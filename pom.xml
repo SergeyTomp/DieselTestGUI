@@ -35,6 +35,13 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+            <groupId>de.huxhorn.lilith</groupId>
+            <artifactId>de.huxhorn.lilith.3rdparty.junique</artifactId>
+            <version>1.0.4</version>
+        </dependency>
+
     </dependencies>
 
     <build>
