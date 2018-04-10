@@ -16,6 +16,7 @@ public class ApplicationConfigHandler {
     private String filePath;
 
     {
+        config.put("GUI_Type", "UIS");
         config.put("Language", "ENGLISH");
     }
 

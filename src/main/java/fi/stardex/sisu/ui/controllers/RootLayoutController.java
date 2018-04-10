@@ -3,8 +3,6 @@ package fi.stardex.sisu.ui.controllers;
 import javafx.fxml.FXML;
 import javafx.scene.layout.GridPane;
 
-import javax.annotation.PostConstruct;
-
 public class RootLayoutController {
 
     @FXML
@@ -12,8 +10,11 @@ public class RootLayoutController {
     @FXML
     private GridPane sectionLayout;
 
-    @PostConstruct
-    private void init() {
-        rootLayout.add();
+    public GridPane getRootLayout() {
+        return rootLayout;
+    }
+
+    public GridPane getSectionLayout() {
+        return sectionLayout;
     }
 }

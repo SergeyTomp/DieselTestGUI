@@ -2,9 +2,12 @@ package fi.stardex.sisu.spring;
 
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.RootLayoutController;
+import fi.stardex.sisu.ui.controllers.main.MainSectionController;
+import fi.stardex.sisu.util.ApplicationConfigHandler;
 import fi.stardex.sisu.util.Enabler;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.i18n.UTF8Control;
+import fi.stardex.sisu.util.view.ApplicationAppearanceChanger;
 import javafx.fxml.FXMLLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,10 +43,19 @@ public class JavaFXSpringConfigure {
     }
 
     @Bean
+    public ViewHolder mainSection() {
+        return loadView("/fxml/sections/Main/MainSection.fxml");
+    }
+
+    @Bean
+    public MainSectionController mainSectionController() {
+        return (MainSectionController) mainSection().getController();
+    }
+
+    @Bean
     public ViewHolder crSection() {
         return loadView("/fxml/sections/CR/CRSection.fxml");
     }
-
 
     @Bean
     public ViewHolder uisSection() {
@@ -53,6 +65,14 @@ public class JavaFXSpringConfigure {
     @Bean
     public ViewHolder additionalSection() {
         return loadView("/fxml/sections/Additional/AdditionalSection.fxml");
+    }
+
+    @Bean
+    @Autowired
+    public ApplicationAppearanceChanger applicationAppearanceChanger(ViewHolder crSection, ViewHolder uisSection,
+                                                                     ViewHolder additionalSection, RootLayoutController rootLayoutController) {
+        return new ApplicationAppearanceChanger(crSection.getView(), uisSection.getView(),
+                additionalSection.getView(), rootLayoutController.getSectionLayout());
     }
 
     @Bean

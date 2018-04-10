@@ -20,4 +20,5 @@ public class SpringJavaConfig {
         return new I18N(applicationConfigHandler());
     }
 
+
 }
