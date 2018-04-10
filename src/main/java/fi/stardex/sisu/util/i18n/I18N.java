@@ -20,9 +20,9 @@ public class I18N {
     private ObjectProperty<Locale> locale;
 
     @Autowired
-    public I18N(ApplicationConfigHandler applicationConfigHandler, UTF8Control utf8Control) {
+    public I18N(ApplicationConfigHandler applicationConfigHandler) {
         this.applicationConfigHandler = applicationConfigHandler;
-        this.utf8Control = utf8Control;
+        this.utf8Control = new UTF8Control();
     }
 
     @PostConstruct

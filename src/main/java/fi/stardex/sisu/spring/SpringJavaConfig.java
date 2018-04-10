@@ -2,11 +2,12 @@ package fi.stardex.sisu.spring;
 
 import fi.stardex.sisu.util.ApplicationConfigHandler;
 import fi.stardex.sisu.util.i18n.I18N;
-import fi.stardex.sisu.util.i18n.UTF8Control;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 @Configuration
+@Import(JavaFXSpringConfigure.class)
 public class SpringJavaConfig {
 
     @Bean
@@ -15,12 +16,8 @@ public class SpringJavaConfig {
     }
 
     @Bean
-    public UTF8Control utf8Control() {
-        return new UTF8Control();
+    public I18N i18N() {
+        return new I18N(applicationConfigHandler());
     }
 
-    @Bean
-    public I18N i18N() {
-        return new I18N(applicationConfigHandler(), utf8Control());
-    }
 }
