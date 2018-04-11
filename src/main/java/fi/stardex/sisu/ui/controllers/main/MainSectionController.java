@@ -79,7 +79,6 @@ public class MainSectionController {
                 break;
             case CR_Pump:
                 versionComboBox.getSelectionModel().select("CR");
-                // pumpRB.setSelected(true);
         }
     }
 
