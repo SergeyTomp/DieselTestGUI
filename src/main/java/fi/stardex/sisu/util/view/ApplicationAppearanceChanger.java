@@ -21,8 +21,6 @@ public class ApplicationAppearanceChanger {
         this.sectionLayout = sectionLayout;
     }
 
-
-
     public void changeToCRInj() {
         clearSectionLayout();
         sectionLayout.add(crSection, 0,0);

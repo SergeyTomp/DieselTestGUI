@@ -16,6 +16,7 @@ import java.util.List;
 public class MainSectionController {
 
     private List<String> versions = new LinkedList<>();
+
     {
         versions.add("CR");
         versions.add("UIS");
@@ -56,12 +57,12 @@ public class MainSectionController {
         });
 
         injectorOrPump.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
-            if(versionComboBox.getSelectionModel().getSelectedItem().equalsIgnoreCase("CR")) {
-                if(injectorOrPump.getSelectedToggle() == injRB) {
+            if (versionComboBox.getSelectionModel().getSelectedItem().equalsIgnoreCase("CR")) {
+                if (injectorOrPump.getSelectedToggle() == injRB) {
                     GUIType.setCurrentType(GUIType.CR_Inj);
                     applicationConfigHandler.put("GUI_Type", "CR_Inj");
                     applicationAppearanceChanger.changeToCRInj();
-                } else {
+                } else if(injectorOrPump.getSelectedToggle() == pumpRB){
                     GUIType.setCurrentType(GUIType.CR_Pump);
                     applicationConfigHandler.put("GUI_Type", "CR_Pump");
                     applicationAppearanceChanger.changeToCRPump();
