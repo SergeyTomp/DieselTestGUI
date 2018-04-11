@@ -45,9 +45,11 @@ public class MainSectionController {
 
             switch (newValue) {
                 case "UIS":
+                    unselectAll();
                     changeToUIS();
                     break;
                 case "CR":
+                    unselectAll();
                     changeToCR();
                     break;
             }
@@ -58,9 +60,11 @@ public class MainSectionController {
                 if(injectorOrPump.getSelectedToggle() == injRB) {
                     GUIType.setCurrentType(GUIType.CR_Inj);
                     applicationConfigHandler.put("GUI_Type", "CR_Inj");
+                    applicationAppearanceChanger.changeToCRInj();
                 } else {
                     GUIType.setCurrentType(GUIType.CR_Pump);
                     applicationConfigHandler.put("GUI_Type", "CR_Pump");
+                    applicationAppearanceChanger.changeToCRPump();
                 }
             }
         });
@@ -81,6 +85,7 @@ public class MainSectionController {
     private void changeToUIS() {
         GUIType.setCurrentType(GUIType.UIS);
         applicationConfigHandler.put("GUI_Type", "UIS");
+        applicationAppearanceChanger.changeToUIS();
         injRB.setSelected(true);
         pumpRB.setDisable(true);
     }
@@ -88,5 +93,10 @@ public class MainSectionController {
     private void changeToCR() {
         injRB.setSelected(true);
         pumpRB.setDisable(false);
+    }
+
+    private void unselectAll() {
+        injRB.setSelected(false);
+        pumpRB.setSelected(false);
     }
 }

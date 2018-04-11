@@ -2,6 +2,8 @@ package fi.stardex.sisu.spring;
 
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.RootLayoutController;
+import fi.stardex.sisu.ui.controllers.additional.AdditionalSectionController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.ConnectionController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
 import fi.stardex.sisu.util.ApplicationConfigHandler;
 import fi.stardex.sisu.util.Enabler;
@@ -65,6 +67,16 @@ public class JavaFXSpringConfigure {
     @Bean
     public ViewHolder additionalSection() {
         return loadView("/fxml/sections/Additional/AdditionalSection.fxml");
+    }
+
+    @Bean
+    public AdditionalSectionController additionalSectionController() {
+        return (AdditionalSectionController) additionalSection().getController();
+    }
+
+    @Bean
+    public ConnectionController connectionController() {
+        return additionalSectionController().getConnectionController();
     }
 
     @Bean

@@ -24,20 +24,27 @@ public class ApplicationAppearanceChanger {
 
 
     public void changeToCRInj() {
+        clearSectionLayout();
         sectionLayout.add(crSection, 0,0);
         sectionLayout.add(additionalSection,0,1);
         logger.info("Change to CR_Inj");
     }
 
     public void changeToCRPump() {
+        clearSectionLayout();
         sectionLayout.add(crSection, 0,0);
         sectionLayout.add(additionalSection,0,1);
         logger.info("Change to CR_Pump");
     }
 
     public void changeToUIS() {
+        clearSectionLayout();
         sectionLayout.add(uisSection,0,0);
         sectionLayout.add(additionalSection,0,1);
         logger.info("Change to UIS");
+    }
+
+    private void clearSectionLayout() {
+        sectionLayout.getChildren().clear();
     }
 }
