@@ -38,6 +38,20 @@ public class SpringJavaConfig {
     }
 
     @Bean
+    @Autowired
+    public ModbusConnect flowModbusConnect(ConnectionController connectionController, ConnectProcessor connectProcessor, Devices devices, StatusBarWrapper statusBar,
+                                             InetAddressWrapper inetAddressWrapper) {
+        return new ModbusConnect(connectionController.getFlowMeterConnect(), connectProcessor, devices, statusBar, Device.MODBUS_FLOW, inetAddressWrapper);
+    }
+
+    @Bean
+    @Autowired
+    public ModbusConnect standModbusConnect(ConnectionController connectionController, ConnectProcessor connectProcessor, Devices devices, StatusBarWrapper statusBar,
+                                           InetAddressWrapper inetAddressWrapper) {
+        return new ModbusConnect(connectionController.getStandConnect(), connectProcessor, devices, statusBar, Device.MODBUS_STAND, inetAddressWrapper);
+    }
+
+    @Bean
     public Devices devices() {
         return new Devices();
     }

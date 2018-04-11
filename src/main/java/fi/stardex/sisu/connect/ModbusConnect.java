@@ -57,7 +57,6 @@ public class ModbusConnect {
 
     @Scheduled(cron = "*/3 * * * * *")
     public void connect() {
-        System.err.println("try to connect");
         if (isConnected()) {
             if (!devices.isAtLeastOneConnected(Device.getPairedDevices(dieselDevice))) {
                 schedularNotifier.signal();
