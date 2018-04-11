@@ -1,0 +1,112 @@
+package fi.stardex.sisu.connect;
+
+import fi.stardex.sisu.devices.Device;
+import fi.stardex.sisu.devices.Devices;
+import fi.stardex.sisu.util.Pair;
+import fi.stardex.sisu.util.wrappers.StatusBarWrapper;
+import javafx.application.Platform;
+import net.wimpi.modbus.io.ModbusTransaction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.scheduling.annotation.Scheduled;
+
+import javax.annotation.PreDestroy;
+import java.util.concurrent.Future;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
+public class ModbusConnect {
+
+    private Logger logger = LoggerFactory.getLogger(ModbusConnect.class);
+    
+    private static final int RETRY = 1;
+    
+    private String addressLine;
+    private int port;
+    
+    private ConnectProcessor connectProcessor;
+
+    private ConnectCallable connectCallable;
+
+    private Future<Boolean> connectionStatus;
+    private ModbusTransaction modbusTransaction;
+    private final Lock lock;
+
+    private final Condition condition;
+    private final Devices devices;
+    private final StatusBarWrapper statusBar;
+    private final Device dieselDevice;
+    private Pair<String, String> connectInfo;
+    private final InetAddressWrapper inetAddressWrapper;
+    private final SchedulerNotifier schedularNotifier;
+
+    public ModbusConnect(Pair<String, String> connectInfo, ConnectProcessor connectProcessor,
+                         Devices devices, StatusBarWrapper statusBar, Device dieselDevice, InetAddressWrapper inetAddressWrapper) {
+        this.connectInfo = connectInfo;
+        this.connectProcessor = connectProcessor;
+        this.devices = devices;
+        this.statusBar = statusBar;
+        this.dieselDevice = dieselDevice;
+        this.inetAddressWrapper = inetAddressWrapper;
+
+        lock = new ReentrantLock();
+        condition = lock.newCondition();
+        schedularNotifier = new SchedulerNotifier(lock, condition);
+    }
+
+    @Scheduled(cron = "*/3 * * * * *")
+    public void connect() {
+        System.err.println("try to connect");
+        if (isConnected()) {
+            if (!devices.isAtLeastOneConnected(Device.getPairedDevices(dieselDevice))) {
+                schedularNotifier.signal();
+                devices.connect(dieselDevice);
+            }
+            Platform.runLater(statusBar::refresh);
+            return;
+        }
+        connect(connectInfo.getKey(), Integer.valueOf(connectInfo.getValue()));
+    }
+
+    public void connect(String addressLine, int port) {
+        this.addressLine = addressLine;
+        this.port = port;
+        disconnect2();
+        connectCallable = new ConnectCallable(devices, addressLine, port, statusBar, dieselDevice, schedularNotifier, inetAddressWrapper);
+        if (connectionStatus == null || connectionStatus.isDone()) {
+            logger.info("Make new Future, old is null or done!");
+            connectionStatus = connectProcessor.submit(connectCallable);
+        } else {
+            logger.info("WARNING!WARNING!WARNING! Old future not null and not done, waiting!");
+        }
+    }
+
+    public void disconnect2() {
+        lock.lock();
+        try {
+            if (connectCallable != null && connectCallable.getConnection() != null) {
+                connectCallable.getConnection().close();
+            }
+            modbusTransaction = null;
+            devices.disconnect(dieselDevice);
+
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public boolean isConnected() {
+        return connectionStatus != null && connectCallable.isConnected();
+    }
+
+    public void disconnect() {
+        disconnect2();
+        Platform.runLater(statusBar::refresh);
+    }
+
+    @PreDestroy
+    public void preDestroy() {
+        disconnect();
+    }
+}

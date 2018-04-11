@@ -1,15 +1,17 @@
 package fi.stardex.sisu.spring;
 
+import fi.stardex.sisu.devices.Devices;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.RootLayoutController;
 import fi.stardex.sisu.ui.controllers.additional.AdditionalSectionController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.ConnectionController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
-import fi.stardex.sisu.util.ApplicationConfigHandler;
 import fi.stardex.sisu.util.Enabler;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.i18n.UTF8Control;
 import fi.stardex.sisu.util.view.ApplicationAppearanceChanger;
+import fi.stardex.sisu.util.wrappers.StatusBarWrapper;
+import fi.stardex.sisu.version.StardexVersion;
 import javafx.fxml.FXMLLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,6 +87,12 @@ public class JavaFXSpringConfigure {
                                                                      ViewHolder additionalSection, RootLayoutController rootLayoutController) {
         return new ApplicationAppearanceChanger(crSection.getView(), uisSection.getView(),
                 additionalSection.getView(), rootLayoutController.getSectionLayout());
+    }
+
+    @Bean
+    @Autowired
+    public StatusBarWrapper statusBar(Devices devices) {
+        return new StatusBarWrapper(devices, "Ready", "Device not connected", StardexVersion.VERSION);
     }
 
     @Bean

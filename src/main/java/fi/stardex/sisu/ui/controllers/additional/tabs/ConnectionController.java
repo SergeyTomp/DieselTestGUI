@@ -52,6 +52,15 @@ public class ConnectionController {
 
     }
 
+    public Pair<String, String> getUltimaConnect() {
+        return ultimaConnect;
+    }
 
+    public Pair<String, String> getFlowMeterConnect() {
+        return flowMeterConnect;
+    }
 
+    public Pair<String, String> getStandConnect() {
+        return standConnect;
+    }
 }

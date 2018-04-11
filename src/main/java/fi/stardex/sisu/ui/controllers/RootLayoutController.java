@@ -2,9 +2,12 @@ package fi.stardex.sisu.ui.controllers;
 
 import javafx.fxml.FXML;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 
 public class RootLayoutController {
 
+    @FXML
+    private VBox vBoxBackground;
     @FXML
     private GridPane rootLayout;
     @FXML
@@ -16,5 +19,9 @@ public class RootLayoutController {
 
     public GridPane getSectionLayout() {
         return sectionLayout;
+    }
+
+    public VBox getvBoxBackground() {
+        return vBoxBackground;
     }
 }

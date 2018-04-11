@@ -3,6 +3,7 @@ package fi.stardex.sisu.main;
 import fi.stardex.sisu.logging.LogbackUncaughtExceptionHandler;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.RootLayoutController;
+import fi.stardex.sisu.util.wrappers.StatusBarWrapper;
 import it.sauronsoftware.junique.AlreadyLockedException;
 import it.sauronsoftware.junique.JUnique;
 import javafx.scene.Parent;
@@ -21,6 +22,9 @@ public class SisuApplication extends AbstractJavaFxApplicationSupport {
 
         ViewHolder rootLayoutViewHolder = context.getBean("rootLayout", ViewHolder.class);
         RootLayoutController rootLayoutController = (RootLayoutController) rootLayoutViewHolder.getController();
+        StatusBarWrapper statusBar = context.getBean(StatusBarWrapper.class);
+        rootLayoutController.getvBoxBackground().getChildren().add(statusBar.getStatusBar());
+
         Parent mainSection = context.getBean("mainSection", ViewHolder.class).getView();
         rootLayoutController.getRootLayout().add(mainSection,0,0);
         Scene scene = new Scene(rootLayoutViewHolder.getView(), 800, 600);
