@@ -7,6 +7,7 @@ public enum GUIType {
     CR_Inj, CR_Pump, UIS;
 
     private static Logger logger = LoggerFactory.getLogger(GUIType.class);
+    private static GUIType type;
 
     public static GUIType getByString(String type) {
         for (GUIType guiType : GUIType.values()) {
@@ -15,5 +16,9 @@ public enum GUIType {
         }
         logger.warn("Incorrect GUI type, return default type \"CR_Inj\"");
         return GUIType.CR_Inj;
+    }
+
+    public static void setCurrentType(GUIType newType) {
+        type = newType;
     }
 }

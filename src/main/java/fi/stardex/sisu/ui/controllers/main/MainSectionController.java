@@ -56,8 +56,10 @@ public class MainSectionController {
         injectorOrPump.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
             if(versionComboBox.getSelectionModel().getSelectedItem().equalsIgnoreCase("CR")) {
                 if(injectorOrPump.getSelectedToggle() == injRB) {
+                    GUIType.setCurrentType(GUIType.CR_Inj);
                     applicationConfigHandler.put("GUI_Type", "CR_Inj");
                 } else {
+                    GUIType.setCurrentType(GUIType.CR_Pump);
                     applicationConfigHandler.put("GUI_Type", "CR_Pump");
                 }
             }
@@ -77,6 +79,7 @@ public class MainSectionController {
     }
 
     private void changeToUIS() {
+        GUIType.setCurrentType(GUIType.UIS);
         applicationConfigHandler.put("GUI_Type", "UIS");
         injRB.setSelected(true);
         pumpRB.setDisable(true);

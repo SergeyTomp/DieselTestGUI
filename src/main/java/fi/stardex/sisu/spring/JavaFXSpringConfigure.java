@@ -81,7 +81,6 @@ public class JavaFXSpringConfigure {
 
     }
 
-
     private ViewHolder loadView(String url) {
         FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(url), ResourceBundle.getBundle("properties.labels", i18N.getLocale(), utf8Control));
         ViewHolder viewHolder = new ViewHolder();

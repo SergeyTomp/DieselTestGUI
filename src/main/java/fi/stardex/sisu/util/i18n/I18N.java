@@ -6,6 +6,7 @@ import javafx.beans.binding.StringBinding;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 
 import javax.annotation.PostConstruct;
 import java.text.MessageFormat;
@@ -19,7 +20,6 @@ public class I18N {
 
     private ObjectProperty<Locale> locale;
 
-    @Autowired
     public I18N(ApplicationConfigHandler applicationConfigHandler) {
         this.applicationConfigHandler = applicationConfigHandler;
         this.utf8Control = new UTF8Control();
