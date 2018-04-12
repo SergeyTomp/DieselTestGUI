@@ -5,7 +5,10 @@ import fi.stardex.sisu.devices.Devices;
 import fi.stardex.sisu.util.Pair;
 import fi.stardex.sisu.util.wrappers.StatusBarWrapper;
 import javafx.application.Platform;
+import net.wimpi.modbus.ModbusException;
+import net.wimpi.modbus.io.ModbusTCPTransaction;
 import net.wimpi.modbus.io.ModbusTransaction;
+import net.wimpi.modbus.msg.ModbusRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -102,6 +105,18 @@ public class ModbusConnect {
     public void disconnect() {
         disconnect2();
         Platform.runLater(statusBar::refresh);
+    }
+
+    public ModbusTransaction getTransaction(ModbusRequest request) throws ModbusException{
+        if (isConnected()) {
+            if (modbusTransaction == null) {
+                modbusTransaction = new ModbusTCPTransaction(connectCallable.getConnection());
+                modbusTransaction.setRetries(RETRY);
+            }
+            modbusTransaction.setRequest(request);
+            return modbusTransaction;
+        }
+        throw new ModbusException(String.format("Trying to getTransaction while - no connection to %s:%s", addressLine, port));
     }
 
     @PreDestroy

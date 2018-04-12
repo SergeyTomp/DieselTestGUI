@@ -1,19 +1,35 @@
 package fi.stardex.sisu.ui.controllers.main;
 
+import fi.stardex.sisu.registers.RegisterProvider;
+import fi.stardex.sisu.registers.modbusmaps.ModbusMapUltima;
+import fi.stardex.sisu.registers.writers.ModbusWriter;
 import fi.stardex.sisu.util.ApplicationConfigHandler;
 import fi.stardex.sisu.util.view.ApplicationAppearanceChanger;
 import fi.stardex.sisu.util.view.GUIType;
 import javafx.fxml.FXML;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class MainSectionController {
+
+    //adasd
+
+    @Autowired
+    private ModbusWriter ultimaModbusWriter;
+    @Autowired
+    private RegisterProvider ultimaRegisterProvider;
+
+    public TextField TF;
+    public Button writeBtn;
+    public Button ReadBtn;
+
+    //asdasd
+
 
     private List<String> versions = new LinkedList<>();
 
@@ -62,7 +78,7 @@ public class MainSectionController {
                     GUIType.setCurrentType(GUIType.CR_Inj);
                     applicationConfigHandler.put("GUI_Type", "CR_Inj");
                     applicationAppearanceChanger.changeToCRInj();
-                } else if(injectorOrPump.getSelectedToggle() == pumpRB){
+                } else if (injectorOrPump.getSelectedToggle() == pumpRB) {
                     GUIType.setCurrentType(GUIType.CR_Pump);
                     applicationConfigHandler.put("GUI_Type", "CR_Pump");
                     applicationAppearanceChanger.changeToCRPump();
@@ -80,6 +96,19 @@ public class MainSectionController {
             case CR_Pump:
                 versionComboBox.getSelectionModel().select("CR");
         }
+
+
+        //asdasd
+        writeBtn.setOnMouseClicked(event -> {
+            ultimaModbusWriter.add(ModbusMapUltima.BoostVoltage, Float.valueOf(TF.getText()));
+            ultimaModbusWriter.execute(1, TimeUnit.MILLISECONDS);
+        });
+
+        ReadBtn.setOnMouseClicked(event -> {
+            System.err.println(ultimaRegisterProvider.read(ModbusMapUltima.BoostVoltage));
+        });
+
+        //asdasd
     }
 
     private void changeToUIS() {

@@ -5,6 +5,8 @@ import fi.stardex.sisu.connect.InetAddressWrapper;
 import fi.stardex.sisu.connect.ModbusConnect;
 import fi.stardex.sisu.devices.Device;
 import fi.stardex.sisu.devices.Devices;
+import fi.stardex.sisu.registers.RegisterProvider;
+import fi.stardex.sisu.registers.writers.ModbusWriter;
 import fi.stardex.sisu.ui.controllers.additional.tabs.ConnectionController;
 import fi.stardex.sisu.util.ApplicationConfigHandler;
 import fi.stardex.sisu.util.i18n.I18N;
@@ -67,4 +69,39 @@ public class SpringJavaConfig {
         return new I18N(applicationConfigHandler);
     }
 
+    @Bean
+    @Autowired
+    public RegisterProvider ultimaRegisterProvider(ModbusConnect ultimaModbusConnect) {
+        return new RegisterProvider(ultimaModbusConnect);
+    }
+
+    @Bean
+    @Autowired
+    public RegisterProvider flowRegisterProvider(ModbusConnect flowModbusConnect) {
+        return new RegisterProvider(flowModbusConnect);
+    }
+
+    @Bean
+    @Autowired
+    public RegisterProvider standRegisterProvider(ModbusConnect standModbusConnect) {
+        return new RegisterProvider(standModbusConnect);
+    }
+
+    @Bean
+    @Autowired
+    public ModbusWriter ultimaModbusWriter(RegisterProvider ultimaRegisterProvider) {
+        return new ModbusWriter(ultimaRegisterProvider);
+    }
+
+    @Bean
+    @Autowired
+    public ModbusWriter flowModbusWriter(RegisterProvider flowRegisterProvider) {
+        return new ModbusWriter(flowRegisterProvider);
+    }
+
+    @Bean
+    @Autowired
+    public ModbusWriter standModbusWriter(RegisterProvider standRegisterProvider) {
+        return new ModbusWriter(standRegisterProvider);
+    }
 }

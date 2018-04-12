@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -54,5 +56,12 @@
                </children></HBox>
          </children>
       </VBox>
+      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="1">
+         <children>
+            <TextField fx:id="TF" />
+            <Button fx:id="writeBtn" mnemonicParsing="false" text="Write" />
+            <Button fx:id="ReadBtn" mnemonicParsing="false" text="Read" />
+         </children>
+      </HBox>
    </children>
 </GridPane>
