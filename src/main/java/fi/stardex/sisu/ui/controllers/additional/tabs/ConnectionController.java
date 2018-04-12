@@ -49,7 +49,15 @@ public class ConnectionController {
         flowMeterPortField.setText(flowMeterConnect.getValue());
         standPortField.setText(standConnect.getValue());
 
+        acceptButton.setOnMouseClicked(event -> {
+            applicationConfigHandler.put("UltimaIP", ultimaIPField.getText());
+            applicationConfigHandler.put("FlowIP", flowMeterIPField.getText());
+            applicationConfigHandler.put("StandIP", standIPField.getText());
 
+            applicationConfigHandler.put("UltimaPort", ultimaPortField.getText());
+            applicationConfigHandler.put("FlowPort", flowMeterPortField.getText());
+            applicationConfigHandler.put("StandPort", standPortField.getText());
+        });
     }
 
     public Pair<String, String> getUltimaConnect() {

@@ -30,7 +30,6 @@ public class MainSectionController {
 
     //asdasd
 
-
     private List<String> versions = new LinkedList<>();
 
     {

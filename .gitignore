@@ -1,0 +1,22 @@
+# Intellij
+.idea/
+*.iml
+*.iws
+*.pdf
+
+# Mac
+.DS_Store
+
+# Maven
+log/
+target/
+
+# Gradle
+.gradle/
+build/
+
+*.log
+sisu_test_derby/
+
+.attach*
+out/
