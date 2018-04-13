@@ -5,6 +5,8 @@ import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.RootLayoutController;
 import fi.stardex.sisu.ui.controllers.additional.AdditionalSectionController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.ConnectionController;
+import fi.stardex.sisu.ui.controllers.cr.CRSectionController;
+import fi.stardex.sisu.ui.controllers.cr.TestBenchController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
 import fi.stardex.sisu.util.Enabler;
 import fi.stardex.sisu.util.i18n.I18N;
@@ -59,6 +61,21 @@ public class JavaFXSpringConfigure {
     @Bean
     public ViewHolder crSection() {
         return loadView("/fxml/sections/CR/CRSection.fxml");
+    }
+
+    @Bean
+    public CRSectionController crSectionController() {
+        return (CRSectionController) crSection().getController();
+    }
+
+    @Bean
+    public ViewHolder testBench() {
+        return loadView("/fxml/sections/CR/TestBenchSection.fxml");
+    }
+
+    @Bean
+    public TestBenchController testBenchController() {
+        return (TestBenchController) testBench().getController();
     }
 
     @Bean

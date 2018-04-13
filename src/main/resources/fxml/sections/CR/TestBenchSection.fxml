@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<StackPane fx:id="rootStackPane" alignment="CENTER" minHeight="130.0" prefHeight="130.0" prefWidth="930.0" styleClass="pane" stylesheets="@../css/VBox.css" xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.cr.TestBenchController">
+    <children>
+        <HBox alignment="CENTER_LEFT" prefHeight="209.0" prefWidth="665.0000999999975" snapToPixel="true" StackPane.alignment="CENTER">
+            <children>
+                <GridPane alignment="CENTER" prefHeight="120.0" prefWidth="133.0" vgap="0.0" HBox.hgrow="ALWAYS">
+                    <children>
+                        <Label stylesheets="@../css/VBox.css" text="%h1.label.rpm" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                     <GridPane.margin>
+                        <Insets bottom="2.0" left="2.0" right="2.0" top="25.0" />
+                     </GridPane.margin></Label>
+                        <GridPane alignment="CENTER" prefHeight="48.0" prefWidth="91.0" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="ALWAYS">
+                            <columnConstraints>
+                                <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="53.0" minWidth="10.0" prefWidth="47.0" />
+                                <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="72.0" minWidth="10.0" prefWidth="44.0" />
+                            </columnConstraints>
+                            <rowConstraints>
+                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            </rowConstraints>
+                            <children>
+                        <ToggleButton fx:id="leftDirectionToggleButton" mnemonicParsing="false" prefHeight="26.0" prefWidth="33.0" styleClass="leftArrow-button" stylesheets="@../css/VBox.css" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                           <toggleGroup>
+                              <ToggleGroup fx:id="rotationDirectionToggleGroup" />
+                           </toggleGroup>
+                           <GridPane.margin>
+                              <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                           </GridPane.margin>
+                           <tooltip>
+                              <Tooltip styleClass="ttip" text="%h1.arrow.tip.left" />
+                           </tooltip></ToggleButton>
+                        <ToggleButton fx:id="rightDirectionToggleButton" mnemonicParsing="false" prefHeight="26.0" prefWidth="29.0" styleClass="rightArrow-button" stylesheets="@../css/VBox.css" toggleGroup="$rotationDirectionToggleGroup" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                           <GridPane.margin>
+                              <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                           </GridPane.margin>
+                           <tooltip>
+                              <Tooltip styleClass="ttip" text="%h1.arrow.tip.right" />
+                           </tooltip></ToggleButton>
+                            </children>
+                        </GridPane>
+                        <Spinner fx:id="spinnerRPM" editable="true" maxHeight="30.0" maxWidth="90.0" minHeight="30.0" minWidth="90.0" prefHeight="30.0" prefWidth="90.0" stylesheets="@../css/VBox.css" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
+                            <opaqueInsets>
+                                <Insets />
+                            </opaqueInsets>
+                            <padding>
+                                <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                            </padding>
+                            <GridPane.margin>
+                                <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                            </GridPane.margin>
+                     <tooltip>
+                        <Tooltip styleClass="ttip" text="%h1.spin.tip.rpm" />
+                     </tooltip></Spinner>
+                    </children>
+                    <columnConstraints>
+                        <ColumnConstraints fillWidth="false" halignment="CENTER" hgrow="SOMETIMES" minWidth="100.0" prefWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints maxHeight="46.0" minHeight="10.0" prefHeight="46.0" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="66.0" minHeight="10.0" prefHeight="42.0" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="57.0" minHeight="10.0" prefHeight="36.0" vgrow="ALWAYS" />
+                    </rowConstraints>
+                    <HBox.margin>
+                        <Insets />
+                    </HBox.margin>
+                </GridPane>
+                <GridPane alignment="CENTER" prefHeight="127.0" prefWidth="186.0" HBox.hgrow="ALWAYS">
+                    <children>
+                        <Label stylesheets="@../css/VBox.css" text="%h1.label.temp1" GridPane.columnIndex="0" GridPane.rowIndex="0">
+                     <GridPane.margin>
+                        <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                     </GridPane.margin></Label>
+                        <Label fx:id="pressure1Label" stylesheets="@../css/VBox.css" text="%h1.label.press1" GridPane.columnIndex="1" GridPane.rowIndex="0">
+                     <GridPane.margin>
+                        <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                     </GridPane.margin></Label>
+                        <Label stylesheets="@../css/VBox.css" text="%h1.label.temp2" GridPane.columnIndex="0" GridPane.rowIndex="2">
+                     <GridPane.margin>
+                        <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                     </GridPane.margin></Label>
+                  <ProgressBar fx:id="pressProgressBar1" minHeight="30.0" minWidth="70.0" prefHeight="30.0" prefWidth="70.0" progress="0.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                     <tooltip>
+                        <Tooltip styleClass="ttip" text="%h1.bar.tip.press1" />
+                     </tooltip></ProgressBar>
+                  <ProgressBar fx:id="tempProgressBar2" minHeight="30.0" minWidth="70.0" prefHeight="30.0" prefWidth="70.0" progress="0.0" GridPane.rowIndex="3">
+                     <tooltip>
+                        <Tooltip styleClass="ttip" text="%h1.bar.tip.temp2" />
+                     </tooltip></ProgressBar>
+                  <ProgressBar fx:id="tempProgressBar1" minHeight="30.0" minWidth="70.0" prefHeight="30.0" prefWidth="70.0" progress="0.0" GridPane.rowIndex="1">
+                     <tooltip>
+                        <Tooltip styleClass="ttip" text="%h1.bar.tip.temp1" />
+                     </tooltip></ProgressBar>
+                  <Text fx:id="textTempBar1" fill="#ddff99" strokeType="OUTSIDE" strokeWidth="0.0" text="0" GridPane.rowIndex="1" />
+                  <Text fx:id="textTempBar2" fill="#ddff99" strokeType="OUTSIDE" strokeWidth="0.0" text="0" GridPane.rowIndex="3" />
+                  <Text fx:id="textPressBar1" fill="#ddff99" strokeType="OUTSIDE" strokeWidth="0.0" text="0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                    </children>
+                    <columnConstraints>
+                        <ColumnConstraints fillWidth="false" halignment="CENTER" hgrow="SOMETIMES" minWidth="80.0" prefWidth="80.0" />
+                        <ColumnConstraints fillWidth="false" halignment="CENTER" hgrow="SOMETIMES" minWidth="80.0" prefWidth="80.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints maxHeight="27.0" minHeight="10.0" prefHeight="19.0" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="43.0" minHeight="10.0" prefHeight="42.0" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="48.0" minHeight="10.0" prefHeight="19.0" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="46.0" minHeight="10.0" prefHeight="46.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                    <HBox.margin>
+                        <Insets />
+                    </HBox.margin>
+                </GridPane>
+                <GridPane fx:id="gridPaneHBox1" prefHeight="124.0" prefWidth="607.0" HBox.hgrow="ALWAYS">
+                    <children>
+                        <ToggleButton fx:id="buttonPumpControl" contentDisplay="CENTER" lineSpacing="2.0" maxHeight="94.0" maxWidth="94.0" minHeight="94.0" minWidth="94.0" mnemonicParsing="false" pickOnBounds="true" prefHeight="94.0" prefWidth="94.0" styleClass="pump-button" stylesheets="@../css/VBox.css" textAlignment="CENTER" textFill="#36231dc1" wrapText="true" GridPane.columnIndex="1">
+                            <font>
+                                <Font name="Calibri" size="12.0" />
+                            </font>
+                     <tooltip>
+                        <Tooltip styleClass="ttip" text="%h1.button.tip.pump" />
+                     </tooltip>
+                     <GridPane.margin>
+                        <Insets bottom="2.0" />
+                     </GridPane.margin></ToggleButton>
+                        <ToggleButton fx:id="buttonFanControl" contentDisplay="CENTER" maxHeight="94.0" maxWidth="94.0" minHeight="94.0" minWidth="94.0" mnemonicParsing="false" prefHeight="94.0" prefWidth="94.0" styleClass="cooler" stylesheets="@../css/VBox.css" text="FAN" wrapText="true" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
+                     <tooltip>
+                        <Tooltip styleClass="ttip" text="%h1.button.tip.fan" />
+                     </tooltip>
+                     <GridPane.margin>
+                        <Insets bottom="2.0" />
+                     </GridPane.margin></ToggleButton>
+                        <ToggleButton fx:id="deviceStateButton" minWidth="52.0" mnemonicParsing="false" prefHeight="96.0" prefWidth="52.0" styleClass="switcher" stylesheets="@../css/VBox.css" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                            <GridPane.margin>
+                                <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                            </GridPane.margin>
+                     <tooltip>
+                        <Tooltip styleClass="ttip" text="%h1.button.tip.power" />
+                     </tooltip>
+                        </ToggleButton>
+                  <StackPane fx:id="stackPaneLCD" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.hgrow="NEVER" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
+                  <ProgressBar fx:id="oilTank" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="88.0" prefWidth="86.0" progress="0.0" rotate="-90.0" styleClass="oil-bar" stylesheets="@../css/VBox.css" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                     <tooltip>
+                        <Tooltip styleClass="ttip" text="%h1.button.tip.oil" />
+                     </tooltip></ProgressBar>
+                  <Text fx:id="textOilTank" fill="#def5aa" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Text>
+                    </children>
+                    <columnConstraints>
+                        <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" minWidth="115.0" prefWidth="115.0" />
+                        <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" minWidth="115.0" prefWidth="115.0" />
+                        <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" minWidth="110.0" prefWidth="115.0" />
+                        <ColumnConstraints fillWidth="false" halignment="RIGHT" hgrow="ALWAYS" minWidth="120.0" prefWidth="120.0" />
+                  <ColumnConstraints fillWidth="false" halignment="RIGHT" hgrow="ALWAYS" maxWidth="55.0" minWidth="55.0" prefWidth="55.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints minHeight="130.0" prefHeight="130.0" valignment="CENTER" vgrow="ALWAYS" />
+                    </rowConstraints>
+                    <HBox.margin>
+                        <Insets />
+                    </HBox.margin>
+                </GridPane>
+            </children>
+        </HBox>
+    </children>
+</StackPane>
