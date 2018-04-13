@@ -11,4 +11,8 @@ public interface ModbusMap {
     Object getLastValue();
 
     void setLastValue(Object lastValue);
+
+    boolean isAutoUpdate();
+
+    void setAutoUpdate(boolean autoUpdate);
 }

@@ -6,7 +6,8 @@ import fi.stardex.sisu.connect.ModbusConnect;
 import fi.stardex.sisu.devices.Device;
 import fi.stardex.sisu.devices.Devices;
 import fi.stardex.sisu.registers.RegisterProvider;
-import fi.stardex.sisu.registers.writers.ModbusWriter;
+import fi.stardex.sisu.registers.modbusmaps.ModbusMapUltima;
+import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.controllers.additional.tabs.ConnectionController;
 import fi.stardex.sisu.util.ApplicationConfigHandler;
 import fi.stardex.sisu.util.i18n.I18N;
@@ -16,6 +17,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.scheduling.annotation.EnableScheduling;
+
+import java.util.Arrays;
 
 @Configuration
 @Import(JavaFXSpringConfigure.class)
@@ -89,19 +92,19 @@ public class SpringJavaConfig {
 
     @Bean
     @Autowired
-    public ModbusWriter ultimaModbusWriter(RegisterProvider ultimaRegisterProvider) {
-        return new ModbusWriter(ultimaRegisterProvider);
+    public ModbusRegisterProcessor ultimaModbusWriter(RegisterProvider ultimaRegisterProvider) {
+        return new ModbusRegisterProcessor(ultimaRegisterProvider, ModbusMapUltima.values(), "Ultima register processor");
     }
 
     @Bean
     @Autowired
-    public ModbusWriter flowModbusWriter(RegisterProvider flowRegisterProvider) {
-        return new ModbusWriter(flowRegisterProvider);
+    public ModbusRegisterProcessor flowModbusWriter(RegisterProvider flowRegisterProvider) {
+        return new ModbusRegisterProcessor(flowRegisterProvider, null, "Flow register processor");
     }
 
     @Bean
     @Autowired
-    public ModbusWriter standModbusWriter(RegisterProvider standRegisterProvider) {
-        return new ModbusWriter(standRegisterProvider);
+    public ModbusRegisterProcessor standModbusWriter(RegisterProvider standRegisterProvider) {
+        return new ModbusRegisterProcessor(standRegisterProvider, null, "Stand register processor");
     }
 }

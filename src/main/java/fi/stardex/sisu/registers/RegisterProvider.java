@@ -48,12 +48,13 @@ public class RegisterProvider {
         }
     }
 
-    public void write(ModbusMap register, Object value) {
+    public void write(ModbusMap register, Object value) throws ModbusException {
         try {
             request(RegisterFactory.getRequest(register, true, value));
         } catch (ModbusException e) {
             modbusConnect.disconnect2();
             logger.warn(e.getMessage());
+            throw e;
         }
     }
 
@@ -61,5 +62,9 @@ public class RegisterProvider {
         ModbusTransaction transaction = modbusConnect.getTransaction(request);
         transaction.execute();
         return transaction.getResponse();
+    }
+
+    public boolean isConnected() {
+        return modbusConnect.isConnected();
     }
 }
