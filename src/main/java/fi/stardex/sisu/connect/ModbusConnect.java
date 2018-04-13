@@ -22,12 +22,12 @@ import java.util.concurrent.locks.ReentrantLock;
 public class ModbusConnect {
 
     private Logger logger = LoggerFactory.getLogger(ModbusConnect.class);
-    
+
     private static final int RETRY = 1;
-    
+
     private String addressLine;
     private int port;
-    
+
     private ConnectProcessor connectProcessor;
 
     private ConnectCallable connectCallable;
@@ -44,6 +44,7 @@ public class ModbusConnect {
     private final InetAddressWrapper inetAddressWrapper;
     private final SchedulerNotifier schedularNotifier;
 
+
     public ModbusConnect(Pair<String, String> connectInfo, ConnectProcessor connectProcessor,
                          Devices devices, StatusBarWrapper statusBar, Device dieselDevice, InetAddressWrapper inetAddressWrapper) {
         this.connectInfo = connectInfo;
@@ -56,11 +57,14 @@ public class ModbusConnect {
         lock = new ReentrantLock();
         condition = lock.newCondition();
         schedularNotifier = new SchedulerNotifier(lock, condition);
+
+        addressLine = connectInfo.getKey();
+        port = Integer.valueOf(connectInfo.getValue());
     }
 
     @Scheduled(cron = "*/3 * * * * *")
     public void connect() {
-        if (isConnected()) {
+        if (isConnected() && isSame(addressLine, port)) {
             if (!devices.isAtLeastOneConnected(Device.getPairedDevices(dieselDevice))) {
                 schedularNotifier.signal();
                 devices.connect(dieselDevice);
@@ -107,7 +111,7 @@ public class ModbusConnect {
         Platform.runLater(statusBar::refresh);
     }
 
-    public ModbusTransaction getTransaction(ModbusRequest request) throws ModbusException{
+    public ModbusTransaction getTransaction(ModbusRequest request) throws ModbusException {
         if (isConnected()) {
             if (modbusTransaction == null) {
                 modbusTransaction = new ModbusTCPTransaction(connectCallable.getConnection());
@@ -117,6 +121,13 @@ public class ModbusConnect {
             return modbusTransaction;
         }
         throw new ModbusException(String.format("Trying to getTransaction while - no connection to %s:%s", addressLine, port));
+    }
+
+    private boolean isSame(String addressLine, int port) {
+        String newAddressLine = connectInfo.getKey();
+        int newPort = Integer.valueOf(connectInfo.getValue());
+
+        return newAddressLine.equals(addressLine) && newPort == port;
     }
 
     @PreDestroy

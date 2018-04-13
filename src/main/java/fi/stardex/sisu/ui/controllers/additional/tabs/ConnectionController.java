@@ -19,7 +19,7 @@ public class ConnectionController {
     private Pair<String, String> standConnect = new Pair<>();
 
     private final String ipRegex = makePartialIPRegex();
-
+    private final String portRegex = "^(6553[0-5]|655[0-2]\\d|65[0-4]\\d\\d|6[0-4]\\d{3}|[1-5]\\d{4}|[1-9]\\d{0,3}|0)$";
 
     @FXML
     private TextField ultimaIPField;
@@ -42,22 +42,18 @@ public class ConnectionController {
     @PostConstruct
     private void init() {
 
-        final UnaryOperator<TextFormatter.Change> ipAddressFilter = c -> {
-            String text = c.getControlNewText();
-            if  (text.matches(ipRegex)) {
-                return c ;
-            } else {
-                return null ;
-            }
-        };
+        ultimaIPField.setTextFormatter(new TextFormatter<>(getFilter(ipRegex)));
+        flowMeterIPField.setTextFormatter(new TextFormatter<>(getFilter(ipRegex)));
+        standIPField.setTextFormatter(new TextFormatter<>(getFilter(ipRegex)));
 
-        ultimaIPField.setTextFormatter(new TextFormatter<>(ipAddressFilter));
-        flowMeterIPField.setTextFormatter(new TextFormatter<>(ipAddressFilter));
-        standIPField.setTextFormatter(new TextFormatter<>(ipAddressFilter));
+        ultimaPortField.setTextFormatter(new TextFormatter<>(getFilter(portRegex)));
+        flowMeterPortField.setTextFormatter(new TextFormatter<>(getFilter(portRegex)));
+        standPortField.setTextFormatter(new TextFormatter<>(getFilter(portRegex)));
 
         ultimaConnect.setKey(applicationConfigHandler.get("UltimaIP"));
         flowMeterConnect.setKey(applicationConfigHandler.get("FlowIP"));
         standConnect.setKey(applicationConfigHandler.get("StandIP"));
+
         ultimaConnect.setValue(applicationConfigHandler.get("UltimaPort"));
         flowMeterConnect.setValue(applicationConfigHandler.get("FlowPort"));
         standConnect.setValue(applicationConfigHandler.get("StandPort"));
@@ -65,6 +61,7 @@ public class ConnectionController {
         ultimaIPField.setText(ultimaConnect.getKey());
         flowMeterIPField.setText(flowMeterConnect.getKey());
         standIPField.setText(standConnect.getKey());
+
         ultimaPortField.setText(ultimaConnect.getValue());
         flowMeterPortField.setText(flowMeterConnect.getValue());
         standPortField.setText(standConnect.getValue());
@@ -74,11 +71,17 @@ public class ConnectionController {
             applicationConfigHandler.put("FlowIP", flowMeterIPField.getText());
             applicationConfigHandler.put("StandIP", standIPField.getText());
 
-            ultimaConnect.setKey(applicationConfigHandler.get("UltimaIP"));
-
             applicationConfigHandler.put("UltimaPort", ultimaPortField.getText());
             applicationConfigHandler.put("FlowPort", flowMeterPortField.getText());
             applicationConfigHandler.put("StandPort", standPortField.getText());
+
+            ultimaConnect.setKey(applicationConfigHandler.get("UltimaIP"));
+            flowMeterConnect.setKey(applicationConfigHandler.get("FlowIP"));
+            standConnect.setKey(applicationConfigHandler.get("StandIP"));
+
+            ultimaConnect.setValue(applicationConfigHandler.get("UltimaPort"));
+            flowMeterConnect.setValue(applicationConfigHandler.get("FlowPort"));
+            standConnect.setValue(applicationConfigHandler.get("StandPort"));
         });
     }
 
@@ -99,5 +102,16 @@ public class ConnectionController {
         String subsequentPartialBlock = "(\\."+partialBlock+")" ;
         String ipAddress = partialBlock+"?"+subsequentPartialBlock+"{0,3}";
         return "^"+ipAddress ;
+    }
+
+    private UnaryOperator<TextFormatter.Change> getFilter(String regex) {
+        return c -> {
+            String text = c.getControlNewText();
+            if (text.matches(regex)) {
+                return c;
+            } else {
+                return null;
+            }
+        };
     }
 }
