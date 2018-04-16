@@ -7,10 +7,6 @@ import javafx.scene.layout.StackPane;
 
 public class InjectorSectionController {
 
-
-    @FXML
-    private StackPane injectorSectionRoot;
-
     @FXML
     private Spinner widthCurrentSignal;
 
@@ -61,4 +57,5 @@ public class InjectorSectionController {
 
     @FXML
     private ProgressBar switcherProgressBar;
+
 }

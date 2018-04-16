@@ -9,8 +9,6 @@ import javafx.scene.layout.StackPane;
 
 public class HighPressureSectionController {
 
-    @FXML
-    private StackPane rootStackPane;
 
     @FXML
     private GridPane gridPaneHBox2;
@@ -55,19 +53,10 @@ public class HighPressureSectionController {
     private Label labelReg3;
 
     @FXML
-    private StackPane stackPWB1;
-
-    @FXML
     private ToggleButton powerButton1;
 
     @FXML
-    private StackPane stackPWB2;
-
-    @FXML
     private ToggleButton powerButton2;
-
-    @FXML
-    private StackPane stackPWB3;
 
     @FXML
     private ToggleButton powerButton3;

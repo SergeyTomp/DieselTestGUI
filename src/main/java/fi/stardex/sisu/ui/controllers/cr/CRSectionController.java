@@ -13,5 +13,5 @@ public class CRSectionController {
     private StackPane highPressure;
 
     @FXML
-    private StackPane injector;
+    private HBox injector;
 }
