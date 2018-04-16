@@ -10,4 +10,7 @@ public class CRSectionController {
 
     @FXML
     public StackPane highPressure;
+
+    @FXML
+    public StackPane injector;
 }

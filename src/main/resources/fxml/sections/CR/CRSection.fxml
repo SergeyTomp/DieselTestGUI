@@ -13,6 +13,8 @@
       <HBox prefHeight="133.0" prefWidth="200.0">
           <fx:include source="HighPressureSection.fxml" fx:id="highPressure" />
       </HBox>
-      <HBox prefHeight="133.0" prefWidth="200.0" />
+      <HBox prefHeight="133.0" prefWidth="200.0">
+          <fx:include source="InjectorSection.fxml" fx:id="injector" />
+      </HBox>
    </children>
 </VBox>
