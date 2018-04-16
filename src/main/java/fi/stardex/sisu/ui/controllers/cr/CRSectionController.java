@@ -1,16 +1,17 @@
 package fi.stardex.sisu.ui.controllers.cr;
 
 import javafx.fxml.FXML;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 
 public class CRSectionController {
 
     @FXML
-    public StackPane testBench;
+    private HBox testBench;
 
     @FXML
-    public StackPane highPressure;
+    private StackPane highPressure;
 
     @FXML
-    public StackPane injector;
+    private StackPane injector;
 }

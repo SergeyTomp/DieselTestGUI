@@ -3,65 +3,70 @@ package fi.stardex.sisu.ui.controllers.cr;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 
 public class TestBenchController {
 
     @FXML
-    public ToggleButton leftDirectionToggleButton;
+    private HBox testBench;
 
     @FXML
-    public ToggleGroup rotationDirectionToggleGroup;
+    private ToggleButton leftDirectionToggleButton;
 
     @FXML
-    public ToggleButton rightDirectionToggleButton;
+    private ToggleGroup rotationDirectionToggleGroup;
 
     @FXML
-    public Spinner spinnerRPM;
+    private ToggleButton rightDirectionToggleButton;
 
     @FXML
-    public ProgressBar pressProgressBar1;
+    private Spinner spinnerRPM;
 
     @FXML
-    public ProgressBar tempProgressBar2;
+    private ProgressBar pressProgressBar1;
 
     @FXML
-    public ProgressBar tempProgressBar1;
+    private ProgressBar tempProgressBar2;
 
     @FXML
-    public Text textTempBar1;
+    private ProgressBar tempProgressBar1;
 
     @FXML
-    public Text textTempBar2;
+    private Text textTempBar1;
 
     @FXML
-    public Text textPressBar1;
+    private Text textTempBar2;
 
     @FXML
-    public GridPane gridPaneHBox1;
+    private Text textPressBar1;
 
     @FXML
-    public ToggleButton buttonPumpControl;
+    private GridPane gridPaneHBox1;
 
     @FXML
-    public ToggleButton buttonFanControl;
+    private ToggleButton buttonPumpControl;
 
     @FXML
-    public ToggleButton deviceStateButton;
+    private ToggleButton buttonFanControl;
 
     @FXML
-    public StackPane stackPaneLCD;
+    private ToggleButton deviceStateButton;
 
     @FXML
-    public ProgressBar oilTank;
+    private StackPane stackPaneLCD;
 
     @FXML
-    public Text textOilTank;
+    private ProgressBar oilTank;
 
     @FXML
-    public StackPane rootStackPane;
+    private Text textOilTank;
 
     @FXML
-    public Label pressure1Label;
+    private StackPane rootStackPane;
+
+    @FXML
+    private Label pressure1Label;
+
 }

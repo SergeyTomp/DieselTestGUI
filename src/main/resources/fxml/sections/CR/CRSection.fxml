@@ -3,18 +3,16 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-
-<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="fi.stardex.sisu.ui.controllers.cr.CRSectionController">
+<VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="392.0" prefWidth="1122.0" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.cr.CRSectionController">
    <children>
-       <HBox prefHeight="133.0" prefWidth="200.0">
-           <fx:include source="TestBenchSection.fxml" fx:id="testBench"/>
+       <HBox>
+           <fx:include fx:id="testBench" source="TestBenchSection.fxml" HBox.hgrow="ALWAYS" />
        </HBox>
-      <HBox prefHeight="133.0" prefWidth="200.0">
-          <fx:include source="HighPressureSection.fxml" fx:id="highPressure" />
+      <HBox>
+          <fx:include fx:id="highPressure" source="HighPressureSection.fxml" HBox.hgrow="ALWAYS" />
       </HBox>
-      <HBox prefHeight="133.0" prefWidth="200.0">
-          <fx:include source="InjectorSection.fxml" fx:id="injector" />
+      <HBox>
+          <fx:include fx:id="injector" source="InjectorSection.fxml" HBox.hgrow="ALWAYS" />
       </HBox>
    </children>
 </VBox>
