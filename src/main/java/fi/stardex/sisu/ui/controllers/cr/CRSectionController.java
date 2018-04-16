@@ -7,4 +7,7 @@ public class CRSectionController {
 
     @FXML
     public StackPane testBench;
+
+    @FXML
+    public StackPane highPressure;
 }

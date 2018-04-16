@@ -10,7 +10,9 @@
        <HBox prefHeight="133.0" prefWidth="200.0">
            <fx:include source="TestBenchSection.fxml" fx:id="testBench"/>
        </HBox>
-      <HBox prefHeight="133.0" prefWidth="200.0" />
+      <HBox prefHeight="133.0" prefWidth="200.0">
+          <fx:include source="HighPressureSection.fxml" fx:id="highPressure" />
+      </HBox>
       <HBox prefHeight="133.0" prefWidth="200.0" />
    </children>
 </VBox>
