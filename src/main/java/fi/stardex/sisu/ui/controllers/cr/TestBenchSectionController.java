@@ -3,7 +3,7 @@ package fi.stardex.sisu.ui.controllers.cr;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
-public class TestBenchController {
+public class TestBenchSectionController {
 
     @FXML
     public ToggleButton testBenchStartBtn;

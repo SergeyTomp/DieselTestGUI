@@ -1,12 +1,9 @@
 package fi.stardex.sisu.registers.modbusmaps;
 
-import java.util.LinkedList;
-import java.util.List;
-
 public enum ModbusMapUltima implements ModbusMap {
 
     FirmwareVersion(RegisterType.REGISTER, 116, 1, false),
-    BoostVoltage(RegisterType.REGISTER, 120, 2, true);
+    PositionRheostatOne(RegisterType.REGISTER, 4096, 2, true);
 
     private RegisterType type;
     private int ref;

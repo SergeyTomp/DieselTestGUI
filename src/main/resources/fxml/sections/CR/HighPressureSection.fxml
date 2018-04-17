@@ -9,8 +9,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 
-
-<StackPane xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController">
+<StackPane maxHeight="130.0" minHeight="130.0" prefHeight="130.0" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController">
    <children>
       <GridPane fx:id="gridPaneHBox2" alignment="TOP_CENTER" prefHeight="146.0" prefWidth="894.0">
             <children>
@@ -160,6 +159,7 @@
                   <RowConstraints maxHeight="44.0" minHeight="0.0" prefHeight="11.0" vgrow="SOMETIMES" />
                       </rowConstraints>
                   </GridPane>
+            <Label fx:id="currentRPMLabel" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Label" GridPane.columnIndex="6" />
             </children>
             <columnConstraints>
                 <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" minWidth="132.0" prefWidth="132.0" />
@@ -168,7 +168,7 @@
                 <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" minWidth="65.0" prefWidth="65.0" />
                 <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" minWidth="132.0" prefWidth="132.0" />
                 <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" minWidth="65.0" prefWidth="65.0" />
-                <ColumnConstraints fillWidth="false" halignment="RIGHT" hgrow="ALWAYS" minWidth="120.0" prefWidth="120.0" />
+                <ColumnConstraints fillWidth="false" halignment="CENTER" hgrow="ALWAYS" minWidth="120.0" prefWidth="120.0" />
             <ColumnConstraints fillWidth="false" halignment="RIGHT" hgrow="ALWAYS" maxWidth="55.0" minWidth="55.0" prefWidth="55.0" />
             </columnConstraints>
             <rowConstraints>

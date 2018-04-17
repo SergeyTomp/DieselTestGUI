@@ -2,10 +2,12 @@ package fi.stardex.sisu.registers.writers;
 
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.modbusmaps.ModbusMap;
+import fi.stardex.sisu.ui.updaters.Updater;
 import fi.stardex.sisu.util.Pair;
 import net.wimpi.modbus.ModbusException;
 
 import javax.annotation.PreDestroy;
+import java.util.List;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
@@ -16,11 +18,14 @@ public class ModbusRegisterProcessor {
     private RegisterProvider registerProvider;
     private ModbusMap[] readArray;
 
+    private List<Updater> updaters;
+
     private Thread loopThread;
 
-    public ModbusRegisterProcessor(RegisterProvider registerProvider, ModbusMap[] readList, String threadName) {
+    public ModbusRegisterProcessor(RegisterProvider registerProvider, ModbusMap[] readList, String threadName, List<Updater> updaters) {
         this.registerProvider = registerProvider;
         this.readArray = readList;
+        this.updaters = updaters;
 
         loopThread = new Thread(new ProcessExecutor());
         loopThread.setName(threadName);
@@ -45,6 +50,7 @@ public class ModbusRegisterProcessor {
 
                 writeAll(500, TimeUnit.MILLISECONDS);
                 readAll();
+                updateAll();
             }
         }
 
@@ -77,6 +83,10 @@ public class ModbusRegisterProcessor {
                     System.err.println(register.getLastValue());
                 }
             }
+        }
+
+        private void updateAll() {
+            updaters.forEach(Updater::update);
         }
     }
 }

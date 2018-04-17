@@ -3,6 +3,7 @@ package fi.stardex.sisu.registers;
 import fi.stardex.sisu.connect.ModbusConnect;
 import fi.stardex.sisu.registers.modbusmaps.ModbusMap;
 import fi.stardex.sisu.registers.modbusmaps.RegisterType;
+import fi.stardex.sisu.ui.updaters.Updater;
 import net.wimpi.modbus.ModbusException;
 import net.wimpi.modbus.io.ModbusTransaction;
 import net.wimpi.modbus.msg.ModbusRequest;
@@ -11,6 +12,8 @@ import net.wimpi.modbus.msg.ReadCoilsResponse;
 import net.wimpi.modbus.msg.ReadMultipleRegistersResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 public class RegisterProvider {
 

@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 
-<HBox alignment="CENTER" fillHeight="true" maxWidth="1.7976931348623157E308" pickOnBounds="true" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.cr.InjectorSectionController">
+<HBox alignment="CENTER" fillHeight="true" maxHeight="130.0" maxWidth="1.7976931348623157E308" minHeight="130.0" pickOnBounds="true" prefHeight="130.0" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.cr.InjectorSectionController">
     <children>
         <GridPane alignment="CENTER" gridLinesVisible="false" prefHeight="102.0" prefWidth="137.0" HBox.hgrow="ALWAYS">
             <children>

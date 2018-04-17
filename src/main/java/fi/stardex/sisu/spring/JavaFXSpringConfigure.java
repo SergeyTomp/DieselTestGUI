@@ -6,7 +6,9 @@ import fi.stardex.sisu.ui.controllers.RootLayoutController;
 import fi.stardex.sisu.ui.controllers.additional.AdditionalSectionController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.ConnectionController;
 import fi.stardex.sisu.ui.controllers.cr.CRSectionController;
-import fi.stardex.sisu.ui.controllers.cr.TestBenchController;
+import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
+import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
+import fi.stardex.sisu.ui.controllers.cr.TestBenchSectionController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
 import fi.stardex.sisu.util.Enabler;
 import fi.stardex.sisu.util.i18n.I18N;
@@ -69,14 +71,23 @@ public class JavaFXSpringConfigure {
     }
 
     @Bean
-    public ViewHolder testBench() {
-        return loadView("/fxml/sections/CR/TestBenchSection.fxml");
+    @Autowired
+    public TestBenchSectionController testBenchController(CRSectionController crSectionController) {
+        return crSectionController.getTestBenchSectionController();
     }
 
     @Bean
-    public TestBenchController testBenchController() {
-        return (TestBenchController) testBench().getController();
+    @Autowired
+    public HighPressureSectionController highPressureSectionController(CRSectionController crSectionController) {
+        return crSectionController.getHighPressureSectionController();
     }
+
+    @Bean
+    @Autowired
+    public InjectorSectionController injectorSectionController(CRSectionController crSectionController) {
+        return crSectionController.getInjectorSectionController();
+    }
+
 
     @Bean
     public ViewHolder uisSection() {

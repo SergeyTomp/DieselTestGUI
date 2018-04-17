@@ -1,5 +1,6 @@
 package fi.stardex.sisu.spring;
 
+import fi.stardex.sisu.annotations.Module;
 import fi.stardex.sisu.connect.ConnectProcessor;
 import fi.stardex.sisu.connect.InetAddressWrapper;
 import fi.stardex.sisu.connect.ModbusConnect;
@@ -9,6 +10,9 @@ import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.modbusmaps.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.controllers.additional.tabs.ConnectionController;
+import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
+import fi.stardex.sisu.ui.updaters.HighPressureSectionUpdater;
+import fi.stardex.sisu.ui.updaters.Updater;
 import fi.stardex.sisu.util.ApplicationConfigHandler;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.wrappers.StatusBarWrapper;
@@ -18,7 +22,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 
 @Configuration
 @Import(JavaFXSpringConfigure.class)
@@ -92,19 +97,35 @@ public class SpringJavaConfig {
 
     @Bean
     @Autowired
-    public ModbusRegisterProcessor ultimaModbusWriter(RegisterProvider ultimaRegisterProvider) {
-        return new ModbusRegisterProcessor(ultimaRegisterProvider, ModbusMapUltima.values(), "Ultima register processor");
+    public ModbusRegisterProcessor ultimaModbusWriter(List<Updater> updatersList, RegisterProvider ultimaRegisterProvider) {
+        final List<Updater> updaters = new LinkedList<>();
+        updatersList.forEach(updater -> {
+            Module module = updater.getClass().getAnnotation(Module.class);
+            for (Device device : module.value()) {
+                if(device == Device.ULTIMA)
+                    updaters.add(updater);
+            }
+        });
+
+        return new ModbusRegisterProcessor(ultimaRegisterProvider, ModbusMapUltima.values(), "Ultima register processor", updaters);
     }
 
     @Bean
     @Autowired
     public ModbusRegisterProcessor flowModbusWriter(RegisterProvider flowRegisterProvider) {
-        return new ModbusRegisterProcessor(flowRegisterProvider, null, "Flow register processor");
+        return new ModbusRegisterProcessor(flowRegisterProvider, null, "Flow register processor", null);
     }
 
     @Bean
     @Autowired
     public ModbusRegisterProcessor standModbusWriter(RegisterProvider standRegisterProvider) {
-        return new ModbusRegisterProcessor(standRegisterProvider, null, "Stand register processor");
+        return new ModbusRegisterProcessor(standRegisterProvider, null, "Stand register processor", null);
     }
+
+    @Bean
+    @Autowired
+    public HighPressureSectionUpdater highPressureSectionUpdater(HighPressureSectionController highPressureSectionController) {
+        return new HighPressureSectionUpdater(highPressureSectionController);
+    }
+
 }

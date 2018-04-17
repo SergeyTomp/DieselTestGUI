@@ -62,8 +62,16 @@ public class HighPressureSectionController {
     private ToggleButton powerButton3;
 
     @FXML
-    private ToggleButton powerSwitch;
+    private StackPane stackPaneLCD;
 
     @FXML
-    private StackPane stackPaneLCD;
+    private Label currentRPMLabel;
+
+    @FXML
+    private ToggleButton powerSwitch;
+
+
+    public Label getCurrentRPMLabel() {
+        return currentRPMLabel;
+    }
 }
