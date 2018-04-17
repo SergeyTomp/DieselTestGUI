@@ -6,10 +6,7 @@ import fi.stardex.sisu.registers.modbusmaps.RegisterType;
 import fi.stardex.sisu.ui.updaters.Updater;
 import net.wimpi.modbus.ModbusException;
 import net.wimpi.modbus.io.ModbusTransaction;
-import net.wimpi.modbus.msg.ModbusRequest;
-import net.wimpi.modbus.msg.ModbusResponse;
-import net.wimpi.modbus.msg.ReadCoilsResponse;
-import net.wimpi.modbus.msg.ReadMultipleRegistersResponse;
+import net.wimpi.modbus.msg.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,7 +25,7 @@ public class RegisterProvider {
     public Object read(ModbusMap register) {
         try {
             Object valueToReturn;
-            if (register.getType() == RegisterType.REGISTER) {
+            if (register.getType() == RegisterType.REGISTER_HOLDING) {
                 ReadMultipleRegistersResponse response = (ReadMultipleRegistersResponse) request(RegisterFactory.getRequest(register, false, null));
                 if (register.getCount() > 1) {
                     valueToReturn = RequestsUtils.createDouble(
@@ -37,9 +34,21 @@ public class RegisterProvider {
                 } else {
                     valueToReturn = response.getRegister(0).getValue();
                 }
-            } else {
+            } else if (register.getType() == RegisterType.REGISTER_INPUT) {
+                ReadInputRegistersResponse response = (ReadInputRegistersResponse) request(RegisterFactory.getRequest(register, false, null));
+                if (register.getCount() > 1) {
+                    valueToReturn = RequestsUtils.createDouble(
+                            (short) response.getRegister(0).getValue(),
+                            (short) response.getRegister(1).getValue());
+                } else {
+                    valueToReturn = response.getRegister(0).getValue();
+                }
+            } else if(register.getType() == RegisterType.DISCRETE_COIL) {
                 ReadCoilsResponse response = (ReadCoilsResponse) request(RegisterFactory.getRequest(register, false, null));
                 valueToReturn = response.getCoilStatus(0);
+            } else {
+                ReadInputDiscretesResponse response = (ReadInputDiscretesResponse) request(RegisterFactory.getRequest(register,false,null));
+                valueToReturn = response.getDiscreteStatus(0);
             }
 
             register.setLastValue(valueToReturn);

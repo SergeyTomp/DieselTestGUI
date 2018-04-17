@@ -11,11 +11,17 @@ public abstract class RegisterFactory {
     public static ModbusRequest getRequest(ModbusMap reg, boolean isWriting, Object value) {
         ModbusRequest request;
         switch (reg.getType()) {
-            case REGISTER:
+            case REGISTER_HOLDING:
                 request = isWriting ? createWriteRegisters(reg, value) : new ReadMultipleRegistersRequest(reg.getRef(), reg.getCount());
                 break;
-            case COIL:
+            case REGISTER_INPUT:
+                request = new ReadInputRegistersRequest(reg.getRef(), reg.getCount());
+                break;
+            case DISCRETE_COIL:
                 request = isWriting ? new WriteCoilRequest(reg.getRef(), (boolean) value) : new ReadCoilsRequest(reg.getRef(), reg.getCount());
+                break;
+            case DISCRETE_INPUT:
+                request = new ReadInputDiscretesRequest(reg.getRef(), reg.getCount());
                 break;
             default:
                 throw new IllegalArgumentException("Incorrect program logic we have only two register types");

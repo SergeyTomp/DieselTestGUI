@@ -2,8 +2,12 @@ package fi.stardex.sisu.registers.modbusmaps;
 
 public enum ModbusMapUltima implements ModbusMap {
 
-    FirmwareVersion(RegisterType.REGISTER, 116, 1, false),
-    PositionRheostatOne(RegisterType.REGISTER, 4096, 2, true);
+    FirmwareVersion(RegisterType.REGISTER_HOLDING, 116, 1, false),
+    PositionRheostatOne(RegisterType.REGISTER_INPUT, 4096, 2, true),
+    //TODO delete after test
+    BoostCurrBoardOne(RegisterType.REGISTER_HOLDING, 1, 1, true),
+    FirstBoardReady(RegisterType.DISCRETE_INPUT, 120, 1, true),
+    Start(RegisterType.DISCRETE_COIL, 42, 1, true);
 
     private RegisterType type;
     private int ref;
