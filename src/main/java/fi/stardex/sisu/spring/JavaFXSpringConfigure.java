@@ -4,6 +4,7 @@ import fi.stardex.sisu.devices.Devices;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.RootLayoutController;
 import fi.stardex.sisu.ui.controllers.additional.AdditionalSectionController;
+import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.ConnectionController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
 import fi.stardex.sisu.ui.controllers.cr.CRSectionController;
@@ -113,6 +114,16 @@ public class JavaFXSpringConfigure {
     @Bean
     public VoltageController voltageController() {
         return additionalSectionController().getVoltageController();
+    }
+
+    @Bean(value = "voltAmpereProfileDialog")
+    public ViewHolder voltAmpereProfileDialog() {
+        return loadView("/fxml/sections/Additional/dialogs/voltAmpereProfileDialog.fxml");
+    }
+
+    @Bean
+    public VoltAmpereProfileController voltAmpereProfileController() {
+        return (VoltAmpereProfileController) voltAmpereProfileDialog().getController();
     }
 
     @Bean
