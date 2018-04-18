@@ -106,7 +106,6 @@ public class SpringJavaConfig {
                     updaters.add(updater);
             }
         });
-
         return new ModbusRegisterProcessor(ultimaRegisterProvider, ModbusMapUltima.values(), "Ultima register processor", updaters);
     }
 
@@ -127,5 +126,4 @@ public class SpringJavaConfig {
     public HighPressureSectionUpdater highPressureSectionUpdater(HighPressureSectionController highPressureSectionController) {
         return new HighPressureSectionUpdater(highPressureSectionController);
     }
-
 }

@@ -4,8 +4,9 @@ import fi.stardex.sisu.annotations.Module;
 import fi.stardex.sisu.devices.Device;
 import fi.stardex.sisu.registers.modbusmaps.ModbusMapUltima;
 import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
+import javafx.application.Platform;
 
-@Module(Device.ULTIMA)
+@Module(value=Device.ULTIMA)
 public class HighPressureSectionUpdater implements Updater {
 
 
@@ -17,6 +18,11 @@ public class HighPressureSectionUpdater implements Updater {
 
     @Override
     public void update() {
-        highPressureSectionController.getCurrentRPMLabel().setText(ModbusMapUltima.PositionRheostatOne.getLastValue().toString());
+    }
+
+    @Override
+    public void run() {
+        if (ModbusMapUltima.PositionRheostatOne.getLastValue() != null)
+            highPressureSectionController.getCurrentRPMLabel().setText(ModbusMapUltima.PositionRheostatOne.getLastValue().toString());
     }
 }

@@ -1,10 +1,5 @@
 package fi.stardex.sisu.ui.updaters;
 
-public class TestBenchSectionUpdater implements Updater {
+public class TestBenchSectionUpdater {
 
-
-    @Override
-    public void update() {
-
-    }
 }

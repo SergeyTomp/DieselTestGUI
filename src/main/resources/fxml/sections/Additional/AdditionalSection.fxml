@@ -8,5 +8,8 @@
     <Tab text="%additional.link">
         <fx:include fx:id="connection" source="tabs/Connection.fxml" />
     </Tab>
+      <Tab text="%additional.voltage">
+          <fx:include fx:id="voltage" source="tabs/Voltage.fxml" />
+      </Tab>
   </tabs>
 </TabPane>

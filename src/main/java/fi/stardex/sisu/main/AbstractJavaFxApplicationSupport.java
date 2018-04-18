@@ -10,7 +10,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Import;
 
 @SpringBootApplication
-@ComponentScan("fi.stardex.nova")
+@ComponentScan("fi.stardex.sisu")
 @Import(SpringJavaConfig.class)
 public abstract class AbstractJavaFxApplicationSupport extends Application {
 

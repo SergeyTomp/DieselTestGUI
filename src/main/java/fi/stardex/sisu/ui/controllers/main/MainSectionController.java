@@ -80,7 +80,6 @@ public class MainSectionController {
             case CR_Pump:
                 versionComboBox.getSelectionModel().select("CR");
         }
-
     }
 
     private void changeToUIS() {

@@ -4,6 +4,7 @@ import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.modbusmaps.ModbusMap;
 import fi.stardex.sisu.ui.updaters.Updater;
 import fi.stardex.sisu.util.Pair;
+import javafx.application.Platform;
 import net.wimpi.modbus.ModbusException;
 
 import javax.annotation.PreDestroy;
@@ -48,7 +49,7 @@ public class ModbusRegisterProcessor {
                 if(!registerProvider.isConnected())
                     continue;
 
-                writeAll(500, TimeUnit.MILLISECONDS);
+                writeAll(2000, TimeUnit.MILLISECONDS);
                 readAll();
                 updateAll();
             }
@@ -77,16 +78,19 @@ public class ModbusRegisterProcessor {
         }
 
         private void readAll() {
+            System.err.println(System.currentTimeMillis());
             for (ModbusMap register : readArray) {
                 if(register.isAutoUpdate()) {
                     registerProvider.read(register);
-                    System.err.println(register.getLastValue());
+                    System.err.println(register + " " + register.getLastValue());
                 }
             }
         }
 
         private void updateAll() {
-            updaters.forEach(Updater::update);
+            for (Updater updater : updaters) {
+                Platform.runLater(updater);
+            }
         }
     }
 }

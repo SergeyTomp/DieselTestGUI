@@ -5,6 +5,7 @@ import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.RootLayoutController;
 import fi.stardex.sisu.ui.controllers.additional.AdditionalSectionController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.ConnectionController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
 import fi.stardex.sisu.ui.controllers.cr.CRSectionController;
 import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
@@ -66,8 +67,9 @@ public class JavaFXSpringConfigure {
     }
 
     @Bean
-    public CRSectionController crSectionController() {
-        return (CRSectionController) crSection().getController();
+    @Autowired
+    public CRSectionController crSectionController(ViewHolder crSection) {
+        return (CRSectionController) crSection.getController();
     }
 
     @Bean
@@ -88,7 +90,6 @@ public class JavaFXSpringConfigure {
         return crSectionController.getInjectorSectionController();
     }
 
-
     @Bean
     public ViewHolder uisSection() {
         return loadView("/fxml/sections/UIS/UISSection.fxml");
@@ -107,6 +108,11 @@ public class JavaFXSpringConfigure {
     @Bean
     public ConnectionController connectionController() {
         return additionalSectionController().getConnectionController();
+    }
+
+    @Bean
+    public VoltageController voltageController() {
+        return additionalSectionController().getVoltageController();
     }
 
     @Bean
