@@ -26,7 +26,6 @@ public abstract class RegisterFactory {
             default:
                 throw new IllegalArgumentException("Incorrect program logic we have only two register types");
         }
-
         return request;
     }
 

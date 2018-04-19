@@ -6,6 +6,7 @@ import fi.stardex.sisu.ui.controllers.RootLayoutController;
 import fi.stardex.sisu.ui.controllers.additional.AdditionalSectionController;
 import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.ConnectionController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.DelayController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
 import fi.stardex.sisu.ui.controllers.cr.CRSectionController;
 import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
@@ -114,6 +115,11 @@ public class JavaFXSpringConfigure {
     @Bean
     public VoltageController voltageController() {
         return additionalSectionController().getVoltageController();
+    }
+
+    @Bean
+    public DelayController delayController() {
+        return additionalSectionController().getDelayController();
     }
 
     @Bean(value = "voltAmpereProfileDialog")

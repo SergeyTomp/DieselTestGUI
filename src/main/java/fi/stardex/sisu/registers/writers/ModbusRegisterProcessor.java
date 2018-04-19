@@ -38,7 +38,7 @@ public class ModbusRegisterProcessor {
     }
 
     @PreDestroy
-    private void destroy() {
+    private void preDestroy() {
         loopThread.interrupt();
     }
 

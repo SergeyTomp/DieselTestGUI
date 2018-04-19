@@ -38,7 +38,6 @@ public class ApplicationAppearanceChanger {
     public void changeToUIS() {
         clearSectionLayout();
         sectionLayout.add(uisSection,0,0);
-        sectionLayout.add(additionalSection,0,1);
         logger.info("Change to UIS");
     }
 

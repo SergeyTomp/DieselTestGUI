@@ -4,12 +4,15 @@
 <?import javafx.scene.control.TabPane?>
 
 <TabPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.additional.AdditionalSectionController">
-  <tabs>
-    <Tab text="%additional.link">
-        <fx:include fx:id="connection" source="tabs/Connection.fxml" />
-    </Tab>
-      <Tab text="%additional.voltage">
-          <fx:include fx:id="voltage" source="tabs/Voltage.fxml" />
-      </Tab>
-  </tabs>
+    <tabs>
+        <Tab text="%additional.link">
+            <fx:include fx:id="connection" source="tabs/Connection.fxml" />
+        </Tab>
+        <Tab text="%additional.voltage">
+            <fx:include fx:id="voltage" source="tabs/Voltage.fxml" />
+        </Tab>
+        <Tab text="%additional.delay">
+            <fx:include fx:id="delay" source="tabs/Delay.fxml" />
+        </Tab>
+    </tabs>
 </TabPane>
