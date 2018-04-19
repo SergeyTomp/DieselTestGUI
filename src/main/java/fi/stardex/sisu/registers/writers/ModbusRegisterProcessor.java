@@ -82,6 +82,7 @@ public class ModbusRegisterProcessor {
             for (ModbusMap register : readArray) {
                 if(register.isAutoUpdate()) {
                     registerProvider.read(register);
+
                     System.err.println(register + " " + register.getLastValue());
                 }
             }

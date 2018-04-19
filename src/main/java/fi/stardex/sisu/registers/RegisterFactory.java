@@ -30,6 +30,7 @@ public abstract class RegisterFactory {
         return request;
     }
 
+    //FIXME: В SimpleRegister может писаться и double
     private static ModbusRequest createWriteRegisters(ModbusMap reg, Object value) {
         WriteMultipleRegistersRequest request;
         if (reg.getCount() > 1) {

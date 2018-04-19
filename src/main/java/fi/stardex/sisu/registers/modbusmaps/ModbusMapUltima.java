@@ -4,6 +4,9 @@ public enum ModbusMapUltima implements ModbusMap {
 
     FirmwareVersion(RegisterType.REGISTER_HOLDING, 116, 1, false),
     PositionRheostatOne(RegisterType.REGISTER_INPUT, 4096, 2, true),
+    FirstIBoardOne(RegisterType.REGISTER_HOLDING, 2, 1, false),
+    FirstIBoardTwo(RegisterType.REGISTER_HOLDING, 22, 1, false),
+
     //TODO delete after test
     BoostCurrBoardOne(RegisterType.REGISTER_HOLDING, 1, 1, true),
     FirstBoardReady(RegisterType.DISCRETE_INPUT, 120, 1, true),

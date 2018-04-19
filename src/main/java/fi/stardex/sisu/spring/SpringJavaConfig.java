@@ -15,6 +15,7 @@ import fi.stardex.sisu.ui.updaters.HighPressureSectionUpdater;
 import fi.stardex.sisu.ui.updaters.Updater;
 import fi.stardex.sisu.util.ApplicationConfigHandler;
 import fi.stardex.sisu.util.i18n.I18N;
+import fi.stardex.sisu.util.storage.CurrentVAPStorage;
 import fi.stardex.sisu.util.wrappers.StatusBarWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -125,5 +126,11 @@ public class SpringJavaConfig {
     @Autowired
     public HighPressureSectionUpdater highPressureSectionUpdater(HighPressureSectionController highPressureSectionController) {
         return new HighPressureSectionUpdater(highPressureSectionController);
+    }
+
+    @Bean
+    @Autowired
+    public CurrentVAPStorage currentVAPStorage(ModbusRegisterProcessor ultimaModbusWriter) {
+        return new CurrentVAPStorage(ultimaModbusWriter);
     }
 }
