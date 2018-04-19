@@ -30,6 +30,8 @@ public class ModbusRegisterProcessor {
 
         loopThread = new Thread(new ProcessExecutor());
         loopThread.setName(threadName);
+        //TODO проверить почему не срабатывает interrupt() в PreDestroy
+        loopThread.setDaemon(true);
         loopThread.start();
     }
 
