@@ -30,8 +30,6 @@ public class ModbusRegisterProcessor {
 
         loopThread = new Thread(new ProcessExecutor());
         loopThread.setName(threadName);
-        //TODO проверить почему не срабатывает interrupt() в PreDestroy
-        loopThread.setDaemon(true);
         loopThread.start();
     }
 
@@ -48,25 +46,24 @@ public class ModbusRegisterProcessor {
         @Override
         public void run() {
             while (!Thread.currentThread().isInterrupted()) {
-                if(!registerProvider.isConnected())
+                if (!registerProvider.isConnected())
                     continue;
-
-                writeAll(2000, TimeUnit.MILLISECONDS);
-                readAll();
-                updateAll();
+                try {
+                    writeAll(2000, TimeUnit.MILLISECONDS);
+                    readAll();
+                    updateAll();
+                } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
+                }
             }
         }
 
-        private void writeAll(long timeout, TimeUnit timeUnit) {
+        private void writeAll(long timeout, TimeUnit timeUnit) throws InterruptedException {
             do {
-                Pair<ModbusMap, Object> toWrite = null;
-                try {
-                    toWrite = writeQueue.poll(timeout, timeUnit);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
+                Pair<ModbusMap, Object> toWrite;
+                toWrite = writeQueue.poll(timeout, timeUnit);
                 if (toWrite != null) {
-                    if(!registerProvider.isConnected()) {
+                    if (!registerProvider.isConnected()) {
                         writeQueue.addFirst(toWrite);
                         return;
                     }
@@ -82,7 +79,7 @@ public class ModbusRegisterProcessor {
         private void readAll() {
             System.err.println(System.currentTimeMillis());
             for (ModbusMap register : readArray) {
-                if(register.isAutoUpdate()) {
+                if (register.isAutoUpdate()) {
                     registerProvider.read(register);
 
                     System.err.println(register + " " + register.getLastValue());
