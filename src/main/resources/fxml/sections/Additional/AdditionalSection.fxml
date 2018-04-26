@@ -3,16 +3,27 @@
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 
-<TabPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.additional.AdditionalSectionController">
+<TabPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity"
+         tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1"
+         fx:controller="fi.stardex.sisu.ui.controllers.additional.AdditionalSectionController">
     <tabs>
         <Tab text="%additional.link">
-            <fx:include fx:id="connection" source="tabs/Connection.fxml" />
+            <fx:include fx:id="connection" source="tabs/Connection.fxml"/>
         </Tab>
         <Tab text="%additional.voltage">
-            <fx:include fx:id="voltage" source="tabs/Voltage.fxml" />
+            <fx:include fx:id="voltage" source="tabs/Voltage.fxml"/>
         </Tab>
         <Tab text="%additional.delay">
-            <fx:include fx:id="delay" source="tabs/Delay.fxml" />
+            <fx:include fx:id="delay" source="tabs/Delay.fxml"/>
+        </Tab>
+        <Tab text="%additional.flow">
+            <fx:include fx:id="flow" source="tabs/Flow.fxml"/>
+        </Tab>
+        <Tab text="%additional.coding">
+            <fx:include fx:id="coding" source="tabs/coding.fxml"/>
+        </Tab>
+        <Tab text="%additional.settings">
+            <fx:include fx:id="settings" source="tabs/Settings.fxml"/>
         </Tab>
     </tabs>
 </TabPane>

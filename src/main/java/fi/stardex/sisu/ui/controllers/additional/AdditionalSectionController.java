@@ -4,7 +4,9 @@ import fi.stardex.sisu.ui.controllers.additional.tabs.ConnectionController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.DelayController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
 import javafx.fxml.FXML;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 
 public class AdditionalSectionController {
@@ -17,6 +19,15 @@ public class AdditionalSectionController {
 
     @FXML
     private GridPane delay;
+
+    @FXML
+    private AnchorPane flow;
+
+    @FXML
+    private GridPane coding;
+
+    @FXML
+    private GridPane settings;
 
     @FXML
     private ConnectionController connectionController;

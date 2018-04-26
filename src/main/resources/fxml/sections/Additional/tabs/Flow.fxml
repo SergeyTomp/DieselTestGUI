@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.geometry.Insets?>
+<AnchorPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="fi.stardex.sisu.ui.controllers.additional.tabs.FlowController"
+            prefHeight="400.0" prefWidth="600.0">
+    <HBox alignment="CENTER" prefHeight="290.0" prefWidth="495.0" AnchorPane.bottomAnchor="1.0"
+          AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="-1.0">
+        <children>
+            <VBox alignment="CENTER" prefHeight="329.0" prefWidth="392.0" HBox.hgrow="ALWAYS">
+                <children>
+                    <GridPane prefHeight="55.0" prefWidth="421.0" VBox.vgrow="NEVER">
+                        <children>
+                            <Label fx:id="deliveryLowHighLabel" text="%h4.flow.label.delivery" GridPane.columnIndex="0"
+                                   GridPane.rowIndex="0"/>
+                            <ComboBox fx:id="deliveryFlowBox" maxHeight="30.0" maxWidth="130.0" minHeight="30.0"
+                                      minWidth="130.0" prefHeight="30.0" prefWidth="130.0"
+                                       GridPane.columnIndex="1" GridPane.hgrow="ALWAYS"
+                                      GridPane.vgrow="ALWAYS">
+                                <GridPane.margin>
+                                    <Insets bottom="2.0" left="2.0" right="2.0" top="2.0"/>
+                                </GridPane.margin>
+                                <tooltip>
+                                    <Tooltip  text="%h4.spin.tip.del.formula"/>
+                                </tooltip>
+                            </ComboBox>
+                        </children>
+                        <columnConstraints>
+                            <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0"/>
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                        </columnConstraints>
+                        <rowConstraints>
+                            <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                        </rowConstraints>
+                    </GridPane>
+                    <GridPane prefHeight="279.0" prefWidth="421.0" VBox.vgrow="ALWAYS">
+                        <children>
+                            <StackPane GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS"
+                                       GridPane.rowIndex="0" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                                <fx:include fx:id="beakerFlowDelivery1" centerShape="true" source="beaker.fxml"
+                                            StackPane.alignment="CENTER"/>
+                                <GridPane.margin>
+                                    <Insets bottom="45.0" left="20.0" right="20.0" top="30.0"/>
+                                </GridPane.margin>
+                            </StackPane>
+                            <StackPane GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS"
+                                       GridPane.rowIndex="0" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                                <fx:include fx:id="beakerFlowDelivery2" centerShape="true" source="beaker.fxml"
+                                            StackPane.alignment="CENTER"/>
+                                <GridPane.margin>
+                                    <Insets bottom="45.0" left="20.0" right="20.0" top="30.0"/>
+                                </GridPane.margin>
+                            </StackPane>
+                            <StackPane GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS"
+                                       GridPane.rowIndex="0" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                                <fx:include fx:id="beakerFlowDelivery3" centerShape="true" source="beaker.fxml"
+                                            StackPane.alignment="CENTER"/>
+                                <GridPane.margin>
+                                    <Insets bottom="45.0" left="20.0" right="20.0" top="30.0"/>
+                                </GridPane.margin>
+                            </StackPane>
+                            <StackPane GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS"
+                                       GridPane.rowIndex="0" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                                <fx:include fx:id="beakerFlowDelivery4" centerShape="true" source="beaker.fxml"
+                                            StackPane.alignment="CENTER"/>
+                                <GridPane.margin>
+                                    <Insets bottom="45.0" left="20.0" right="20.0" top="30.0"/>
+                                </GridPane.margin>
+                            </StackPane>
+                            <TextField fx:id="currentValueDelivText1" editable="false" maxHeight="30.0" maxWidth="80.0"
+                                       minHeight="30.0" minWidth="70.0" prefHeight="30.0" prefWidth="70.0"
+                                       GridPane.columnIndex="0" GridPane.rowIndex="1">
+                                <tooltip>
+                                    <Tooltip  text="%h4.field.tip.beaker1"/>
+                                </tooltip>
+                            </TextField>
+                            <TextField fx:id="currentValueDelivText2" editable="false" maxHeight="30.0" maxWidth="80.0"
+                                       minHeight="30.0" minWidth="70.0" prefHeight="30.0" prefWidth="70.0"
+                                       GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                <tooltip>
+                                    <Tooltip  text="%h4.field.tip.beaker2"/>
+                                </tooltip>
+                            </TextField>
+                            <TextField fx:id="currentValueDelivText3" editable="false" maxHeight="30.0" maxWidth="80.0"
+                                       minHeight="30.0" minWidth="70.0" prefHeight="30.0" prefWidth="70.0"
+                                       GridPane.columnIndex="2" GridPane.rowIndex="1">
+                                <tooltip>
+                                    <Tooltip  text="%h4.field.tip.beaker3"/>
+                                </tooltip>
+                            </TextField>
+                            <TextField fx:id="currentValueDelivText4" editable="false" maxHeight="30.0" maxWidth="80.0"
+                                       minHeight="30.0" minWidth="70.0" prefHeight="30.0" prefWidth="70.0"
+                                       GridPane.columnIndex="3" GridPane.rowIndex="1">
+                                <tooltip>
+                                    <Tooltip  text="%h4.field.tip.beaker4"/>
+                                </tooltip>
+                            </TextField>
+                            <Label fx:id="temperatureDelivery1" GridPane.columnIndex="0"
+                                   GridPane.rowIndex="2"/>
+                            <Label fx:id="temperatureDelivery2" GridPane.columnIndex="1"
+                                   GridPane.rowIndex="2"/>
+                            <Label fx:id="temperatureDelivery3" GridPane.columnIndex="2"
+                                   GridPane.rowIndex="2"/>
+                            <Label fx:id="temperatureDelivery4" GridPane.columnIndex="3"
+                                   GridPane.rowIndex="2"/>
+                            <Label fx:id="temperatureDelivery12" GridPane.columnIndex="0"
+                                   GridPane.rowIndex="3"/>
+                            <Label fx:id="temperatureDelivery22" GridPane.columnIndex="1"
+                                   GridPane.rowIndex="3"/>
+                            <Label fx:id="temperatureDelivery32" GridPane.columnIndex="2"
+                                   GridPane.rowIndex="3"/>
+                            <Label fx:id="temperatureDelivery42" GridPane.columnIndex="3"
+                                   GridPane.rowIndex="3"/>
+                        </children>
+                        <columnConstraints>
+                            <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0"/>
+                            <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0"/>
+                            <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0"/>
+                            <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0"/>
+                        </columnConstraints>
+                        <rowConstraints>
+                            <RowConstraints minHeight="10.0" prefHeight="194.0" valignment="CENTER" vgrow="ALWAYS"/>
+                            <RowConstraints minHeight="40.0" prefHeight="40.0" valignment="CENTER" vgrow="NEVER"/>
+                            <RowConstraints maxHeight="30.0" minHeight="25.0" prefHeight="25.0" valignment="CENTER"
+                                            vgrow="NEVER"/>
+                            <RowConstraints maxHeight="30.0" minHeight="25.0" prefHeight="25.0" valignment="CENTER"
+                                            vgrow="NEVER"/>
+                        </rowConstraints>
+                        <VBox.margin>
+                            <Insets top="10.0"/>
+                        </VBox.margin>
+                    </GridPane>
+                </children>
+            </VBox>
+            <Separator orientation="VERTICAL" prefHeight="290.0" prefWidth="39.0"/>
+            <VBox alignment="CENTER" prefHeight="288.0" prefWidth="370.0" HBox.hgrow="ALWAYS">
+                <children>
+                    <GridPane prefHeight="55.0" prefWidth="350.0" VBox.vgrow="NEVER">
+                        <children>
+                            <Label fx:id="backFlowLowHighLabel" text="%h4.flow.label.backflow" GridPane.columnIndex="0"
+                                   GridPane.rowIndex="0"/>
+                            <ComboBox fx:id="recoveryFlowBox" maxHeight="30.0" maxWidth="130.0" minHeight="30.0"
+                                      minWidth="130.0" prefHeight="30.0" prefWidth="130.0"
+                                       GridPane.columnIndex="1" GridPane.hgrow="ALWAYS"
+                                      GridPane.vgrow="ALWAYS">
+                                <GridPane.margin>
+                                    <Insets bottom="2.0" left="2.0" right="2.0" top="2.0"/>
+                                </GridPane.margin>
+                                <tooltip>
+                                    <Tooltip  text="%h4.spin.tip.back.formula"/>
+                                </tooltip>
+                            </ComboBox>
+                        </children>
+                        <columnConstraints>
+                            <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0"/>
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0"/>
+                        </columnConstraints>
+                        <rowConstraints>
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+                        </rowConstraints>
+                    </GridPane>
+                    <GridPane alignment="CENTER" prefHeight="279.0" prefWidth="421.0" VBox.vgrow="ALWAYS">
+                        <children>
+                            <StackPane GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS"
+                                       GridPane.rowIndex="0" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                                <fx:include fx:id="beakerBackFlow1" centerShape="true" source="beaker.fxml"
+                                            StackPane.alignment="CENTER"/>
+                                <GridPane.margin>
+                                    <Insets bottom="45.0" left="20.0" right="20.0" top="30.0"/>
+                                </GridPane.margin>
+                            </StackPane>
+                            <StackPane GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS"
+                                       GridPane.rowIndex="0" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                                <fx:include fx:id="beakerBackFlow2" centerShape="true" source="beaker.fxml"
+                                            StackPane.alignment="CENTER"/>
+                                <GridPane.margin>
+                                    <Insets bottom="45.0" left="20.0" right="20.0" top="30.0"/>
+                                </GridPane.margin>
+                            </StackPane>
+                            <StackPane GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS"
+                                       GridPane.rowIndex="0" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                                <fx:include fx:id="beakerBackFlow3" centerShape="true" source="beaker.fxml"
+                                            StackPane.alignment="CENTER"/>
+                                <GridPane.margin>
+                                    <Insets bottom="45.0" left="20.0" right="20.0" top="30.0"/>
+                                </GridPane.margin>
+                            </StackPane>
+                            <StackPane GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS"
+                                       GridPane.rowIndex="0" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                                <fx:include fx:id="beakerBackFlow4" centerShape="true" source="beaker.fxml"
+                                            StackPane.alignment="CENTER"/>
+                                <GridPane.margin>
+                                    <Insets bottom="45.0" left="20.0" right="20.0" top="30.0"/>
+                                </GridPane.margin>
+                            </StackPane>
+
+                            <TextField fx:id="currentValueRecovText1" editable="false" maxHeight="30.0" maxWidth="80.0"
+                                       minHeight="30.0" minWidth="70.0" prefHeight="30.0" prefWidth="70.0"
+                                       GridPane.columnIndex="0" GridPane.rowIndex="1">
+                                <tooltip>
+                                    <Tooltip  text="%h4.field.tip.beaker5"/>
+                                </tooltip>
+                            </TextField>
+                            <TextField fx:id="currentValueRecovText2" editable="false" maxHeight="30.0" maxWidth="80.0"
+                                       minHeight="30.0" minWidth="70.0" prefHeight="30.0" prefWidth="70.0"
+                                       GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                <tooltip>
+                                    <Tooltip  text="%h4.field.tip.beaker6"/>
+                                </tooltip>
+                            </TextField>
+                            <TextField fx:id="currentValueRecovText3" editable="false" maxHeight="30.0" maxWidth="80.0"
+                                       minHeight="30.0" minWidth="70.0" prefHeight="30.0" prefWidth="70.0"
+                                       GridPane.columnIndex="2" GridPane.rowIndex="1">
+                                <tooltip>
+                                    <Tooltip  text="%h4.field.tip.beaker7"/>
+                                </tooltip>
+                            </TextField>
+                            <TextField fx:id="currentValueRecovText4" editable="false" maxHeight="30.0" maxWidth="80.0"
+                                       minHeight="30.0" minWidth="70.0" prefHeight="30.0" prefWidth="70.0"
+                                       GridPane.columnIndex="3" GridPane.rowIndex="1">
+                                <tooltip>
+                                    <Tooltip  text="%h4.field.tip.beaker8"/>
+                                </tooltip>
+                            </TextField>
+                            <Label fx:id="temperatureBackFlow1" GridPane.columnIndex="0"
+                                   GridPane.rowIndex="2"/>
+                            <Label fx:id="temperatureBackFlow2" GridPane.columnIndex="1"
+                                   GridPane.rowIndex="2"/>
+                            <Label fx:id="temperatureBackFlow3" GridPane.columnIndex="2"
+                                   GridPane.rowIndex="2"/>
+                            <Label fx:id="temperatureBackFlow4" GridPane.columnIndex="3"
+                                   GridPane.rowIndex="2"/>
+                            <Label fx:id="temperatureBackFlow12" GridPane.columnIndex="0"
+                                   GridPane.rowIndex="3"/>
+                            <Label fx:id="temperatureBackFlow22" GridPane.columnIndex="1"
+                                   GridPane.rowIndex="3"/>
+                            <Label fx:id="temperatureBackFlow32" GridPane.columnIndex="2"
+                                   GridPane.rowIndex="3"/>
+                            <Label fx:id="temperatureBackFlow42" GridPane.columnIndex="3"
+                                   GridPane.rowIndex="3"/>
+                        </children>
+                        <columnConstraints>
+                            <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0"/>
+                            <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0"/>
+                            <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0"/>
+                            <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0"/>
+                        </columnConstraints>
+                        <rowConstraints>
+                            <RowConstraints minHeight="10.0" prefHeight="194.0" valignment="CENTER" vgrow="ALWAYS"/>
+                            <RowConstraints minHeight="40.0" prefHeight="40.0" valignment="CENTER" vgrow="NEVER"/>
+                            <RowConstraints maxHeight="30.0" minHeight="25.0" prefHeight="25.0" valignment="CENTER"
+                                            vgrow="NEVER"/>
+                            <RowConstraints maxHeight="30.0" minHeight="25.0" prefHeight="25.0" valignment="CENTER"
+                                            vgrow="NEVER"/>
+                        </rowConstraints>
+                        <VBox.margin>
+                            <Insets top="10.0"/>
+                        </VBox.margin>
+                    </GridPane>
+                </children>
+            </VBox>
+        </children>
+    </HBox>
+
+</AnchorPane>

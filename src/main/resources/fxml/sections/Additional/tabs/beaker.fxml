@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.effect.BoxBlur?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.shape.Arc?>
+<?import javafx.scene.shape.Ellipse?>
+<?import javafx.scene.shape.Line?>
+<?import javafx.scene.shape.Rectangle?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane fx:id="beakerPane" minHeight="-Infinity" minWidth="-Infinity" prefHeight="160.0" prefWidth="70.0"
+            xmlns="http://javafx.com/javafx/8.0.65" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="fi.stardex.sisu.ui.controllers.additional.BeakerController">
+    <children>
+        <Rectangle fx:id="rectangleBeaker" arcHeight="5.0" arcWidth="5.0" fill="#2197ff00" height="170.0" stroke="BLACK"
+                   strokeType="INSIDE" strokeWidth="0.0" width="70.0" AnchorPane.bottomAnchor="0.0"
+                   AnchorPane.leftAnchor="0.0"/>
+        <Ellipse fx:id="ellipseTopBeaker" fill="#2197ff00" radiusX="35.0" radiusY="11.0" stroke="#7f7abf"
+                 strokeLineJoin="ROUND" strokeType="INSIDE" strokeWidth="2.0" AnchorPane.leftAnchor="0.0"
+                 AnchorPane.topAnchor="-11.0"/>
+        <Ellipse fx:id="ellipseBottomBeaker" fill="#2197ff00" radiusX="35.0" radiusY="15.0" stroke="#7e7ebd73"
+                 strokeLineJoin="ROUND" strokeType="INSIDE" strokeWidth="2.0" AnchorPane.bottomAnchor="-15.0"
+                 AnchorPane.leftAnchor="0.0"/>
+        <Rectangle fx:id="rectangleFuel" arcHeight="5.0" arcWidth="5.0" fill="#1fffb4" stroke="BLACK"
+                   strokeType="INSIDE" strokeWidth="0.0" width="64.0" AnchorPane.bottomAnchor="0.0"
+                   AnchorPane.leftAnchor="3.0"/>
+        <Ellipse fx:id="ellipseBottomFuel" fill="#21ffae" opacity="0.0" radiusX="32.0" radiusY="14.0" stroke="BLACK"
+                 strokeType="INSIDE" strokeWidth="0.0" AnchorPane.bottomAnchor="-13.0" AnchorPane.leftAnchor="3.0"/>
+        <Ellipse fx:id="ellipseTopFuel" fill="#2eb586" opacity="0.0" radiusX="32.0" radiusY="10.0" stroke="BLACK"
+                 strokeType="INSIDE" strokeWidth="0.0" AnchorPane.bottomAnchor="-7.0" AnchorPane.leftAnchor="3.0"/>
+        <Arc fx:id="arcTickTop" fill="#1f93ff00" length="180.0" opacity="0.0" radiusX="35.0" radiusY="13.0"
+             startAngle="180.0" stroke="#ff1f1f" strokeType="INSIDE" strokeWidth="2.0" AnchorPane.bottomAnchor="87.0"
+             AnchorPane.leftAnchor="0.0"/>
+        <Arc fx:id="arcTickBottom" fill="#1f93ff00" length="180.0" opacity="0.0" radiusX="35.0" radiusY="13.0"
+             startAngle="180.0" stroke="#ff1f1f" strokeType="INSIDE" strokeWidth="2.0" AnchorPane.bottomAnchor="87.0"
+             AnchorPane.leftAnchor="0.0"/>
+        <Text fx:id="textTop" fill="#ff1f1f" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER"
+              wrappingWidth="60.0" AnchorPane.bottomAnchor="90.0" AnchorPane.leftAnchor="5.0">
+            <font>
+                <Font name="System Bold" size="15.0"/>
+            </font>
+        </Text>
+        <Text fx:id="textBottom" fill="#ff1f1f" strokeType="OUTSIDE" strokeWidth="0.0" textAlignment="CENTER"
+              wrappingWidth="60.0" AnchorPane.bottomAnchor="90.0" AnchorPane.leftAnchor="5.0">
+            <font>
+                <Font name="System Bold" size="15.0"/>
+            </font>
+        </Text>
+        <ImageView fx:id="imageViewBottom" fitHeight="48.0" fitWidth="70.0" focusTraversable="true" layoutY="163.0"
+                   AnchorPane.bottomAnchor="-16.0" AnchorPane.leftAnchor="0.0">
+            <cursor>
+                <Cursor fx:constant="DEFAULT"/>
+            </cursor>
+            <image>
+                <Image url="@../../../../img/BottomImage.png"/>
+            </image>
+            <effect>
+                <BoxBlur/>
+            </effect>
+        </ImageView>
+        <ImageView fx:id="imageViewCenter" fitHeight="121.0" fitWidth="70.0" focusTraversable="true" layoutY="47.0">
+            <cursor>
+                <Cursor fx:constant="DEFAULT"/>
+            </cursor>
+            <image>
+                <Image url="@../../../../img/CenterImage.png"/>
+            </image>
+            <effect>
+                <BoxBlur/>
+            </effect>
+        </ImageView>
+        <ImageView fx:id="imageViewTop" fitHeight="47.0" fitWidth="70.0" focusTraversable="true"
+                   AnchorPane.leftAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <cursor>
+                <Cursor fx:constant="DEFAULT"/>
+            </cursor>
+            <image>
+                <Image url="@../../../../img/TopImage.png"/>
+            </image>
+            <effect>
+                <BoxBlur/>
+            </effect>
+        </ImageView>
+        <Line fx:id="lineLeft" endY="180.0" stroke="#7e7ebdf0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0"
+              AnchorPane.topAnchor="0.0"/>
+        <Line fx:id="lineRight" endY="180.0" layoutX="70.0" stroke="#7e7ebdf0" AnchorPane.bottomAnchor="0.0"
+              AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0"/>
+    </children>
+</AnchorPane>
