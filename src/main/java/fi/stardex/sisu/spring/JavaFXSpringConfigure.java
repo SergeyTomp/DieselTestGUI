@@ -37,8 +37,7 @@ public class JavaFXSpringConfigure {
 
     private final Logger logger = LoggerFactory.getLogger(JavaFXSpringConfigure.class);
 
-    @Autowired
-    public JavaFXSpringConfigure(I18N i18N) {
+    public JavaFXSpringConfigure (I18N i18N) {
         this.i18N = i18N;
         this.utf8Control = new UTF8Control();
     }
@@ -69,9 +68,8 @@ public class JavaFXSpringConfigure {
     }
 
     @Bean
-    @Autowired
-    public CRSectionController crSectionController(ViewHolder crSection) {
-        return (CRSectionController) crSection.getController();
+    public CRSectionController crSectionController() {
+        return (CRSectionController) crSection().getController();
     }
 
     @Bean

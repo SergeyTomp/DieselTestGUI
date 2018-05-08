@@ -6,7 +6,6 @@ import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
 import javafx.fxml.FXML;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 
 public class AdditionalSectionController {
@@ -15,7 +14,7 @@ public class AdditionalSectionController {
     private StackPane connection;
 
     @FXML
-    private GridPane voltage;
+    private StackPane voltage;
 
     @FXML
     private GridPane delay;
