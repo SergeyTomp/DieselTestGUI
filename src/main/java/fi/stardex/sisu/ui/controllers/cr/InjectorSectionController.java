@@ -1,9 +1,13 @@
 package fi.stardex.sisu.ui.controllers.cr;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+
+import javax.annotation.PostConstruct;
 
 public class InjectorSectionController {
 
@@ -58,4 +62,10 @@ public class InjectorSectionController {
     @FXML
     private ProgressBar switcherProgressBar;
 
+    @PostConstruct
+    private void init() {
+        powerSwitch.selectedProperty().addListener((observable, oldValue, newValue) -> {
+
+        });
+    }
 }

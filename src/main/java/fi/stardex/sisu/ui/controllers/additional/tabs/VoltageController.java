@@ -5,10 +5,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.Spinner;
+import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -100,6 +97,15 @@ public class VoltageController {
             voapStage.show();
         });
 
+        firstWidth.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(100, 10000, 100, 10));
+        voltage.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(30, 350, 0, 1));
+        voltageHold.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(11, 30, 11.0, 0.1));
+        firstCurrent.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0, 25, 0, 0.1));
+        secondCurrent.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0, 25, 0, 0.1));
+        boostCurrent.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0, 25, 0, 0.1));
+        firstNegative.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(12, 75, 12, 1));
+        secondNegative.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0, 75, 0, 1));
+
         xAxis.setMinorTickVisible(false);
         yAxis.setLowerBound(-15);
         yAxis.setUpperBound(25);
@@ -110,5 +116,25 @@ public class VoltageController {
         lineChart.getXAxis().setAutoRanging(true);
         lineChart.getYAxis().setAutoRanging(false);
         lineChart.getXAxis().setTickMarkVisible(true);
+
+        setVisibleVoltage(false);
+    }
+
+    public void setVisibleVoltage(final boolean value) {
+        labelCurrentBoost.setVisible(value);
+        labelVoltageHold.setVisible(value);
+        labelVoltageFirst.setVisible(value);
+        labelVoltageSecond.setVisible(value);
+
+        boostCurrent.setVisible(value);
+        voltageHold.setVisible(value);
+        firstNegative.setVisible(value);
+        secondNegative.setVisible(value);
+
+        labelUnitsBoostI.setVisible(value);
+        labelUnitsBatteryU.setVisible(value);
+        labelUnitsNegativeU1.setVisible(value);
+        labelUnitsNegativeU2.setVisible(value);
+        checkBoxBoostDisable.setVisible(value);
     }
 }
