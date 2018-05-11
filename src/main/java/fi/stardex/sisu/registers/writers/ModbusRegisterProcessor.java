@@ -77,12 +77,9 @@ public class ModbusRegisterProcessor {
         }
 
         private void readAll() {
-            System.err.println(System.currentTimeMillis());
             for (ModbusMap register : readArray) {
                 if (register.isAutoUpdate()) {
                     registerProvider.read(register);
-
-                    System.err.println(register + " " + register.getLastValue());
                 }
             }
         }

@@ -1,14 +1,20 @@
 package fi.stardex.sisu.ui.controllers.cr;
 
+import fi.stardex.sisu.registers.modbusmaps.ModbusMapUltima;
+import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.xml.ws.Action;
 
+@Component
 public class InjectorSectionController {
 
     @FXML
@@ -62,10 +68,17 @@ public class InjectorSectionController {
     @FXML
     private ProgressBar switcherProgressBar;
 
+    //TODO in Spring Java Config
+    @Autowired
+    private ModbusRegisterProcessor ultimaModbusWriter;
+
     @PostConstruct
     private void init() {
         powerSwitch.selectedProperty().addListener((observable, oldValue, newValue) -> {
-
+            if (newValue)
+                ultimaModbusWriter.add(ModbusMapUltima.Start, true);
+            else
+                ultimaModbusWriter.add(ModbusMapUltima.Start, false);
         });
     }
 }

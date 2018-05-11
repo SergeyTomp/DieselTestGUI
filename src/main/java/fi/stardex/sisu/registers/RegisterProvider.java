@@ -3,14 +3,14 @@ package fi.stardex.sisu.registers;
 import fi.stardex.sisu.connect.ModbusConnect;
 import fi.stardex.sisu.registers.modbusmaps.ModbusMap;
 import fi.stardex.sisu.registers.modbusmaps.RegisterType;
-import fi.stardex.sisu.ui.updaters.Updater;
 import net.wimpi.modbus.ModbusException;
 import net.wimpi.modbus.io.ModbusTransaction;
 import net.wimpi.modbus.msg.*;
+import net.wimpi.modbus.procimg.InputRegister;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
+import java.util.Arrays;
 
 public class RegisterProvider {
 
@@ -24,9 +24,9 @@ public class RegisterProvider {
 
     public Object read(ModbusMap register) {
         try {
-            Object valueToReturn;
+            Object valueToReturn = null;
             if (register.getType() == RegisterType.REGISTER_HOLDING) {
-                ReadMultipleRegistersResponse response = (ReadMultipleRegistersResponse) request(RegisterFactory.getRequest(register, false, null));
+                ReadMultipleRegistersResponse response = (ReadMultipleRegistersResponse) subscribeRequest(RegisterFactory.getRequest(register, false, null));
                 if (register.getCount() > 1) {
                     valueToReturn = RequestsUtils.createDouble(
                             (short) response.getRegister(0).getValue(),
@@ -35,7 +35,7 @@ public class RegisterProvider {
                     valueToReturn = response.getRegister(0).getValue();
                 }
             } else if (register.getType() == RegisterType.REGISTER_INPUT) {
-                ReadInputRegistersResponse response = (ReadInputRegistersResponse) request(RegisterFactory.getRequest(register, false, null));
+                ReadInputRegistersResponse response = (ReadInputRegistersResponse) subscribeRequest(RegisterFactory.getRequest(register, false, null));
                 if (register.getCount() > 1) {
                     valueToReturn = RequestsUtils.createDouble(
                             (short) response.getRegister(0).getValue(),
@@ -44,13 +44,40 @@ public class RegisterProvider {
                     valueToReturn = response.getRegister(0).getValue();
                 }
             } else if(register.getType() == RegisterType.DISCRETE_COIL) {
-                ReadCoilsResponse response = (ReadCoilsResponse) request(RegisterFactory.getRequest(register, false, null));
+                ReadCoilsResponse response = (ReadCoilsResponse) subscribeRequest(RegisterFactory.getRequest(register, false, null));
                 valueToReturn = response.getCoilStatus(0);
-            } else {
-                ReadInputDiscretesResponse response = (ReadInputDiscretesResponse) request(RegisterFactory.getRequest(register,false,null));
+            } else if(register.getType() == RegisterType.DISCRETE_INPUT) {
+                ReadInputDiscretesResponse response = (ReadInputDiscretesResponse) subscribeRequest(RegisterFactory.getRequest(register,false,null));
                 valueToReturn = response.getDiscreteStatus(0);
-            }
+            } else if(register.getType() == RegisterType.REGISTER_INPUT_CHART) {
+                int size = register.getCount();
+                int[] chartData = new int[size];
+                //TODO why IOOBEE if stepsize = 150;
+                int stepSize = 100;
+                int stepCount = size / stepSize;
+                int remainder = size % stepSize;
 
+                int currRef = register.getRef();
+                int currPoint = 0;
+                for (int i = 0; i < stepCount; i++) {
+                    ReadInputRegistersRequest request = new ReadInputRegistersRequest(currRef, stepSize);
+                    currRef += stepSize;
+                    ReadInputRegistersResponse response = (ReadInputRegistersResponse) subscribeRequest(request);
+                    for (InputRegister inputRegister : response.getRegisters()) {
+                        chartData[currPoint++] = inputRegister.getValue();
+                    }
+                }
+
+                if(remainder > 0) {
+                    ReadInputRegistersRequest request = new ReadInputRegistersRequest(currRef, remainder);
+                    ReadInputRegistersResponse response = (ReadInputRegistersResponse) subscribeRequest(request);
+                    for (InputRegister inputRegister : response.getRegisters()) {
+                        chartData[currPoint++] = inputRegister.getValue();
+                    }
+                }
+
+                valueToReturn = chartData;
+            }
             register.setLastValue(valueToReturn);
             return valueToReturn;
         } catch (ModbusException e) {
@@ -62,7 +89,7 @@ public class RegisterProvider {
 
     public void write(ModbusMap register, Object value) throws ModbusException {
         try {
-            request(RegisterFactory.getRequest(register, true, value));
+            subscribeRequest(RegisterFactory.getRequest(register, true, value));
         } catch (ModbusException e) {
             modbusConnect.disconnect2();
             logger.warn(e.getMessage());
@@ -70,7 +97,7 @@ public class RegisterProvider {
         }
     }
 
-    private ModbusResponse request(ModbusRequest request) throws ModbusException {
+    private ModbusResponse subscribeRequest(ModbusRequest request) throws ModbusException {
         ModbusTransaction transaction = modbusConnect.getTransaction(request);
         transaction.execute();
         return transaction.getResponse();
