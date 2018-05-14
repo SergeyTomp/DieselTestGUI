@@ -17,6 +17,7 @@ public class ModbusRegisterProcessor {
     private final BlockingDeque<Pair<ModbusMap, Object>> writeQueue = new LinkedBlockingDeque<>();
 
     private RegisterProvider registerProvider;
+
     private ModbusMap[] readArray;
 
     private List<Updater> updaters;
@@ -31,6 +32,10 @@ public class ModbusRegisterProcessor {
         loopThread = new Thread(new ProcessExecutor());
         loopThread.setName(threadName);
         loopThread.start();
+    }
+
+    public RegisterProvider getRegisterProvider() {
+        return registerProvider;
     }
 
     public boolean add(ModbusMap reg, Object value) {

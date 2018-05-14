@@ -1,7 +1,10 @@
 package fi.stardex.sisu.ui.controllers.cr;
 
+import fi.stardex.sisu.charts.ChartTask;
+import fi.stardex.sisu.charts.TimerTasksManager;
 import fi.stardex.sisu.registers.modbusmaps.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
+import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -13,9 +16,18 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.xml.ws.Action;
+import java.io.IOException;
 
-@Component
 public class InjectorSectionController {
+
+    @Autowired
+    private TimerTasksManager timerTasksManager;
+
+    @Autowired
+    private ChartTask chartTask;
+
+    @Autowired
+    private VoltageController voltageController;
 
     @FXML
     private Spinner widthCurrentSignal;
@@ -68,17 +80,25 @@ public class InjectorSectionController {
     @FXML
     private ProgressBar switcherProgressBar;
 
-    //TODO in Spring Java Config
-    @Autowired
-    private ModbusRegisterProcessor ultimaModbusWriter;
+    private boolean updateOSC;
+
+    public boolean isUpdateOSC() {
+        return updateOSC;
+    }
+
+    public void setUpdateOSC(boolean updateOSC) {
+        this.updateOSC = updateOSC;
+    }
 
     @PostConstruct
     private void init() {
         powerSwitch.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue)
-                ultimaModbusWriter.add(ModbusMapUltima.Start, true);
-            else
-                ultimaModbusWriter.add(ModbusMapUltima.Start, false);
+                timerTasksManager.start(chartTask);
+            else {
+                timerTasksManager.stop();
+                voltageController.getData1().clear();
+            }
         });
     }
 }

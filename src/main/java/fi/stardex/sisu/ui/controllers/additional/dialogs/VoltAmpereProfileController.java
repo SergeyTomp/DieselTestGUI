@@ -16,9 +16,6 @@ import javax.annotation.PostConstruct;
 public class VoltAmpereProfileController {
 
     @Autowired
-    private VoltageController voltageController;
-
-    @Autowired
     private CurrentVAPStorage currentVAPStorage;
 
     @FXML

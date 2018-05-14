@@ -43,40 +43,14 @@ public class RegisterProvider {
                 } else {
                     valueToReturn = response.getRegister(0).getValue();
                 }
-            } else if(register.getType() == RegisterType.DISCRETE_COIL) {
+            } else if (register.getType() == RegisterType.DISCRETE_COIL) {
                 ReadCoilsResponse response = (ReadCoilsResponse) subscribeRequest(RegisterFactory.getRequest(register, false, null));
                 valueToReturn = response.getCoilStatus(0);
-            } else if(register.getType() == RegisterType.DISCRETE_INPUT) {
-                ReadInputDiscretesResponse response = (ReadInputDiscretesResponse) subscribeRequest(RegisterFactory.getRequest(register,false,null));
+            } else if (register.getType() == RegisterType.DISCRETE_INPUT) {
+                ReadInputDiscretesResponse response = (ReadInputDiscretesResponse) subscribeRequest(RegisterFactory.getRequest(register, false, null));
                 valueToReturn = response.getDiscreteStatus(0);
-            } else if(register.getType() == RegisterType.REGISTER_INPUT_CHART) {
-                int size = register.getCount();
-                int[] chartData = new int[size];
-                //TODO why IOOBEE if stepsize = 150;
-                int stepSize = 100;
-                int stepCount = size / stepSize;
-                int remainder = size % stepSize;
-
-                int currRef = register.getRef();
-                int currPoint = 0;
-                for (int i = 0; i < stepCount; i++) {
-                    ReadInputRegistersRequest request = new ReadInputRegistersRequest(currRef, stepSize);
-                    currRef += stepSize;
-                    ReadInputRegistersResponse response = (ReadInputRegistersResponse) subscribeRequest(request);
-                    for (InputRegister inputRegister : response.getRegisters()) {
-                        chartData[currPoint++] = inputRegister.getValue();
-                    }
-                }
-
-                if(remainder > 0) {
-                    ReadInputRegistersRequest request = new ReadInputRegistersRequest(currRef, remainder);
-                    ReadInputRegistersResponse response = (ReadInputRegistersResponse) subscribeRequest(request);
-                    for (InputRegister inputRegister : response.getRegisters()) {
-                        chartData[currPoint++] = inputRegister.getValue();
-                    }
-                }
-
-                valueToReturn = chartData;
+            } else if (register.getType() == RegisterType.REGISTER_INPUT_CHART) {
+                valueToReturn = readBytePacket(register);
             }
             register.setLastValue(valueToReturn);
             return valueToReturn;
@@ -105,5 +79,41 @@ public class RegisterProvider {
 
     public boolean isConnected() {
         return modbusConnect.isConnected();
+    }
+
+
+    private int[] readBytePacket(ModbusMap register) throws ModbusException {
+        int currRef = register.getRef();
+        int size = register.getCount();
+        return readBytePacket(currRef, size);
+    }
+
+    public int[] readBytePacket(int currRef, int size) throws ModbusException {
+
+        int[] chartData = new int[size];
+        //TODO why IOOBEE if stepsize = 150;
+        int stepSize = 100;
+        int stepCount = size / stepSize;
+        int remainder = size % stepSize;
+
+        int currPoint = 0;
+        for (int i = 0; i < stepCount; i++) {
+            ReadInputRegistersRequest request = new ReadInputRegistersRequest(currRef, stepSize);
+            currRef += stepSize;
+            ReadInputRegistersResponse response = (ReadInputRegistersResponse) subscribeRequest(request);
+            for (InputRegister inputRegister : response.getRegisters()) {
+                chartData[currPoint++] = inputRegister.getValue();
+            }
+        }
+
+        if (remainder > 0) {
+            ReadInputRegistersRequest request = new ReadInputRegistersRequest(currRef, remainder);
+            ReadInputRegistersResponse response = (ReadInputRegistersResponse) subscribeRequest(request);
+            for (InputRegister inputRegister : response.getRegisters()) {
+                chartData[currPoint++] = inputRegister.getValue();
+            }
+        }
+        System.err.println(Arrays.toString(chartData));
+        return chartData;
     }
 }

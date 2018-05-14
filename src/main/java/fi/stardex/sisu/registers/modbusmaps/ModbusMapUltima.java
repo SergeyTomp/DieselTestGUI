@@ -7,12 +7,9 @@ public enum ModbusMapUltima implements ModbusMap {
     FirstIBoardOne(RegisterType.REGISTER_HOLDING, 2, 1, false),
     FirstIBoardTwo(RegisterType.REGISTER_HOLDING, 22, 1, false),
 
-    //TODO delete after test
-    BoostCurrBoardOne(RegisterType.REGISTER_HOLDING, 1, 1, true),
-    FirstBoardReady(RegisterType.DISCRETE_INPUT, 120, 1, true),
-    Start(RegisterType.DISCRETE_COIL, 42, 1, true),
-
-    ChartBoardOne(RegisterType.REGISTER_INPUT_CHART, 0, 2047, true);
+    Current_graph1(RegisterType.REGISTER_INPUT_CHART, 0, 2047, false),
+    Current_graph1_frame_num(RegisterType.REGISTER_HOLDING, 7, 1, false),
+    Current_graph1_update(RegisterType.DISCRETE_COIL, 1, 1, false);
 
     private RegisterType type;
     private int ref;

@@ -16,6 +16,7 @@ import fi.stardex.sisu.ui.controllers.main.MainSectionController;
 import fi.stardex.sisu.util.Enabler;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.i18n.UTF8Control;
+import fi.stardex.sisu.util.storage.CurrentVAPStorage;
 import fi.stardex.sisu.util.view.ApplicationAppearanceChanger;
 import fi.stardex.sisu.util.wrappers.StatusBarWrapper;
 import fi.stardex.sisu.version.StardexVersion;
@@ -25,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 import java.io.IOException;
 import java.util.ResourceBundle;
