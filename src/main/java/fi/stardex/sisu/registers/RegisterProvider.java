@@ -49,7 +49,7 @@ public class RegisterProvider {
             } else if (register.getType() == RegisterType.DISCRETE_INPUT) {
                 ReadInputDiscretesResponse response = (ReadInputDiscretesResponse) subscribeRequest(RegisterFactory.getRequest(register, false, null));
                 valueToReturn = response.getDiscreteStatus(0);
-            } else if (register.getType() == RegisterType.REGISTER_INPUT_CHART) {
+            } else  {
                 valueToReturn = readBytePacket(register);
             }
             register.setLastValue(valueToReturn);
@@ -80,7 +80,6 @@ public class RegisterProvider {
     public boolean isConnected() {
         return modbusConnect.isConnected();
     }
-
 
     private int[] readBytePacket(ModbusMap register) throws ModbusException {
         int currRef = register.getRef();
