@@ -9,7 +9,12 @@ public enum ModbusMapUltima implements ModbusMap {
 
     Current_graph1(RegisterType.REGISTER_INPUT_CHART, 0, 2047, false),
     Current_graph1_frame_num(RegisterType.REGISTER_HOLDING, 7, 1, false),
-    Current_graph1_update(RegisterType.DISCRETE_COIL, 1, 1, false);
+    Current_graph1_update(RegisterType.DISCRETE_COIL, 1, 1, false),
+
+    Injectors_Running_En(RegisterType.DISCRETE_COIL, 42, 1, false),
+    GImpulsesPeriod(RegisterType.REGISTER_HOLDING, 140, 1, false),
+    Ftime(RegisterType.REGISTER_HOLDING, 141, 1, false),
+    FInjectorNumber(RegisterType.REGISTER_HOLDING, 142, 1, false);
 
     private RegisterType type;
     private int ref;

@@ -29,6 +29,10 @@ public class InjectorSectionController {
     @Autowired
     private VoltageController voltageController;
 
+    //TODO: delete after test
+    @Autowired
+    private ModbusRegisterProcessor ultimaModbusWriter;
+
     @FXML
     private Spinner widthCurrentSignal;
 
@@ -92,10 +96,20 @@ public class InjectorSectionController {
 
     @PostConstruct
     private void init() {
+
+        ultimaModbusWriter.add(ModbusMapUltima.Ftime, 0);
+        ultimaModbusWriter.add(ModbusMapUltima.GImpulsesPeriod, 60);
+        ultimaModbusWriter.add(ModbusMapUltima.FInjectorNumber, 1);
+
         powerSwitch.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue)
+            if (newValue) {
+                ultimaModbusWriter.add(ModbusMapUltima.Injectors_Running_En, true);
                 timerTasksManager.start(chartTask);
+            }
             else {
+                ultimaModbusWriter.add(ModbusMapUltima.Injectors_Running_En, false);
+                ultimaModbusWriter.add(ModbusMapUltima.FInjectorNumber, 0xff);
+                ultimaModbusWriter.add(ModbusMapUltima.Ftime, 0);
                 timerTasksManager.stop();
                 voltageController.getData1().clear();
             }

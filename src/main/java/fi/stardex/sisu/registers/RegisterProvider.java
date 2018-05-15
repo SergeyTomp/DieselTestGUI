@@ -49,7 +49,7 @@ public class RegisterProvider {
             } else if (register.getType() == RegisterType.DISCRETE_INPUT) {
                 ReadInputDiscretesResponse response = (ReadInputDiscretesResponse) subscribeRequest(RegisterFactory.getRequest(register, false, null));
                 valueToReturn = response.getDiscreteStatus(0);
-            } else  {
+            } else if(register.getType() == RegisterType.REGISTER_INPUT_CHART) {
                 valueToReturn = readBytePacket(register);
             }
             register.setLastValue(valueToReturn);
@@ -81,15 +81,15 @@ public class RegisterProvider {
         return modbusConnect.isConnected();
     }
 
-    private int[] readBytePacket(ModbusMap register) throws ModbusException {
+    private Integer[] readBytePacket(ModbusMap register) throws ModbusException {
         int currRef = register.getRef();
         int size = register.getCount();
         return readBytePacket(currRef, size);
     }
 
-    public int[] readBytePacket(int currRef, int size) throws ModbusException {
+    public Integer[] readBytePacket(int currRef, int size) throws ModbusException {
 
-        int[] chartData = new int[size];
+        Integer[] chartData = new Integer[size];
         //TODO why IOOBEE if stepsize = 150;
         int stepSize = 100;
         int stepCount = size / stepSize;
@@ -112,7 +112,6 @@ public class RegisterProvider {
                 chartData[currPoint++] = inputRegister.getValue();
             }
         }
-        System.err.println(Arrays.toString(chartData));
         return chartData;
     }
 }

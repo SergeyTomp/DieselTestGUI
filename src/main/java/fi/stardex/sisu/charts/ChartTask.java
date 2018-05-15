@@ -72,7 +72,6 @@ public class ChartTask extends TimerTask {
     @Override
     public void run() {
 
-        System.err.println("Running");
         int n;
         offset = 200;
         // TODO: hardcoded n
@@ -101,7 +100,6 @@ public class ChartTask extends TimerTask {
                         if (!injectorSectionController.isUpdateOSC())
                             return;
                         ready = (boolean) ultimaModbusWriter.getRegisterProvider().read(ModbusMapUltima.Current_graph1_update);
-                        System.err.println("ready1: " + ready);
                     } catch (ClassCastException e) {
                         logger.error("Cast Error: ", e);
                         return;
@@ -126,17 +124,13 @@ public class ChartTask extends TimerTask {
                     if (!injectorSectionController.isUpdateOSC())
                         return;
                     ready = (boolean) ultimaModbusWriter.getRegisterProvider().read(ModbusMapUltima.Current_graph1_update);
-                    System.err.println("ready2: " + ready);
                 } catch (ClassCastException e) {
                     logger.error("Cast Exception: ", e);
                     return;
                 }
             } while (ready);
-            int[] data = ultimaModbusWriter.getRegisterProvider().readBytePacket(0, remainder);
-            Integer[] temp = new Integer[data.length];
-            for (int i : data)
-                temp[i] = i;
-            addModbusData(resultDataList, temp);
+            Integer[] data = ultimaModbusWriter.getRegisterProvider().readBytePacket(0, remainder);
+            addModbusData(resultDataList, data);
         } catch (ModbusException e) {
             logger.error("Cannot obtain graphic 2", e);
             return;
