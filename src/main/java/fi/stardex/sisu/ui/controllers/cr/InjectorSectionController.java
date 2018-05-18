@@ -5,18 +5,13 @@ import fi.stardex.sisu.charts.TimerTasksManager;
 import fi.stardex.sisu.registers.modbusmaps.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import javax.xml.ws.Action;
-import java.io.IOException;
 
 public class InjectorSectionController {
 
@@ -97,9 +92,9 @@ public class InjectorSectionController {
     @PostConstruct
     private void init() {
 
-        ultimaModbusWriter.add(ModbusMapUltima.Ftime, 0);
+        ultimaModbusWriter.add(ModbusMapUltima.Ftime1, 0);
         ultimaModbusWriter.add(ModbusMapUltima.GImpulsesPeriod, 60);
-        ultimaModbusWriter.add(ModbusMapUltima.FInjectorNumber, 1);
+        ultimaModbusWriter.add(ModbusMapUltima.FInjectorNumber1, 1);
 
         powerSwitch.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
@@ -108,8 +103,8 @@ public class InjectorSectionController {
             }
             else {
                 ultimaModbusWriter.add(ModbusMapUltima.Injectors_Running_En, false);
-                ultimaModbusWriter.add(ModbusMapUltima.FInjectorNumber, 0xff);
-                ultimaModbusWriter.add(ModbusMapUltima.Ftime, 0);
+                ultimaModbusWriter.add(ModbusMapUltima.FInjectorNumber1, 0xff);
+                ultimaModbusWriter.add(ModbusMapUltima.Ftime1, 0);
                 timerTasksManager.stop();
                 voltageController.getData1().clear();
             }
