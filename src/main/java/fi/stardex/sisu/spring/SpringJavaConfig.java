@@ -8,6 +8,7 @@ import fi.stardex.sisu.connect.InetAddressWrapper;
 import fi.stardex.sisu.connect.ModbusConnect;
 import fi.stardex.sisu.devices.Device;
 import fi.stardex.sisu.devices.Devices;
+import fi.stardex.sisu.listeners.FrequencySpinnerListener;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.modbusmaps.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
@@ -150,5 +151,11 @@ public class SpringJavaConfig {
     @Autowired
     public ChartTask chartTask(VoltageController voltageController, ModbusRegisterProcessor ultimaModbusWriter, InjectorSectionController injectorSectionController) {
         return new ChartTask(voltageController, ultimaModbusWriter, injectorSectionController);
+    }
+
+    @Bean
+    @Autowired
+    public FrequencySpinnerListener frequencySpinnerListener(InjectorSectionController injectorSectionController) {
+        return new FrequencySpinnerListener(injectorSectionController);
     }
 }

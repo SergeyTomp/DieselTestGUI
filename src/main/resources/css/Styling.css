@@ -1,0 +1,60 @@
+.led {
+
+    -textFont-color: #ffff66;
+    -fx-font-size: 12pt;
+    -fx-font-weight: 300;
+    -fx-font-family: "Arial";
+    -fx-text-fill: -textFont-color;
+
+    -fx-background-image: url("../img/LED-off.png");
+    -fx-background-size: stretch;
+    -fx-background-color: transparent;
+    -fx-background-repeat: no-repeat;
+    -fx-opacity: 0.8;
+}
+
+.led:disabled{
+    -fx-background-image: url("../img/LED-disable.png");
+    -fx-background-size: stretch;
+    -fx-opacity: 1;
+}
+
+.led .ledBlink-on{
+    -fx-background-image: url("../img/LED-on.png");
+    -fx-background-size: stretch;
+    -fx-opacity: 1;
+}
+
+.led:hover{
+
+    -fx-opacity: 1;
+}
+
+.led:focused{
+
+    -fx-opacity: 1;
+}
+
+.ledBlink-on{
+    -fx-background-image: url("../img/LED-on.png");
+    -fx-background-size: stretch;
+    -fx-opacity: 1;
+}
+
+.ledBlink-on:disabled{
+    -fx-background-image: url("../img/LED-on.png");
+    -fx-background-size: stretch;
+    -fx-opacity: 1;
+}
+
+.ledBlink-off{
+    -fx-background-image: url("../img/LED-off.png");
+    -fx-background-size: stretch;
+    -fx-opacity: 1;
+}
+
+.ledBlink-disable{
+    -fx-background-image: url("../img/LED-disable.png");
+    -fx-background-size: stretch;
+    -fx-opacity: 1;
+}

@@ -18,7 +18,7 @@ public class ApplicationConfigHandler {
     {
         config.put("GUI_Type", "UIS");
         config.put("Language", "ENGLISH");
-        config.put("UltimaIP", "192.168.10.200");
+        config.put("UltimaIP", "192.168.10.206");
         config.put("UltimaPort", "502");
         config.put("FlowIP", "192.168.10.201");
         config.put("FlowPort", "502");

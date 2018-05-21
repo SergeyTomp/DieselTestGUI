@@ -30,16 +30,13 @@ public enum ModbusMapUltima implements ModbusMap {
     FInjectorNumber4(RegisterType.REGISTER_HOLDING, 148, 1, false);
 
 
-
-
-
     private RegisterType type;
     private int ref;
     private int count;
     private boolean autoUpdate;
     private Object lastValue;
 
-    static final List<ModbusMapUltima> impulseToInjectorsList = new LinkedList<>();
+    public static final List<ModbusMapUltima> impulseToInjectorsList = new LinkedList<>();
 
     static {
         impulseToInjectorsList.add(Injector_type);
@@ -52,6 +49,10 @@ public enum ModbusMapUltima implements ModbusMap {
         impulseToInjectorsList.add(FInjectorNumber3);
         impulseToInjectorsList.add(Ftime4);
         impulseToInjectorsList.add(FInjectorNumber4);
+    }
+
+    public static List<ModbusMapUltima> getImpulseToInjectorsList() {
+        return impulseToInjectorsList;
     }
 
     ModbusMapUltima(RegisterType type, int ref, int count, boolean autoUpdate) {

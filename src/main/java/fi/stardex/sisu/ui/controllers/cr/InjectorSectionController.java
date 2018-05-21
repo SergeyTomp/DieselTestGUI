@@ -4,9 +4,11 @@ import fi.stardex.sisu.charts.ChartTask;
 import fi.stardex.sisu.charts.TimerTasksManager;
 import fi.stardex.sisu.registers.modbusmaps.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
+import fi.stardex.sisu.ui.controllers.additional.LedController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +17,7 @@ import javax.annotation.PostConstruct;
 
 public class InjectorSectionController {
 
+    //TODO: delete after test
     @Autowired
     private TimerTasksManager timerTasksManager;
 
@@ -24,15 +27,16 @@ public class InjectorSectionController {
     @Autowired
     private VoltageController voltageController;
 
-    //TODO: delete after test
     @Autowired
     private ModbusRegisterProcessor ultimaModbusWriter;
+
+
 
     @FXML
     private Spinner widthCurrentSignal;
 
     @FXML
-    private Spinner freqCurrentSignal;
+    private Spinner<Double> freqCurrentSignal;
 
     @FXML
     private RadioButton piezoRadioButton;
@@ -79,7 +83,34 @@ public class InjectorSectionController {
     @FXML
     private ProgressBar switcherProgressBar;
 
+    @FXML
+    private LedController ledBeakerController;
+
+    @FXML
+    private AnchorPane ledBeaker;
+
+    @FXML
+    private AnchorPane ledBeaker2;
+
+    @FXML
+    private AnchorPane ledBeaker3;
+
+    @FXML
+    private AnchorPane ledBeaker4;
+
     private boolean updateOSC;
+
+    public LedController getLedBeakerController() {
+        return ledBeakerController;
+    }
+
+    public Spinner<Double> getFreqCurrentSignal() {
+        return freqCurrentSignal;
+    }
+
+    public ToggleButton getPowerSwitch() {
+        return powerSwitch;
+    }
 
     public boolean isUpdateOSC() {
         return updateOSC;
@@ -92,6 +123,7 @@ public class InjectorSectionController {
     @PostConstruct
     private void init() {
 
+        //TODO: delete after test
         ultimaModbusWriter.add(ModbusMapUltima.Ftime1, 0);
         ultimaModbusWriter.add(ModbusMapUltima.GImpulsesPeriod, 60);
         ultimaModbusWriter.add(ModbusMapUltima.FInjectorNumber1, 1);
@@ -109,5 +141,14 @@ public class InjectorSectionController {
                 voltageController.getData1().clear();
             }
         });
+
+        setupFrequencySpinner();
+
+
+
+    }
+
+    private void setupFrequencySpinner() {
+        freqCurrentSignal.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0.5, 50, 16.67, 0.01));
     }
 }

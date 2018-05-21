@@ -4,6 +4,7 @@ import fi.stardex.sisu.devices.Devices;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.RootLayoutController;
 import fi.stardex.sisu.ui.controllers.additional.AdditionalSectionController;
+import fi.stardex.sisu.ui.controllers.additional.LedController;
 import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.ConnectionController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.DelayController;
@@ -90,6 +91,14 @@ public class JavaFXSpringConfigure {
     @Autowired
     public InjectorSectionController injectorSectionController(CRSectionController crSectionController) {
         return crSectionController.getInjectorSectionController();
+    }
+
+    @Bean
+    @Autowired
+    public LedController ledController(InjectorSectionController injectorSectionController) {
+        LedController ledBeakerController = injectorSectionController.getLedBeakerController();
+        ledBeakerController.setInjectorSectionController(injectorSectionController);
+        return ledBeakerController;
     }
 
     @Bean
