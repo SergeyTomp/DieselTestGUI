@@ -103,7 +103,7 @@
                 <StackPane prefHeight="150.0" prefWidth="67.0" GridPane.halignment="CENTER"
                            GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER"
                            GridPane.vgrow="ALWAYS">
-                    <fx:include fx:id="ledBeaker" source="../Additional/LedBeaker.fxml"/>
+                    <fx:include fx:id="ledBeaker1" source="../Additional/LedBeaker.fxml"/>
                 </StackPane>
                 <StackPane prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="1"
                            GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1"

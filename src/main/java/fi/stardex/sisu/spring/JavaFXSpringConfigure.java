@@ -1,6 +1,7 @@
 package fi.stardex.sisu.spring;
 
 import fi.stardex.sisu.devices.Devices;
+import fi.stardex.sisu.injectors.InjectorSwitchManager;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.RootLayoutController;
 import fi.stardex.sisu.ui.controllers.additional.AdditionalSectionController;
@@ -21,6 +22,7 @@ import fi.stardex.sisu.util.storage.CurrentVAPStorage;
 import fi.stardex.sisu.util.view.ApplicationAppearanceChanger;
 import fi.stardex.sisu.util.wrappers.StatusBarWrapper;
 import fi.stardex.sisu.version.StardexVersion;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXMLLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,10 +97,38 @@ public class JavaFXSpringConfigure {
 
     @Bean
     @Autowired
-    public LedController ledController(InjectorSectionController injectorSectionController) {
-        LedController ledBeakerController = injectorSectionController.getLedBeakerController();
-        ledBeakerController.setInjectorSectionController(injectorSectionController);
-        return ledBeakerController;
+    public LedController led1Controller(InjectorSectionController injectorSectionController) {
+        LedController ledBeaker1Controller = injectorSectionController.getLedBeaker1Controller();
+        ledBeaker1Controller.setNumber(1);
+        ledBeaker1Controller.setInjectorSectionController(injectorSectionController);
+        return ledBeaker1Controller;
+    }
+
+    @Bean
+    @Autowired
+    public LedController led2Controller(InjectorSectionController injectorSectionController) {
+        LedController ledBeaker2Controller = injectorSectionController.getLedBeaker2Controller();
+        ledBeaker2Controller.setNumber(2);
+        ledBeaker2Controller.setInjectorSectionController(injectorSectionController);
+        return ledBeaker2Controller;
+    }
+
+    @Bean
+    @Autowired
+    public LedController led3Controller(InjectorSectionController injectorSectionController) {
+        LedController ledBeaker3Controller = injectorSectionController.getLedBeaker3Controller();
+        ledBeaker3Controller.setNumber(3);
+        ledBeaker3Controller.setInjectorSectionController(injectorSectionController);
+        return ledBeaker3Controller;
+    }
+
+    @Bean
+    @Autowired
+    public LedController led4Controller(InjectorSectionController injectorSectionController) {
+        LedController ledBeaker4Controller = injectorSectionController.getLedBeaker4Controller();
+        ledBeaker4Controller.setNumber(4);
+        ledBeaker4Controller.setInjectorSectionController(injectorSectionController);
+        return ledBeaker4Controller;
     }
 
     @Bean

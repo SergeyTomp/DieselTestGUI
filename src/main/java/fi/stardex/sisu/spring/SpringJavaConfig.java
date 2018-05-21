@@ -8,10 +8,13 @@ import fi.stardex.sisu.connect.InetAddressWrapper;
 import fi.stardex.sisu.connect.ModbusConnect;
 import fi.stardex.sisu.devices.Device;
 import fi.stardex.sisu.devices.Devices;
+import fi.stardex.sisu.injectors.InjectorSwitchManager;
 import fi.stardex.sisu.listeners.FrequencySpinnerListener;
+import fi.stardex.sisu.listeners.LedBeakerListener;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.modbusmaps.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
+import fi.stardex.sisu.ui.controllers.additional.LedController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.ConnectionController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
 import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
@@ -22,6 +25,7 @@ import fi.stardex.sisu.util.ApplicationConfigHandler;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.storage.CurrentVAPStorage;
 import fi.stardex.sisu.util.wrappers.StatusBarWrapper;
+import fi.stardex.sisu.wrappers.LedControllerWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -57,14 +61,14 @@ public class SpringJavaConfig {
     @Bean
     @Autowired
     public ModbusConnect flowModbusConnect(ConnectionController connectionController, ConnectProcessor connectProcessor, Devices devices, StatusBarWrapper statusBar,
-                                             InetAddressWrapper inetAddressWrapper) {
+                                           InetAddressWrapper inetAddressWrapper) {
         return new ModbusConnect(connectionController.getFlowMeterConnect(), connectProcessor, devices, statusBar, Device.MODBUS_FLOW, inetAddressWrapper);
     }
 
     @Bean
     @Autowired
     public ModbusConnect standModbusConnect(ConnectionController connectionController, ConnectProcessor connectProcessor, Devices devices, StatusBarWrapper statusBar,
-                                           InetAddressWrapper inetAddressWrapper) {
+                                            InetAddressWrapper inetAddressWrapper) {
         return new ModbusConnect(connectionController.getStandConnect(), connectProcessor, devices, statusBar, Device.MODBUS_STAND, inetAddressWrapper);
     }
 
@@ -109,7 +113,7 @@ public class SpringJavaConfig {
         updatersList.forEach(updater -> {
             Module module = updater.getClass().getAnnotation(Module.class);
             for (Device device : module.value()) {
-                if(device == Device.ULTIMA)
+                if (device == Device.ULTIMA)
                     updaters.add(updater);
             }
         });
@@ -158,4 +162,51 @@ public class SpringJavaConfig {
     public FrequencySpinnerListener frequencySpinnerListener(InjectorSectionController injectorSectionController) {
         return new FrequencySpinnerListener(injectorSectionController);
     }
+
+    @Bean
+    @Autowired
+    public LedBeakerListener ledBeaker1Listener(LedController led1Controller, InjectorSwitchManager injectorSwitchManager) {
+        LedBeakerListener ledBeaker1Listener = new LedBeakerListener(led1Controller, 0);
+        ledBeaker1Listener.setManager(injectorSwitchManager);
+        return ledBeaker1Listener;
+    }
+
+    @Bean
+    @Autowired
+    public LedBeakerListener ledBeaker2Listener(LedController led2Controller, InjectorSwitchManager injectorSwitchManager) {
+        LedBeakerListener ledBeaker2Listener = new LedBeakerListener(led2Controller, 1);
+        ledBeaker2Listener.setManager(injectorSwitchManager);
+        return ledBeaker2Listener;
+    }
+
+    @Bean
+    @Autowired
+    public LedBeakerListener ledBeaker3Listener(LedController led3Controller, InjectorSwitchManager injectorSwitchManager) {
+        LedBeakerListener ledBeaker3Listener = new LedBeakerListener(led3Controller, 2);
+        ledBeaker3Listener.setManager(injectorSwitchManager);
+        return ledBeaker3Listener;
+    }
+
+    @Bean
+    @Autowired
+    public LedBeakerListener ledBeaker4Listener(LedController led4Controller, InjectorSwitchManager injectorSwitchManager) {
+        LedBeakerListener ledBeaker4Listener = new LedBeakerListener(led4Controller, 3);
+        ledBeaker4Listener.setManager(injectorSwitchManager);
+        return ledBeaker4Listener;
+    }
+
+    @Bean
+    @Autowired
+    public LedControllerWrapper ledControllerWrapper(List<LedController> ledControllers) {
+        return new LedControllerWrapper(ledControllers);
+    }
+
+    @Bean
+    @Autowired
+    public InjectorSwitchManager injectorSwitchManager(ModbusRegisterProcessor ultimaModbusWriter,
+                                                       LedControllerWrapper ledControllerWrapper,
+                                                       InjectorSectionController injectorSectionController) {
+        return new InjectorSwitchManager(ultimaModbusWriter, ledControllerWrapper, injectorSectionController);
+    }
+
 }

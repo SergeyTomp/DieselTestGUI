@@ -94,6 +94,10 @@ public class LedController {
         ledBeaker.setText(String.valueOf(number));
     }
 
+    public int getNumber() {
+        return number;
+    }
+
     @PostConstruct
     private void init() {
         timeline.getKeyFrames().add(keyFrame);
@@ -105,16 +109,16 @@ public class LedController {
             if (newValue) {
                 injectorMask += 1 << injectorNumber;
                 ledBeaker.getStyleClass().set(2, LED_BLINK_ON);
-//                if (injectorSectionController.getPowerSwitch().isSelected()) {
-//                    ledBlinkStart();
-//                }
+                if (injectorSectionController.getPowerSwitch().isSelected()) {
+                    ledBlinkStart();
+                }
 
             } else {
                 injectorMask -= 1 << injectorNumber;
                 ledBeaker.getStyleClass().set(2, LED_BLINK_OFF);
-//                if (injectorSectionController.getPowerSwitch().isSelected()) {
-//                    ledBlinkStop();
-//                }
+                if (injectorSectionController.getPowerSwitch().isSelected()) {
+                    ledBlinkStop();
+                }
             }
         });
     }

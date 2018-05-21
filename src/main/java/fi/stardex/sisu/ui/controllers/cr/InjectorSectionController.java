@@ -30,8 +30,6 @@ public class InjectorSectionController {
     @Autowired
     private ModbusRegisterProcessor ultimaModbusWriter;
 
-
-
     @FXML
     private Spinner widthCurrentSignal;
 
@@ -84,10 +82,19 @@ public class InjectorSectionController {
     private ProgressBar switcherProgressBar;
 
     @FXML
-    private LedController ledBeakerController;
+    private LedController ledBeaker1Controller;
 
     @FXML
-    private AnchorPane ledBeaker;
+    private LedController ledBeaker2Controller;
+
+    @FXML
+    private LedController ledBeaker3Controller;
+
+    @FXML
+    private LedController ledBeaker4Controller;
+
+    @FXML
+    private AnchorPane ledBeaker1;
 
     @FXML
     private AnchorPane ledBeaker2;
@@ -100,8 +107,20 @@ public class InjectorSectionController {
 
     private boolean updateOSC;
 
-    public LedController getLedBeakerController() {
-        return ledBeakerController;
+    public LedController getLedBeaker1Controller() {
+        return ledBeaker1Controller;
+    }
+
+    public LedController getLedBeaker2Controller() {
+        return ledBeaker2Controller;
+    }
+
+    public LedController getLedBeaker3Controller() {
+        return ledBeaker3Controller;
+    }
+
+    public LedController getLedBeaker4Controller() {
+        return ledBeaker4Controller;
     }
 
     public Spinner<Double> getFreqCurrentSignal() {
