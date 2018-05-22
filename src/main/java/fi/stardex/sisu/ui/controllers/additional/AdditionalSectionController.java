@@ -2,6 +2,7 @@ package fi.stardex.sisu.ui.controllers.additional;
 
 import fi.stardex.sisu.ui.controllers.additional.tabs.ConnectionController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.DelayController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
 import javafx.fxml.FXML;
 import javafx.scene.layout.AnchorPane;
@@ -37,6 +38,9 @@ public class AdditionalSectionController {
     @FXML
     private DelayController delayController;
 
+    @FXML
+    private SettingsController settingsController;
+
     public ConnectionController getConnectionController() {
         return connectionController;
     }
@@ -46,4 +50,8 @@ public class AdditionalSectionController {
     }
 
     public DelayController getDelayController() { return delayController; }
+
+    public SettingsController getSettingsController() {
+        return settingsController;
+    }
 }

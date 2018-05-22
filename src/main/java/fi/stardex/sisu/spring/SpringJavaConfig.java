@@ -10,12 +10,14 @@ import fi.stardex.sisu.devices.Device;
 import fi.stardex.sisu.devices.Devices;
 import fi.stardex.sisu.injectors.InjectorSwitchManager;
 import fi.stardex.sisu.listeners.FrequencySpinnerListener;
+import fi.stardex.sisu.listeners.InjectorConfigComboBoxListener;
 import fi.stardex.sisu.listeners.LedBeakerListener;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.modbusmaps.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.controllers.additional.LedController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.ConnectionController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
 import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
@@ -193,6 +195,13 @@ public class SpringJavaConfig {
         LedBeakerListener ledBeaker4Listener = new LedBeakerListener(led4Controller, 3);
         ledBeaker4Listener.setManager(injectorSwitchManager);
         return ledBeaker4Listener;
+    }
+
+    @Bean
+    @Autowired
+    public InjectorConfigComboBoxListener injectorConfigComboBoxListener(InjectorSectionController injectorSectionController,
+                                                                         SettingsController settingsController) {
+        return new InjectorConfigComboBoxListener(injectorSectionController, settingsController);
     }
 
     @Bean
