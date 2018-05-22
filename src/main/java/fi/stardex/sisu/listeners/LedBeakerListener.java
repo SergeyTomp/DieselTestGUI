@@ -27,7 +27,7 @@ public class LedBeakerListener implements ChangeListener<Boolean> {
 
     @Override
     public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-
+        injectorSwitchManager.sendRefreshedLeds();
     }
 
     public void setManager(InjectorSwitchManager injectorSwitchManager) {

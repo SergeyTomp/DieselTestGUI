@@ -139,6 +139,22 @@ public class InjectorSectionController {
         this.updateOSC = updateOSC;
     }
 
+    public ToggleGroup getPiezoCoilToggleGroup() {
+        return piezoCoilToggleGroup;
+    }
+
+    public RadioButton getPiezoRadioButton() {
+        return piezoRadioButton;
+    }
+
+    public RadioButton getCoilRadioButton() {
+        return coilRadioButton;
+    }
+
+    public RadioButton getPiezoDelphiRadioButton() {
+        return piezoDelphiRadioButton;
+    }
+
     @PostConstruct
     private void init() {
 

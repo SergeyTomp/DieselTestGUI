@@ -44,8 +44,21 @@ public enum ModbusMapUltima implements ModbusMap {
         slotNumbersList.add(FInjectorNumber4);
     }
 
+    public static final List<ModbusMapUltima> slotPulsesList = new LinkedList<>();
+
+    static {
+        slotPulsesList.add(Ftime1);
+        slotPulsesList.add(Ftime2);
+        slotPulsesList.add(Ftime3);
+        slotPulsesList.add(Ftime4);
+    }
+
     public static List<ModbusMapUltima> getSlotNumbersList() {
         return slotNumbersList;
+    }
+
+    public static List<ModbusMapUltima> getSlotPulsesList() {
+        return slotPulsesList;
     }
 
     ModbusMapUltima(RegisterType type, int ref, int count, boolean autoUpdate) {

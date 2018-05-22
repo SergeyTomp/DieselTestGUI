@@ -11,6 +11,7 @@ import fi.stardex.sisu.devices.Devices;
 import fi.stardex.sisu.injectors.InjectorSwitchManager;
 import fi.stardex.sisu.listeners.FrequencySpinnerListener;
 import fi.stardex.sisu.listeners.InjectorConfigComboBoxListener;
+import fi.stardex.sisu.listeners.InjectorTypeListener;
 import fi.stardex.sisu.listeners.LedBeakerListener;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.modbusmaps.ModbusMapUltima;
@@ -161,8 +162,16 @@ public class SpringJavaConfig {
 
     @Bean
     @Autowired
-    public FrequencySpinnerListener frequencySpinnerListener(InjectorSectionController injectorSectionController) {
-        return new FrequencySpinnerListener(injectorSectionController);
+    public FrequencySpinnerListener frequencySpinnerListener(InjectorSectionController injectorSectionController,
+                                                             InjectorSwitchManager injectorSwitchManager) {
+        return new FrequencySpinnerListener(injectorSectionController, injectorSwitchManager);
+    }
+
+    @Bean
+    @Autowired
+    public InjectorTypeListener injectorTypeListener(InjectorSectionController injectorSectionController,
+                                                     InjectorSwitchManager injectorSwitchManager) {
+        return new InjectorTypeListener(injectorSectionController, injectorSwitchManager);
     }
 
     @Bean
@@ -214,8 +223,9 @@ public class SpringJavaConfig {
     @Autowired
     public InjectorSwitchManager injectorSwitchManager(ModbusRegisterProcessor ultimaModbusWriter,
                                                        LedControllerWrapper ledControllerWrapper,
-                                                       InjectorSectionController injectorSectionController) {
-        return new InjectorSwitchManager(ultimaModbusWriter, ledControllerWrapper, injectorSectionController);
+                                                       InjectorSectionController injectorSectionController,
+                                                       SettingsController settingsController) {
+        return new InjectorSwitchManager(ultimaModbusWriter, ledControllerWrapper, injectorSectionController, settingsController);
     }
 
 }

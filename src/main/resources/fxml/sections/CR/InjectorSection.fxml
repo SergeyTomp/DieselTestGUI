@@ -59,9 +59,10 @@
                     </toggleGroup>
                 </RadioButton>
                 <RadioButton fx:id="coilRadioButton" minHeight="-Infinity" minWidth="50.0" mnemonicParsing="false"
-                             prefWidth="50.0" text="%injSection.radio.coil" toggleGroup="$piezoCoilToggleGroup"
-                             GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS"
-                             GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                             prefWidth="50.0" selected="true" text="%injSection.radio.coil"
+                             toggleGroup="$piezoCoilToggleGroup" GridPane.columnIndex="0" GridPane.halignment="CENTER"
+                             GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER"
+                             GridPane.vgrow="ALWAYS">
                     <GridPane.margin>
                         <Insets bottom="2.0" left="5.0" right="2.0" top="2.0"/>
                     </GridPane.margin>
@@ -100,24 +101,23 @@
                 </ToggleButton>
                 <Label fx:id="statusBoostULabelText" alignment="TOP_RIGHT" text="%injSection.label.adjustingBoostU"
                        visible="false" GridPane.columnSpan="4" GridPane.halignment="RIGHT" GridPane.valignment="TOP"/>
-                <StackPane prefHeight="150.0" prefWidth="67.0" GridPane.halignment="CENTER"
-                           GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER"
-                           GridPane.vgrow="ALWAYS">
+                <StackPane prefHeight="150.0" prefWidth="67.0" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS"
+                           GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                     <fx:include fx:id="ledBeaker1" source="../Additional/LedBeaker.fxml"/>
                 </StackPane>
-                <StackPane prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="1"
-                           GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1"
-                           GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                <StackPane prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.halignment="CENTER"
+                           GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER"
+                           GridPane.vgrow="ALWAYS">
                     <fx:include fx:id="ledBeaker2" source="../Additional/LedBeaker.fxml"/>
                 </StackPane>
-                <StackPane prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="2"
-                           GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1"
-                           GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                <StackPane prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.halignment="CENTER"
+                           GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER"
+                           GridPane.vgrow="ALWAYS">
                     <fx:include fx:id="ledBeaker3" source="../Additional/LedBeaker.fxml"/>
                 </StackPane>
-                <StackPane prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="3"
-                           GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1"
-                           GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                <StackPane prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="3" GridPane.halignment="CENTER"
+                           GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER"
+                           GridPane.vgrow="ALWAYS">
                     <fx:include fx:id="ledBeaker4" source="../Additional/LedBeaker.fxml"/>
                 </StackPane>
                 <ProgressBar fx:id="switcherProgressBar" prefHeight="22.0" prefWidth="423.0" progress="0.0"
@@ -135,6 +135,7 @@
                                    prefWidth="60.0"/>
                 <ColumnConstraints fillWidth="false" halignment="RIGHT" hgrow="ALWAYS" maxWidth="1.7976931348623157E308"
                                    minWidth="50.0" prefWidth="50.0"/>
+                <ColumnConstraints/>
             </columnConstraints>
             <rowConstraints>
                 <RowConstraints maxHeight="9.0" minHeight="0.0" prefHeight="0.0"/>

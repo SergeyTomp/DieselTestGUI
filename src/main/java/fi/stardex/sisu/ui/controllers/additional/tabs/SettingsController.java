@@ -19,6 +19,6 @@ public class SettingsController {
     @PostConstruct
     private void init() {
         comboInjectorConfig.setItems(FXCollections.observableArrayList(InjectorChannel.SINGLE_CHANNEL,InjectorChannel.MULTI_CHANNEL));
+        comboInjectorConfig.getSelectionModel().selectFirst();
     }
-
 }

@@ -1,5 +1,6 @@
 package fi.stardex.sisu.listeners;
 
+import fi.stardex.sisu.injectors.InjectorSwitchManager;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -18,10 +19,13 @@ public class FrequencySpinnerListener implements ChangeListener<Double> {
 
     private StringConverter<Double> converter;
 
-    public FrequencySpinnerListener(InjectorSectionController injectorSectionController) {
+    private InjectorSwitchManager injectorSwitchManager;
+
+    public FrequencySpinnerListener(InjectorSectionController injectorSectionController, InjectorSwitchManager injectorSwitchManager) {
         freqCurrentSignal = injectorSectionController.getFreqCurrentSignal();
         spinnerValue.bind(freqCurrentSignal.valueProperty());
         converter = freqCurrentSignal.getValueFactory().getConverter();
+        this.injectorSwitchManager = injectorSwitchManager;
     }
 
     @PostConstruct
@@ -59,6 +63,7 @@ public class FrequencySpinnerListener implements ChangeListener<Double> {
 
     @Override
     public void changed(ObservableValue<? extends Double> observable, Double oldValue, Double newValue) {
-        //TODO:
+        System.err.println("Frequency:" + newValue);
+        injectorSwitchManager.sendRefreshedLeds();
     }
 }
