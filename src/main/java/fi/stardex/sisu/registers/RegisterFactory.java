@@ -29,7 +29,6 @@ public abstract class RegisterFactory {
         return request;
     }
 
-    //FIXME: В SimpleRegister может писаться и double
     private static ModbusRequest createWriteRegisters(ModbusMap reg, Object value) {
         WriteMultipleRegistersRequest request;
         if (reg.getCount() > 1) {
@@ -40,7 +39,13 @@ public abstract class RegisterFactory {
             Register secondReg = new SimpleRegister(secondWord);
             request = new WriteMultipleRegistersRequest(reg.getRef(), new Register[]{firstReg, secondReg});
         } else {
-            Register register = new SimpleRegister((int) value);
+            Register register;
+            if (value instanceof Double) {
+                Double doubleValue = Double.parseDouble(value.toString());
+                register = new SimpleRegister((int) Math.round(doubleValue));
+            } else {
+                register = new SimpleRegister((int) value);
+            }
             request = new WriteMultipleRegistersRequest(reg.getRef(), new Register[]{register});
         }
         return request;

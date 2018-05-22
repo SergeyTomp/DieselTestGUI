@@ -1,7 +1,10 @@
 package fi.stardex.sisu.listeners;
 
+import fi.stardex.sisu.injectors.InjectorChannel;
 import fi.stardex.sisu.injectors.InjectorSwitchManager;
 import fi.stardex.sisu.ui.controllers.additional.LedController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
+import fi.stardex.sisu.wrappers.LedControllerWrapper;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 
@@ -15,9 +18,12 @@ public class LedBeakerListener implements ChangeListener<Boolean> {
 
     private InjectorSwitchManager injectorSwitchManager;
 
-    public LedBeakerListener(LedController ledController, int beakerIndex) {
+    private SettingsController settingsController;
+
+    public LedBeakerListener(LedController ledController, int beakerIndex, SettingsController settingsController) {
         this.ledController = ledController;
         this.beakerIndex = beakerIndex;
+        this.settingsController = settingsController;
     }
 
     @PostConstruct
@@ -27,7 +33,9 @@ public class LedBeakerListener implements ChangeListener<Boolean> {
 
     @Override
     public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-        injectorSwitchManager.sendRefreshedLeds();
+        if ((settingsController.getComboInjectorConfig().getSelectionModel().getSelectedItem() == InjectorChannel.SINGLE_CHANNEL && newValue) ||
+                (settingsController.getComboInjectorConfig().getSelectionModel().getSelectedItem() == InjectorChannel.MULTI_CHANNEL))
+            injectorSwitchManager.sendRefreshedLeds();
     }
 
     public void setManager(InjectorSwitchManager injectorSwitchManager) {

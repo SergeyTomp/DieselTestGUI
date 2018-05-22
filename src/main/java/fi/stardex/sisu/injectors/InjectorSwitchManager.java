@@ -46,7 +46,7 @@ public class InjectorSwitchManager {
         piezoDelphiRadioButton = injectorSectionController.getPiezoDelphiRadioButton();
     }
 
-    public void sendRefreshedLeds() {
+    public synchronized void sendRefreshedLeds() {
         switchOffAll();
 
         Toggle newValue = injectorSectionController.getPiezoCoilToggleGroup().getSelectedToggle();
@@ -60,27 +60,33 @@ public class InjectorSwitchManager {
         else
             throw new AssertionError("Coil or piezo buttons has not been set.");
 
-        Iterator<LedController> activeControllersIterator = ledControllerWrapper.activeControllers().iterator();
-        int activeLeds = ledControllerWrapper.activeControllers().size();
+        List<LedController> activeControllers = ledControllerWrapper.activeControllers();
+        Iterator<LedController> activeControllersIterator = activeControllers.iterator();
+        int activeLeds = activeControllers.size();
+        System.err.println("activeLeds: " + activeLeds);
         double frequency = injectorSectionController.getFreqCurrentSignal().getValue();
         ultimaModbusWriter.add(ModbusMapUltima.GImpulsesPeriod, 1000 / frequency);
         if ((int) frequency == 0 || activeLeds == 0) {
             return;
         }
-        int step = (int) (1000 / (frequency * activeLeds));
+        int step = (int) Math.round(1000 / (frequency * activeLeds));
+        System.err.println("step: " + step);
         int impulseTime = 0;
-        int slotPulseArrayIndex = 0;
         while (activeControllersIterator.hasNext()) {
+            System.err.println("Looping");
             int selectedChannel = activeControllersIterator.next().getNumber();
+            System.err.println("selectedChannel: " + selectedChannel);
             int injectorChannel = settingsController.getComboInjectorConfig().getSelectionModel().getSelectedItem() ==
                     InjectorChannel.SINGLE_CHANNEL ? 1 : selectedChannel;
-            slotNumbersList.forEach((s) -> ultimaModbusWriter.add(s, injectorChannel));
-            ultimaModbusWriter.add(slotPulsesList.get(slotPulseArrayIndex++), impulseTime);
+            ultimaModbusWriter.add(slotNumbersList.get(selectedChannel - 1), injectorChannel);
+            ultimaModbusWriter.add(slotPulsesList.get(selectedChannel - 1), impulseTime);
+            System.err.println("impulseTime: " + impulseTime);
             impulseTime += step;
         }
     }
 
     private void switchOffAll() {
         slotNumbersList.forEach((s) -> ultimaModbusWriter.add(s, OFF_COMMAND_NUMBER));
+        slotPulsesList.forEach((s) -> ultimaModbusWriter.add(s, 0));
     }
 }

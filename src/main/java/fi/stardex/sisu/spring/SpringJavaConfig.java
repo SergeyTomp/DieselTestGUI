@@ -176,32 +176,40 @@ public class SpringJavaConfig {
 
     @Bean
     @Autowired
-    public LedBeakerListener ledBeaker1Listener(LedController led1Controller, InjectorSwitchManager injectorSwitchManager) {
-        LedBeakerListener ledBeaker1Listener = new LedBeakerListener(led1Controller, 0);
+    public LedBeakerListener ledBeaker1Listener(LedController led1Controller,
+                                                InjectorSwitchManager injectorSwitchManager,
+                                                SettingsController settingsController) {
+        LedBeakerListener ledBeaker1Listener = new LedBeakerListener(led1Controller, 0, settingsController);
         ledBeaker1Listener.setManager(injectorSwitchManager);
         return ledBeaker1Listener;
     }
 
     @Bean
     @Autowired
-    public LedBeakerListener ledBeaker2Listener(LedController led2Controller, InjectorSwitchManager injectorSwitchManager) {
-        LedBeakerListener ledBeaker2Listener = new LedBeakerListener(led2Controller, 1);
+    public LedBeakerListener ledBeaker2Listener(LedController led2Controller,
+                                                InjectorSwitchManager injectorSwitchManager,
+                                                SettingsController settingsController) {
+        LedBeakerListener ledBeaker2Listener = new LedBeakerListener(led2Controller, 1, settingsController);
         ledBeaker2Listener.setManager(injectorSwitchManager);
         return ledBeaker2Listener;
     }
 
     @Bean
     @Autowired
-    public LedBeakerListener ledBeaker3Listener(LedController led3Controller, InjectorSwitchManager injectorSwitchManager) {
-        LedBeakerListener ledBeaker3Listener = new LedBeakerListener(led3Controller, 2);
+    public LedBeakerListener ledBeaker3Listener(LedController led3Controller,
+                                                InjectorSwitchManager injectorSwitchManager,
+                                                SettingsController settingsController) {
+        LedBeakerListener ledBeaker3Listener = new LedBeakerListener(led3Controller, 2, settingsController);
         ledBeaker3Listener.setManager(injectorSwitchManager);
         return ledBeaker3Listener;
     }
 
     @Bean
     @Autowired
-    public LedBeakerListener ledBeaker4Listener(LedController led4Controller, InjectorSwitchManager injectorSwitchManager) {
-        LedBeakerListener ledBeaker4Listener = new LedBeakerListener(led4Controller, 3);
+    public LedBeakerListener ledBeaker4Listener(LedController led4Controller,
+                                                InjectorSwitchManager injectorSwitchManager,
+                                                SettingsController settingsController) {
+        LedBeakerListener ledBeaker4Listener = new LedBeakerListener(led4Controller, 3, settingsController);
         ledBeaker4Listener.setManager(injectorSwitchManager);
         return ledBeaker4Listener;
     }

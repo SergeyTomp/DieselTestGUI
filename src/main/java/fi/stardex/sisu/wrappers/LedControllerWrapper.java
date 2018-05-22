@@ -22,16 +22,18 @@ public class LedControllerWrapper {
     }
 
     public List<LedController> activeControllers() {
+        //FIXME: в режиме мультиченнел этот метод вызывается дважды при выборе от двух до 4 ледов
         List<LedController> result = new ArrayList<>();
         for (LedController s: ledControllers) {
             if(s.isSelected()) result.add(s);
         }
         result.sort(Comparator.comparingInt(LedController::getNumber));
+        System.err.println("activeControllers: " + result);
         return result;
     }
 
 
-    public boolean isSingleSelected() {
-        return ledControllers.size() == 1;
+    public boolean isAtLeastOneActive() {
+        return ledControllers.size() != 0;
     }
 }

@@ -159,9 +159,9 @@ public class InjectorSectionController {
     private void init() {
 
         //TODO: delete after test
-        ultimaModbusWriter.add(ModbusMapUltima.Ftime1, 0);
-        ultimaModbusWriter.add(ModbusMapUltima.GImpulsesPeriod, 60);
-        ultimaModbusWriter.add(ModbusMapUltima.FInjectorNumber1, 1);
+//        ultimaModbusWriter.add(ModbusMapUltima.Ftime1, 0);
+//        ultimaModbusWriter.add(ModbusMapUltima.GImpulsesPeriod, 60);
+//        ultimaModbusWriter.add(ModbusMapUltima.FInjectorNumber1, 1);
 
         powerSwitch.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
