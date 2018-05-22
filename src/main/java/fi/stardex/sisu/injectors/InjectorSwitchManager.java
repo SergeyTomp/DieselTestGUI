@@ -65,10 +65,12 @@ public class InjectorSwitchManager {
         int activeLeds = activeControllers.size();
         System.err.println("activeLeds: " + activeLeds);
         double frequency = injectorSectionController.getFreqCurrentSignal().getValue();
+        System.err.println(frequency);
         ultimaModbusWriter.add(ModbusMapUltima.GImpulsesPeriod, 1000 / frequency);
         if ((int) frequency == 0 || activeLeds == 0) {
             return;
         }
+        //FIXME: не работает при частотах менее 1 так как округляет значение!
         int step = (int) Math.round(1000 / (frequency * activeLeds));
         System.err.println("step: " + step);
         int impulseTime = 0;
