@@ -9,10 +9,7 @@ import fi.stardex.sisu.connect.ModbusConnect;
 import fi.stardex.sisu.devices.Device;
 import fi.stardex.sisu.devices.Devices;
 import fi.stardex.sisu.injectors.InjectorSwitchManager;
-import fi.stardex.sisu.listeners.FrequencySpinnerListener;
-import fi.stardex.sisu.listeners.InjectorConfigComboBoxListener;
-import fi.stardex.sisu.listeners.InjectorTypeListener;
-import fi.stardex.sisu.listeners.LedBeakerListener;
+import fi.stardex.sisu.listeners.*;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.modbusmaps.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
@@ -216,9 +213,9 @@ public class SpringJavaConfig {
 
     @Bean
     @Autowired
-    public InjectorConfigComboBoxListener injectorConfigComboBoxListener(InjectorSectionController injectorSectionController,
+    public InjectorConfigComboBoxListener injectorConfigComboBoxListener(LedControllerWrapper ledControllerWrapper,
                                                                          SettingsController settingsController) {
-        return new InjectorConfigComboBoxListener(injectorSectionController, settingsController);
+        return new InjectorConfigComboBoxListener(ledControllerWrapper, settingsController);
     }
 
     @Bean

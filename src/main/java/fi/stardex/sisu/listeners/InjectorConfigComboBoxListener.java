@@ -1,20 +1,23 @@
 package fi.stardex.sisu.listeners;
 
 import fi.stardex.sisu.injectors.InjectorChannel;
+import fi.stardex.sisu.ui.controllers.additional.LedController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
-import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
+import fi.stardex.sisu.wrappers.LedControllerWrapper;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.ToggleGroup;
 
-public class InjectorConfigComboBoxListener implements ChangeListener<InjectorChannel> {
+import java.util.List;
 
-    private InjectorSectionController injectorSectionController;
+public class InjectorConfigComboBoxListener implements ChangeListener<InjectorChannel> {
 
     private ToggleGroup toggleGroup = new ToggleGroup();
 
-    public InjectorConfigComboBoxListener(InjectorSectionController injectorSectionController, SettingsController settingsController) {
-        this.injectorSectionController = injectorSectionController;
+    private List<LedController> ledControllers;
+
+    public InjectorConfigComboBoxListener(LedControllerWrapper ledControllerWrapper, SettingsController settingsController) {
+        ledControllers = ledControllerWrapper.getLedControllers();
         settingsController.getComboInjectorConfig().getSelectionModel().selectedItemProperty().addListener(this);
         setToggleGroupToLeds(toggleGroup);
     }
@@ -25,9 +28,6 @@ public class InjectorConfigComboBoxListener implements ChangeListener<InjectorCh
     }
 
     private void setToggleGroupToLeds(ToggleGroup toggleGroup) {
-        injectorSectionController.getLedBeaker4Controller().getLedBeaker().setToggleGroup(toggleGroup);
-        injectorSectionController.getLedBeaker3Controller().getLedBeaker().setToggleGroup(toggleGroup);
-        injectorSectionController.getLedBeaker2Controller().getLedBeaker().setToggleGroup(toggleGroup);
-        injectorSectionController.getLedBeaker1Controller().getLedBeaker().setToggleGroup(toggleGroup);
+        ledControllers.forEach(s -> s.getLedBeaker().setToggleGroup(toggleGroup));
     }
 }

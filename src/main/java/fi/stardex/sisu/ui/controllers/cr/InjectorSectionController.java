@@ -31,7 +31,7 @@ public class InjectorSectionController {
     private ModbusRegisterProcessor ultimaModbusWriter;
 
     @FXML
-    private Spinner widthCurrentSignal;
+    private Spinner<Integer> widthCurrentSignal;
 
     @FXML
     private Spinner<Double> freqCurrentSignal;
@@ -127,6 +127,10 @@ public class InjectorSectionController {
         return freqCurrentSignal;
     }
 
+    public Spinner<Integer> getWidthCurrentSignal() {
+        return widthCurrentSignal;
+    }
+
     public ToggleButton getPowerSwitch() {
         return powerSwitch;
     }
@@ -179,8 +183,13 @@ public class InjectorSectionController {
 
         setupFrequencySpinner();
 
+        setupWidthSpinner();
 
 
+    }
+
+    private void setupWidthSpinner() {
+        widthCurrentSignal.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 3000, 300, 10));
     }
 
     private void setupFrequencySpinner() {

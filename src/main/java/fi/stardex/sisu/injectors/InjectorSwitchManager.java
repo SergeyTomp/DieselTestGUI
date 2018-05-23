@@ -46,9 +46,37 @@ public class InjectorSwitchManager {
         piezoDelphiRadioButton = injectorSectionController.getPiezoDelphiRadioButton();
     }
 
-    public synchronized void sendRefreshedLeds() {
+    public void sendRefreshedLeds() {
         switchOffAll();
 
+        writeInjectorTypeRegister();
+
+        List<LedController> activeControllers = ledControllerWrapper.activeControllers();
+        Iterator<LedController> activeControllersIterator = activeControllers.iterator();
+        int activeLeds = activeControllers.size();
+        double frequency = injectorSectionController.getFreqCurrentSignal().getValue();
+        ultimaModbusWriter.add(ModbusMapUltima.GImpulsesPeriod, 1000 / frequency);
+        if (activeLeds == 0) {
+            return;
+        }
+        int step = (int) Math.round(1000 / (frequency * activeLeds));
+        int impulseTime = 0;
+        while (activeControllersIterator.hasNext()) {
+            int selectedChannel = activeControllersIterator.next().getNumber();
+            int injectorChannel = settingsController.getComboInjectorConfig().getSelectionModel().getSelectedItem() ==
+                    InjectorChannel.SINGLE_CHANNEL ? 1 : selectedChannel;
+            ultimaModbusWriter.add(slotNumbersList.get(selectedChannel - 1), injectorChannel);
+            ultimaModbusWriter.add(slotPulsesList.get(selectedChannel - 1), impulseTime);
+            impulseTime += step;
+        }
+    }
+
+    private void switchOffAll() {
+        slotNumbersList.forEach((s) -> ultimaModbusWriter.add(s, OFF_COMMAND_NUMBER));
+        slotPulsesList.forEach((s) -> ultimaModbusWriter.add(s, 0));
+    }
+
+    private void writeInjectorTypeRegister() {
         Toggle newValue = injectorSectionController.getPiezoCoilToggleGroup().getSelectedToggle();
 
         if (Objects.equals(coilRadioButton, newValue))
@@ -59,36 +87,5 @@ public class InjectorSwitchManager {
             ultimaModbusWriter.add(ModbusMapUltima.Injector_type, 2);
         else
             throw new AssertionError("Coil or piezo buttons has not been set.");
-
-        List<LedController> activeControllers = ledControllerWrapper.activeControllers();
-        Iterator<LedController> activeControllersIterator = activeControllers.iterator();
-        int activeLeds = activeControllers.size();
-        System.err.println("activeLeds: " + activeLeds);
-        double frequency = injectorSectionController.getFreqCurrentSignal().getValue();
-        System.err.println(frequency);
-        ultimaModbusWriter.add(ModbusMapUltima.GImpulsesPeriod, 1000 / frequency);
-        if ((int) frequency == 0 || activeLeds == 0) {
-            return;
-        }
-        //FIXME: не работает при частотах менее 1 так как округляет значение!
-        int step = (int) Math.round(1000 / (frequency * activeLeds));
-        System.err.println("step: " + step);
-        int impulseTime = 0;
-        while (activeControllersIterator.hasNext()) {
-            System.err.println("Looping");
-            int selectedChannel = activeControllersIterator.next().getNumber();
-            System.err.println("selectedChannel: " + selectedChannel);
-            int injectorChannel = settingsController.getComboInjectorConfig().getSelectionModel().getSelectedItem() ==
-                    InjectorChannel.SINGLE_CHANNEL ? 1 : selectedChannel;
-            ultimaModbusWriter.add(slotNumbersList.get(selectedChannel - 1), injectorChannel);
-            ultimaModbusWriter.add(slotPulsesList.get(selectedChannel - 1), impulseTime);
-            System.err.println("impulseTime: " + impulseTime);
-            impulseTime += step;
-        }
-    }
-
-    private void switchOffAll() {
-        slotNumbersList.forEach((s) -> ultimaModbusWriter.add(s, OFF_COMMAND_NUMBER));
-        slotPulsesList.forEach((s) -> ultimaModbusWriter.add(s, 0));
     }
 }
