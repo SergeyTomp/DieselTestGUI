@@ -6,14 +6,24 @@ import fi.stardex.sisu.registers.modbusmaps.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.controllers.additional.LedController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
+import javafx.beans.property.*;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+import javafx.util.StringConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
+import java.util.LinkedList;
+import java.util.List;
 
 public class InjectorSectionController {
 
@@ -107,6 +117,8 @@ public class InjectorSectionController {
 
     private boolean updateOSC;
 
+    private ObservableList<LedController> ledControllers;
+
     public LedController getLedBeaker1Controller() {
         return ledBeaker1Controller;
     }
@@ -171,8 +183,7 @@ public class InjectorSectionController {
             if (newValue) {
                 ultimaModbusWriter.add(ModbusMapUltima.Injectors_Running_En, true);
                 timerTasksManager.start(chartTask);
-            }
-            else {
+            } else {
                 ultimaModbusWriter.add(ModbusMapUltima.Injectors_Running_En, false);
                 ultimaModbusWriter.add(ModbusMapUltima.FInjectorNumber1, 0xff);
                 ultimaModbusWriter.add(ModbusMapUltima.Ftime1, 0);
@@ -181,10 +192,19 @@ public class InjectorSectionController {
             }
         });
 
+        ledControllers = FXCollections.observableArrayList(new LinkedList<>());
+
+        ledControllers.add(ledBeaker1Controller);
+        ledControllers.add(ledBeaker2Controller);
+        ledControllers.add(ledBeaker3Controller);
+        ledControllers.add(ledBeaker4Controller);
+
+        LedParametersChanger ledParametersChanger = new LedParametersChanger(freqCurrentSignal.valueProperty(),
+                piezoCoilToggleGroup.selectedToggleProperty(), new SimpleListProperty<>(ledControllers));
+
         setupFrequencySpinner();
 
         setupWidthSpinner();
-
 
     }
 
@@ -193,6 +213,66 @@ public class InjectorSectionController {
     }
 
     private void setupFrequencySpinner() {
+
         freqCurrentSignal.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0.5, 50, 16.67, 0.01));
+
+        StringConverter<Double> converter = freqCurrentSignal.getValueFactory().getConverter();
+
+        freqCurrentSignal.getValueFactory().setConverter(new StringConverter<Double>() {
+
+            @Override
+            public String toString(Double object) {
+                return converter.toString(object);
+            }
+
+            @Override
+            public Double fromString(String string) {
+                try {
+                    return converter.fromString(string);
+                } catch (RuntimeException ex) {
+                    freqCurrentSignal.getValueFactory().setValue(0.49);
+                    return freqCurrentSignal.getValue();
+                }
+            }
+        });
+
+        freqCurrentSignal.addEventHandler(MouseEvent.MOUSE_EXITED, event -> freqCurrentSignal.getParent().requestFocus());
+
+        freqCurrentSignal.focusedProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue)
+                freqCurrentSignal.increment(0);
+        });
+
+    }
+
+    private class LedParametersChanger implements ChangeListener<Object> {
+
+        private DoubleProperty frequencyProperty = new SimpleDoubleProperty();
+
+        private ObjectProperty<Toggle> injectorTypeProperty = new SimpleObjectProperty<>();
+
+        private ListProperty<LedController> ledControllersProperty = new SimpleListProperty<>();
+
+        LedParametersChanger(ReadOnlyObjectProperty<Double> doubleObjectProperty, ReadOnlyObjectProperty<Toggle> toggleReadOnlyObjectProperty, ListProperty<LedController> ledProperty) {
+            frequencyProperty.bind(doubleObjectProperty);
+            injectorTypeProperty.bind(toggleReadOnlyObjectProperty);
+            ledControllersProperty.bind(ledProperty);
+            frequencyProperty.addListener(this);
+            injectorTypeProperty.addListener(this);
+            ledControllersProperty.get().forEach(s -> s.getLedBeaker().selectedProperty().addListener(this));
+        }
+
+        @Override
+        public void changed(ObservableValue<?> observable, Object oldValue, Object newValue) {
+            if (newValue instanceof Double) {
+                if ((Double) newValue <= 50 && (Double) newValue >= 0.5)
+                    //FIXME: при инициализации сразу отправляется значение frequency
+                    System.err.println(newValue);
+            } else if (newValue instanceof Toggle)
+                System.err.println(newValue);
+            else if (newValue instanceof Boolean)
+                System.err.println(newValue);
+            else throw new RuntimeException("Wrong listener type!");
+        }
     }
 }

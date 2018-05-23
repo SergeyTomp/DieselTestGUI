@@ -157,12 +157,12 @@ public class SpringJavaConfig {
         return new ChartTask(voltageController, ultimaModbusWriter, injectorSectionController);
     }
 
-    @Bean
-    @Autowired
-    public FrequencySpinnerListener frequencySpinnerListener(InjectorSectionController injectorSectionController,
-                                                             InjectorSwitchManager injectorSwitchManager) {
-        return new FrequencySpinnerListener(injectorSectionController, injectorSwitchManager);
-    }
+//    @Bean
+//    @Autowired
+//    public FrequencySpinnerListener frequencySpinnerListener(InjectorSectionController injectorSectionController,
+//                                                             InjectorSwitchManager injectorSwitchManager) {
+//        return new FrequencySpinnerListener(injectorSectionController, injectorSwitchManager);
+//    }
 
     @Bean
     @Autowired
