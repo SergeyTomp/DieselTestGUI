@@ -258,17 +258,10 @@ public class InjectorSectionController {
                 try {
                     return converter.fromString(string);
                 } catch (RuntimeException ex) {
-                    freqCurrentSignal.getValueFactory().setValue(0.49);
+                    freqCurrentSignal.getValueFactory().setValue(16.67);
                     return freqCurrentSignal.getValue();
                 }
             }
-        });
-
-        freqCurrentSignal.addEventHandler(MouseEvent.MOUSE_EXITED, event -> freqCurrentSignal.getParent().requestFocus());
-
-        freqCurrentSignal.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue)
-                freqCurrentSignal.increment(0);
         });
 
     }
@@ -306,9 +299,16 @@ public class InjectorSectionController {
             if (newValue instanceof Double) {
                 if ((Double) newValue <= 50 && (Double) newValue >= 0.5)
                     sendLedRegisters();
-            } else if (newValue instanceof Toggle)
-                sendLedRegisters();
-            else if (newValue instanceof Boolean) {
+            } else if (newValue instanceof Toggle) {
+                if (newValue == piezoDelphiRadioButton) {
+                    disableLedsExceptFirst(true);
+                    settingsController.getComboInjectorConfig().getSelectionModel().select(InjectorChannel.SINGLE_CHANNEL);
+                    ledBeaker1Controller.getLedBeaker().setSelected(true);
+                } else {
+                    disableLedsExceptFirst(false);
+                    sendLedRegisters();
+                }
+            } else if (newValue instanceof Boolean) {
                 if ((injectorChannelProperty.get() == InjectorChannel.SINGLE_CHANNEL && (Boolean) newValue)
                         || (injectorChannelProperty.get() == InjectorChannel.MULTI_CHANNEL))
                     sendLedRegisters();
@@ -338,10 +338,13 @@ public class InjectorSectionController {
             while (activeControllersIterator.hasNext()) {
                 System.err.println("looping");
                 int selectedChannel = activeControllersIterator.next().getNumber();
+                System.err.println("selectedChannel: " + selectedChannel);
                 int injectorChannel = injectorChannelProperty.get() == InjectorChannel.SINGLE_CHANNEL ? 1 : selectedChannel;
+                System.err.println("injectorChannel: " + injectorChannel);
                 ultimaModbusWriter.add(slotNumbersList.get(selectedChannel - 1), injectorChannel);
                 ultimaModbusWriter.add(slotPulsesList.get(selectedChannel - 1), impulseTime);
                 impulseTime += step;
+                System.err.println("impulseTime: " + impulseTime);
             }
         }
 
@@ -359,6 +362,12 @@ public class InjectorSectionController {
                 ultimaModbusWriter.add(ModbusMapUltima.Injector_type, 2);
             else
                 throw new AssertionError("Coil or piezo buttons has not been set.");
+        }
+
+        private void disableLedsExceptFirst(boolean disable) {
+            ledControllersProperty.get().get(1).setDisable(disable);
+            ledControllersProperty.get().get(2).setDisable(disable);
+            ledControllersProperty.get().get(3).setDisable(disable);
         }
     }
 }

@@ -48,6 +48,10 @@ public class LedController implements Initializable {
         return ledBeaker.isSelected();
     }
 
+    public void setDisable(boolean disabled) {
+        ledBeaker.setDisable(disabled);
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         System.err.println("init led: " + this);
