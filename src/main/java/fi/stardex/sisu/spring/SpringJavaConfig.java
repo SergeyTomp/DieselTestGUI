@@ -8,12 +8,10 @@ import fi.stardex.sisu.connect.InetAddressWrapper;
 import fi.stardex.sisu.connect.ModbusConnect;
 import fi.stardex.sisu.devices.Device;
 import fi.stardex.sisu.devices.Devices;
-import fi.stardex.sisu.injectors.InjectorSwitchManager;
-import fi.stardex.sisu.listeners.*;
+import fi.stardex.sisu.listeners.InjectorConfigComboBoxListener;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.modbusmaps.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
-import fi.stardex.sisu.ui.controllers.additional.LedController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.ConnectionController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
@@ -164,73 +162,72 @@ public class SpringJavaConfig {
 //        return new FrequencySpinnerListener(injectorSectionController, injectorSwitchManager);
 //    }
 
-    @Bean
-    @Autowired
-    public InjectorTypeListener injectorTypeListener(InjectorSectionController injectorSectionController,
-                                                     InjectorSwitchManager injectorSwitchManager) {
-        return new InjectorTypeListener(injectorSectionController, injectorSwitchManager);
-    }
+//    @Bean
+//    @Autowired
+//    public InjectorTypeListener injectorTypeListener(InjectorSectionController injectorSectionController,
+//                                                     InjectorSwitchManager injectorSwitchManager) {
+//        return new InjectorTypeListener(injectorSectionController, injectorSwitchManager);
+//    }
+
+//    @Bean
+//    @Autowired
+//    public LedBeakerListener ledBeaker1Listener(LedController led1Controller,
+//                                                InjectorSwitchManager injectorSwitchManager,
+//                                                SettingsController settingsController) {
+//        LedBeakerListener ledBeaker1Listener = new LedBeakerListener(led1Controller, 0, settingsController);
+//        ledBeaker1Listener.setManager(injectorSwitchManager);
+//        return ledBeaker1Listener;
+//    }
+//
+//    @Bean
+//    @Autowired
+//    public LedBeakerListener ledBeaker2Listener(LedController led2Controller,
+//                                                InjectorSwitchManager injectorSwitchManager,
+//                                                SettingsController settingsController) {
+//        LedBeakerListener ledBeaker2Listener = new LedBeakerListener(led2Controller, 1, settingsController);
+//        ledBeaker2Listener.setManager(injectorSwitchManager);
+//        return ledBeaker2Listener;
+//    }
+//
+//    @Bean
+//    @Autowired
+//    public LedBeakerListener ledBeaker3Listener(LedController led3Controller,
+//                                                InjectorSwitchManager injectorSwitchManager,
+//                                                SettingsController settingsController) {
+//        LedBeakerListener ledBeaker3Listener = new LedBeakerListener(led3Controller, 2, settingsController);
+//        ledBeaker3Listener.setManager(injectorSwitchManager);
+//        return ledBeaker3Listener;
+//    }
+//
+//    @Bean
+//    @Autowired
+//    public LedBeakerListener ledBeaker4Listener(LedController led4Controller,
+//                                                InjectorSwitchManager injectorSwitchManager,
+//                                                SettingsController settingsController) {
+//        LedBeakerListener ledBeaker4Listener = new LedBeakerListener(led4Controller, 3, settingsController);
+//        ledBeaker4Listener.setManager(injectorSwitchManager);
+//        return ledBeaker4Listener;
+//    }
 
     @Bean
     @Autowired
-    public LedBeakerListener ledBeaker1Listener(LedController led1Controller,
-                                                InjectorSwitchManager injectorSwitchManager,
-                                                SettingsController settingsController) {
-        LedBeakerListener ledBeaker1Listener = new LedBeakerListener(led1Controller, 0, settingsController);
-        ledBeaker1Listener.setManager(injectorSwitchManager);
-        return ledBeaker1Listener;
-    }
-
-    @Bean
-    @Autowired
-    public LedBeakerListener ledBeaker2Listener(LedController led2Controller,
-                                                InjectorSwitchManager injectorSwitchManager,
-                                                SettingsController settingsController) {
-        LedBeakerListener ledBeaker2Listener = new LedBeakerListener(led2Controller, 1, settingsController);
-        ledBeaker2Listener.setManager(injectorSwitchManager);
-        return ledBeaker2Listener;
-    }
-
-    @Bean
-    @Autowired
-    public LedBeakerListener ledBeaker3Listener(LedController led3Controller,
-                                                InjectorSwitchManager injectorSwitchManager,
-                                                SettingsController settingsController) {
-        LedBeakerListener ledBeaker3Listener = new LedBeakerListener(led3Controller, 2, settingsController);
-        ledBeaker3Listener.setManager(injectorSwitchManager);
-        return ledBeaker3Listener;
-    }
-
-    @Bean
-    @Autowired
-    public LedBeakerListener ledBeaker4Listener(LedController led4Controller,
-                                                InjectorSwitchManager injectorSwitchManager,
-                                                SettingsController settingsController) {
-        LedBeakerListener ledBeaker4Listener = new LedBeakerListener(led4Controller, 3, settingsController);
-        ledBeaker4Listener.setManager(injectorSwitchManager);
-        return ledBeaker4Listener;
-    }
-
-    @Bean
-    @Autowired
-    public InjectorConfigComboBoxListener injectorConfigComboBoxListener(LedControllerWrapper ledControllerWrapper,
+    public InjectorConfigComboBoxListener injectorConfigComboBoxListener(InjectorSectionController injectorSectionController,
                                                                          SettingsController settingsController) {
-        return new InjectorConfigComboBoxListener(ledControllerWrapper, settingsController);
+        return new InjectorConfigComboBoxListener(injectorSectionController, settingsController);
     }
 
-    @Bean
-    @Autowired
-    public LedControllerWrapper ledControllerWrapper(List<LedController> ledControllers) {
-        return new LedControllerWrapper(ledControllers);
-    }
+//    @Bean
+//    @Autowired
+//    public LedControllerWrapper ledControllerWrapper(InjectorSectionController injectorSectionController) {
+//        return new LedControllerWrapper(injectorSectionController.getLedControllers());
+//    }
 
-    @Bean
-    @Autowired
-    public InjectorSwitchManager injectorSwitchManager(ModbusRegisterProcessor ultimaModbusWriter,
-                                                       LedControllerWrapper ledControllerWrapper,
-                                                       InjectorSectionController injectorSectionController,
-                                                       SettingsController settingsController) {
-        return new InjectorSwitchManager(ultimaModbusWriter, ledControllerWrapper, injectorSectionController, settingsController);
-    }
-
+//    @Bean
+//    @Autowired
+//    public InjectorSwitchManager injectorSwitchManager(ModbusRegisterProcessor ultimaModbusWriter,
+//                                                       LedControllerWrapper ledControllerWrapper,
+//                                                       InjectorSectionController injectorSectionController,
+//                                                       SettingsController settingsController) {
+//        return new InjectorSwitchManager(ultimaModbusWriter, ledControllerWrapper, injectorSectionController, settingsController);
+//    }
 }

@@ -1,19 +1,20 @@
 package fi.stardex.sisu.ui.controllers.additional;
 
-import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
+import javafx.fxml.Initializable;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.PostConstruct;
+import java.net.URL;
+import java.util.ResourceBundle;
 
-public class LedController {
+public class LedController implements Initializable {
 
     private final static Logger logger = LoggerFactory.getLogger(LedController.class);
 
@@ -43,10 +44,25 @@ public class LedController {
         }
     });
 
-    private InjectorSectionController injectorSectionController;
-
     public boolean isSelected() {
         return ledBeaker.isSelected();
+    }
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        System.err.println("init led: " + this);
+        timeline.getKeyFrames().add(keyFrame);
+        timeline.setCycleCount(Animation.INDEFINITE);
+        ledBeaker.getStyleClass().add(2, LED_BLINK_OFF);
+
+        ledBeaker.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            getLoggingInjectorSelection(newValue);
+            if (newValue) {
+                ledBeaker.getStyleClass().set(2, LED_BLINK_ON);
+            } else {
+                ledBeaker.getStyleClass().set(2, LED_BLINK_OFF);
+            }
+        });
     }
 
     public void setVisible(boolean visible) {
@@ -98,38 +114,11 @@ public class LedController {
         return number;
     }
 
-    @PostConstruct
-    private void init() {
-        timeline.getKeyFrames().add(keyFrame);
-        timeline.setCycleCount(Animation.INDEFINITE);
-        ledBeaker.getStyleClass().add(2, LED_BLINK_OFF);
-
-        ledBeaker.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            getLoggingInjectorSelection(newValue);
-            if (newValue) {
-                injectorMask += 1 << injectorNumber;
-                ledBeaker.getStyleClass().set(2, LED_BLINK_ON);
-                if (injectorSectionController.getPowerSwitch().isSelected()) {
-                    ledBlinkStart();
-                }
-
-            } else {
-                injectorMask -= 1 << injectorNumber;
-                ledBeaker.getStyleClass().set(2, LED_BLINK_OFF);
-                if (injectorSectionController.getPowerSwitch().isSelected()) {
-                    ledBlinkStop();
-                }
-            }
-        });
-    }
 
     private void getLoggingInjectorSelection(Boolean value) {
         String s = String.format("LedBeaker %s selected: %s", ledBeaker.getText(), value);
         logger.info(s);
     }
 
-    public void setInjectorSectionController(InjectorSectionController injectorSectionController) {
-        this.injectorSectionController = injectorSectionController;
-    }
 
 }

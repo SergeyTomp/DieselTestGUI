@@ -1,11 +1,10 @@
 package fi.stardex.sisu.spring;
 
 import fi.stardex.sisu.devices.Devices;
-import fi.stardex.sisu.injectors.InjectorSwitchManager;
+import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.RootLayoutController;
 import fi.stardex.sisu.ui.controllers.additional.AdditionalSectionController;
-import fi.stardex.sisu.ui.controllers.additional.LedController;
 import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.ConnectionController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.DelayController;
@@ -16,21 +15,17 @@ import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.cr.TestBenchSectionController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
-import fi.stardex.sisu.util.Enabler;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.i18n.UTF8Control;
-import fi.stardex.sisu.util.storage.CurrentVAPStorage;
 import fi.stardex.sisu.util.view.ApplicationAppearanceChanger;
 import fi.stardex.sisu.util.wrappers.StatusBarWrapper;
 import fi.stardex.sisu.version.StardexVersion;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXMLLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 
 import java.io.IOException;
 import java.util.ResourceBundle;
@@ -92,45 +87,48 @@ public class JavaFXSpringConfigure {
 
     @Bean
     @Autowired
-    public InjectorSectionController injectorSectionController(CRSectionController crSectionController) {
-        return crSectionController.getInjectorSectionController();
+    public InjectorSectionController injectorSectionController(SettingsController settingsController, ModbusRegisterProcessor ultimaModbusWriter) {
+        InjectorSectionController injectorSectionController = crSectionController().getInjectorSectionController();
+        injectorSectionController.setSettingsController(settingsController);
+        injectorSectionController.setUltimaModbusWriter(ultimaModbusWriter);
+        return injectorSectionController;
     }
 
-    @Bean
-    @Autowired
-    public LedController led1Controller(InjectorSectionController injectorSectionController) {
-        LedController ledBeaker1Controller = injectorSectionController.getLedBeaker1Controller();
-        ledBeaker1Controller.setNumber(1);
-        ledBeaker1Controller.setInjectorSectionController(injectorSectionController);
-        return ledBeaker1Controller;
-    }
-
-    @Bean
-    @Autowired
-    public LedController led2Controller(InjectorSectionController injectorSectionController) {
-        LedController ledBeaker2Controller = injectorSectionController.getLedBeaker2Controller();
-        ledBeaker2Controller.setNumber(2);
-        ledBeaker2Controller.setInjectorSectionController(injectorSectionController);
-        return ledBeaker2Controller;
-    }
-
-    @Bean
-    @Autowired
-    public LedController led3Controller(InjectorSectionController injectorSectionController) {
-        LedController ledBeaker3Controller = injectorSectionController.getLedBeaker3Controller();
-        ledBeaker3Controller.setNumber(3);
-        ledBeaker3Controller.setInjectorSectionController(injectorSectionController);
-        return ledBeaker3Controller;
-    }
-
-    @Bean
-    @Autowired
-    public LedController led4Controller(InjectorSectionController injectorSectionController) {
-        LedController ledBeaker4Controller = injectorSectionController.getLedBeaker4Controller();
-        ledBeaker4Controller.setNumber(4);
-        ledBeaker4Controller.setInjectorSectionController(injectorSectionController);
-        return ledBeaker4Controller;
-    }
+//    @Bean
+//    @Autowired
+//    public LedController led1Controller(InjectorSectionController injectorSectionController) {
+//        LedController ledBeaker1Controller = injectorSectionController.getLedBeaker1Controller();
+//        ledBeaker1Controller.setNumber(1);
+//        ledBeaker1Controller.setInjectorSectionController(injectorSectionController);
+//        return ledBeaker1Controller;
+//    }
+//
+//    @Bean
+//    @Autowired
+//    public LedController led2Controller(InjectorSectionController injectorSectionController) {
+//        LedController ledBeaker2Controller = injectorSectionController.getLedBeaker2Controller();
+//        ledBeaker2Controller.setNumber(2);
+//        ledBeaker2Controller.setInjectorSectionController(injectorSectionController);
+//        return ledBeaker2Controller;
+//    }
+//
+//    @Bean
+//    @Autowired
+//    public LedController led3Controller(InjectorSectionController injectorSectionController) {
+//        LedController ledBeaker3Controller = injectorSectionController.getLedBeaker3Controller();
+//        ledBeaker3Controller.setNumber(3);
+//        ledBeaker3Controller.setInjectorSectionController(injectorSectionController);
+//        return ledBeaker3Controller;
+//    }
+//
+//    @Bean
+//    @Autowired
+//    public LedController led4Controller(InjectorSectionController injectorSectionController) {
+//        LedController ledBeaker4Controller = injectorSectionController.getLedBeaker4Controller();
+//        ledBeaker4Controller.setNumber(4);
+//        ledBeaker4Controller.setInjectorSectionController(injectorSectionController);
+//        return ledBeaker4Controller;
+//    }
 
     @Bean
     public ViewHolder uisSection() {
@@ -189,12 +187,6 @@ public class JavaFXSpringConfigure {
     @Autowired
     public StatusBarWrapper statusBar(Devices devices) {
         return new StatusBarWrapper(devices, "Ready", "Device not connected", StardexVersion.VERSION);
-    }
-
-    @Bean
-    public Enabler enabler() {
-        return new Enabler();
-
     }
 
     private ViewHolder loadView(String url) {

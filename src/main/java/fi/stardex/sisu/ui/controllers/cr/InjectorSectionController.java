@@ -2,9 +2,11 @@ package fi.stardex.sisu.ui.controllers.cr;
 
 import fi.stardex.sisu.charts.ChartTask;
 import fi.stardex.sisu.charts.TimerTasksManager;
+import fi.stardex.sisu.injectors.InjectorChannel;
 import fi.stardex.sisu.registers.modbusmaps.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.controllers.additional.LedController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
@@ -22,8 +24,7 @@ import javafx.util.StringConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class InjectorSectionController {
 
@@ -36,9 +37,6 @@ public class InjectorSectionController {
 
     @Autowired
     private VoltageController voltageController;
-
-    @Autowired
-    private ModbusRegisterProcessor ultimaModbusWriter;
 
     @FXML
     private Spinner<Integer> widthCurrentSignal;
@@ -117,6 +115,10 @@ public class InjectorSectionController {
 
     private boolean updateOSC;
 
+    private SettingsController settingsController;
+
+    private ModbusRegisterProcessor ultimaModbusWriter;
+
     private ObservableList<LedController> ledControllers;
 
     public LedController getLedBeaker1Controller() {
@@ -171,6 +173,27 @@ public class InjectorSectionController {
         return piezoDelphiRadioButton;
     }
 
+    public ObservableList<LedController> getLedControllers() {
+        return ledControllers;
+    }
+
+    public List<LedController> activeControllers() {
+        List<LedController> result = new ArrayList<>();
+        for (LedController s : ledControllers) {
+            if (s.isSelected()) result.add(s);
+        }
+        result.sort(Comparator.comparingInt(LedController::getNumber));
+        return result;
+    }
+
+    public void setSettingsController(SettingsController settingsController) {
+        this.settingsController = settingsController;
+    }
+
+    public void setUltimaModbusWriter(ModbusRegisterProcessor ultimaModbusWriter) {
+        this.ultimaModbusWriter = ultimaModbusWriter;
+    }
+
     @PostConstruct
     private void init() {
 
@@ -192,6 +215,11 @@ public class InjectorSectionController {
             }
         });
 
+        ledBeaker1Controller.setNumber(1);
+        ledBeaker2Controller.setNumber(2);
+        ledBeaker3Controller.setNumber(3);
+        ledBeaker4Controller.setNumber(4);
+
         ledControllers = FXCollections.observableArrayList(new LinkedList<>());
 
         ledControllers.add(ledBeaker1Controller);
@@ -199,12 +227,12 @@ public class InjectorSectionController {
         ledControllers.add(ledBeaker3Controller);
         ledControllers.add(ledBeaker4Controller);
 
-        LedParametersChanger ledParametersChanger = new LedParametersChanger(freqCurrentSignal.valueProperty(),
-                piezoCoilToggleGroup.selectedToggleProperty(), new SimpleListProperty<>(ledControllers));
-
         setupFrequencySpinner();
 
         setupWidthSpinner();
+
+        new LedParametersChanger(freqCurrentSignal.valueProperty(),
+                piezoCoilToggleGroup.selectedToggleProperty(), new SimpleListProperty<>(ledControllers));
 
     }
 
@@ -253,10 +281,21 @@ public class InjectorSectionController {
 
         private ListProperty<LedController> ledControllersProperty = new SimpleListProperty<>();
 
-        LedParametersChanger(ReadOnlyObjectProperty<Double> doubleObjectProperty, ReadOnlyObjectProperty<Toggle> toggleReadOnlyObjectProperty, ListProperty<LedController> ledProperty) {
+        private ObjectProperty<InjectorChannel> injectorChannelProperty = new SimpleObjectProperty<>();
+
+        private List<ModbusMapUltima> slotNumbersList = ModbusMapUltima.getSlotNumbersList();
+
+        private List<ModbusMapUltima> slotPulsesList = ModbusMapUltima.getSlotPulsesList();
+
+        private static final int OFF_COMMAND_NUMBER = 255;
+
+        LedParametersChanger(ReadOnlyObjectProperty<Double> doubleObjectProperty,
+                             ReadOnlyObjectProperty<Toggle> toggleReadOnlyObjectProperty,
+                             ListProperty<LedController> ledProperty) {
             frequencyProperty.bind(doubleObjectProperty);
             injectorTypeProperty.bind(toggleReadOnlyObjectProperty);
             ledControllersProperty.bind(ledProperty);
+            injectorChannelProperty.bind(settingsController.getComboInjectorConfig().getSelectionModel().selectedItemProperty());
             frequencyProperty.addListener(this);
             injectorTypeProperty.addListener(this);
             ledControllersProperty.get().forEach(s -> s.getLedBeaker().selectedProperty().addListener(this));
@@ -266,13 +305,60 @@ public class InjectorSectionController {
         public void changed(ObservableValue<?> observable, Object oldValue, Object newValue) {
             if (newValue instanceof Double) {
                 if ((Double) newValue <= 50 && (Double) newValue >= 0.5)
-                    //FIXME: при инициализации сразу отправляется значение frequency
-                    System.err.println(newValue);
+                    sendLedRegisters();
             } else if (newValue instanceof Toggle)
-                System.err.println(newValue);
-            else if (newValue instanceof Boolean)
-                System.err.println(newValue);
-            else throw new RuntimeException("Wrong listener type!");
+                sendLedRegisters();
+            else if (newValue instanceof Boolean) {
+                if ((injectorChannelProperty.get() == InjectorChannel.SINGLE_CHANNEL && (Boolean) newValue)
+                        || (injectorChannelProperty.get() == InjectorChannel.MULTI_CHANNEL))
+                    sendLedRegisters();
+            } else
+                throw new RuntimeException("Wrong listener type!");
+        }
+
+        private void sendLedRegisters() {
+            switchOffAll();
+
+            writeInjectorTypeRegister();
+
+            List<LedController> activeControllers = activeControllers();
+            System.err.println("Active controllers: " + activeControllers);
+            Iterator<LedController> activeControllersIterator = activeControllers.iterator();
+            int activeLeds = activeControllers.size();
+            System.err.println("activeLeds: " + activeLeds);
+            double frequency = freqCurrentSignal.getValue();
+            System.err.println("frequency: " + frequency);
+            ultimaModbusWriter.add(ModbusMapUltima.GImpulsesPeriod, 1000 / frequency);
+            if (activeLeds == 0) {
+                return;
+            }
+            int step = (int) Math.round(1000 / (frequency * activeLeds));
+            System.err.println("step: " + step);
+            int impulseTime = 0;
+            while (activeControllersIterator.hasNext()) {
+                System.err.println("looping");
+                int selectedChannel = activeControllersIterator.next().getNumber();
+                int injectorChannel = injectorChannelProperty.get() == InjectorChannel.SINGLE_CHANNEL ? 1 : selectedChannel;
+                ultimaModbusWriter.add(slotNumbersList.get(selectedChannel - 1), injectorChannel);
+                ultimaModbusWriter.add(slotPulsesList.get(selectedChannel - 1), impulseTime);
+                impulseTime += step;
+            }
+        }
+
+        private void switchOffAll() {
+            slotNumbersList.forEach((s) -> ultimaModbusWriter.add(s, OFF_COMMAND_NUMBER));
+            slotPulsesList.forEach((s) -> ultimaModbusWriter.add(s, 0));
+        }
+
+        private void writeInjectorTypeRegister() {
+            if (Objects.equals(coilRadioButton, injectorTypeProperty.get()))
+                ultimaModbusWriter.add(ModbusMapUltima.Injector_type, 0);
+            else if (Objects.equals(piezoRadioButton, injectorTypeProperty.get()))
+                ultimaModbusWriter.add(ModbusMapUltima.Injector_type, 1);
+            else if (Objects.equals(piezoDelphiRadioButton, injectorTypeProperty.get()))
+                ultimaModbusWriter.add(ModbusMapUltima.Injector_type, 2);
+            else
+                throw new AssertionError("Coil or piezo buttons has not been set.");
         }
     }
 }
