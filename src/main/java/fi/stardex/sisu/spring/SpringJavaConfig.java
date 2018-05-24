@@ -22,8 +22,8 @@ import fi.stardex.sisu.ui.updaters.Updater;
 import fi.stardex.sisu.util.ApplicationConfigHandler;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.storage.CurrentVAPStorage;
+import fi.stardex.sisu.util.tooltips.CustomTooltip;
 import fi.stardex.sisu.util.wrappers.StatusBarWrapper;
-import fi.stardex.sisu.wrappers.LedControllerWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -155,59 +155,6 @@ public class SpringJavaConfig {
         return new ChartTask(voltageController, ultimaModbusWriter, injectorSectionController);
     }
 
-//    @Bean
-//    @Autowired
-//    public FrequencySpinnerListener frequencySpinnerListener(InjectorSectionController injectorSectionController,
-//                                                             InjectorSwitchManager injectorSwitchManager) {
-//        return new FrequencySpinnerListener(injectorSectionController, injectorSwitchManager);
-//    }
-
-//    @Bean
-//    @Autowired
-//    public InjectorTypeListener injectorTypeListener(InjectorSectionController injectorSectionController,
-//                                                     InjectorSwitchManager injectorSwitchManager) {
-//        return new InjectorTypeListener(injectorSectionController, injectorSwitchManager);
-//    }
-
-//    @Bean
-//    @Autowired
-//    public LedBeakerListener ledBeaker1Listener(LedController led1Controller,
-//                                                InjectorSwitchManager injectorSwitchManager,
-//                                                SettingsController settingsController) {
-//        LedBeakerListener ledBeaker1Listener = new LedBeakerListener(led1Controller, 0, settingsController);
-//        ledBeaker1Listener.setManager(injectorSwitchManager);
-//        return ledBeaker1Listener;
-//    }
-//
-//    @Bean
-//    @Autowired
-//    public LedBeakerListener ledBeaker2Listener(LedController led2Controller,
-//                                                InjectorSwitchManager injectorSwitchManager,
-//                                                SettingsController settingsController) {
-//        LedBeakerListener ledBeaker2Listener = new LedBeakerListener(led2Controller, 1, settingsController);
-//        ledBeaker2Listener.setManager(injectorSwitchManager);
-//        return ledBeaker2Listener;
-//    }
-//
-//    @Bean
-//    @Autowired
-//    public LedBeakerListener ledBeaker3Listener(LedController led3Controller,
-//                                                InjectorSwitchManager injectorSwitchManager,
-//                                                SettingsController settingsController) {
-//        LedBeakerListener ledBeaker3Listener = new LedBeakerListener(led3Controller, 2, settingsController);
-//        ledBeaker3Listener.setManager(injectorSwitchManager);
-//        return ledBeaker3Listener;
-//    }
-//
-//    @Bean
-//    @Autowired
-//    public LedBeakerListener ledBeaker4Listener(LedController led4Controller,
-//                                                InjectorSwitchManager injectorSwitchManager,
-//                                                SettingsController settingsController) {
-//        LedBeakerListener ledBeaker4Listener = new LedBeakerListener(led4Controller, 3, settingsController);
-//        ledBeaker4Listener.setManager(injectorSwitchManager);
-//        return ledBeaker4Listener;
-//    }
 
     @Bean
     @Autowired
@@ -216,18 +163,9 @@ public class SpringJavaConfig {
         return new InjectorConfigComboBoxListener(injectorSectionController, settingsController);
     }
 
-//    @Bean
-//    @Autowired
-//    public LedControllerWrapper ledControllerWrapper(InjectorSectionController injectorSectionController) {
-//        return new LedControllerWrapper(injectorSectionController.getLedControllers());
-//    }
+    @Bean
+    public CustomTooltip enterToolTip() {
+        return new CustomTooltip("Press ENTER to commit changes");
+    }
 
-//    @Bean
-//    @Autowired
-//    public InjectorSwitchManager injectorSwitchManager(ModbusRegisterProcessor ultimaModbusWriter,
-//                                                       LedControllerWrapper ledControllerWrapper,
-//                                                       InjectorSectionController injectorSectionController,
-//                                                       SettingsController settingsController) {
-//        return new InjectorSwitchManager(ultimaModbusWriter, ledControllerWrapper, injectorSectionController, settingsController);
-//    }
 }

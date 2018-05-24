@@ -4,13 +4,10 @@ import fi.stardex.sisu.injectors.InjectorChannel;
 import fi.stardex.sisu.ui.controllers.additional.LedController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
-import fi.stardex.sisu.wrappers.LedControllerWrapper;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ToggleGroup;
-
-import java.util.List;
 
 public class InjectorConfigComboBoxListener implements ChangeListener<InjectorChannel> {
 
@@ -30,7 +27,6 @@ public class InjectorConfigComboBoxListener implements ChangeListener<InjectorCh
     }
 
     private void setToggleGroupToLeds(ToggleGroup toggleGroup) {
-        System.err.println(toggleGroup);
         ledControllers.forEach(s -> s.getLedBeaker().setToggleGroup(toggleGroup));
     }
 }

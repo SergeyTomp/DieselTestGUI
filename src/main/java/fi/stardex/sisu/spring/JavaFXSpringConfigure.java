@@ -17,6 +17,7 @@ import fi.stardex.sisu.ui.controllers.cr.TestBenchSectionController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.i18n.UTF8Control;
+import fi.stardex.sisu.util.tooltips.CustomTooltip;
 import fi.stardex.sisu.util.view.ApplicationAppearanceChanger;
 import fi.stardex.sisu.util.wrappers.StatusBarWrapper;
 import fi.stardex.sisu.version.StardexVersion;
@@ -87,48 +88,15 @@ public class JavaFXSpringConfigure {
 
     @Bean
     @Autowired
-    public InjectorSectionController injectorSectionController(SettingsController settingsController, ModbusRegisterProcessor ultimaModbusWriter) {
+    public InjectorSectionController injectorSectionController(SettingsController settingsController,
+                                                               ModbusRegisterProcessor ultimaModbusWriter,
+                                                               CustomTooltip enterToolTip) {
         InjectorSectionController injectorSectionController = crSectionController().getInjectorSectionController();
         injectorSectionController.setSettingsController(settingsController);
         injectorSectionController.setUltimaModbusWriter(ultimaModbusWriter);
+        injectorSectionController.setEnterToolTip(enterToolTip);
         return injectorSectionController;
     }
-
-//    @Bean
-//    @Autowired
-//    public LedController led1Controller(InjectorSectionController injectorSectionController) {
-//        LedController ledBeaker1Controller = injectorSectionController.getLedBeaker1Controller();
-//        ledBeaker1Controller.setNumber(1);
-//        ledBeaker1Controller.setInjectorSectionController(injectorSectionController);
-//        return ledBeaker1Controller;
-//    }
-//
-//    @Bean
-//    @Autowired
-//    public LedController led2Controller(InjectorSectionController injectorSectionController) {
-//        LedController ledBeaker2Controller = injectorSectionController.getLedBeaker2Controller();
-//        ledBeaker2Controller.setNumber(2);
-//        ledBeaker2Controller.setInjectorSectionController(injectorSectionController);
-//        return ledBeaker2Controller;
-//    }
-//
-//    @Bean
-//    @Autowired
-//    public LedController led3Controller(InjectorSectionController injectorSectionController) {
-//        LedController ledBeaker3Controller = injectorSectionController.getLedBeaker3Controller();
-//        ledBeaker3Controller.setNumber(3);
-//        ledBeaker3Controller.setInjectorSectionController(injectorSectionController);
-//        return ledBeaker3Controller;
-//    }
-//
-//    @Bean
-//    @Autowired
-//    public LedController led4Controller(InjectorSectionController injectorSectionController) {
-//        LedController ledBeaker4Controller = injectorSectionController.getLedBeaker4Controller();
-//        ledBeaker4Controller.setNumber(4);
-//        ledBeaker4Controller.setInjectorSectionController(injectorSectionController);
-//        return ledBeaker4Controller;
-//    }
 
     @Bean
     public ViewHolder uisSection() {

@@ -54,7 +54,6 @@ public class LedController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-        System.err.println("init led: " + this);
         timeline.getKeyFrames().add(keyFrame);
         timeline.setCycleCount(Animation.INDEFINITE);
         ledBeaker.getStyleClass().add(2, LED_BLINK_OFF);
@@ -117,6 +116,7 @@ public class LedController implements Initializable {
     public int getNumber() {
         return number;
     }
+
 
 
     private void getLoggingInjectorSelection(Boolean value) {

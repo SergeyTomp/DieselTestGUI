@@ -8,22 +8,25 @@ import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.controllers.additional.LedController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
+import fi.stardex.sisu.util.tooltips.CustomTooltip;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
+import javafx.util.Duration;
 import javafx.util.StringConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
+import java.lang.reflect.Field;
 import java.util.*;
 
 public class InjectorSectionController {
@@ -115,6 +118,10 @@ public class InjectorSectionController {
 
     private boolean updateOSC;
 
+    private LedParametersChangeListener ledParametersChangeListener;
+
+    private CustomTooltip enterToolTip;
+
     private SettingsController settingsController;
 
     private ModbusRegisterProcessor ultimaModbusWriter;
@@ -155,6 +162,10 @@ public class InjectorSectionController {
 
     public void setUpdateOSC(boolean updateOSC) {
         this.updateOSC = updateOSC;
+    }
+
+    public void setEnterToolTip(CustomTooltip enterToolTip) {
+        this.enterToolTip = enterToolTip;
     }
 
     public ToggleGroup getPiezoCoilToggleGroup() {
@@ -231,8 +242,7 @@ public class InjectorSectionController {
 
         setupWidthSpinner();
 
-        new LedParametersChanger(freqCurrentSignal.valueProperty(),
-                piezoCoilToggleGroup.selectedToggleProperty(), new SimpleListProperty<>(ledControllers));
+        ledParametersChangeListener = new LedParametersChangeListener();
 
     }
 
@@ -264,17 +274,16 @@ public class InjectorSectionController {
             }
         });
 
+        freqCurrentSignal.getEditor().textProperty().addListener((observable, oldValue, newValue) -> Tooltip.install(freqCurrentSignal.getEditor(), enterToolTip));
+
+        freqCurrentSignal.valueProperty().addListener((observable, oldValue, newValue) -> Tooltip.uninstall(freqCurrentSignal.getEditor(), enterToolTip));
     }
 
-    private class LedParametersChanger implements ChangeListener<Object> {
+    private class LedParametersChangeListener implements ChangeListener<Object> {
 
-        private DoubleProperty frequencyProperty = new SimpleDoubleProperty();
+        private ReadOnlyObjectProperty<Toggle> injectorTypeProperty;
 
-        private ObjectProperty<Toggle> injectorTypeProperty = new SimpleObjectProperty<>();
-
-        private ListProperty<LedController> ledControllersProperty = new SimpleListProperty<>();
-
-        private ObjectProperty<InjectorChannel> injectorChannelProperty = new SimpleObjectProperty<>();
+        private ReadOnlyObjectProperty<InjectorChannel> injectorChannelProperty;
 
         private List<ModbusMapUltima> slotNumbersList = ModbusMapUltima.getSlotNumbersList();
 
@@ -282,21 +291,19 @@ public class InjectorSectionController {
 
         private static final int OFF_COMMAND_NUMBER = 255;
 
-        LedParametersChanger(ReadOnlyObjectProperty<Double> doubleObjectProperty,
-                             ReadOnlyObjectProperty<Toggle> toggleReadOnlyObjectProperty,
-                             ListProperty<LedController> ledProperty) {
-            frequencyProperty.bind(doubleObjectProperty);
-            injectorTypeProperty.bind(toggleReadOnlyObjectProperty);
-            ledControllersProperty.bind(ledProperty);
-            injectorChannelProperty.bind(settingsController.getComboInjectorConfig().getSelectionModel().selectedItemProperty());
-            frequencyProperty.addListener(this);
+        LedParametersChangeListener() {
+            injectorTypeProperty = piezoCoilToggleGroup.selectedToggleProperty();
+            injectorChannelProperty = settingsController.getComboInjectorConfig().getSelectionModel().selectedItemProperty();
+            freqCurrentSignal.valueProperty().addListener(this);
             injectorTypeProperty.addListener(this);
-            ledControllersProperty.get().forEach(s -> s.getLedBeaker().selectedProperty().addListener(this));
+            ledControllers.forEach(s -> s.getLedBeaker().selectedProperty().addListener(this));
         }
 
         @Override
         public void changed(ObservableValue<?> observable, Object oldValue, Object newValue) {
+            switchOffAll();
             if (newValue instanceof Double) {
+                System.err.println("listener");
                 if ((Double) newValue <= 50 && (Double) newValue >= 0.5)
                     sendLedRegisters();
             } else if (newValue instanceof Toggle) {
@@ -309,7 +316,7 @@ public class InjectorSectionController {
                     sendLedRegisters();
                 }
             } else if (newValue instanceof Boolean) {
-                if ((injectorChannelProperty.get() == InjectorChannel.SINGLE_CHANNEL && (Boolean) newValue)
+                if ((((Boolean) newValue) && (injectorChannelProperty.get() == InjectorChannel.SINGLE_CHANNEL || injectorTypeProperty.get() == piezoDelphiRadioButton))
                         || (injectorChannelProperty.get() == InjectorChannel.MULTI_CHANNEL))
                     sendLedRegisters();
             } else
@@ -317,34 +324,25 @@ public class InjectorSectionController {
         }
 
         private void sendLedRegisters() {
-            switchOffAll();
 
             writeInjectorTypeRegister();
 
             List<LedController> activeControllers = activeControllers();
-            System.err.println("Active controllers: " + activeControllers);
             Iterator<LedController> activeControllersIterator = activeControllers.iterator();
             int activeLeds = activeControllers.size();
-            System.err.println("activeLeds: " + activeLeds);
             double frequency = freqCurrentSignal.getValue();
-            System.err.println("frequency: " + frequency);
             ultimaModbusWriter.add(ModbusMapUltima.GImpulsesPeriod, 1000 / frequency);
             if (activeLeds == 0) {
                 return;
             }
             int step = (int) Math.round(1000 / (frequency * activeLeds));
-            System.err.println("step: " + step);
             int impulseTime = 0;
             while (activeControllersIterator.hasNext()) {
-                System.err.println("looping");
                 int selectedChannel = activeControllersIterator.next().getNumber();
-                System.err.println("selectedChannel: " + selectedChannel);
                 int injectorChannel = injectorChannelProperty.get() == InjectorChannel.SINGLE_CHANNEL ? 1 : selectedChannel;
-                System.err.println("injectorChannel: " + injectorChannel);
                 ultimaModbusWriter.add(slotNumbersList.get(selectedChannel - 1), injectorChannel);
                 ultimaModbusWriter.add(slotPulsesList.get(selectedChannel - 1), impulseTime);
                 impulseTime += step;
-                System.err.println("impulseTime: " + impulseTime);
             }
         }
 
@@ -365,9 +363,9 @@ public class InjectorSectionController {
         }
 
         private void disableLedsExceptFirst(boolean disable) {
-            ledControllersProperty.get().get(1).setDisable(disable);
-            ledControllersProperty.get().get(2).setDisable(disable);
-            ledControllersProperty.get().get(3).setDisable(disable);
+            ledControllers.get(1).setDisable(disable);
+            ledControllers.get(2).setDisable(disable);
+            ledControllers.get(3).setDisable(disable);
         }
     }
 }
