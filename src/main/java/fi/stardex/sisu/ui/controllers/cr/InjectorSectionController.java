@@ -17,6 +17,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Point2D;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
@@ -274,9 +275,22 @@ public class InjectorSectionController {
             }
         });
 
-        freqCurrentSignal.getEditor().textProperty().addListener((observable, oldValue, newValue) -> Tooltip.install(freqCurrentSignal.getEditor(), enterToolTip));
+        freqCurrentSignal.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
+            Point2D p = freqCurrentSignal.localToScene(0.0, 0.0);
+            freqCurrentSignal.setTooltip(enterToolTip);
+            enterToolTip.show(freqCurrentSignal,
+                    p.getX() + freqCurrentSignal.getScene().getX() + freqCurrentSignal.getScene().getWindow().getX(),
+                    p.getY() + freqCurrentSignal.getScene().getY() + freqCurrentSignal.getHeight() + freqCurrentSignal.getScene().getWindow().getY());
+            freqCurrentSignal.setTooltip(null);
+        });
 
-        freqCurrentSignal.valueProperty().addListener((observable, oldValue, newValue) -> Tooltip.uninstall(freqCurrentSignal.getEditor(), enterToolTip));
+        freqCurrentSignal.valueProperty().addListener((observable, oldValue, newValue) -> {
+            freqCurrentSignal.setTooltip(enterToolTip);
+            freqCurrentSignal.getTooltip().hide();
+            freqCurrentSignal.setTooltip(null);
+//            freqCurrentSignal.getEditor().getTooltip().hide();
+        });
+
     }
 
     private class LedParametersChangeListener implements ChangeListener<Object> {
