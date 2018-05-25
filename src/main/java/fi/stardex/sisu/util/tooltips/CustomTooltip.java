@@ -11,6 +11,7 @@ public class CustomTooltip extends Tooltip {
 
     public CustomTooltip(String message) {
         super(message);
+        setHideOnEscape(false);
         hackTooltipStartTiming();
     }
 
@@ -30,4 +31,5 @@ public class CustomTooltip extends Tooltip {
             e.printStackTrace();
         }
     }
+
 }

@@ -9,25 +9,24 @@ import fi.stardex.sisu.ui.controllers.additional.LedController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
 import fi.stardex.sisu.util.tooltips.CustomTooltip;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.beans.property.*;
+import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
 import javafx.scene.control.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
-import javafx.util.Duration;
 import javafx.util.StringConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
-import java.lang.reflect.Field;
 import java.util.*;
 
 public class InjectorSectionController {
@@ -119,7 +118,7 @@ public class InjectorSectionController {
 
     private boolean updateOSC;
 
-    private LedParametersChangeListener ledParametersChangeListener;
+    private static final double FREQ_SPINNER_FAKE_VALUE = 16.671;
 
     private CustomTooltip enterToolTip;
 
@@ -243,7 +242,7 @@ public class InjectorSectionController {
 
         setupWidthSpinner();
 
-        ledParametersChangeListener = new LedParametersChangeListener();
+        new LedParametersChangeListener();
 
     }
 
@@ -251,6 +250,9 @@ public class InjectorSectionController {
         widthCurrentSignal.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 3000, 300, 10));
     }
 
+    /**
+     * regex checks for presence of characters, digits and dots
+     */
     private void setupFrequencySpinner() {
 
         freqCurrentSignal.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0.5, 50, 16.67, 0.01));
@@ -267,8 +269,12 @@ public class InjectorSectionController {
             @Override
             public Double fromString(String string) {
                 try {
+                    String regex = "^(?=.*[A-Za-z])(?=.*[0-9])[A-Za-z0-9.]+$";
+                    if(string.isEmpty() || string.matches(regex))
+                        throw new RuntimeException("Empty spinner value!");
                     return converter.fromString(string);
                 } catch (RuntimeException ex) {
+                    freqCurrentSignal.getValueFactory().setValue(FREQ_SPINNER_FAKE_VALUE);
                     freqCurrentSignal.getValueFactory().setValue(16.67);
                     return freqCurrentSignal.getValue();
                 }
@@ -288,9 +294,7 @@ public class InjectorSectionController {
             freqCurrentSignal.setTooltip(enterToolTip);
             freqCurrentSignal.getTooltip().hide();
             freqCurrentSignal.setTooltip(null);
-//            freqCurrentSignal.getEditor().getTooltip().hide();
         });
-
     }
 
     private class LedParametersChangeListener implements ChangeListener<Object> {
@@ -317,9 +321,10 @@ public class InjectorSectionController {
         public void changed(ObservableValue<?> observable, Object oldValue, Object newValue) {
             switchOffAll();
             if (newValue instanceof Double) {
-                System.err.println("listener");
-                if ((Double) newValue <= 50 && (Double) newValue >= 0.5)
+                if (((Double) newValue <= 50 && (Double) newValue >= 0.5) && (Double) newValue != FREQ_SPINNER_FAKE_VALUE) {
+                    System.err.println("listener");
                     sendLedRegisters();
+                }
             } else if (newValue instanceof Toggle) {
                 if (newValue == piezoDelphiRadioButton) {
                     disableLedsExceptFirst(true);
@@ -345,6 +350,7 @@ public class InjectorSectionController {
             Iterator<LedController> activeControllersIterator = activeControllers.iterator();
             int activeLeds = activeControllers.size();
             double frequency = freqCurrentSignal.getValue();
+            System.err.println("frequency: " + frequency);
             ultimaModbusWriter.add(ModbusMapUltima.GImpulsesPeriod, 1000 / frequency);
             if (activeLeds == 0) {
                 return;
