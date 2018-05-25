@@ -9,9 +9,12 @@ import java.lang.reflect.Field;
 
 public class CustomTooltip extends Tooltip {
 
+    private Number spinnerOldValue;
+
+    private Number spinnerNewValue;
+
     public CustomTooltip(String message) {
         super(message);
-        setHideOnEscape(false);
         hackTooltipStartTiming();
     }
 
@@ -32,4 +35,19 @@ public class CustomTooltip extends Tooltip {
         }
     }
 
+    public Number getSpinnerOldValue() {
+        return spinnerOldValue;
+    }
+
+    public void setSpinnerOldValue(Number spinnerOldValue) {
+        this.spinnerOldValue = spinnerOldValue;
+    }
+
+    public Number getSpinnerNewValue() {
+        return spinnerNewValue;
+    }
+
+    public void setSpinnerNewValue(Number spinnerNewValue) {
+        this.spinnerNewValue = spinnerNewValue;
+    }
 }

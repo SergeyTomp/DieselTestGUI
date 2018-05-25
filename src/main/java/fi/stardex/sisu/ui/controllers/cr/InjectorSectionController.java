@@ -251,7 +251,7 @@ public class InjectorSectionController {
     }
 
     /**
-     * regex checks for presence of characters, digits and dots
+     * regex checks for presence of characters/dots and digits both at a string
      */
     private void setupFrequencySpinner() {
 
@@ -270,7 +270,7 @@ public class InjectorSectionController {
             public Double fromString(String string) {
                 try {
                     String regex = "^(?=.*[A-Za-z])(?=.*[0-9])[A-Za-z0-9.]+$";
-                    if(string.isEmpty() || string.matches(regex))
+                    if (string.isEmpty() || string.matches(regex))
                         throw new RuntimeException("Empty spinner value!");
                     return converter.fromString(string);
                 } catch (RuntimeException ex) {
@@ -282,6 +282,8 @@ public class InjectorSectionController {
         });
 
         freqCurrentSignal.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
+            enterToolTip.setSpinnerOldValue(Double.parseDouble(oldValue));
+            enterToolTip.setSpinnerNewValue(Double.parseDouble(newValue));
             Point2D p = freqCurrentSignal.localToScene(0.0, 0.0);
             freqCurrentSignal.setTooltip(enterToolTip);
             enterToolTip.show(freqCurrentSignal,
@@ -294,6 +296,13 @@ public class InjectorSectionController {
             freqCurrentSignal.setTooltip(enterToolTip);
             freqCurrentSignal.getTooltip().hide();
             freqCurrentSignal.setTooltip(null);
+        });
+
+        freqCurrentSignal.addEventHandler(KeyEvent.ANY, event -> {
+            if(event.getCode() == KeyCode.ESCAPE) {
+                freqCurrentSignal.getValueFactory().setValue((Double)enterToolTip.getSpinnerNewValue() + 0.001);
+                freqCurrentSignal.getValueFactory().setValue((Double)enterToolTip.getSpinnerOldValue());
+            }
         });
     }
 
