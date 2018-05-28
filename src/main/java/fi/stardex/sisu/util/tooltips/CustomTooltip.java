@@ -37,6 +37,9 @@ public class CustomTooltip extends Tooltip implements ChangeListener<Boolean> {
         }
     }
 
+    /**
+     * @param spinnerOldValue saves all last value when spinner textProperty listener is fired
+     */
     public void setSpinnerOldValue(Number spinnerOldValue) {
         this.spinnerOldValue = spinnerOldValue;
     }
@@ -45,6 +48,9 @@ public class CustomTooltip extends Tooltip implements ChangeListener<Boolean> {
         return initialSpinnerOldValue;
     }
 
+    /**
+     * saves the last spinner value before the tooltip starts showing
+     */
     @Override
     public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
         if (newValue)

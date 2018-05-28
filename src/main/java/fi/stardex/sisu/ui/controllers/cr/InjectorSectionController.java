@@ -14,7 +14,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.geometry.Point2D;
 import javafx.scene.control.*;
@@ -30,8 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.Semaphore;
 
 public class InjectorSectionController {
 
@@ -282,7 +279,6 @@ public class InjectorSectionController {
                         throw new RuntimeException("Invalid spinner value!");
                     return converter.fromString(string);
                 } catch (RuntimeException ex) {
-                    logger.warn("Exception: {}", ex);
                     freqCurrentSignal.getValueFactory().setValue(FREQ_SPINNER_FAKE_VALUE);
                     freqCurrentSignal.getValueFactory().setValue(16.67);
                     return freqCurrentSignal.getValue();
