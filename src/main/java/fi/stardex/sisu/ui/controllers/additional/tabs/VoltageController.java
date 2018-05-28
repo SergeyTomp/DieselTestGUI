@@ -18,8 +18,6 @@ import javax.annotation.PostConstruct;
 
 public class VoltageController {
 
-    @Autowired
-    @Qualifier(value = "voltAmpereProfileDialog")
     private ViewHolder voltAmpereProfileDialog;
 
     @FXML
@@ -30,15 +28,15 @@ public class VoltageController {
     private NumberAxis yAxis;
 
     @FXML
-    private Spinner<Double> voltage;
+    private Label voltage;
     @FXML
     private Spinner<Double> voltageHold;
     @FXML
-    private Spinner<Integer> firstWidth;
+    private Label firstWidth;
     @FXML
-    private Spinner<Double> firstCurrent;
+    private Label firstCurrent;
     @FXML
-    private Spinner<Double> secondCurrent;
+    private Label secondCurrent;
     @FXML
     private Spinner<Double> boostCurrent;
     @FXML
@@ -98,6 +96,11 @@ public class VoltageController {
         return data1;
     }
 
+    public void setVoltAmpereProfileDialog(ViewHolder voltAmpereProfileDialog) {
+        this.voltAmpereProfileDialog = voltAmpereProfileDialog;
+
+    }
+
     @PostConstruct
     private void init() {
         pulseSettingsButton.setOnMouseClicked(event -> {
@@ -110,15 +113,6 @@ public class VoltageController {
             }
             voapStage.show();
         });
-
-        firstWidth.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(100, 10000, 100, 10));
-        voltage.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(30, 350, 0, 1));
-        voltageHold.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(11, 30, 11.0, 0.1));
-        firstCurrent.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0, 25, 0, 0.1));
-        secondCurrent.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0, 25, 0, 0.1));
-        boostCurrent.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0, 25, 0, 0.1));
-        firstNegative.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(12, 75, 12, 1));
-        secondNegative.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0, 75, 0, 1));
 
         XYChart.Series<Double, Double> series1 = new XYChart.Series<>();
         series1.setName("");
@@ -162,24 +156,5 @@ public class VoltageController {
         lineChart.getYAxis().setAutoRanging(false);
         lineChart.getXAxis().setTickMarkVisible(true);
 
-        setVisibleVoltage(false);
-    }
-
-    public void setVisibleVoltage(final boolean value) {
-        labelCurrentBoost.setVisible(value);
-        labelVoltageHold.setVisible(value);
-        labelVoltageFirst.setVisible(value);
-        labelVoltageSecond.setVisible(value);
-
-        boostCurrent.setVisible(value);
-        voltageHold.setVisible(value);
-        firstNegative.setVisible(value);
-        secondNegative.setVisible(value);
-
-        labelUnitsBoostI.setVisible(value);
-        labelUnitsBatteryU.setVisible(value);
-        labelUnitsNegativeU1.setVisible(value);
-        labelUnitsNegativeU2.setVisible(value);
-        checkBoxBoostDisable.setVisible(value);
     }
 }

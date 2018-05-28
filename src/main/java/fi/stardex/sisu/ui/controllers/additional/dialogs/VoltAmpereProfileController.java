@@ -1,22 +1,14 @@
 package fi.stardex.sisu.ui.controllers.additional.dialogs;
 
-import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
-import fi.stardex.sisu.util.storage.CurrentVAPStorage;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.ToggleButton;
-import javafx.scene.input.MouseEvent;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
 
 public class VoltAmpereProfileController {
-
-    @Autowired
-    private CurrentVAPStorage currentVAPStorage;
 
     @FXML
     private Spinner<Integer> firstWSpinner;
@@ -53,6 +45,10 @@ public class VoltAmpereProfileController {
 
     @PostConstruct
     private void init() {
+
+        enableBoostToggleButton.setSelected(false);
+        enableBoostToggleButton.setText("BoostU disabled");
+
         firstWSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(91, 15510, 500, 10));
         boostISpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(3, 25, 21.5, 0.1));
         firstISpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(2, 25, 15, 0.1));
@@ -72,8 +68,5 @@ public class VoltAmpereProfileController {
         negativeU2Spinner.setEditable(true);
         boostUSpinner.setEditable(true);
 
-        applyBtn.setOnMouseClicked(event -> currentVAPStorage.calculateAndSet(firstWSpinner.getValue(), batteruUSpinner.getValue(), boostUSpinner.getValue(),
-                firstISpinner.getValue(), boostISpinner.getValue(), secondISpinner.getValue(),
-                negativeU1Spinner.getValue(), negativeU2Spinner.getValue()));
     }
 }
