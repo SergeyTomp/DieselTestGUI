@@ -2,20 +2,22 @@ package fi.stardex.sisu.util.tooltips;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Tooltip;
 import javafx.util.Duration;
-
 import java.lang.reflect.Field;
 
-public class CustomTooltip extends Tooltip {
+public class CustomTooltip extends Tooltip implements ChangeListener<Boolean> {
 
     private Number spinnerOldValue;
 
-    private Number spinnerNewValue;
+    private Number initialSpinnerOldValue;
 
     public CustomTooltip(String message) {
         super(message);
         hackTooltipStartTiming();
+        showingProperty().addListener(this);
     }
 
     private void hackTooltipStartTiming() {
@@ -35,19 +37,17 @@ public class CustomTooltip extends Tooltip {
         }
     }
 
-    public Number getSpinnerOldValue() {
-        return spinnerOldValue;
-    }
-
     public void setSpinnerOldValue(Number spinnerOldValue) {
         this.spinnerOldValue = spinnerOldValue;
     }
 
-    public Number getSpinnerNewValue() {
-        return spinnerNewValue;
+    public Number getInitialSpinnerOldValue() {
+        return initialSpinnerOldValue;
     }
 
-    public void setSpinnerNewValue(Number spinnerNewValue) {
-        this.spinnerNewValue = spinnerNewValue;
+    @Override
+    public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+        if (newValue)
+            initialSpinnerOldValue = spinnerOldValue;
     }
 }

@@ -30,8 +30,6 @@ public class SettingsController {
 
         autoResetCheckBox.setSelected(prefs.getBoolean("autoResetCheckBoxSelected", true));
 
-//        prefs.putBoolean("autoResetCheckBoxSelected", true);
-
         comboInjectorConfig.setItems(FXCollections.observableArrayList(InjectorChannel.SINGLE_CHANNEL,InjectorChannel.MULTI_CHANNEL));
         comboInjectorConfig.getSelectionModel().selectFirst();
 
@@ -39,6 +37,5 @@ public class SettingsController {
             prefs.putBoolean("autoResetCheckBoxSelected", newValue);
         });
     }
-
 
 }

@@ -24,12 +24,18 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.util.StringConverter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.Semaphore;
 
 public class InjectorSectionController {
+
+    private Logger logger = LoggerFactory.getLogger(InjectorSectionController.class);
 
     //TODO: delete after test
     @Autowired
@@ -117,6 +123,8 @@ public class InjectorSectionController {
     private AnchorPane ledBeaker4;
 
     private boolean updateOSC;
+
+    private boolean escapePressed;
 
     private static final double FREQ_SPINNER_FAKE_VALUE = 16.671;
 
@@ -271,9 +279,10 @@ public class InjectorSectionController {
                 try {
                     String regex = "^(?=.*[A-Za-z])(?=.*[0-9])[A-Za-z0-9.]+$";
                     if (string.isEmpty() || string.matches(regex))
-                        throw new RuntimeException("Empty spinner value!");
+                        throw new RuntimeException("Invalid spinner value!");
                     return converter.fromString(string);
                 } catch (RuntimeException ex) {
+                    logger.warn("Exception: {}", ex);
                     freqCurrentSignal.getValueFactory().setValue(FREQ_SPINNER_FAKE_VALUE);
                     freqCurrentSignal.getValueFactory().setValue(16.67);
                     return freqCurrentSignal.getValue();
@@ -282,14 +291,22 @@ public class InjectorSectionController {
         });
 
         freqCurrentSignal.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
-            enterToolTip.setSpinnerOldValue(Double.parseDouble(oldValue));
-            enterToolTip.setSpinnerNewValue(Double.parseDouble(newValue));
-            Point2D p = freqCurrentSignal.localToScene(0.0, 0.0);
-            freqCurrentSignal.setTooltip(enterToolTip);
-            enterToolTip.show(freqCurrentSignal,
-                    p.getX() + freqCurrentSignal.getScene().getX() + freqCurrentSignal.getScene().getWindow().getX(),
-                    p.getY() + freqCurrentSignal.getScene().getY() + freqCurrentSignal.getHeight() + freqCurrentSignal.getScene().getWindow().getY());
-            freqCurrentSignal.setTooltip(null);
+            if (!escapePressed) {
+                try {
+                    enterToolTip.setSpinnerOldValue(Double.parseDouble(oldValue));
+                } catch(NumberFormatException ex) {
+                    enterToolTip.setSpinnerOldValue(enterToolTip.getInitialSpinnerOldValue());
+                }
+                Point2D p = freqCurrentSignal.localToScene(0.0, 0.0);
+                freqCurrentSignal.setTooltip(enterToolTip);
+                if (!enterToolTip.isShowing()) {
+                    enterToolTip.show(freqCurrentSignal,
+                            p.getX() + freqCurrentSignal.getScene().getX() + freqCurrentSignal.getScene().getWindow().getX(),
+                            p.getY() + freqCurrentSignal.getScene().getY() + freqCurrentSignal.getHeight() + freqCurrentSignal.getScene().getWindow().getY());
+                }
+
+                freqCurrentSignal.setTooltip(null);
+            }
         });
 
         freqCurrentSignal.valueProperty().addListener((observable, oldValue, newValue) -> {
@@ -299,9 +316,11 @@ public class InjectorSectionController {
         });
 
         freqCurrentSignal.addEventHandler(KeyEvent.ANY, event -> {
-            if(event.getCode() == KeyCode.ESCAPE) {
-                freqCurrentSignal.getValueFactory().setValue((Double)enterToolTip.getSpinnerNewValue() + 0.001);
-                freqCurrentSignal.getValueFactory().setValue((Double)enterToolTip.getSpinnerOldValue());
+            if (event.getCode() == KeyCode.ESCAPE) {
+                escapePressed = true;
+                freqCurrentSignal.getValueFactory().setValue(FREQ_SPINNER_FAKE_VALUE);
+                freqCurrentSignal.getValueFactory().setValue((Double) enterToolTip.getInitialSpinnerOldValue());
+                escapePressed = false;
             }
         });
     }
