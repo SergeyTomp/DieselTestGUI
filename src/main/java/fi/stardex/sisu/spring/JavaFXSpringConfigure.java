@@ -90,11 +90,12 @@ public class JavaFXSpringConfigure {
     @Autowired
     public InjectorSectionController injectorSectionController(SettingsController settingsController,
                                                                ModbusRegisterProcessor ultimaModbusWriter,
-                                                               CustomTooltip enterToolTip) {
+                                                               CustomTooltip frequencyEnterToolTip, CustomTooltip widthEnterToolTip) {
         InjectorSectionController injectorSectionController = crSectionController().getInjectorSectionController();
         injectorSectionController.setSettingsController(settingsController);
         injectorSectionController.setUltimaModbusWriter(ultimaModbusWriter);
-        injectorSectionController.setEnterToolTip(enterToolTip);
+        injectorSectionController.setFrequencyEnterToolTip(frequencyEnterToolTip);
+        injectorSectionController.setWidthEnterToolTip(widthEnterToolTip);
         return injectorSectionController;
     }
 

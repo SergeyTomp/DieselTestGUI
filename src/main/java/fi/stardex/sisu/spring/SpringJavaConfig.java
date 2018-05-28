@@ -148,7 +148,6 @@ public class SpringJavaConfig {
         return new ChartTask(voltageController, ultimaModbusWriter, injectorSectionController);
     }
 
-
     @Bean
     @Autowired
     public InjectorConfigComboBoxListener injectorConfigComboBoxListener(InjectorSectionController injectorSectionController,
@@ -157,6 +156,7 @@ public class SpringJavaConfig {
     }
 
     @Bean
+    @Scope("prototype")
     public CustomTooltip enterToolTip() {
         return new CustomTooltip("Press ENTER to commit changes");
     }
