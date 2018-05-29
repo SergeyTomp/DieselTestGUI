@@ -83,7 +83,7 @@
                <children>
                   <ButtonBar prefHeight="40.0" prefWidth="200.0">
                     <buttons>
-                      <Button fx:id="applyBtn" mnemonicParsing="false" text="%voapProfile.button.apply" />
+                      <Button fx:id="applyButton" mnemonicParsing="false" text="%voapProfile.button.apply" />
                         <Button fx:id="cancelBtn" mnemonicParsing="false" text="%voapProfile.button.cancel" />
                     </buttons>
                   </ButtonBar>

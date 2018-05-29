@@ -1,6 +1,7 @@
 package fi.stardex.sisu.ui.controllers.additional.tabs;
 
 import fi.stardex.sisu.ui.ViewHolder;
+import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -11,6 +12,7 @@ import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -98,11 +100,13 @@ public class VoltageController {
 
     public void setVoltAmpereProfileDialog(ViewHolder voltAmpereProfileDialog) {
         this.voltAmpereProfileDialog = voltAmpereProfileDialog;
-
     }
 
     @PostConstruct
     private void init() {
+
+        VoltAmpereProfileController voltAmpereProfileController = (VoltAmpereProfileController) voltAmpereProfileDialog.getController();
+
         pulseSettingsButton.setOnMouseClicked(event -> {
             if(voapStage == null) {
                 voapStage = new Stage();
@@ -110,7 +114,9 @@ public class VoltageController {
                 voapStage.setScene(new Scene(voltAmpereProfileDialog.getView()));
                 voapStage.setResizable(false);
                 voapStage.initModality(Modality.APPLICATION_MODAL);
+                voapStage.initStyle(StageStyle.UTILITY);
             }
+            voltAmpereProfileController.setStage(voapStage);
             voapStage.show();
         });
 

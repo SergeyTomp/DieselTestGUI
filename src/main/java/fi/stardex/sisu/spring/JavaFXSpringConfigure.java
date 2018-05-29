@@ -142,8 +142,11 @@ public class JavaFXSpringConfigure {
     }
 
     @Bean
-    public VoltAmpereProfileController voltAmpereProfileController() {
-        return (VoltAmpereProfileController) voltAmpereProfileDialog().getController();
+    @Autowired
+    public VoltAmpereProfileController voltAmpereProfileController(ModbusRegisterProcessor ultimaModbusWriter) {
+        VoltAmpereProfileController voltAmpereProfileController = (VoltAmpereProfileController) voltAmpereProfileDialog().getController();
+        voltAmpereProfileController.setUltimaModbusWriter(ultimaModbusWriter);
+        return voltAmpereProfileController;
     }
 
     @Bean

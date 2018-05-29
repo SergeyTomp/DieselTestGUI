@@ -31,16 +31,15 @@ public enum ModbusMapUltima implements ModbusMap {
 
 
     //слепок регистров ВАП
-    Boost_U(RegisterType.REGISTER_HOLDING, 120, 2, false),
-    Battery_U(RegisterType.REGISTER_HOLDING, 122, 2, false),
-    Negative_U1(RegisterType.REGISTER_HOLDING, 124, 2, false),
-    Negative_U2(RegisterType.REGISTER_HOLDING, 126, 2, false),
-    Fets_Resistance(RegisterType.REGISTER_HOLDING, 130, 2, false),
-    BoostIBoardOne(RegisterType.REGISTER_HOLDING, 1, 1, false),
-    FirstIBoardOne(RegisterType.REGISTER_HOLDING, 2, 1, false),
-    SecondIBoardOne(RegisterType.REGISTER_HOLDING, 3, 1, false),
-    FirstWBoardOne(RegisterType.REGISTER_HOLDING, 4, 1, false),
-    WidthBoardOne(RegisterType.REGISTER_HOLDING, 5, 1, false),
+    Boost_U(RegisterType.REGISTER_HOLDING, 120, 2, false), // boostUSpinner
+    Battery_U(RegisterType.REGISTER_HOLDING, 122, 2, false), // batteruUSpinner
+    Negative_U1(RegisterType.REGISTER_HOLDING, 124, 2, false), // negativeU1Spinner
+    Negative_U2(RegisterType.REGISTER_HOLDING, 126, 2, false), // negativeU2Spinner
+    BoostIBoardOne(RegisterType.REGISTER_HOLDING, 1, 1, false), // boostISpinner
+    FirstIBoardOne(RegisterType.REGISTER_HOLDING, 2, 1, false), // firstISpinner
+    SecondIBoardOne(RegisterType.REGISTER_HOLDING, 3, 1, false), // secondISpinner
+    FirstWBoardOne(RegisterType.REGISTER_HOLDING, 4, 1, false), // firstWSpinner
+    WidthBoardOne(RegisterType.REGISTER_HOLDING, 5, 1, false), // widthCurrentSignal
     BoostIBoardTwo(RegisterType.REGISTER_HOLDING, 21, 1, false),
     FirstIBoardTwo(RegisterType.REGISTER_HOLDING, 22, 1, false),
     SecondIBoardTwo(RegisterType.REGISTER_HOLDING, 23, 1, false),
@@ -56,10 +55,10 @@ public enum ModbusMapUltima implements ModbusMap {
     SecondIBoardFour(RegisterType.REGISTER_HOLDING, 1023, 1, false),
     FirstWBoardFour(RegisterType.REGISTER_HOLDING, 1024, 1, false),
     WidthBoardFour(RegisterType.REGISTER_HOLDING, 1025, 1, false),
-    StartOnBatteryUOne(RegisterType.DISCRETE_COIL, 2, 1, false),
-    StartOnBatteryUTwo(RegisterType.DISCRETE_COIL, 22, 1, false),
-    StartOnBatteryUThree(RegisterType.DISCRETE_COIL, 1002, 1, false),
-    StartOnBatteryUFour(RegisterType.DISCRETE_COIL, 1022, 1, false);
+    StartOnBatteryUOne(RegisterType.DISCRETE_COIL, 2, 1, false), // Boost_U enabled - true disabled - false
+    StartOnBatteryUTwo(RegisterType.DISCRETE_COIL, 22, 1, false), // Boost_U enabled - true disabled - false
+    StartOnBatteryUThree(RegisterType.DISCRETE_COIL, 1002, 1, false), // Boost_U enabled - true disabled - false
+    StartOnBatteryUFour(RegisterType.DISCRETE_COIL, 1022, 1, false); // Boost_U enabled - true disabled - false
 
 
 
