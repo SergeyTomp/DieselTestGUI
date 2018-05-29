@@ -2,8 +2,11 @@ package fi.stardex.sisu.ui.controllers.additional.tabs;
 
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
@@ -13,6 +16,7 @@ import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import javafx.stage.WindowEvent;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 
@@ -81,8 +85,10 @@ public class VoltageController {
                 voapStage.setResizable(false);
                 voapStage.initModality(Modality.APPLICATION_MODAL);
                 voapStage.initStyle(StageStyle.UTILITY);
+                voapStage.setOnCloseRequest(ev -> voltAmpereProfileController.getCancelButton().fire());
             }
             voltAmpereProfileController.setStage(voapStage);
+            voltAmpereProfileController.saveValues();
             voapStage.show();
         });
 

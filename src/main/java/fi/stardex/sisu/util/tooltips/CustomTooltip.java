@@ -14,6 +14,10 @@ public class CustomTooltip extends Tooltip implements ChangeListener<Boolean> {
 
     private Number initialSpinnerOldValue;
 
+    public CustomTooltip() {
+        this("Press ENTER to commit changes");
+    }
+
     public CustomTooltip(String message) {
         super(message);
         hackTooltipStartTiming();

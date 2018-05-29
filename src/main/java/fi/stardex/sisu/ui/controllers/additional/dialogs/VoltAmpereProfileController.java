@@ -3,9 +3,8 @@ package fi.stardex.sisu.ui.controllers.additional.dialogs;
 import fi.stardex.sisu.registers.modbusmaps.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
-import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import fi.stardex.sisu.util.SpinnerManager;
+import fi.stardex.sisu.util.tooltips.CustomTooltip;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Spinner;
@@ -14,6 +13,8 @@ import javafx.scene.control.ToggleButton;
 import javafx.stage.Stage;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.List;
 
 public class VoltAmpereProfileController {
 
@@ -48,7 +49,23 @@ public class VoltAmpereProfileController {
     private Button applyButton;
 
     @FXML
-    private Button cancelBtn;
+    private Button cancelButton;
+
+    private int firstWValue;
+
+    private double boostIValue;
+
+    private double firstIValue;
+
+    private double secondIValue;
+
+    private int batteryUValue;
+
+    private int negativeU1Value;
+
+    private int negativeU2Value;
+
+    private int boostUValue;
 
     private ModbusRegisterProcessor ultimaModbusWriter;
 
@@ -59,6 +76,8 @@ public class VoltAmpereProfileController {
     private boolean boostToggleButtonEnabled = true;
 
     private VoltageController voltageController;
+
+    private List<Spinner> listOfVAPSpinners = new ArrayList<>();
 
     public void setUltimaModbusWriter(ModbusRegisterProcessor ultimaModbusWriter) {
         this.ultimaModbusWriter = ultimaModbusWriter;
@@ -76,6 +95,10 @@ public class VoltAmpereProfileController {
         this.voltageController = voltageController;
     }
 
+    public Button getCancelButton() {
+        return cancelButton;
+    }
+
     @PostConstruct
     private void init() {
 
@@ -90,23 +113,36 @@ public class VoltAmpereProfileController {
         negativeU2Spinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(12, 70, 36, 1));
         boostUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(40, 75, 60, 1));
 
-        firstWSpinner.setEditable(true);
-        boostISpinner.setEditable(true);
-        firstISpinner.setEditable(true);
-        secondISpinner.setEditable(true);
-        batteryUSpinner.setEditable(true);
-        negativeU1Spinner.setEditable(true);
-        negativeU2Spinner.setEditable(true);
-        boostUSpinner.setEditable(true);
+        SpinnerManager.setupSpinner(firstWSpinner, 500, 15503, new CustomTooltip());
+        SpinnerManager.setupSpinner(boostISpinner, 21.5, 21.51, new CustomTooltip());
+        SpinnerManager.setupSpinner(firstISpinner, 15, 15.01, new CustomTooltip());
+        SpinnerManager.setupSpinner(secondISpinner, 5.5, 5.51, new CustomTooltip());
+        SpinnerManager.setupSpinner(batteryUSpinner, 20, 13, new CustomTooltip());
+        SpinnerManager.setupSpinner(negativeU1Spinner, 48, 94, new CustomTooltip());
+        SpinnerManager.setupSpinner(negativeU2Spinner, 36, 67, new CustomTooltip());
+        SpinnerManager.setupSpinner(boostUSpinner, 60, 71, new CustomTooltip());
+
+        listOfVAPSpinners.add(firstWSpinner);
+        listOfVAPSpinners.add(boostISpinner);
+        listOfVAPSpinners.add(firstISpinner);
+        listOfVAPSpinners.add(secondISpinner);
+        listOfVAPSpinners.add(batteryUSpinner);
+        listOfVAPSpinners.add(negativeU1Spinner);
+        listOfVAPSpinners.add(negativeU2Spinner);
+        listOfVAPSpinners.add(boostUSpinner);
+        listOfVAPSpinners.add(widthCurrentSignal);
+
+        listOfVAPSpinners.forEach(e -> e.setEditable(true));
 
         setupApplyButton();
 
-//        widthCurrentSignal.valueProperty().addListener((observable, oldValue, newValue) -> {
-//            if((newValue >= 0) && (newValue <= 3000) && (!(newValue == WIDTH_SPINNER_FAKE_VALUE)))
-//                System.err.println("Value is: " + newValue);
-//        });
+        setupCancelButton();
 
-        new VAPSettingsChangeListener();
+        widthCurrentSignal.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if ((newValue >= 0) && (newValue <= 3000) && (!(newValue == 2993)))
+                sendVAPRegisters();
+        });
+
     }
 
     private void setupEnableBoostToggleButton() {
@@ -125,33 +161,26 @@ public class VoltAmpereProfileController {
 
     private void setupApplyButton() {
         applyButton.setOnAction(event -> {
+            listOfVAPSpinners.forEach(e -> e.increment(0));
             sendVAPRegisters();
             voltageController.refreshVoltageLabels(boostUSpinner.getValue(), firstWSpinner.getValue(), firstISpinner.getValue(), secondISpinner.getValue());
             stage.close();
         });
     }
 
-    private class VAPSettingsChangeListener implements ChangeListener<Number> {
-
-        VAPSettingsChangeListener() {
-            boostUSpinner.valueProperty().addListener(this);
-            batteryUSpinner.valueProperty().addListener(this);
-            negativeU1Spinner.valueProperty().addListener(this);
-            negativeU2Spinner.valueProperty().addListener(this);
-            boostISpinner.valueProperty().addListener(this);
-            firstISpinner.valueProperty().addListener(this);
-            secondISpinner.valueProperty().addListener(this);
-            firstWSpinner.valueProperty().addListener(this);
-            widthCurrentSignal.valueProperty().addListener((observable, oldValue, newValue) -> {
-                if ((newValue >= 0) && (newValue <= 3000) && (!(newValue == InjectorSectionController.WIDTH_SPINNER_FAKE_VALUE)))
-                    sendVAPRegisters();
-            });
-        }
-
-        @Override
-        public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-
-        }
+    // TODO: есть баги, не пишется старое значение при закрытии окна при горящем tooltip
+    private void setupCancelButton() {
+        cancelButton.setOnAction(event -> {
+            firstWSpinner.getValueFactory().setValue(firstWValue);
+            boostISpinner.getValueFactory().setValue(boostIValue);
+            firstISpinner.getValueFactory().setValue(firstIValue);
+            secondISpinner.getValueFactory().setValue(secondIValue);
+            batteryUSpinner.getValueFactory().setValue(batteryUValue);
+            negativeU1Spinner.getValueFactory().setValue(negativeU1Value);
+            negativeU2Spinner.getValueFactory().setValue(negativeU2Value);
+            boostUSpinner.getValueFactory().setValue(boostUValue);
+            stage.close();
+        });
     }
 
     private void sendVAPRegisters() {
@@ -196,5 +225,16 @@ public class VoltAmpereProfileController {
         System.err.println("StartOnBatteryUTwo: " + boostToggleButtonEnabled);
         System.err.println("StartOnBatteryUThree: " + boostToggleButtonEnabled);
         System.err.println("StartOnBatteryUFour: " + boostToggleButtonEnabled);
+    }
+
+    public void saveValues() {
+        firstWValue = firstWSpinner.getValue();
+        boostIValue = boostISpinner.getValue();
+        firstIValue = firstISpinner.getValue();
+        secondIValue = secondISpinner.getValue();
+        batteryUValue = batteryUSpinner.getValue();
+        negativeU1Value = negativeU1Spinner.getValue();
+        negativeU2Value = negativeU2Spinner.getValue();
+        boostUValue = boostUSpinner.getValue();
     }
 }

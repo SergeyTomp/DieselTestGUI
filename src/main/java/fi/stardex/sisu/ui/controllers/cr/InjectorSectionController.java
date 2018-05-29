@@ -8,22 +8,18 @@ import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.controllers.additional.LedController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
+import fi.stardex.sisu.util.SpinnerManager;
 import fi.stardex.sisu.util.tooltips.CustomTooltip;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.Event;
 import javafx.fxml.FXML;
-import javafx.geometry.Point2D;
 import javafx.scene.control.*;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
-import javafx.util.StringConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -122,16 +118,6 @@ public class InjectorSectionController {
 
     private boolean updateOSC;
 
-    private boolean escapePressed;
-
-    private static final double FREQ_SPINNER_FAKE_VALUE = 16.671;
-
-    public static final int WIDTH_SPINNER_FAKE_VALUE = 2993;
-
-    private CustomTooltip frequencyEnterToolTip;
-
-    private CustomTooltip widthEnterToolTip;
-
     private SettingsController settingsController;
 
     private ModbusRegisterProcessor ultimaModbusWriter;
@@ -174,14 +160,6 @@ public class InjectorSectionController {
 
     public void setUpdateOSC(boolean updateOSC) {
         this.updateOSC = updateOSC;
-    }
-
-    public void setFrequencyEnterToolTip(CustomTooltip frequencyEnterToolTip) {
-        this.frequencyEnterToolTip = frequencyEnterToolTip;
-    }
-
-    public void setWidthEnterToolTip(CustomTooltip widthEnterToolTip) {
-        this.widthEnterToolTip = widthEnterToolTip;
     }
 
     public ToggleGroup getPiezoCoilToggleGroup() {
@@ -256,10 +234,13 @@ public class InjectorSectionController {
 
         setupInjectorConfigComboBox();
 
-        //TODO: баги в новых спиннерах нужно тестить
-        setupWidthSpinner();
+        widthCurrentSignal.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 3000, 300, 10));
 
-        setupFrequencySpinner();
+        freqCurrentSignal.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0.5, 50, 16.67, 0.01));
+
+        SpinnerManager.setupSpinner(widthCurrentSignal, 300, 2993, new CustomTooltip());
+
+        SpinnerManager.setupSpinner(freqCurrentSignal, 16.67, 16.671, new CustomTooltip());
 
         new LedParametersChangeListener();
 
@@ -275,151 +256,6 @@ public class InjectorSectionController {
 
     private void setToggleGroupToLeds(ToggleGroup toggleGroup) {
         ledControllers.forEach(s -> s.getLedBeaker().setToggleGroup(toggleGroup));
-    }
-
-    /**
-     * regex checks for presence of positive integers
-     */
-    private void setupWidthSpinner() {
-
-        widthCurrentSignal.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 3000, 300, 10));
-
-        StringConverter<Integer> converter = widthCurrentSignal.getValueFactory().getConverter();
-
-        widthCurrentSignal.getValueFactory().setConverter(new StringConverter<Integer>() {
-            @Override
-            public String toString(Integer object) {
-                return converter.toString(object);
-            }
-
-            @Override
-            public Integer fromString(String string) {
-                try {
-                    if (string.isEmpty())
-                        throw new RuntimeException("Invalid spinner value!");
-                    return converter.fromString(string);
-                } catch (RuntimeException ex) {
-                    System.err.println("Runtime ex");
-                    widthCurrentSignal.getValueFactory().setValue(WIDTH_SPINNER_FAKE_VALUE);
-                    widthCurrentSignal.getValueFactory().setValue(300);
-                    return widthCurrentSignal.getValue();
-                }
-            }
-        });
-
-        widthCurrentSignal.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!escapePressed) {
-                try {
-                    widthEnterToolTip.setSpinnerOldValue(Integer.parseInt(oldValue));
-                } catch(NumberFormatException ex) {
-                    widthEnterToolTip.setSpinnerOldValue(widthEnterToolTip.getInitialSpinnerOldValue());
-                }
-                Point2D p = widthCurrentSignal.localToScene(0.0, 0.0);
-                widthCurrentSignal.setTooltip(widthEnterToolTip);
-                if (!widthEnterToolTip.isShowing()) {
-                    widthEnterToolTip.show(widthCurrentSignal,
-                            p.getX() + widthCurrentSignal.getScene().getX() + widthCurrentSignal.getScene().getWindow().getX(),
-                            p.getY() + widthCurrentSignal.getScene().getY() + widthCurrentSignal.getHeight() + widthCurrentSignal.getScene().getWindow().getY());
-                }
-
-                widthCurrentSignal.setTooltip(null);
-            }
-        });
-
-        widthCurrentSignal.addEventHandler(KeyEvent.ANY, event -> {
-            if (event.getCode() == KeyCode.ESCAPE) {
-                widthCurrentSignal.requestFocus();
-                escapePressed = true;
-                System.err.println("Escape width");
-                widthCurrentSignal.getValueFactory().setValue(WIDTH_SPINNER_FAKE_VALUE);
-                widthCurrentSignal.getValueFactory().setValue((Integer) widthEnterToolTip.getInitialSpinnerOldValue());
-                escapePressed = false;
-            }
-        });
-
-        setupUtilityListeners(widthCurrentSignal, widthEnterToolTip);
-    }
-
-    /**
-     * regex checks for presence of characters/dots and digits both at a string
-     */
-    private void setupFrequencySpinner() {
-
-        freqCurrentSignal.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0.5, 50, 16.67, 0.01));
-
-        StringConverter<Double> converter = freqCurrentSignal.getValueFactory().getConverter();
-
-        freqCurrentSignal.getValueFactory().setConverter(new StringConverter<Double>() {
-
-            @Override
-            public String toString(Double object) {
-                return converter.toString(object);
-            }
-
-            @Override
-            public Double fromString(String string) {
-                try {
-                    String regex = "^(?=.*[A-Za-z])(?=.*[0-9])[A-Za-z0-9.]+$";
-                    if (string.isEmpty() || string.matches(regex))
-                        throw new RuntimeException("Invalid spinner value!");
-                    return converter.fromString(string);
-                } catch (RuntimeException ex) {
-                    freqCurrentSignal.getValueFactory().setValue(FREQ_SPINNER_FAKE_VALUE);
-                    freqCurrentSignal.getValueFactory().setValue(16.67);
-                    return freqCurrentSignal.getValue();
-                }
-            }
-        });
-
-        freqCurrentSignal.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!escapePressed) {
-                try {
-                    frequencyEnterToolTip.setSpinnerOldValue(Double.parseDouble(oldValue));
-                } catch(NumberFormatException ex) {
-                    frequencyEnterToolTip.setSpinnerOldValue(frequencyEnterToolTip.getInitialSpinnerOldValue());
-                }
-                Point2D p = freqCurrentSignal.localToScene(0.0, 0.0);
-                freqCurrentSignal.setTooltip(frequencyEnterToolTip);
-                if (!frequencyEnterToolTip.isShowing()) {
-                    frequencyEnterToolTip.show(freqCurrentSignal,
-                            p.getX() + freqCurrentSignal.getScene().getX() + freqCurrentSignal.getScene().getWindow().getX(),
-                            p.getY() + freqCurrentSignal.getScene().getY() + freqCurrentSignal.getHeight() + freqCurrentSignal.getScene().getWindow().getY());
-                }
-
-                freqCurrentSignal.setTooltip(null);
-            }
-        });
-
-        freqCurrentSignal.addEventHandler(KeyEvent.ANY, event -> {
-            if (event.getCode() == KeyCode.ESCAPE) {
-                freqCurrentSignal.requestFocus();
-                escapePressed = true;
-                System.err.println("Escape freq");
-                freqCurrentSignal.getValueFactory().setValue(FREQ_SPINNER_FAKE_VALUE);
-                freqCurrentSignal.getValueFactory().setValue((Double) frequencyEnterToolTip.getInitialSpinnerOldValue());
-                escapePressed = false;
-            }
-        });
-
-        setupUtilityListeners(freqCurrentSignal, frequencyEnterToolTip);
-    }
-
-    private void setupUtilityListeners(Spinner<? extends Number> spinner, CustomTooltip tooltip) {
-
-        spinner.valueProperty().addListener((observable, oldValue, newValue) -> {
-            spinner.setTooltip(tooltip);
-            spinner.getTooltip().hide();
-            spinner.setTooltip(null);
-        });
-
-        spinner.focusedProperty().addListener((observable, oldValue, newValue) -> {
-            if(!newValue && tooltip.isShowing()) {
-                System.err.println("Fire escape");
-                Event.fireEvent(spinner, new KeyEvent(null, spinner,
-                        KeyEvent.ANY, "", "", KeyCode.ESCAPE,
-                        false, false, false, false));
-            }
-        });
     }
 
     private class LedParametersChangeListener implements ChangeListener<Object> {
@@ -446,7 +282,7 @@ public class InjectorSectionController {
         public void changed(ObservableValue<?> observable, Object oldValue, Object newValue) {
             switchOffAll();
             if (newValue instanceof Double) {
-                if (((Double) newValue <= 50 && (Double) newValue >= 0.5) && (Double) newValue != FREQ_SPINNER_FAKE_VALUE) {
+                if (((Double) newValue <= 50 && (Double) newValue >= 0.5) && (Double) newValue != 16.671) {
                     System.err.println("listener");
                     sendLedRegisters();
                 }

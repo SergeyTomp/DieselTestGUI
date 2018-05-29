@@ -19,7 +19,6 @@ import fi.stardex.sisu.ui.updaters.HighPressureSectionUpdater;
 import fi.stardex.sisu.ui.updaters.Updater;
 import fi.stardex.sisu.util.ApplicationConfigHandler;
 import fi.stardex.sisu.util.i18n.I18N;
-import fi.stardex.sisu.util.tooltips.CustomTooltip;
 import fi.stardex.sisu.util.wrappers.StatusBarWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -146,9 +145,4 @@ public class SpringJavaConfig {
         return new ChartTask(voltageController, ultimaModbusWriter, injectorSectionController);
     }
 
-    @Bean
-    @Scope("prototype")
-    public CustomTooltip enterToolTip() {
-        return new CustomTooltip("Press ENTER to commit changes");
-    }
 }
