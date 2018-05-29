@@ -8,12 +8,10 @@ import fi.stardex.sisu.connect.InetAddressWrapper;
 import fi.stardex.sisu.connect.ModbusConnect;
 import fi.stardex.sisu.devices.Device;
 import fi.stardex.sisu.devices.Devices;
-import fi.stardex.sisu.listeners.InjectorConfigComboBoxListener;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.modbusmaps.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.controllers.additional.tabs.ConnectionController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
 import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
@@ -149,16 +147,8 @@ public class SpringJavaConfig {
     }
 
     @Bean
-    @Autowired
-    public InjectorConfigComboBoxListener injectorConfigComboBoxListener(InjectorSectionController injectorSectionController,
-                                                                         SettingsController settingsController) {
-        return new InjectorConfigComboBoxListener(injectorSectionController, settingsController);
-    }
-
-    @Bean
     @Scope("prototype")
     public CustomTooltip enterToolTip() {
         return new CustomTooltip("Press ENTER to commit changes");
     }
-
 }

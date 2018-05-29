@@ -1,9 +1,11 @@
 package fi.stardex.sisu.ui.controllers.additional.tabs;
 
 import fi.stardex.sisu.injectors.InjectorChannel;
+import fi.stardex.sisu.ui.controllers.additional.LedController;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
@@ -85,5 +87,7 @@ public class SettingsController {
         sensor2200RadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> prefs.putBoolean("sensor2200RadioButtonSelected", newValue));
 
         sensor2400RadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> prefs.putBoolean("sensor2400RadioButtonSelected", newValue));
+
     }
+
 }

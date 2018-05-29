@@ -138,6 +138,8 @@ public class InjectorSectionController {
 
     private ObservableList<LedController> ledControllers;
 
+    private ToggleGroup toggleGroup = new ToggleGroup();
+
     public LedController getLedBeaker1Controller() {
         return ledBeaker1Controller;
     }
@@ -252,12 +254,27 @@ public class InjectorSectionController {
         ledControllers.add(ledBeaker3Controller);
         ledControllers.add(ledBeaker4Controller);
 
+        setupInjectorConfigComboBox();
+
+        //TODO: баги в новых спиннерах нужно тестить
         setupWidthSpinner();
 
         setupFrequencySpinner();
 
         new LedParametersChangeListener();
 
+    }
+
+    private void setupInjectorConfigComboBox() {
+
+        setToggleGroupToLeds(toggleGroup);
+
+        settingsController.getComboInjectorConfig().getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
+                setToggleGroupToLeds(newValue == InjectorChannel.SINGLE_CHANNEL ? toggleGroup : null));
+    }
+
+    private void setToggleGroupToLeds(ToggleGroup toggleGroup) {
+        ledControllers.forEach(s -> s.getLedBeaker().setToggleGroup(toggleGroup));
     }
 
     /**
@@ -313,7 +330,7 @@ public class InjectorSectionController {
             if (event.getCode() == KeyCode.ESCAPE) {
                 widthCurrentSignal.requestFocus();
                 escapePressed = true;
-                System.err.println("Escape");
+                System.err.println("Escape width");
                 widthCurrentSignal.getValueFactory().setValue(WIDTH_SPINNER_FAKE_VALUE);
                 widthCurrentSignal.getValueFactory().setValue((Integer) widthEnterToolTip.getInitialSpinnerOldValue());
                 escapePressed = false;
@@ -382,7 +399,7 @@ public class InjectorSectionController {
             if (event.getCode() == KeyCode.ESCAPE) {
                 freqCurrentSignal.requestFocus();
                 escapePressed = true;
-                System.err.println("Escape");
+                System.err.println("Escape freq");
                 freqCurrentSignal.getValueFactory().setValue(FREQ_SPINNER_FAKE_VALUE);
                 freqCurrentSignal.getValueFactory().setValue((Double) frequencyEnterToolTip.getInitialSpinnerOldValue());
                 escapePressed = false;
@@ -402,6 +419,7 @@ public class InjectorSectionController {
 
         spinner.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if(!newValue && tooltip.isShowing()) {
+                System.err.println("Fire escape");
                 Event.fireEvent(spinner, new KeyEvent(null, spinner,
                         KeyEvent.ANY, "", "", KeyCode.ESCAPE,
                         false, false, false, false));
