@@ -143,9 +143,13 @@ public class JavaFXSpringConfigure {
 
     @Bean
     @Autowired
-    public VoltAmpereProfileController voltAmpereProfileController(ModbusRegisterProcessor ultimaModbusWriter) {
+    public VoltAmpereProfileController voltAmpereProfileController(ModbusRegisterProcessor ultimaModbusWriter,
+                                                                   InjectorSectionController injectorSectionController,
+                                                                   VoltageController voltageController) {
         VoltAmpereProfileController voltAmpereProfileController = (VoltAmpereProfileController) voltAmpereProfileDialog().getController();
         voltAmpereProfileController.setUltimaModbusWriter(ultimaModbusWriter);
+        voltAmpereProfileController.setWidthSpinner(injectorSectionController.getWidthCurrentSignal());
+        voltAmpereProfileController.setVoltageController(voltageController);
         return voltAmpereProfileController;
     }
 

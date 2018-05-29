@@ -32,7 +32,7 @@ public enum ModbusMapUltima implements ModbusMap {
 
     //слепок регистров ВАП
     Boost_U(RegisterType.REGISTER_HOLDING, 120, 2, false), // boostUSpinner
-    Battery_U(RegisterType.REGISTER_HOLDING, 122, 2, false), // batteruUSpinner
+    Battery_U(RegisterType.REGISTER_HOLDING, 122, 2, false), // batteryUSpinner
     Negative_U1(RegisterType.REGISTER_HOLDING, 124, 2, false), // negativeU1Spinner
     Negative_U2(RegisterType.REGISTER_HOLDING, 126, 2, false), // negativeU2Spinner
     BoostIBoardOne(RegisterType.REGISTER_HOLDING, 1, 1, false), // boostISpinner

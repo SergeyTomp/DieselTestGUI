@@ -126,7 +126,7 @@ public class InjectorSectionController {
 
     private static final double FREQ_SPINNER_FAKE_VALUE = 16.671;
 
-    private static final int WIDTH_SPINNER_FAKE_VALUE = 2999;
+    public static final int WIDTH_SPINNER_FAKE_VALUE = 2993;
 
     private CustomTooltip frequencyEnterToolTip;
 
@@ -335,11 +335,6 @@ public class InjectorSectionController {
                 widthCurrentSignal.getValueFactory().setValue((Integer) widthEnterToolTip.getInitialSpinnerOldValue());
                 escapePressed = false;
             }
-        });
-
-        widthCurrentSignal.valueProperty().addListener((observable, oldValue, newValue) -> {
-            if((newValue >= 0) && (newValue <= 3000) && (!(newValue == WIDTH_SPINNER_FAKE_VALUE)))
-                System.err.println("Value is: " + newValue);
         });
 
         setupUtilityListeners(widthCurrentSignal, widthEnterToolTip);

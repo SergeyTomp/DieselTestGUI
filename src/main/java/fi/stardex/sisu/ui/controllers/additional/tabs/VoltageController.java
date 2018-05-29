@@ -24,63 +24,24 @@ public class VoltageController {
 
     @FXML
     private LineChart<Double, Double> lineChart;
+
     @FXML
     private NumberAxis xAxis;
+
     @FXML
     private NumberAxis yAxis;
 
     @FXML
     private Label voltage;
-    @FXML
-    private Spinner<Double> voltageHold;
+
     @FXML
     private Label firstWidth;
+
     @FXML
     private Label firstCurrent;
+
     @FXML
     private Label secondCurrent;
-    @FXML
-    private Spinner<Double> boostCurrent;
-    @FXML
-    private Spinner<Double> firstNegative;
-    @FXML
-    private Spinner<Double> secondNegative;
-
-    @FXML
-    private Label labelVoltage;
-    @FXML
-    private Label labelFirstWidth;
-    @FXML
-    private Label labelCurrent1;
-    @FXML
-    private Label labelCurrent2;
-    @FXML
-    private Label labelCurrentBoost;
-    @FXML
-    private Label labelVoltageHold;
-    @FXML
-    private Label labelVoltageFirst;
-    @FXML
-    private Label labelVoltageSecond;
-
-    @FXML
-    private Label labelUnitsBoostU;
-    @FXML
-    private Label labelUnitsFirstW;
-    @FXML
-    private Label labelUnitsFirstI;
-    @FXML
-    private Label labelUnitsSecondI;
-    @FXML
-    private Label labelUnitsBoostI;
-    @FXML
-    private Label labelUnitsBatteryU;
-    @FXML
-    private Label labelUnitsNegativeU1;
-    @FXML
-    private Label labelUnitsNegativeU2;
-    @FXML
-    private CheckBox checkBoxBoostDisable;
 
     @FXML
     private Button pulseSettingsButton;
@@ -104,6 +65,11 @@ public class VoltageController {
 
     @PostConstruct
     private void init() {
+
+        voltage.setText("60"); // boostUSpinner initial value
+        firstWidth.setText("500"); // firstWSpinner initial value
+        firstCurrent.setText("15.0"); // firstISpinner initial value
+        secondCurrent.setText("5.5"); // secondISpinner initial value
 
         VoltAmpereProfileController voltAmpereProfileController = (VoltAmpereProfileController) voltAmpereProfileDialog.getController();
 
@@ -162,5 +128,12 @@ public class VoltageController {
         lineChart.getYAxis().setAutoRanging(false);
         lineChart.getXAxis().setTickMarkVisible(true);
 
+    }
+
+    public void refreshVoltageLabels(Integer voltageValue, Integer firstWidthValue, Double firstCurrentValue, Double secondCurrentValue) {
+        voltage.setText(voltageValue.toString());
+        firstWidth.setText(firstWidthValue.toString());
+        firstCurrent.setText(firstCurrentValue.toString());
+        secondCurrent.setText(secondCurrentValue.toString());
     }
 }

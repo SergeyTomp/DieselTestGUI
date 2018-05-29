@@ -35,7 +35,7 @@
             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="1">
                <children>
                   <Label text="%voapProfile.label.batteryU" />
-                  <Spinner fx:id="batteruUSpinner" prefWidth="100.0" />
+                  <Spinner fx:id="batteryUSpinner" prefWidth="100.0" />
                </children>
             </HBox>
             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.rowIndex="1">

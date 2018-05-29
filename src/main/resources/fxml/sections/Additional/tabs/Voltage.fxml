@@ -87,7 +87,7 @@
                                         <Insets />
                                     </opaqueInsets>
                                     <tooltip>
-                                        <Tooltip text="Set to defaults values" />
+                                        <Tooltip text="Set voltage values" />
                                     </tooltip>
                                 </Button>
                             </children>
