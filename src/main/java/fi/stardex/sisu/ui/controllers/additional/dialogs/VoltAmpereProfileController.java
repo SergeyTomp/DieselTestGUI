@@ -116,14 +116,14 @@ public class VoltAmpereProfileController {
         negativeU2Spinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(12, 70, 36, 1));
         boostUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(30, 75, 60, 1));
 
-        SpinnerManager.setupSpinner(firstWSpinner, 500, 15503, new CustomTooltip());
+        SpinnerManager.setupSpinner(firstWSpinner, 500, 90, 15500, new CustomTooltip());
         SpinnerManager.setupSpinner(boostISpinner, 21.5, 21.51, new CustomTooltip());
         SpinnerManager.setupSpinner(firstISpinner, 15, 15.01, new CustomTooltip());
         SpinnerManager.setupSpinner(secondISpinner, 5.5, 5.51, new CustomTooltip());
-        SpinnerManager.setupSpinner(batteryUSpinner, 20, 13, new CustomTooltip());
-        SpinnerManager.setupSpinner(negativeU1Spinner, 48, 94, new CustomTooltip());
-        SpinnerManager.setupSpinner(negativeU2Spinner, 36, 67, new CustomTooltip());
-        SpinnerManager.setupSpinner(boostUSpinner, 60, 71, new CustomTooltip());
+        SpinnerManager.setupSpinner(batteryUSpinner, 20, 11, 32, new CustomTooltip());
+        SpinnerManager.setupSpinner(negativeU1Spinner, 48, 17, 121, new CustomTooltip());
+        SpinnerManager.setupSpinner(negativeU2Spinner, 36, 12, 70, new CustomTooltip());
+        SpinnerManager.setupSpinner(boostUSpinner, 60, 30, 75, new CustomTooltip());
 
         listOfVAPSpinners.add(firstWSpinner);
         listOfVAPSpinners.add(boostISpinner);

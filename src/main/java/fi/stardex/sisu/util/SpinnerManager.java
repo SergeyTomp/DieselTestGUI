@@ -8,10 +8,23 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.util.StringConverter;
 
+import java.util.Random;
+
 //TODO: баги в спиннерах нужно тестить (Escape при фокусе на спиннере, fake_value для Spinner<Integer>)
 public class SpinnerManager {
 
     private static boolean escapePressed;
+
+    private static Random random = new Random();
+
+    // TODO впоследствии если будет нужен value property listener на Spinner<Integer> проверять на равенство с currentRandomFakeInt и не пускать дальше (fake value)
+    private static int currentRandomFakeInt;
+
+    private static int generateRandomFakeInt(int min, int max) {
+        currentRandomFakeInt = random.nextInt((max - min) + 1) + min;
+        System.err.println(currentRandomFakeInt);
+        return currentRandomFakeInt;
+    }
 
     /**
      * regex checks for presence of characters/dots and digits both at a string
@@ -48,7 +61,7 @@ public class SpinnerManager {
                 } catch (NumberFormatException ex) {
                     tooltip.setSpinnerOldValue(tooltip.getInitialSpinnerOldValue());
                 }
-                // TODO: баг в расположении tooltips на экране
+                // TODO: баг в расположении tooltips на экране, иногда в volt ampere dialog появляются относительно главной scene
                 Point2D p = spinner.localToScene(0.0, 0.0);
                 spinner.setTooltip(tooltip);
                 if (!tooltip.isShowing()) {
@@ -74,7 +87,7 @@ public class SpinnerManager {
         setupUtilityListeners(spinner, tooltip);
     }
 
-    public static void setupSpinner(Spinner<Integer> spinner, int initValue, int fake_value, CustomTooltip tooltip) {
+    public static void setupSpinner(Spinner<Integer> spinner, int initValue, int minValue, int maxValue, CustomTooltip tooltip) {
         StringConverter<Integer> converter = spinner.getValueFactory().getConverter();
 
         spinner.getValueFactory().setConverter(new StringConverter<Integer>() {
@@ -90,7 +103,7 @@ public class SpinnerManager {
                         throw new RuntimeException("Invalid spinner value!");
                     return converter.fromString(string);
                 } catch (RuntimeException ex) {
-                    spinner.getValueFactory().setValue(fake_value);
+                    spinner.getValueFactory().setValue(generateRandomFakeInt(minValue, maxValue));
                     spinner.getValueFactory().setValue(initValue);
                     return spinner.getValue();
                 }
@@ -120,7 +133,7 @@ public class SpinnerManager {
             if (event.getCode() == KeyCode.ESCAPE) {
                 spinner.requestFocus();
                 escapePressed = true;
-                spinner.getValueFactory().setValue(fake_value);
+                spinner.getValueFactory().setValue(generateRandomFakeInt(minValue, maxValue));
                 spinner.getValueFactory().setValue((Integer) tooltip.getInitialSpinnerOldValue());
                 escapePressed = false;
             }

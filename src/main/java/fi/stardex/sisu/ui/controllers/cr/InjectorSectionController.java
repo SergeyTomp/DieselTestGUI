@@ -234,11 +234,11 @@ public class InjectorSectionController {
 
         setupInjectorConfigComboBox();
 
-        widthCurrentSignal.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 3000, 300, 10));
+        widthCurrentSignal.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(120, 15500, 300, 10));
 
         freqCurrentSignal.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0.5, 50, 16.67, 0.01));
 
-        SpinnerManager.setupSpinner(widthCurrentSignal, 300, 2993, new CustomTooltip());
+        SpinnerManager.setupSpinner(widthCurrentSignal, 300, 120, 15500, new CustomTooltip());
 
         SpinnerManager.setupSpinner(freqCurrentSignal, 16.67, 16.671, new CustomTooltip());
 
