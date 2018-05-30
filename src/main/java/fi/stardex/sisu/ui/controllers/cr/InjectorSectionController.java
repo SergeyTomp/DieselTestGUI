@@ -283,7 +283,6 @@ public class InjectorSectionController {
             switchOffAll();
             if (newValue instanceof Double) {
                 if (((Double) newValue <= 50 && (Double) newValue >= 0.5) && (Double) newValue != 16.671) {
-                    System.err.println("listener");
                     sendLedRegisters();
                 }
             } else if (newValue instanceof Toggle) {
@@ -311,7 +310,6 @@ public class InjectorSectionController {
             Iterator<LedController> activeControllersIterator = activeControllers.iterator();
             int activeLeds = activeControllers.size();
             double frequency = freqCurrentSignal.getValue();
-            System.err.println("frequency: " + frequency);
             ultimaModbusWriter.add(ModbusMapUltima.GImpulsesPeriod, 1000 / frequency);
             if (activeLeds == 0) {
                 return;

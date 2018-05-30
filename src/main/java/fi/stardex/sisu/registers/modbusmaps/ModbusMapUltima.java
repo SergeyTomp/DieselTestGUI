@@ -1,7 +1,5 @@
 package fi.stardex.sisu.registers.modbusmaps;
 
-import net.wimpi.modbus.procimg.Register;
-
 import java.util.LinkedList;
 import java.util.List;
 

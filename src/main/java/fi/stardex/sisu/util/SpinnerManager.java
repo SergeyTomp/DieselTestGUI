@@ -139,7 +139,6 @@ public class SpinnerManager {
 
         spinner.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue && tooltip.isShowing()) {
-                System.err.println("Fire escape");
                 Event.fireEvent(spinner, new KeyEvent(null, spinner,
                         KeyEvent.ANY, "", "", KeyCode.ESCAPE,
                         false, false, false, false));

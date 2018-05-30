@@ -51,21 +51,23 @@ public class VoltAmpereProfileController {
     @FXML
     private Button cancelButton;
 
-    private int firstWValue;
+    private int firstWSavedValue;
 
-    private double boostIValue;
+    private double boostISavedValue;
 
-    private double firstIValue;
+    private double firstISavedValue;
 
-    private double secondIValue;
+    private double secondISavedValue;
 
-    private int batteryUValue;
+    private int batteryUSavedValue;
 
-    private int negativeU1Value;
+    private int negativeU1SavedValue;
 
-    private int negativeU2Value;
+    private int negativeU2SavedValue;
 
-    private int boostUValue;
+    private int boostUSavedValue;
+
+    private static final double ONE_AMPERE_MULTIPLY = 93.07;
 
     private ModbusRegisterProcessor ultimaModbusWriter;
 
@@ -104,14 +106,15 @@ public class VoltAmpereProfileController {
 
         setupEnableBoostToggleButton();
 
-        firstWSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(91, 15510, 500, 10));
-        boostISpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(3, 25, 21.5, 0.1));
-        firstISpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(2, 25, 15, 0.1));
-        secondISpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(1, 25, 5.5, 0.1));
+        //TODO: Boost U для Piezo/PiezoDelphi [30; 350]
+        firstWSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(90, 15500, 500, 10));
+        boostISpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(3, 25.5, 21.5, 0.1));
+        firstISpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(2, 25.5, 15, 0.1));
+        secondISpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(1, 25.5, 5.5, 0.1));
         batteryUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(11, 32, 20, 1));
-        negativeU1Spinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(17, 100, 48, 1));
+        negativeU1Spinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(17, 121, 48, 1));
         negativeU2Spinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(12, 70, 36, 1));
-        boostUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(40, 75, 60, 1));
+        boostUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(30, 75, 60, 1));
 
         SpinnerManager.setupSpinner(firstWSpinner, 500, 15503, new CustomTooltip());
         SpinnerManager.setupSpinner(boostISpinner, 21.5, 21.51, new CustomTooltip());
@@ -171,56 +174,70 @@ public class VoltAmpereProfileController {
     // TODO: есть баги, не пишется старое значение при закрытии окна при горящем tooltip
     private void setupCancelButton() {
         cancelButton.setOnAction(event -> {
-            firstWSpinner.getValueFactory().setValue(firstWValue);
-            boostISpinner.getValueFactory().setValue(boostIValue);
-            firstISpinner.getValueFactory().setValue(firstIValue);
-            secondISpinner.getValueFactory().setValue(secondIValue);
-            batteryUSpinner.getValueFactory().setValue(batteryUValue);
-            negativeU1Spinner.getValueFactory().setValue(negativeU1Value);
-            negativeU2Spinner.getValueFactory().setValue(negativeU2Value);
-            boostUSpinner.getValueFactory().setValue(boostUValue);
+            firstWSpinner.getValueFactory().setValue(firstWSavedValue);
+            boostISpinner.getValueFactory().setValue(boostISavedValue);
+            firstISpinner.getValueFactory().setValue(firstISavedValue);
+            secondISpinner.getValueFactory().setValue(secondISavedValue);
+            batteryUSpinner.getValueFactory().setValue(batteryUSavedValue);
+            negativeU1Spinner.getValueFactory().setValue(negativeU1SavedValue);
+            negativeU2Spinner.getValueFactory().setValue(negativeU2SavedValue);
+            boostUSpinner.getValueFactory().setValue(boostUSavedValue);
             stage.close();
         });
     }
 
     private void sendVAPRegisters() {
+
+        int negative1Value = negativeU1Spinner.getValue();
+        int negative2Value = negativeU2Spinner.getValue();
+        double boostIValue = boostISpinner.getValue();
+        double firstIValue = firstISpinner.getValue();
+        double secondIValue = secondISpinner.getValue();
+        int firstWValue = firstWSpinner.getValue();
+        int widthValue = widthCurrentSignal.getValue();
+
+        negative1Value = (negative1Value - negative2Value > 5) ? negative1Value : negative1Value + 5;
+        firstIValue = (boostIValue - firstIValue > 0.5) ? firstIValue : firstIValue - 0.5;
+        secondIValue = (firstIValue - secondIValue > 0.5) ? secondIValue : secondIValue - 0.5;
+        firstWValue = (widthValue - firstWValue > 30) ? firstWValue : firstWValue - 30;
+
         ultimaModbusWriter.add(ModbusMapUltima.Boost_U, boostUSpinner.getValue());
         ultimaModbusWriter.add(ModbusMapUltima.Battery_U, batteryUSpinner.getValue());
-        ultimaModbusWriter.add(ModbusMapUltima.Negative_U1, negativeU1Spinner.getValue());
-        ultimaModbusWriter.add(ModbusMapUltima.Negative_U2, negativeU2Spinner.getValue());
-        ultimaModbusWriter.add(ModbusMapUltima.BoostIBoardOne, boostISpinner.getValue());
-        ultimaModbusWriter.add(ModbusMapUltima.FirstIBoardOne, firstISpinner.getValue());
-        ultimaModbusWriter.add(ModbusMapUltima.SecondIBoardOne, secondISpinner.getValue());
-        ultimaModbusWriter.add(ModbusMapUltima.FirstWBoardOne, firstWSpinner.getValue());
-        ultimaModbusWriter.add(ModbusMapUltima.WidthBoardOne, widthCurrentSignal.getValue());
-        ultimaModbusWriter.add(ModbusMapUltima.BoostIBoardTwo, boostISpinner.getValue());
-        ultimaModbusWriter.add(ModbusMapUltima.FirstIBoardTwo, firstISpinner.getValue());
-        ultimaModbusWriter.add(ModbusMapUltima.SecondIBoardTwo, secondISpinner.getValue());
-        ultimaModbusWriter.add(ModbusMapUltima.FirstWBoardTwo, firstWSpinner.getValue());
-        ultimaModbusWriter.add(ModbusMapUltima.WidthBoardTwo, widthCurrentSignal.getValue());
-        ultimaModbusWriter.add(ModbusMapUltima.BoostIBoardThree, boostISpinner.getValue());
-        ultimaModbusWriter.add(ModbusMapUltima.FirstIBoardThree, firstISpinner.getValue());
-        ultimaModbusWriter.add(ModbusMapUltima.SecondIBoardThree, secondISpinner.getValue());
-        ultimaModbusWriter.add(ModbusMapUltima.FirstWBoardThree, firstWSpinner.getValue());
-        ultimaModbusWriter.add(ModbusMapUltima.WidthBoardThree, widthCurrentSignal.getValue());
-        ultimaModbusWriter.add(ModbusMapUltima.BoostIBoardFour, boostISpinner.getValue());
-        ultimaModbusWriter.add(ModbusMapUltima.FirstIBoardFour, firstISpinner.getValue());
-        ultimaModbusWriter.add(ModbusMapUltima.SecondIBoardFour, secondISpinner.getValue());
-        ultimaModbusWriter.add(ModbusMapUltima.FirstWBoardFour, firstWSpinner.getValue());
-        ultimaModbusWriter.add(ModbusMapUltima.WidthBoardFour, widthCurrentSignal.getValue());
+        ultimaModbusWriter.add(ModbusMapUltima.Negative_U1, negative1Value);
+        ultimaModbusWriter.add(ModbusMapUltima.Negative_U2, negative2Value);
+        ultimaModbusWriter.add(ModbusMapUltima.BoostIBoardOne, boostIValue * ONE_AMPERE_MULTIPLY);
+        ultimaModbusWriter.add(ModbusMapUltima.FirstIBoardOne, firstIValue * ONE_AMPERE_MULTIPLY);
+        ultimaModbusWriter.add(ModbusMapUltima.SecondIBoardOne, secondIValue * ONE_AMPERE_MULTIPLY);
+        ultimaModbusWriter.add(ModbusMapUltima.FirstWBoardOne, firstWValue);
+        ultimaModbusWriter.add(ModbusMapUltima.WidthBoardOne, widthValue);
+        ultimaModbusWriter.add(ModbusMapUltima.BoostIBoardTwo, boostIValue * ONE_AMPERE_MULTIPLY);
+        ultimaModbusWriter.add(ModbusMapUltima.FirstIBoardTwo, firstIValue * ONE_AMPERE_MULTIPLY);
+        ultimaModbusWriter.add(ModbusMapUltima.SecondIBoardTwo, secondIValue * ONE_AMPERE_MULTIPLY);
+        ultimaModbusWriter.add(ModbusMapUltima.FirstWBoardTwo, firstWValue);
+        ultimaModbusWriter.add(ModbusMapUltima.WidthBoardTwo, widthValue);
+        ultimaModbusWriter.add(ModbusMapUltima.BoostIBoardThree, boostIValue * ONE_AMPERE_MULTIPLY);
+        ultimaModbusWriter.add(ModbusMapUltima.FirstIBoardThree, firstIValue * ONE_AMPERE_MULTIPLY);
+        ultimaModbusWriter.add(ModbusMapUltima.SecondIBoardThree, secondIValue * ONE_AMPERE_MULTIPLY);
+        ultimaModbusWriter.add(ModbusMapUltima.FirstWBoardThree, firstWValue);
+        ultimaModbusWriter.add(ModbusMapUltima.WidthBoardThree, widthValue);
+        ultimaModbusWriter.add(ModbusMapUltima.BoostIBoardFour, boostIValue * ONE_AMPERE_MULTIPLY);
+        ultimaModbusWriter.add(ModbusMapUltima.FirstIBoardFour, firstIValue * ONE_AMPERE_MULTIPLY);
+        ultimaModbusWriter.add(ModbusMapUltima.SecondIBoardFour, secondIValue * ONE_AMPERE_MULTIPLY);
+        ultimaModbusWriter.add(ModbusMapUltima.FirstWBoardFour, firstWValue);
+        ultimaModbusWriter.add(ModbusMapUltima.WidthBoardFour, widthValue);
         ultimaModbusWriter.add(ModbusMapUltima.StartOnBatteryUOne, boostToggleButtonEnabled);
         ultimaModbusWriter.add(ModbusMapUltima.StartOnBatteryUTwo, boostToggleButtonEnabled);
         ultimaModbusWriter.add(ModbusMapUltima.StartOnBatteryUThree, boostToggleButtonEnabled);
         ultimaModbusWriter.add(ModbusMapUltima.StartOnBatteryUFour, boostToggleButtonEnabled);
         System.err.println("boostUSpinner: " + boostUSpinner.getValue());
         System.err.println("batteryUSpinner: " + batteryUSpinner.getValue());
-        System.err.println("negativeU1Spinner: " + negativeU1Spinner.getValue());
-        System.err.println("negativeU2Spinner: " + negativeU2Spinner.getValue());
-        System.err.println("boostISpinner: " + boostISpinner.getValue());
-        System.err.println("firstISpinner: " + firstISpinner.getValue());
-        System.err.println("secondISpinner: " + secondISpinner.getValue());
-        System.err.println("firstWSpinner: " + firstWSpinner.getValue());
-        System.err.println("widthCurrentSignal: " + widthCurrentSignal.getValue());
+        System.err.println("negativeU1Spinner: " + negative1Value);
+        System.err.println("negativeU2Spinner: " + negative2Value);
+        System.err.println("boostISpinner: " + boostIValue);
+        System.err.println("firstISpinner: " + firstIValue);
+        System.err.println("secondISpinner: " + secondIValue);
+        System.err.println("firstWSpinner: " + firstWValue);
+        System.err.println("widthCurrentSignal: " + widthValue);
         System.err.println("StartOnBatteryUOne: " + boostToggleButtonEnabled);
         System.err.println("StartOnBatteryUTwo: " + boostToggleButtonEnabled);
         System.err.println("StartOnBatteryUThree: " + boostToggleButtonEnabled);
@@ -228,13 +245,13 @@ public class VoltAmpereProfileController {
     }
 
     public void saveValues() {
-        firstWValue = firstWSpinner.getValue();
-        boostIValue = boostISpinner.getValue();
-        firstIValue = firstISpinner.getValue();
-        secondIValue = secondISpinner.getValue();
-        batteryUValue = batteryUSpinner.getValue();
-        negativeU1Value = negativeU1Spinner.getValue();
-        negativeU2Value = negativeU2Spinner.getValue();
-        boostUValue = boostUSpinner.getValue();
+        firstWSavedValue = firstWSpinner.getValue();
+        boostISavedValue = boostISpinner.getValue();
+        firstISavedValue = firstISpinner.getValue();
+        secondISavedValue = secondISpinner.getValue();
+        batteryUSavedValue = batteryUSpinner.getValue();
+        negativeU1SavedValue = negativeU1Spinner.getValue();
+        negativeU2SavedValue = negativeU2Spinner.getValue();
+        boostUSavedValue = boostUSpinner.getValue();
     }
 }

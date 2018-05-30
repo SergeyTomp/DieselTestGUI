@@ -32,7 +32,13 @@ public abstract class RegisterFactory {
     private static ModbusRequest createWriteRegisters(ModbusMap reg, Object value) {
         WriteMultipleRegistersRequest request;
         if (reg.getCount() > 1) {
-            byte[] byteData = ModbusUtil.floatToRegisters((float) value);
+            byte[] byteData;
+            Float floatValue;
+            if(value instanceof Integer) {
+                floatValue = ((Integer) value).floatValue();
+                byteData = ModbusUtil.floatToRegisters(floatValue);
+            } else
+                byteData = ModbusUtil.floatToRegisters((float) value);
             short firstWord = (short) (((byteData[0] & 0xFF) << 8) | (byteData[1] & 0xFF));
             short secondWord = (short) (((byteData[2] & 0xFF) << 8) | (byteData[3] & 0xFF));
             Register firstReg = new SimpleRegister(firstWord);
