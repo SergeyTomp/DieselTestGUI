@@ -1,7 +1,10 @@
 package fi.stardex.sisu.ui.controllers.additional.tabs;
 
+import fi.stardex.sisu.styles.FontColour;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -76,6 +79,10 @@ public class VoltageController {
 
     @PostConstruct
     private void init() {
+
+        width.styleProperty().bindBidirectional(FontColour.fontColourPropertyProperty());
+
+        width.styleProperty().addListener((observable, oldValue, newValue) -> width.setStyle(newValue));
 
         voltage.setText("60"); // boostUSpinner initial value
         firstWidth.setText("500"); // firstWSpinner initial value

@@ -135,8 +135,8 @@ public class SpringJavaConfig {
 
     @Bean
     @Autowired
-    public InjectorSectionUpdater injectorSectionUpdater(InjectorSectionController injectorSectionController, VoltageController voltageController) {
-        return new InjectorSectionUpdater(injectorSectionController, voltageController);
+    public InjectorSectionUpdater injectorSectionUpdater(VoltageController voltageController, InjectorSectionController injectorSectionController) {
+        return new InjectorSectionUpdater(voltageController, injectorSectionController);
     }
 
     @Bean

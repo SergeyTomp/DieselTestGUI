@@ -5,17 +5,21 @@ import fi.stardex.sisu.charts.TimerTasksManager;
 import fi.stardex.sisu.injectors.InjectorChannel;
 import fi.stardex.sisu.registers.modbusmaps.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
+import fi.stardex.sisu.styles.FontColour;
 import fi.stardex.sisu.ui.controllers.additional.LedController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
 import fi.stardex.sisu.util.SpinnerManager;
 import fi.stardex.sisu.util.tooltips.CustomTooltip;
 import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Point2D;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
@@ -118,6 +122,8 @@ public class InjectorSectionController {
 
     private boolean updateOSC;
 
+    private StringProperty labelWidthProperty = new SimpleStringProperty();
+
     private SettingsController settingsController;
 
     private ModbusRegisterProcessor ultimaModbusWriter;
@@ -160,6 +166,10 @@ public class InjectorSectionController {
 
     public void setUpdateOSC(boolean updateOSC) {
         this.updateOSC = updateOSC;
+    }
+
+    public StringProperty labelWidthPropertyProperty() {
+        return labelWidthProperty;
     }
 
     public ToggleGroup getPiezoCoilToggleGroup() {
@@ -244,6 +254,20 @@ public class InjectorSectionController {
 
         new LedParametersChangeListener();
 
+        labelWidthProperty.addListener((observable, oldValue, newValue) -> {
+            Integer integerNewValue = Math.round(Float.parseFloat(newValue));
+            if (!integerNewValue.equals(widthCurrentSignal.getValue())) {
+                FontColour.setFontColourProperty("-fx-text-fill: red");
+            } else {
+                FontColour.setFontColourProperty(null);
+            }
+        });
+
+        widthCurrentSignal.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.toString().equals(labelWidthProperty.get())) {
+                FontColour.setFontColourProperty(null);
+            }
+        });
     }
 
     private void setupInjectorConfigComboBox() {
@@ -338,7 +362,7 @@ public class InjectorSectionController {
             else if (Objects.equals(piezoDelphiRadioButton, injectorTypeProperty.get()))
                 ultimaModbusWriter.add(ModbusMapUltima.Injector_type, 2);
             else
-                throw new AssertionError("Coil or piezo buttons has not been set.");
+                throw new AssertionError("Coil or piezo buttons have not been set.");
         }
 
         private void disableLedsExceptFirst(boolean disable) {

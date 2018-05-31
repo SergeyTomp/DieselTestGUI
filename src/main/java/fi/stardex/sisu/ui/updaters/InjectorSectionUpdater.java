@@ -9,13 +9,14 @@ import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 @Module(value = Device.ULTIMA)
 public class InjectorSectionUpdater implements Updater {
 
-    private InjectorSectionController injectorSectionController;
-
     private VoltageController voltageController;
 
-    public InjectorSectionUpdater(InjectorSectionController injectorSectionController, VoltageController voltageController) {
-        this.injectorSectionController = injectorSectionController;
+    private InjectorSectionController injectorSectionController;
+
+    public InjectorSectionUpdater(VoltageController voltageController, InjectorSectionController injectorSectionController) {
         this.voltageController = voltageController;
+        this.injectorSectionController = injectorSectionController;
+        injectorSectionController.labelWidthPropertyProperty().bind(voltageController.getWidth().textProperty());
     }
 
     @Override

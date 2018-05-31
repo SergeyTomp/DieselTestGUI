@@ -90,7 +90,7 @@ public class JavaFXSpringConfigure {
     @Bean
     @Autowired
     public InjectorSectionController injectorSectionController(SettingsController settingsController,
-                                                               ModbusRegisterProcessor ultimaModbusWriter) {
+                                                               @Lazy ModbusRegisterProcessor ultimaModbusWriter) {
         InjectorSectionController injectorSectionController = crSectionController().getInjectorSectionController();
         injectorSectionController.setSettingsController(settingsController);
         injectorSectionController.setUltimaModbusWriter(ultimaModbusWriter);
