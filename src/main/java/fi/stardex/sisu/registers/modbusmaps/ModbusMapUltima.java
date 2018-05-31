@@ -37,22 +37,22 @@ public enum ModbusMapUltima implements ModbusMap {
     FirstIBoardOne(RegisterType.REGISTER_HOLDING, 2, 1, false), // firstISpinner
     SecondIBoardOne(RegisterType.REGISTER_HOLDING, 3, 1, false), // secondISpinner
     FirstWBoardOne(RegisterType.REGISTER_HOLDING, 4, 1, false), // firstWSpinner
-    WidthBoardOne(RegisterType.REGISTER_HOLDING, 5, 1, false), // widthCurrentSignal
+    WidthBoardOne(RegisterType.REGISTER_HOLDING, 5, 1, true), // widthCurrentSignal
     BoostIBoardTwo(RegisterType.REGISTER_HOLDING, 21, 1, false),
     FirstIBoardTwo(RegisterType.REGISTER_HOLDING, 22, 1, false),
     SecondIBoardTwo(RegisterType.REGISTER_HOLDING, 23, 1, false),
     FirstWBoardTwo(RegisterType.REGISTER_HOLDING, 24, 1, false),
-    WidthBoardTwo(RegisterType.REGISTER_HOLDING, 25, 1, false),
+    WidthBoardTwo(RegisterType.REGISTER_HOLDING, 25, 1, true),
     BoostIBoardThree(RegisterType.REGISTER_HOLDING, 1001, 1, false),
     FirstIBoardThree(RegisterType.REGISTER_HOLDING, 1002, 1, false),
     SecondIBoardThree(RegisterType.REGISTER_HOLDING, 1003, 1, false),
     FirstWBoardThree(RegisterType.REGISTER_HOLDING, 1004, 1, false),
-    WidthBoardThree(RegisterType.REGISTER_HOLDING, 1005, 1, false),
+    WidthBoardThree(RegisterType.REGISTER_HOLDING, 1005, 1, true),
     BoostIBoardFour(RegisterType.REGISTER_HOLDING, 1021, 1, false),
     FirstIBoardFour(RegisterType.REGISTER_HOLDING, 1022, 1, false),
     SecondIBoardFour(RegisterType.REGISTER_HOLDING, 1023, 1, false),
     FirstWBoardFour(RegisterType.REGISTER_HOLDING, 1024, 1, false),
-    WidthBoardFour(RegisterType.REGISTER_HOLDING, 1025, 1, false),
+    WidthBoardFour(RegisterType.REGISTER_HOLDING, 1025, 1, true),
     StartOnBatteryUOne(RegisterType.DISCRETE_COIL, 2, 1, false), // Boost_U enabled - true disabled - false
     StartOnBatteryUTwo(RegisterType.DISCRETE_COIL, 22, 1, false), // Boost_U enabled - true disabled - false
     StartOnBatteryUThree(RegisterType.DISCRETE_COIL, 1002, 1, false), // Boost_U enabled - true disabled - false
@@ -132,5 +132,16 @@ public enum ModbusMapUltima implements ModbusMap {
     @Override
     public void setAutoUpdate(boolean autoUpdate) {
         this.autoUpdate = autoUpdate;
+    }
+
+    @Override
+    public String toString() {
+        return "ModbusMapUltima{" +
+                "type=" + type +
+                ", ref=" + ref +
+                ", count=" + count +
+                ", autoUpdate=" + autoUpdate +
+                ", lastValue=" + lastValue +
+                '}';
     }
 }

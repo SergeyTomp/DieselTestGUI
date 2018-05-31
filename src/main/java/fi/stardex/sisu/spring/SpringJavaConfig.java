@@ -16,6 +16,7 @@ import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
 import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.updaters.HighPressureSectionUpdater;
+import fi.stardex.sisu.ui.updaters.InjectorSectionUpdater;
 import fi.stardex.sisu.ui.updaters.Updater;
 import fi.stardex.sisu.util.ApplicationConfigHandler;
 import fi.stardex.sisu.util.i18n.I18N;
@@ -130,6 +131,12 @@ public class SpringJavaConfig {
     @Autowired
     public HighPressureSectionUpdater highPressureSectionUpdater(HighPressureSectionController highPressureSectionController) {
         return new HighPressureSectionUpdater(highPressureSectionController);
+    }
+
+    @Bean
+    @Autowired
+    public InjectorSectionUpdater injectorSectionUpdater(InjectorSectionController injectorSectionController, VoltageController voltageController) {
+        return new InjectorSectionUpdater(injectorSectionController, voltageController);
     }
 
     @Bean

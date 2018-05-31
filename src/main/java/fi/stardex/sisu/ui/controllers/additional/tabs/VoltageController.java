@@ -36,6 +36,9 @@ public class VoltageController {
     private NumberAxis yAxis;
 
     @FXML
+    private Label width;
+
+    @FXML
     private Label voltage;
 
     @FXML
@@ -65,6 +68,10 @@ public class VoltageController {
 
     public void setVoltAmpereProfileDialog(ViewHolder voltAmpereProfileDialog) {
         this.voltAmpereProfileDialog = voltAmpereProfileDialog;
+    }
+
+    public Label getWidth() {
+        return width;
     }
 
     @PostConstruct
