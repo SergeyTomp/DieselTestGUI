@@ -27,6 +27,18 @@ import javax.annotation.PostConstruct;
 
 public class VoltageController {
 
+    @FXML
+    private Label boostI;
+
+    @FXML
+    private Label batteryU;
+
+    @FXML
+    private Label negativeU1;
+
+    @FXML
+    private Label negativeU2;
+
     private ViewHolder voltAmpereProfileDialog;
 
     @FXML
@@ -75,6 +87,23 @@ public class VoltageController {
 
     public Label getWidth() {
         return width;
+    }
+
+    // TODO: добавить чтение регистров в InjectorSectionUpdater и обновление этих labels
+    public Label getBoostI() {
+        return boostI;
+    }
+
+    public Label getBatteryU() {
+        return batteryU;
+    }
+
+    public Label getNegativeU1() {
+        return negativeU1;
+    }
+
+    public Label getNegativeU2() {
+        return negativeU2;
     }
 
     @PostConstruct

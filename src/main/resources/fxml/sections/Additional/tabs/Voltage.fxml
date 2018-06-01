@@ -72,6 +72,30 @@
                            </GridPane.margin>
                         </Label>
                         <Label fx:id="width" text="Label" GridPane.columnIndex="1" />
+                        <Label fx:id="labelBoostI" text="%h4.voltage.label.currentBoost" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="5" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                           <GridPane.margin>
+                              <Insets bottom="2.0" left="4.0" right="6.0" top="2.0" />
+                           </GridPane.margin>
+                        </Label>
+                        <Label fx:id="labelBatteryU" text="%h4.voltage.label.voltageHold" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="6" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                           <GridPane.margin>
+                              <Insets bottom="2.0" left="4.0" right="6.0" top="2.0" />
+                           </GridPane.margin>
+                        </Label>
+                        <Label fx:id="labelNegativeU1" text="%h4.voltage.label.firstNegativeVoltage" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="7" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                           <GridPane.margin>
+                              <Insets bottom="2.0" left="4.0" right="6.0" top="2.0" />
+                           </GridPane.margin>
+                        </Label>
+                        <Label fx:id="labelNegativeU2" text="%h4.voltage.label.secondNegativeVoltage" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="8" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                           <GridPane.margin>
+                              <Insets bottom="2.0" left="4.0" right="6.0" top="2.0" />
+                           </GridPane.margin>
+                        </Label>
+                        <Label fx:id="boostI" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                        <Label fx:id="batteryU" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                        <Label fx:id="negativeU1" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                        <Label fx:id="negativeU2" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="8" />
                             </children>
                             <columnConstraints>
                                 <ColumnConstraints halignment="RIGHT" hgrow="ALWAYS" maxWidth="100.0" minWidth="100.0" prefWidth="100.0" />
@@ -84,6 +108,10 @@
                                 <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                 <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                 <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                 <RowConstraints />
                             </rowConstraints>
                         </GridPane>
