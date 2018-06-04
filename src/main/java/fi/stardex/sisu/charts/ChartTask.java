@@ -72,19 +72,53 @@ public class ChartTask extends TimerTask {
     @Override
     public void run() {
 
-        int n;
-        offset = 200;
-        // TODO: hardcoded n
-        //n = (int) ((injectorSectionController.getWidthCurrentSignal().getValue() + offset) / X_VALUE_OFFSET);
-        n = 526;
-        int div = n / 2047;
-        int remainder = n % 2047;
-        int part = 1;
-        if (!injectorSectionController.isUpdateOSC())
-            return;
-        ArrayList<Integer> resultDataList = new ArrayList<>();
-        try {
-            for (int i = 0; i < div; i++) {
+        if (injectorSectionController.activeControllers().size() != 0) {
+
+            int n;
+
+            if (injectorSectionController.getCoilRadioButton().isSelected()) {
+                offset = 200;
+                n = (int) ((injectorSectionController.getCurrentFirmwareWidth() + offset) / X_VALUE_OFFSET);
+            } else if (injectorSectionController.getPiezoRadioButton().isSelected()) {
+                offset = 0;
+                n = (int) ((injectorSectionController.getCurrentFirmwareWidth()) / X_VALUE_OFFSET);
+            } else {
+                offset = injectorSectionController.getCurrentFirmwareWidth() < 500 ?
+                        injectorSectionController.getCurrentFirmwareWidth() : 500;
+                n = (int) ((injectorSectionController.getCurrentFirmwareWidth() + offset) / X_VALUE_OFFSET);
+            }
+            int div = n / 2047;
+            int remainder = n % 2047;
+            int part = 1;
+            if (!injectorSectionController.isUpdateOSC())
+                return;
+            ArrayList<Integer> resultDataList = new ArrayList<>();
+            try {
+                for (int i = 0; i < div; i++) {
+                    if (!injectorSectionController.isUpdateOSC())
+                        return;
+                    ultimaModbusWriter.add(ModbusMapUltima.Current_graph1_frame_num, part);
+                    ultimaModbusWriter.add(ModbusMapUltima.Current_graph1_update, true);
+                    boolean ready;
+                    do {
+                        try {
+                            Thread.sleep(500);
+                        } catch (InterruptedException e) {
+                            logger.error("Interrupted 1.", e);
+                        }
+                        try {
+                            if (!injectorSectionController.isUpdateOSC())
+                                return;
+                            ready = (boolean) ultimaModbusWriter.getRegisterProvider().read(ModbusMapUltima.Current_graph1_update);
+                        } catch (ClassCastException e) {
+                            logger.error("Cast Error: ", e);
+                            return;
+                        }
+                    } while (ready);
+                    Integer[] data = (Integer[]) ultimaModbusWriter.getRegisterProvider().read(ModbusMapUltima.Current_graph1);
+                    addModbusData(resultDataList, data);
+                    part++;
+                }
                 if (!injectorSectionController.isUpdateOSC())
                     return;
                 ultimaModbusWriter.add(ModbusMapUltima.Current_graph1_frame_num, part);
@@ -101,40 +135,19 @@ public class ChartTask extends TimerTask {
                             return;
                         ready = (boolean) ultimaModbusWriter.getRegisterProvider().read(ModbusMapUltima.Current_graph1_update);
                     } catch (ClassCastException e) {
-                        logger.error("Cast Error: ", e);
+                        logger.error("Cast Exception: ", e);
                         return;
                     }
                 } while (ready);
-                Integer[] data = (Integer[]) ultimaModbusWriter.getRegisterProvider().read(ModbusMapUltima.Current_graph1);
+                Integer[] data = ultimaModbusWriter.getRegisterProvider().readBytePacket(0, remainder);
                 addModbusData(resultDataList, data);
-                part++;
-            }
-            if (!injectorSectionController.isUpdateOSC())
+            } catch (ModbusException e) {
+                logger.error("Cannot obtain graphic 2", e);
                 return;
-            ultimaModbusWriter.add(ModbusMapUltima.Current_graph1_frame_num, part);
-            ultimaModbusWriter.add(ModbusMapUltima.Current_graph1_update, true);
-            boolean ready;
-            do {
-                try {
-                    Thread.sleep(500);
-                } catch (InterruptedException e) {
-                    logger.error("Interrupted 1.", e);
-                }
-                try {
-                    if (!injectorSectionController.isUpdateOSC())
-                        return;
-                    ready = (boolean) ultimaModbusWriter.getRegisterProvider().read(ModbusMapUltima.Current_graph1_update);
-                } catch (ClassCastException e) {
-                    logger.error("Cast Exception: ", e);
-                    return;
-                }
-            } while (ready);
-            Integer[] data = ultimaModbusWriter.getRegisterProvider().readBytePacket(0, remainder);
-            addModbusData(resultDataList, data);
-        } catch (ModbusException e) {
-            logger.error("Cannot obtain graphic 2", e);
-            return;
+            }
+            Platform.runLater(() -> addData(resultDataList, voltageController.getData1()));
         }
-        Platform.runLater(() -> addData(resultDataList, voltageController.getData1()));
+
+
     }
 }

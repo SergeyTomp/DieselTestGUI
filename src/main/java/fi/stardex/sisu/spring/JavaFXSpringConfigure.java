@@ -1,5 +1,7 @@
 package fi.stardex.sisu.spring;
 
+import fi.stardex.sisu.charts.ChartTask;
+import fi.stardex.sisu.charts.TimerTasksManager;
 import fi.stardex.sisu.devices.Devices;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.ViewHolder;
@@ -90,10 +92,16 @@ public class JavaFXSpringConfigure {
     @Bean
     @Autowired
     public InjectorSectionController injectorSectionController(SettingsController settingsController,
-                                                               @Lazy ModbusRegisterProcessor ultimaModbusWriter) {
+                                                               @Lazy ModbusRegisterProcessor ultimaModbusWriter,
+                                                               @Lazy TimerTasksManager timerTasksManager,
+                                                               @Lazy ChartTask chartTask,
+                                                               VoltageController voltageController) {
         InjectorSectionController injectorSectionController = crSectionController().getInjectorSectionController();
         injectorSectionController.setSettingsController(settingsController);
         injectorSectionController.setUltimaModbusWriter(ultimaModbusWriter);
+        injectorSectionController.setTimerTaskManager(timerTasksManager);
+        injectorSectionController.setChartTask(chartTask);
+        injectorSectionController.setVoltageController(voltageController);
         return injectorSectionController;
     }
 

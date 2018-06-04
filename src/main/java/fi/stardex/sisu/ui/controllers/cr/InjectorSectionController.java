@@ -19,14 +19,12 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.geometry.Point2D;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
@@ -34,16 +32,6 @@ import java.util.*;
 public class InjectorSectionController {
 
     private Logger logger = LoggerFactory.getLogger(InjectorSectionController.class);
-
-    //TODO: delete after test
-    @Autowired
-    private TimerTasksManager timerTasksManager;
-
-    @Autowired
-    private ChartTask chartTask;
-
-    @Autowired
-    private VoltageController voltageController;
 
     @FXML
     private Spinner<Integer> widthCurrentSignal;
@@ -122,15 +110,25 @@ public class InjectorSectionController {
 
     private boolean updateOSC;
 
+    private int currentFirmwareWidth;
+
     private StringProperty labelWidthProperty = new SimpleStringProperty();
 
     private SettingsController settingsController;
 
     private ModbusRegisterProcessor ultimaModbusWriter;
 
+    private TimerTasksManager timerTasksManager;
+
+    private ChartTask chartTask;
+
+    private VoltageController voltageController;
+
     private ObservableList<LedController> ledControllers;
 
     private ToggleGroup toggleGroup = new ToggleGroup();
+
+    private LedParametersChangeListener ledParametersChangeListener;
 
     public LedController getLedBeaker1Controller() {
         return ledBeaker1Controller;
@@ -154,6 +152,10 @@ public class InjectorSectionController {
 
     public Spinner<Integer> getWidthCurrentSignal() {
         return widthCurrentSignal;
+    }
+
+    public int getCurrentFirmwareWidth() {
+        return currentFirmwareWidth;
     }
 
     public ToggleButton getPowerSwitch() {
@@ -209,22 +211,29 @@ public class InjectorSectionController {
         this.ultimaModbusWriter = ultimaModbusWriter;
     }
 
+    public void setTimerTaskManager(TimerTasksManager timerTasksManager) {
+        this.timerTasksManager = timerTasksManager;
+    }
+
+    public void setChartTask(ChartTask chartTask) {
+        this.chartTask = chartTask;
+    }
+
+    public void setVoltageController(VoltageController voltageController) {
+        this.voltageController = voltageController;
+    }
+
     @PostConstruct
     private void init() {
-
-        //TODO: delete after test
-//        ultimaModbusWriter.add(ModbusMapUltima.Ftime1, 0);
-//        ultimaModbusWriter.add(ModbusMapUltima.GImpulsesPeriod, 60);
-//        ultimaModbusWriter.add(ModbusMapUltima.FInjectorNumber1, 1);
 
         powerSwitch.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
                 ultimaModbusWriter.add(ModbusMapUltima.Injectors_Running_En, true);
+                ledParametersChangeListener.sendLedRegisters();
                 timerTasksManager.start(chartTask);
             } else {
                 ultimaModbusWriter.add(ModbusMapUltima.Injectors_Running_En, false);
-                ultimaModbusWriter.add(ModbusMapUltima.FInjectorNumber1, 0xff);
-                ultimaModbusWriter.add(ModbusMapUltima.Ftime1, 0);
+                ledParametersChangeListener.switchOffAll();
                 timerTasksManager.stop();
                 voltageController.getData1().clear();
             }
@@ -252,11 +261,11 @@ public class InjectorSectionController {
 
         SpinnerManager.setupSpinner(freqCurrentSignal, 16.67, 16.671, new CustomTooltip());
 
-        new LedParametersChangeListener();
+        ledParametersChangeListener = new LedParametersChangeListener();
 
         labelWidthProperty.addListener((observable, oldValue, newValue) -> {
-            Integer integerNewValue = Math.round(Float.parseFloat(newValue));
-            if (!integerNewValue.equals(widthCurrentSignal.getValue())) {
+            currentFirmwareWidth = Math.round(Float.parseFloat(newValue));
+            if (currentFirmwareWidth != widthCurrentSignal.getValue()) {
                 FontColour.setFontColourProperty("-fx-text-fill: red");
             } else {
                 FontColour.setFontColourProperty(null);
