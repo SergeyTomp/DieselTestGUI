@@ -1,5 +1,7 @@
 package fi.stardex.sisu.ui.controllers.cr;
 
+import fi.stardex.sisu.charts.ChartTasks;
+import fi.stardex.sisu.charts.TimerTasksManager;
 import fi.stardex.sisu.injectors.InjectorChannel;
 import fi.stardex.sisu.registers.modbusmaps.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
@@ -116,6 +118,8 @@ public class InjectorSectionController {
 
     private VoltageController voltageController;
 
+    private TimerTasksManager timerTasksManager;
+
     private ObservableList<LedController> ledControllers;
 
     private ToggleGroup toggleGroup = new ToggleGroup();
@@ -203,6 +207,11 @@ public class InjectorSectionController {
         this.voltageController = voltageController;
     }
 
+    public void setTimerTaskManager(TimerTasksManager timerTasksManager) {
+        this.timerTasksManager = timerTasksManager;
+    }
+
+
     @PostConstruct
     private void init() {
 
@@ -245,20 +254,20 @@ public class InjectorSectionController {
             }
         });
 
-//        powerSwitch.selectedProperty().addListener((observable, oldValue, newValue) -> {
-//            if (newValue) {
-//                powerSwitch.setText("On");
-//                ultimaModbusWriter.add(ModbusMapUltima.Injectors_Running_En, true);
-//                ledParametersChangeListener.sendLedRegisters();
-//                timerTasksManager.start(chartTask);
-//            } else {
-//                powerSwitch.setText("Off");
-//                ultimaModbusWriter.add(ModbusMapUltima.Injectors_Running_En, false);
-//                ledParametersChangeListener.switchOffAll();
-//                timerTasksManager.stop();
-//                voltageController.getData1().clear();
-//            }
-//        });
+        powerSwitch.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                powerSwitch.setText("On");
+                ultimaModbusWriter.add(ModbusMapUltima.Injectors_Running_En, true);
+                ledParametersChangeListener.sendLedRegisters();
+                timerTasksManager.start(ChartTasks.CHART_TASK_ONE);
+            } else {
+                powerSwitch.setText("Off");
+                ultimaModbusWriter.add(ModbusMapUltima.Injectors_Running_En, false);
+                ledParametersChangeListener.switchOffAll();
+                timerTasksManager.stop();
+                voltageController.getData1().clear();
+            }
+        });
 
     }
 

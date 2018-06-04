@@ -8,6 +8,7 @@ import fi.stardex.sisu.connect.InetAddressWrapper;
 import fi.stardex.sisu.connect.ModbusConnect;
 import fi.stardex.sisu.devices.Device;
 import fi.stardex.sisu.devices.Devices;
+import fi.stardex.sisu.parts.PiezoCoilToggleGroup;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.modbusmaps.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
@@ -137,15 +138,24 @@ public class SpringJavaConfig {
     }
 
     @Bean
-    public TimerTasksManager timerTasksManager() {
-        return new TimerTasksManager();
+    @Autowired
+    public TimerTasksManager timerTasksManager(ChartTask chartTask) {
+        return new TimerTasksManager(chartTask);
     }
 
+
+    //FIXME: singleton or prototype?
     @Bean
 //    @Scope("prototype")
     @Autowired
     public ChartTask chartTask(VoltageController voltageController, ModbusRegisterProcessor ultimaModbusWriter,
-                               InjectorSectionController injectorSectionController, TimerTasksManager timerTasksManager) {
-        return new ChartTask(voltageController, ultimaModbusWriter, injectorSectionController, timerTasksManager);
+                               TimerTasksManager timerTasksManager, PiezoCoilToggleGroup piezoCoilToggleGroup) {
+        return new ChartTask(voltageController, ultimaModbusWriter, timerTasksManager, piezoCoilToggleGroup);
+    }
+
+    @Bean
+    @Autowired
+    public PiezoCoilToggleGroup piezoCoilToggleGroup(InjectorSectionController injectorSectionController) {
+        return new PiezoCoilToggleGroup(injectorSectionController);
     }
 }

@@ -147,9 +147,11 @@ public class JavaFXSpringConfigure {
     @Autowired
     public VoltAmpereProfileController voltAmpereProfileController(ModbusRegisterProcessor ultimaModbusWriter,
                                                                    InjectorSectionController injectorSectionController,
-                                                                   VoltageController voltageController) {
+                                                                   VoltageController voltageController,
+                                                                   TimerTasksManager timerTasksManager) {
         VoltAmpereProfileController voltAmpereProfileController = (VoltAmpereProfileController) voltAmpereProfileDialog().getController();
         voltAmpereProfileController.setUltimaModbusWriter(ultimaModbusWriter);
+        injectorSectionController.setTimerTaskManager(timerTasksManager);
         voltAmpereProfileController.setWidthSpinner(injectorSectionController.getWidthCurrentSignal());
         voltAmpereProfileController.setVoltageController(voltageController);
         return voltAmpereProfileController;

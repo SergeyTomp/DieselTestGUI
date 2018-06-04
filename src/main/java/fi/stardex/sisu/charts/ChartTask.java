@@ -1,19 +1,16 @@
 package fi.stardex.sisu.charts;
 
+import fi.stardex.sisu.parts.PiezoCoilToggleGroup;
 import fi.stardex.sisu.registers.modbusmaps.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
-import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.XYChart;
 import net.wimpi.modbus.ModbusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -27,9 +24,9 @@ public class ChartTask extends TimerTask {
 
     private ModbusRegisterProcessor ultimaModbusWriter;
 
-    private InjectorSectionController injectorSectionController;
-
     private TimerTasksManager timerTasksManager;
+
+    private PiezoCoilToggleGroup piezoCoilToggleGroup;
 
     private static final double X_VALUE_OFFSET = 0.95;
     private static final double CURRENT_COEF = 93.07;
@@ -37,29 +34,11 @@ public class ChartTask extends TimerTask {
 
     private int offset = 0;
 
-    public ChartTask(VoltageController voltageController, ModbusRegisterProcessor ultimaModbusWriter, InjectorSectionController injectorSectionController, TimerTasksManager timerTasksManager) {
+    public ChartTask(VoltageController voltageController, ModbusRegisterProcessor ultimaModbusWriter, TimerTasksManager timerTasksManager, PiezoCoilToggleGroup piezoCoilToggleGroup) {
         this.voltageController = voltageController;
         this.ultimaModbusWriter = ultimaModbusWriter;
-        this.injectorSectionController = injectorSectionController;
         this.timerTasksManager = timerTasksManager;
-    }
-
-    @PostConstruct
-    private void init() {
-        injectorSectionController.getPowerSwitch().selectedProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue) {
-                injectorSectionController.getPowerSwitch().setText("On");
-                ultimaModbusWriter.add(ModbusMapUltima.Injectors_Running_En, true);
-                injectorSectionController.getLedParametersChangeListener().sendLedRegisters();
-                timerTasksManager.start(ChartTask.this);
-            } else {
-                injectorSectionController.getPowerSwitch().setText("Off");
-                ultimaModbusWriter.add(ModbusMapUltima.Injectors_Running_En, false);
-                injectorSectionController.getLedParametersChangeListener().switchOffAll();
-                timerTasksManager.stop();
-                voltageController.getData1().clear();
-            }
-        });
+        this.piezoCoilToggleGroup = piezoCoilToggleGroup;
     }
 
     private void addModbusData(ArrayList<Integer> resultDataList, Integer[] data) {
@@ -102,10 +81,10 @@ public class ChartTask extends TimerTask {
 
             int n;
 
-            if (injectorSectionController.getCoilRadioButton().isSelected()) {
+            if (piezoCoilToggleGroup.getPiezoCoilToggleGroup().getSelectedToggle() == piezoCoilToggleGroup.getCoilRadioButton()) {
                 offset = 200;
                 n = (int) ((injectorSectionController.getCurrentFirmwareWidth() + offset) / X_VALUE_OFFSET);
-            } else if (injectorSectionController.getPiezoRadioButton().isSelected()) {
+            } else if (piezoCoilToggleGroup.getPiezoCoilToggleGroup().getSelectedToggle() == piezoCoilToggleGroup.getPiezoRadioButton()) {
                 offset = 0;
                 n = (int) ((injectorSectionController.getCurrentFirmwareWidth()) / X_VALUE_OFFSET);
             } else {
