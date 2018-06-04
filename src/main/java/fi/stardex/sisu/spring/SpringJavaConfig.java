@@ -22,10 +22,7 @@ import fi.stardex.sisu.util.ApplicationConfigHandler;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.wrappers.StatusBarWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.*;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.util.LinkedList;
@@ -140,16 +137,15 @@ public class SpringJavaConfig {
     }
 
     @Bean
-    @Autowired
-    public TimerTasksManager timerTasksManager(InjectorSectionController injectorSectionController) {
-        return new TimerTasksManager(injectorSectionController);
+    public TimerTasksManager timerTasksManager() {
+        return new TimerTasksManager();
     }
 
     @Bean
-    @Scope("prototype")
+//    @Scope("prototype")
     @Autowired
-    public ChartTask chartTask(VoltageController voltageController, ModbusRegisterProcessor ultimaModbusWriter, InjectorSectionController injectorSectionController) {
-        return new ChartTask(voltageController, ultimaModbusWriter, injectorSectionController);
+    public ChartTask chartTask(VoltageController voltageController, ModbusRegisterProcessor ultimaModbusWriter,
+                               InjectorSectionController injectorSectionController, TimerTasksManager timerTasksManager) {
+        return new ChartTask(voltageController, ultimaModbusWriter, injectorSectionController, timerTasksManager);
     }
-
 }

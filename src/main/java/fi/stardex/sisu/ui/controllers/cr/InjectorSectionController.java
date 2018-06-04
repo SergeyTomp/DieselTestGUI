@@ -1,7 +1,5 @@
 package fi.stardex.sisu.ui.controllers.cr;
 
-import fi.stardex.sisu.charts.ChartTask;
-import fi.stardex.sisu.charts.TimerTasksManager;
 import fi.stardex.sisu.injectors.InjectorChannel;
 import fi.stardex.sisu.registers.modbusmaps.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
@@ -108,8 +106,6 @@ public class InjectorSectionController {
     @FXML
     private AnchorPane ledBeaker4;
 
-    private boolean updateOSC;
-
     private int currentFirmwareWidth;
 
     private StringProperty labelWidthProperty = new SimpleStringProperty();
@@ -117,10 +113,6 @@ public class InjectorSectionController {
     private SettingsController settingsController;
 
     private ModbusRegisterProcessor ultimaModbusWriter;
-
-    private TimerTasksManager timerTasksManager;
-
-    private ChartTask chartTask;
 
     private VoltageController voltageController;
 
@@ -162,12 +154,8 @@ public class InjectorSectionController {
         return powerSwitch;
     }
 
-    public boolean isUpdateOSC() {
-        return updateOSC;
-    }
-
-    public void setUpdateOSC(boolean updateOSC) {
-        this.updateOSC = updateOSC;
+    public LedParametersChangeListener getLedParametersChangeListener() {
+        return ledParametersChangeListener;
     }
 
     public StringProperty labelWidthPropertyProperty() {
@@ -211,33 +199,12 @@ public class InjectorSectionController {
         this.ultimaModbusWriter = ultimaModbusWriter;
     }
 
-    public void setTimerTaskManager(TimerTasksManager timerTasksManager) {
-        this.timerTasksManager = timerTasksManager;
-    }
-
-    public void setChartTask(ChartTask chartTask) {
-        this.chartTask = chartTask;
-    }
-
     public void setVoltageController(VoltageController voltageController) {
         this.voltageController = voltageController;
     }
 
     @PostConstruct
     private void init() {
-
-        powerSwitch.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue) {
-                ultimaModbusWriter.add(ModbusMapUltima.Injectors_Running_En, true);
-                ledParametersChangeListener.sendLedRegisters();
-                timerTasksManager.start(chartTask);
-            } else {
-                ultimaModbusWriter.add(ModbusMapUltima.Injectors_Running_En, false);
-                ledParametersChangeListener.switchOffAll();
-                timerTasksManager.stop();
-                voltageController.getData1().clear();
-            }
-        });
 
         ledBeaker1Controller.setNumber(1);
         ledBeaker2Controller.setNumber(2);
@@ -277,6 +244,22 @@ public class InjectorSectionController {
                 FontColour.setFontColourProperty(null);
             }
         });
+
+//        powerSwitch.selectedProperty().addListener((observable, oldValue, newValue) -> {
+//            if (newValue) {
+//                powerSwitch.setText("On");
+//                ultimaModbusWriter.add(ModbusMapUltima.Injectors_Running_En, true);
+//                ledParametersChangeListener.sendLedRegisters();
+//                timerTasksManager.start(chartTask);
+//            } else {
+//                powerSwitch.setText("Off");
+//                ultimaModbusWriter.add(ModbusMapUltima.Injectors_Running_En, false);
+//                ledParametersChangeListener.switchOffAll();
+//                timerTasksManager.stop();
+//                voltageController.getData1().clear();
+//            }
+//        });
+
     }
 
     private void setupInjectorConfigComboBox() {
@@ -291,7 +274,7 @@ public class InjectorSectionController {
         ledControllers.forEach(s -> s.getLedBeaker().setToggleGroup(toggleGroup));
     }
 
-    private class LedParametersChangeListener implements ChangeListener<Object> {
+    public class LedParametersChangeListener implements ChangeListener<Object> {
 
         private ReadOnlyObjectProperty<Toggle> injectorTypeProperty;
 
@@ -335,7 +318,7 @@ public class InjectorSectionController {
                 throw new RuntimeException("Wrong listener type!");
         }
 
-        private void sendLedRegisters() {
+        public void sendLedRegisters() {
 
             writeInjectorTypeRegister();
 
@@ -358,7 +341,7 @@ public class InjectorSectionController {
             }
         }
 
-        private void switchOffAll() {
+        public void switchOffAll() {
             slotNumbersList.forEach((s) -> ultimaModbusWriter.add(s, OFF_COMMAND_NUMBER));
             slotPulsesList.forEach((s) -> ultimaModbusWriter.add(s, 0));
         }

@@ -93,14 +93,10 @@ public class JavaFXSpringConfigure {
     @Autowired
     public InjectorSectionController injectorSectionController(SettingsController settingsController,
                                                                @Lazy ModbusRegisterProcessor ultimaModbusWriter,
-                                                               @Lazy TimerTasksManager timerTasksManager,
-                                                               @Lazy ChartTask chartTask,
                                                                VoltageController voltageController) {
         InjectorSectionController injectorSectionController = crSectionController().getInjectorSectionController();
         injectorSectionController.setSettingsController(settingsController);
         injectorSectionController.setUltimaModbusWriter(ultimaModbusWriter);
-        injectorSectionController.setTimerTaskManager(timerTasksManager);
-        injectorSectionController.setChartTask(chartTask);
         injectorSectionController.setVoltageController(voltageController);
         return injectorSectionController;
     }
