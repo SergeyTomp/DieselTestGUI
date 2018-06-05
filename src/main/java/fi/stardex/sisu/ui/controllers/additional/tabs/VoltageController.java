@@ -2,26 +2,20 @@ package fi.stardex.sisu.ui.controllers.additional.tabs;
 
 import fi.stardex.sisu.styles.FontColour;
 import fi.stardex.sisu.ui.ViewHolder;
+import fi.stardex.sisu.ui.controllers.additional.AdditionalSectionController;
 import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import javafx.stage.WindowEvent;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import javax.annotation.PostConstruct;
 
@@ -70,6 +64,8 @@ public class VoltageController {
 
     private Stage voapStage;
 
+    private AdditionalSectionController additionalSectionController;
+
     private ObservableList<XYChart.Data<Double, Double>> data1;
     private ObservableList<XYChart.Data<Double, Double>> data2;
     private ObservableList<XYChart.Data<Double, Double>> data3;
@@ -83,6 +79,14 @@ public class VoltageController {
 
     public void setVoltAmpereProfileDialog(ViewHolder voltAmpereProfileDialog) {
         this.voltAmpereProfileDialog = voltAmpereProfileDialog;
+    }
+
+    public void setParentController(AdditionalSectionController additionalSectionController) {
+        this.additionalSectionController = additionalSectionController;
+    }
+
+    public AdditionalSectionController getAdditionalSectionController() {
+        return additionalSectionController;
     }
 
     public Label getWidth() {
@@ -186,4 +190,5 @@ public class VoltageController {
         firstCurrent.setText(firstCurrentValue.toString());
         secondCurrent.setText(secondCurrentValue.toString());
     }
+
 }

@@ -124,6 +124,7 @@ public class JavaFXSpringConfigure {
     @Bean
     public VoltageController voltageController() {
         VoltageController voltageController = additionalSectionController().getVoltageController();
+        voltageController.setParentController(additionalSectionController());
         voltageController.setVoltAmpereProfileDialog(voltAmpereProfileDialog());
         return voltageController;
     }

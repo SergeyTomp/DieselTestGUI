@@ -238,6 +238,12 @@ public class InjectorSectionController {
             }
         });
 
+        //FIXME: при включении инжекторной секции вне таба voltage при переходе на другой таб кнопка отключается
+        voltageController.getAdditionalSectionController().getTabPane().getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if((powerSwitch.isSelected()) && (newValue != voltageController.getAdditionalSectionController().getTabVoltage()))
+                powerSwitch.fire();
+        });
+
         powerSwitch.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
                 powerSwitch.setText("On");
