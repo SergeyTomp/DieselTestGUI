@@ -24,6 +24,7 @@ import fi.stardex.sisu.util.ApplicationConfigHandler;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.wrappers.StatusBarWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.*;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
@@ -140,14 +141,12 @@ public class SpringJavaConfig {
 
     @Bean
     @Autowired
-    public TimerTasksManager timerTasksManager(ChartTask chartTask) {
-        return new TimerTasksManager(chartTask);
+    public TimerTasksManager timerTasksManager(ApplicationContext applicationContext) {
+        return new TimerTasksManager(applicationContext);
     }
 
-
-    //FIXME: singleton or prototype?
     @Bean
-//    @Scope("prototype")
+    @Scope("prototype")
     @Autowired
     public ChartTask chartTask(VoltageController voltageController, ModbusRegisterProcessor ultimaModbusWriter,
                                PiezoCoilToggleGroup piezoCoilToggleGroup) {

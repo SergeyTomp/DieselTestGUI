@@ -2,6 +2,7 @@ package fi.stardex.sisu.charts;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 
 import java.util.Timer;
 
@@ -18,8 +19,14 @@ public class TimerTasksManager {
 
     private Timer timer1;
 
-    public TimerTasksManager(ChartTask chartTask) {
-        this.chartTask = chartTask;
+    private ApplicationContext applicationContext;
+
+    public TimerTasksManager(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
+    }
+
+    public ChartTask chartTask() {
+        return applicationContext.getBean(ChartTask.class);
     }
 
     public void start(ChartTasks chartTasks) {
@@ -28,6 +35,7 @@ public class TimerTasksManager {
         }
 
         if(chartTasks == ChartTasks.CHART_TASK_ONE) {
+            chartTask = chartTask();
             chartTask.setUpdateOSC(true);
             timer1 = new Timer();
             timer1.schedule(chartTask, DELAY, PERIOD);
