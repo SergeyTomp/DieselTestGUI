@@ -1,5 +1,7 @@
 package fi.stardex.sisu.charts;
 
+import fi.stardex.sisu.firmware.FirmwareDataObtainer;
+import fi.stardex.sisu.leds.ActiveLeds;
 import fi.stardex.sisu.parts.PiezoCoilToggleGroup;
 import fi.stardex.sisu.registers.modbusmaps.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
@@ -24,9 +26,13 @@ public class ChartTask extends TimerTask {
 
     private ModbusRegisterProcessor ultimaModbusWriter;
 
-    private TimerTasksManager timerTasksManager;
-
     private PiezoCoilToggleGroup piezoCoilToggleGroup;
+
+    private boolean updateOSC;
+
+    public void setUpdateOSC(boolean updateOSC) {
+        this.updateOSC = updateOSC;
+    }
 
     private static final double X_VALUE_OFFSET = 0.95;
     private static final double CURRENT_COEF = 93.07;
@@ -34,10 +40,9 @@ public class ChartTask extends TimerTask {
 
     private int offset = 0;
 
-    public ChartTask(VoltageController voltageController, ModbusRegisterProcessor ultimaModbusWriter, TimerTasksManager timerTasksManager, PiezoCoilToggleGroup piezoCoilToggleGroup) {
+    public ChartTask(VoltageController voltageController, ModbusRegisterProcessor ultimaModbusWriter, PiezoCoilToggleGroup piezoCoilToggleGroup) {
         this.voltageController = voltageController;
         this.ultimaModbusWriter = ultimaModbusWriter;
-        this.timerTasksManager = timerTasksManager;
         this.piezoCoilToggleGroup = piezoCoilToggleGroup;
     }
 
@@ -75,7 +80,7 @@ public class ChartTask extends TimerTask {
     @Override
     public void run() {
 
-        if (injectorSectionController.activeControllers().size() != 0) {
+        if (ActiveLeds.activeControllers().size() != 0) {
 
             System.err.println("Running chart");
 
@@ -83,24 +88,24 @@ public class ChartTask extends TimerTask {
 
             if (piezoCoilToggleGroup.getPiezoCoilToggleGroup().getSelectedToggle() == piezoCoilToggleGroup.getCoilRadioButton()) {
                 offset = 200;
-                n = (int) ((injectorSectionController.getCurrentFirmwareWidth() + offset) / X_VALUE_OFFSET);
+                n = (int) ((FirmwareDataObtainer.getFirmwareWidth() + offset) / X_VALUE_OFFSET);
             } else if (piezoCoilToggleGroup.getPiezoCoilToggleGroup().getSelectedToggle() == piezoCoilToggleGroup.getPiezoRadioButton()) {
                 offset = 0;
-                n = (int) ((injectorSectionController.getCurrentFirmwareWidth()) / X_VALUE_OFFSET);
+                n = (int) ((FirmwareDataObtainer.getFirmwareWidth()) / X_VALUE_OFFSET);
             } else {
-                offset = injectorSectionController.getCurrentFirmwareWidth() < 500 ?
-                        injectorSectionController.getCurrentFirmwareWidth() : 500;
-                n = (int) ((injectorSectionController.getCurrentFirmwareWidth() + offset) / X_VALUE_OFFSET);
+                offset = FirmwareDataObtainer.getFirmwareWidth() < 500 ?
+                        FirmwareDataObtainer.getFirmwareWidth() : 500;
+                n = (int) ((FirmwareDataObtainer.getFirmwareWidth() + offset) / X_VALUE_OFFSET);
             }
             int div = n / 2047;
             int remainder = n % 2047;
             int part = 1;
-            if (!timerTasksManager.isUpdateOSC())
+            if (!updateOSC)
                 return;
             ArrayList<Integer> resultDataList = new ArrayList<>();
             try {
                 for (int i = 0; i < div; i++) {
-                    if (!timerTasksManager.isUpdateOSC())
+                    if (!updateOSC)
                         return;
                     ultimaModbusWriter.add(ModbusMapUltima.Current_graph1_frame_num, part);
                     ultimaModbusWriter.add(ModbusMapUltima.Current_graph1_update, true);
@@ -112,7 +117,7 @@ public class ChartTask extends TimerTask {
                             logger.error("Interrupted 1.", e);
                         }
                         try {
-                            if (!timerTasksManager.isUpdateOSC())
+                            if (!updateOSC)
                                 return;
                             ready = (boolean) ultimaModbusWriter.getRegisterProvider().read(ModbusMapUltima.Current_graph1_update);
                         } catch (ClassCastException e) {
@@ -124,7 +129,7 @@ public class ChartTask extends TimerTask {
                     addModbusData(resultDataList, data);
                     part++;
                 }
-                if (!timerTasksManager.isUpdateOSC())
+                if (!updateOSC)
                     return;
                 ultimaModbusWriter.add(ModbusMapUltima.Current_graph1_frame_num, part);
                 ultimaModbusWriter.add(ModbusMapUltima.Current_graph1_update, true);
@@ -136,7 +141,7 @@ public class ChartTask extends TimerTask {
                         logger.error("Interrupted 1.", e);
                     }
                     try {
-                        if (!timerTasksManager.isUpdateOSC())
+                        if (!updateOSC)
                             return;
                         ready = (boolean) ultimaModbusWriter.getRegisterProvider().read(ModbusMapUltima.Current_graph1_update);
                     } catch (ClassCastException e) {

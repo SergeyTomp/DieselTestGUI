@@ -3,6 +3,7 @@ package fi.stardex.sisu.ui.controllers.cr;
 import fi.stardex.sisu.charts.ChartTasks;
 import fi.stardex.sisu.charts.TimerTasksManager;
 import fi.stardex.sisu.injectors.InjectorChannel;
+import fi.stardex.sisu.leds.ActiveLeds;
 import fi.stardex.sisu.registers.modbusmaps.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.styles.FontColour;
@@ -108,8 +109,6 @@ public class InjectorSectionController {
     @FXML
     private AnchorPane ledBeaker4;
 
-    private int currentFirmwareWidth;
-
     private StringProperty labelWidthProperty = new SimpleStringProperty();
 
     private SettingsController settingsController;
@@ -150,10 +149,6 @@ public class InjectorSectionController {
         return widthCurrentSignal;
     }
 
-    public int getCurrentFirmwareWidth() {
-        return currentFirmwareWidth;
-    }
-
     public ToggleButton getPowerSwitch() {
         return powerSwitch;
     }
@@ -186,14 +181,14 @@ public class InjectorSectionController {
         return ledControllers;
     }
 
-    public List<LedController> activeControllers() {
-        List<LedController> result = new ArrayList<>();
-        for (LedController s : ledControllers) {
-            if (s.isSelected()) result.add(s);
-        }
-        result.sort(Comparator.comparingInt(LedController::getNumber));
-        return result;
-    }
+//    public List<LedController> activeControllers() {
+//        List<LedController> result = new ArrayList<>();
+//        for (LedController s : ledControllers) {
+//            if (s.isSelected()) result.add(s);
+//        }
+//        result.sort(Comparator.comparingInt(LedController::getNumber));
+//        return result;
+//    }
 
     public void setSettingsController(SettingsController settingsController) {
         this.settingsController = settingsController;
@@ -240,8 +235,7 @@ public class InjectorSectionController {
         ledParametersChangeListener = new LedParametersChangeListener();
 
         labelWidthProperty.addListener((observable, oldValue, newValue) -> {
-            currentFirmwareWidth = Math.round(Float.parseFloat(newValue));
-            if (currentFirmwareWidth != widthCurrentSignal.getValue()) {
+            if (Math.round(Float.parseFloat(newValue)) != widthCurrentSignal.getValue()) {
                 FontColour.setFontColourProperty("-fx-text-fill: red");
             } else {
                 FontColour.setFontColourProperty(null);
@@ -331,7 +325,8 @@ public class InjectorSectionController {
 
             writeInjectorTypeRegister();
 
-            List<LedController> activeControllers = activeControllers();
+            List<LedController> activeControllers = ActiveLeds.activeControllers();
+            activeControllers.forEach(System.err::println);
             Iterator<LedController> activeControllersIterator = activeControllers.iterator();
             int activeLeds = activeControllers.size();
             double frequency = freqCurrentSignal.getValue();

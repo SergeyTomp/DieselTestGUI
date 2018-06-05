@@ -8,6 +8,7 @@ import fi.stardex.sisu.connect.InetAddressWrapper;
 import fi.stardex.sisu.connect.ModbusConnect;
 import fi.stardex.sisu.devices.Device;
 import fi.stardex.sisu.devices.Devices;
+import fi.stardex.sisu.leds.ActiveLeds;
 import fi.stardex.sisu.parts.PiezoCoilToggleGroup;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.modbusmaps.ModbusMapUltima;
@@ -149,13 +150,19 @@ public class SpringJavaConfig {
 //    @Scope("prototype")
     @Autowired
     public ChartTask chartTask(VoltageController voltageController, ModbusRegisterProcessor ultimaModbusWriter,
-                               TimerTasksManager timerTasksManager, PiezoCoilToggleGroup piezoCoilToggleGroup) {
-        return new ChartTask(voltageController, ultimaModbusWriter, timerTasksManager, piezoCoilToggleGroup);
+                               PiezoCoilToggleGroup piezoCoilToggleGroup) {
+        return new ChartTask(voltageController, ultimaModbusWriter, piezoCoilToggleGroup);
     }
 
     @Bean
     @Autowired
     public PiezoCoilToggleGroup piezoCoilToggleGroup(InjectorSectionController injectorSectionController) {
         return new PiezoCoilToggleGroup(injectorSectionController);
+    }
+
+    @Bean
+    @Autowired
+    public ActiveLeds activeLeds(InjectorSectionController injectorSectionController) {
+        return new ActiveLeds(injectorSectionController.getLedControllers());
     }
 }
