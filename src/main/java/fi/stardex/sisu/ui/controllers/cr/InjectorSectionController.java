@@ -182,15 +182,6 @@ public class InjectorSectionController {
         return ledControllers;
     }
 
-//    public List<LedController> activeControllers() {
-//        List<LedController> result = new ArrayList<>();
-//        for (LedController s : ledControllers) {
-//            if (s.isSelected()) result.add(s);
-//        }
-//        result.sort(Comparator.comparingInt(LedController::getNumber));
-//        return result;
-//    }
-
     public void setSettingsController(SettingsController settingsController) {
         this.settingsController = settingsController;
     }
@@ -228,8 +219,6 @@ public class InjectorSectionController {
         widthCurrentSignal.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(120, 15500, 300, 10));
 
         freqCurrentSignal.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0.5, 50, 16.67, 0.01));
-
-//        SpinnerManager.setupSpinner(widthCurrentSignal, 300, 120, 15500, new CustomTooltip(), new SpinnerValueObtainer(300));
 
         SpinnerManager.setupSpinner(freqCurrentSignal, 16.67, 16.671, new CustomTooltip(), new SpinnerValueObtainer(16.67));
 
