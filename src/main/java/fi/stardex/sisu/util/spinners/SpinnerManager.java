@@ -136,8 +136,8 @@ public class SpinnerManager {
                         System.err.println("Generated: " + ((WidthSpinnerValueObtainer) obtainer).getGeneratedFakeValue());
                     } else {
                         spinner.getValueFactory().setValue(generateRandomFakeInt(minValue, maxValue));
-                        spinner.getValueFactory().setValue(initValue);
                     }
+                    spinner.getValueFactory().setValue(initValue);
                     return spinner.getValue();
                 }
             }

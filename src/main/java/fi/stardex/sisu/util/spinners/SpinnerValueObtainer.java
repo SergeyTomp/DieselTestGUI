@@ -6,7 +6,6 @@ public class SpinnerValueObtainer {
 
     private Number oldValue;
 
-    
     public SpinnerValueObtainer(Number initValue) {
         oldValue = initValue;
     }
