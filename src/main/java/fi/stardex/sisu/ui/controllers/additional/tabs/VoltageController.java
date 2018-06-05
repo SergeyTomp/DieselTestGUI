@@ -70,11 +70,21 @@ public class VoltageController {
     private ObservableList<XYChart.Data<Double, Double>> data2;
     private ObservableList<XYChart.Data<Double, Double>> data3;
     private ObservableList<XYChart.Data<Double, Double>> data4;
-    private ObservableList<XYChart.Data<Double, Double>> data5;
-    private ObservableList<XYChart.Data<Double, Double>> data6;
 
     public ObservableList<XYChart.Data<Double, Double>> getData1() {
         return data1;
+    }
+
+    public ObservableList<XYChart.Data<Double, Double>> getData2() {
+        return data2;
+    }
+
+    public ObservableList<XYChart.Data<Double, Double>> getData3() {
+        return data3;
+    }
+
+    public ObservableList<XYChart.Data<Double, Double>> getData4() {
+        return data4;
     }
 
     public void setVoltAmpereProfileDialog(ViewHolder voltAmpereProfileDialog) {
@@ -148,28 +158,18 @@ public class VoltageController {
         series3.setName("");
         XYChart.Series<Double, Double> series4 = new XYChart.Series<>();
         series4.setName("");
-        XYChart.Series<Double, Double> series5 = new XYChart.Series<>();
-        series5.setName("");
-        XYChart.Series<Double, Double> series6 = new XYChart.Series<>();
-        series6.setName("");
         data1 = FXCollections.observableArrayList();
         data2 = FXCollections.observableArrayList();
         data3 = FXCollections.observableArrayList();
         data4 = FXCollections.observableArrayList();
-        data5 = FXCollections.observableArrayList();
-        data6 = FXCollections.observableArrayList();
         series1.setData(data1);
         series2.setData(data2);
         series3.setData(data3);
         series4.setData(data4);
-        series5.setData(data5);
-        series6.setData(data6);
         lineChart.getData().add(series1);
         lineChart.getData().add(series2);
         lineChart.getData().add(series3);
         lineChart.getData().add(series4);
-        lineChart.getData().add(series5);
-        lineChart.getData().add(series6);
 
         xAxis.setMinorTickVisible(false);
         yAxis.setLowerBound(-15);

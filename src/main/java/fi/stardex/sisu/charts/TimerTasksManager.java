@@ -25,8 +25,8 @@ public class TimerTasksManager {
         this.applicationContext = applicationContext;
     }
 
-    public ChartTask chartTask() {
-        return applicationContext.getBean(ChartTask.class);
+    private ChartTask chartTaskOne() {
+        return applicationContext.getBean("chartTaskOne", ChartTask.class);
     }
 
     public void start(ChartTasks chartTasks) {
@@ -35,7 +35,7 @@ public class TimerTasksManager {
         }
 
         if(chartTasks == ChartTasks.CHART_TASK_ONE) {
-            chartTask = chartTask();
+            chartTask = chartTaskOne();
             chartTask.setUpdateOSC(true);
             timer1 = new Timer();
             timer1.schedule(chartTask, DELAY, PERIOD);

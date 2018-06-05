@@ -1,6 +1,5 @@
 package fi.stardex.sisu.spring;
 
-import fi.stardex.sisu.charts.ChartTask;
 import fi.stardex.sisu.charts.TimerTasksManager;
 import fi.stardex.sisu.devices.Devices;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
@@ -19,7 +18,6 @@ import fi.stardex.sisu.ui.controllers.cr.TestBenchSectionController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.i18n.UTF8Control;
-import fi.stardex.sisu.util.tooltips.CustomTooltip;
 import fi.stardex.sisu.util.view.ApplicationAppearanceChanger;
 import fi.stardex.sisu.util.wrappers.StatusBarWrapper;
 import fi.stardex.sisu.version.StardexVersion;

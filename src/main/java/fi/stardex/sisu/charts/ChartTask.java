@@ -18,11 +18,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.TimerTask;
 
-public class ChartTask extends TimerTask {
+public abstract class ChartTask extends TimerTask {
 
     private static final Logger logger = LoggerFactory.getLogger(ChartTask.class);
-
-    private VoltageController voltageController;
 
     private ModbusRegisterProcessor ultimaModbusWriter;
 
@@ -40,8 +38,15 @@ public class ChartTask extends TimerTask {
 
     private int offset = 0;
 
-    public ChartTask(VoltageController voltageController, ModbusRegisterProcessor ultimaModbusWriter, PiezoCoilToggleGroup piezoCoilToggleGroup) {
-        this.voltageController = voltageController;
+    protected abstract ModbusMapUltima getCurrentGraph();
+
+    protected abstract ModbusMapUltima getCurrentGraphFrameNum();
+
+    protected abstract ModbusMapUltima getCurrentGraphUpdate();
+
+    protected abstract ObservableList<XYChart.Data<Double, Double>> getData();
+
+    public ChartTask(ModbusRegisterProcessor ultimaModbusWriter, PiezoCoilToggleGroup piezoCoilToggleGroup) {
         this.ultimaModbusWriter = ultimaModbusWriter;
         this.piezoCoilToggleGroup = piezoCoilToggleGroup;
     }
@@ -107,8 +112,8 @@ public class ChartTask extends TimerTask {
                 for (int i = 0; i < div; i++) {
                     if (!updateOSC)
                         return;
-                    ultimaModbusWriter.add(ModbusMapUltima.Current_graph1_frame_num, part);
-                    ultimaModbusWriter.add(ModbusMapUltima.Current_graph1_update, true);
+                    ultimaModbusWriter.add(getCurrentGraphFrameNum(), part);
+                    ultimaModbusWriter.add(getCurrentGraphUpdate(), true);
                     boolean ready;
                     do {
                         try {
@@ -119,20 +124,20 @@ public class ChartTask extends TimerTask {
                         try {
                             if (!updateOSC)
                                 return;
-                            ready = (boolean) ultimaModbusWriter.getRegisterProvider().read(ModbusMapUltima.Current_graph1_update);
+                            ready = (boolean) ultimaModbusWriter.getRegisterProvider().read(getCurrentGraphUpdate());
                         } catch (ClassCastException e) {
                             logger.error("Cast Error: ", e);
                             return;
                         }
                     } while (ready);
-                    Integer[] data = (Integer[]) ultimaModbusWriter.getRegisterProvider().read(ModbusMapUltima.Current_graph1);
+                    Integer[] data = (Integer[]) ultimaModbusWriter.getRegisterProvider().read(getCurrentGraph());
                     addModbusData(resultDataList, data);
                     part++;
                 }
                 if (!updateOSC)
                     return;
-                ultimaModbusWriter.add(ModbusMapUltima.Current_graph1_frame_num, part);
-                ultimaModbusWriter.add(ModbusMapUltima.Current_graph1_update, true);
+                ultimaModbusWriter.add(getCurrentGraphFrameNum(), part);
+                ultimaModbusWriter.add(getCurrentGraphUpdate(), true);
                 boolean ready;
                 do {
                     try {
@@ -143,7 +148,7 @@ public class ChartTask extends TimerTask {
                     try {
                         if (!updateOSC)
                             return;
-                        ready = (boolean) ultimaModbusWriter.getRegisterProvider().read(ModbusMapUltima.Current_graph1_update);
+                        ready = (boolean) ultimaModbusWriter.getRegisterProvider().read(getCurrentGraphUpdate());
                     } catch (ClassCastException e) {
                         logger.error("Cast Exception: ", e);
                         return;
@@ -155,7 +160,7 @@ public class ChartTask extends TimerTask {
                 logger.error("Cannot obtain graphic 2", e);
                 return;
             }
-            Platform.runLater(() -> addData(resultDataList, voltageController.getData1()));
+            Platform.runLater(() -> addData(resultDataList, getData()));
         }
     }
 

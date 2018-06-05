@@ -8,9 +8,25 @@ public enum ModbusMapUltima implements ModbusMap {
     FirmwareVersion(RegisterType.REGISTER_HOLDING, 116, 1, false),
     PositionRheostatOne(RegisterType.REGISTER_INPUT, 4096, 2, false),
 
+    // ChartTask 1
     Current_graph1(RegisterType.REGISTER_INPUT_CHART, 0, 2047, false),
     Current_graph1_frame_num(RegisterType.REGISTER_HOLDING, 7, 1, false),
     Current_graph1_update(RegisterType.DISCRETE_COIL, 1, 1, false),
+
+    // ChartTask 2
+    Current_graph2(RegisterType.REGISTER_INPUT_CHART, 2048, 4095, false),
+    Current_graph2_frame_num(RegisterType.REGISTER_HOLDING, 27, 1, false),
+    Current_graph2_update(RegisterType.DISCRETE_COIL, 21, 1, false),
+
+    // ChartTask 3
+    Current_graph3(RegisterType.REGISTER_INPUT_CHART, 4500, 6547, false),
+    Current_graph3_frame_num(RegisterType.REGISTER_HOLDING, 1007, 1, false),
+    Current_graph3_update(RegisterType.DISCRETE_COIL, 1001, 1, false),
+
+    // ChartTask 4
+    Current_graph4(RegisterType.REGISTER_INPUT_CHART, 6548, 8595, false),
+    Current_graph4_frame_num(RegisterType.REGISTER_HOLDING, 1027, 1, false),
+    Current_graph4_update(RegisterType.DISCRETE_COIL, 1021, 1, false),
 
     Injectors_Running_En(RegisterType.DISCRETE_COIL, 42, 1, false),
 

@@ -169,6 +169,7 @@ public class VoltAmpereProfileController {
         });
     }
 
+    // FIXME: не меняется на графике boost enabled/disabled при нажатии Apply, только после перезапуска инжекторной секции
     private void setupApplyButton() {
         applyButton.setOnAction(event -> {
             listOfVAPSpinners.forEach(e -> e.increment(0));
