@@ -1,5 +1,7 @@
 package fi.stardex.sisu.spring;
 
+import fi.stardex.sisu.charts.ChartTask;
+import fi.stardex.sisu.charts.TimerTasksManager;
 import fi.stardex.sisu.devices.Devices;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.ViewHolder;
@@ -90,10 +92,12 @@ public class JavaFXSpringConfigure {
     @Bean
     @Autowired
     public InjectorSectionController injectorSectionController(SettingsController settingsController,
-                                                               @Lazy ModbusRegisterProcessor ultimaModbusWriter) {
+                                                               @Lazy ModbusRegisterProcessor ultimaModbusWriter,
+                                                               VoltageController voltageController) {
         InjectorSectionController injectorSectionController = crSectionController().getInjectorSectionController();
         injectorSectionController.setSettingsController(settingsController);
         injectorSectionController.setUltimaModbusWriter(ultimaModbusWriter);
+        injectorSectionController.setVoltageController(voltageController);
         return injectorSectionController;
     }
 
@@ -143,9 +147,11 @@ public class JavaFXSpringConfigure {
     @Autowired
     public VoltAmpereProfileController voltAmpereProfileController(ModbusRegisterProcessor ultimaModbusWriter,
                                                                    InjectorSectionController injectorSectionController,
-                                                                   VoltageController voltageController) {
+                                                                   VoltageController voltageController,
+                                                                   TimerTasksManager timerTasksManager) {
         VoltAmpereProfileController voltAmpereProfileController = (VoltAmpereProfileController) voltAmpereProfileDialog().getController();
         voltAmpereProfileController.setUltimaModbusWriter(ultimaModbusWriter);
+        injectorSectionController.setTimerTaskManager(timerTasksManager);
         voltAmpereProfileController.setWidthSpinner(injectorSectionController.getWidthCurrentSignal());
         voltAmpereProfileController.setVoltageController(voltageController);
         return voltAmpereProfileController;

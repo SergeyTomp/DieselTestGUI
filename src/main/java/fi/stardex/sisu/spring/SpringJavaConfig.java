@@ -8,6 +8,8 @@ import fi.stardex.sisu.connect.InetAddressWrapper;
 import fi.stardex.sisu.connect.ModbusConnect;
 import fi.stardex.sisu.devices.Device;
 import fi.stardex.sisu.devices.Devices;
+import fi.stardex.sisu.leds.ActiveLeds;
+import fi.stardex.sisu.parts.PiezoCoilToggleGroup;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.modbusmaps.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
@@ -22,10 +24,8 @@ import fi.stardex.sisu.util.ApplicationConfigHandler;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.wrappers.StatusBarWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Scope;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.*;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.util.LinkedList;
@@ -141,15 +141,27 @@ public class SpringJavaConfig {
 
     @Bean
     @Autowired
-    public TimerTasksManager timerTasksManager(InjectorSectionController injectorSectionController) {
-        return new TimerTasksManager(injectorSectionController);
+    public TimerTasksManager timerTasksManager(ApplicationContext applicationContext) {
+        return new TimerTasksManager(applicationContext);
     }
 
     @Bean
     @Scope("prototype")
     @Autowired
-    public ChartTask chartTask(VoltageController voltageController, ModbusRegisterProcessor ultimaModbusWriter, InjectorSectionController injectorSectionController) {
-        return new ChartTask(voltageController, ultimaModbusWriter, injectorSectionController);
+    public ChartTask chartTask(VoltageController voltageController, ModbusRegisterProcessor ultimaModbusWriter,
+                               PiezoCoilToggleGroup piezoCoilToggleGroup) {
+        return new ChartTask(voltageController, ultimaModbusWriter, piezoCoilToggleGroup);
     }
 
+    @Bean
+    @Autowired
+    public PiezoCoilToggleGroup piezoCoilToggleGroup(InjectorSectionController injectorSectionController) {
+        return new PiezoCoilToggleGroup(injectorSectionController);
+    }
+
+    @Bean
+    @Autowired
+    public ActiveLeds activeLeds(InjectorSectionController injectorSectionController) {
+        return new ActiveLeds(injectorSectionController.getLedControllers());
+    }
 }

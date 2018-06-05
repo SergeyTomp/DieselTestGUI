@@ -113,6 +113,7 @@ public class VoltageController {
 
         width.styleProperty().addListener((observable, oldValue, newValue) -> width.setStyle(newValue));
 
+        width.setText("300"); // widthCurrentSignal initial value
         voltage.setText("60"); // boostUSpinner initial value
         firstWidth.setText("500"); // firstWSpinner initial value
         firstCurrent.setText("15.0"); // firstISpinner initial value

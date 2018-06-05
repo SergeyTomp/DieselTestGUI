@@ -1,17 +1,16 @@
 package fi.stardex.sisu.charts;
 
-import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.context.ApplicationContext;
 
 import java.util.Timer;
-import java.util.TimerTask;
 
 public class TimerTasksManager {
 
-    private InjectorSectionController injectorSectionController;
-
     private static final Logger logger = LoggerFactory.getLogger(TimerTasksManager.class);
+
+    private ChartTask chartTask;
 
     private static final int DELAY = 0;
     private static final int PERIOD = 100;
@@ -20,27 +19,37 @@ public class TimerTasksManager {
 
     private Timer timer1;
 
-    public TimerTasksManager(InjectorSectionController injectorSectionController) {
-        this.injectorSectionController = injectorSectionController;
+    private ApplicationContext applicationContext;
+
+    public TimerTasksManager(ApplicationContext applicationContext) {
+        this.applicationContext = applicationContext;
     }
 
-    public void start(TimerTask timerTask) {
+    public ChartTask chartTask() {
+        return applicationContext.getBean(ChartTask.class);
+    }
+
+    public void start(ChartTasks chartTasks) {
         if (running) {
             return;
         }
-        injectorSectionController.setUpdateOSC(true);
-        timer1 = new Timer();
-        timer1.schedule(timerTask, DELAY, PERIOD);
-        running = true;
-        logger.debug("START timers");
-    }
 
+        if(chartTasks == ChartTasks.CHART_TASK_ONE) {
+            chartTask = chartTask();
+            chartTask.setUpdateOSC(true);
+            timer1 = new Timer();
+            timer1.schedule(chartTask, DELAY, PERIOD);
+            running = true;
+            logger.debug("START timers");
+        }
+
+    }
 
     public void stop() {
         if (running) {
             timer1.cancel();
             timer1.purge();
-            injectorSectionController.setUpdateOSC(false);
+            chartTask.setUpdateOSC(true);
             running = false;
             logger.debug("STOP timers");
         }
