@@ -3,7 +3,9 @@ package fi.stardex.sisu.ui.controllers.additional.dialogs;
 import fi.stardex.sisu.registers.modbusmaps.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
-import fi.stardex.sisu.util.SpinnerManager;
+import fi.stardex.sisu.util.spinners.SpinnerManager;
+import fi.stardex.sisu.util.spinners.SpinnerValueObtainer;
+import fi.stardex.sisu.util.spinners.WidthSpinnerValueObtainer;
 import fi.stardex.sisu.util.tooltips.CustomTooltip;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -81,6 +83,8 @@ public class VoltAmpereProfileController {
 
     private List<Spinner> listOfVAPSpinners = new ArrayList<>();
 
+    private WidthSpinnerValueObtainer widthCurrentSignalValueObtainer = new WidthSpinnerValueObtainer(300);
+
     public void setUltimaModbusWriter(ModbusRegisterProcessor ultimaModbusWriter) {
         this.ultimaModbusWriter = ultimaModbusWriter;
     }
@@ -116,14 +120,15 @@ public class VoltAmpereProfileController {
         negativeU2Spinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(12, 70, 36, 1));
         boostUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(30, 75, 60, 1));
 
-        SpinnerManager.setupSpinner(firstWSpinner, 500, 90, 15500, new CustomTooltip());
-        SpinnerManager.setupSpinner(boostISpinner, 21.5, 21.51, new CustomTooltip());
-        SpinnerManager.setupSpinner(firstISpinner, 15, 15.01, new CustomTooltip());
-        SpinnerManager.setupSpinner(secondISpinner, 5.5, 5.51, new CustomTooltip());
-        SpinnerManager.setupSpinner(batteryUSpinner, 20, 11, 32, new CustomTooltip());
-        SpinnerManager.setupSpinner(negativeU1Spinner, 48, 17, 121, new CustomTooltip());
-        SpinnerManager.setupSpinner(negativeU2Spinner, 36, 12, 70, new CustomTooltip());
-        SpinnerManager.setupSpinner(boostUSpinner, 60, 30, 75, new CustomTooltip());
+        SpinnerManager.setupSpinner(widthCurrentSignal, 300, 120, 15500, new CustomTooltip(), widthCurrentSignalValueObtainer);
+        SpinnerManager.setupSpinner(firstWSpinner, 500, 90, 15500, new CustomTooltip(), new SpinnerValueObtainer(500));
+        SpinnerManager.setupSpinner(boostISpinner, 21.5, 21.51, new CustomTooltip(), new SpinnerValueObtainer(21.5));
+        SpinnerManager.setupSpinner(firstISpinner, 15, 15.01, new CustomTooltip(), new SpinnerValueObtainer(15));
+        SpinnerManager.setupSpinner(secondISpinner, 5.5, 5.51, new CustomTooltip(), new SpinnerValueObtainer(5.5));
+        SpinnerManager.setupSpinner(batteryUSpinner, 20, 11, 32, new CustomTooltip(), new SpinnerValueObtainer(20));
+        SpinnerManager.setupSpinner(negativeU1Spinner, 48, 17, 121, new CustomTooltip(), new SpinnerValueObtainer(48));
+        SpinnerManager.setupSpinner(negativeU2Spinner, 36, 12, 70, new CustomTooltip(), new SpinnerValueObtainer(36));
+        SpinnerManager.setupSpinner(boostUSpinner, 60, 30, 75, new CustomTooltip(), new SpinnerValueObtainer(60));
 
         listOfVAPSpinners.add(firstWSpinner);
         listOfVAPSpinners.add(boostISpinner);
@@ -142,8 +147,10 @@ public class VoltAmpereProfileController {
         setupCancelButton();
 
         widthCurrentSignal.valueProperty().addListener((observable, oldValue, newValue) -> {
-            if ((newValue >= 0) && (newValue <= 3000) && (!(newValue == 2993)))
+            if ((newValue >= 120) && (newValue <= 15500) && (!(newValue == widthCurrentSignalValueObtainer.getGeneratedFakeValue()))) {
                 sendVAPRegisters();
+                System.err.println("width sent value: " + newValue);
+            }
         });
 
     }

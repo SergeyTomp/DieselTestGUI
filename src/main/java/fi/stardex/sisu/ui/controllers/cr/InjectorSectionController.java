@@ -9,7 +9,8 @@ import fi.stardex.sisu.styles.FontColour;
 import fi.stardex.sisu.ui.controllers.additional.LedController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
-import fi.stardex.sisu.util.SpinnerManager;
+import fi.stardex.sisu.util.spinners.SpinnerManager;
+import fi.stardex.sisu.util.spinners.SpinnerValueObtainer;
 import fi.stardex.sisu.util.tooltips.CustomTooltip;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -19,7 +20,6 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.geometry.Point2D;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
@@ -248,9 +248,9 @@ public class InjectorSectionController {
 
         freqCurrentSignal.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0.5, 50, 16.67, 0.01));
 
-        SpinnerManager.setupSpinner(widthCurrentSignal, 300, 120, 15500, new CustomTooltip());
+//        SpinnerManager.setupSpinner(widthCurrentSignal, 300, 120, 15500, new CustomTooltip(), new SpinnerValueObtainer(300));
 
-        SpinnerManager.setupSpinner(freqCurrentSignal, 16.67, 16.671, new CustomTooltip());
+        SpinnerManager.setupSpinner(freqCurrentSignal, 16.67, 16.671, new CustomTooltip(), new SpinnerValueObtainer(16.67));
 
         new LedParametersChangeListener();
 
@@ -307,6 +307,7 @@ public class InjectorSectionController {
             switchOffAll();
             if (newValue instanceof Double) {
                 if (((Double) newValue <= 50 && (Double) newValue >= 0.5) && (Double) newValue != 16.671) {
+                    System.err.println("sent to firmware: " + newValue);
                     sendLedRegisters();
                 }
             } else if (newValue instanceof Toggle) {

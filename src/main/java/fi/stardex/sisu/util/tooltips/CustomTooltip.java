@@ -8,11 +8,7 @@ import javafx.scene.control.Tooltip;
 import javafx.util.Duration;
 import java.lang.reflect.Field;
 
-public class CustomTooltip extends Tooltip implements ChangeListener<Boolean> {
-
-    private Number spinnerOldValue;
-
-    private Number initialSpinnerOldValue;
+public class CustomTooltip extends Tooltip {
 
     public CustomTooltip() {
         this("Press ENTER to commit changes");
@@ -21,7 +17,6 @@ public class CustomTooltip extends Tooltip implements ChangeListener<Boolean> {
     public CustomTooltip(String message) {
         super(message);
         hackTooltipStartTiming();
-        showingProperty().addListener(this);
     }
 
     private void hackTooltipStartTiming() {
@@ -41,23 +36,4 @@ public class CustomTooltip extends Tooltip implements ChangeListener<Boolean> {
         }
     }
 
-    /**
-     * @param spinnerOldValue saves all last value when spinner textProperty listener is fired
-     */
-    public void setSpinnerOldValue(Number spinnerOldValue) {
-        this.spinnerOldValue = spinnerOldValue;
-    }
-
-    public Number getInitialSpinnerOldValue() {
-        return initialSpinnerOldValue;
-    }
-
-    /**
-     * saves the last spinner value before the tooltip starts showing
-     */
-    @Override
-    public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-        if (newValue)
-            initialSpinnerOldValue = spinnerOldValue;
-    }
 }
