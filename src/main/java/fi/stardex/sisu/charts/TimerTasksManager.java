@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Timer;
@@ -20,6 +21,8 @@ public class TimerTasksManager {
     private volatile boolean running;
 
     private Timer timer;
+
+    private List<Timer> timersList = new ArrayList<>();
 
     private ApplicationContext applicationContext;
 
@@ -51,6 +54,7 @@ public class TimerTasksManager {
         listOfCharts.forEach(e -> {
             e.setUpdateOSC(true);
             timer = new Timer();
+            timersList.add(timer);
             timer.schedule(e, DELAY, PERIOD);
         });
 
@@ -60,8 +64,11 @@ public class TimerTasksManager {
 
     public void stop() {
         if (running) {
-            timer.cancel();
-            timer.purge();
+            timersList.forEach(e -> {
+                e.cancel();
+                e.purge();
+            });
+            timersList.clear();
             listOfCharts.forEach(e -> e.setUpdateOSC(false));
             running = false;
             logger.debug("STOP timers");

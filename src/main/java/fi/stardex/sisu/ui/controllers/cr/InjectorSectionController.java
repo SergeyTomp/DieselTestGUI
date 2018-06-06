@@ -1,6 +1,5 @@
 package fi.stardex.sisu.ui.controllers.cr;
 
-import fi.stardex.sisu.charts.ChartTasks;
 import fi.stardex.sisu.charts.TimerTasksManager;
 import fi.stardex.sisu.injectors.InjectorChannel;
 import fi.stardex.sisu.leds.ActiveLeds;
@@ -365,16 +364,28 @@ public class InjectorSectionController {
                 ultimaModbusWriter.add(ModbusMapUltima.Injectors_Running_En, true);
                 ledParametersChangeListener.sendLedRegisters();
                 timerTasksManager.start();
+                enableInjectorSectionLedsAndToggleGroup(true);
             } else {
                 powerSwitch.setText("Off");
                 ultimaModbusWriter.add(ModbusMapUltima.Injectors_Running_En, false);
                 ledParametersChangeListener.switchOffAll();
                 timerTasksManager.stop();
+                enableInjectorSectionLedsAndToggleGroup(false);
                 voltageController.getData1().clear();
                 voltageController.getData2().clear();
                 voltageController.getData3().clear();
                 voltageController.getData4().clear();
             }
+        }
+
+        private void enableInjectorSectionLedsAndToggleGroup(boolean disabled) {
+            coilRadioButton.setDisable(disabled);
+            piezoRadioButton.setDisable(disabled);
+            piezoDelphiRadioButton.setDisable(disabled);
+            ledBeaker1Controller.getLedBeaker().setDisable(disabled);
+            ledBeaker2Controller.getLedBeaker().setDisable(disabled);
+            ledBeaker3Controller.getLedBeaker().setDisable(disabled);
+            ledBeaker4Controller.getLedBeaker().setDisable(disabled);
         }
     }
 }

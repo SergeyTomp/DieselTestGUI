@@ -141,6 +141,8 @@ public abstract class ChartTask extends TimerTask {
                 return;
         }
 
+        System.err.println(getChartNumber());
+
         int n;
 
         if (piezoCoilToggleGroup.getPiezoCoilToggleGroup().getSelectedToggle() == piezoCoilToggleGroup.getCoilRadioButton()) {
@@ -200,8 +202,11 @@ public abstract class ChartTask extends TimerTask {
                 try {
                     if (!updateOSC)
                         return;
+                    // FIXME: в многоканальном режиме при выборе 2-ух и более ледов периодически выскакивает
+                    // java.lang.ClassCastException: ReadMultipleRegistersResponse cannot be cast to ReadCoilsResponse
                     ready = (boolean) ultimaModbusWriter.getRegisterProvider().read(getCurrentGraphUpdate());
                 } catch (ClassCastException e) {
+                    System.err.println("Exception");
                     logger.error("Cast Exception: ", e);
                     return;
                 }
