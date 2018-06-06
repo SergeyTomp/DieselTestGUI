@@ -23,6 +23,7 @@ import fi.stardex.sisu.ui.updaters.Updater;
 import fi.stardex.sisu.util.ApplicationConfigHandler;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.wrappers.StatusBarWrapper;
+import fi.stardex.sisu.version.UltimaFirmwareVersion;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.XYChart;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -91,19 +92,52 @@ public class SpringJavaConfig {
     @Bean
     @Autowired
     public RegisterProvider ultimaRegisterProvider(ModbusConnect ultimaModbusConnect) {
-        return new RegisterProvider(ultimaModbusConnect);
+        return new RegisterProvider(ultimaModbusConnect) {
+            @Override
+            public void setupFirmwareVersionListener() {
+                ultimaModbusConnect.connectedPropertyProperty().addListener((observable, oldValue, newValue) -> {
+                    if (newValue) {
+                        int firmwareVersionNumber = (int) read(ModbusMapUltima.FirmwareVersion);
+                        switch (firmwareVersionNumber) {
+                            case 221:
+                                UltimaFirmwareVersion.setUltimaFirmwareVersion(UltimaFirmwareVersion.MULTI_CHANNEL_FIRMWARE_WO_ACTIVATION);
+                                break;
+                            case 238:
+                                UltimaFirmwareVersion.setUltimaFirmwareVersion(UltimaFirmwareVersion.MULTI_CHANNEL_FIRMWARE_W_ACTIVATION);
+                                break;
+                            case 241:
+                                UltimaFirmwareVersion.setUltimaFirmwareVersion(UltimaFirmwareVersion.MULTI_CHANNEL_FIRMWARE_WO_FILTER);
+                                break;
+                            default:
+                                UltimaFirmwareVersion.setUltimaFirmwareVersion(UltimaFirmwareVersion.MULTI_CHANNEL_FIRMWARE_WO_FILTER);
+                                break;
+                        }
+                    }
+                });
+            }
+        };
     }
 
     @Bean
     @Autowired
     public RegisterProvider flowRegisterProvider(ModbusConnect flowModbusConnect) {
-        return new RegisterProvider(flowModbusConnect);
+        return new RegisterProvider(flowModbusConnect) {
+            @Override
+            protected void setupFirmwareVersionListener() {
+                // TODO: implement listener
+            }
+        };
     }
 
     @Bean
     @Autowired
     public RegisterProvider standRegisterProvider(ModbusConnect standModbusConnect) {
-        return new RegisterProvider(standModbusConnect);
+        return new RegisterProvider(standModbusConnect) {
+            @Override
+            protected void setupFirmwareVersionListener() {
+                // TODO: implement listener
+            }
+        };
     }
 
     @Bean
@@ -123,13 +157,13 @@ public class SpringJavaConfig {
     @Bean
     @Autowired
     public ModbusRegisterProcessor flowModbusWriter(RegisterProvider flowRegisterProvider) {
-        return new ModbusRegisterProcessor(flowRegisterProvider, null, "Flow register processor", null);
+        return new ModbusRegisterProcessor(flowRegisterProvider,  null, "Flow register processor", null);
     }
 
     @Bean
     @Autowired
     public ModbusRegisterProcessor standModbusWriter(RegisterProvider standRegisterProvider) {
-        return new ModbusRegisterProcessor(standRegisterProvider, null, "Stand register processor", null);
+        return new ModbusRegisterProcessor(standRegisterProvider,  null, "Stand register processor", null);
     }
 
     @Bean
@@ -210,7 +244,7 @@ public class SpringJavaConfig {
     @Scope("prototype")
     @Autowired
     public ChartTask chartTaskThree(VoltageController voltageController, ModbusRegisterProcessor ultimaModbusWriter,
-                                  PiezoCoilToggleGroup piezoCoilToggleGroup) {
+                                    PiezoCoilToggleGroup piezoCoilToggleGroup) {
         return new ChartTask(ultimaModbusWriter, piezoCoilToggleGroup) {
             @Override
             public ModbusMapUltima getCurrentGraph() {
@@ -238,7 +272,7 @@ public class SpringJavaConfig {
     @Scope("prototype")
     @Autowired
     public ChartTask chartTaskFour(VoltageController voltageController, ModbusRegisterProcessor ultimaModbusWriter,
-                                    PiezoCoilToggleGroup piezoCoilToggleGroup) {
+                                   PiezoCoilToggleGroup piezoCoilToggleGroup) {
         return new ChartTask(ultimaModbusWriter, piezoCoilToggleGroup) {
             @Override
             public ModbusMapUltima getCurrentGraph() {

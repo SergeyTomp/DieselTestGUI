@@ -5,6 +5,8 @@ import fi.stardex.sisu.devices.Devices;
 import fi.stardex.sisu.util.Pair;
 import fi.stardex.sisu.util.wrappers.StatusBarWrapper;
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import net.wimpi.modbus.ModbusException;
 import net.wimpi.modbus.io.ModbusTCPTransaction;
 import net.wimpi.modbus.io.ModbusTransaction;
@@ -44,6 +46,11 @@ public class ModbusConnect {
     private final InetAddressWrapper inetAddressWrapper;
     private final SchedulerNotifier schedularNotifier;
 
+    private BooleanProperty connectedProperty = new SimpleBooleanProperty();
+
+    public BooleanProperty connectedPropertyProperty() {
+        return connectedProperty;
+    }
 
     public ModbusConnect(Pair<String, String> connectInfo, ConnectProcessor connectProcessor,
                          Devices devices, StatusBarWrapper statusBar, Device dieselDevice, InetAddressWrapper inetAddressWrapper) {
@@ -103,7 +110,8 @@ public class ModbusConnect {
     }
 
     public boolean isConnected() {
-        return connectionStatus != null && connectCallable.isConnected();
+        connectedProperty.set(connectionStatus != null && connectCallable.isConnected());
+        return connectedProperty.get();
     }
 
     public void disconnect() {

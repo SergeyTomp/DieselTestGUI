@@ -42,7 +42,6 @@ public class TimerTasksManager {
             running = true;
             logger.debug("START timers");
         }
-
     }
 
     public void stop() {

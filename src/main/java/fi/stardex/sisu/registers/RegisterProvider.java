@@ -10,9 +10,9 @@ import net.wimpi.modbus.procimg.InputRegister;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Arrays;
+import javax.annotation.PostConstruct;
 
-public class RegisterProvider {
+public abstract class RegisterProvider {
 
     private Logger logger = LoggerFactory.getLogger(RegisterProvider.class);
 
@@ -21,6 +21,13 @@ public class RegisterProvider {
     public RegisterProvider(ModbusConnect modbusConnect) {
         this.modbusConnect = modbusConnect;
     }
+
+    @PostConstruct
+    private void init() {
+        setupFirmwareVersionListener();
+    }
+
+    protected abstract void setupFirmwareVersionListener();
 
     public Object read(ModbusMap register) {
         try {
