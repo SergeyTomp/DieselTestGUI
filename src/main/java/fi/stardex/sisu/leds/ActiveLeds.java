@@ -23,4 +23,10 @@ public class ActiveLeds {
         result.sort(Comparator.comparingInt(LedController::getNumber));
         return result;
     }
+
+    public static List<Integer> arrayNumbersOfActiveControllers() {
+        List<Integer> active = new ArrayList<>();
+        activeControllers().forEach(e -> active.add(e.getNumber()));
+        return active;
+    }
 }

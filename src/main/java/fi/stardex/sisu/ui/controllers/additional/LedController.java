@@ -123,6 +123,4 @@ public class LedController implements Initializable {
         String s = String.format("LedBeaker %s selected: %s", ledBeaker.getText(), value);
         logger.info(s);
     }
-
-
 }

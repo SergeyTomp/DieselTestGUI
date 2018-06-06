@@ -240,24 +240,11 @@ public class InjectorSectionController {
 
         //FIXME: при включении инжекторной секции вне таба voltage при переходе на другой таб кнопка отключается
         voltageController.getAdditionalSectionController().getTabPane().getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if((powerSwitch.isSelected()) && (newValue != voltageController.getAdditionalSectionController().getTabVoltage()))
+            if ((powerSwitch.isSelected()) && (newValue != voltageController.getAdditionalSectionController().getTabVoltage()))
                 powerSwitch.fire();
         });
 
-        powerSwitch.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue) {
-                powerSwitch.setText("On");
-                ultimaModbusWriter.add(ModbusMapUltima.Injectors_Running_En, true);
-                ledParametersChangeListener.sendLedRegisters();
-                timerTasksManager.start(ChartTasks.CHART_TASK_ONE);
-            } else {
-                powerSwitch.setText("Off");
-                ultimaModbusWriter.add(ModbusMapUltima.Injectors_Running_En, false);
-                ledParametersChangeListener.switchOffAll();
-                timerTasksManager.stop();
-                voltageController.getData1().clear();
-            }
-        });
+        new PowerButtonChangeListener();
 
     }
 
@@ -273,7 +260,7 @@ public class InjectorSectionController {
         ledControllers.forEach(s -> s.getLedBeaker().setToggleGroup(toggleGroup));
     }
 
-    public class LedParametersChangeListener implements ChangeListener<Object> {
+    private class LedParametersChangeListener implements ChangeListener<Object> {
 
         private ReadOnlyObjectProperty<Toggle> injectorTypeProperty;
 
@@ -318,7 +305,7 @@ public class InjectorSectionController {
                 throw new RuntimeException("Wrong listener type!");
         }
 
-        public void sendLedRegisters() {
+        private void sendLedRegisters() {
 
             writeInjectorTypeRegister();
 
@@ -342,7 +329,7 @@ public class InjectorSectionController {
             }
         }
 
-        public void switchOffAll() {
+        private void switchOffAll() {
             slotNumbersList.forEach((s) -> ultimaModbusWriter.add(s, OFF_COMMAND_NUMBER));
             slotPulsesList.forEach((s) -> ultimaModbusWriter.add(s, 0));
         }
@@ -362,6 +349,32 @@ public class InjectorSectionController {
             ledControllers.get(1).setDisable(disable);
             ledControllers.get(2).setDisable(disable);
             ledControllers.get(3).setDisable(disable);
+        }
+    }
+
+    private class PowerButtonChangeListener implements ChangeListener<Boolean> {
+
+        PowerButtonChangeListener() {
+            powerSwitch.selectedProperty().addListener(this);
+        }
+
+        @Override
+        public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+            if (newValue) {
+                powerSwitch.setText("On");
+                ultimaModbusWriter.add(ModbusMapUltima.Injectors_Running_En, true);
+                ledParametersChangeListener.sendLedRegisters();
+                timerTasksManager.start();
+            } else {
+                powerSwitch.setText("Off");
+                ultimaModbusWriter.add(ModbusMapUltima.Injectors_Running_En, false);
+                ledParametersChangeListener.switchOffAll();
+                timerTasksManager.stop();
+                voltageController.getData1().clear();
+                voltageController.getData2().clear();
+                voltageController.getData3().clear();
+                voltageController.getData4().clear();
+            }
         }
     }
 }

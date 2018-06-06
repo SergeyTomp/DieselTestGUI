@@ -14,6 +14,7 @@ import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.modbusmaps.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.controllers.additional.tabs.ConnectionController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
 import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
@@ -188,8 +189,8 @@ public class SpringJavaConfig {
     @Scope("prototype")
     @Autowired
     public ChartTask chartTaskOne(VoltageController voltageController, ModbusRegisterProcessor ultimaModbusWriter,
-                                  PiezoCoilToggleGroup piezoCoilToggleGroup) {
-        return new ChartTask(ultimaModbusWriter, piezoCoilToggleGroup) {
+                                  PiezoCoilToggleGroup piezoCoilToggleGroup, SettingsController settingsController) {
+        return new ChartTask(ultimaModbusWriter, piezoCoilToggleGroup, settingsController) {
             @Override
             public ModbusMapUltima getCurrentGraph() {
                 return ModbusMapUltima.Current_graph1;
@@ -209,6 +210,11 @@ public class SpringJavaConfig {
             protected ObservableList<XYChart.Data<Double, Double>> getData() {
                 return voltageController.getData1();
             }
+
+            @Override
+            protected int getChartNumber() {
+                return 1;
+            }
         };
     }
 
@@ -216,8 +222,8 @@ public class SpringJavaConfig {
     @Scope("prototype")
     @Autowired
     public ChartTask chartTaskTwo(VoltageController voltageController, ModbusRegisterProcessor ultimaModbusWriter,
-                                  PiezoCoilToggleGroup piezoCoilToggleGroup) {
-        return new ChartTask(ultimaModbusWriter, piezoCoilToggleGroup) {
+                                  PiezoCoilToggleGroup piezoCoilToggleGroup, SettingsController settingsController) {
+        return new ChartTask(ultimaModbusWriter, piezoCoilToggleGroup, settingsController) {
             @Override
             public ModbusMapUltima getCurrentGraph() {
                 return ModbusMapUltima.Current_graph2;
@@ -237,6 +243,11 @@ public class SpringJavaConfig {
             protected ObservableList<XYChart.Data<Double, Double>> getData() {
                 return voltageController.getData2();
             }
+
+            @Override
+            protected int getChartNumber() {
+                return 2;
+            }
         };
     }
 
@@ -244,8 +255,8 @@ public class SpringJavaConfig {
     @Scope("prototype")
     @Autowired
     public ChartTask chartTaskThree(VoltageController voltageController, ModbusRegisterProcessor ultimaModbusWriter,
-                                    PiezoCoilToggleGroup piezoCoilToggleGroup) {
-        return new ChartTask(ultimaModbusWriter, piezoCoilToggleGroup) {
+                                    PiezoCoilToggleGroup piezoCoilToggleGroup, SettingsController settingsController) {
+        return new ChartTask(ultimaModbusWriter, piezoCoilToggleGroup, settingsController) {
             @Override
             public ModbusMapUltima getCurrentGraph() {
                 return ModbusMapUltima.Current_graph3;
@@ -265,6 +276,11 @@ public class SpringJavaConfig {
             protected ObservableList<XYChart.Data<Double, Double>> getData() {
                 return voltageController.getData3();
             }
+
+            @Override
+            protected int getChartNumber() {
+                return 3;
+            }
         };
     }
 
@@ -272,8 +288,8 @@ public class SpringJavaConfig {
     @Scope("prototype")
     @Autowired
     public ChartTask chartTaskFour(VoltageController voltageController, ModbusRegisterProcessor ultimaModbusWriter,
-                                   PiezoCoilToggleGroup piezoCoilToggleGroup) {
-        return new ChartTask(ultimaModbusWriter, piezoCoilToggleGroup) {
+                                   PiezoCoilToggleGroup piezoCoilToggleGroup, SettingsController settingsController) {
+        return new ChartTask(ultimaModbusWriter, piezoCoilToggleGroup, settingsController) {
             @Override
             public ModbusMapUltima getCurrentGraph() {
                 return ModbusMapUltima.Current_graph4;
@@ -292,6 +308,11 @@ public class SpringJavaConfig {
             @Override
             protected ObservableList<XYChart.Data<Double, Double>> getData() {
                 return voltageController.getData4();
+            }
+
+            @Override
+            protected int getChartNumber() {
+                return 4;
             }
         };
     }

@@ -1,14 +1,19 @@
 package fi.stardex.sisu.charts;
 
 import fi.stardex.sisu.firmware.FirmwareDataObtainer;
+import fi.stardex.sisu.injectors.InjectorChannel;
 import fi.stardex.sisu.leds.ActiveLeds;
 import fi.stardex.sisu.parts.PiezoCoilToggleGroup;
 import fi.stardex.sisu.registers.modbusmaps.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
+import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
+import fi.stardex.sisu.util.filters.FilterInputChartData;
+import fi.stardex.sisu.version.UltimaFirmwareVersion;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.ComboBox;
 import net.wimpi.modbus.ModbusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,9 +31,11 @@ public abstract class ChartTask extends TimerTask {
 
     private PiezoCoilToggleGroup piezoCoilToggleGroup;
 
+    private ComboBox<InjectorChannel> comboInjectorConfig;
+
     private boolean updateOSC;
 
-    public void setUpdateOSC(boolean updateOSC) {
+    void setUpdateOSC(boolean updateOSC) {
         this.updateOSC = updateOSC;
     }
 
@@ -46,9 +53,12 @@ public abstract class ChartTask extends TimerTask {
 
     protected abstract ObservableList<XYChart.Data<Double, Double>> getData();
 
-    public ChartTask(ModbusRegisterProcessor ultimaModbusWriter, PiezoCoilToggleGroup piezoCoilToggleGroup) {
+    protected abstract int getChartNumber();
+
+    public ChartTask(ModbusRegisterProcessor ultimaModbusWriter, PiezoCoilToggleGroup piezoCoilToggleGroup, SettingsController settingsController) {
         this.ultimaModbusWriter = ultimaModbusWriter;
         this.piezoCoilToggleGroup = piezoCoilToggleGroup;
+        comboInjectorConfig = settingsController.getComboInjectorConfig();
     }
 
     private void addModbusData(ArrayList<Integer> resultDataList, Integer[] data) {
@@ -63,16 +73,49 @@ public abstract class ChartTask extends TimerTask {
 
             doubleData[i] = resultDataList.get(i).doubleValue();
         }
-        return doubleData;
+
+        if (UltimaFirmwareVersion.getUltimaFirmwareVersion() != UltimaFirmwareVersion.MULTI_CHANNEL_FIRMWARE_WO_FILTER)
+            return FilterInputChartData.medianFilter(doubleData, STEP_SIZE);
+        else
+            return doubleData;
     }
 
     private void addDataToChart(double[] data, ObservableList<XYChart.Data<Double, Double>> chartData) {
         chartData.clear();
         double xValue = 0;
         List<XYChart.Data<Double, Double>> pointsList = new ArrayList<>();
-        for (double aData : data) {
-            pointsList.add(new XYChart.Data<>(xValue, aData / CURRENT_COEF));
-            xValue += X_VALUE_OFFSET;
+        List<XYChart.Data<Double, Double>> piezoDelphiNegativePoints = new ArrayList<>();
+        if (piezoCoilToggleGroup.getPiezoDelphiRadioButton().isSelected()) {
+            for (double aData : data) {
+                pointsList.add(new XYChart.Data<>(xValue, aData / CURRENT_COEF));
+                if (xValue >= FirmwareDataObtainer.getFirmwareWidth()) {
+                    piezoDelphiNegativePoints.add(new XYChart.Data<>(xValue, -aData / CURRENT_COEF));
+                }
+                xValue += X_VALUE_OFFSET;
+            }
+        } else {
+            for (double aData : data) {
+                pointsList.add(new XYChart.Data<>(xValue, aData / CURRENT_COEF));
+                xValue += X_VALUE_OFFSET;
+            }
+        }
+        if (piezoCoilToggleGroup.getPiezoRadioButton().isSelected()) {
+            double xOffset = 0;
+            for (Double aData : data) {
+                pointsList.add(new XYChart.Data<>(xValue, -aData / CURRENT_COEF));
+                xValue += X_VALUE_OFFSET;
+                xOffset += X_VALUE_OFFSET;
+                if (xOffset > 200) {
+                    break;
+                }
+            }
+        } else if (piezoCoilToggleGroup.getPiezoDelphiRadioButton().isSelected()) {
+            int i = 0;
+            for (XYChart.Data<Double, Double> point : piezoDelphiNegativePoints) {
+                logger.warn("Point: {}", pointsList.get(i));
+                pointsList.get(i).setYValue(point.getYValue());
+                i++;
+            }
         }
         chartData.addAll(pointsList);
     }
@@ -85,55 +128,40 @@ public abstract class ChartTask extends TimerTask {
     @Override
     public void run() {
 
-        if (ActiveLeds.activeControllers().size() != 0) {
+        if(ActiveLeds.activeControllers().size() == 0)
+            return;
 
-            System.err.println("Running chart");
-
-            int n;
-
-            if (piezoCoilToggleGroup.getPiezoCoilToggleGroup().getSelectedToggle() == piezoCoilToggleGroup.getCoilRadioButton()) {
-                offset = 200;
-                n = (int) ((FirmwareDataObtainer.getFirmwareWidth() + offset) / X_VALUE_OFFSET);
-            } else if (piezoCoilToggleGroup.getPiezoCoilToggleGroup().getSelectedToggle() == piezoCoilToggleGroup.getPiezoRadioButton()) {
-                offset = 0;
-                n = (int) ((FirmwareDataObtainer.getFirmwareWidth()) / X_VALUE_OFFSET);
-            } else {
-                offset = FirmwareDataObtainer.getFirmwareWidth() < 500 ?
-                        FirmwareDataObtainer.getFirmwareWidth() : 500;
-                n = (int) ((FirmwareDataObtainer.getFirmwareWidth() + offset) / X_VALUE_OFFSET);
-            }
-            int div = n / 2047;
-            int remainder = n % 2047;
-            int part = 1;
-            if (!updateOSC)
+        if (comboInjectorConfig.getSelectionModel().getSelectedItem() == InjectorChannel.SINGLE_CHANNEL) {
+            int number = getChartNumber();
+            if(number == 2 | number == 3 | number == 4)
                 return;
-            ArrayList<Integer> resultDataList = new ArrayList<>();
-            try {
-                for (int i = 0; i < div; i++) {
-                    if (!updateOSC)
-                        return;
-                    ultimaModbusWriter.add(getCurrentGraphFrameNum(), part);
-                    ultimaModbusWriter.add(getCurrentGraphUpdate(), true);
-                    boolean ready;
-                    do {
-                        try {
-                            Thread.sleep(500);
-                        } catch (InterruptedException e) {
-                            logger.error("Interrupted 1.", e);
-                        }
-                        try {
-                            if (!updateOSC)
-                                return;
-                            ready = (boolean) ultimaModbusWriter.getRegisterProvider().read(getCurrentGraphUpdate());
-                        } catch (ClassCastException e) {
-                            logger.error("Cast Error: ", e);
-                            return;
-                        }
-                    } while (ready);
-                    Integer[] data = (Integer[]) ultimaModbusWriter.getRegisterProvider().read(getCurrentGraph());
-                    addModbusData(resultDataList, data);
-                    part++;
-                }
+        } else {
+            List<Integer> activeLedControllerNumbers = ActiveLeds.arrayNumbersOfActiveControllers();
+            if(!activeLedControllerNumbers.contains(getChartNumber()))
+                return;
+        }
+
+        int n;
+
+        if (piezoCoilToggleGroup.getPiezoCoilToggleGroup().getSelectedToggle() == piezoCoilToggleGroup.getCoilRadioButton()) {
+            offset = 200;
+            n = (int) ((FirmwareDataObtainer.getFirmwareWidth() + offset) / X_VALUE_OFFSET);
+        } else if (piezoCoilToggleGroup.getPiezoCoilToggleGroup().getSelectedToggle() == piezoCoilToggleGroup.getPiezoRadioButton()) {
+            offset = 0;
+            n = (int) ((FirmwareDataObtainer.getFirmwareWidth()) / X_VALUE_OFFSET);
+        } else {
+            offset = FirmwareDataObtainer.getFirmwareWidth() < 500 ?
+                    FirmwareDataObtainer.getFirmwareWidth() : 500;
+            n = (int) ((FirmwareDataObtainer.getFirmwareWidth() + offset) / X_VALUE_OFFSET);
+        }
+        int div = n / 2047;
+        int remainder = n % 2047;
+        int part = 1;
+        if (!updateOSC)
+            return;
+        ArrayList<Integer> resultDataList = new ArrayList<>();
+        try {
+            for (int i = 0; i < div; i++) {
                 if (!updateOSC)
                     return;
                 ultimaModbusWriter.add(getCurrentGraphFrameNum(), part);
@@ -150,18 +178,41 @@ public abstract class ChartTask extends TimerTask {
                             return;
                         ready = (boolean) ultimaModbusWriter.getRegisterProvider().read(getCurrentGraphUpdate());
                     } catch (ClassCastException e) {
-                        logger.error("Cast Exception: ", e);
+                        logger.error("Cast Error: ", e);
                         return;
                     }
                 } while (ready);
-                Integer[] data = ultimaModbusWriter.getRegisterProvider().readBytePacket(0, remainder);
+                Integer[] data = (Integer[]) ultimaModbusWriter.getRegisterProvider().read(getCurrentGraph());
                 addModbusData(resultDataList, data);
-            } catch (ModbusException e) {
-                logger.error("Cannot obtain graphic 2", e);
-                return;
+                part++;
             }
-            Platform.runLater(() -> addData(resultDataList, getData()));
+            if (!updateOSC)
+                return;
+            ultimaModbusWriter.add(getCurrentGraphFrameNum(), part);
+            ultimaModbusWriter.add(getCurrentGraphUpdate(), true);
+            boolean ready;
+            do {
+                try {
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    logger.error("Interrupted 1.", e);
+                }
+                try {
+                    if (!updateOSC)
+                        return;
+                    ready = (boolean) ultimaModbusWriter.getRegisterProvider().read(getCurrentGraphUpdate());
+                } catch (ClassCastException e) {
+                    logger.error("Cast Exception: ", e);
+                    return;
+                }
+            } while (ready);
+            Integer[] data = ultimaModbusWriter.getRegisterProvider().readBytePacket(0, remainder);
+            addModbusData(resultDataList, data);
+        } catch (ModbusException e) {
+            logger.error("Cannot obtain graphic 2", e);
+            return;
         }
+        Platform.runLater(() -> addData(resultDataList, getData()));
     }
 
 }
