@@ -6,8 +6,6 @@ import fi.stardex.sisu.ui.controllers.additional.AdditionalSectionController;
 import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -17,7 +15,6 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.Tab;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -127,10 +124,6 @@ public class VoltageController {
         this.additionalSectionController = additionalSectionController;
     }
 
-    public AdditionalSectionController getAdditionalSectionController() {
-        return additionalSectionController;
-    }
-
     @PostConstruct
     private void init() {
 
@@ -163,6 +156,19 @@ public class VoltageController {
             voapStage.show();
         });
 
+        configLineChartData();
+
+    }
+
+
+    public void refreshVoltageLabels(Integer voltageValue, Integer firstWidthValue, Double firstCurrentValue, Double secondCurrentValue) {
+        voltage.setText(voltageValue.toString());
+        firstWidth.setText(firstWidthValue.toString());
+        firstCurrent.setText(firstCurrentValue.toString());
+        secondCurrent.setText(secondCurrentValue.toString());
+    }
+
+    private void configLineChartData() {
         XYChart.Series<Double, Double> series1 = new XYChart.Series<>();
         series1.setName("");
         XYChart.Series<Double, Double> series2 = new XYChart.Series<>();
@@ -194,14 +200,5 @@ public class VoltageController {
         lineChart.getXAxis().setAutoRanging(true);
         lineChart.getYAxis().setAutoRanging(false);
         lineChart.getXAxis().setTickMarkVisible(true);
-
     }
-
-    public void refreshVoltageLabels(Integer voltageValue, Integer firstWidthValue, Double firstCurrentValue, Double secondCurrentValue) {
-        voltage.setText(voltageValue.toString());
-        firstWidth.setText(firstWidthValue.toString());
-        firstCurrent.setText(firstCurrentValue.toString());
-        secondCurrent.setText(secondCurrentValue.toString());
-    }
-
 }

@@ -1,6 +1,5 @@
 package fi.stardex.sisu.charts;
 
-import fi.stardex.sisu.firmware.FirmwareDataObtainer;
 import fi.stardex.sisu.injectors.InjectorChannel;
 import fi.stardex.sisu.leds.ActiveLeds;
 import fi.stardex.sisu.parts.PiezoCoilToggleGroup;
@@ -9,6 +8,7 @@ import fi.stardex.sisu.registers.modbusmaps.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
+import fi.stardex.sisu.util.FirmwareDataConverter;
 import fi.stardex.sisu.util.filters.FilterInputChartData;
 import fi.stardex.sisu.version.UltimaFirmwareVersion;
 import javafx.application.Platform;
@@ -41,6 +41,8 @@ public abstract class ChartTask extends TimerTask {
 
     private boolean updateOSC;
 
+    private int firmwareWidth;
+
     void setUpdateOSC(boolean updateOSC) {
         this.updateOSC = updateOSC;
     }
@@ -48,8 +50,6 @@ public abstract class ChartTask extends TimerTask {
     private static final double X_VALUE_OFFSET = 0.95;
     private static final double CURRENT_COEF = 93.07;
     private static final int STEP_SIZE = 10;
-
-    private int offset = 0;
 
     protected abstract ModbusMapUltima getCurrentGraph();
 
@@ -97,7 +97,7 @@ public abstract class ChartTask extends TimerTask {
         if (piezoCoilToggleGroup.getPiezoDelphiRadioButton().isSelected()) {
             for (double aData : data) {
                 pointsList.add(new XYChart.Data<>(xValue, aData / CURRENT_COEF));
-                if (xValue >= FirmwareDataObtainer.getFirmwareWidth()) {
+                if (xValue >= firmwareWidth) {
                     piezoDelphiNegativePoints.add(new XYChart.Data<>(xValue, -aData / CURRENT_COEF));
                 }
                 xValue += X_VALUE_OFFSET;
@@ -153,14 +153,14 @@ public abstract class ChartTask extends TimerTask {
         }
 
         int n;
-        int firmwareWidth = FirmwareDataObtainer.getFirmwareWidth();
+        firmwareWidth = FirmwareDataConverter.convertDataToInt(ModbusMapUltima.WidthBoardOne);
         Toggle selectedToggle = piezoCoilToggleGroup.getPiezoCoilToggleGroup().getSelectedToggle();
+        int offset;
 
         if (selectedToggle == piezoCoilToggleGroup.getCoilRadioButton()) {
             offset = 200;
             n = (int) ((firmwareWidth + offset) / X_VALUE_OFFSET);
         } else if (selectedToggle == piezoCoilToggleGroup.getPiezoRadioButton()) {
-            offset = 0;
             n = (int) ((firmwareWidth) / X_VALUE_OFFSET);
         } else {
             offset = firmwareWidth < 500 ? firmwareWidth : 500;

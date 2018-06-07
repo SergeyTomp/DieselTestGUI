@@ -68,16 +68,8 @@ public class AdditionalSectionController {
         return settingsController;
     }
 
-    public TabPane getTabPane() {
-        return tabPane;
-    }
-
     public Tab getTabVoltage() {
         return tabVoltage;
-    }
-
-    @PostConstruct
-    private void init() {
     }
 
 }
