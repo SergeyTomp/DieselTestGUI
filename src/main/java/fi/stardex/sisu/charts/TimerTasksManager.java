@@ -50,12 +50,13 @@ public class TimerTasksManager {
         if (running)
             return;
 
-        listOfCharts = Arrays.asList(chartTaskOne(), chartTaskTwo(), chartTaskThree(), chartTaskFour());
+        listOfCharts = new ArrayList<>(Arrays.asList(chartTaskOne(), chartTaskTwo(), chartTaskThree(), chartTaskFour()));
+
         listOfCharts.forEach(e -> {
             e.setUpdateOSC(true);
             timer = new Timer();
-            timersList.add(timer);
             timer.schedule(e, DELAY, PERIOD);
+            timersList.add(timer);
         });
 
         running = true;

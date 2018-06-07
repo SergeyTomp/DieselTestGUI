@@ -18,7 +18,6 @@ public abstract class RegisterFactory {
                 request = new ReadInputRegistersRequest(reg.getRef(), reg.getCount());
                 break;
             case DISCRETE_COIL:
-                System.err.println("is writing? " + isWriting);
                 request = isWriting ? new WriteCoilRequest(reg.getRef(), (boolean) value) : new ReadCoilsRequest(reg.getRef(), reg.getCount());
                 break;
             case DISCRETE_INPUT:

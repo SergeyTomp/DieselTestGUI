@@ -29,7 +29,7 @@ public abstract class RegisterProvider {
 
     protected abstract void setupFirmwareVersionListener();
 
-    public Object read(ModbusMap register) {
+    public synchronized Object read(ModbusMap register) {
         try {
             Object valueToReturn = null;
             if (register.getType() == RegisterType.REGISTER_HOLDING) {
@@ -96,11 +96,17 @@ public abstract class RegisterProvider {
 
     public Integer[] readBytePacket(int currRef, int size) throws ModbusException {
 
-        Integer[] chartData = new Integer[size];
+        int chartDataSize;
+        if(size <= currRef)
+            chartDataSize = size;
+        else
+            chartDataSize = size - currRef;
+
+        Integer[] chartData = new Integer[chartDataSize];
         //TODO why IOOBEE if stepsize = 150;
-        int stepSize = 100;
-        int stepCount = size / stepSize;
-        int remainder = size % stepSize;
+        int stepSize = 125;
+        int stepCount = chartDataSize / stepSize;
+        int remainder = chartDataSize % stepSize;
 
         int currPoint = 0;
         for (int i = 0; i < stepCount; i++) {

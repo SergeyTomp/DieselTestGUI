@@ -271,6 +271,8 @@ public class InjectorSectionController {
 
         private static final int OFF_COMMAND_NUMBER = 255;
 
+        private static final int OFF_COMMAND_NUMBER_PULSE_TIME = 65535;
+
         LedParametersChangeListener() {
             injectorTypeProperty = piezoCoilToggleGroup.selectedToggleProperty();
             injectorChannelProperty = settingsController.getComboInjectorConfig().getSelectionModel().selectedItemProperty();
@@ -284,7 +286,6 @@ public class InjectorSectionController {
             switchOffAll();
             if (newValue instanceof Double) {
                 if (((Double) newValue <= 50 && (Double) newValue >= 0.5) && (Double) newValue != 16.671) {
-                    System.err.println("sent to firmware: " + newValue);
                     sendLedRegisters();
                 }
             } else if (newValue instanceof Toggle) {
@@ -309,7 +310,6 @@ public class InjectorSectionController {
             writeInjectorTypeRegister();
 
             List<LedController> activeControllers = ActiveLeds.activeControllers();
-            activeControllers.forEach(System.err::println);
             Iterator<LedController> activeControllersIterator = activeControllers.iterator();
             int activeLeds = activeControllers.size();
             double frequency = freqCurrentSignal.getValue();
@@ -330,7 +330,7 @@ public class InjectorSectionController {
 
         private void switchOffAll() {
             slotNumbersList.forEach((s) -> ultimaModbusWriter.add(s, OFF_COMMAND_NUMBER));
-            slotPulsesList.forEach((s) -> ultimaModbusWriter.add(s, 0));
+            slotPulsesList.forEach((s) -> ultimaModbusWriter.add(s, OFF_COMMAND_NUMBER_PULSE_TIME));
         }
 
         private void writeInjectorTypeRegister() {

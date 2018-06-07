@@ -141,8 +141,6 @@ public abstract class ChartTask extends TimerTask {
                 return;
         }
 
-        System.err.println(getChartNumber());
-
         int n;
 
         if (piezoCoilToggleGroup.getPiezoCoilToggleGroup().getSelectedToggle() == piezoCoilToggleGroup.getCoilRadioButton()) {
@@ -159,13 +157,15 @@ public abstract class ChartTask extends TimerTask {
         int div = n / 2047;
         int remainder = n % 2047;
         int part = 1;
-        if (!updateOSC)
+        if (!updateOSC) {
             return;
+        }
         ArrayList<Integer> resultDataList = new ArrayList<>();
         try {
             for (int i = 0; i < div; i++) {
-                if (!updateOSC)
+                if (!updateOSC) {
                     return;
+                }
                 ultimaModbusWriter.add(getCurrentGraphFrameNum(), part);
                 ultimaModbusWriter.add(getCurrentGraphUpdate(), true);
                 boolean ready;
@@ -206,12 +206,11 @@ public abstract class ChartTask extends TimerTask {
                     // java.lang.ClassCastException: ReadMultipleRegistersResponse cannot be cast to ReadCoilsResponse
                     ready = (boolean) ultimaModbusWriter.getRegisterProvider().read(getCurrentGraphUpdate());
                 } catch (ClassCastException e) {
-                    System.err.println("Exception");
                     logger.error("Cast Exception: ", e);
                     return;
                 }
             } while (ready);
-            Integer[] data = ultimaModbusWriter.getRegisterProvider().readBytePacket(0, remainder);
+            Integer[] data = ultimaModbusWriter.getRegisterProvider().readBytePacket(getCurrentGraph().getRef(), remainder);
             addModbusData(resultDataList, data);
         } catch (ModbusException e) {
             logger.error("Cannot obtain graphic 2", e);

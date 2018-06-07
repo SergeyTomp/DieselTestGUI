@@ -149,7 +149,6 @@ public class VoltAmpereProfileController {
         widthCurrentSignal.valueProperty().addListener((observable, oldValue, newValue) -> {
             if ((newValue >= 120) && (newValue <= 15500) && (!(newValue == widthCurrentSignalValueObtainer.getGeneratedFakeValue()))) {
                 sendVAPRegisters();
-                System.err.println("width sent value: " + newValue);
             }
         });
 

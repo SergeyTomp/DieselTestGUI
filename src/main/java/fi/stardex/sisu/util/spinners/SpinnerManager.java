@@ -20,9 +20,7 @@ public class SpinnerManager {
     private static Random random = new Random();
 
     private static int generateRandomFakeInt(int min, int max) {
-        int currentRandomFakeInt = random.nextInt((max - min) + 1) + min;
-        System.err.println(currentRandomFakeInt);
-        return currentRandomFakeInt;
+        return random.nextInt((max - min) + 1) + min;
     }
 
     public static void setupSpinner(Spinner<Double> spinner, double initValue, double fake_value, CustomTooltip tooltip, SpinnerValueObtainer obtainer) {
@@ -133,7 +131,6 @@ public class SpinnerManager {
                     if(obtainer instanceof WidthSpinnerValueObtainer) {
                         ((WidthSpinnerValueObtainer) obtainer).setGeneratedFakeValue(generateRandomFakeInt(minValue, maxValue));
                         spinner.getValueFactory().setValue(((WidthSpinnerValueObtainer) obtainer).getGeneratedFakeValue());
-                        System.err.println("Generated: " + ((WidthSpinnerValueObtainer) obtainer).getGeneratedFakeValue());
                     } else {
                         spinner.getValueFactory().setValue(generateRandomFakeInt(minValue, maxValue));
                     }
