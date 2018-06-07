@@ -4,6 +4,10 @@ import fi.stardex.sisu.styles.FontColour;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.additional.AdditionalSectionController;
 import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -13,6 +17,7 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Tab;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -66,6 +71,12 @@ public class VoltageController {
 
     private AdditionalSectionController additionalSectionController;
 
+    private ObjectProperty<Boolean> isTabVoltageShowing = new SimpleObjectProperty<>();
+
+    public ObjectProperty<Boolean> isTabVoltageShowingProperty() {
+        return isTabVoltageShowing;
+    }
+
     private ObservableList<XYChart.Data<Double, Double>> data1;
     private ObservableList<XYChart.Data<Double, Double>> data2;
     private ObservableList<XYChart.Data<Double, Double>> data3;
@@ -91,14 +102,6 @@ public class VoltageController {
         this.voltAmpereProfileDialog = voltAmpereProfileDialog;
     }
 
-    public void setParentController(AdditionalSectionController additionalSectionController) {
-        this.additionalSectionController = additionalSectionController;
-    }
-
-    public AdditionalSectionController getAdditionalSectionController() {
-        return additionalSectionController;
-    }
-
     public Label getWidth() {
         return width;
     }
@@ -120,8 +123,18 @@ public class VoltageController {
         return negativeU2;
     }
 
+    public void setParentController(AdditionalSectionController additionalSectionController) {
+        this.additionalSectionController = additionalSectionController;
+    }
+
+    public AdditionalSectionController getAdditionalSectionController() {
+        return additionalSectionController;
+    }
+
     @PostConstruct
     private void init() {
+
+        isTabVoltageShowing.bind(additionalSectionController.getTabVoltage().selectedProperty());
 
         width.styleProperty().bindBidirectional(FontColour.fontColourPropertyProperty());
 

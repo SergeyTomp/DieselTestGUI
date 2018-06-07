@@ -115,26 +115,30 @@ public class JavaFXSpringConfigure {
     }
 
     @Bean
-    public ConnectionController connectionController() {
-        return additionalSectionController().getConnectionController();
+    @Autowired
+    public ConnectionController connectionController(AdditionalSectionController additionalSectionController) {
+        return additionalSectionController.getConnectionController();
     }
 
     @Bean
-    public VoltageController voltageController() {
-        VoltageController voltageController = additionalSectionController().getVoltageController();
-        voltageController.setParentController(additionalSectionController());
+    @Autowired
+    public VoltageController voltageController(AdditionalSectionController additionalSectionController) {
+        VoltageController voltageController = additionalSectionController.getVoltageController();
         voltageController.setVoltAmpereProfileDialog(voltAmpereProfileDialog());
+        voltageController.setParentController(additionalSectionController);
         return voltageController;
     }
 
     @Bean
-    public DelayController delayController() {
-        return additionalSectionController().getDelayController();
+    @Autowired
+    public DelayController delayController(AdditionalSectionController additionalSectionController) {
+        return additionalSectionController.getDelayController();
     }
 
     @Bean
-    public SettingsController settingsController() {
-        return additionalSectionController().getSettingsController();
+    @Autowired
+    public SettingsController settingsController(AdditionalSectionController additionalSectionController) {
+        return additionalSectionController.getSettingsController();
     }
 
     @Bean(value = "voltAmpereProfileDialog")

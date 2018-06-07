@@ -190,7 +190,7 @@ public class SpringJavaConfig {
     @Autowired
     public ChartTask chartTaskOne(VoltageController voltageController, ModbusRegisterProcessor ultimaModbusWriter,
                                   PiezoCoilToggleGroup piezoCoilToggleGroup, SettingsController settingsController) {
-        return new ChartTask(ultimaModbusWriter, piezoCoilToggleGroup, settingsController) {
+        return new ChartTask(ultimaModbusWriter, piezoCoilToggleGroup, settingsController, voltageController) {
             @Override
             public ModbusMapUltima getCurrentGraph() {
                 return ModbusMapUltima.Current_graph1;
@@ -223,7 +223,7 @@ public class SpringJavaConfig {
     @Autowired
     public ChartTask chartTaskTwo(VoltageController voltageController, ModbusRegisterProcessor ultimaModbusWriter,
                                   PiezoCoilToggleGroup piezoCoilToggleGroup, SettingsController settingsController) {
-        return new ChartTask(ultimaModbusWriter, piezoCoilToggleGroup, settingsController) {
+        return new ChartTask(ultimaModbusWriter, piezoCoilToggleGroup, settingsController, voltageController) {
             @Override
             public ModbusMapUltima getCurrentGraph() {
                 return ModbusMapUltima.Current_graph2;
@@ -256,7 +256,7 @@ public class SpringJavaConfig {
     @Autowired
     public ChartTask chartTaskThree(VoltageController voltageController, ModbusRegisterProcessor ultimaModbusWriter,
                                     PiezoCoilToggleGroup piezoCoilToggleGroup, SettingsController settingsController) {
-        return new ChartTask(ultimaModbusWriter, piezoCoilToggleGroup, settingsController) {
+        return new ChartTask(ultimaModbusWriter, piezoCoilToggleGroup, settingsController, voltageController) {
             @Override
             public ModbusMapUltima getCurrentGraph() {
                 return ModbusMapUltima.Current_graph3;
@@ -289,7 +289,7 @@ public class SpringJavaConfig {
     @Autowired
     public ChartTask chartTaskFour(VoltageController voltageController, ModbusRegisterProcessor ultimaModbusWriter,
                                    PiezoCoilToggleGroup piezoCoilToggleGroup, SettingsController settingsController) {
-        return new ChartTask(ultimaModbusWriter, piezoCoilToggleGroup, settingsController) {
+        return new ChartTask(ultimaModbusWriter, piezoCoilToggleGroup, settingsController, voltageController) {
             @Override
             public ModbusMapUltima getCurrentGraph() {
                 return ModbusMapUltima.Current_graph4;
