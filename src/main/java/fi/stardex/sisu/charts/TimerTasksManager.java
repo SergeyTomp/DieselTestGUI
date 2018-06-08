@@ -2,13 +2,16 @@ package fi.stardex.sisu.charts;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.ApplicationContext;
+import org.springframework.beans.factory.annotation.Lookup;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Timer;
 
+@Component
 public class TimerTasksManager {
 
     private static final Logger logger = LoggerFactory.getLogger(TimerTasksManager.class);
@@ -24,33 +27,40 @@ public class TimerTasksManager {
 
     private List<Timer> timersList = new ArrayList<>();
 
-    private ApplicationContext applicationContext;
+//    @Autowired
+//    public TimerTasksManager(List<ChartTask> listOfChartTasks) {
+//
+//    }
 
-    public TimerTasksManager(ApplicationContext applicationContext) {
-        this.applicationContext = applicationContext;
+    @Lookup
+    @Qualifier("chartTaskOne")
+    public ChartTaskOne getChartTaskOne() {
+        return null;
     }
 
-    private ChartTask chartTaskOne() {
-        return applicationContext.getBean("chartTaskOne", ChartTask.class);
+    @Lookup
+    @Qualifier("chartTaskTwo")
+    public ChartTaskTwo getChartTaskTwo() {
+        return null;
     }
 
-    private ChartTask chartTaskTwo() {
-        return applicationContext.getBean("chartTaskTwo", ChartTask.class);
+    @Lookup
+    @Qualifier("chartTaskThree")
+    public ChartTaskThree getChartTaskThree() {
+        return null;
     }
 
-    private ChartTask chartTaskThree() {
-        return applicationContext.getBean("chartTaskThree", ChartTask.class);
-    }
-
-    private ChartTask chartTaskFour() {
-        return applicationContext.getBean("chartTaskFour", ChartTask.class);
+    @Lookup
+    @Qualifier("chartTaskFour")
+    public ChartTaskFour getChartTaskFour() {
+        return null;
     }
 
     public void start() {
         if (running)
             return;
 
-        listOfCharts = new ArrayList<>(Arrays.asList(chartTaskOne(), chartTaskTwo(), chartTaskThree(), chartTaskFour()));
+        listOfCharts = new ArrayList<>(Arrays.asList(getChartTaskOne(), getChartTaskTwo(), getChartTaskThree(), getChartTaskFour()));
 
         listOfCharts.forEach(e -> {
             e.setUpdateOSC(true);

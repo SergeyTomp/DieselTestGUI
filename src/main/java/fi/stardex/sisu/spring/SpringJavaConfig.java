@@ -1,8 +1,7 @@
 package fi.stardex.sisu.spring;
 
 import fi.stardex.sisu.annotations.Module;
-import fi.stardex.sisu.charts.ChartTask;
-import fi.stardex.sisu.charts.TimerTasksManager;
+import fi.stardex.sisu.charts.*;
 import fi.stardex.sisu.connect.ConnectProcessor;
 import fi.stardex.sisu.connect.InetAddressWrapper;
 import fi.stardex.sisu.connect.ModbusConnect;
@@ -27,7 +26,9 @@ import fi.stardex.sisu.util.wrappers.StatusBarWrapper;
 import fi.stardex.sisu.version.UltimaFirmwareVersion;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.XYChart;
+import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -158,13 +159,13 @@ public class SpringJavaConfig {
     @Bean
     @Autowired
     public ModbusRegisterProcessor flowModbusWriter(RegisterProvider flowRegisterProvider) {
-        return new ModbusRegisterProcessor(flowRegisterProvider,  null, "Flow register processor", null);
+        return new ModbusRegisterProcessor(flowRegisterProvider, null, "Flow register processor", null);
     }
 
     @Bean
     @Autowired
     public ModbusRegisterProcessor standModbusWriter(RegisterProvider standRegisterProvider) {
-        return new ModbusRegisterProcessor(standRegisterProvider,  null, "Stand register processor", null);
+        return new ModbusRegisterProcessor(standRegisterProvider, null, "Stand register processor", null);
     }
 
     @Bean
@@ -180,141 +181,31 @@ public class SpringJavaConfig {
     }
 
     @Bean
-    @Autowired
-    public TimerTasksManager timerTasksManager(ApplicationContext applicationContext) {
-        return new TimerTasksManager(applicationContext);
+    @Qualifier("chartTaskOne")
+    @Scope("prototype")
+    public ChartTaskOne chartTaskOne() {
+        return new ChartTaskOne();
     }
 
     @Bean
+    @Qualifier("ChartTaskTwo")
     @Scope("prototype")
-    @Autowired
-    public ChartTask chartTaskOne(VoltageController voltageController, ModbusRegisterProcessor ultimaModbusWriter,
-                                  PiezoCoilToggleGroup piezoCoilToggleGroup, SettingsController settingsController) {
-        return new ChartTask(ultimaModbusWriter, piezoCoilToggleGroup, settingsController, voltageController) {
-            @Override
-            public ModbusMapUltima getCurrentGraph() {
-                return ModbusMapUltima.Current_graph1;
-            }
-
-            @Override
-            public ModbusMapUltima getCurrentGraphFrameNum() {
-                return ModbusMapUltima.Current_graph1_frame_num;
-            }
-
-            @Override
-            public ModbusMapUltima getCurrentGraphUpdate() {
-                return ModbusMapUltima.Current_graph1_update;
-            }
-
-            @Override
-            protected ObservableList<XYChart.Data<Double, Double>> getData() {
-                return voltageController.getData1();
-            }
-
-            @Override
-            protected int getChartNumber() {
-                return 1;
-            }
-        };
+    public ChartTaskTwo chartTaskTwo() {
+        return new ChartTaskTwo();
     }
 
     @Bean
+    @Qualifier("chartTaskThree")
     @Scope("prototype")
-    @Autowired
-    public ChartTask chartTaskTwo(VoltageController voltageController, ModbusRegisterProcessor ultimaModbusWriter,
-                                  PiezoCoilToggleGroup piezoCoilToggleGroup, SettingsController settingsController) {
-        return new ChartTask(ultimaModbusWriter, piezoCoilToggleGroup, settingsController, voltageController) {
-            @Override
-            public ModbusMapUltima getCurrentGraph() {
-                return ModbusMapUltima.Current_graph2;
-            }
-
-            @Override
-            public ModbusMapUltima getCurrentGraphFrameNum() {
-                return ModbusMapUltima.Current_graph2_frame_num;
-            }
-
-            @Override
-            public ModbusMapUltima getCurrentGraphUpdate() {
-                return ModbusMapUltima.Current_graph2_update;
-            }
-
-            @Override
-            protected ObservableList<XYChart.Data<Double, Double>> getData() {
-                return voltageController.getData2();
-            }
-
-            @Override
-            protected int getChartNumber() {
-                return 2;
-            }
-        };
+    public ChartTaskThree chartTaskThree() {
+        return new ChartTaskThree();
     }
 
     @Bean
+    @Qualifier("chartTaskFour")
     @Scope("prototype")
-    @Autowired
-    public ChartTask chartTaskThree(VoltageController voltageController, ModbusRegisterProcessor ultimaModbusWriter,
-                                    PiezoCoilToggleGroup piezoCoilToggleGroup, SettingsController settingsController) {
-        return new ChartTask(ultimaModbusWriter, piezoCoilToggleGroup, settingsController, voltageController) {
-            @Override
-            public ModbusMapUltima getCurrentGraph() {
-                return ModbusMapUltima.Current_graph3;
-            }
-
-            @Override
-            public ModbusMapUltima getCurrentGraphFrameNum() {
-                return ModbusMapUltima.Current_graph3_frame_num;
-            }
-
-            @Override
-            public ModbusMapUltima getCurrentGraphUpdate() {
-                return ModbusMapUltima.Current_graph3_update;
-            }
-
-            @Override
-            protected ObservableList<XYChart.Data<Double, Double>> getData() {
-                return voltageController.getData3();
-            }
-
-            @Override
-            protected int getChartNumber() {
-                return 3;
-            }
-        };
-    }
-
-    @Bean
-    @Scope("prototype")
-    @Autowired
-    public ChartTask chartTaskFour(VoltageController voltageController, ModbusRegisterProcessor ultimaModbusWriter,
-                                   PiezoCoilToggleGroup piezoCoilToggleGroup, SettingsController settingsController) {
-        return new ChartTask(ultimaModbusWriter, piezoCoilToggleGroup, settingsController, voltageController) {
-            @Override
-            public ModbusMapUltima getCurrentGraph() {
-                return ModbusMapUltima.Current_graph4;
-            }
-
-            @Override
-            public ModbusMapUltima getCurrentGraphFrameNum() {
-                return ModbusMapUltima.Current_graph4_frame_num;
-            }
-
-            @Override
-            public ModbusMapUltima getCurrentGraphUpdate() {
-                return ModbusMapUltima.Current_graph4_update;
-            }
-
-            @Override
-            protected ObservableList<XYChart.Data<Double, Double>> getData() {
-                return voltageController.getData4();
-            }
-
-            @Override
-            protected int getChartNumber() {
-                return 4;
-            }
-        };
+    public ChartTaskFour chartTaskFour() {
+        return new ChartTaskFour();
     }
 
     @Bean

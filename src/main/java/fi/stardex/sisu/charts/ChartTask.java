@@ -14,30 +14,34 @@ import fi.stardex.sisu.version.UltimaFirmwareVersion;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Toggle;
 import net.wimpi.modbus.ModbusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.TimerTask;
 
+@Component
 public abstract class ChartTask extends TimerTask {
 
     private static final Logger logger = LoggerFactory.getLogger(ChartTask.class);
 
+    @Autowired
     private ModbusRegisterProcessor ultimaModbusWriter;
 
+    @Autowired
     private PiezoCoilToggleGroup piezoCoilToggleGroup;
 
-    private ComboBox<InjectorChannel> comboInjectorConfig;
+    @Autowired
+    private SettingsController settingsController;
 
-    private VoltageController voltageController;
-
-    private RegisterProvider ultimaRegisterProvider;
+    @Autowired
+    protected VoltageController voltageController;
 
     private boolean updateOSC;
 
@@ -60,15 +64,6 @@ public abstract class ChartTask extends TimerTask {
     protected abstract ObservableList<XYChart.Data<Double, Double>> getData();
 
     protected abstract int getChartNumber();
-
-    public ChartTask(ModbusRegisterProcessor ultimaModbusWriter, PiezoCoilToggleGroup piezoCoilToggleGroup,
-                     SettingsController settingsController, VoltageController voltageController) {
-        this.ultimaModbusWriter = ultimaModbusWriter;
-        ultimaRegisterProvider = ultimaModbusWriter.getRegisterProvider();
-        this.piezoCoilToggleGroup = piezoCoilToggleGroup;
-        comboInjectorConfig = settingsController.getComboInjectorConfig();
-        this.voltageController = voltageController;
-    }
 
     private void addModbusData(ArrayList<Integer> resultDataList, Integer[] data) {
         resultDataList.addAll(Arrays.asList(data));
@@ -142,7 +137,7 @@ public abstract class ChartTask extends TimerTask {
         if(ActiveLeds.activeControllers().size() == 0)
             return;
 
-        if (comboInjectorConfig.getSelectionModel().getSelectedItem() == InjectorChannel.SINGLE_CHANNEL) {
+        if (settingsController.getComboInjectorConfig().getSelectionModel().getSelectedItem() == InjectorChannel.SINGLE_CHANNEL) {
             int number = getChartNumber();
             if(number == 2 | number == 3 | number == 4)
                 return;
@@ -172,6 +167,7 @@ public abstract class ChartTask extends TimerTask {
         if (!updateOSC)
             return;
         ArrayList<Integer> resultDataList = new ArrayList<>();
+        RegisterProvider ultimaRegisterProvider = ultimaModbusWriter.getRegisterProvider();
         try {
             for (int i = 0; i < div; i++) {
                 if (!updateOSC)
