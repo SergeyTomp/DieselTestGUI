@@ -21,6 +21,7 @@ import fi.stardex.sisu.ui.updaters.HighPressureSectionUpdater;
 import fi.stardex.sisu.ui.updaters.InjectorSectionUpdater;
 import fi.stardex.sisu.ui.updaters.Updater;
 import fi.stardex.sisu.util.ApplicationConfigHandler;
+import fi.stardex.sisu.util.FirmwareDataConverter;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.wrappers.StatusBarWrapper;
 import fi.stardex.sisu.version.UltimaFirmwareVersion;
@@ -176,8 +177,8 @@ public class SpringJavaConfig {
 
     @Bean
     @Autowired
-    public InjectorSectionUpdater injectorSectionUpdater(VoltageController voltageController, InjectorSectionController injectorSectionController) {
-        return new InjectorSectionUpdater(voltageController, injectorSectionController);
+    public InjectorSectionUpdater injectorSectionUpdater(VoltageController voltageController) {
+        return new InjectorSectionUpdater(voltageController);
     }
 
     @Bean
@@ -218,5 +219,10 @@ public class SpringJavaConfig {
     @Autowired
     public ActiveLeds activeLeds(InjectorSectionController injectorSectionController) {
         return new ActiveLeds(injectorSectionController.getLedControllers());
+    }
+
+    @Bean
+    public FirmwareDataConverter firmwareDataConverter() {
+        return new FirmwareDataConverter();
     }
 }

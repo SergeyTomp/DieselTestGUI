@@ -43,6 +43,9 @@ public abstract class ChartTask extends TimerTask {
     @Autowired
     protected VoltageController voltageController;
 
+    @Autowired
+    private FirmwareDataConverter firmwareDataConverter;
+
     private boolean updateOSC;
 
     private int firmwareWidth;
@@ -148,7 +151,7 @@ public abstract class ChartTask extends TimerTask {
         }
 
         int n;
-        firmwareWidth = FirmwareDataConverter.convertDataToInt(ModbusMapUltima.WidthBoardOne);
+        firmwareWidth = firmwareDataConverter.convertDataToInt(ModbusMapUltima.WidthBoardOne.getLastValue().toString());
         Toggle selectedToggle = piezoCoilToggleGroup.getPiezoCoilToggleGroup().getSelectedToggle();
         int offset;
 

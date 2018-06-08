@@ -5,7 +5,6 @@ import fi.stardex.sisu.injectors.InjectorChannel;
 import fi.stardex.sisu.leds.ActiveLeds;
 import fi.stardex.sisu.registers.modbusmaps.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
-import fi.stardex.sisu.styles.FontColour;
 import fi.stardex.sisu.ui.controllers.additional.LedController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
@@ -13,8 +12,6 @@ import fi.stardex.sisu.util.spinners.SpinnerManager;
 import fi.stardex.sisu.util.spinners.SpinnerValueObtainer;
 import fi.stardex.sisu.util.tooltips.CustomTooltip;
 import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -26,9 +23,13 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
-import java.util.*;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Objects;
 
 public class InjectorSectionController {
 
@@ -109,13 +110,9 @@ public class InjectorSectionController {
     @FXML
     private AnchorPane ledBeaker4;
 
-    private StringProperty labelWidthProperty = new SimpleStringProperty();
-
     private SettingsController settingsController;
 
     private ModbusRegisterProcessor ultimaModbusWriter;
-
-    private VoltageController voltageController;
 
     private TimerTasksManager timerTasksManager;
 
@@ -157,10 +154,6 @@ public class InjectorSectionController {
         return ledParametersChangeListener;
     }
 
-    public StringProperty labelWidthPropertyProperty() {
-        return labelWidthProperty;
-    }
-
     public ToggleGroup getPiezoCoilToggleGroup() {
         return piezoCoilToggleGroup;
     }
@@ -189,14 +182,9 @@ public class InjectorSectionController {
         this.ultimaModbusWriter = ultimaModbusWriter;
     }
 
-    public void setVoltageController(VoltageController voltageController) {
-        this.voltageController = voltageController;
-    }
-
     public void setTimerTaskManager(TimerTasksManager timerTasksManager) {
         this.timerTasksManager = timerTasksManager;
     }
-
 
     @PostConstruct
     private void init() {
@@ -222,20 +210,6 @@ public class InjectorSectionController {
         SpinnerManager.setupSpinner(freqCurrentSignal, 16.67, 16.671, new CustomTooltip(), new SpinnerValueObtainer(16.67));
 
         ledParametersChangeListener = new LedParametersChangeListener();
-
-        labelWidthProperty.addListener((observable, oldValue, newValue) -> {
-            if (Math.round(Float.parseFloat(newValue)) != widthCurrentSignal.getValue()) {
-                FontColour.setFontColourProperty("-fx-text-fill: red");
-            } else {
-                FontColour.setFontColourProperty(null);
-            }
-        });
-
-        widthCurrentSignal.valueProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue.toString().equals(labelWidthProperty.get())) {
-                FontColour.setFontColourProperty(null);
-            }
-        });
 
         new PowerButtonChangeListener();
 
@@ -365,10 +339,6 @@ public class InjectorSectionController {
                 ledParametersChangeListener.switchOffAll();
                 timerTasksManager.stop();
                 enableInjectorSectionLedsAndToggleGroup(false);
-                voltageController.getData1().clear();
-                voltageController.getData2().clear();
-                voltageController.getData3().clear();
-                voltageController.getData4().clear();
             }
         }
 

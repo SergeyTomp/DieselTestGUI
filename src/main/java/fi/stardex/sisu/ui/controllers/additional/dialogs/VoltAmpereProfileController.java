@@ -44,6 +44,8 @@ public class VoltAmpereProfileController {
     @FXML
     private Spinner<Integer> negativeU2Spinner;
 
+    private Spinner<Integer> widthCurrentSignal;
+
     @FXML
     private ToggleButton enableBoostToggleButton;
 
@@ -75,8 +77,6 @@ public class VoltAmpereProfileController {
 
     private Stage stage;
 
-    private Spinner<Integer> widthCurrentSignal;
-
     private boolean boostToggleButtonEnabled = true;
 
     private VoltageController voltageController;
@@ -84,6 +84,42 @@ public class VoltAmpereProfileController {
     private List<Spinner> listOfVAPSpinners = new ArrayList<>();
 
     private WidthSpinnerValueObtainer widthCurrentSignalValueObtainer = new WidthSpinnerValueObtainer(300);
+
+    public Spinner<Integer> getFirstWSpinner() {
+        return firstWSpinner;
+    }
+
+    public Spinner<Integer> getBatteryUSpinner() {
+        return batteryUSpinner;
+    }
+
+    public Spinner<Double> getBoostISpinner() {
+        return boostISpinner;
+    }
+
+    public Spinner<Integer> getBoostUSpinner() {
+        return boostUSpinner;
+    }
+
+    public Spinner<Double> getFirstISpinner() {
+        return firstISpinner;
+    }
+
+    public Spinner<Integer> getNegativeU1Spinner() {
+        return negativeU1Spinner;
+    }
+
+    public Spinner<Double> getSecondISpinner() {
+        return secondISpinner;
+    }
+
+    public Spinner<Integer> getNegativeU2Spinner() {
+        return negativeU2Spinner;
+    }
+
+    public Spinner<Integer> getWidthCurrentSignal() {
+        return widthCurrentSignal;
+    }
 
     public void setUltimaModbusWriter(ModbusRegisterProcessor ultimaModbusWriter) {
         this.ultimaModbusWriter = ultimaModbusWriter;

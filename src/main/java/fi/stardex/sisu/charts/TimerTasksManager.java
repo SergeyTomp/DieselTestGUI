@@ -80,7 +80,10 @@ public class TimerTasksManager {
                 e.purge();
             });
             timersList.clear();
-            listOfCharts.forEach(e -> e.setUpdateOSC(false));
+            listOfCharts.forEach(e -> {
+                e.setUpdateOSC(false);
+                e.getData().clear();
+            });
             running = false;
             logger.debug("STOP timers");
         }

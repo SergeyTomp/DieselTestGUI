@@ -16,6 +16,7 @@ import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.cr.TestBenchSectionController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
+import fi.stardex.sisu.util.FirmwareDataConverter;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.i18n.UTF8Control;
 import fi.stardex.sisu.util.view.ApplicationAppearanceChanger;
@@ -90,12 +91,10 @@ public class JavaFXSpringConfigure {
     @Bean
     @Autowired
     public InjectorSectionController injectorSectionController(SettingsController settingsController,
-                                                               @Lazy ModbusRegisterProcessor ultimaModbusWriter,
-                                                               VoltageController voltageController) {
+                                                               @Lazy ModbusRegisterProcessor ultimaModbusWriter) {
         InjectorSectionController injectorSectionController = crSectionController().getInjectorSectionController();
         injectorSectionController.setSettingsController(settingsController);
         injectorSectionController.setUltimaModbusWriter(ultimaModbusWriter);
-        injectorSectionController.setVoltageController(voltageController);
         return injectorSectionController;
     }
 
@@ -122,10 +121,14 @@ public class JavaFXSpringConfigure {
 
     @Bean
     @Autowired
-    public VoltageController voltageController(AdditionalSectionController additionalSectionController) {
+    public VoltageController voltageController(AdditionalSectionController additionalSectionController,
+                                               FirmwareDataConverter firmwareDataConverter,
+                                               InjectorSectionController injectorSectionController) {
         VoltageController voltageController = additionalSectionController.getVoltageController();
         voltageController.setVoltAmpereProfileDialog(voltAmpereProfileDialog());
         voltageController.setParentController(additionalSectionController);
+        voltageController.setInjectorSectionController(injectorSectionController);
+        voltageController.setFirmwareDataConverter(firmwareDataConverter);
         return voltageController;
     }
 
@@ -150,11 +153,9 @@ public class JavaFXSpringConfigure {
     @Autowired
     public VoltAmpereProfileController voltAmpereProfileController(ModbusRegisterProcessor ultimaModbusWriter,
                                                                    InjectorSectionController injectorSectionController,
-                                                                   VoltageController voltageController,
-                                                                   TimerTasksManager timerTasksManager) {
+                                                                   VoltageController voltageController) {
         VoltAmpereProfileController voltAmpereProfileController = (VoltAmpereProfileController) voltAmpereProfileDialog().getController();
         voltAmpereProfileController.setUltimaModbusWriter(ultimaModbusWriter);
-        injectorSectionController.setTimerTaskManager(timerTasksManager);
         voltAmpereProfileController.setWidthSpinner(injectorSectionController.getWidthCurrentSignal());
         voltAmpereProfileController.setVoltageController(voltageController);
         return voltAmpereProfileController;

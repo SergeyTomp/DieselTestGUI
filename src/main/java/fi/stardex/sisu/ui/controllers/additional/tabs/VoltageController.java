@@ -1,11 +1,14 @@
 package fi.stardex.sisu.ui.controllers.additional.tabs;
 
-import fi.stardex.sisu.styles.FontColour;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.additional.AdditionalSectionController;
 import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
+import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
+import fi.stardex.sisu.util.FirmwareDataConverter;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -15,6 +18,7 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.Spinner;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -70,11 +74,15 @@ public class VoltageController {
 
     private ObjectProperty<Boolean> isTabVoltageShowing = new SimpleObjectProperty<>();
 
+    private FirmwareDataConverter firmwareDataConverter;
+
     public ObjectProperty<Boolean> isTabVoltageShowingProperty() {
         return isTabVoltageShowing;
     }
 
     private VoltAmpereProfileController voltAmpereProfileController;
+
+    private InjectorSectionController injectorSectionController;
 
     private ObservableList<XYChart.Data<Double, Double>> data1;
     private ObservableList<XYChart.Data<Double, Double>> data2;
@@ -142,25 +150,29 @@ public class VoltageController {
         this.additionalSectionController = additionalSectionController;
     }
 
+    public void setFirmwareDataConverter(FirmwareDataConverter firmwareDataConverter) {
+        this.firmwareDataConverter = firmwareDataConverter;
+    }
+
+    public void setInjectorSectionController(InjectorSectionController injectorSectionController) {
+        this.injectorSectionController = injectorSectionController;
+    }
+
     @PostConstruct
     private void init() {
 
         isTabVoltageShowing.bind(additionalSectionController.getTabVoltage().selectedProperty());
 
-        width.styleProperty().bindBidirectional(FontColour.fontColourPropertyProperty());
-
-        width.styleProperty().addListener((observable, oldValue, newValue) -> width.setStyle(newValue));
-
-        setInitialValuesToLabels();
-
         setupVoltAmpereProfileDialog();
+
+        setupVAPLabels();
 
         configLineChartData();
 
     }
 
 
-    private void setInitialValuesToLabels() {
+    private void setupVAPLabels() {
         width.setText("300"); // widthCurrentSignal initial value
         voltage.setText("60"); // boostUSpinner initial value
         firstWidth.setText("500"); // firstWSpinner initial value
@@ -170,6 +182,16 @@ public class VoltageController {
         batteryU.setText("20"); // batteryUSpinner initial value
         negativeU1.setText("48"); // negativeU1Spinner initial value
         negativeU2.setText("36"); // negativeU2Spinner initial value
+
+        width.textProperty().addListener(new LabelListener(width, injectorSectionController.getWidthCurrentSignal()));
+        voltage.textProperty().addListener(new LabelListener(voltage, voltAmpereProfileController.getBoostUSpinner()));
+        firstWidth.textProperty().addListener(new LabelListener(firstWidth, voltAmpereProfileController.getFirstWSpinner()));
+        firstCurrent.textProperty().addListener(new LabelListener(firstCurrent, voltAmpereProfileController.getFirstISpinner()));
+        secondCurrent.textProperty().addListener(new LabelListener(secondCurrent, voltAmpereProfileController.getSecondISpinner()));
+        boostI.textProperty().addListener(new LabelListener(boostI, voltAmpereProfileController.getBoostISpinner()));
+        batteryU.textProperty().addListener(new LabelListener(batteryU, voltAmpereProfileController.getBatteryUSpinner()));
+        negativeU1.textProperty().addListener(new LabelListener(negativeU1, voltAmpereProfileController.getNegativeU1Spinner()));
+        negativeU2.textProperty().addListener(new LabelListener(negativeU2, voltAmpereProfileController.getNegativeU2Spinner()));
     }
 
     private void setupVoltAmpereProfileDialog() {
@@ -177,7 +199,7 @@ public class VoltageController {
         voltAmpereProfileController = (VoltAmpereProfileController) voltAmpereProfileDialog.getController();
 
         pulseSettingsButton.setOnMouseClicked(event -> {
-            if(voapStage == null) {
+            if (voapStage == null) {
                 voapStage = new Stage();
                 voapStage.setTitle("Settings");
                 voapStage.setScene(new Scene(voltAmpereProfileDialog.getView()));
@@ -231,5 +253,43 @@ public class VoltageController {
         lineChart.getXAxis().setAutoRanging(true);
         lineChart.getYAxis().setAutoRanging(false);
         lineChart.getXAxis().setTickMarkVisible(true);
+    }
+
+
+
+    private class LabelListener implements ChangeListener<String> {
+
+        private Label label;
+
+        private Spinner<? extends Number> spinner;
+
+        private static final String RED_COLOR_STYLE = "-fx-text-fill: red";
+
+        LabelListener(Label label, Spinner<? extends Number> spinner) {
+            this.label = label;
+            this.spinner = spinner;
+        }
+
+        @Override
+        public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+            Number spinnerValue = spinner.getValue();
+            if (spinnerValue instanceof Double) {
+                if ((Double) spinnerValue != firmwareDataConverter.convertDataToDouble(newValue)) {
+                    spinner.setStyle(RED_COLOR_STYLE);
+                    label.setStyle(RED_COLOR_STYLE);
+                } else {
+                    spinner.setStyle(null);
+                    label.setStyle(null);
+                }
+            } else if (spinnerValue instanceof Integer) {
+                if ((Integer) spinnerValue != firmwareDataConverter.convertDataToInt(newValue)) {
+                    spinner.setStyle(RED_COLOR_STYLE);
+                    label.setStyle(RED_COLOR_STYLE);
+                } else {
+                    spinner.setStyle(null);
+                    label.setStyle(null);
+                }
+            }
+        }
     }
 }

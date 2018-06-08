@@ -12,9 +12,8 @@ public class InjectorSectionUpdater implements Updater {
 
     private VoltageController voltageController;
 
-    public InjectorSectionUpdater(VoltageController voltageController, InjectorSectionController injectorSectionController) {
+    public InjectorSectionUpdater(VoltageController voltageController) {
         this.voltageController = voltageController;
-        injectorSectionController.labelWidthPropertyProperty().bind(voltageController.getWidth().textProperty());
     }
 
     @Override
