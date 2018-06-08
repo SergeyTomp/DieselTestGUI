@@ -45,14 +45,14 @@ public enum ModbusMapUltima implements ModbusMap {
 
 
     //слепок регистров ВАП
-    Boost_U(RegisterType.REGISTER_HOLDING, 120, 2, false), // boostUSpinner
-    Battery_U(RegisterType.REGISTER_HOLDING, 122, 2, false), // batteryUSpinner
-    Negative_U1(RegisterType.REGISTER_HOLDING, 124, 2, false), // negativeU1Spinner
-    Negative_U2(RegisterType.REGISTER_HOLDING, 126, 2, false), // negativeU2Spinner
-    BoostIBoardOne(RegisterType.REGISTER_HOLDING, 1, 1, false), // boostISpinner
-    FirstIBoardOne(RegisterType.REGISTER_HOLDING, 2, 1, false), // firstISpinner
-    SecondIBoardOne(RegisterType.REGISTER_HOLDING, 3, 1, false), // secondISpinner
-    FirstWBoardOne(RegisterType.REGISTER_HOLDING, 4, 1, false), // firstWSpinner
+    Boost_U(RegisterType.REGISTER_HOLDING, 120, 2, true), // boostUSpinner
+    Battery_U(RegisterType.REGISTER_HOLDING, 122, 2, true), // batteryUSpinner
+    Negative_U1(RegisterType.REGISTER_HOLDING, 124, 2, true), // negativeU1Spinner
+    Negative_U2(RegisterType.REGISTER_HOLDING, 126, 2, true), // negativeU2Spinner
+    BoostIBoardOne(RegisterType.REGISTER_HOLDING, 1, 1, true), // boostISpinner
+    FirstIBoardOne(RegisterType.REGISTER_HOLDING, 2, 1, true), // firstISpinner
+    SecondIBoardOne(RegisterType.REGISTER_HOLDING, 3, 1, true), // secondISpinner
+    FirstWBoardOne(RegisterType.REGISTER_HOLDING, 4, 1, true), // firstWSpinner
     WidthBoardOne(RegisterType.REGISTER_HOLDING, 5, 1, true), // widthCurrentSignal
     BoostIBoardTwo(RegisterType.REGISTER_HOLDING, 21, 1, false),
     FirstIBoardTwo(RegisterType.REGISTER_HOLDING, 22, 1, false),

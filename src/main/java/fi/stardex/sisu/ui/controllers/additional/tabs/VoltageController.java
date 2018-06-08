@@ -74,6 +74,8 @@ public class VoltageController {
         return isTabVoltageShowing;
     }
 
+    private VoltAmpereProfileController voltAmpereProfileController;
+
     private ObservableList<XYChart.Data<Double, Double>> data1;
     private ObservableList<XYChart.Data<Double, Double>> data2;
     private ObservableList<XYChart.Data<Double, Double>> data3;
@@ -120,6 +122,22 @@ public class VoltageController {
         return negativeU2;
     }
 
+    public Label getVoltage() {
+        return voltage;
+    }
+
+    public Label getFirstWidth() {
+        return firstWidth;
+    }
+
+    public Label getFirstCurrent() {
+        return firstCurrent;
+    }
+
+    public Label getSecondCurrent() {
+        return secondCurrent;
+    }
+
     public void setParentController(AdditionalSectionController additionalSectionController) {
         this.additionalSectionController = additionalSectionController;
     }
@@ -133,13 +151,30 @@ public class VoltageController {
 
         width.styleProperty().addListener((observable, oldValue, newValue) -> width.setStyle(newValue));
 
+        setInitialValuesToLabels();
+
+        setupVoltAmpereProfileDialog();
+
+        configLineChartData();
+
+    }
+
+
+    private void setInitialValuesToLabels() {
         width.setText("300"); // widthCurrentSignal initial value
         voltage.setText("60"); // boostUSpinner initial value
         firstWidth.setText("500"); // firstWSpinner initial value
         firstCurrent.setText("15.0"); // firstISpinner initial value
         secondCurrent.setText("5.5"); // secondISpinner initial value
+        boostI.setText("21.5"); // boostISpinner initial value
+        batteryU.setText("20"); // batteryUSpinner initial value
+        negativeU1.setText("48"); // negativeU1Spinner initial value
+        negativeU2.setText("36"); // negativeU2Spinner initial value
+    }
 
-        VoltAmpereProfileController voltAmpereProfileController = (VoltAmpereProfileController) voltAmpereProfileDialog.getController();
+    private void setupVoltAmpereProfileDialog() {
+
+        voltAmpereProfileController = (VoltAmpereProfileController) voltAmpereProfileDialog.getController();
 
         pulseSettingsButton.setOnMouseClicked(event -> {
             if(voapStage == null) {
@@ -155,11 +190,7 @@ public class VoltageController {
             voltAmpereProfileController.saveValues();
             voapStage.show();
         });
-
-        configLineChartData();
-
     }
-
 
     public void refreshVoltageLabels(Integer voltageValue, Integer firstWidthValue, Double firstCurrentValue, Double secondCurrentValue) {
         voltage.setText(voltageValue.toString());
