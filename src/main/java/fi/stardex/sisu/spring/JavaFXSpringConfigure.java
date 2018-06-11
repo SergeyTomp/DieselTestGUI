@@ -2,6 +2,7 @@ package fi.stardex.sisu.spring;
 
 import fi.stardex.sisu.charts.TimerTasksManager;
 import fi.stardex.sisu.devices.Devices;
+import fi.stardex.sisu.parts.PiezoCoilToggleGroup;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.RootLayoutController;
@@ -27,6 +28,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 
@@ -34,6 +36,7 @@ import java.io.IOException;
 import java.util.ResourceBundle;
 
 @Configuration
+@ComponentScan(value = "fi.stardex.sisu")
 public class JavaFXSpringConfigure {
 
     private final I18N i18N;
@@ -91,10 +94,12 @@ public class JavaFXSpringConfigure {
     @Bean
     @Autowired
     public InjectorSectionController injectorSectionController(SettingsController settingsController,
-                                                               @Lazy ModbusRegisterProcessor ultimaModbusWriter) {
+                                                               @Lazy ModbusRegisterProcessor ultimaModbusWriter,
+                                                               TimerTasksManager timerTasksManager) {
         InjectorSectionController injectorSectionController = crSectionController().getInjectorSectionController();
         injectorSectionController.setSettingsController(settingsController);
         injectorSectionController.setUltimaModbusWriter(ultimaModbusWriter);
+        injectorSectionController.setTimerTasksManager(timerTasksManager);
         return injectorSectionController;
     }
 
@@ -153,11 +158,15 @@ public class JavaFXSpringConfigure {
     @Autowired
     public VoltAmpereProfileController voltAmpereProfileController(ModbusRegisterProcessor ultimaModbusWriter,
                                                                    InjectorSectionController injectorSectionController,
-                                                                   VoltageController voltageController) {
+                                                                   VoltageController voltageController,
+                                                                   PiezoCoilToggleGroup piezoCoilToggleGroup,
+                                                                   FirmwareDataConverter firmwareDataConverter) {
         VoltAmpereProfileController voltAmpereProfileController = (VoltAmpereProfileController) voltAmpereProfileDialog().getController();
         voltAmpereProfileController.setUltimaModbusWriter(ultimaModbusWriter);
+        voltAmpereProfileController.setPiezoCoilToggleGroup(piezoCoilToggleGroup);
         voltAmpereProfileController.setWidthSpinner(injectorSectionController.getWidthCurrentSignal());
         voltAmpereProfileController.setVoltageController(voltageController);
+        voltAmpereProfileController.setFirmwareDataConverter(firmwareDataConverter);
         return voltAmpereProfileController;
     }
 

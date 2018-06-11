@@ -22,6 +22,7 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
 import java.util.Iterator;
@@ -32,6 +33,8 @@ import java.util.Objects;
 public class InjectorSectionController {
 
     private Logger logger = LoggerFactory.getLogger(InjectorSectionController.class);
+
+    private TimerTasksManager timerTasksManager;
 
     @FXML
     private Spinner<Integer> widthCurrentSignal;
@@ -112,8 +115,6 @@ public class InjectorSectionController {
 
     private ModbusRegisterProcessor ultimaModbusWriter;
 
-    private TimerTasksManager timerTasksManager;
-
     private ObservableList<LedController> ledControllers;
 
     private ToggleGroup toggleGroup = new ToggleGroup();
@@ -150,6 +151,10 @@ public class InjectorSectionController {
 
     public void setUltimaModbusWriter(ModbusRegisterProcessor ultimaModbusWriter) {
         this.ultimaModbusWriter = ultimaModbusWriter;
+    }
+
+    public void setTimerTasksManager(TimerTasksManager timerTasksManager) {
+        this.timerTasksManager = timerTasksManager;
     }
 
     @PostConstruct

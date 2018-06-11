@@ -119,7 +119,7 @@ public abstract class ChartTask extends TimerTask {
         } else if (piezoCoilToggleGroup.getPiezoDelphiRadioButton().isSelected()) {
             int i = 0;
             for (XYChart.Data<Double, Double> point : piezoDelphiNegativePoints) {
-                logger.warn("Point: {}", pointsList.get(i));
+//                logger.warn("Point: {}", pointsList.get(i));
                 pointsList.get(i).setYValue(point.getYValue());
                 i++;
             }

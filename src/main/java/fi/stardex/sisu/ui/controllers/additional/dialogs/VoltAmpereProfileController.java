@@ -1,12 +1,16 @@
 package fi.stardex.sisu.ui.controllers.additional.dialogs;
 
+import fi.stardex.sisu.parts.PiezoCoilToggleGroup;
 import fi.stardex.sisu.registers.modbusmaps.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
+import fi.stardex.sisu.util.FirmwareDataConverter;
 import fi.stardex.sisu.util.spinners.SpinnerManager;
 import fi.stardex.sisu.util.spinners.SpinnerValueObtainer;
 import fi.stardex.sisu.util.spinners.WidthSpinnerValueObtainer;
 import fi.stardex.sisu.util.tooltips.CustomTooltip;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
@@ -74,13 +78,17 @@ public class VoltAmpereProfileController {
 
     private Stage stage;
 
-    private boolean boostToggleButtonEnabled = true;
+    private boolean boostToggleButtonDisabled = true;
 
     private VoltageController voltageController;
 
     private List<Spinner> listOfVAPSpinners = new ArrayList<>();
 
     private WidthSpinnerValueObtainer widthCurrentSignalValueObtainer = new WidthSpinnerValueObtainer(300);
+
+    private PiezoCoilToggleGroup piezoCoilToggleGroup;
+
+    private FirmwareDataConverter firmwareDataConverter;
 
     public Spinner<Integer> getFirstWSpinner() {
         return firstWSpinner;
@@ -134,6 +142,14 @@ public class VoltAmpereProfileController {
         this.voltageController = voltageController;
     }
 
+    public void setPiezoCoilToggleGroup(PiezoCoilToggleGroup piezoCoilToggleGroup) {
+        this.piezoCoilToggleGroup = piezoCoilToggleGroup;
+    }
+
+    public void setFirmwareDataConverter(FirmwareDataConverter firmwareDataConverter) {
+        this.firmwareDataConverter = firmwareDataConverter;
+    }
+
     public Button getCancelButton() {
         return cancelButton;
     }
@@ -152,6 +168,16 @@ public class VoltAmpereProfileController {
         negativeU1Spinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(17, 121, 48, 1));
         negativeU2Spinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(12, 70, 36, 1));
         boostUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(30, 75, 60, 1));
+
+        piezoCoilToggleGroup.getPiezoCoilToggleGroup().selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == piezoCoilToggleGroup.getPiezoRadioButton()) {
+                boostUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(30, 350, 60, 1));
+            } else {
+                if (firmwareDataConverter.convertDataToInt(voltageController.getVoltage().getText()) > 75)
+                    ultimaModbusWriter.add(ModbusMapUltima.Boost_U, 60);
+                boostUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(30, 75, 60, 1));
+            }
+        });
 
         SpinnerManager.setupSpinner(widthCurrentSignal, 300, 120, 15500, new CustomTooltip(), widthCurrentSignalValueObtainer);
         SpinnerManager.setupSpinner(firstWSpinner, 500, 90, 15500, new CustomTooltip(), new SpinnerValueObtainer(500));
@@ -191,55 +217,55 @@ public class VoltAmpereProfileController {
     private void setupSpinnerStyleWhenValueChangedListener() {
         widthCurrentSignal.valueProperty().addListener((observable, oldValue, newValue) -> {
             Label widthLabel = voltageController.getWidth();
-            if(newValue.toString().equals(widthLabel.getText()))
+            if (newValue.toString().equals(widthLabel.getText()))
                 setDefaultStyle(widthCurrentSignal, widthLabel);
         });
 
         firstWSpinner.valueProperty().addListener((observable, oldValue, newValue) -> {
             Label firstWLabel = voltageController.getFirstWidth();
-            if(newValue.toString().equals(firstWLabel.getText()))
+            if (newValue.toString().equals(firstWLabel.getText()))
                 setDefaultStyle(firstWSpinner, firstWLabel);
         });
 
         boostISpinner.valueProperty().addListener((observable, oldValue, newValue) -> {
             Label boostILabel = voltageController.getBoostI();
-            if(newValue.toString().equals(boostILabel.getText()))
+            if (newValue.toString().equals(boostILabel.getText()))
                 setDefaultStyle(boostISpinner, boostILabel);
         });
 
         firstISpinner.valueProperty().addListener((observable, oldValue, newValue) -> {
             Label firstILabel = voltageController.getFirstCurrent();
-            if(newValue.toString().equals(firstILabel.getText()))
+            if (newValue.toString().equals(firstILabel.getText()))
                 setDefaultStyle(firstISpinner, firstILabel);
         });
 
         secondISpinner.valueProperty().addListener((observable, oldValue, newValue) -> {
             Label secondILabel = voltageController.getSecondCurrent();
-            if(newValue.toString().equals(secondILabel.getText()))
+            if (newValue.toString().equals(secondILabel.getText()))
                 setDefaultStyle(secondISpinner, secondILabel);
         });
 
         batteryUSpinner.valueProperty().addListener((observable, oldValue, newValue) -> {
             Label batteryULabel = voltageController.getBatteryU();
-            if(newValue.toString().equals(batteryULabel.getText()))
+            if (newValue.toString().equals(batteryULabel.getText()))
                 setDefaultStyle(batteryUSpinner, batteryULabel);
         });
 
         negativeU1Spinner.valueProperty().addListener((observable, oldValue, newValue) -> {
             Label negativeU1Label = voltageController.getNegativeU1();
-            if(newValue.toString().equals(negativeU1Label.getText()))
+            if (newValue.toString().equals(negativeU1Label.getText()))
                 setDefaultStyle(negativeU1Spinner, negativeU1Label);
         });
 
         negativeU2Spinner.valueProperty().addListener((observable, oldValue, newValue) -> {
             Label negativeU2Label = voltageController.getNegativeU2();
-            if(newValue.toString().equals(negativeU2Label.getText()))
+            if (newValue.toString().equals(negativeU2Label.getText()))
                 setDefaultStyle(negativeU2Spinner, negativeU2Label);
         });
 
         boostUSpinner.valueProperty().addListener((observable, oldValue, newValue) -> {
             Label boostULabel = voltageController.getVoltage();
-            if(newValue.toString().equals(boostULabel.getText()))
+            if (newValue.toString().equals(boostULabel.getText()))
                 setDefaultStyle(boostUSpinner, boostULabel);
         });
     }
@@ -250,16 +276,15 @@ public class VoltAmpereProfileController {
     }
 
     private void setupEnableBoostToggleButton() {
-        enableBoostToggleButton.setSelected(boostToggleButtonEnabled);
-        enableBoostToggleButton.setText("Boost_U enabled");
+        enableBoostToggleButton.setSelected(boostToggleButtonDisabled);
+        enableBoostToggleButton.setText("Boost_U disabled");
         enableBoostToggleButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
-                enableBoostToggleButton.setText("Boost_U enabled");
-
-            } else {
                 enableBoostToggleButton.setText("Boost_U disabled");
+            } else {
+                enableBoostToggleButton.setText("Boost_U enabled");
             }
-            boostToggleButtonEnabled = newValue;
+            boostToggleButtonDisabled = newValue;
         });
     }
 
@@ -326,10 +351,10 @@ public class VoltAmpereProfileController {
         ultimaModbusWriter.add(ModbusMapUltima.SecondIBoardFour, secondIValue * ONE_AMPERE_MULTIPLY);
         ultimaModbusWriter.add(ModbusMapUltima.FirstWBoardFour, firstWValue);
         ultimaModbusWriter.add(ModbusMapUltima.WidthBoardFour, widthValue);
-        ultimaModbusWriter.add(ModbusMapUltima.StartOnBatteryUOne, boostToggleButtonEnabled);
-        ultimaModbusWriter.add(ModbusMapUltima.StartOnBatteryUTwo, boostToggleButtonEnabled);
-        ultimaModbusWriter.add(ModbusMapUltima.StartOnBatteryUThree, boostToggleButtonEnabled);
-        ultimaModbusWriter.add(ModbusMapUltima.StartOnBatteryUFour, boostToggleButtonEnabled);
+        ultimaModbusWriter.add(ModbusMapUltima.StartOnBatteryUOne, boostToggleButtonDisabled);
+        ultimaModbusWriter.add(ModbusMapUltima.StartOnBatteryUTwo, boostToggleButtonDisabled);
+        ultimaModbusWriter.add(ModbusMapUltima.StartOnBatteryUThree, boostToggleButtonDisabled);
+        ultimaModbusWriter.add(ModbusMapUltima.StartOnBatteryUFour, boostToggleButtonDisabled);
         System.err.println("boostUSpinner: " + boostUSpinner.getValue());
         System.err.println("batteryUSpinner: " + batteryUSpinner.getValue());
         System.err.println("negativeU1Spinner: " + negative1Value);
@@ -339,10 +364,10 @@ public class VoltAmpereProfileController {
         System.err.println("secondISpinner: " + secondIValue);
         System.err.println("firstWSpinner: " + firstWValue);
         System.err.println("widthCurrentSignal: " + widthValue);
-        System.err.println("StartOnBatteryUOne: " + boostToggleButtonEnabled);
-        System.err.println("StartOnBatteryUTwo: " + boostToggleButtonEnabled);
-        System.err.println("StartOnBatteryUThree: " + boostToggleButtonEnabled);
-        System.err.println("StartOnBatteryUFour: " + boostToggleButtonEnabled);
+        System.err.println("StartOnBatteryUOne: " + boostToggleButtonDisabled);
+        System.err.println("StartOnBatteryUTwo: " + boostToggleButtonDisabled);
+        System.err.println("StartOnBatteryUThree: " + boostToggleButtonDisabled);
+        System.err.println("StartOnBatteryUFour: " + boostToggleButtonDisabled);
     }
 
     public void saveValues() {
