@@ -7,7 +7,6 @@ import fi.stardex.sisu.registers.modbusmaps.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.controllers.additional.LedController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
 import fi.stardex.sisu.util.spinners.SpinnerManager;
 import fi.stardex.sisu.util.spinners.SpinnerValueObtainer;
 import fi.stardex.sisu.util.tooltips.CustomTooltip;
@@ -23,7 +22,6 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
 import java.util.Iterator;
@@ -122,36 +120,8 @@ public class InjectorSectionController {
 
     private LedParametersChangeListener ledParametersChangeListener;
 
-    public LedController getLedBeaker1Controller() {
-        return ledBeaker1Controller;
-    }
-
-    public LedController getLedBeaker2Controller() {
-        return ledBeaker2Controller;
-    }
-
-    public LedController getLedBeaker3Controller() {
-        return ledBeaker3Controller;
-    }
-
-    public LedController getLedBeaker4Controller() {
-        return ledBeaker4Controller;
-    }
-
-    public Spinner<Double> getFreqCurrentSignal() {
-        return freqCurrentSignal;
-    }
-
     public Spinner<Integer> getWidthCurrentSignal() {
         return widthCurrentSignal;
-    }
-
-    public ToggleButton getPowerSwitch() {
-        return powerSwitch;
-    }
-
-    public LedParametersChangeListener getLedParametersChangeListener() {
-        return ledParametersChangeListener;
     }
 
     public ToggleGroup getPiezoCoilToggleGroup() {
@@ -180,10 +150,6 @@ public class InjectorSectionController {
 
     public void setUltimaModbusWriter(ModbusRegisterProcessor ultimaModbusWriter) {
         this.ultimaModbusWriter = ultimaModbusWriter;
-    }
-
-    public void setTimerTaskManager(TimerTasksManager timerTasksManager) {
-        this.timerTasksManager = timerTasksManager;
     }
 
     @PostConstruct
@@ -331,18 +297,20 @@ public class InjectorSectionController {
                 powerSwitch.setText("On");
                 ultimaModbusWriter.add(ModbusMapUltima.Injectors_Running_En, true);
                 ledParametersChangeListener.sendLedRegisters();
+                // FIXME: throws NPE if there is no connection
+                // при коннекте должен строиться хотя бы нулевой график
                 timerTasksManager.start();
-                enableInjectorSectionLedsAndToggleGroup(true);
+                disableInjectorSectionLedsAndToggleGroup(true);
             } else {
                 powerSwitch.setText("Off");
                 ultimaModbusWriter.add(ModbusMapUltima.Injectors_Running_En, false);
                 ledParametersChangeListener.switchOffAll();
                 timerTasksManager.stop();
-                enableInjectorSectionLedsAndToggleGroup(false);
+                disableInjectorSectionLedsAndToggleGroup(false);
             }
         }
 
-        private void enableInjectorSectionLedsAndToggleGroup(boolean disabled) {
+        private void disableInjectorSectionLedsAndToggleGroup(boolean disabled) {
             coilRadioButton.setDisable(disabled);
             piezoRadioButton.setDisable(disabled);
             piezoDelphiRadioButton.setDisable(disabled);

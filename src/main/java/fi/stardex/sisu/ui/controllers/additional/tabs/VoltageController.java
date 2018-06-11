@@ -39,8 +39,6 @@ public class VoltageController {
     @FXML
     private Label negativeU2;
 
-    private ViewHolder voltAmpereProfileDialog;
-
     @FXML
     private LineChart<Double, Double> lineChart;
 
@@ -68,6 +66,8 @@ public class VoltageController {
     @FXML
     private Button pulseSettingsButton;
 
+    private ViewHolder voltAmpereProfileDialog;
+
     private Stage voapStage;
 
     private AdditionalSectionController additionalSectionController;
@@ -85,8 +85,11 @@ public class VoltageController {
     private InjectorSectionController injectorSectionController;
 
     private ObservableList<XYChart.Data<Double, Double>> data1;
+
     private ObservableList<XYChart.Data<Double, Double>> data2;
+
     private ObservableList<XYChart.Data<Double, Double>> data3;
+
     private ObservableList<XYChart.Data<Double, Double>> data4;
 
     public ObservableList<XYChart.Data<Double, Double>> getData1() {
@@ -113,7 +116,6 @@ public class VoltageController {
         return width;
     }
 
-    // TODO: добавить чтение регистров в InjectorSectionUpdater и обновление этих labels
     public Label getBoostI() {
         return boostI;
     }
@@ -146,6 +148,8 @@ public class VoltageController {
         return secondCurrent;
     }
 
+    private static final String RED_COLOR_STYLE = "-fx-text-fill: red";
+
     public void setParentController(AdditionalSectionController additionalSectionController) {
         this.additionalSectionController = additionalSectionController;
     }
@@ -170,7 +174,6 @@ public class VoltageController {
         configLineChartData();
 
     }
-
 
     private void setupVAPLabels() {
         width.setText("300"); // widthCurrentSignal initial value
@@ -214,13 +217,6 @@ public class VoltageController {
         });
     }
 
-    public void refreshVoltageLabels(Integer voltageValue, Integer firstWidthValue, Double firstCurrentValue, Double secondCurrentValue) {
-        voltage.setText(voltageValue.toString());
-        firstWidth.setText(firstWidthValue.toString());
-        firstCurrent.setText(firstCurrentValue.toString());
-        secondCurrent.setText(secondCurrentValue.toString());
-    }
-
     private void configLineChartData() {
         XYChart.Series<Double, Double> series1 = new XYChart.Series<>();
         series1.setName("");
@@ -256,14 +252,11 @@ public class VoltageController {
     }
 
 
-
     private class LabelListener implements ChangeListener<String> {
 
         private Label label;
 
         private Spinner<? extends Number> spinner;
-
-        private static final String RED_COLOR_STYLE = "-fx-text-fill: red";
 
         LabelListener(Label label, Spinner<? extends Number> spinner) {
             this.label = label;
@@ -275,21 +268,24 @@ public class VoltageController {
             Number spinnerValue = spinner.getValue();
             if (spinnerValue instanceof Double) {
                 if ((Double) spinnerValue != firmwareDataConverter.convertDataToDouble(newValue)) {
-                    spinner.setStyle(RED_COLOR_STYLE);
-                    label.setStyle(RED_COLOR_STYLE);
+                    setStyle(RED_COLOR_STYLE);
                 } else {
-                    spinner.setStyle(null);
-                    label.setStyle(null);
+                    setStyle(null);
                 }
+
             } else if (spinnerValue instanceof Integer) {
+
                 if ((Integer) spinnerValue != firmwareDataConverter.convertDataToInt(newValue)) {
-                    spinner.setStyle(RED_COLOR_STYLE);
-                    label.setStyle(RED_COLOR_STYLE);
+                    setStyle(RED_COLOR_STYLE);
                 } else {
-                    spinner.setStyle(null);
-                    label.setStyle(null);
+                    setStyle(null);
                 }
             }
+        }
+
+        private void setStyle(String style) {
+            spinner.getEditor().setStyle(style);
+            label.setStyle(style);
         }
     }
 }

@@ -177,8 +177,8 @@ public class SpringJavaConfig {
 
     @Bean
     @Autowired
-    public InjectorSectionUpdater injectorSectionUpdater(VoltageController voltageController) {
-        return new InjectorSectionUpdater(voltageController);
+    public InjectorSectionUpdater injectorSectionUpdater(VoltageController voltageController, FirmwareDataConverter firmwareDataConverter) {
+        return new InjectorSectionUpdater(voltageController, firmwareDataConverter);
     }
 
     @Bean
