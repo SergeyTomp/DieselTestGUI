@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 
-<StackPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="130.0" minWidth="500.0" prefHeight="130.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController">
+<StackPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="130.0" minWidth="500.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController">
    <children>
       <GridPane fx:id="gridPaneHBox2" alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="130.0" minWidth="500.0">
             <children>
@@ -43,7 +43,7 @@
                                   <Insets left="2.0" />
                               </GridPane.margin>
                   </Spinner>
-                        <Label fx:id="labelReg2" minWidth="60.0" text="%highPressure.label.reg2.name" GridPane.columnIndex="1">
+                        <Label fx:id="labelReg2" minWidth="30.0" text="%highPressure.label.reg2.name" GridPane.columnIndex="1">
                      <GridPane.margin>
                         <Insets />
                      </GridPane.margin>
@@ -51,7 +51,7 @@
                       </children>
                       <columnConstraints>
                           <ColumnConstraints halignment="RIGHT" hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="30.0" prefWidth="30.0" />
-                          <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="100.0" />
+                          <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="100.0" />
                       </columnConstraints>
                       <rowConstraints>
                   <RowConstraints maxHeight="37.0" minHeight="37.0" prefHeight="37.0" valignment="TOP" vgrow="SOMETIMES" />
@@ -93,7 +93,7 @@
                       </children>
                       <columnConstraints>
                           <ColumnConstraints halignment="RIGHT" hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="30.0" prefWidth="30.0" />
-                          <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="100.0" />
+                          <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="100.0" />
                       </columnConstraints>
                       <rowConstraints>
                   <RowConstraints maxHeight="37.0" minHeight="37.0" prefHeight="37.0" valignment="TOP" vgrow="SOMETIMES" />
@@ -108,16 +108,25 @@
                      <GridPane.margin>
                         <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
                      </GridPane.margin>
+                     <padding>
+                        <Insets left="10.0" />
+                     </padding>
                   </Label>
                           <Label minWidth="30.0" text="%highPressure.label.amp" GridPane.columnIndex="0" GridPane.rowIndex="2">
                      <GridPane.margin>
                         <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
                      </GridPane.margin>
+                     <padding>
+                        <Insets left="10.0" />
+                     </padding>
                   </Label>
                           <Label minWidth="30.0" text="%highPressure.label.cycle" GridPane.columnIndex="0" GridPane.rowIndex="3">
                      <GridPane.margin>
                         <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
                      </GridPane.margin>
+                     <padding>
+                        <Insets left="10.0" />
+                     </padding>
                   </Label>
                           <Spinner fx:id="pressBarReg1" editable="true" maxHeight="30.0" maxWidth="90.0" minHeight="30.0" minWidth="90.0" prefHeight="30.0" prefWidth="90.0" styleClass="" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.vgrow="NEVER">
                               <GridPane.margin>
@@ -134,7 +143,7 @@
                                   <Insets />
                               </GridPane.margin>
                   </Spinner>
-                        <Label minWidth="60.0" text="%highPressure.label.reg1.name" GridPane.columnIndex="1">
+                        <Label minWidth="30.0" text="%highPressure.label.reg1.name" GridPane.columnIndex="1">
                             <padding>
                                 <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
                             </padding>
@@ -144,8 +153,8 @@
                   </Label>
                       </children>
                       <columnConstraints>
-                          <ColumnConstraints halignment="RIGHT" hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="30.0" prefWidth="30.0" />
-                          <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="100.0" prefWidth="100.0" />
+                          <ColumnConstraints halignment="RIGHT" hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="30.0" />
+                          <ColumnConstraints halignment="RIGHT" hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="100.0" />
                       </columnConstraints>
                       <rowConstraints>
                   <RowConstraints maxHeight="24.0" minHeight="24.0" prefHeight="24.0" valignment="TOP" vgrow="SOMETIMES" />
@@ -164,7 +173,7 @@
                 <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="40.0" prefWidth="40.0" />
                 <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="80.0" prefWidth="80.0" />
                 <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="40.0" prefWidth="40.0" />
-                <ColumnConstraints fillWidth="false" halignment="CENTER" hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="90.0" prefWidth="90.0" />
+                <ColumnConstraints fillWidth="false" halignment="CENTER" hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="40.0" />
             <ColumnConstraints fillWidth="false" halignment="RIGHT" hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="50.0" prefWidth="50.0" />
             </columnConstraints>
             <rowConstraints>
