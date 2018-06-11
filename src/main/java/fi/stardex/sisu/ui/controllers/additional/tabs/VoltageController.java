@@ -1,5 +1,6 @@
 package fi.stardex.sisu.ui.controllers.additional.tabs;
 
+import fi.stardex.sisu.parts.PiezoCoilToggleGroup;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.additional.AdditionalSectionController;
 import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
@@ -16,9 +17,7 @@ import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.Spinner;
+import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -83,6 +82,8 @@ public class VoltageController {
     private VoltAmpereProfileController voltAmpereProfileController;
 
     private InjectorSectionController injectorSectionController;
+
+    private PiezoCoilToggleGroup piezoCoilToggleGroup;
 
     private ObservableList<XYChart.Data<Double, Double>> data1;
 
@@ -162,6 +163,10 @@ public class VoltageController {
         this.injectorSectionController = injectorSectionController;
     }
 
+    public void setPiezoCoilToggleGroup(PiezoCoilToggleGroup piezoCoilToggleGroup) {
+        this.piezoCoilToggleGroup = piezoCoilToggleGroup;
+    }
+
     @PostConstruct
     private void init() {
 
@@ -172,6 +177,8 @@ public class VoltageController {
         setupVAPLabels();
 
         configLineChartData();
+
+        setupYAxisResizable();
 
     }
 
@@ -251,7 +258,6 @@ public class VoltageController {
         lineChart.getXAxis().setTickMarkVisible(true);
     }
 
-
     private class LabelListener implements ChangeListener<String> {
 
         private Label label;
@@ -267,19 +273,15 @@ public class VoltageController {
         public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
             Number spinnerValue = spinner.getValue();
             if (spinnerValue instanceof Double) {
-                if ((Double) spinnerValue != firmwareDataConverter.convertDataToDouble(newValue)) {
+                if ((Double) spinnerValue != firmwareDataConverter.convertDataToDouble(newValue))
                     setStyle(RED_COLOR_STYLE);
-                } else {
+                else
                     setStyle(null);
-                }
-
             } else if (spinnerValue instanceof Integer) {
-
-                if ((Integer) spinnerValue != firmwareDataConverter.convertDataToInt(newValue)) {
+                if ((Integer) spinnerValue != firmwareDataConverter.convertDataToInt(newValue))
                     setStyle(RED_COLOR_STYLE);
-                } else {
+                else
                     setStyle(null);
-                }
             }
         }
 
@@ -287,5 +289,14 @@ public class VoltageController {
             spinner.getEditor().setStyle(style);
             label.setStyle(style);
         }
+    }
+
+    private void setupYAxisResizable() {
+        piezoCoilToggleGroup.getPiezoCoilToggleGroup().selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == piezoCoilToggleGroup.getCoilRadioButton())
+                yAxis.setUpperBound(25);
+            else
+                yAxis.setUpperBound(15);
+        });
     }
 }

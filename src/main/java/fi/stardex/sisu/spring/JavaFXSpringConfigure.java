@@ -128,12 +128,14 @@ public class JavaFXSpringConfigure {
     @Autowired
     public VoltageController voltageController(AdditionalSectionController additionalSectionController,
                                                FirmwareDataConverter firmwareDataConverter,
-                                               InjectorSectionController injectorSectionController) {
+                                               InjectorSectionController injectorSectionController,
+                                               PiezoCoilToggleGroup piezoCoilToggleGroup) {
         VoltageController voltageController = additionalSectionController.getVoltageController();
         voltageController.setVoltAmpereProfileDialog(voltAmpereProfileDialog());
         voltageController.setParentController(additionalSectionController);
         voltageController.setInjectorSectionController(injectorSectionController);
         voltageController.setFirmwareDataConverter(firmwareDataConverter);
+        voltageController.setPiezoCoilToggleGroup(piezoCoilToggleGroup);
         return voltageController;
     }
 
