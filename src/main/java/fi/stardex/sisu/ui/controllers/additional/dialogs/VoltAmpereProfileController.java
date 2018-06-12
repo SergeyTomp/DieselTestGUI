@@ -9,8 +9,6 @@ import fi.stardex.sisu.util.spinners.SpinnerManager;
 import fi.stardex.sisu.util.spinners.SpinnerValueObtainer;
 import fi.stardex.sisu.util.spinners.WidthSpinnerValueObtainer;
 import fi.stardex.sisu.util.tooltips.CustomTooltip;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
@@ -122,10 +120,6 @@ public class VoltAmpereProfileController {
         return negativeU2Spinner;
     }
 
-    public Spinner<Integer> getWidthCurrentSignal() {
-        return widthCurrentSignal;
-    }
-
     public void setUltimaModbusWriter(ModbusRegisterProcessor ultimaModbusWriter) {
         this.ultimaModbusWriter = ultimaModbusWriter;
     }
@@ -159,15 +153,7 @@ public class VoltAmpereProfileController {
 
         setupEnableBoostToggleButton();
 
-        //TODO: Boost U для Piezo/PiezoDelphi [30; 350]
-        firstWSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(90, 15500, 500, 10));
-        boostISpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(3, 25.5, 21.5, 0.1));
-        firstISpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(2, 25.5, 15, 0.1));
-        secondISpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(1, 25.5, 5.5, 0.1));
-        batteryUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(11, 32, 20, 1));
-        negativeU1Spinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(17, 121, 48, 1));
-        negativeU2Spinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(12, 70, 36, 1));
-        boostUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(30, 75, 60, 1));
+        setupVAPSpinners();
 
         piezoCoilToggleGroup.getPiezoCoilToggleGroup().selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == piezoCoilToggleGroup.getPiezoRadioButton()) {
@@ -178,6 +164,46 @@ public class VoltAmpereProfileController {
                 boostUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(30, 75, 60, 1));
             }
         });
+
+        setupApplyButton();
+
+        setupCancelButton();
+
+        widthCurrentSignal.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if ((newValue >= 120) && (newValue <= 15500) && (!(newValue == widthCurrentSignalValueObtainer.getGeneratedFakeValue()))) {
+                sendVAPRegisters();
+            }
+        });
+
+        setupSpinnerStyleWhenValueChangedListener();
+
+    }
+
+    private void setupEnableBoostToggleButton() {
+
+        enableBoostToggleButton.setSelected(boostToggleButtonDisabled);
+        enableBoostToggleButton.setText("Boost_U disabled");
+        enableBoostToggleButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                enableBoostToggleButton.setText("Boost_U disabled");
+            } else {
+                enableBoostToggleButton.setText("Boost_U enabled");
+            }
+            boostToggleButtonDisabled = newValue;
+        });
+
+    }
+
+    private void setupVAPSpinners() {
+
+        firstWSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(90, 15500, 500, 10));
+        boostISpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(3, 25.5, 21.5, 0.1));
+        firstISpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(2, 25.5, 15, 0.1));
+        secondISpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(1, 25.5, 5.5, 0.1));
+        batteryUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(11, 32, 20, 1));
+        negativeU1Spinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(17, 121, 48, 1));
+        negativeU2Spinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(12, 70, 36, 1));
+        boostUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(30, 75, 60, 1));
 
         SpinnerManager.setupSpinner(widthCurrentSignal, 300, 120, 15500, new CustomTooltip(), widthCurrentSignalValueObtainer);
         SpinnerManager.setupSpinner(firstWSpinner, 500, 90, 15500, new CustomTooltip(), new SpinnerValueObtainer(500));
@@ -201,20 +227,38 @@ public class VoltAmpereProfileController {
 
         listOfVAPSpinners.forEach(e -> e.setEditable(true));
 
-        setupApplyButton();
+    }
 
-        setupCancelButton();
+    // FIXME: не меняется на графике boost enabled/disabled при нажатии Apply, только после перезапуска инжекторной секции
+    private void setupApplyButton() {
 
-        widthCurrentSignal.valueProperty().addListener((observable, oldValue, newValue) -> {
-            if ((newValue >= 120) && (newValue <= 15500) && (!(newValue == widthCurrentSignalValueObtainer.getGeneratedFakeValue()))) {
-                sendVAPRegisters();
-            }
+        applyButton.setOnAction(event -> {
+            listOfVAPSpinners.forEach(e -> e.increment(0));
+            sendVAPRegisters();
+            stage.close();
         });
 
-        setupSpinnerStyleWhenValueChangedListener();
+    }
+
+    // TODO: есть баги, не пишется старое значение при закрытии окна при горящем tooltip
+    private void setupCancelButton() {
+
+        cancelButton.setOnAction(event -> {
+            firstWSpinner.getValueFactory().setValue(firstWSavedValue);
+            boostISpinner.getValueFactory().setValue(boostISavedValue);
+            firstISpinner.getValueFactory().setValue(firstISavedValue);
+            secondISpinner.getValueFactory().setValue(secondISavedValue);
+            batteryUSpinner.getValueFactory().setValue(batteryUSavedValue);
+            negativeU1Spinner.getValueFactory().setValue(negativeU1SavedValue);
+            negativeU2Spinner.getValueFactory().setValue(negativeU2SavedValue);
+            boostUSpinner.getValueFactory().setValue(boostUSavedValue);
+            stage.close();
+        });
+
     }
 
     private void setupSpinnerStyleWhenValueChangedListener() {
+
         widthCurrentSignal.valueProperty().addListener((observable, oldValue, newValue) -> {
             Label widthLabel = voltageController.getWidth();
             if (newValue.toString().equals(widthLabel.getText()))
@@ -268,48 +312,14 @@ public class VoltAmpereProfileController {
             if (newValue.toString().equals(boostULabel.getText()))
                 setDefaultStyle(boostUSpinner, boostULabel);
         });
+
     }
 
     private void setDefaultStyle(Spinner<? extends Number> spinner, Label label) {
+
         spinner.getEditor().setStyle(null);
         label.setStyle(null);
-    }
 
-    private void setupEnableBoostToggleButton() {
-        enableBoostToggleButton.setSelected(boostToggleButtonDisabled);
-        enableBoostToggleButton.setText("Boost_U disabled");
-        enableBoostToggleButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue) {
-                enableBoostToggleButton.setText("Boost_U disabled");
-            } else {
-                enableBoostToggleButton.setText("Boost_U enabled");
-            }
-            boostToggleButtonDisabled = newValue;
-        });
-    }
-
-    // FIXME: не меняется на графике boost enabled/disabled при нажатии Apply, только после перезапуска инжекторной секции
-    private void setupApplyButton() {
-        applyButton.setOnAction(event -> {
-            listOfVAPSpinners.forEach(e -> e.increment(0));
-            sendVAPRegisters();
-            stage.close();
-        });
-    }
-
-    // TODO: есть баги, не пишется старое значение при закрытии окна при горящем tooltip
-    private void setupCancelButton() {
-        cancelButton.setOnAction(event -> {
-            firstWSpinner.getValueFactory().setValue(firstWSavedValue);
-            boostISpinner.getValueFactory().setValue(boostISavedValue);
-            firstISpinner.getValueFactory().setValue(firstISavedValue);
-            secondISpinner.getValueFactory().setValue(secondISavedValue);
-            batteryUSpinner.getValueFactory().setValue(batteryUSavedValue);
-            negativeU1Spinner.getValueFactory().setValue(negativeU1SavedValue);
-            negativeU2Spinner.getValueFactory().setValue(negativeU2SavedValue);
-            boostUSpinner.getValueFactory().setValue(boostUSavedValue);
-            stage.close();
-        });
     }
 
     private void sendVAPRegisters() {
@@ -368,9 +378,11 @@ public class VoltAmpereProfileController {
         System.err.println("StartOnBatteryUTwo: " + boostToggleButtonDisabled);
         System.err.println("StartOnBatteryUThree: " + boostToggleButtonDisabled);
         System.err.println("StartOnBatteryUFour: " + boostToggleButtonDisabled);
+
     }
 
     public void saveValues() {
+
         firstWSavedValue = firstWSpinner.getValue();
         boostISavedValue = boostISpinner.getValue();
         firstISavedValue = firstISpinner.getValue();
@@ -379,5 +391,6 @@ public class VoltAmpereProfileController {
         negativeU1SavedValue = negativeU1Spinner.getValue();
         negativeU2SavedValue = negativeU2Spinner.getValue();
         boostUSavedValue = boostUSpinner.getValue();
+
     }
 }

@@ -182,7 +182,31 @@ public class VoltageController {
 
     }
 
+    private void setupVoltAmpereProfileDialog() {
+
+        voltAmpereProfileController = (VoltAmpereProfileController) voltAmpereProfileDialog.getController();
+
+        pulseSettingsButton.setOnMouseClicked(event -> {
+
+            if (voapStage == null) {
+                voapStage = new Stage();
+                voapStage.setTitle("Settings");
+                voapStage.setScene(new Scene(voltAmpereProfileDialog.getView()));
+                voapStage.setResizable(false);
+                voapStage.initModality(Modality.APPLICATION_MODAL);
+                voapStage.initStyle(StageStyle.UTILITY);
+                voapStage.setOnCloseRequest(ev -> voltAmpereProfileController.getCancelButton().fire());
+            }
+            voltAmpereProfileController.setStage(voapStage);
+            voltAmpereProfileController.saveValues();
+            voapStage.show();
+
+        });
+
+    }
+
     private void setupVAPLabels() {
+
         width.setText("300"); // widthCurrentSignal initial value
         voltage.setText("60"); // boostUSpinner initial value
         firstWidth.setText("500"); // firstWSpinner initial value
@@ -202,29 +226,12 @@ public class VoltageController {
         batteryU.textProperty().addListener(new LabelListener(batteryU, voltAmpereProfileController.getBatteryUSpinner()));
         negativeU1.textProperty().addListener(new LabelListener(negativeU1, voltAmpereProfileController.getNegativeU1Spinner()));
         negativeU2.textProperty().addListener(new LabelListener(negativeU2, voltAmpereProfileController.getNegativeU2Spinner()));
+
     }
 
-    private void setupVoltAmpereProfileDialog() {
-
-        voltAmpereProfileController = (VoltAmpereProfileController) voltAmpereProfileDialog.getController();
-
-        pulseSettingsButton.setOnMouseClicked(event -> {
-            if (voapStage == null) {
-                voapStage = new Stage();
-                voapStage.setTitle("Settings");
-                voapStage.setScene(new Scene(voltAmpereProfileDialog.getView()));
-                voapStage.setResizable(false);
-                voapStage.initModality(Modality.APPLICATION_MODAL);
-                voapStage.initStyle(StageStyle.UTILITY);
-                voapStage.setOnCloseRequest(ev -> voltAmpereProfileController.getCancelButton().fire());
-            }
-            voltAmpereProfileController.setStage(voapStage);
-            voltAmpereProfileController.saveValues();
-            voapStage.show();
-        });
-    }
 
     private void configLineChartData() {
+
         XYChart.Series<Double, Double> series1 = new XYChart.Series<>();
         series1.setName("");
         XYChart.Series<Double, Double> series2 = new XYChart.Series<>();
@@ -256,6 +263,21 @@ public class VoltageController {
         lineChart.getXAxis().setAutoRanging(true);
         lineChart.getYAxis().setAutoRanging(false);
         lineChart.getXAxis().setTickMarkVisible(true);
+
+    }
+
+
+    private void setupYAxisResizable() {
+
+        piezoCoilToggleGroup.getPiezoCoilToggleGroup().selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+
+            if (newValue == piezoCoilToggleGroup.getCoilRadioButton())
+                yAxis.setUpperBound(25);
+            else
+                yAxis.setUpperBound(15);
+
+        });
+
     }
 
     private class LabelListener implements ChangeListener<String> {
@@ -265,12 +287,15 @@ public class VoltageController {
         private Spinner<? extends Number> spinner;
 
         LabelListener(Label label, Spinner<? extends Number> spinner) {
+
             this.label = label;
             this.spinner = spinner;
+
         }
 
         @Override
         public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+
             Number spinnerValue = spinner.getValue();
             if (spinnerValue instanceof Double) {
                 if ((Double) spinnerValue != firmwareDataConverter.convertDataToDouble(newValue))
@@ -283,20 +308,15 @@ public class VoltageController {
                 else
                     setStyle(null);
             }
+
         }
 
         private void setStyle(String style) {
+
             spinner.getEditor().setStyle(style);
             label.setStyle(style);
+
         }
     }
 
-    private void setupYAxisResizable() {
-        piezoCoilToggleGroup.getPiezoCoilToggleGroup().selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue == piezoCoilToggleGroup.getCoilRadioButton())
-                yAxis.setUpperBound(25);
-            else
-                yAxis.setUpperBound(15);
-        });
-    }
 }
