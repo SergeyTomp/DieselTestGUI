@@ -148,6 +148,7 @@ public class VoltAmpereProfileController {
         return cancelButton;
     }
 
+    // FIXME: при изменении значения в спиннере которое равно значению с прошивки красным перестают гореть оба значения, хотя значение спиннера еще не было подтверждено нажатием Apply
     @PostConstruct
     private void init() {
 
@@ -229,7 +230,6 @@ public class VoltAmpereProfileController {
 
     }
 
-    // FIXME: не меняется на графике boost enabled/disabled при нажатии Apply, только после перезапуска инжекторной секции
     private void setupApplyButton() {
 
         applyButton.setOnAction(event -> {
@@ -240,7 +240,7 @@ public class VoltAmpereProfileController {
 
     }
 
-    // TODO: есть баги, не пишется старое значение при закрытии окна при горящем tooltip
+    // FIXME: есть баги, не пишется старое значение при закрытии окна при горящем tooltip
     private void setupCancelButton() {
 
         cancelButton.setOnAction(event -> {
