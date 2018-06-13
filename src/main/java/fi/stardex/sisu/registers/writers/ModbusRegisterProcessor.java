@@ -1,8 +1,7 @@
 package fi.stardex.sisu.registers.writers;
 
 import fi.stardex.sisu.registers.RegisterProvider;
-import fi.stardex.sisu.registers.modbusmaps.ModbusMap;
-import fi.stardex.sisu.registers.modbusmaps.ModbusMapUltima;
+import fi.stardex.sisu.registers.ModbusMap;
 import fi.stardex.sisu.ui.updaters.Updater;
 import fi.stardex.sisu.util.Pair;
 import javafx.application.Platform;

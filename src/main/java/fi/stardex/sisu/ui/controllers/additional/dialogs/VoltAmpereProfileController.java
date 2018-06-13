@@ -1,7 +1,7 @@
 package fi.stardex.sisu.ui.controllers.additional.dialogs;
 
 import fi.stardex.sisu.parts.PiezoCoilToggleGroup;
-import fi.stardex.sisu.registers.modbusmaps.ModbusMapUltima;
+import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
 import fi.stardex.sisu.util.FirmwareDataConverter;

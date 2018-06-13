@@ -1,7 +1,10 @@
 package fi.stardex.sisu.spring;
 
 import fi.stardex.sisu.annotations.Module;
-import fi.stardex.sisu.charts.*;
+import fi.stardex.sisu.charts.ChartTaskFour;
+import fi.stardex.sisu.charts.ChartTaskOne;
+import fi.stardex.sisu.charts.ChartTaskThree;
+import fi.stardex.sisu.charts.ChartTaskTwo;
 import fi.stardex.sisu.connect.ConnectProcessor;
 import fi.stardex.sisu.connect.InetAddressWrapper;
 import fi.stardex.sisu.connect.ModbusConnect;
@@ -10,13 +13,14 @@ import fi.stardex.sisu.devices.Devices;
 import fi.stardex.sisu.leds.ActiveLeds;
 import fi.stardex.sisu.parts.PiezoCoilToggleGroup;
 import fi.stardex.sisu.registers.RegisterProvider;
-import fi.stardex.sisu.registers.modbusmaps.ModbusMapUltima;
+import fi.stardex.sisu.registers.flow.ModbusMapFlow;
+import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.controllers.additional.tabs.ConnectionController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
 import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
+import fi.stardex.sisu.ui.updaters.FlowUpdater;
 import fi.stardex.sisu.ui.updaters.HighPressureSectionUpdater;
 import fi.stardex.sisu.ui.updaters.InjectorSectionUpdater;
 import fi.stardex.sisu.ui.updaters.Updater;
@@ -24,13 +28,12 @@ import fi.stardex.sisu.util.ApplicationConfigHandler;
 import fi.stardex.sisu.util.FirmwareDataConverter;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.wrappers.StatusBarWrapper;
+import fi.stardex.sisu.version.FlowFirmwareVersion;
 import fi.stardex.sisu.version.UltimaFirmwareVersion;
-import javafx.collections.ObservableList;
-import javafx.scene.chart.XYChart;
-import org.springframework.beans.factory.ObjectFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -44,6 +47,8 @@ import java.util.List;
 @Import(JavaFXSpringConfigure.class)
 @EnableScheduling
 public class SpringJavaConfig {
+
+    private static final Logger logger = LoggerFactory.getLogger(SpringJavaConfig.class);
 
     @Bean
     public ConnectProcessor connectProcessor() {
@@ -112,7 +117,7 @@ public class SpringJavaConfig {
                                 UltimaFirmwareVersion.setUltimaFirmwareVersion(UltimaFirmwareVersion.MULTI_CHANNEL_FIRMWARE_WO_FILTER);
                                 break;
                             default:
-                                UltimaFirmwareVersion.setUltimaFirmwareVersion(UltimaFirmwareVersion.MULTI_CHANNEL_FIRMWARE_WO_FILTER);
+                                logger.error("Wrong Ultima firmware version!");
                                 break;
                         }
                     }
@@ -126,8 +131,23 @@ public class SpringJavaConfig {
     public RegisterProvider flowRegisterProvider(ModbusConnect flowModbusConnect) {
         return new RegisterProvider(flowModbusConnect) {
             @Override
-            protected void setupFirmwareVersionListener() {
-                // TODO: implement listener
+            public void setupFirmwareVersionListener() {
+                flowModbusConnect.connectedPropertyProperty().addListener((observable, oldValue, newValue) -> {
+                    if (newValue) {
+                        int firmwareVersionNumber = (int) read(ModbusMapFlow.FlowMeterVersion);
+                        switch (firmwareVersionNumber) {
+                            case 43724:
+                                FlowFirmwareVersion.setFlowFirmwareVersion(FlowFirmwareVersion.FLOW_MASTER);
+                                break;
+                            case 43707:
+                                FlowFirmwareVersion.setFlowFirmwareVersion(FlowFirmwareVersion.FLOW_STREAM);
+                                break;
+                            default:
+                                logger.error("Wrong Flow firmware version!");
+                                break;
+                        }
+                    }
+                });
             }
         };
     }
@@ -146,21 +166,15 @@ public class SpringJavaConfig {
     @Bean
     @Autowired
     public ModbusRegisterProcessor ultimaModbusWriter(List<Updater> updatersList, RegisterProvider ultimaRegisterProvider) {
-        final List<Updater> updaters = new LinkedList<>();
-        updatersList.forEach(updater -> {
-            Module module = updater.getClass().getAnnotation(Module.class);
-            for (Device device : module.value()) {
-                if (device == Device.ULTIMA)
-                    updaters.add(updater);
-            }
-        });
-        return new ModbusRegisterProcessor(ultimaRegisterProvider, ModbusMapUltima.values(), "Ultima register processor", updaters);
+        return new ModbusRegisterProcessor(ultimaRegisterProvider, ModbusMapUltima.values(),
+                "Ultima register processor", addUpdaters(updatersList, Device.ULTIMA));
     }
 
     @Bean
     @Autowired
-    public ModbusRegisterProcessor flowModbusWriter(RegisterProvider flowRegisterProvider) {
-        return new ModbusRegisterProcessor(flowRegisterProvider, null, "Flow register processor", null);
+    public ModbusRegisterProcessor flowModbusWriter(List<Updater> updatersList, RegisterProvider flowRegisterProvider) {
+        return new ModbusRegisterProcessor(flowRegisterProvider, ModbusMapFlow.values(),
+                "Flow register processor", addUpdaters(updatersList, Device.MODBUS_FLOW));
     }
 
     @Bean
@@ -179,6 +193,12 @@ public class SpringJavaConfig {
     @Autowired
     public InjectorSectionUpdater injectorSectionUpdater(VoltageController voltageController, FirmwareDataConverter firmwareDataConverter) {
         return new InjectorSectionUpdater(voltageController, firmwareDataConverter);
+    }
+
+    // TODO: Test bean
+    @Bean
+    public FlowUpdater flowUpdater() {
+        return new FlowUpdater();
     }
 
     @Bean
@@ -224,5 +244,17 @@ public class SpringJavaConfig {
     @Bean
     public FirmwareDataConverter firmwareDataConverter() {
         return new FirmwareDataConverter();
+    }
+
+    private List<Updater> addUpdaters(List<Updater> updatersList, Device targetDevice) {
+        List<Updater> updaters = new LinkedList<>();
+        updatersList.forEach(updater -> {
+            Module module = updater.getClass().getAnnotation(Module.class);
+            for (Device device : module.value()) {
+                if (device == targetDevice)
+                    updaters.add(updater);
+            }
+        });
+        return updaters;
     }
 }

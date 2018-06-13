@@ -1,4 +1,7 @@
-package fi.stardex.sisu.registers.modbusmaps;
+package fi.stardex.sisu.registers.ultima;
+
+import fi.stardex.sisu.registers.ModbusMap;
+import fi.stardex.sisu.registers.RegisterType;
 
 import java.util.LinkedList;
 import java.util.List;

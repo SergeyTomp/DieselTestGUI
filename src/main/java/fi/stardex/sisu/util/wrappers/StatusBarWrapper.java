@@ -2,6 +2,7 @@ package fi.stardex.sisu.util.wrappers;
 
 import fi.stardex.sisu.devices.Device;
 import fi.stardex.sisu.devices.Devices;
+import fi.stardex.sisu.version.FlowFirmwareVersion;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.layout.StackPane;
@@ -71,11 +72,21 @@ public class StatusBarWrapper {
         while (iterator.hasNext()) {
             Device device = iterator.next();
             stringBuilder.append(device.getLabel());
+            if (device == Device.MODBUS_FLOW)
+                doIfDeviceIsFlow(stringBuilder);
             if (iterator.hasNext()) {
                 stringBuilder.append(", ");
             }
         }
         textfield2.setFill(Color.GREEN);
         textfield2.setText(stringBuilder.toString());
+    }
+
+    private void doIfDeviceIsFlow(StringBuilder sb) {
+        FlowFirmwareVersion version = FlowFirmwareVersion.getFlowFirmwareVersion();
+        if (version == FlowFirmwareVersion.FLOW_MASTER)
+            sb.append(" CH04");
+        else if (version == FlowFirmwareVersion.FLOW_STREAM)
+            sb.append(" CH10");
     }
 }

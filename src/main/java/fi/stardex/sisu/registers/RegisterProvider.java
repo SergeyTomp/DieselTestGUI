@@ -1,8 +1,6 @@
 package fi.stardex.sisu.registers;
 
 import fi.stardex.sisu.connect.ModbusConnect;
-import fi.stardex.sisu.registers.modbusmaps.ModbusMap;
-import fi.stardex.sisu.registers.modbusmaps.RegisterType;
 import net.wimpi.modbus.ModbusException;
 import net.wimpi.modbus.io.ModbusTransaction;
 import net.wimpi.modbus.msg.*;

@@ -1,6 +1,6 @@
 package fi.stardex.sisu.charts;
 
-import fi.stardex.sisu.registers.modbusmaps.ModbusMapUltima;
+import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.XYChart;
 

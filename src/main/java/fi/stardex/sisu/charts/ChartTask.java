@@ -4,7 +4,7 @@ import fi.stardex.sisu.injectors.InjectorChannel;
 import fi.stardex.sisu.leds.ActiveLeds;
 import fi.stardex.sisu.parts.PiezoCoilToggleGroup;
 import fi.stardex.sisu.registers.RegisterProvider;
-import fi.stardex.sisu.registers.modbusmaps.ModbusMapUltima;
+import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;

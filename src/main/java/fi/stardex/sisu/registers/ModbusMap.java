@@ -1,4 +1,4 @@
-package fi.stardex.sisu.registers.modbusmaps;
+package fi.stardex.sisu.registers;
 
 public interface ModbusMap {
 

@@ -7,7 +7,7 @@ public enum Device {
 
     ULTIMA(DeviceType.COMMON, "ULTIMA", true),
 
-    MODBUS_FLOW(DeviceType.FLOW, "FM STREAM"),
+    MODBUS_FLOW(DeviceType.FLOW, "FM"),
     MODBUS_STAND(DeviceType.STAND, "BENCH V.2");
 
     public enum DeviceType{

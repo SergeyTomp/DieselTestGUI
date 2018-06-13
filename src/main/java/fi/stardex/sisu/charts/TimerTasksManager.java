@@ -27,11 +27,6 @@ public class TimerTasksManager {
 
     private List<Timer> timersList = new ArrayList<>();
 
-//    @Autowired
-//    public TimerTasksManager(List<ChartTask> listOfChartTasks) {
-//
-//    }
-
     @Lookup
     @Qualifier("chartTaskOne")
     public ChartTaskOne getChartTaskOne() {
