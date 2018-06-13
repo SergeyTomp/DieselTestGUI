@@ -11,36 +11,36 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 
-<StackPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="330.0" prefWidth="1000.0" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController">
+<StackPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="210.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController">
     <children>
         <GridPane gridLinesVisible="true" StackPane.alignment="CENTER">
             <columnConstraints>
-                <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="650.0" />
-                <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="266.0" minWidth="206.0" prefWidth="266.0" />
+                <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="350.0" />
+                <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="150.0" />
             </columnConstraints>
             <rowConstraints>
-                <RowConstraints minHeight="10.0" vgrow="ALWAYS" />
+                <RowConstraints maxHeight="1.7976931348623157E308" minHeight="210.0" prefHeight="210.0" vgrow="ALWAYS" />
             </rowConstraints>
             <children>
-                <LineChart id="LineChart" fx:id="lineChart" axisSortingPolicy="NONE" createSymbols="false" prefHeight="329.0" prefWidth="552.0" titleSide="LEFT">
+                <LineChart id="LineChart" fx:id="lineChart" axisSortingPolicy="NONE" createSymbols="false" minHeight="-Infinity" minWidth="-Infinity" prefHeight="210.0" prefWidth="350.0" titleSide="LEFT">
                     <xAxis>
-                        <NumberAxis label="%h4.voltage.chars.time" prefHeight="50.0" prefWidth="500.0" fx:id="xAxis" />
+                        <NumberAxis label="%h4.voltage.chars.time" minWidth="-Infinity" prefHeight="50.0" prefWidth="250.0" fx:id="xAxis" />
                     </xAxis>
                     <yAxis>
                         <NumberAxis fx:id="yAxis" label="%h4.voltage.chars.amp" lowerBound="-5" tickUnit="1" upperBound="25" />
                         <NumberAxis side="LEFT" />
                     </yAxis>
                 </LineChart>
-                <GridPane prefHeight="254.0" prefWidth="222.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                <GridPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="210.0" prefWidth="150.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                     <columnConstraints>
                         <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" minWidth="10.0" />
                     </columnConstraints>
                     <rowConstraints>
-                        <RowConstraints minHeight="150.0" prefHeight="243.0" valignment="CENTER" vgrow="ALWAYS" />
-                        <RowConstraints maxHeight="90.0" minHeight="50.0" prefHeight="50.0" valignment="CENTER" vgrow="ALWAYS" />
+                        <RowConstraints minHeight="-Infinity" prefHeight="180.0" valignment="CENTER" vgrow="ALWAYS" />
+                        <RowConstraints minHeight="-Infinity" prefHeight="30.0" valignment="CENTER" vgrow="ALWAYS" />
                     </rowConstraints>
                     <children>
-                        <GridPane prefHeight="158.0" prefWidth="136.0" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                        <GridPane minHeight="-Infinity" prefHeight="170.0" prefWidth="136.0" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                             <children>
                                 <Label fx:id="labelVoltage" text="%h4.voltage.label.voltage" GridPane.columnIndex="0" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                                     <GridPane.margin>
@@ -103,21 +103,21 @@
                                 <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="50.0" minWidth="10.0" prefWidth="30" />
                             </columnConstraints>
                             <rowConstraints>
-                        <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                        <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="-Infinity" prefHeight="20.0" vgrow="SOMETIMES" />
+                                <RowConstraints minHeight="-Infinity" prefHeight="20.0" vgrow="SOMETIMES" />
+                                <RowConstraints minHeight="-Infinity" prefHeight="20.0" vgrow="SOMETIMES" />
+                                <RowConstraints minHeight="-Infinity" prefHeight="20.0" vgrow="SOMETIMES" />
+                                <RowConstraints minHeight="-Infinity" prefHeight="20.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="-Infinity" prefHeight="20.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="-Infinity" prefHeight="20.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="-Infinity" prefHeight="20.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="-Infinity" prefHeight="20.0" vgrow="SOMETIMES" />
                                 <RowConstraints />
                             </rowConstraints>
                         </GridPane>
-                        <GridPane prefHeight="50.0" prefWidth="136.0" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="NEVER">
+                        <GridPane minHeight="-Infinity" prefHeight="30.0" prefWidth="136.0" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="NEVER">
                             <children>
-                                <Button fx:id="pulseSettingsButton" maxHeight="3.0" minHeight="30.0" minWidth="128.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="128.0" text="%h4.voltage.button" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                                <Button fx:id="pulseSettingsButton" maxHeight="3.0" minHeight="30.0" minWidth="128.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="128.0" text="%h4.voltage.button" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                                     <opaqueInsets>
                                         <Insets />
                                     </opaqueInsets>
@@ -127,8 +127,7 @@
                                 </Button>
                             </children>
                             <columnConstraints>
-                                <ColumnConstraints halignment="RIGHT" hgrow="ALWAYS" maxWidth="100.0" minWidth="100.0" prefWidth="100.0" />
-                                <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="145.0" minWidth="10.0" prefWidth="100.0" />
+                                <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="100.0" />
                             </columnConstraints>
                             <rowConstraints>
                                 <RowConstraints />
