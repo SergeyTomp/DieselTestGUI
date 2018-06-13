@@ -22,7 +22,7 @@
               </columnConstraints>
               <rowConstraints>
                 <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="390.0" vgrow="SOMETIMES" />
-                <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="210.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="1.7976931348623157E308" minHeight="-Infinity" prefHeight="210.0" vgrow="SOMETIMES" />
               </rowConstraints>
             </GridPane>
          </children>

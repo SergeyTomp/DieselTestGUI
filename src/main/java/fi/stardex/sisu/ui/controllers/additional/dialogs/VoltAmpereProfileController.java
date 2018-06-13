@@ -240,7 +240,7 @@ public class VoltAmpereProfileController {
 
     }
 
-    // TODO: есть баги, не пишется старое значение при закрытии окна при горящем tooltip
+    // FIXME: есть баги, не пишется старое значение при закрытии окна при горящем tooltip
     private void setupCancelButton() {
 
         cancelButton.setOnAction(event -> {
