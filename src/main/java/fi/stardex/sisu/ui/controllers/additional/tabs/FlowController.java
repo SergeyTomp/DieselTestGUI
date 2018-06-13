@@ -19,6 +19,18 @@ public class FlowController {
     private AnchorPane beakerFlowDelivery4;
 
     @FXML
+    private AnchorPane beakerBackFlow1;
+
+    @FXML
+    private AnchorPane beakerBackFlow2;
+
+    @FXML
+    private AnchorPane beakerBackFlow3;
+
+    @FXML
+    private AnchorPane beakerBackFlow4;
+
+    @FXML
     private BeakerController beakerFlowDelivery1Controller;
 
     @FXML
@@ -29,6 +41,18 @@ public class FlowController {
 
     @FXML
     private BeakerController beakerFlowDelivery4Controller;
+
+    @FXML
+    private BeakerController beakerBackFlow1Controller;
+
+    @FXML
+    private BeakerController beakerBackFlow2Controller;
+
+    @FXML
+    private BeakerController beakerBackFlow3Controller;
+
+    @FXML
+    private BeakerController beakerBackFlow4Controller;
 
     public BeakerController getBeakerFlowDelivery1Controller() {
         return beakerFlowDelivery1Controller;
@@ -44,5 +68,21 @@ public class FlowController {
 
     public BeakerController getBeakerFlowDelivery4Controller() {
         return beakerFlowDelivery4Controller;
+    }
+
+    public BeakerController getBeakerBackFlow1Controller() {
+        return beakerBackFlow1Controller;
+    }
+
+    public BeakerController getBeakerBackFlow2Controller() {
+        return beakerBackFlow2Controller;
+    }
+
+    public BeakerController getBeakerBackFlow3Controller() {
+        return beakerBackFlow3Controller;
+    }
+
+    public BeakerController getBeakerBackFlow4Controller() {
+        return beakerBackFlow4Controller;
     }
 }

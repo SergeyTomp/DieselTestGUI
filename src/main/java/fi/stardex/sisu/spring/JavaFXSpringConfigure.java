@@ -124,26 +124,50 @@ public class JavaFXSpringConfigure {
 
     @Bean
     @Autowired
-    public BeakerController BeakerFlowDelivery1Controller(FlowController flowController) {
+    public BeakerController beakerFlowDelivery1Controller(FlowController flowController) {
         return flowController.getBeakerFlowDelivery1Controller();
     }
 
     @Bean
     @Autowired
-    public BeakerController BeakerFlowDelivery2Controller(FlowController flowController) {
+    public BeakerController beakerFlowDelivery2Controller(FlowController flowController) {
         return flowController.getBeakerFlowDelivery2Controller();
     }
 
     @Bean
     @Autowired
-    public BeakerController BeakerFlowDelivery3Controller(FlowController flowController) {
+    public BeakerController beakerFlowDelivery3Controller(FlowController flowController) {
         return flowController.getBeakerFlowDelivery3Controller();
     }
 
     @Bean
     @Autowired
-    public BeakerController BeakerFlowDelivery4Controller(FlowController flowController) {
+    public BeakerController beakerFlowDelivery4Controller(FlowController flowController) {
         return flowController.getBeakerFlowDelivery4Controller();
+    }
+
+    @Bean
+    @Autowired
+    public BeakerController beakerBackFlow1Controller(FlowController flowController) {
+        return flowController.getBeakerBackFlow1Controller();
+    }
+
+    @Bean
+    @Autowired
+    public BeakerController beakerBackFlow2Controller(FlowController flowController) {
+        return flowController.getBeakerBackFlow2Controller();
+    }
+
+    @Bean
+    @Autowired
+    public BeakerController beakerBackFlow3Controller(FlowController flowController) {
+        return flowController.getBeakerBackFlow3Controller();
+    }
+
+    @Bean
+    @Autowired
+    public BeakerController beakerBackFlow4Controller(FlowController flowController) {
+        return flowController.getBeakerBackFlow4Controller();
     }
 
     @Bean

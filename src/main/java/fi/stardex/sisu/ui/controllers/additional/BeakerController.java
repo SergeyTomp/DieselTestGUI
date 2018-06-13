@@ -1,10 +1,13 @@
 package fi.stardex.sisu.ui.controllers.additional;
 
 import fi.stardex.sisu.beakers.BeakerMode;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.shape.Arc;
 import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.Line;
@@ -84,7 +87,30 @@ public class BeakerController {
     @PostConstruct
     public void init() {
         beakerControllers.add(this);
-        System.err.println("Controllers added to list");
-        System.err.println(this + " initialized");
+
+        rectangleBeaker.heightProperty().bind(((StackPane) beakerPane.getParent()).heightProperty());
+        rectangleBeaker.widthProperty().bind(((StackPane) beakerPane.getParent()).widthProperty());
+        ellipseTopBeaker.radiusXProperty().bind(((StackPane) beakerPane.getParent()).widthProperty().divide(2));
+        ellipseBottomBeaker.radiusXProperty().bind(((StackPane) beakerPane.getParent()).widthProperty().divide(2));
+        ellipseTopFuel.radiusXProperty().bind(((StackPane) beakerPane.getParent()).widthProperty().divide(2.1));
+        ellipseBottomFuel.radiusXProperty().bind(((StackPane) beakerPane.getParent()).widthProperty().divide(2.1));
+        arcTickTop.radiusXProperty().bind(((StackPane) beakerPane.getParent()).widthProperty().divide(2));
+        arcTickBottom.radiusXProperty().bind(((StackPane) beakerPane.getParent()).widthProperty().divide(2));
+        rectangleFuel.widthProperty().bind(((StackPane) beakerPane.getParent()).widthProperty().divide(1.055));
+        imageViewCenter.fitHeightProperty().bind(rectangleBeaker.heightProperty().subtract(79));
+        imageViewTop.fitWidthProperty().bind(((StackPane) beakerPane.getParent()).widthProperty());
+        imageViewBottom.fitWidthProperty().bind(((StackPane) beakerPane.getParent()).widthProperty());
+        imageViewCenter.fitWidthProperty().bind(((StackPane) beakerPane.getParent()).widthProperty());
+
+        ((StackPane) beakerPane.getParent()).heightProperty().addListener((observable, oldValue, newValue) -> {
+//            reinstallBeaker();
+            lineLeft.setEndY(newValue.doubleValue());
+            lineRight.setEndY(newValue.doubleValue());
+        });
+
+        ((StackPane) beakerPane.getParent()).widthProperty().addListener((observable, oldValue, newValue) -> {
+            AnchorPane.setLeftAnchor(textTop, arcTickTop.getCenterX() + arcTickTop.getRadiusX() - textTop.getWrappingWidth() / 2);
+            AnchorPane.setLeftAnchor(textBottom, arcTickBottom.getCenterX() + arcTickBottom.getRadiusX() - textBottom.getWrappingWidth() / 2);
+        });
     }
 }
