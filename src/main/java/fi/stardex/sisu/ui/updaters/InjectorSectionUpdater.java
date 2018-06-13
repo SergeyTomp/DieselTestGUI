@@ -4,7 +4,7 @@ import fi.stardex.sisu.annotations.Module;
 import fi.stardex.sisu.devices.Device;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
-import fi.stardex.sisu.util.FirmwareDataConverter;
+import fi.stardex.sisu.util.converters.FirmwareDataConverter;
 
 @Module(value = Device.ULTIMA)
 public class InjectorSectionUpdater implements Updater {

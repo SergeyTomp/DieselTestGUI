@@ -1,4 +1,4 @@
-package fi.stardex.sisu.util;
+package fi.stardex.sisu.util.converters;
 
 public class FirmwareDataConverter {
 

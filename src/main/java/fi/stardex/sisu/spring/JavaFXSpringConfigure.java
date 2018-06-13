@@ -7,17 +7,15 @@ import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.RootLayoutController;
 import fi.stardex.sisu.ui.controllers.additional.AdditionalSectionController;
+import fi.stardex.sisu.ui.controllers.additional.BeakerController;
 import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.ConnectionController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.DelayController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.*;
 import fi.stardex.sisu.ui.controllers.cr.CRSectionController;
 import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.cr.TestBenchSectionController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
-import fi.stardex.sisu.util.FirmwareDataConverter;
+import fi.stardex.sisu.util.converters.FirmwareDataConverter;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.i18n.UTF8Control;
 import fi.stardex.sisu.util.view.ApplicationAppearanceChanger;
@@ -116,6 +114,36 @@ public class JavaFXSpringConfigure {
     @Bean
     public AdditionalSectionController additionalSectionController() {
         return (AdditionalSectionController) additionalSection().getController();
+    }
+
+    @Bean
+    @Autowired
+    public FlowController flowController(AdditionalSectionController additionalSectionController) {
+        return additionalSectionController.getFlowController();
+    }
+
+    @Bean
+    @Autowired
+    public BeakerController BeakerFlowDelivery1Controller(FlowController flowController) {
+        return flowController.getBeakerFlowDelivery1Controller();
+    }
+
+    @Bean
+    @Autowired
+    public BeakerController BeakerFlowDelivery2Controller(FlowController flowController) {
+        return flowController.getBeakerFlowDelivery2Controller();
+    }
+
+    @Bean
+    @Autowired
+    public BeakerController BeakerFlowDelivery3Controller(FlowController flowController) {
+        return flowController.getBeakerFlowDelivery3Controller();
+    }
+
+    @Bean
+    @Autowired
+    public BeakerController BeakerFlowDelivery4Controller(FlowController flowController) {
+        return flowController.getBeakerFlowDelivery4Controller();
     }
 
     @Bean

@@ -7,7 +7,24 @@ public enum ModbusMapFlow implements ModbusMap {
 
     FlowMeterVersion(RegisterType.REGISTER_INPUT, 0, 1, false),
 
-    Channel1Level(RegisterType.REGISTER_INPUT, 2, 2, true);
+    StartMeasurementCycle(RegisterType.DISCRETE_COIL, 0, 1, false),
+    StopMeasurementCycle(RegisterType.DISCRETE_COIL, 1, 1, false),
+
+    Channel1Level(RegisterType.REGISTER_INPUT, 2, 2, true),
+    Channel1Temperature1(RegisterType.REGISTER_INPUT, 12, 2, true),
+    Channel1Temperature2(RegisterType.REGISTER_INPUT, 14, 2, true),
+
+    Channel2Level(RegisterType.REGISTER_INPUT, 16, 2, true),
+    Channel2Temperature1(RegisterType.REGISTER_INPUT, 26, 2, true),
+    Channel2Temperature2(RegisterType.REGISTER_INPUT, 28, 2, true),
+
+    Channel3Level(RegisterType.REGISTER_INPUT, 30, 2, true),
+    Channel3Temperature1(RegisterType.REGISTER_INPUT, 40, 2, true),
+    Channel3Temperature2(RegisterType.REGISTER_INPUT, 42, 2, true),
+
+    Channel4Level(RegisterType.REGISTER_INPUT, 44, 2, true),
+    Channel4Temperature1(RegisterType.REGISTER_INPUT, 54, 2, true),
+    Channel4Temperature2(RegisterType.REGISTER_INPUT, 56, 2, true);
 
     private RegisterType type;
     private int ref;
