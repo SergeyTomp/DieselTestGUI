@@ -2,9 +2,58 @@ package fi.stardex.sisu.ui.controllers.additional.tabs;
 
 import fi.stardex.sisu.ui.controllers.additional.BeakerController;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
 
 public class FlowController {
+
+    @FXML
+    private Label temperature1Delivery1;
+
+    @FXML
+    private Label temperature1Delivery2;
+
+    @FXML
+    private Label temperature1Delivery3;
+
+    @FXML
+    private Label temperature1Delivery4;
+
+    @FXML
+    private Label temperature2Delivery1;
+
+    @FXML
+    private Label temperature2Delivery2;
+
+    @FXML
+    private Label temperature2Delivery3;
+
+    @FXML
+    private Label temperature2Delivery4;
+
+    @FXML
+    private Label temperature1BackFlow1;
+
+    @FXML
+    private Label temperature1BackFlow2;
+
+    @FXML
+    private Label temperature1BackFlow3;
+
+    @FXML
+    private Label temperature1BackFlow4;
+
+    @FXML
+    private Label temperature2BackFlow1;
+
+    @FXML
+    private Label temperature2BackFlow2;
+
+    @FXML
+    private Label temperature2BackFlow3;
+
+    @FXML
+    private Label temperature2BackFlow4;
 
     @FXML
     private AnchorPane beakerFlowDelivery1;
@@ -53,6 +102,70 @@ public class FlowController {
 
     @FXML
     private BeakerController beakerBackFlow4Controller;
+
+    public Label getTemperature1Delivery1() {
+        return temperature1Delivery1;
+    }
+
+    public Label getTemperature1Delivery2() {
+        return temperature1Delivery2;
+    }
+
+    public Label getTemperature1Delivery3() {
+        return temperature1Delivery3;
+    }
+
+    public Label getTemperature1Delivery4() {
+        return temperature1Delivery4;
+    }
+
+    public Label getTemperature2Delivery1() {
+        return temperature2Delivery1;
+    }
+
+    public Label getTemperature2Delivery2() {
+        return temperature2Delivery2;
+    }
+
+    public Label getTemperature2Delivery3() {
+        return temperature2Delivery3;
+    }
+
+    public Label getTemperature2Delivery4() {
+        return temperature2Delivery4;
+    }
+
+    public Label getTemperature1BackFlow1() {
+        return temperature1BackFlow1;
+    }
+
+    public Label getTemperature1BackFlow2() {
+        return temperature1BackFlow2;
+    }
+
+    public Label getTemperature1BackFlow3() {
+        return temperature1BackFlow3;
+    }
+
+    public Label getTemperature1BackFlow4() {
+        return temperature1BackFlow4;
+    }
+
+    public Label getTemperature2BackFlow1() {
+        return temperature2BackFlow1;
+    }
+
+    public Label getTemperature2BackFlow2() {
+        return temperature2BackFlow2;
+    }
+
+    public Label getTemperature2BackFlow3() {
+        return temperature2BackFlow3;
+    }
+
+    public Label getTemperature2BackFlow4() {
+        return temperature2BackFlow4;
+    }
 
     public BeakerController getBeakerFlowDelivery1Controller() {
         return beakerFlowDelivery1Controller;

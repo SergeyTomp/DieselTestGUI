@@ -27,7 +27,10 @@ public class InjectorSectionUpdater implements Updater {
 
     @Override
     public void run() {
+
         String value;
+        Float convertedValue;
+
         if ((value = ModbusMapUltima.WidthBoardOne.getLastValue().toString()) != null)
             voltageController.getWidth().setText(value);
         if ((value = ModbusMapUltima.Boost_U.getLastValue().toString()) != null)
@@ -35,15 +38,15 @@ public class InjectorSectionUpdater implements Updater {
         if ((value = ModbusMapUltima.FirstWBoardOne.getLastValue().toString()) != null)
             voltageController.getFirstWidth().setText(value);
         if ((value = ModbusMapUltima.FirstIBoardOne.getLastValue().toString()) != null) {
-            Float convertedValue = roundToOneDecimalPlace(Float.parseFloat(value) / ONE_AMPERE_MULTIPLY);
+            convertedValue = firmwareDataConverter.roundToOneDecimalPlace(firmwareDataConverter.convertDataToFloat(value) / ONE_AMPERE_MULTIPLY);
             voltageController.getFirstCurrent().setText(convertedValue.toString());
         }
         if ((value = ModbusMapUltima.SecondIBoardOne.getLastValue().toString()) != null) {
-            Float convertedValue = roundToOneDecimalPlace(Float.parseFloat(value) / ONE_AMPERE_MULTIPLY);
+            convertedValue = firmwareDataConverter.roundToOneDecimalPlace(firmwareDataConverter.convertDataToFloat(value) / ONE_AMPERE_MULTIPLY);
             voltageController.getSecondCurrent().setText(convertedValue.toString());
         }
         if ((value = ModbusMapUltima.BoostIBoardOne.getLastValue().toString()) != null) {
-            Float convertedValue = roundToOneDecimalPlace(Float.parseFloat(value) / ONE_AMPERE_MULTIPLY);
+            convertedValue = firmwareDataConverter.roundToOneDecimalPlace(firmwareDataConverter.convertDataToFloat(value) / ONE_AMPERE_MULTIPLY);
             voltageController.getBoostI().setText(convertedValue.toString());
         }
         if ((value = ModbusMapUltima.Battery_U.getLastValue().toString()) != null)
@@ -52,9 +55,7 @@ public class InjectorSectionUpdater implements Updater {
             voltageController.getNegativeU1().setText(value);
         if ((value = ModbusMapUltima.Negative_U2.getLastValue().toString()) != null)
             voltageController.getNegativeU2().setText(value);
+
     }
 
-    private float roundToOneDecimalPlace(float value) {
-        return (float) Math.round(value * 10) / 10;
-    }
 }

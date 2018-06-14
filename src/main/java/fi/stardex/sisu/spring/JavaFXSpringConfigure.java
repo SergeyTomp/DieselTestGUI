@@ -15,6 +15,7 @@ import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.cr.TestBenchSectionController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
+import fi.stardex.sisu.util.ApplicationConfigHandler;
 import fi.stardex.sisu.util.converters.FirmwareDataConverter;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.i18n.UTF8Control;
@@ -63,8 +64,15 @@ public class JavaFXSpringConfigure {
     }
 
     @Bean
-    public MainSectionController mainSectionController() {
-        return (MainSectionController) mainSection().getController();
+    @Autowired
+    public MainSectionController mainSectionController(ApplicationConfigHandler applicationConfigHandler,
+                                                       ApplicationAppearanceChanger applicationAppearanceChanger,
+                                                       @Lazy ModbusRegisterProcessor flowModbusWriter) {
+        MainSectionController mainSectionController = (MainSectionController) mainSection().getController();
+        mainSectionController.setApplicationConfigHandler(applicationConfigHandler);
+        mainSectionController.setApplicationAppearanceChanger(applicationAppearanceChanger);
+        mainSectionController.setFlowModbusWriter(flowModbusWriter);
+        return mainSectionController;
     }
 
     @Bean

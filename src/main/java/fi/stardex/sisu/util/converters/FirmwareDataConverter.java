@@ -10,4 +10,11 @@ public class FirmwareDataConverter {
         return Double.parseDouble(firmwareValue);
     }
 
+    public float convertDataToFloat(String firmwareValue) {
+        return Float.parseFloat(firmwareValue);
+    }
+
+    public float roundToOneDecimalPlace(float value) {
+        return (float) Math.round(value * 10) / 10;
+    }
 }

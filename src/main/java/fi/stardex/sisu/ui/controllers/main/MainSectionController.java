@@ -1,12 +1,14 @@
 package fi.stardex.sisu.ui.controllers.main;
 
+import fi.stardex.sisu.registers.flow.ModbusMapFlow;
+import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.util.ApplicationConfigHandler;
 import fi.stardex.sisu.util.view.ApplicationAppearanceChanger;
 import fi.stardex.sisu.util.view.GUIType;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
@@ -14,6 +16,12 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class MainSectionController {
+
+    @FXML
+    private Button resetButton;
+
+    @FXML
+    private ToggleButton startStopToggleButton;
 
     private List<String> versions = new LinkedList<>();
 
@@ -31,13 +39,37 @@ public class MainSectionController {
     @FXML
     private ToggleGroup injectorOrPump;
 
-    @Autowired
     private ApplicationConfigHandler applicationConfigHandler;
-    @Autowired
+
     private ApplicationAppearanceChanger applicationAppearanceChanger;
+
+    private ModbusRegisterProcessor flowModbusWriter;
+
+    public void setFlowModbusWriter(ModbusRegisterProcessor flowModbusWriter) {
+        this.flowModbusWriter = flowModbusWriter;
+    }
+
+    public void setApplicationConfigHandler(ApplicationConfigHandler applicationConfigHandler) {
+        this.applicationConfigHandler = applicationConfigHandler;
+    }
+
+    public void setApplicationAppearanceChanger(ApplicationAppearanceChanger applicationAppearanceChanger) {
+        this.applicationAppearanceChanger = applicationAppearanceChanger;
+    }
 
     @PostConstruct
     private void init() {
+
+        setupVersionComboBox();
+
+        setupStartStopToggleButton();
+
+        setupResetButton();
+
+    }
+
+    private void setupVersionComboBox() {
+
         versionComboBox.getItems().addAll(versions);
 
         versionComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
@@ -80,23 +112,52 @@ public class MainSectionController {
             case CR_Pump:
                 versionComboBox.getSelectionModel().select("CR");
         }
+
+    }
+
+    private void setupStartStopToggleButton() {
+
+        startStopToggleButton.selectedProperty().addListener((observable, stopped, started) -> {
+            if (started) {
+                flowModbusWriter.add(ModbusMapFlow.StartMeasurementCycle, true);
+                startStopToggleButton.setText("Stop");
+            }
+            else {
+                flowModbusWriter.add(ModbusMapFlow.StopMeasurementCycle, true);
+                startStopToggleButton.setText("Start");
+            }
+        });
+
+    }
+
+    private void setupResetButton() {
+
+        resetButton.setOnAction(event -> flowModbusWriter.add(ModbusMapFlow.StartMeasurementCycle, true));
+
     }
 
     private void changeToUIS() {
+
         GUIType.setCurrentType(GUIType.UIS);
         applicationConfigHandler.put("GUI_Type", "UIS");
         applicationAppearanceChanger.changeToUIS();
         injRB.setSelected(true);
         pumpRB.setDisable(true);
+
     }
 
     private void changeToCR() {
+
         injRB.setSelected(true);
         pumpRB.setDisable(false);
+
     }
 
     private void unselectAll() {
+
         injRB.setSelected(false);
         pumpRB.setSelected(false);
+
     }
+
 }
