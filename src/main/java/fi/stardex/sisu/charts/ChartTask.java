@@ -1,13 +1,13 @@
 package fi.stardex.sisu.charts;
 
 import fi.stardex.sisu.injectors.InjectorChannel;
-import fi.stardex.sisu.leds.ActiveLeds;
 import fi.stardex.sisu.parts.PiezoCoilToggleGroup;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
+import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.util.converters.FirmwareDataConverter;
 import fi.stardex.sisu.util.filters.FilterInputChartData;
 import fi.stardex.sisu.version.UltimaFirmwareVersion;
@@ -45,6 +45,9 @@ public abstract class ChartTask extends TimerTask {
 
     @Autowired
     private FirmwareDataConverter firmwareDataConverter;
+
+    @Autowired
+    private InjectorSectionController injectorSectionController;
 
     private boolean updateOSC;
 
@@ -137,7 +140,7 @@ public abstract class ChartTask extends TimerTask {
 
         updateOSC = voltageController.isTabVoltageShowingProperty().get();
 
-        if(ActiveLeds.activeControllers().size() == 0)
+        if(injectorSectionController.getActiveControllers().size() == 0)
             return;
 
         if (settingsController.getComboInjectorConfig().getSelectionModel().getSelectedItem() == InjectorChannel.SINGLE_CHANNEL) {
@@ -145,7 +148,7 @@ public abstract class ChartTask extends TimerTask {
             if(number == 2 | number == 3 | number == 4)
                 return;
         } else {
-            List<Integer> activeLedControllerNumbers = ActiveLeds.arrayNumbersOfActiveControllers();
+            List<Integer> activeLedControllerNumbers = injectorSectionController.getArrayNumbersOfActiveControllers();
             if(!activeLedControllerNumbers.contains(getChartNumber()))
                 return;
         }

@@ -10,7 +10,6 @@ import fi.stardex.sisu.connect.InetAddressWrapper;
 import fi.stardex.sisu.connect.ModbusConnect;
 import fi.stardex.sisu.devices.Device;
 import fi.stardex.sisu.devices.Devices;
-import fi.stardex.sisu.leds.ActiveLeds;
 import fi.stardex.sisu.parts.PiezoCoilToggleGroup;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.flow.ModbusMapFlow;
@@ -198,8 +197,9 @@ public class SpringJavaConfig {
 
     @Bean
     @Autowired
-    public FlowUpdater flowUpdater(FlowController flowController, FirmwareDataConverter firmwareDataConverter) {
-        return new FlowUpdater(flowController, firmwareDataConverter);
+    public FlowUpdater flowUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
+                                   FirmwareDataConverter firmwareDataConverter) {
+        return new FlowUpdater(flowController, injectorSectionController, firmwareDataConverter);
     }
 
     @Bean
@@ -234,12 +234,6 @@ public class SpringJavaConfig {
     @Autowired
     public PiezoCoilToggleGroup piezoCoilToggleGroup(InjectorSectionController injectorSectionController) {
         return new PiezoCoilToggleGroup(injectorSectionController);
-    }
-
-    @Bean
-    @Autowired
-    public ActiveLeds activeLeds(InjectorSectionController injectorSectionController) {
-        return new ActiveLeds(injectorSectionController.getLedControllers());
     }
 
     @Bean
