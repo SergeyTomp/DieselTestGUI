@@ -1,12 +1,24 @@
 package fi.stardex.sisu.ui.controllers.additional.tabs;
 
+import fi.stardex.sisu.formulas.Formula;
 import fi.stardex.sisu.ui.controllers.additional.BeakerController;
 import javafx.fxml.FXML;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.AnchorPane;
+import org.springframework.core.OrderComparator;
+
+import javax.annotation.PostConstruct;
+import java.util.List;
 
 public class FlowController {
+    
+    @FXML
+    private ComboBox<Formula> deliveryFlowComboBox;
 
+    @FXML
+    private ComboBox<Formula> backFlowComboBox;
+    
     @FXML
     private Label temperature1Delivery1;
 
@@ -103,6 +115,8 @@ public class FlowController {
     @FXML
     private BeakerController beakerBackFlow4Controller;
 
+    private List<Formula> formulas;
+
     public Label getTemperature1Delivery1() {
         return temperature1Delivery1;
     }
@@ -198,4 +212,35 @@ public class FlowController {
     public BeakerController getBeakerBackFlow4Controller() {
         return beakerBackFlow4Controller;
     }
+
+    public ComboBox getBackFlowComboBox() {
+        return backFlowComboBox;
+    }
+
+    public ComboBox getDeliveryFlowComboBox() {
+        return deliveryFlowComboBox;
+    }
+
+    public void setFormulasList(List<Formula> formulas) {
+        this.formulas = formulas;
+    }
+    
+    @PostConstruct
+    private void init() {
+
+        setupDeliveryAndBackFlowComboBox();
+
+    }
+
+    private void setupDeliveryAndBackFlowComboBox() {
+
+        formulas.sort(new OrderComparator());
+        deliveryFlowComboBox.getItems().setAll(formulas);
+        deliveryFlowComboBox.getSelectionModel().select(0);
+
+        backFlowComboBox.getItems().setAll(formulas);
+        backFlowComboBox.getSelectionModel().select(0);
+
+    }
+
 }

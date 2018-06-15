@@ -22,7 +22,7 @@
                     <GridPane prefHeight="55.0" prefWidth="421.0" VBox.vgrow="NEVER">
                         <children>
                             <Label fx:id="deliveryLowHighLabel" text="%h4.flow.label.delivery" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-                            <ComboBox fx:id="deliveryFlowBox" maxHeight="30.0" maxWidth="130.0" minHeight="30.0" minWidth="130.0" prefHeight="30.0" prefWidth="130.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
+                            <ComboBox fx:id="deliveryFlowComboBox" maxHeight="30.0" maxWidth="130.0" minHeight="30.0" minWidth="130.0" prefHeight="30.0" prefWidth="130.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
                                 <GridPane.margin>
                                     <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
                                 </GridPane.margin>
@@ -118,7 +118,7 @@
                     <GridPane prefHeight="55.0" prefWidth="350.0" VBox.vgrow="NEVER">
                         <children>
                             <Label fx:id="backFlowLowHighLabel" text="%h4.flow.label.backflow" GridPane.columnIndex="0" GridPane.rowIndex="0" />
-                            <ComboBox fx:id="recoveryFlowBox" maxHeight="30.0" maxWidth="130.0" minHeight="30.0" minWidth="130.0" prefHeight="30.0" prefWidth="130.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
+                            <ComboBox fx:id="backFlowComboBox" maxHeight="30.0" maxWidth="130.0" minHeight="30.0" minWidth="130.0" prefHeight="30.0" prefWidth="130.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
                                 <GridPane.margin>
                                     <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
                                 </GridPane.margin>

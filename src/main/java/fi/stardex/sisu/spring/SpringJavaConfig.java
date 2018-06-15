@@ -10,6 +10,7 @@ import fi.stardex.sisu.connect.InetAddressWrapper;
 import fi.stardex.sisu.connect.ModbusConnect;
 import fi.stardex.sisu.devices.Device;
 import fi.stardex.sisu.devices.Devices;
+import fi.stardex.sisu.formulas.*;
 import fi.stardex.sisu.parts.PiezoCoilToggleGroup;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.flow.ModbusMapFlow;
@@ -239,6 +240,31 @@ public class SpringJavaConfig {
     @Bean
     public FirmwareDataConverter firmwareDataConverter() {
         return new FirmwareDataConverter();
+    }
+
+    @Bean
+    public Formula litrePerHour() {
+        return new LitrePerHour();
+    }
+
+    @Bean
+    public Formula milliliterPerMinutes() {
+        return new MilliliterPerMinutes();
+    }
+
+    @Bean
+    public Formula millilitrePer1000Str() {
+        return new MillilitrePer1000Str();
+    }
+
+    @Bean
+    public Formula millilitrePer100Str() {
+        return new MillilitrePer100Str();
+    }
+
+    @Bean
+    public Formula millilitrePer200Str() {
+        return new MillilitrePer200Str();
     }
 
     private List<Updater> addUpdaters(List<Updater> updatersList, Device targetDevice) {

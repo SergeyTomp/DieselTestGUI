@@ -138,6 +138,9 @@ public class FlowUpdater implements Updater {
     @Override
     public void run() {
 
+        System.err.println(ModbusMapFlow.Channel1Level.getLastValue());
+        System.err.println(ModbusMapFlow.Channel2Level.getLastValue());
+
         String value;
         if ((value = ModbusMapFlow.Channel1Temperature1.getLastValue().toString()) != null) {
             convertedValue.append(String.valueOf(firmwareDataConverter.
