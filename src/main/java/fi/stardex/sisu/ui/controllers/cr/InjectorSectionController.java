@@ -2,7 +2,6 @@ package fi.stardex.sisu.ui.controllers.cr;
 
 import fi.stardex.sisu.charts.TimerTasksManager;
 import fi.stardex.sisu.injectors.InjectorChannel;
-import fi.stardex.sisu.leds.ActiveLeds;
 import fi.stardex.sisu.registers.modbusmaps.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.controllers.additional.LedController;
@@ -24,10 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public class InjectorSectionController {
 
@@ -116,6 +112,7 @@ public class InjectorSectionController {
 
     private ObservableList<LedController> ledControllers;
 
+
     private ToggleGroup toggleGroup = new ToggleGroup();
 
     private LedParametersChangeListener ledParametersChangeListener;
@@ -140,10 +137,6 @@ public class InjectorSectionController {
         return piezoDelphiRadioButton;
     }
 
-    public ObservableList<LedController> getLedControllers() {
-        return ledControllers;
-    }
-
     public void setSettingsController(SettingsController settingsController) {
         this.settingsController = settingsController;
     }
@@ -154,6 +147,21 @@ public class InjectorSectionController {
 
     public void setTimerTasksManager(TimerTasksManager timerTasksManager) {
         this.timerTasksManager = timerTasksManager;
+    }
+
+    public List<LedController> activeControllers() {
+        List<LedController> result = new ArrayList<>();
+        for (LedController s : ledControllers) {
+            if (s.isSelected()) result.add(s);
+        }
+        result.sort(Comparator.comparingInt(LedController::getNumber));
+        return result;
+    }
+
+    public List<Integer> arrayNumbersOfActiveControllers() {
+        List<Integer> active = new ArrayList<>();
+        activeControllers().forEach(e -> active.add(e.getNumber()));
+        return active;
     }
 
     @PostConstruct
@@ -247,7 +255,7 @@ public class InjectorSectionController {
 
             writeInjectorTypeRegister();
 
-            List<LedController> activeControllers = ActiveLeds.activeControllers();
+            List<LedController> activeControllers = activeControllers();
             Iterator<LedController> activeControllersIterator = activeControllers.iterator();
             int activeLeds = activeControllers.size();
             double frequency = freqCurrentSignal.getValue();

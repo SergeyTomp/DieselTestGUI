@@ -1,19 +1,20 @@
 package fi.stardex.sisu.spring;
 
 import fi.stardex.sisu.annotations.Module;
-import fi.stardex.sisu.charts.*;
+import fi.stardex.sisu.charts.ChartTaskFour;
+import fi.stardex.sisu.charts.ChartTaskOne;
+import fi.stardex.sisu.charts.ChartTaskThree;
+import fi.stardex.sisu.charts.ChartTaskTwo;
 import fi.stardex.sisu.connect.ConnectProcessor;
 import fi.stardex.sisu.connect.InetAddressWrapper;
 import fi.stardex.sisu.connect.ModbusConnect;
 import fi.stardex.sisu.devices.Device;
 import fi.stardex.sisu.devices.Devices;
-import fi.stardex.sisu.leds.ActiveLeds;
 import fi.stardex.sisu.parts.PiezoCoilToggleGroup;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.modbusmaps.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.controllers.additional.tabs.ConnectionController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
 import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
@@ -25,12 +26,8 @@ import fi.stardex.sisu.util.FirmwareDataConverter;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.wrappers.StatusBarWrapper;
 import fi.stardex.sisu.version.UltimaFirmwareVersion;
-import javafx.collections.ObservableList;
-import javafx.scene.chart.XYChart;
-import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -213,12 +210,6 @@ public class SpringJavaConfig {
     @Autowired
     public PiezoCoilToggleGroup piezoCoilToggleGroup(InjectorSectionController injectorSectionController) {
         return new PiezoCoilToggleGroup(injectorSectionController);
-    }
-
-    @Bean
-    @Autowired
-    public ActiveLeds activeLeds(InjectorSectionController injectorSectionController) {
-        return new ActiveLeds(injectorSectionController.getLedControllers());
     }
 
     @Bean
