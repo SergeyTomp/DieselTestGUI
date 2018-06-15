@@ -6,7 +6,9 @@ import fi.stardex.sisu.registers.flow.ModbusMapFlow;
 import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.util.converters.FirmwareDataConverter;
+import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 
 import javax.annotation.PostConstruct;
@@ -52,6 +54,22 @@ public class FlowUpdater implements Updater {
 
     private Label temperature2BackFlow4Label;
 
+    private TextField delivery1TextField;
+
+    private TextField delivery2TextField;
+
+    private TextField delivery3TextField;
+
+    private TextField delivery4TextField;
+
+    private TextField backFlow1TextField;
+
+    private TextField backFlow2TextField;
+
+    private TextField backFlow3TextField;
+
+    private TextField backFlow4TextField;
+
     private ToggleButton ledBeaker1ToggleButton;
 
     private ToggleButton ledBeaker2ToggleButton;
@@ -79,6 +97,14 @@ public class FlowUpdater implements Updater {
         temperature2BackFlow2Label = flowController.getTemperature2BackFlow2();
         temperature2BackFlow3Label = flowController.getTemperature2BackFlow3();
         temperature2BackFlow4Label = flowController.getTemperature2BackFlow4();
+        delivery1TextField = flowController.getDelivery1TextField();
+        delivery2TextField = flowController.getDelivery2TextField();
+        delivery3TextField = flowController.getDelivery3TextField();
+        delivery4TextField = flowController.getDelivery4TextField();
+        backFlow1TextField = flowController.getBackFlow1TextField();
+        backFlow2TextField = flowController.getBackFlow2TextField();
+        backFlow3TextField = flowController.getBackFlow3TextField();
+        backFlow4TextField = flowController.getBackFlow4TextField();
         ledBeaker1ToggleButton = injectorSectionController.getLedBeaker1Controller().getLedBeaker();
         ledBeaker2ToggleButton = injectorSectionController.getLedBeaker2Controller().getLedBeaker();
         ledBeaker3ToggleButton = injectorSectionController.getLedBeaker3Controller().getLedBeaker();

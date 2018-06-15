@@ -1,10 +1,6 @@
 package fi.stardex.sisu.ui.controllers.additional;
 
 import fi.stardex.sisu.beakers.BeakerMode;
-import fi.stardex.sisu.ui.wrappers.CleverField;
-import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
@@ -42,7 +38,7 @@ public class BeakerController {
 
 //    private ComboBox<Formula> comboBox
 //    private LedController ledController
-    private CleverField textField;
+//    private CleverField textField;
 //    private BeakerPlace beakerPlace
 //    private Rescaler rescaler
 //    private SavedInjectorBeakerData savedInjectorBeakerData
@@ -91,12 +87,9 @@ public class BeakerController {
 
         beakerControllers.add(this);
 
-        textField.addListener((observable, oldValue, newValue) -> Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-                setFuelLevelBeaker();
-            }
-        }))
+//        textField.doublePropertyProperty().addListener((observable, oldValue, newValue) -> Platform.runLater(() -> {
+////                setFuelLevelBeaker();
+//        }));
 
         rectangleBeaker.heightProperty().bind(((StackPane) beakerPane.getParent()).heightProperty());
         rectangleBeaker.widthProperty().bind(((StackPane) beakerPane.getParent()).widthProperty());
@@ -126,7 +119,7 @@ public class BeakerController {
 
     public void setInvariantLevel(Number invariantValue) {
         if (beakerMode != BeakerMode.DISABLED) {
-            textField.set(comboBox.selectionModel.selectedItem.calculate(invariantValue).toDouble());
+//            textField.set(comboBox.selectionModel.selectedItem.calculate(invariantValue).toDouble());
         }
     }
 }

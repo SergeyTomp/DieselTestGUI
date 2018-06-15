@@ -2,7 +2,6 @@ package fi.stardex.sisu.spring;
 
 import fi.stardex.sisu.charts.TimerTasksManager;
 import fi.stardex.sisu.devices.Devices;
-import fi.stardex.sisu.formulas.Formula;
 import fi.stardex.sisu.parts.PiezoCoilToggleGroup;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.ViewHolder;
@@ -33,7 +32,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.ResourceBundle;
 
 @Configuration
@@ -128,10 +126,8 @@ public class JavaFXSpringConfigure {
 
     @Bean
     @Autowired
-    public FlowController flowController(AdditionalSectionController additionalSectionController, List<Formula> formulas) {
-        FlowController flowController = additionalSectionController.getFlowController();
-        flowController.setFormulasList(formulas);
-        return flowController;
+    public FlowController flowController(AdditionalSectionController additionalSectionController) {
+        return additionalSectionController.getFlowController();
     }
 
     @Bean

@@ -1,7 +1,7 @@
 package fi.stardex.sisu.ui.controllers.cr;
 
 import fi.stardex.sisu.charts.TimerTasksManager;
-import fi.stardex.sisu.injectors.InjectorChannel;
+import fi.stardex.sisu.combobox_values.InjectorChannel;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.controllers.additional.LedController;

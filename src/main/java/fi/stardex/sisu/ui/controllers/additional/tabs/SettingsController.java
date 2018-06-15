@@ -1,16 +1,11 @@
 package fi.stardex.sisu.ui.controllers.additional.tabs;
 
-import fi.stardex.sisu.injectors.InjectorChannel;
-import fi.stardex.sisu.ui.controllers.additional.LedController;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import fi.stardex.sisu.combobox_values.InjectorChannel;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.RadioButton;
-import javafx.scene.control.ToggleGroup;
 
 import javax.annotation.PostConstruct;
 import java.util.prefs.Preferences;

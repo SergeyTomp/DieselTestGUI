@@ -65,22 +65,22 @@
                                     <Insets bottom="45.0" left="20.0" right="20.0" top="30.0" />
                                 </GridPane.margin>
                             </StackPane>
-                            <TextField fx:id="currentValueDelivText1" editable="false" maxHeight="30.0" maxWidth="80.0" minHeight="30.0" minWidth="70.0" prefHeight="30.0" prefWidth="70.0" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                            <TextField fx:id="delivery1TextField" editable="false" maxHeight="30.0" maxWidth="80.0" minHeight="30.0" minWidth="70.0" prefHeight="30.0" prefWidth="70.0" GridPane.columnIndex="0" GridPane.rowIndex="1">
                                 <tooltip>
                                     <Tooltip text="%h4.field.tip.beaker1" />
                                 </tooltip>
                             </TextField>
-                            <TextField fx:id="currentValueDelivText2" editable="false" maxHeight="30.0" maxWidth="80.0" minHeight="30.0" minWidth="70.0" prefHeight="30.0" prefWidth="70.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                            <TextField fx:id="delivery2TextField" editable="false" maxHeight="30.0" maxWidth="80.0" minHeight="30.0" minWidth="70.0" prefHeight="30.0" prefWidth="70.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                                 <tooltip>
                                     <Tooltip text="%h4.field.tip.beaker2" />
                                 </tooltip>
                             </TextField>
-                            <TextField fx:id="currentValueDelivText3" editable="false" maxHeight="30.0" maxWidth="80.0" minHeight="30.0" minWidth="70.0" prefHeight="30.0" prefWidth="70.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                            <TextField fx:id="delivery3TextField" editable="false" maxHeight="30.0" maxWidth="80.0" minHeight="30.0" minWidth="70.0" prefHeight="30.0" prefWidth="70.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
                                 <tooltip>
                                     <Tooltip text="%h4.field.tip.beaker3" />
                                 </tooltip>
                             </TextField>
-                            <TextField fx:id="currentValueDelivText4" editable="false" maxHeight="30.0" maxWidth="80.0" minHeight="30.0" minWidth="70.0" prefHeight="30.0" prefWidth="70.0" GridPane.columnIndex="3" GridPane.rowIndex="1">
+                            <TextField fx:id="delivery4TextField" editable="false" maxHeight="30.0" maxWidth="80.0" minHeight="30.0" minWidth="70.0" prefHeight="30.0" prefWidth="70.0" GridPane.columnIndex="3" GridPane.rowIndex="1">
                                 <tooltip>
                                     <Tooltip text="%h4.field.tip.beaker4" />
                                 </tooltip>
@@ -162,22 +162,22 @@
                                 </GridPane.margin>
                             </StackPane>
 
-                            <TextField fx:id="currentValueRecovText1" editable="false" maxHeight="30.0" maxWidth="80.0" minHeight="30.0" minWidth="70.0" prefHeight="30.0" prefWidth="70.0" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                            <TextField fx:id="backFlow1TextField" editable="false" maxHeight="30.0" maxWidth="80.0" minHeight="30.0" minWidth="70.0" prefHeight="30.0" prefWidth="70.0" GridPane.columnIndex="0" GridPane.rowIndex="1">
                                 <tooltip>
                                     <Tooltip text="%h4.field.tip.beaker5" />
                                 </tooltip>
                             </TextField>
-                            <TextField fx:id="currentValueRecovText2" editable="false" maxHeight="30.0" maxWidth="80.0" minHeight="30.0" minWidth="70.0" prefHeight="30.0" prefWidth="70.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                            <TextField fx:id="backFlow2TextField" editable="false" maxHeight="30.0" maxWidth="80.0" minHeight="30.0" minWidth="70.0" prefHeight="30.0" prefWidth="70.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                                 <tooltip>
                                     <Tooltip text="%h4.field.tip.beaker6" />
                                 </tooltip>
                             </TextField>
-                            <TextField fx:id="currentValueRecovText3" editable="false" maxHeight="30.0" maxWidth="80.0" minHeight="30.0" minWidth="70.0" prefHeight="30.0" prefWidth="70.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                            <TextField fx:id="backFlow3TextField" editable="false" maxHeight="30.0" maxWidth="80.0" minHeight="30.0" minWidth="70.0" prefHeight="30.0" prefWidth="70.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
                                 <tooltip>
                                     <Tooltip text="%h4.field.tip.beaker7" />
                                 </tooltip>
                             </TextField>
-                            <TextField fx:id="currentValueRecovText4" editable="false" maxHeight="30.0" maxWidth="80.0" minHeight="30.0" minWidth="70.0" prefHeight="30.0" prefWidth="70.0" GridPane.columnIndex="3" GridPane.rowIndex="1">
+                            <TextField fx:id="backFlow4TextField" editable="false" maxHeight="30.0" maxWidth="80.0" minHeight="30.0" minWidth="70.0" prefHeight="30.0" prefWidth="70.0" GridPane.columnIndex="3" GridPane.rowIndex="1">
                                 <tooltip>
                                     <Tooltip text="%h4.field.tip.beaker8" />
                                 </tooltip>

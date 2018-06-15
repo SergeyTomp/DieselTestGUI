@@ -1,23 +1,47 @@
 package fi.stardex.sisu.ui.controllers.additional.tabs;
 
-import fi.stardex.sisu.formulas.Formula;
+import fi.stardex.sisu.combobox_values.FlowUnits;
 import fi.stardex.sisu.ui.controllers.additional.BeakerController;
+import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
-import org.springframework.core.OrderComparator;
 
 import javax.annotation.PostConstruct;
-import java.util.List;
 
 public class FlowController {
-    
-    @FXML
-    private ComboBox<Formula> deliveryFlowComboBox;
 
     @FXML
-    private ComboBox<Formula> backFlowComboBox;
+    private TextField delivery1TextField;
+
+    @FXML
+    private TextField delivery2TextField;
+
+    @FXML
+    private TextField delivery3TextField;
+
+    @FXML
+    private TextField delivery4TextField;
+
+    @FXML
+    private TextField backFlow1TextField;
+
+    @FXML
+    private TextField backFlow2TextField;
+
+    @FXML
+    private TextField backFlow3TextField;
+
+    @FXML
+    private TextField backFlow4TextField;
+
+    @FXML
+    private ComboBox<String> deliveryFlowComboBox;
+
+    @FXML
+    private ComboBox<String> backFlowComboBox;
     
     @FXML
     private Label temperature1Delivery1;
@@ -115,8 +139,6 @@ public class FlowController {
     @FXML
     private BeakerController beakerBackFlow4Controller;
 
-    private List<Formula> formulas;
-
     public Label getTemperature1Delivery1() {
         return temperature1Delivery1;
     }
@@ -213,6 +235,38 @@ public class FlowController {
         return beakerBackFlow4Controller;
     }
 
+    public TextField getDelivery1TextField() {
+        return delivery1TextField;
+    }
+
+    public TextField getDelivery2TextField() {
+        return delivery2TextField;
+    }
+
+    public TextField getDelivery3TextField() {
+        return delivery3TextField;
+    }
+
+    public TextField getDelivery4TextField() {
+        return delivery4TextField;
+    }
+
+    public TextField getBackFlow1TextField() {
+        return backFlow1TextField;
+    }
+
+    public TextField getBackFlow2TextField() {
+        return backFlow2TextField;
+    }
+
+    public TextField getBackFlow3TextField() {
+        return backFlow3TextField;
+    }
+
+    public TextField getBackFlow4TextField() {
+        return backFlow4TextField;
+    }
+
     public ComboBox getBackFlowComboBox() {
         return backFlowComboBox;
     }
@@ -221,10 +275,6 @@ public class FlowController {
         return deliveryFlowComboBox;
     }
 
-    public void setFormulasList(List<Formula> formulas) {
-        this.formulas = formulas;
-    }
-    
     @PostConstruct
     private void init() {
 
@@ -234,12 +284,11 @@ public class FlowController {
 
     private void setupDeliveryAndBackFlowComboBox() {
 
-        formulas.sort(new OrderComparator());
-        deliveryFlowComboBox.getItems().setAll(formulas);
-        deliveryFlowComboBox.getSelectionModel().select(0);
+        deliveryFlowComboBox.setItems(FXCollections.observableArrayList(FlowUnits.getStringValues()));
+        deliveryFlowComboBox.getSelectionModel().selectFirst();
 
-        backFlowComboBox.getItems().setAll(formulas);
-        backFlowComboBox.getSelectionModel().select(0);
+        backFlowComboBox.setItems(FXCollections.observableArrayList(FlowUnits.getStringValues()));
+        backFlowComboBox.getSelectionModel().selectFirst();
 
     }
 

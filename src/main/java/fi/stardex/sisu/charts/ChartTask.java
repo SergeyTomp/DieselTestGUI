@@ -1,6 +1,6 @@
 package fi.stardex.sisu.charts;
 
-import fi.stardex.sisu.injectors.InjectorChannel;
+import fi.stardex.sisu.combobox_values.InjectorChannel;
 import fi.stardex.sisu.parts.PiezoCoilToggleGroup;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
