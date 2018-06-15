@@ -10,6 +10,7 @@ import fi.stardex.sisu.devices.Device;
 import fi.stardex.sisu.devices.Devices;
 import fi.stardex.sisu.leds.ActiveLeds;
 import fi.stardex.sisu.parts.PiezoCoilToggleGroup;
+import fi.stardex.sisu.persistence.orm.Manufacturer;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.modbusmaps.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
@@ -18,6 +19,7 @@ import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
 import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
+import fi.stardex.sisu.ui.controllers.main.MainSectionController;
 import fi.stardex.sisu.ui.updaters.HighPressureSectionUpdater;
 import fi.stardex.sisu.ui.updaters.InjectorSectionUpdater;
 import fi.stardex.sisu.ui.updaters.Updater;
@@ -25,16 +27,19 @@ import fi.stardex.sisu.util.ApplicationConfigHandler;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.wrappers.StatusBarWrapper;
 import fi.stardex.sisu.version.UltimaFirmwareVersion;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.ListView;
+import org.hibernate.FlushMode;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.*;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -327,5 +332,23 @@ public class SpringJavaConfig {
     @Autowired
     public ActiveLeds activeLeds(InjectorSectionController injectorSectionController) {
         return new ActiveLeds(injectorSectionController.getLedControllers());
+    }
+
+    @Bean
+    @DependsOn("checkAndInitializeBD")
+    @Autowired
+    public ListView<Manufacturer> manufacturerList(SessionFactory sessionFactory, MainSectionController mainSectionController) {
+        Session session = sessionFactory.openSession();
+        session.setFlushMode(FlushMode.MANUAL);
+        session.setDefaultReadOnly(true);
+
+        List<Manufacturer> manufacturers = session.createQuery("select manufacturer from Manufacturer manufacturer").list();
+
+        Collections.sort(manufacturers);
+        ObservableList<Manufacturer> observableList = FXCollections.observableList(manufacturers);
+        ListView<Manufacturer> manufacturerListView = mainSectionController.getManufacturerListView();
+        manufacturerListView.setItems(observableList);
+
+        return manufacturerListView;
     }
 }

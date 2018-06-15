@@ -1,6 +1,7 @@
 package fi.stardex.sisu.main;
 
 import fi.stardex.sisu.logging.LogbackUncaughtExceptionHandler;
+import fi.stardex.sisu.persistence.CheckAndInitializeBD;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.RootLayoutController;
 import fi.stardex.sisu.util.wrappers.StatusBarWrapper;

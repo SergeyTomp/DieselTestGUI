@@ -1,0 +1,4 @@
+INSERT INTO MANUFACTURER(ID, MANUFACTURER, DISPLAY_ORDER)
+  SELECT * FROM CSVREAD('classpath:/db/csv/manufacturers.csv');
+
+

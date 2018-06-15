@@ -1,26 +1,42 @@
 package fi.stardex.sisu.ui.controllers.main;
 
+import fi.stardex.sisu.persistence.orm.Manufacturer;
 import fi.stardex.sisu.util.ApplicationConfigHandler;
 import fi.stardex.sisu.util.view.ApplicationAppearanceChanger;
 import fi.stardex.sisu.util.view.GUIType;
 import javafx.fxml.FXML;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.ToggleGroup;
+import javafx.scene.control.*;
+import org.h2.tools.RunScript;
+import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
+import javax.sql.DataSource;
 import java.util.LinkedList;
 import java.util.List;
 
 public class MainSectionController {
 
-    private List<String> versions = new LinkedList<>();
 
+
+    //TODO FOR TEST DELETE AFTER
+    @FXML
+    private TextField scriptTF;
+    @FXML
+    private Button scriptBtn;
+    @Autowired
+    private SessionFactory sessionFactory;
+    @Autowired
+    private DataSource dataSource;
+    //FINISHTESTBLOCK
+
+
+    private List<String> versions = new LinkedList<>();
     {
         versions.add("CR");
         versions.add("UIS");
     }
+
 
     @FXML
     private ComboBox<String> versionComboBox;
@@ -30,6 +46,13 @@ public class MainSectionController {
     private RadioButton injRB;
     @FXML
     private ToggleGroup injectorOrPump;
+
+    @FXML
+    private ListView<Manufacturer> manufacturerListView;
+    @FXML
+    private TextField searchModelTF;
+    @FXML
+    private ListView injectorsListView;
 
     @Autowired
     private ApplicationConfigHandler applicationConfigHandler;
@@ -80,6 +103,9 @@ public class MainSectionController {
             case CR_Pump:
                 versionComboBox.getSelectionModel().select("CR");
         }
+
+
+
     }
 
     private void changeToUIS() {
@@ -98,5 +124,9 @@ public class MainSectionController {
     private void unselectAll() {
         injRB.setSelected(false);
         pumpRB.setSelected(false);
+    }
+
+    public ListView<Manufacturer> getManufacturerListView() {
+        return manufacturerListView;
     }
 }
