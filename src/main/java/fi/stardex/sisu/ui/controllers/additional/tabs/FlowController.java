@@ -10,6 +10,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 
 import javax.annotation.PostConstruct;
+import java.util.Arrays;
 
 public class FlowController {
 
@@ -267,11 +268,11 @@ public class FlowController {
         return backFlow4TextField;
     }
 
-    public ComboBox getBackFlowComboBox() {
+    public ComboBox<String> getBackFlowComboBox() {
         return backFlowComboBox;
     }
 
-    public ComboBox getDeliveryFlowComboBox() {
+    public ComboBox<String> getDeliveryFlowComboBox() {
         return deliveryFlowComboBox;
     }
 
@@ -284,10 +285,10 @@ public class FlowController {
 
     private void setupDeliveryAndBackFlowComboBox() {
 
-        deliveryFlowComboBox.setItems(FXCollections.observableArrayList(FlowUnits.getStringValues()));
+        deliveryFlowComboBox.getItems().setAll(FlowUnits.getArrayOfFlowUnits());
         deliveryFlowComboBox.getSelectionModel().selectFirst();
 
-        backFlowComboBox.setItems(FXCollections.observableArrayList(FlowUnits.getStringValues()));
+        backFlowComboBox.getItems().setAll(FlowUnits.getArrayOfFlowUnits());
         backFlowComboBox.getSelectionModel().selectFirst();
 
     }

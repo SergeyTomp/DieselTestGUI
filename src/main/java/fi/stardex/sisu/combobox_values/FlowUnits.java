@@ -3,36 +3,29 @@ package fi.stardex.sisu.combobox_values;
 import java.util.ArrayList;
 import java.util.List;
 
-public enum FlowUnits {
+public class FlowUnits {
 
-    MILLILITRE_PER_MINUTE("ml/min"),
-    LITRE_PER_HOUR("l/h"),
-    MILLILITRE_PER_100RPM("ml/100str"),
-    MILLILITRE_PER_200RPM("ml/200str"),
-    MILLILITRE_PER_1000RPM("ml/1000str");
+    public static final String MILLILITRE_PER_MINUTE = "ml/min";
 
-    private String label;
+    public static final String LITRE_PER_HOUR = "l/h";
 
-    private static List<String> stringValues = new ArrayList<>();
+    public static final String MILLILITRE_PER_100RPM = "ml/100str";
+
+    public static final String MILLILITRE_PER_200RPM = "ml/200str";
+
+    public static final String MILLILITRE_PER_1000RPM = "ml/1000str";
+
+    private static List<String> arrayOfFlowUnits = new ArrayList<>();
 
     static {
-        stringValues.add(MILLILITRE_PER_MINUTE.getLabel());
-        stringValues.add(LITRE_PER_HOUR.getLabel());
-        stringValues.add(MILLILITRE_PER_100RPM.getLabel());
-        stringValues.add(MILLILITRE_PER_200RPM.getLabel());
-        stringValues.add(MILLILITRE_PER_1000RPM.getLabel());
+        arrayOfFlowUnits.add(MILLILITRE_PER_MINUTE);
+        arrayOfFlowUnits.add(LITRE_PER_HOUR);
+        arrayOfFlowUnits.add(MILLILITRE_PER_100RPM);
+        arrayOfFlowUnits.add(MILLILITRE_PER_200RPM);
+        arrayOfFlowUnits.add(MILLILITRE_PER_1000RPM);
     }
 
-    public String getLabel() {
-        return label;
+    public static List<String> getArrayOfFlowUnits() {
+        return arrayOfFlowUnits;
     }
-
-    public static List<String> getStringValues() {
-        return stringValues;
-    }
-
-    FlowUnits(String label) {
-        this.label = label;
-    }
-
 }

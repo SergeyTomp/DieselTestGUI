@@ -39,6 +39,7 @@ public class BeakerController {
     }
 
     private TextField textField;
+
     Label temperatureLabel;
     Label temperature2Label;
 

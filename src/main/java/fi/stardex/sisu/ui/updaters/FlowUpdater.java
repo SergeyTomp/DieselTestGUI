@@ -1,12 +1,13 @@
 package fi.stardex.sisu.ui.updaters;
 
 import fi.stardex.sisu.annotations.Module;
+import fi.stardex.sisu.combobox_values.FlowUnits;
 import fi.stardex.sisu.devices.Device;
 import fi.stardex.sisu.registers.flow.ModbusMapFlow;
-import fi.stardex.sisu.ui.controllers.additional.BeakerController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.util.converters.FirmwareDataConverter;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
@@ -70,6 +71,10 @@ public class FlowUpdater implements Updater {
 
     private TextField backFlow4TextField;
 
+    private ComboBox<String> deliveryFlowComboBox;
+
+    private ComboBox<String> backFlowComboBox;
+
     private ToggleButton ledBeaker1ToggleButton;
 
     private ToggleButton ledBeaker2ToggleButton;
@@ -106,6 +111,8 @@ public class FlowUpdater implements Updater {
         backFlow2TextField = flowController.getBackFlow2TextField();
         backFlow3TextField = flowController.getBackFlow3TextField();
         backFlow4TextField = flowController.getBackFlow4TextField();
+        deliveryFlowComboBox = flowController.getDeliveryFlowComboBox();
+        backFlowComboBox = flowController.getBackFlowComboBox();
         ledBeaker1ToggleButton = injectorSectionController.getLedBeaker1Controller().getLedBeaker();
         ledBeaker2ToggleButton = injectorSectionController.getLedBeaker2Controller().getLedBeaker();
         ledBeaker3ToggleButton = injectorSectionController.getLedBeaker3Controller().getLedBeaker();
@@ -145,6 +152,28 @@ public class FlowUpdater implements Updater {
                 setTempLabelsToNull(temperature1Delivery4Label, temperature2Delivery4Label,
                         temperature1BackFlow4Label, temperature2BackFlow4Label);
                 setDeliveryBackFlowFieldsToNull(delivery4TextField, backFlow4TextField);
+            }
+        });
+
+        // TODO: реализовать 3 последних опции Combobox
+        deliveryFlowComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            switch (newValue) {
+                case FlowUnits.MILLILITRE_PER_MINUTE:
+                    setDeliveryBackFlowFields(delivery1TextField, delivery2TextField,
+                            delivery3TextField, delivery4TextField, convertedValue.toString());
+                    break;
+                case FlowUnits.LITRE_PER_HOUR:
+                    setDeliveryBackFlowFields(delivery1TextField, delivery2TextField,
+                            delivery3TextField, delivery4TextField, String.valueOf(Float.parseFloat(convertedValue.toString()) * 0.06));
+                    break;
+                case FlowUnits.MILLILITRE_PER_100RPM:
+                    break;
+                case FlowUnits.MILLILITRE_PER_200RPM:
+                    break;
+                case FlowUnits.MILLILITRE_PER_1000RPM:
+                    break;
+                default:
+                    break;
             }
         });
 
