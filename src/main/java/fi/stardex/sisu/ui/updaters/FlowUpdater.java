@@ -77,7 +77,8 @@ public class FlowUpdater implements Updater {
 
     private ToggleButton ledBeaker4ToggleButton;
 
-    public FlowUpdater(FlowController flowController, InjectorSectionController injectorSectionController, FirmwareDataConverter firmwareDataConverter) {
+    public FlowUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
+                       FirmwareDataConverter firmwareDataConverter) {
 
         this.firmwareDataConverter = firmwareDataConverter;
         temperature1Delivery1Label = flowController.getTemperature1Delivery1();
@@ -116,28 +117,32 @@ public class FlowUpdater implements Updater {
 
         ledBeaker1ToggleButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue) {
-                setTempLabelsToNull(temperature1Delivery1Label, temperature2Delivery1Label, temperature1BackFlow1Label, temperature2BackFlow1Label);
+                setTempLabelsToNull(temperature1Delivery1Label, temperature2Delivery1Label,
+                        temperature1BackFlow1Label, temperature2BackFlow1Label);
                 setDeliveryBackFlowFieldsToNull(delivery1TextField, backFlow1TextField);
             }
         });
 
         ledBeaker2ToggleButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue) {
-                setTempLabelsToNull(temperature1Delivery2Label, temperature2Delivery2Label, temperature1BackFlow2Label, temperature2BackFlow2Label);
+                setTempLabelsToNull(temperature1Delivery2Label, temperature2Delivery2Label,
+                        temperature1BackFlow2Label, temperature2BackFlow2Label);
                 setDeliveryBackFlowFieldsToNull(delivery2TextField, backFlow2TextField);
             }
         });
 
         ledBeaker3ToggleButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue) {
-                setTempLabelsToNull(temperature1Delivery3Label, temperature2Delivery3Label, temperature1BackFlow3Label, temperature2BackFlow3Label);
+                setTempLabelsToNull(temperature1Delivery3Label, temperature2Delivery3Label,
+                        temperature1BackFlow3Label, temperature2BackFlow3Label);
                 setDeliveryBackFlowFieldsToNull(delivery3TextField, backFlow3TextField);
             }
         });
 
         ledBeaker4ToggleButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue) {
-                setTempLabelsToNull(temperature1Delivery4Label, temperature2Delivery4Label, temperature1BackFlow4Label, temperature2BackFlow4Label);
+                setTempLabelsToNull(temperature1Delivery4Label, temperature2Delivery4Label,
+                        temperature1BackFlow4Label, temperature2BackFlow4Label);
                 setDeliveryBackFlowFieldsToNull(delivery4TextField, backFlow4TextField);
             }
         });
@@ -163,8 +168,8 @@ public class FlowUpdater implements Updater {
 
     }
 
-    private void setTempLabelsToNull(Label temperature1DeliveryLabel, Label temperature2DeliveryLabel, Label temperature1BackFlowLabel,
-                                     Label temperature2BackFlowLabel) {
+    private void setTempLabelsToNull(Label temperature1DeliveryLabel, Label temperature2DeliveryLabel,
+                                     Label temperature1BackFlowLabel, Label temperature2BackFlowLabel) {
 
         temperature1DeliveryLabel.setText(null);
         temperature2DeliveryLabel.setText(null);
@@ -189,59 +194,47 @@ public class FlowUpdater implements Updater {
         String value;
 
         if ((value = ModbusMapFlow.Channel1Level.getLastValue().toString()) != null) {
-            convertedValue.append(String.valueOf(firmwareDataConverter.
-                    roundToOneDecimalPlace(firmwareDataConverter.convertDataToFloat(value))));
-            if (!convertedValue.toString().equals(delivery1TextField.getText())) {
-                setDeliveryBackFlowFields(delivery1TextField, delivery2TextField,
-                        delivery3TextField, delivery4TextField, convertedValue.toString());
-            }
+            convertedValue.append(firmwareDataConverter.
+                    roundToOneDecimalPlace(firmwareDataConverter.convertDataToFloat(value)));
+            setDeliveryBackFlowFields(delivery1TextField, delivery2TextField,
+                    delivery3TextField, delivery4TextField, convertedValue.toString());
             convertedValue.setLength(0);
         }
 
         if ((value = ModbusMapFlow.Channel2Level.getLastValue().toString()) != null) {
-            convertedValue.append(String.valueOf(firmwareDataConverter.
-                    roundToOneDecimalPlace(firmwareDataConverter.convertDataToFloat(value))));
-            if (!convertedValue.toString().equals(delivery1TextField.getText())) {
-                setDeliveryBackFlowFields(backFlow1TextField, backFlow2TextField,
-                        backFlow3TextField, backFlow4TextField, convertedValue.toString());
-            }
+            convertedValue.append(firmwareDataConverter.
+                    roundToOneDecimalPlace(firmwareDataConverter.convertDataToFloat(value)));
+            setDeliveryBackFlowFields(backFlow1TextField, backFlow2TextField,
+                    backFlow3TextField, backFlow4TextField, convertedValue.toString());
             convertedValue.setLength(0);
         }
 
         if ((value = ModbusMapFlow.Channel1Temperature1.getLastValue().toString()) != null) {
-            convertedValue.append(String.valueOf(firmwareDataConverter.
-                    roundToOneDecimalPlace(firmwareDataConverter.convertDataToFloat(value)))).append(DEGREES_CELSIUS);
-            if (!convertedValue.toString().equals(temperature1Delivery1Label.getText())) {
-                setTempLabels(temperature1Delivery1Label, temperature1Delivery2Label,
-                        temperature1Delivery3Label, temperature1Delivery4Label, convertedValue.toString());
-            }
+            convertedValue.append(firmwareDataConverter.
+                    roundToOneDecimalPlace(firmwareDataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
+            setTempLabels(temperature1Delivery1Label, temperature1Delivery2Label,
+                    temperature1Delivery3Label, temperature1Delivery4Label, convertedValue.toString());
             convertedValue.setLength(0);
         }
         if ((value = ModbusMapFlow.Channel1Temperature2.getLastValue().toString()) != null) {
-            convertedValue.append(String.valueOf(firmwareDataConverter.
-                    roundToOneDecimalPlace(firmwareDataConverter.convertDataToFloat(value)))).append(DEGREES_CELSIUS);
-            if (!convertedValue.toString().equals(temperature1Delivery1Label.getText())) {
-                setTempLabels(temperature2Delivery1Label, temperature2Delivery2Label,
-                        temperature2Delivery3Label, temperature2Delivery4Label, convertedValue.toString());
-            }
+            convertedValue.append(firmwareDataConverter.
+                    roundToOneDecimalPlace(firmwareDataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
+            setTempLabels(temperature2Delivery1Label, temperature2Delivery2Label,
+                    temperature2Delivery3Label, temperature2Delivery4Label, convertedValue.toString());
             convertedValue.setLength(0);
         }
         if ((value = ModbusMapFlow.Channel2Temperature1.getLastValue().toString()) != null) {
-            convertedValue.append(String.valueOf(firmwareDataConverter.
-                    roundToOneDecimalPlace(firmwareDataConverter.convertDataToFloat(value)))).append(DEGREES_CELSIUS);
-            if (!convertedValue.toString().equals(temperature1Delivery1Label.getText())) {
-                setTempLabels(temperature1BackFlow1Label, temperature1BackFlow2Label,
-                        temperature1BackFlow3Label, temperature1BackFlow4Label, convertedValue.toString());
-            }
+            convertedValue.append(firmwareDataConverter.
+                    roundToOneDecimalPlace(firmwareDataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
+            setTempLabels(temperature1BackFlow1Label, temperature1BackFlow2Label,
+                    temperature1BackFlow3Label, temperature1BackFlow4Label, convertedValue.toString());
             convertedValue.setLength(0);
         }
         if ((value = ModbusMapFlow.Channel2Temperature2.getLastValue().toString()) != null) {
-            convertedValue.append(String.valueOf(firmwareDataConverter.
-                    roundToOneDecimalPlace(firmwareDataConverter.convertDataToFloat(value)))).append(DEGREES_CELSIUS);
-            if (!convertedValue.toString().equals(temperature1Delivery1Label.getText())) {
-                setTempLabels(temperature2BackFlow1Label, temperature2BackFlow2Label,
-                        temperature2BackFlow3Label, temperature2BackFlow4Label, convertedValue.toString());
-            }
+            convertedValue.append(firmwareDataConverter.
+                    roundToOneDecimalPlace(firmwareDataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
+            setTempLabels(temperature2BackFlow1Label, temperature2BackFlow2Label,
+                    temperature2BackFlow3Label, temperature2BackFlow4Label, convertedValue.toString());
             convertedValue.setLength(0);
         }
 

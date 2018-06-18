@@ -14,6 +14,7 @@ import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 
 public class ModbusRegisterProcessor {
+
     private final BlockingDeque<Pair<ModbusMap, Object>> writeQueue = new LinkedBlockingDeque<>();
 
     private RegisterProvider registerProvider;
@@ -54,7 +55,7 @@ public class ModbusRegisterProcessor {
                 if (!registerProvider.isConnected())
                     continue;
                 try {
-                    writeAll(2000, TimeUnit.MILLISECONDS);
+                    writeAll();
                     readAll();
                     updateAll();
                 } catch (InterruptedException e) {
@@ -63,10 +64,10 @@ public class ModbusRegisterProcessor {
             }
         }
 
-        private void writeAll(long timeout, TimeUnit timeUnit) throws InterruptedException {
+        private void writeAll() throws InterruptedException {
             do {
                 Pair<ModbusMap, Object> toWrite;
-                toWrite = writeQueue.poll(timeout, timeUnit);
+                toWrite = writeQueue.poll(500, TimeUnit.MILLISECONDS);
                 if (toWrite != null) {
                     if (!registerProvider.isConnected()) {
                         writeQueue.addFirst(toWrite);
