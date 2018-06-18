@@ -42,25 +42,25 @@
                     <GridPane prefHeight="279.0" prefWidth="421.0" VBox.vgrow="ALWAYS">
                         <children>
                             <StackPane GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
-                                <fx:include fx:id="beakerFlowDelivery1" centerShape="true" source="beaker.fxml" StackPane.alignment="CENTER" />
+                                <fx:include fx:id="beakerDelivery1" centerShape="true" source="beaker.fxml" StackPane.alignment="CENTER" />
                                 <GridPane.margin>
                                     <Insets bottom="45.0" left="20.0" right="20.0" top="30.0" />
                                 </GridPane.margin>
                             </StackPane>
                             <StackPane GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
-                                <fx:include fx:id="beakerFlowDelivery2" centerShape="true" source="beaker.fxml" StackPane.alignment="CENTER" />
+                                <fx:include fx:id="beakerDelivery2" centerShape="true" source="beaker.fxml" StackPane.alignment="CENTER" />
                                 <GridPane.margin>
                                     <Insets bottom="45.0" left="20.0" right="20.0" top="30.0" />
                                 </GridPane.margin>
                             </StackPane>
                             <StackPane GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
-                                <fx:include fx:id="beakerFlowDelivery3" centerShape="true" source="beaker.fxml" StackPane.alignment="CENTER" />
+                                <fx:include fx:id="beakerDelivery3" centerShape="true" source="beaker.fxml" StackPane.alignment="CENTER" />
                                 <GridPane.margin>
                                     <Insets bottom="45.0" left="20.0" right="20.0" top="30.0" />
                                 </GridPane.margin>
                             </StackPane>
                             <StackPane GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
-                                <fx:include fx:id="beakerFlowDelivery4" centerShape="true" source="beaker.fxml" StackPane.alignment="CENTER" />
+                                <fx:include fx:id="beakerDelivery4" centerShape="true" source="beaker.fxml" StackPane.alignment="CENTER" />
                                 <GridPane.margin>
                                     <Insets bottom="45.0" left="20.0" right="20.0" top="30.0" />
                                 </GridPane.margin>

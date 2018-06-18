@@ -1,8 +1,10 @@
 package fi.stardex.sisu.ui.controllers.additional;
 
 import fi.stardex.sisu.beakers.BeakerMode;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
@@ -28,7 +30,7 @@ public class BeakerController {
     private final static BigDecimal PERCENT_05 = new BigDecimal(0.5);
     private final static BigDecimal ARC_DEVIATION = new BigDecimal(11);
     private final static BigDecimal TEXT_DEVIATION = new BigDecimal(3);
-    private final static BigDecimal ELLIPSE_TOP_FUEL_DEVIATION = new BigDecimal(8);
+    private static final double ELLIPSE_TOP_FUEL_DEVIATION = 8;
 
     private static List<BeakerController> beakerControllers = new ArrayList<>();
 
@@ -36,14 +38,7 @@ public class BeakerController {
         return beakerControllers;
     }
 
-//    private ComboBox<Formula> comboBox
-//    private LedController ledController
-//    private CleverField textField;
-//    private BeakerPlace beakerPlace
-//    private Rescaler rescaler
-//    private SavedInjectorBeakerData savedInjectorBeakerData
-
-
+    private TextField textField;
     Label temperatureLabel;
     Label temperature2Label;
 
@@ -82,14 +77,21 @@ public class BeakerController {
 
     BeakerMode beakerMode;
 
+    public void setTextField(TextField textField) {
+        this.textField = textField;
+    }
+
     @PostConstruct
     public void init() {
 
         beakerControllers.add(this);
 
-//        textField.doublePropertyProperty().addListener((observable, oldValue, newValue) -> Platform.runLater(() -> {
-////                setFuelLevelBeaker();
-//        }));
+        textField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null)
+                Platform.runLater(() -> setLevel(rectangleBeaker.getHeight() / 2));
+            else
+                makeEmpty();
+        });
 
         rectangleBeaker.heightProperty().bind(((StackPane) beakerPane.getParent()).heightProperty());
         rectangleBeaker.widthProperty().bind(((StackPane) beakerPane.getParent()).widthProperty());
@@ -106,7 +108,7 @@ public class BeakerController {
         imageViewCenter.fitWidthProperty().bind(((StackPane) beakerPane.getParent()).widthProperty());
 
         ((StackPane) beakerPane.getParent()).heightProperty().addListener((observable, oldValue, newValue) -> {
-//            reinstallBeaker();
+            setHalfFuelLevel(rectangleBeaker.getHeight() / 2);
             lineLeft.setEndY(newValue.doubleValue());
             lineRight.setEndY(newValue.doubleValue());
         });
@@ -117,9 +119,34 @@ public class BeakerController {
         });
     }
 
-    public void setInvariantLevel(Number invariantValue) {
-        if (beakerMode != BeakerMode.DISABLED) {
-//            textField.set(comboBox.selectionModel.selectedItem.calculate(invariantValue).toDouble());
-        }
+    private void setLevel(double level) {
+
+        rectangleFuel.setOpacity(0.8);
+
+        ellipseBottomFuel.setOpacity(opacityByLevel(level));
+        ellipseTopFuel.setOpacity(opacityByLevel(level));
+
+        setHalfFuelLevel(level);
     }
+
+    private void setHalfFuelLevel(double level) {
+        rectangleFuel.setHeight(level);
+        AnchorPane.setBottomAnchor(ellipseTopFuel, level - ELLIPSE_TOP_FUEL_DEVIATION);
+    }
+
+    private void makeEmpty() {
+        arcTickTop.setOpacity(0);
+        arcTickBottom.setOpacity(0);
+        ellipseBottomFuel.setOpacity(0);
+        ellipseTopFuel.setOpacity(0);
+        textTop.setText("");
+        textBottom.setText("");
+        rectangleFuel.setHeight(0);
+        rectangleFuel.setOpacity(0);
+    }
+
+    private double opacityByLevel(double level) {
+        return level == 0 ? 0 : 1;
+    }
+
 }

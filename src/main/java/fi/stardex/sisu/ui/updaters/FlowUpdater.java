@@ -3,6 +3,7 @@ package fi.stardex.sisu.ui.updaters;
 import fi.stardex.sisu.annotations.Module;
 import fi.stardex.sisu.devices.Device;
 import fi.stardex.sisu.registers.flow.ModbusMapFlow;
+import fi.stardex.sisu.ui.controllers.additional.BeakerController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.util.converters.FirmwareDataConverter;

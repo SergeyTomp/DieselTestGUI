@@ -132,50 +132,66 @@ public class JavaFXSpringConfigure {
 
     @Bean
     @Autowired
-    public BeakerController beakerFlowDelivery1Controller(FlowController flowController) {
-        return flowController.getBeakerFlowDelivery1Controller();
+    public BeakerController beakerDelivery1Controller(FlowController flowController) {
+        BeakerController beakerDelivery1Controller = flowController.getBeakerDelivery1Controller();
+        beakerDelivery1Controller.setTextField(flowController.getDelivery1TextField());
+        return beakerDelivery1Controller;
     }
 
     @Bean
     @Autowired
-    public BeakerController beakerFlowDelivery2Controller(FlowController flowController) {
-        return flowController.getBeakerFlowDelivery2Controller();
+    public BeakerController beakerDelivery2Controller(FlowController flowController) {
+        BeakerController beakerDelivery2Controller = flowController.getBeakerDelivery2Controller();
+        beakerDelivery2Controller.setTextField(flowController.getDelivery2TextField());
+        return beakerDelivery2Controller;
     }
 
     @Bean
     @Autowired
-    public BeakerController beakerFlowDelivery3Controller(FlowController flowController) {
-        return flowController.getBeakerFlowDelivery3Controller();
+    public BeakerController beakerDelivery3Controller(FlowController flowController) {
+        BeakerController beakerDelivery3Controller = flowController.getBeakerDelivery3Controller();
+        beakerDelivery3Controller.setTextField(flowController.getDelivery3TextField());
+        return beakerDelivery3Controller;
     }
 
     @Bean
     @Autowired
-    public BeakerController beakerFlowDelivery4Controller(FlowController flowController) {
-        return flowController.getBeakerFlowDelivery4Controller();
+    public BeakerController beakerDelivery4Controller(FlowController flowController) {
+        BeakerController beakerDelivery4Controller = flowController.getBeakerDelivery4Controller();
+        beakerDelivery4Controller.setTextField(flowController.getDelivery4TextField());
+        return beakerDelivery4Controller;
     }
 
     @Bean
     @Autowired
     public BeakerController beakerBackFlow1Controller(FlowController flowController) {
-        return flowController.getBeakerBackFlow1Controller();
+        BeakerController beakerBackFlow1Controller = flowController.getBeakerBackFlow1Controller();
+        beakerBackFlow1Controller.setTextField(flowController.getBackFlow1TextField());
+        return beakerBackFlow1Controller;
     }
 
     @Bean
     @Autowired
     public BeakerController beakerBackFlow2Controller(FlowController flowController) {
-        return flowController.getBeakerBackFlow2Controller();
+        BeakerController beakerBackFlow2Controller = flowController.getBeakerBackFlow2Controller();
+        beakerBackFlow2Controller.setTextField(flowController.getBackFlow2TextField());
+        return beakerBackFlow2Controller;
     }
 
     @Bean
     @Autowired
     public BeakerController beakerBackFlow3Controller(FlowController flowController) {
-        return flowController.getBeakerBackFlow3Controller();
+        BeakerController beakerBackFlow3Controller = flowController.getBeakerBackFlow3Controller();
+        beakerBackFlow3Controller.setTextField(flowController.getBackFlow3TextField());
+        return beakerBackFlow3Controller;
     }
 
     @Bean
     @Autowired
     public BeakerController beakerBackFlow4Controller(FlowController flowController) {
-        return flowController.getBeakerBackFlow4Controller();
+        BeakerController beakerBackFlow4Controller = flowController.getBeakerBackFlow4Controller();
+        beakerBackFlow4Controller.setTextField(flowController.getBackFlow4TextField());
+        return beakerBackFlow4Controller;
     }
 
     @Bean

@@ -92,16 +92,16 @@ public class FlowController {
     private Label temperature2BackFlow4;
 
     @FXML
-    private AnchorPane beakerFlowDelivery1;
+    private AnchorPane beakerDelivery1;
 
     @FXML
-    private AnchorPane beakerFlowDelivery2;
+    private AnchorPane beakerDelivery2;
 
     @FXML
-    private AnchorPane beakerFlowDelivery3;
+    private AnchorPane beakerDelivery3;
 
     @FXML
-    private AnchorPane beakerFlowDelivery4;
+    private AnchorPane beakerDelivery4;
 
     @FXML
     private AnchorPane beakerBackFlow1;
@@ -116,16 +116,16 @@ public class FlowController {
     private AnchorPane beakerBackFlow4;
 
     @FXML
-    private BeakerController beakerFlowDelivery1Controller;
+    private BeakerController beakerDelivery1Controller;
 
     @FXML
-    private BeakerController beakerFlowDelivery2Controller;
+    private BeakerController beakerDelivery2Controller;
 
     @FXML
-    private BeakerController beakerFlowDelivery3Controller;
+    private BeakerController beakerDelivery3Controller;
 
     @FXML
-    private BeakerController beakerFlowDelivery4Controller;
+    private BeakerController beakerDelivery4Controller;
 
     @FXML
     private BeakerController beakerBackFlow1Controller;
@@ -203,20 +203,20 @@ public class FlowController {
         return temperature2BackFlow4;
     }
 
-    public BeakerController getBeakerFlowDelivery1Controller() {
-        return beakerFlowDelivery1Controller;
+    public BeakerController getBeakerDelivery1Controller() {
+        return beakerDelivery1Controller;
     }
 
-    public BeakerController getBeakerFlowDelivery2Controller() {
-        return beakerFlowDelivery2Controller;
+    public BeakerController getBeakerDelivery2Controller() {
+        return beakerDelivery2Controller;
     }
 
-    public BeakerController getBeakerFlowDelivery3Controller() {
-        return beakerFlowDelivery3Controller;
+    public BeakerController getBeakerDelivery3Controller() {
+        return beakerDelivery3Controller;
     }
 
-    public BeakerController getBeakerFlowDelivery4Controller() {
-        return beakerFlowDelivery4Controller;
+    public BeakerController getBeakerDelivery4Controller() {
+        return beakerDelivery4Controller;
     }
 
     public BeakerController getBeakerBackFlow1Controller() {
