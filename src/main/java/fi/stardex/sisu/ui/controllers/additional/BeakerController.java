@@ -118,6 +118,8 @@ public class BeakerController {
             AnchorPane.setLeftAnchor(textTop, arcTickTop.getCenterX() + arcTickTop.getRadiusX() - textTop.getWrappingWidth() / 2);
             AnchorPane.setLeftAnchor(textBottom, arcTickBottom.getCenterX() + arcTickBottom.getRadiusX() - textBottom.getWrappingWidth() / 2);
         });
+
+        makeEmpty();
     }
 
     private void setLevel(double level) {

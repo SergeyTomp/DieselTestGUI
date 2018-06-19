@@ -17,6 +17,7 @@ import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.controllers.additional.tabs.ConnectionController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
 import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
@@ -198,8 +199,8 @@ public class SpringJavaConfig {
     @Bean
     @Autowired
     public FlowUpdater flowUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
-                                   FirmwareDataConverter firmwareDataConverter) {
-        return new FlowUpdater(flowController, injectorSectionController, firmwareDataConverter);
+                                   SettingsController settingsController, FirmwareDataConverter firmwareDataConverter) {
+        return new FlowUpdater(flowController, injectorSectionController, settingsController.getCheckBoxFlowVisible(), firmwareDataConverter);
     }
 
     @Bean

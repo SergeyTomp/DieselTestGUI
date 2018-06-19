@@ -13,6 +13,9 @@ import java.util.prefs.Preferences;
 public class SettingsController {
 
     @FXML
+    private CheckBox checkBoxFlowVisible;
+
+    @FXML
     private CheckBox fastMeasurementCheckBox;
 
     @FXML
@@ -37,7 +40,7 @@ public class SettingsController {
     private ComboBox<InjectorChannel> comboInjectorConfig;
 
     @FXML
-    public CheckBox autoResetCheckBox;
+    private CheckBox autoResetCheckBox;
 
     private Preferences prefs = Preferences.userNodeForPackage(this.getClass());
 
@@ -45,8 +48,14 @@ public class SettingsController {
         return comboInjectorConfig;
     }
 
+    public CheckBox getCheckBoxFlowVisible() {
+        return checkBoxFlowVisible;
+    }
+
     @PostConstruct
     private void init() {
+
+        checkBoxFlowVisible.setSelected(prefs.getBoolean("checkBoxFlowVisibleSelected", true));
 
         autoResetCheckBox.setSelected(prefs.getBoolean("autoResetCheckBoxSelected", true));
 
@@ -66,6 +75,8 @@ public class SettingsController {
         sensor2200RadioButton.setSelected(prefs.getBoolean("sensor2200RadioButtonSelected", false));
 
         sensor2400RadioButton.setSelected(prefs.getBoolean("sensor2400RadioButtonSelected", false));
+
+        checkBoxFlowVisible.selectedProperty().addListener((observable, oldValue, newValue) -> prefs.putBoolean("checkBoxFlowVisibleSelected", newValue));
 
         autoResetCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> prefs.putBoolean("autoResetCheckBoxSelected", newValue));
 

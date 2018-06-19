@@ -7,12 +7,11 @@ import fi.stardex.sisu.registers.flow.ModbusMapFlow;
 import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.util.converters.FirmwareDataConverter;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleButton;
+import javafx.scene.control.*;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.List;
 
 @Module(value = Device.MODBUS_FLOW)
 public class FlowUpdater implements Updater {
@@ -55,6 +54,8 @@ public class FlowUpdater implements Updater {
 
     private Label temperature2BackFlow4Label;
 
+    private List<Label> allFlowLabels = new ArrayList<>();
+
     private TextField delivery1TextField;
 
     private TextField delivery2TextField;
@@ -71,9 +72,13 @@ public class FlowUpdater implements Updater {
 
     private TextField backFlow4TextField;
 
+    private List<TextField> allFlowTextFields = new ArrayList<>();
+
     private ComboBox<String> deliveryFlowComboBox;
 
     private ComboBox<String> backFlowComboBox;
+
+    private CheckBox checkBoxFlowVisible;
 
     private ToggleButton ledBeaker1ToggleButton;
 
@@ -84,7 +89,7 @@ public class FlowUpdater implements Updater {
     private ToggleButton ledBeaker4ToggleButton;
 
     public FlowUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
-                       FirmwareDataConverter firmwareDataConverter) {
+                       CheckBox checkBoxFlowVisible, FirmwareDataConverter firmwareDataConverter) {
 
         this.firmwareDataConverter = firmwareDataConverter;
         temperature1Delivery1Label = flowController.getTemperature1Delivery1();
@@ -113,10 +118,37 @@ public class FlowUpdater implements Updater {
         backFlow4TextField = flowController.getBackFlow4TextField();
         deliveryFlowComboBox = flowController.getDeliveryFlowComboBox();
         backFlowComboBox = flowController.getBackFlowComboBox();
+        this.checkBoxFlowVisible = checkBoxFlowVisible;
         ledBeaker1ToggleButton = injectorSectionController.getLedBeaker1Controller().getLedBeaker();
         ledBeaker2ToggleButton = injectorSectionController.getLedBeaker2Controller().getLedBeaker();
         ledBeaker3ToggleButton = injectorSectionController.getLedBeaker3Controller().getLedBeaker();
         ledBeaker4ToggleButton = injectorSectionController.getLedBeaker4Controller().getLedBeaker();
+
+        allFlowLabels.add(temperature1Delivery1Label);
+        allFlowLabels.add(temperature1Delivery2Label);
+        allFlowLabels.add(temperature1Delivery3Label);
+        allFlowLabels.add(temperature1Delivery4Label);
+        allFlowLabels.add(temperature2Delivery1Label);
+        allFlowLabels.add(temperature2Delivery2Label);
+        allFlowLabels.add(temperature2Delivery3Label);
+        allFlowLabels.add(temperature2Delivery4Label);
+        allFlowLabels.add(temperature1BackFlow1Label);
+        allFlowLabels.add(temperature1BackFlow2Label);
+        allFlowLabels.add(temperature1BackFlow3Label);
+        allFlowLabels.add(temperature1BackFlow4Label);
+        allFlowLabels.add(temperature2BackFlow1Label);
+        allFlowLabels.add(temperature2BackFlow2Label);
+        allFlowLabels.add(temperature2BackFlow3Label);
+        allFlowLabels.add(temperature2BackFlow4Label);
+
+        allFlowTextFields.add(delivery1TextField);
+        allFlowTextFields.add(delivery2TextField);
+        allFlowTextFields.add(delivery3TextField);
+        allFlowTextFields.add(delivery4TextField);
+        allFlowTextFields.add(backFlow1TextField);
+        allFlowTextFields.add(backFlow2TextField);
+        allFlowTextFields.add(backFlow3TextField);
+        allFlowTextFields.add(backFlow4TextField);
 
     }
 
@@ -165,6 +197,13 @@ public class FlowUpdater implements Updater {
         backFlowComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
                 showOnChosenFlowUnit(ModbusMapFlow.Channel2Level.getLastValue().toString(), newValue, Flow.BACK_FLOW));
 
+        checkBoxFlowVisible.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue) {
+                allFlowLabels.forEach(e -> e.setText(null));
+                allFlowTextFields.forEach(e -> e.setText(null));
+            }
+        });
+
     }
 
 
@@ -208,6 +247,9 @@ public class FlowUpdater implements Updater {
 
     @Override
     public void run() {
+
+        if (!checkBoxFlowVisible.isSelected())
+            return;
 
         String value;
 
