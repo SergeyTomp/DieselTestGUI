@@ -120,6 +120,10 @@ public class FlowUpdater implements Updater {
 
     }
 
+    private enum Flow {
+        DELIVERY, BACK_FLOW
+    }
+
     @PostConstruct
     private void init() {
 
@@ -155,27 +159,11 @@ public class FlowUpdater implements Updater {
             }
         });
 
-        // TODO: реализовать 3 последних опции Combobox
-        deliveryFlowComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            switch (newValue) {
-                case FlowUnits.MILLILITRE_PER_MINUTE:
-                    setDeliveryBackFlowFields(delivery1TextField, delivery2TextField,
-                            delivery3TextField, delivery4TextField, convertedValue.toString());
-                    break;
-                case FlowUnits.LITRE_PER_HOUR:
-                    setDeliveryBackFlowFields(delivery1TextField, delivery2TextField,
-                            delivery3TextField, delivery4TextField, String.valueOf(Float.parseFloat(convertedValue.toString()) * 0.06));
-                    break;
-                case FlowUnits.MILLILITRE_PER_100RPM:
-                    break;
-                case FlowUnits.MILLILITRE_PER_200RPM:
-                    break;
-                case FlowUnits.MILLILITRE_PER_1000RPM:
-                    break;
-                default:
-                    break;
-            }
-        });
+        deliveryFlowComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
+                showOnChosenFlowUnit(ModbusMapFlow.Channel1Level.getLastValue().toString(), newValue, Flow.DELIVERY));
+
+        backFlowComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
+                showOnChosenFlowUnit(ModbusMapFlow.Channel2Level.getLastValue().toString(), newValue, Flow.BACK_FLOW));
 
     }
 
@@ -223,21 +211,11 @@ public class FlowUpdater implements Updater {
 
         String value;
 
-        if ((value = ModbusMapFlow.Channel1Level.getLastValue().toString()) != null) {
-            convertedValue.append(firmwareDataConverter.
-                    roundToOneDecimalPlace(firmwareDataConverter.convertDataToFloat(value)));
-            setDeliveryBackFlowFields(delivery1TextField, delivery2TextField,
-                    delivery3TextField, delivery4TextField, convertedValue.toString());
-            convertedValue.setLength(0);
-        }
+        if ((value = ModbusMapFlow.Channel1Level.getLastValue().toString()) != null)
+            showOnChosenFlowUnit(value, deliveryFlowComboBox.getSelectionModel().getSelectedItem(), Flow.DELIVERY);
 
-        if ((value = ModbusMapFlow.Channel2Level.getLastValue().toString()) != null) {
-            convertedValue.append(firmwareDataConverter.
-                    roundToOneDecimalPlace(firmwareDataConverter.convertDataToFloat(value)));
-            setDeliveryBackFlowFields(backFlow1TextField, backFlow2TextField,
-                    backFlow3TextField, backFlow4TextField, convertedValue.toString());
-            convertedValue.setLength(0);
-        }
+        if ((value = ModbusMapFlow.Channel2Level.getLastValue().toString()) != null)
+            showOnChosenFlowUnit(value, backFlowComboBox.getSelectionModel().getSelectedItem(), Flow.BACK_FLOW);
 
         if ((value = ModbusMapFlow.Channel1Temperature1.getLastValue().toString()) != null) {
             convertedValue.append(firmwareDataConverter.
@@ -266,6 +244,37 @@ public class FlowUpdater implements Updater {
             setTempLabels(temperature2BackFlow1Label, temperature2BackFlow2Label,
                     temperature2BackFlow3Label, temperature2BackFlow4Label, convertedValue.toString());
             convertedValue.setLength(0);
+        }
+
+    }
+
+    // TODO: реализовать 3 последних опции Combo box
+    private void showOnChosenFlowUnit(String value, String selectedItem, Flow flow) {
+
+        float convertedValueFloat = firmwareDataConverter.
+                roundToOneDecimalPlace(firmwareDataConverter.convertDataToFloat(value));
+
+        TextField field1 = (flow == Flow.DELIVERY) ? delivery1TextField : backFlow1TextField;
+        TextField field2 = (flow == Flow.DELIVERY) ? delivery2TextField : backFlow2TextField;
+        TextField field3 = (flow == Flow.DELIVERY) ? delivery3TextField : backFlow3TextField;
+        TextField field4 = (flow == Flow.DELIVERY) ? delivery4TextField : backFlow4TextField;
+
+        switch (selectedItem) {
+            case FlowUnits.MILLILITRE_PER_MINUTE:
+                setDeliveryBackFlowFields(field1, field2, field3, field4, String.valueOf(convertedValueFloat));
+                break;
+            case FlowUnits.LITRE_PER_HOUR:
+                setDeliveryBackFlowFields(field1, field2, field3, field4, String.valueOf(firmwareDataConverter.
+                                roundToOneDecimalPlace(convertedValueFloat * 0.06f)));
+                break;
+            case FlowUnits.MILLILITRE_PER_100RPM:
+                break;
+            case FlowUnits.MILLILITRE_PER_200RPM:
+                break;
+            case FlowUnits.MILLILITRE_PER_1000RPM:
+                break;
+            default:
+                break;
         }
 
     }
