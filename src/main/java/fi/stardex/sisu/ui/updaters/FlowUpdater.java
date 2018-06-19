@@ -88,6 +88,8 @@ public class FlowUpdater implements Updater {
 
     private ToggleButton ledBeaker4ToggleButton;
 
+    private ToggleButton injectorSectionPowerSwitch;
+
     public FlowUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
                        CheckBox checkBoxFlowVisible, FirmwareDataConverter firmwareDataConverter) {
 
@@ -123,7 +125,7 @@ public class FlowUpdater implements Updater {
         ledBeaker2ToggleButton = injectorSectionController.getLedBeaker2Controller().getLedBeaker();
         ledBeaker3ToggleButton = injectorSectionController.getLedBeaker3Controller().getLedBeaker();
         ledBeaker4ToggleButton = injectorSectionController.getLedBeaker4Controller().getLedBeaker();
-
+        injectorSectionPowerSwitch = injectorSectionController.getPowerSwitch();
         allFlowLabels.add(temperature1Delivery1Label);
         allFlowLabels.add(temperature1Delivery2Label);
         allFlowLabels.add(temperature1Delivery3Label);
@@ -198,14 +200,16 @@ public class FlowUpdater implements Updater {
                 showOnChosenFlowUnit(ModbusMapFlow.Channel2Level.getLastValue().toString(), newValue, Flow.BACK_FLOW));
 
         checkBoxFlowVisible.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue) {
-                allFlowLabels.forEach(e -> e.setText(null));
-                allFlowTextFields.forEach(e -> e.setText(null));
-            }
+            if (!newValue)
+                setAllLabelsAndFieldsToNull();
+        });
+
+        injectorSectionPowerSwitch.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue && !checkBoxFlowVisible.isSelected())
+                setAllLabelsAndFieldsToNull();
         });
 
     }
-
 
     private void setTempLabels(Label label1, Label label2, Label label3, Label label4, String value) {
 
@@ -240,6 +244,12 @@ public class FlowUpdater implements Updater {
         backFlowTextField.setText(null);
     }
 
+    private void setAllLabelsAndFieldsToNull() {
+        allFlowLabels.forEach(e -> e.setText(null));
+        allFlowTextFields.forEach(e -> e.setText(null));
+    }
+
+
     @Override
     public void update() {
 
@@ -248,7 +258,7 @@ public class FlowUpdater implements Updater {
     @Override
     public void run() {
 
-        if (!checkBoxFlowVisible.isSelected())
+        if ((!checkBoxFlowVisible.isSelected()) && (!injectorSectionPowerSwitch.isSelected()))
             return;
 
         String value;
@@ -307,7 +317,7 @@ public class FlowUpdater implements Updater {
                 break;
             case FlowUnits.LITRE_PER_HOUR:
                 setDeliveryBackFlowFields(field1, field2, field3, field4, String.valueOf(firmwareDataConverter.
-                                roundToOneDecimalPlace(convertedValueFloat * 0.06f)));
+                        roundToOneDecimalPlace(convertedValueFloat * 0.06f)));
                 break;
             case FlowUnits.MILLILITRE_PER_100RPM:
                 break;

@@ -50,34 +50,10 @@ public class InjectorSectionController {
     private RadioButton piezoDelphiRadioButton;
 
     @FXML
-    private GridPane gridLedBeaker;
-
-    @FXML
     private ToggleButton powerSwitch;
 
     @FXML
     private Label statusBoostULabelText;
-
-    @FXML
-    private Label statusBoostULabel;
-
-    @FXML
-    private StackPane stackPaneLed1;
-
-    @FXML
-    private StackPane stackPaneLed2;
-
-    @FXML
-    private StackPane stackPaneLed3;
-
-    @FXML
-    private StackPane stackPaneLed4;
-
-    @FXML
-    private StackPane stackPaneLed5;
-
-    @FXML
-    private StackPane stackPaneLed6;
 
     @FXML
     private ProgressBar switcherProgressBar;
@@ -93,18 +69,6 @@ public class InjectorSectionController {
 
     @FXML
     private LedController ledBeaker4Controller;
-
-    @FXML
-    private AnchorPane ledBeaker1;
-
-    @FXML
-    private AnchorPane ledBeaker2;
-
-    @FXML
-    private AnchorPane ledBeaker3;
-
-    @FXML
-    private AnchorPane ledBeaker4;
 
     private SettingsController settingsController;
 
@@ -140,10 +104,6 @@ public class InjectorSectionController {
         return piezoDelphiRadioButton;
     }
 
-    public ObservableList<LedController> getLedControllers() {
-        return ledControllers;
-    }
-
     public LedController getLedBeaker1Controller() {
         return ledBeaker1Controller;
     }
@@ -158,6 +118,10 @@ public class InjectorSectionController {
 
     public LedController getLedBeaker4Controller() {
         return ledBeaker4Controller;
+    }
+
+    public ToggleButton getPowerSwitch() {
+        return powerSwitch;
     }
 
     public void setSettingsController(SettingsController settingsController) {
