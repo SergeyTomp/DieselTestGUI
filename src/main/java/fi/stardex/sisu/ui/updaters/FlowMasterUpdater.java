@@ -15,14 +15,15 @@ public class FlowMasterUpdater extends FlowUpdater implements Updater {
 
     public FlowMasterUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
                              CheckBox checkBoxFlowVisible, FirmwareDataConverter firmwareDataConverter) {
+
         super(flowController, injectorSectionController, checkBoxFlowVisible, firmwareDataConverter);
+
     }
 
+    // FIXME: метод вызывается 2 раза для каждого бина
     @PostConstruct
     private void init() {
-
         initListeners();
-
     }
 
     @Override

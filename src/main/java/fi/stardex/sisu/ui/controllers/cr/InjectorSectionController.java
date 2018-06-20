@@ -136,7 +136,7 @@ public class InjectorSectionController {
         this.timerTasksManager = timerTasksManager;
     }
 
-    public List<LedController> getActiveControllers() {
+    public synchronized List<LedController> getActiveControllers() {
         activeControllers.clear();
         for (LedController s : ledControllers) {
             if (s.isSelected()) activeControllers.add(s);

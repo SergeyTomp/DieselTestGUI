@@ -6,13 +6,14 @@ import fi.stardex.sisu.registers.flow.ModbusMapFlow;
 import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.util.converters.FirmwareDataConverter;
+import fi.stardex.sisu.version.FlowFirmwareVersion;
 import javafx.scene.control.*;
 
-import javax.annotation.PostConstruct;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-public class FlowUpdater {
+public abstract class FlowUpdater {
 
     protected FirmwareDataConverter firmwareDataConverter;
 
@@ -89,7 +90,7 @@ public class FlowUpdater {
     protected ToggleButton injectorSectionPowerSwitch;
 
     public FlowUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
-                             CheckBox checkBoxFlowVisible, FirmwareDataConverter firmwareDataConverter) {
+                       CheckBox checkBoxFlowVisible, FirmwareDataConverter firmwareDataConverter) {
 
         this.firmwareDataConverter = firmwareDataConverter;
         temperature1Delivery1Label = flowController.getTemperature1Delivery1();
@@ -153,7 +154,9 @@ public class FlowUpdater {
     }
 
     protected enum Flow {
+
         DELIVERY, BACK_FLOW
+
     }
 
     protected void initListeners() {
@@ -190,12 +193,6 @@ public class FlowUpdater {
             }
         });
 
-        deliveryFlowComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
-                showOnChosenFlowUnit(ModbusMapFlow.Channel1Level.getLastValue().toString(), newValue, FlowMasterUpdater.Flow.DELIVERY));
-
-        backFlowComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
-                showOnChosenFlowUnit(ModbusMapFlow.Channel2Level.getLastValue().toString(), newValue, FlowMasterUpdater.Flow.BACK_FLOW));
-
         checkBoxFlowVisible.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue)
                 setAllLabelsAndFieldsToNull();
@@ -206,7 +203,110 @@ public class FlowUpdater {
                 setAllLabelsAndFieldsToNull();
         });
 
+        deliveryFlowComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
+                refreshValues(newValue, Flow.DELIVERY));
+
+        backFlowComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
+                refreshValues(newValue, Flow.BACK_FLOW));
+
     }
+
+    protected void refreshValues(String selectedItem, Flow flow) {
+        if (FlowFirmwareVersion.getFlowFirmwareVersion() == FlowFirmwareVersion.FLOW_MASTER)
+            showOnChosenFlowUnit(ModbusMapFlow.Channel1Level.getLastValue().toString(), selectedItem, flow);
+        else if (FlowFirmwareVersion.getFlowFirmwareVersion() == FlowFirmwareVersion.FLOW_STREAM)
+            showOnChosenFlowUnit(Arrays.asList(ModbusMapFlow.Channel1Level.getLastValue().toString(),
+                    ModbusMapFlow.Channel2Level.getLastValue().toString(),
+                    ModbusMapFlow.Channel3Level.getLastValue().toString(),
+                    ModbusMapFlow.Channel4Level.getLastValue().toString()), selectedItem, flow);
+    }
+
+    // TODO: реализовать 3 последние опции Combo box
+    protected void showOnChosenFlowUnit(String value, String selectedItem, Flow flow) {
+
+        float convertedValueFloat = firmwareDataConverter.
+                roundToOneDecimalPlace(firmwareDataConverter.convertDataToFloat(value));
+
+        TextField field1 = (flow == Flow.DELIVERY) ? delivery1TextField : backFlow1TextField;
+        TextField field2 = (flow == Flow.DELIVERY) ? delivery2TextField : backFlow2TextField;
+        TextField field3 = (flow == Flow.DELIVERY) ? delivery3TextField : backFlow3TextField;
+        TextField field4 = (flow == Flow.DELIVERY) ? delivery4TextField : backFlow4TextField;
+
+        switch (selectedItem) {
+            case FlowUnits.MILLILITRE_PER_MINUTE:
+                setDeliveryBackFlowFields(field1, field2, field3, field4, String.valueOf(convertedValueFloat));
+                break;
+            case FlowUnits.LITRE_PER_HOUR:
+                setDeliveryBackFlowFields(field1, field2, field3, field4, String.valueOf(firmwareDataConverter.
+                        roundToOneDecimalPlace(convertedValueFloat * 0.06f)));
+                break;
+            case FlowUnits.MILLILITRE_PER_100RPM:
+                break;
+            case FlowUnits.MILLILITRE_PER_200RPM:
+                break;
+            case FlowUnits.MILLILITRE_PER_1000RPM:
+                break;
+            default:
+                break;
+        }
+
+    }
+
+    // TODO: реализовать 3 последние опции Combo box
+    protected void showOnChosenFlowUnit(List<String> listOfValues, String selectedItem, Flow flow) {
+
+        List<Float> listOfConvertedValues = new ArrayList<>();
+        listOfConvertedValues.add(firmwareDataConverter.
+                roundToOneDecimalPlace(firmwareDataConverter.convertDataToFloat(listOfValues.get(0))));
+        listOfConvertedValues.add(firmwareDataConverter.
+                roundToOneDecimalPlace(firmwareDataConverter.convertDataToFloat(listOfValues.get(1))));
+        listOfConvertedValues.add(firmwareDataConverter.
+                roundToOneDecimalPlace(firmwareDataConverter.convertDataToFloat(listOfValues.get(2))));
+        listOfConvertedValues.add(firmwareDataConverter.
+                roundToOneDecimalPlace(firmwareDataConverter.convertDataToFloat(listOfValues.get(3))));
+
+        TextField field1 = (flow == Flow.DELIVERY) ? delivery1TextField : backFlow1TextField;
+        TextField field2 = (flow == Flow.DELIVERY) ? delivery2TextField : backFlow2TextField;
+        TextField field3 = (flow == Flow.DELIVERY) ? delivery3TextField : backFlow3TextField;
+        TextField field4 = (flow == Flow.DELIVERY) ? delivery4TextField : backFlow4TextField;
+
+        switch (selectedItem) {
+            case FlowUnits.MILLILITRE_PER_MINUTE:
+                field1.setText(ledBeaker1ToggleButton.isSelected() ? listOfConvertedValues.get(0).toString() : null);
+                field2.setText(ledBeaker2ToggleButton.isSelected() ? listOfConvertedValues.get(1).toString() : null);
+                field3.setText(ledBeaker3ToggleButton.isSelected() ? listOfConvertedValues.get(2).toString() : null);
+                field4.setText(ledBeaker4ToggleButton.isSelected() ? listOfConvertedValues.get(3).toString() : null);
+                break;
+            case FlowUnits.LITRE_PER_HOUR:
+                field1.setText(ledBeaker1ToggleButton.isSelected() ? String.valueOf(firmwareDataConverter.
+                        roundToOneDecimalPlace(listOfConvertedValues.get(0) * 0.06f)) : null);
+                field2.setText(ledBeaker2ToggleButton.isSelected() ? String.valueOf(firmwareDataConverter.
+                        roundToOneDecimalPlace(listOfConvertedValues.get(1) * 0.06f)) : null);
+                field3.setText(ledBeaker3ToggleButton.isSelected() ? String.valueOf(firmwareDataConverter.
+                        roundToOneDecimalPlace(listOfConvertedValues.get(2) * 0.06f)) : null);
+                field4.setText(ledBeaker4ToggleButton.isSelected() ? String.valueOf(firmwareDataConverter.
+                        roundToOneDecimalPlace(listOfConvertedValues.get(3) * 0.06f)) : null);
+                break;
+            case FlowUnits.MILLILITRE_PER_100RPM:
+                break;
+            case FlowUnits.MILLILITRE_PER_200RPM:
+                break;
+            case FlowUnits.MILLILITRE_PER_1000RPM:
+                break;
+            default:
+                break;
+        }
+    }
+
+    protected void setDeliveryBackFlowFields(TextField field1, TextField field2, TextField field3, TextField field4, String value) {
+
+        field1.setText(ledBeaker1ToggleButton.isSelected() ? value : null);
+        field2.setText(ledBeaker2ToggleButton.isSelected() ? value : null);
+        field3.setText(ledBeaker3ToggleButton.isSelected() ? value : null);
+        field4.setText(ledBeaker4ToggleButton.isSelected() ? value : null);
+
+    }
+
 
     protected void setTempLabelsToNull(Label temperature1DeliveryLabel, Label temperature2DeliveryLabel,
                                        Label temperature1BackFlowLabel, Label temperature2BackFlowLabel) {
@@ -232,52 +332,12 @@ public class FlowUpdater {
 
     }
 
-    // TODO: реализовать 3 последних опции Combo box
-    protected void showOnChosenFlowUnit(String value, String selectedItem, FlowMasterUpdater.Flow flow) {
-
-        float convertedValueFloat = firmwareDataConverter.
-                roundToOneDecimalPlace(firmwareDataConverter.convertDataToFloat(value));
-
-        TextField field1 = (flow == FlowMasterUpdater.Flow.DELIVERY) ? delivery1TextField : backFlow1TextField;
-        TextField field2 = (flow == FlowMasterUpdater.Flow.DELIVERY) ? delivery2TextField : backFlow2TextField;
-        TextField field3 = (flow == FlowMasterUpdater.Flow.DELIVERY) ? delivery3TextField : backFlow3TextField;
-        TextField field4 = (flow == FlowMasterUpdater.Flow.DELIVERY) ? delivery4TextField : backFlow4TextField;
-
-        switch (selectedItem) {
-            case FlowUnits.MILLILITRE_PER_MINUTE:
-                setDeliveryBackFlowFields(field1, field2, field3, field4, String.valueOf(convertedValueFloat));
-                break;
-            case FlowUnits.LITRE_PER_HOUR:
-                setDeliveryBackFlowFields(field1, field2, field3, field4, String.valueOf(firmwareDataConverter.
-                        roundToOneDecimalPlace(convertedValueFloat * 0.06f)));
-                break;
-            case FlowUnits.MILLILITRE_PER_100RPM:
-                break;
-            case FlowUnits.MILLILITRE_PER_200RPM:
-                break;
-            case FlowUnits.MILLILITRE_PER_1000RPM:
-                break;
-            default:
-                break;
-        }
-
-    }
-
     protected void setTempLabels(Label label1, Label label2, Label label3, Label label4, String value) {
 
         label1.setText(ledBeaker1ToggleButton.isSelected() ? value : null);
         label2.setText(ledBeaker2ToggleButton.isSelected() ? value : null);
         label3.setText(ledBeaker3ToggleButton.isSelected() ? value : null);
         label4.setText(ledBeaker4ToggleButton.isSelected() ? value : null);
-
-    }
-
-    protected void setDeliveryBackFlowFields(TextField field1, TextField field2, TextField field3, TextField field4, String value) {
-
-        field1.setText(ledBeaker1ToggleButton.isSelected() ? value : null);
-        field2.setText(ledBeaker2ToggleButton.isSelected() ? value : null);
-        field3.setText(ledBeaker3ToggleButton.isSelected() ? value : null);
-        field4.setText(ledBeaker4ToggleButton.isSelected() ? value : null);
 
     }
 
