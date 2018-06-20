@@ -88,7 +88,7 @@ public class BeakerController {
         beakerControllers.add(this);
 
         textField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null)
+            if (newValue != null && !newValue.equals("0.0"))
                 Platform.runLater(() -> setLevel(rectangleBeaker.getHeight() / 2));
             else
                 makeEmpty();

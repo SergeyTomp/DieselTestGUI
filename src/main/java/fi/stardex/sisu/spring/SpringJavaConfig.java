@@ -21,16 +21,14 @@ import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
 import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
-import fi.stardex.sisu.ui.updaters.FlowUpdater;
-import fi.stardex.sisu.ui.updaters.HighPressureSectionUpdater;
-import fi.stardex.sisu.ui.updaters.InjectorSectionUpdater;
-import fi.stardex.sisu.ui.updaters.Updater;
+import fi.stardex.sisu.ui.updaters.*;
 import fi.stardex.sisu.util.ApplicationConfigHandler;
 import fi.stardex.sisu.util.converters.FirmwareDataConverter;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.wrappers.StatusBarWrapper;
 import fi.stardex.sisu.version.FlowFirmwareVersion;
 import fi.stardex.sisu.version.UltimaFirmwareVersion;
+import javafx.application.Platform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -137,10 +135,10 @@ public class SpringJavaConfig {
                     if (newValue) {
                         int firmwareVersionNumber = (int) read(ModbusMapFlow.FlowMeterVersion);
                         switch (firmwareVersionNumber) {
-                            case 43724:
+                            case 0xAACC:
                                 FlowFirmwareVersion.setFlowFirmwareVersion(FlowFirmwareVersion.FLOW_MASTER);
                                 break;
-                            case 43707:
+                            case 0xAABB:
                                 FlowFirmwareVersion.setFlowFirmwareVersion(FlowFirmwareVersion.FLOW_STREAM);
                                 break;
                             default:
@@ -167,21 +165,68 @@ public class SpringJavaConfig {
     @Bean
     @Autowired
     public ModbusRegisterProcessor ultimaModbusWriter(List<Updater> updatersList, RegisterProvider ultimaRegisterProvider) {
-        return new ModbusRegisterProcessor(ultimaRegisterProvider, ModbusMapUltima.values(),
-                "Ultima register processor", addUpdaters(updatersList, Device.ULTIMA));
+        return new ModbusRegisterProcessor(ultimaRegisterProvider, ModbusMapUltima.values()) {
+            @Override
+            protected void initThread() {
+                List<Updater> updaters = addUpdaters(updatersList, Device.ULTIMA);
+                Thread loopThread = new Thread(new ProcessExecutor() {
+                    @Override
+                    protected void updateAll() {
+                        for (Updater updater : updaters)
+                            Platform.runLater(updater);
+                    }
+                });
+                setLoopThread(loopThread);
+                loopThread.setName("Ultima register processor");
+                loopThread.start();
+            }
+        };
     }
 
     @Bean
     @Autowired
     public ModbusRegisterProcessor flowModbusWriter(List<Updater> updatersList, RegisterProvider flowRegisterProvider) {
-        return new ModbusRegisterProcessor(flowRegisterProvider, ModbusMapFlow.values(),
-                "Flow register processor", addUpdaters(updatersList, Device.MODBUS_FLOW));
+        return new ModbusRegisterProcessor(flowRegisterProvider, ModbusMapFlow.values()) {
+            @Override
+            protected void initThread() {
+                List<Updater> updaters = addUpdaters(updatersList, Device.MODBUS_FLOW);
+                Thread loopThread = new Thread(new ProcessExecutor() {
+                    @Override
+                    protected void updateAll() {
+                        for (Updater updater : updaters) {
+                            if ((updater instanceof FlowMasterUpdater) && (FlowFirmwareVersion.getFlowFirmwareVersion() == FlowFirmwareVersion.FLOW_MASTER))
+                                Platform.runLater(updater);
+                            else if ((updater instanceof FlowStreamUpdater) && (FlowFirmwareVersion.getFlowFirmwareVersion() == FlowFirmwareVersion.FLOW_STREAM))
+                                Platform.runLater(updater);
+                        }
+                    }
+                });
+                setLoopThread(loopThread);
+                loopThread.setName("Flow register processor");
+                loopThread.start();
+            }
+        };
     }
 
+    //TODO: implement
     @Bean
     @Autowired
     public ModbusRegisterProcessor standModbusWriter(RegisterProvider standRegisterProvider) {
-        return new ModbusRegisterProcessor(standRegisterProvider, null, "Stand register processor", null);
+        return new ModbusRegisterProcessor(standRegisterProvider, null) {
+            @Override
+            protected void initThread() {
+                List<Updater> updaters = null;
+                Thread loopThread = new Thread(new ProcessExecutor() {
+                    @Override
+                    protected void updateAll() {
+
+                    }
+                });
+                setLoopThread(loopThread);
+                loopThread.setName("Stand register processor");
+                loopThread.start();
+            }
+        };
     }
 
     @Bean
@@ -198,9 +243,16 @@ public class SpringJavaConfig {
 
     @Bean
     @Autowired
-    public FlowUpdater flowUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
-                                   SettingsController settingsController, FirmwareDataConverter firmwareDataConverter) {
-        return new FlowUpdater(flowController, injectorSectionController, settingsController.getCheckBoxFlowVisible(), firmwareDataConverter);
+    public FlowMasterUpdater flowMasterUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
+                                               SettingsController settingsController, FirmwareDataConverter firmwareDataConverter) {
+        return new FlowMasterUpdater(flowController, injectorSectionController, settingsController.getCheckBoxFlowVisible(), firmwareDataConverter);
+    }
+
+    @Bean
+    @Autowired
+    public FlowStreamUpdater flowStreamUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
+                                               SettingsController settingsController, FirmwareDataConverter firmwareDataConverter) {
+        return new FlowStreamUpdater(flowController, injectorSectionController, settingsController.getCheckBoxFlowVisible(), firmwareDataConverter);
     }
 
     @Bean
