@@ -50,6 +50,11 @@ public class SpringJavaConfig {
     private static final Logger logger = LoggerFactory.getLogger(SpringJavaConfig.class);
 
     @Bean
+    public InitializeListenerBeanPostProcessor initializeListenerBeanPostProcessor() {
+        return new InitializeListenerBeanPostProcessor();
+    }
+
+    @Bean
     public ConnectProcessor connectProcessor() {
         return new ConnectProcessor();
     }

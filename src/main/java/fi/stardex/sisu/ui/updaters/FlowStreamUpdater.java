@@ -29,10 +29,10 @@ public class FlowStreamUpdater extends FlowUpdater implements Updater{
 
     }
 
-    @PostConstruct
-    private void init() {
-        initListeners();
-    }
+//    @PostConstruct
+//    private void init() {
+//        initListeners();
+//    }
 
 
     @Override

@@ -1,6 +1,7 @@
 package fi.stardex.sisu.ui.updaters;
 
 
+import fi.stardex.sisu.annotations.InitListeners;
 import fi.stardex.sisu.combobox_values.FlowUnits;
 import fi.stardex.sisu.registers.flow.ModbusMapFlow;
 import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
@@ -13,7 +14,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public abstract class FlowUpdater {
+public class FlowUpdater {
 
     protected FirmwareDataConverter firmwareDataConverter;
 
@@ -159,7 +160,10 @@ public abstract class FlowUpdater {
 
     }
 
-    protected void initListeners() {
+    @InitListeners
+    private void initListeners() {
+
+        System.err.println("init listeners");
 
         ledBeaker1ToggleButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue) {

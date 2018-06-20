@@ -21,10 +21,10 @@ public class FlowMasterUpdater extends FlowUpdater implements Updater {
     }
 
     // FIXME: метод вызывается 2 раза для каждого бина
-    @PostConstruct
-    private void init() {
-        initListeners();
-    }
+//    @PostConstruct
+//    private void init() {
+//        initListeners();
+//    }
 
     @Override
     public void update() {
