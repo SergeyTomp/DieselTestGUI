@@ -7,11 +7,18 @@ import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.util.converters.FirmwareDataConverter;
 import javafx.scene.control.CheckBox;
 
+import javax.annotation.PostConstruct;
+
 @Module(value = Device.MODBUS_FLOW)
 public class FlowStreamUpdater extends FlowUpdater implements Updater{
 
     public FlowStreamUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
                        CheckBox checkBoxFlowVisible, FirmwareDataConverter firmwareDataConverter) {
+        super(flowController, injectorSectionController, checkBoxFlowVisible, firmwareDataConverter);
+    }
+
+    @PostConstruct
+    private void init() {
 
     }
 
@@ -22,6 +29,15 @@ public class FlowStreamUpdater extends FlowUpdater implements Updater{
 
     @Override
     public void run() {
+
         System.err.println("Stream");
+
+        if ((!checkBoxFlowVisible.isSelected()) && (!injectorSectionPowerSwitch.isSelected()))
+            return;
+
+        String value;
+
+//        if ((value = ModbusMapFlow.Channel1Level.getLastValue().toString()) != null)
+
     }
 }
