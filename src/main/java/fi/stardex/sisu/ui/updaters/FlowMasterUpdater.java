@@ -37,8 +37,6 @@ public class FlowMasterUpdater extends FlowUpdater implements Updater {
     @Override
     public void run() {
 
-        System.err.println("Flow");
-
         if ((!checkBoxFlowVisible.isSelected()) && (!injectorSectionPowerSwitch.isSelected()))
             return;
 

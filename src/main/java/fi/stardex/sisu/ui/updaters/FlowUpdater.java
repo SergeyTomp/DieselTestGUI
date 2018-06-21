@@ -23,6 +23,8 @@ public abstract class FlowUpdater {
 
     protected StringBuilder convertedValue = new StringBuilder();
 
+    private List<Float> listOfConvertedValues = new ArrayList<>();
+
     protected Label temperature1Delivery1Label;
 
     protected Label temperature1Delivery2Label;
@@ -130,6 +132,7 @@ public abstract class FlowUpdater {
         ledBeaker3ToggleButton = injectorSectionController.getLedBeaker3Controller().getLedBeaker();
         ledBeaker4ToggleButton = injectorSectionController.getLedBeaker4Controller().getLedBeaker();
         injectorSectionPowerSwitch = injectorSectionController.getPowerSwitch();
+
         allFlowLabels.add(temperature1Delivery1Label);
         allFlowLabels.add(temperature1Delivery2Label);
         allFlowLabels.add(temperature1Delivery3Label);
@@ -165,8 +168,6 @@ public abstract class FlowUpdater {
     }
 
     protected void initListeners() {
-
-        System.err.println("init listeners");
 
         ledBeaker1ToggleButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue) {
@@ -210,15 +211,17 @@ public abstract class FlowUpdater {
                 setAllLabelsAndFieldsToNull();
         });
 
+        // FIXME: баг при выключенном instant flow: выбираю тип измерения - показывается поток
         deliveryFlowComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
                 refreshValues(newValue, Flow.DELIVERY));
 
+        // FIXME: баг при выключенном instant flow: выбираю тип измерения - показывается поток
         backFlowComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
                 refreshValues(newValue, Flow.BACK_FLOW));
 
     }
 
-    protected void refreshValues(String selectedItem, Flow flow) {
+    private void refreshValues(String selectedItem, Flow flow) {
 
         if (FlowFirmwareVersion.getFlowFirmwareVersion() == FlowFirmwareVersion.FLOW_MASTER) {
             if (flow == Flow.DELIVERY)
@@ -241,7 +244,7 @@ public abstract class FlowUpdater {
     }
 
     // TODO: реализовать 3 последние опции Combo box
-    protected void showOnChosenFlowUnit(String value, String selectedItem, Flow flow) {
+    private void showOnChosenFlowUnit(String value, String selectedItem, Flow flow) {
 
         float convertedValueFloat = firmwareDataConverter.
                 roundToOneDecimalPlace(firmwareDataConverter.convertDataToFloat(value));
@@ -272,9 +275,8 @@ public abstract class FlowUpdater {
     }
 
     // TODO: реализовать 3 последние опции Combo box
-    protected void showOnChosenFlowUnit(List<String> listOfValues, String selectedItem, Flow flow) {
+    private void showOnChosenFlowUnit(List<String> listOfValues, String selectedItem, Flow flow) {
 
-        List<Float> listOfConvertedValues = new ArrayList<>();
         listOfConvertedValues.add(firmwareDataConverter.
                 roundToOneDecimalPlace(firmwareDataConverter.convertDataToFloat(listOfValues.get(0))));
         listOfConvertedValues.add(firmwareDataConverter.
@@ -315,9 +317,11 @@ public abstract class FlowUpdater {
             default:
                 break;
         }
+
+        listOfConvertedValues.clear();
     }
 
-    protected void setDeliveryBackFlowFields(TextField field1, TextField field2, TextField field3, TextField field4, String value) {
+    private void setDeliveryBackFlowFields(TextField field1, TextField field2, TextField field3, TextField field4, String value) {
 
         field1.setText(ledBeaker1ToggleButton.isSelected() ? value : null);
         field2.setText(ledBeaker2ToggleButton.isSelected() ? value : null);
@@ -327,7 +331,7 @@ public abstract class FlowUpdater {
     }
 
 
-    protected void setTempLabelsToNull(Label temperature1DeliveryLabel, Label temperature2DeliveryLabel,
+    private void setTempLabelsToNull(Label temperature1DeliveryLabel, Label temperature2DeliveryLabel,
                                        Label temperature1BackFlowLabel, Label temperature2BackFlowLabel) {
 
         temperature1DeliveryLabel.setText(null);
@@ -337,21 +341,21 @@ public abstract class FlowUpdater {
 
     }
 
-    protected void setDeliveryBackFlowFieldsToNull(TextField deliveryTextField, TextField backFlowTextField) {
+    private void setDeliveryBackFlowFieldsToNull(TextField deliveryTextField, TextField backFlowTextField) {
 
         deliveryTextField.setText(null);
         backFlowTextField.setText(null);
 
     }
 
-    protected void setAllLabelsAndFieldsToNull() {
+    private void setAllLabelsAndFieldsToNull() {
 
         allFlowLabels.forEach(e -> e.setText(null));
         allFlowTextFields.forEach(e -> e.setText(null));
 
     }
 
-    protected void setTempLabels(Label label1, Label label2, Label label3, Label label4, String value) {
+    private void setTempLabels(Label label1, Label label2, Label label3, Label label4, String value) {
 
         label1.setText(ledBeaker1ToggleButton.isSelected() ? value : null);
         label2.setText(ledBeaker2ToggleButton.isSelected() ? value : null);
