@@ -2,15 +2,14 @@ package fi.stardex.sisu.ui.controllers.additional.tabs;
 
 import fi.stardex.sisu.combobox_values.FlowUnits;
 import fi.stardex.sisu.ui.controllers.additional.BeakerController;
-import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 
 import javax.annotation.PostConstruct;
-import java.util.Arrays;
 
 public class FlowController {
 
@@ -276,10 +275,21 @@ public class FlowController {
         return deliveryFlowComboBox;
     }
 
+    private static final int TEXT_FIELD_MAX_LENGTH = 7;
+
     @PostConstruct
     private void init() {
 
         setupDeliveryAndBackFlowComboBox();
+
+        blockTextInputToDeliveryBackFlowTextFields(delivery1TextField);
+        blockTextInputToDeliveryBackFlowTextFields(delivery2TextField);
+        blockTextInputToDeliveryBackFlowTextFields(delivery3TextField);
+        blockTextInputToDeliveryBackFlowTextFields(delivery4TextField);
+        blockTextInputToDeliveryBackFlowTextFields(backFlow1TextField);
+        blockTextInputToDeliveryBackFlowTextFields(backFlow2TextField);
+        blockTextInputToDeliveryBackFlowTextFields(backFlow3TextField);
+        blockTextInputToDeliveryBackFlowTextFields(backFlow4TextField);
 
     }
 
@@ -290,6 +300,26 @@ public class FlowController {
 
         backFlowComboBox.getItems().setAll(FlowUnits.getArrayOfFlowUnits());
         backFlowComboBox.getSelectionModel().selectFirst();
+
+    }
+
+    private void blockTextInputToDeliveryBackFlowTextFields(TextField field) {
+
+        field.addEventFilter(KeyEvent.KEY_TYPED, e -> {
+            TextField txt_TextField = (TextField) e.getSource();
+            if (txt_TextField.getText().length() >= TEXT_FIELD_MAX_LENGTH) {
+                e.consume();
+            }
+            if (e.getCharacter().matches("[0-9.]")) {
+                if (txt_TextField.getText().contains(".") && e.getCharacter().matches("[.]")) {
+                    e.consume();
+                } else if (txt_TextField.getText().length() == 0 && e.getCharacter().matches("[.]")) {
+                    e.consume();
+                }
+            } else {
+                e.consume();
+            }
+        });
 
     }
 

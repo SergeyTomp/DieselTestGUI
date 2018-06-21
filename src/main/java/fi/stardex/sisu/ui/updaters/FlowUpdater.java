@@ -169,37 +169,17 @@ public abstract class FlowUpdater {
 
     protected void initListeners() {
 
-        ledBeaker1ToggleButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue) {
-                setTempLabelsToNull(temperature1Delivery1Label, temperature2Delivery1Label,
-                        temperature1BackFlow1Label, temperature2BackFlow1Label);
-                setDeliveryBackFlowFieldsToNull(delivery1TextField, backFlow1TextField);
-            }
-        });
+        initLedBeakerListener(ledBeaker1ToggleButton, temperature1Delivery1Label, temperature2Delivery1Label,
+                temperature1BackFlow1Label, temperature2BackFlow1Label, delivery1TextField, backFlow1TextField);
 
-        ledBeaker2ToggleButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue) {
-                setTempLabelsToNull(temperature1Delivery2Label, temperature2Delivery2Label,
-                        temperature1BackFlow2Label, temperature2BackFlow2Label);
-                setDeliveryBackFlowFieldsToNull(delivery2TextField, backFlow2TextField);
-            }
-        });
+        initLedBeakerListener(ledBeaker2ToggleButton, temperature1Delivery2Label, temperature2Delivery2Label,
+                temperature1BackFlow2Label, temperature2BackFlow2Label, delivery2TextField, backFlow2TextField);
 
-        ledBeaker3ToggleButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue) {
-                setTempLabelsToNull(temperature1Delivery3Label, temperature2Delivery3Label,
-                        temperature1BackFlow3Label, temperature2BackFlow3Label);
-                setDeliveryBackFlowFieldsToNull(delivery3TextField, backFlow3TextField);
-            }
-        });
+        initLedBeakerListener(ledBeaker3ToggleButton, temperature1Delivery3Label, temperature2Delivery3Label,
+                temperature1BackFlow3Label, temperature2BackFlow3Label, delivery3TextField, backFlow3TextField);
 
-        ledBeaker4ToggleButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue) {
-                setTempLabelsToNull(temperature1Delivery4Label, temperature2Delivery4Label,
-                        temperature1BackFlow4Label, temperature2BackFlow4Label);
-                setDeliveryBackFlowFieldsToNull(delivery4TextField, backFlow4TextField);
-            }
-        });
+        initLedBeakerListener(ledBeaker4ToggleButton, temperature1Delivery4Label, temperature2Delivery4Label,
+                temperature1BackFlow4Label, temperature2BackFlow4Label, delivery4TextField, backFlow4TextField);
 
         checkBoxFlowVisible.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue)
@@ -219,6 +199,19 @@ public abstract class FlowUpdater {
         backFlowComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
                 refreshValues(newValue, Flow.BACK_FLOW));
 
+    }
+
+    private void initLedBeakerListener(ToggleButton ledBeaker, Label temperature1Delivery, Label temperature2Delivery,
+                                       Label temperature1BackFlow, Label temperature2BackFlow, TextField delivery, TextField backFlow) {
+        ledBeaker.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if (oldValue) {
+                setTempLabelsToNull(temperature1Delivery, temperature2Delivery,
+                        temperature1BackFlow, temperature2BackFlow);
+                setDeliveryBackFlowFieldsToNull(delivery, backFlow);
+            }
+            delivery.setEditable(newValue);
+            backFlow.setEditable(newValue);
+        });
     }
 
     private void refreshValues(String selectedItem, Flow flow) {
