@@ -1,10 +1,11 @@
 package fi.stardex.sisu.ui.updaters;
 
 
-import fi.stardex.sisu.annotations.InitListeners;
 import fi.stardex.sisu.combobox_values.FlowUnits;
+import fi.stardex.sisu.combobox_values.InjectorChannel;
 import fi.stardex.sisu.registers.flow.ModbusMapFlow;
 import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.util.converters.FirmwareDataConverter;
 import fi.stardex.sisu.version.FlowFirmwareVersion;
@@ -14,7 +15,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class FlowUpdater {
+public abstract class FlowUpdater {
 
     protected FirmwareDataConverter firmwareDataConverter;
 
@@ -80,6 +81,8 @@ public class FlowUpdater {
 
     protected CheckBox checkBoxFlowVisible;
 
+    protected ComboBox<InjectorChannel> comboInjectorConfig;
+
     protected ToggleButton ledBeaker1ToggleButton;
 
     protected ToggleButton ledBeaker2ToggleButton;
@@ -91,7 +94,7 @@ public class FlowUpdater {
     protected ToggleButton injectorSectionPowerSwitch;
 
     public FlowUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
-                       CheckBox checkBoxFlowVisible, FirmwareDataConverter firmwareDataConverter) {
+                       SettingsController settingsController, FirmwareDataConverter firmwareDataConverter) {
 
         this.firmwareDataConverter = firmwareDataConverter;
         temperature1Delivery1Label = flowController.getTemperature1Delivery1();
@@ -120,7 +123,8 @@ public class FlowUpdater {
         backFlow4TextField = flowController.getBackFlow4TextField();
         deliveryFlowComboBox = flowController.getDeliveryFlowComboBox();
         backFlowComboBox = flowController.getBackFlowComboBox();
-        this.checkBoxFlowVisible = checkBoxFlowVisible;
+        checkBoxFlowVisible = settingsController.getCheckBoxFlowVisible();
+        comboInjectorConfig = settingsController.getComboInjectorConfig();
         ledBeaker1ToggleButton = injectorSectionController.getLedBeaker1Controller().getLedBeaker();
         ledBeaker2ToggleButton = injectorSectionController.getLedBeaker2Controller().getLedBeaker();
         ledBeaker3ToggleButton = injectorSectionController.getLedBeaker3Controller().getLedBeaker();
@@ -160,8 +164,7 @@ public class FlowUpdater {
 
     }
 
-    @InitListeners
-    private void initListeners() {
+    protected void initListeners() {
 
         System.err.println("init listeners");
 
@@ -216,13 +219,25 @@ public class FlowUpdater {
     }
 
     protected void refreshValues(String selectedItem, Flow flow) {
-        if (FlowFirmwareVersion.getFlowFirmwareVersion() == FlowFirmwareVersion.FLOW_MASTER)
-            showOnChosenFlowUnit(ModbusMapFlow.Channel1Level.getLastValue().toString(), selectedItem, flow);
-        else if (FlowFirmwareVersion.getFlowFirmwareVersion() == FlowFirmwareVersion.FLOW_STREAM)
-            showOnChosenFlowUnit(Arrays.asList(ModbusMapFlow.Channel1Level.getLastValue().toString(),
-                    ModbusMapFlow.Channel2Level.getLastValue().toString(),
-                    ModbusMapFlow.Channel3Level.getLastValue().toString(),
-                    ModbusMapFlow.Channel4Level.getLastValue().toString()), selectedItem, flow);
+
+        if (FlowFirmwareVersion.getFlowFirmwareVersion() == FlowFirmwareVersion.FLOW_MASTER) {
+            if (flow == Flow.DELIVERY)
+                showOnChosenFlowUnit(ModbusMapFlow.Channel1Level.getLastValue().toString(), selectedItem, flow);
+            else if (flow == Flow.BACK_FLOW)
+                showOnChosenFlowUnit(ModbusMapFlow.Channel2Level.getLastValue().toString(), selectedItem, flow);
+        } else if (FlowFirmwareVersion.getFlowFirmwareVersion() == FlowFirmwareVersion.FLOW_STREAM) {
+            if (flow == Flow.DELIVERY)
+                showOnChosenFlowUnit(Arrays.asList(ModbusMapFlow.Channel1Level.getLastValue().toString(),
+                        ModbusMapFlow.Channel2Level.getLastValue().toString(),
+                        ModbusMapFlow.Channel3Level.getLastValue().toString(),
+                        ModbusMapFlow.Channel4Level.getLastValue().toString()), selectedItem, flow);
+            else if (flow == Flow.BACK_FLOW)
+                showOnChosenFlowUnit(Arrays.asList(ModbusMapFlow.Channel5Level.getLastValue().toString(),
+                        ModbusMapFlow.Channel6Level.getLastValue().toString(),
+                        ModbusMapFlow.Channel7Level.getLastValue().toString(),
+                        ModbusMapFlow.Channel8Level.getLastValue().toString()), selectedItem, flow);
+        }
+
     }
 
     // TODO: реализовать 3 последние опции Combo box
@@ -342,6 +357,50 @@ public class FlowUpdater {
         label2.setText(ledBeaker2ToggleButton.isSelected() ? value : null);
         label3.setText(ledBeaker3ToggleButton.isSelected() ? value : null);
         label4.setText(ledBeaker4ToggleButton.isSelected() ? value : null);
+
+    }
+
+    protected void runOnSingleChannelMode(FlowFirmwareVersion version) {
+
+        String value;
+
+        if ((value = ModbusMapFlow.Channel1Level.getLastValue().toString()) != null)
+            showOnChosenFlowUnit(value, deliveryFlowComboBox.getSelectionModel().getSelectedItem(), Flow.DELIVERY);
+
+        if ((value = (version == FlowFirmwareVersion.FLOW_MASTER) ? ModbusMapFlow.Channel2Level.getLastValue().toString()
+                : ModbusMapFlow.Channel5Level.getLastValue().toString()) != null)
+            showOnChosenFlowUnit(value, backFlowComboBox.getSelectionModel().getSelectedItem(), Flow.BACK_FLOW);
+
+        if ((value = ModbusMapFlow.Channel1Temperature1.getLastValue().toString()) != null) {
+            convertedValue.append(firmwareDataConverter.
+                    roundToOneDecimalPlace(firmwareDataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
+            setTempLabels(temperature1Delivery1Label, temperature1Delivery2Label,
+                    temperature1Delivery3Label, temperature1Delivery4Label, convertedValue.toString());
+            convertedValue.setLength(0);
+        }
+        if ((value = ModbusMapFlow.Channel1Temperature2.getLastValue().toString()) != null) {
+            convertedValue.append(firmwareDataConverter.
+                    roundToOneDecimalPlace(firmwareDataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
+            setTempLabels(temperature2Delivery1Label, temperature2Delivery2Label,
+                    temperature2Delivery3Label, temperature2Delivery4Label, convertedValue.toString());
+            convertedValue.setLength(0);
+        }
+        if ((value = (version == FlowFirmwareVersion.FLOW_MASTER) ? ModbusMapFlow.Channel2Temperature1.getLastValue().toString()
+                : ModbusMapFlow.Channel5Temperature1.getLastValue().toString()) != null) {
+            convertedValue.append(firmwareDataConverter.
+                    roundToOneDecimalPlace(firmwareDataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
+            setTempLabels(temperature1BackFlow1Label, temperature1BackFlow2Label,
+                    temperature1BackFlow3Label, temperature1BackFlow4Label, convertedValue.toString());
+            convertedValue.setLength(0);
+        }
+        if ((value = (version == FlowFirmwareVersion.FLOW_MASTER) ? ModbusMapFlow.Channel2Temperature2.getLastValue().toString()
+                : ModbusMapFlow.Channel5Temperature2.getLastValue().toString()) != null) {
+            convertedValue.append(firmwareDataConverter.
+                    roundToOneDecimalPlace(firmwareDataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
+            setTempLabels(temperature2BackFlow1Label, temperature2BackFlow2Label,
+                    temperature2BackFlow3Label, temperature2BackFlow4Label, convertedValue.toString());
+            convertedValue.setLength(0);
+        }
 
     }
 

@@ -50,11 +50,6 @@ public class SpringJavaConfig {
     private static final Logger logger = LoggerFactory.getLogger(SpringJavaConfig.class);
 
     @Bean
-    public InitializeListenerBeanPostProcessor initializeListenerBeanPostProcessor() {
-        return new InitializeListenerBeanPostProcessor();
-    }
-
-    @Bean
     public ConnectProcessor connectProcessor() {
         return new ConnectProcessor();
     }
@@ -250,14 +245,14 @@ public class SpringJavaConfig {
     @Autowired
     public FlowMasterUpdater flowMasterUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
                                                SettingsController settingsController, FirmwareDataConverter firmwareDataConverter) {
-        return new FlowMasterUpdater(flowController, injectorSectionController, settingsController.getCheckBoxFlowVisible(), firmwareDataConverter);
+        return new FlowMasterUpdater(flowController, injectorSectionController, settingsController, firmwareDataConverter);
     }
 
     @Bean
     @Autowired
     public FlowStreamUpdater flowStreamUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
                                                SettingsController settingsController, FirmwareDataConverter firmwareDataConverter) {
-        return new FlowStreamUpdater(flowController, injectorSectionController, settingsController.getCheckBoxFlowVisible(), firmwareDataConverter);
+        return new FlowStreamUpdater(flowController, injectorSectionController, settingsController, firmwareDataConverter);
     }
 
     @Bean
