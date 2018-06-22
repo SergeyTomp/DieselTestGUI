@@ -25,8 +25,8 @@
                <padding>
                   <Insets left="10.0" />
                </padding></Label>
-                <Spinner fx:id="widthCurrentSignal" editable="true" maxHeight="30.0" maxWidth="90.0" minHeight="30.0" minWidth="90.0" prefHeight="30.0" prefWidth="90.0" GridPane.columnIndex="1" GridPane.halignment="LEFT" />
-                <Spinner fx:id="freqCurrentSignal" editable="true" maxHeight="30.0" maxWidth="90.0" minHeight="30.0" minWidth="90.0" prefHeight="30.0" prefWidth="90.0" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="1" />
+                <Spinner fx:id="widthCurrentSignal" editable="true" maxHeight="30.0" maxWidth="90.0" minHeight="30.0" minWidth="90.0" prefHeight="30.0" prefWidth="90.0" stylesheets="@../../../css/Styling.css" GridPane.columnIndex="1" GridPane.halignment="LEFT" />
+                <Spinner fx:id="freqCurrentSignal" editable="true" maxHeight="30.0" maxWidth="90.0" minHeight="30.0" minWidth="90.0" prefHeight="30.0" prefWidth="90.0" stylesheets="@../../../css/Styling.css" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="1" />
             </children>
             <columnConstraints>
                 <ColumnConstraints halignment="LEFT" maxWidth="1.7976931348623157E308" minWidth="50.0" />

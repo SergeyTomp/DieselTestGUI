@@ -1,11 +1,13 @@
 package fi.stardex.sisu.main;
 
+import com.sun.javafx.css.StyleManager;
 import fi.stardex.sisu.logging.LogbackUncaughtExceptionHandler;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.RootLayoutController;
 import fi.stardex.sisu.util.wrappers.StatusBarWrapper;
 import it.sauronsoftware.junique.AlreadyLockedException;
 import it.sauronsoftware.junique.JUnique;
+import javafx.application.Application;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;

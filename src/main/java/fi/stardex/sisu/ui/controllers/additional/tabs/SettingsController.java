@@ -1,16 +1,24 @@
 package fi.stardex.sisu.ui.controllers.additional.tabs;
 
 import fi.stardex.sisu.combobox_values.InjectorChannel;
+import fi.stardex.sisu.combobox_values.Languages;
+import fi.stardex.sisu.util.i18n.I18N;
+import fi.stardex.sisu.util.i18n.Locales;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
 import java.util.prefs.Preferences;
 
 public class SettingsController {
+
+    @FXML
+    private ComboBox<Languages> comboLanguageConfig;
 
     @FXML
     private CheckBox checkBoxFlowVisible;
@@ -20,6 +28,9 @@ public class SettingsController {
 
     @FXML
     private CheckBox fastCodingCheckBox;
+
+    @FXML
+    private Label pressureSensorLabel;
 
     @FXML
     private RadioButton sensor1500RadioButton;
@@ -42,6 +53,9 @@ public class SettingsController {
     @FXML
     private CheckBox autoResetCheckBox;
 
+    @Autowired
+    private I18N i18N;
+
     private Preferences prefs = Preferences.userNodeForPackage(this.getClass());
 
     public ComboBox<InjectorChannel> getComboInjectorConfig() {
@@ -55,7 +69,9 @@ public class SettingsController {
     @PostConstruct
     private void init() {
 
-        checkBoxFlowVisible.setSelected(prefs.getBoolean("checkBoxFlowVisibleSelected", true));
+        bindingI18N();
+
+        comboLanguageConfig.setItems(FXCollections.observableArrayList(Languages.RUSSIAN, Languages.ENGLISH, Languages.KOREAN));
 
         autoResetCheckBox.setSelected(prefs.getBoolean("autoResetCheckBoxSelected", true));
 
@@ -63,7 +79,7 @@ public class SettingsController {
 
         fastMeasurementCheckBox.setSelected(prefs.getBoolean("fastMeasurementCheckBoxSelected", false));
 
-        comboInjectorConfig.setItems(FXCollections.observableArrayList(InjectorChannel.SINGLE_CHANNEL,InjectorChannel.MULTI_CHANNEL));
+        comboInjectorConfig.setItems(FXCollections.observableArrayList(InjectorChannel.SINGLE_CHANNEL, InjectorChannel.MULTI_CHANNEL));
         comboInjectorConfig.getSelectionModel().selectFirst();
 
         sensor1500RadioButton.setSelected(prefs.getBoolean("sensor1500RadioButtonSelected", true));
@@ -76,9 +92,13 @@ public class SettingsController {
 
         sensor2400RadioButton.setSelected(prefs.getBoolean("sensor2400RadioButtonSelected", false));
 
-        checkBoxFlowVisible.selectedProperty().addListener((observable, oldValue, newValue) -> prefs.putBoolean("checkBoxFlowVisibleSelected", newValue));
+        comboLanguageConfig.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            prefs.put("languageSelected", newValue.name());
+            System.err.println(newValue.name());
+            i18N.setLocale(Locales.getLocale(newValue.name()));
+        });
 
-        autoResetCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> prefs.putBoolean("autoResetCheckBoxSelected", newValue));
+        checkBoxFlowVisible.selectedProperty().addListener((observable, oldValue, newValue) -> prefs.putBoolean("checkBoxFlowVisibleSelected", newValue));
 
         fastCodingCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> prefs.putBoolean("fastCodingCheckBoxSelected", newValue));
 
@@ -94,6 +114,16 @@ public class SettingsController {
 
         sensor2400RadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> prefs.putBoolean("sensor2400RadioButtonSelected", newValue));
 
+        comboLanguageConfig.getSelectionModel().select(Languages.valueOf(prefs.get("languageSelected", Languages.ENGLISH.name())));
+
+        autoResetCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> prefs.putBoolean("autoResetCheckBoxSelected", newValue));
+
+        checkBoxFlowVisible.setSelected(prefs.getBoolean("checkBoxFlowVisibleSelected", true));
+    }
+
+    private void bindingI18N() {
+        pressureSensorLabel.textProperty().bind(i18N.createStringBinding("settings.pressureSensor"));
+        autoResetCheckBox.textProperty().bind(i18N.createStringBinding("settings.autoReset.CheckBox"));
     }
 
 }
