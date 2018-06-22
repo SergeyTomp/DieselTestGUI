@@ -2,7 +2,6 @@ package fi.stardex.sisu.spring;
 
 import fi.stardex.sisu.charts.TimerTasksManager;
 import fi.stardex.sisu.devices.Devices;
-import fi.stardex.sisu.parts.PiezoCoilToggleGroup;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.RootLayoutController;
@@ -16,7 +15,6 @@ import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.cr.TestBenchSectionController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
 import fi.stardex.sisu.util.ApplicationConfigHandler;
-import fi.stardex.sisu.util.rescalers.DeliveryRescaler;
 import fi.stardex.sisu.util.converters.FirmwareDataConverter;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.i18n.UTF8Control;
@@ -238,14 +236,12 @@ public class JavaFXSpringConfigure {
     @Autowired
     public VoltageController voltageController(AdditionalSectionController additionalSectionController,
                                                FirmwareDataConverter firmwareDataConverter,
-                                               InjectorSectionController injectorSectionController,
-                                               PiezoCoilToggleGroup piezoCoilToggleGroup) {
+                                               InjectorSectionController injectorSectionController) {
         VoltageController voltageController = additionalSectionController.getVoltageController();
         voltageController.setVoltAmpereProfileDialog(voltAmpereProfileDialog());
         voltageController.setParentController(additionalSectionController);
         voltageController.setInjectorSectionController(injectorSectionController);
         voltageController.setFirmwareDataConverter(firmwareDataConverter);
-        voltageController.setPiezoCoilToggleGroup(piezoCoilToggleGroup);
         return voltageController;
     }
 
@@ -271,11 +267,10 @@ public class JavaFXSpringConfigure {
     public VoltAmpereProfileController voltAmpereProfileController(ModbusRegisterProcessor ultimaModbusWriter,
                                                                    InjectorSectionController injectorSectionController,
                                                                    VoltageController voltageController,
-                                                                   PiezoCoilToggleGroup piezoCoilToggleGroup,
                                                                    FirmwareDataConverter firmwareDataConverter) {
         VoltAmpereProfileController voltAmpereProfileController = (VoltAmpereProfileController) voltAmpereProfileDialog().getController();
         voltAmpereProfileController.setUltimaModbusWriter(ultimaModbusWriter);
-        voltAmpereProfileController.setPiezoCoilToggleGroup(piezoCoilToggleGroup);
+        voltAmpereProfileController.setInjectorSectionController(injectorSectionController);
         voltAmpereProfileController.setWidthSpinner(injectorSectionController.getWidthCurrentSignal());
         voltAmpereProfileController.setVoltageController(voltageController);
         voltAmpereProfileController.setFirmwareDataConverter(firmwareDataConverter);

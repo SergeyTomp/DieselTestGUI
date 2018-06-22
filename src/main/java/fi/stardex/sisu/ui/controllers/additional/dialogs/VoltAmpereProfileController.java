@@ -1,9 +1,9 @@
 package fi.stardex.sisu.ui.controllers.additional.dialogs;
 
-import fi.stardex.sisu.parts.PiezoCoilToggleGroup;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
+import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.util.converters.FirmwareDataConverter;
 import fi.stardex.sisu.util.spinners.SpinnerManager;
 import fi.stardex.sisu.util.spinners.SpinnerValueObtainer;
@@ -84,7 +84,7 @@ public class VoltAmpereProfileController {
 
     private WidthSpinnerValueObtainer widthCurrentSignalValueObtainer = new WidthSpinnerValueObtainer(300);
 
-    private PiezoCoilToggleGroup piezoCoilToggleGroup;
+    private InjectorSectionController injectorSectionController;
 
     private FirmwareDataConverter firmwareDataConverter;
 
@@ -136,12 +136,12 @@ public class VoltAmpereProfileController {
         this.voltageController = voltageController;
     }
 
-    public void setPiezoCoilToggleGroup(PiezoCoilToggleGroup piezoCoilToggleGroup) {
-        this.piezoCoilToggleGroup = piezoCoilToggleGroup;
-    }
-
     public void setFirmwareDataConverter(FirmwareDataConverter firmwareDataConverter) {
         this.firmwareDataConverter = firmwareDataConverter;
+    }
+
+    public void setInjectorSectionController(InjectorSectionController injectorSectionController) {
+        this.injectorSectionController = injectorSectionController;
     }
 
     public Button getCancelButton() {
@@ -156,8 +156,8 @@ public class VoltAmpereProfileController {
 
         setupVAPSpinners();
 
-        piezoCoilToggleGroup.getPiezoCoilToggleGroup().selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue == piezoCoilToggleGroup.getPiezoRadioButton()) {
+        injectorSectionController.getPiezoCoilToggleGroup().selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == injectorSectionController.getPiezoRadioButton()) {
                 boostUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(30, 350, 60, 1));
             } else {
                 if (firmwareDataConverter.convertDataToInt(voltageController.getVoltage().getText()) > 75)
@@ -393,4 +393,5 @@ public class VoltAmpereProfileController {
         boostUSavedValue = boostUSpinner.getValue();
 
     }
+
 }

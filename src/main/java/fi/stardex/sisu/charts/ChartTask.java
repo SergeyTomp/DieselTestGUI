@@ -1,7 +1,6 @@
 package fi.stardex.sisu.charts;
 
 import fi.stardex.sisu.combobox_values.InjectorChannel;
-import fi.stardex.sisu.parts.PiezoCoilToggleGroup;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
@@ -33,9 +32,6 @@ public abstract class ChartTask extends TimerTask {
 
     @Autowired
     private ModbusRegisterProcessor ultimaModbusWriter;
-
-    @Autowired
-    private PiezoCoilToggleGroup piezoCoilToggleGroup;
 
     @Autowired
     private SettingsController settingsController;
@@ -95,7 +91,7 @@ public abstract class ChartTask extends TimerTask {
         double xValue = 0;
         List<XYChart.Data<Double, Double>> pointsList = new ArrayList<>();
         List<XYChart.Data<Double, Double>> piezoDelphiNegativePoints = new ArrayList<>();
-        if (piezoCoilToggleGroup.getPiezoDelphiRadioButton().isSelected()) {
+        if (injectorSectionController.getPiezoDelphiRadioButton().isSelected()) {
             for (double aData : data) {
                 pointsList.add(new XYChart.Data<>(xValue, aData / CURRENT_COEF));
                 if (xValue >= firmwareWidth) {
@@ -109,7 +105,7 @@ public abstract class ChartTask extends TimerTask {
                 xValue += X_VALUE_OFFSET;
             }
         }
-        if (piezoCoilToggleGroup.getPiezoRadioButton().isSelected()) {
+        if (injectorSectionController.getPiezoRadioButton().isSelected()) {
             double xOffset = 0;
             for (Double aData : data) {
                 pointsList.add(new XYChart.Data<>(xValue, -aData / CURRENT_COEF));
@@ -119,7 +115,7 @@ public abstract class ChartTask extends TimerTask {
                     break;
                 }
             }
-        } else if (piezoCoilToggleGroup.getPiezoDelphiRadioButton().isSelected()) {
+        } else if (injectorSectionController.getPiezoDelphiRadioButton().isSelected()) {
             int i = 0;
             for (XYChart.Data<Double, Double> point : piezoDelphiNegativePoints) {
 //                logger.warn("Point: {}", pointsList.get(i));
@@ -155,13 +151,13 @@ public abstract class ChartTask extends TimerTask {
 
         int n;
         firmwareWidth = firmwareDataConverter.convertDataToInt(ModbusMapUltima.WidthBoardOne.getLastValue().toString());
-        Toggle selectedToggle = piezoCoilToggleGroup.getPiezoCoilToggleGroup().getSelectedToggle();
+        Toggle selectedToggle = injectorSectionController.getPiezoCoilToggleGroup().getSelectedToggle();
         int offset;
 
-        if (selectedToggle == piezoCoilToggleGroup.getCoilRadioButton()) {
+        if (selectedToggle == injectorSectionController.getCoilRadioButton()) {
             offset = 200;
             n = (int) ((firmwareWidth + offset) / X_VALUE_OFFSET);
-        } else if (selectedToggle == piezoCoilToggleGroup.getPiezoRadioButton()) {
+        } else if (selectedToggle == injectorSectionController.getPiezoRadioButton()) {
             n = (int) ((firmwareWidth) / X_VALUE_OFFSET);
         } else {
             offset = firmwareWidth < 500 ? firmwareWidth : 500;

@@ -1,6 +1,5 @@
 package fi.stardex.sisu.ui.controllers.additional.tabs;
 
-import fi.stardex.sisu.parts.PiezoCoilToggleGroup;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.additional.AdditionalSectionController;
 import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
@@ -17,7 +16,9 @@ import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.control.Spinner;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -82,8 +83,6 @@ public class VoltageController {
     private VoltAmpereProfileController voltAmpereProfileController;
 
     private InjectorSectionController injectorSectionController;
-
-    private PiezoCoilToggleGroup piezoCoilToggleGroup;
 
     private ObservableList<XYChart.Data<Double, Double>> data1;
 
@@ -161,10 +160,6 @@ public class VoltageController {
 
     public void setInjectorSectionController(InjectorSectionController injectorSectionController) {
         this.injectorSectionController = injectorSectionController;
-    }
-
-    public void setPiezoCoilToggleGroup(PiezoCoilToggleGroup piezoCoilToggleGroup) {
-        this.piezoCoilToggleGroup = piezoCoilToggleGroup;
     }
 
     @PostConstruct
@@ -269,9 +264,9 @@ public class VoltageController {
 
     private void setupYAxisResizable() {
 
-        piezoCoilToggleGroup.getPiezoCoilToggleGroup().selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+        injectorSectionController.getPiezoCoilToggleGroup().selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
 
-            if (newValue == piezoCoilToggleGroup.getCoilRadioButton())
+            if (newValue == injectorSectionController.getCoilRadioButton())
                 yAxis.setUpperBound(25);
             else
                 yAxis.setUpperBound(15);
