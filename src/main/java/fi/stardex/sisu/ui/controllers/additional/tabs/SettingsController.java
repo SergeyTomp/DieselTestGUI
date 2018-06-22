@@ -75,9 +75,6 @@ public class SettingsController {
 
         autoResetCheckBox.setSelected(prefs.getBoolean("autoResetCheckBoxSelected", true));
 
-        fastCodingCheckBox.setSelected(prefs.getBoolean("fastCodingCheckBoxSelected", false));
-
-        fastMeasurementCheckBox.setSelected(prefs.getBoolean("fastMeasurementCheckBoxSelected", false));
 
         comboInjectorConfig.setItems(FXCollections.observableArrayList(InjectorChannel.SINGLE_CHANNEL, InjectorChannel.MULTI_CHANNEL));
         comboInjectorConfig.getSelectionModel().selectFirst();
@@ -94,7 +91,6 @@ public class SettingsController {
 
         comboLanguageConfig.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             prefs.put("languageSelected", newValue.name());
-            System.err.println(newValue.name());
             i18N.setLocale(Locales.getLocale(newValue.name()));
         });
 
@@ -119,11 +115,17 @@ public class SettingsController {
         autoResetCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> prefs.putBoolean("autoResetCheckBoxSelected", newValue));
 
         checkBoxFlowVisible.setSelected(prefs.getBoolean("checkBoxFlowVisibleSelected", true));
+
+        fastCodingCheckBox.setSelected(prefs.getBoolean("fastCodingCheckBoxSelected", false));
+
+        fastMeasurementCheckBox.setSelected(prefs.getBoolean("fastMeasurementCheckBoxSelected", false));
     }
 
     private void bindingI18N() {
         pressureSensorLabel.textProperty().bind(i18N.createStringBinding("settings.pressureSensor"));
         autoResetCheckBox.textProperty().bind(i18N.createStringBinding("settings.autoReset.CheckBox"));
+        fastCodingCheckBox.textProperty().bind(i18N.createStringBinding("settings.fastCoding.CheckBox"));
+        fastMeasurementCheckBox.textProperty().bind(i18N.createStringBinding("settings.fastMeasurement.CheckBox"));
     }
 
 }

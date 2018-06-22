@@ -66,12 +66,12 @@
                 <Insets left="70.0" />
             </GridPane.margin>
         </CheckBox>
-        <CheckBox fx:id="fastCodingCheckBox" mnemonicParsing="false" selected="true" styleClass="label" stylesheets="@../../../../css/Styling.css" text="%h4.settings.checkBox.fastCoding" GridPane.halignment="LEFT" GridPane.rowIndex="7">
+        <CheckBox fx:id="fastCodingCheckBox" mnemonicParsing="false" selected="true" styleClass="label" stylesheets="@../../../../css/Styling.css" text="%settings.fastCoding.CheckBox" GridPane.halignment="LEFT" GridPane.rowIndex="7">
             <GridPane.margin>
                 <Insets left="70.0" />
             </GridPane.margin>
         </CheckBox>
-        <CheckBox fx:id="fastMeasurementCheckBox" mnemonicParsing="false" selected="true" styleClass="label" stylesheets="@../../../../css/Styling.css" text="%h4.settings.checkBox.fastMeasurement" GridPane.halignment="LEFT" GridPane.rowIndex="8">
+        <CheckBox fx:id="fastMeasurementCheckBox" mnemonicParsing="false" selected="true" styleClass="label" stylesheets="@../../../../css/Styling.css" text="%settings.fastMeasurement.CheckBox" GridPane.halignment="LEFT" GridPane.rowIndex="8">
             <GridPane.margin>
                 <Insets left="70.0" />
             </GridPane.margin>
