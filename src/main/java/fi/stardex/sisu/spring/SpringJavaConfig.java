@@ -23,9 +23,11 @@ import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.updaters.*;
 import fi.stardex.sisu.util.ApplicationConfigHandler;
-import fi.stardex.sisu.util.Rescaler;
+import fi.stardex.sisu.util.rescalers.BackFlowRescaler;
+import fi.stardex.sisu.util.rescalers.DeliveryRescaler;
 import fi.stardex.sisu.util.converters.FirmwareDataConverter;
 import fi.stardex.sisu.util.i18n.I18N;
+import fi.stardex.sisu.util.rescalers.Rescaler;
 import fi.stardex.sisu.util.wrappers.StatusBarWrapper;
 import fi.stardex.sisu.version.FlowFirmwareVersion;
 import fi.stardex.sisu.version.UltimaFirmwareVersion;
@@ -296,8 +298,13 @@ public class SpringJavaConfig {
     }
 
     @Bean
-    public Rescaler rescaler() {
-        return new Rescaler();
+    public Rescaler deliveryRescaler() {
+        return new DeliveryRescaler();
+    }
+
+    @Bean
+    public Rescaler backFlowRescaler() {
+        return new BackFlowRescaler();
     }
 
     private List<Updater> addUpdaters(List<Updater> updatersList, Device targetDevice) {

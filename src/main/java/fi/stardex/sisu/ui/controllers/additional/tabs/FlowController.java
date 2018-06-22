@@ -307,18 +307,21 @@ public class FlowController {
 
         field.addEventFilter(KeyEvent.KEY_TYPED, e -> {
             TextField txt_TextField = (TextField) e.getSource();
-            if (txt_TextField.getText().length() >= TEXT_FIELD_MAX_LENGTH) {
-                e.consume();
-            }
-            if (e.getCharacter().matches("[0-9.]")) {
-                if (txt_TextField.getText().contains(".") && e.getCharacter().matches("[.]")) {
-                    e.consume();
-                } else if (txt_TextField.getText().length() == 0 && e.getCharacter().matches("[.]")) {
+            if (txt_TextField != null && txt_TextField.getText() != null) {
+                if (txt_TextField.getText().length() >= TEXT_FIELD_MAX_LENGTH) {
                     e.consume();
                 }
-            } else {
-                e.consume();
+                if (e.getCharacter().matches("[0-9.]")) {
+                    if (txt_TextField.getText().contains(".") && e.getCharacter().matches("[.]")) {
+                        e.consume();
+                    } else if (txt_TextField.getText().length() == 0 && e.getCharacter().matches("[.]")) {
+                        e.consume();
+                    }
+                } else {
+                    e.consume();
+                }
             }
+
         });
 
     }

@@ -1,9 +1,11 @@
 package fi.stardex.sisu.ui.controllers.additional;
 
 import fi.stardex.sisu.beakers.BeakerMode;
-import fi.stardex.sisu.util.Rescaler;
+import fi.stardex.sisu.util.rescalers.DeliveryRescaler;
 import fi.stardex.sisu.util.converters.FirmwareDataConverter;
+import fi.stardex.sisu.util.rescalers.Rescaler;
 import javafx.application.Platform;
+import javafx.collections.MapChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -45,10 +47,6 @@ public class BeakerController {
     private Rescaler rescaler;
 
     private FirmwareDataConverter firmwareDataConverter;
-
-    private float lastFuelLevel;
-
-    private float currentFuelLevel;
 
     private String name;
 
@@ -118,6 +116,7 @@ public class BeakerController {
         textField.textProperty().addListener((observable, oldValue, newValue) -> {
 
             if (newValue == null || newValue.equals("") || newValue.equals("0.0") || newValue.equals("0")) {
+                rescaler.getMapOfLevels().put(name, 0f);
                 makeEmpty();
                 return;
             }
@@ -130,59 +129,25 @@ public class BeakerController {
 
             float currentVal = firmwareDataConverter.roundToOneDecimalPlace(firmwareDataConverter.convertDataToFloat(newValue));
 
-            System.err.println(currentVal);
-            rescaler.getMapOfLevels().put(name, currentVal);
+            System.err.println("currentVal: " + currentVal);
+
+            rescaler.getObservableMapOfLevels().put(name, currentVal);
 
             System.err.println(rescaler.getMapOfLevels());
 
-            Platform.runLater(() -> setLevel((rectangleBeaker.getHeight() / 2) * (currentVal / rescaler.getMapOfLevels().lastEntry().getValue())));
+            float max = rescaler.getMapOfLevels().values().stream().max(Float::compare).get();
 
-//            rescaler.getSetOfLevels().add(currentVal);
-//
-//            float ratio = currentVal / rescaler.getSetOfLevels().last();
+            System.err.println("max: " + max);
 
-//            Platform.runLater(() -> setLevel((rectangleBeaker.getHeight() / 2) * ratio));
+            Platform.runLater(() -> setLevel((rectangleBeaker.getHeight() / 2) * (currentVal / max)));
 
-//            if (newValue != null && !newValue.equals("0.0") && !newValue.equals("0") && !newValue.equals("") && newValue.matches(REGEX)) {
-//
-//                currentFuelLevel = firmwareDataConverter.roundToOneDecimalPlace(firmwareDataConverter.convertDataToFloat(newValue));
-//
-//                if (oldValue != null && !oldValue.equals("0.0") && !oldValue.equals("0") && !oldValue.equals("") && oldValue.matches(REGEX))
-//                    lastFuelLevel = firmwareDataConverter.roundToOneDecimalPlace(firmwareDataConverter.convertDataToFloat(oldValue));
-//
-//                rescaler.getSetOfLevels().add(currentFuelLevel);
-//                rescaler.getSetOfLevels().remove(lastFuelLevel);
-//
-//                rescaler.setMediumLevel(currentFuelLevel);
-//
-//                ratio = currentFuelLevel / rescaler.getSetOfLevels().last();
-//
-//                Platform.runLater(() -> setLevel((rectangleBeaker.getHeight() / 2) * ratio));
-
-
-
-
-
-//            if (newValue != null && !newValue.equals("0.0") && !newValue.equals("0") && !newValue.equals("") && newValue.matches(REGEX)) {
-//                currentFuelMidHeight = firmwareDataConverter.roundToOneDecimalPlace(firmwareDataConverter.convertDataToFloat(newValue));
-//                if (currentFuelMidHeight > rescaler.getMediumLevel() * 2) {
-//                    rescaler.setMediumLevel(currentFuelMidHeight);
-//                    ratio = 1;
-//                    Platform.runLater(() -> setLevel((rectangleBeaker.getHeight() / 2) * ratio));
-//                } else {
-//                    ratio = currentFuelMidHeight / rescaler.getMediumLevel();
-//                    Platform.runLater(() -> setLevel((rectangleBeaker.getHeight() / 2) * ratio));
-//                }
-//
-//            } else
-//                makeEmpty();
 
         });
 
-//        rescaler.mediumLevelProperty().addListener((observable, oldValue, newValue) -> {
-//            if (!textField.getText().equals(""))
-//                Platform.runLater(() -> setLevel((rectangleBeaker.getHeight() / 2) * ratio));
-//        });
+        rescaler.getObservableMapOfLevels().addListener((MapChangeListener<String, Float>) change -> {
+            System.err.println("changed");
+            Platform.runLater(() -> setLevel((rectangleBeaker.getHeight() / 2) * (rescaler.getMapOfLevels().get(name) / rescaler.getMapOfLevels().values().stream().max(Float::compare).get())));
+        });
 
         rectangleBeaker.heightProperty().bind(((StackPane) beakerPane.getParent()).heightProperty());
         rectangleBeaker.widthProperty().bind(((StackPane) beakerPane.getParent()).widthProperty());
@@ -199,7 +164,7 @@ public class BeakerController {
         imageViewCenter.fitWidthProperty().bind(((StackPane) beakerPane.getParent()).widthProperty());
 
         ((StackPane) beakerPane.getParent()).heightProperty().addListener((observable, oldValue, newValue) -> {
-            setHalfFuelLevel((rectangleBeaker.getHeight() / 2));
+            setHalfFuelLevel((rectangleBeaker.getHeight() / 2) * (rescaler.getMapOfLevels().get(name) / rescaler.getMapOfLevels().values().stream().max(Float::compare).get()));
             lineLeft.setEndY(newValue.doubleValue());
             lineRight.setEndY(newValue.doubleValue());
         });
