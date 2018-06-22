@@ -65,7 +65,7 @@
             <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="150.0" spacing="4.0">
                <children>
                   <TextField fx:id="searchModelTF" />
-                  <ListView fx:id="injectorsListView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" />
+                  <ListView fx:id="modelListView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" />
                </children>
             </VBox>
          </children>

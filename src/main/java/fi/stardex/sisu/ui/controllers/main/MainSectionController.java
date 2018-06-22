@@ -1,17 +1,21 @@
 package fi.stardex.sisu.ui.controllers.main;
 
 import fi.stardex.sisu.persistence.orm.Manufacturer;
+import fi.stardex.sisu.persistence.orm.Model;
 import fi.stardex.sisu.util.ApplicationConfigHandler;
 import fi.stardex.sisu.util.view.ApplicationAppearanceChanger;
 import fi.stardex.sisu.util.view.GUIType;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import org.h2.tools.RunScript;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -52,7 +56,7 @@ public class MainSectionController {
     @FXML
     private TextField searchModelTF;
     @FXML
-    private ListView injectorsListView;
+    private ListView<Model> modelListView;
 
     @Autowired
     private ApplicationConfigHandler applicationConfigHandler;
@@ -105,6 +109,22 @@ public class MainSectionController {
         }
 
 
+        manufacturerListView.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) -> {
+            System.err.println(newValue);
+            ObservableList<Model> observableList = FXCollections.observableList(new ArrayList<>());
+            switch (GUIType.getCurrentType()) {
+                case CR_Inj:
+                    System.err.println(newValue.getInjectorsCR());
+                    observableList.setAll(newValue.getInjectorsCR());
+                    modelListView.setItems(new FilteredList<>(observableList));
+                    break;
+                case CR_Pump:
+                    break;
+                case UIS:
+                    break;
+            }
+
+        }));
 
     }
 
