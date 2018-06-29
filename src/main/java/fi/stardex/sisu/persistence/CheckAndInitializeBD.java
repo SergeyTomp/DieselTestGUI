@@ -29,6 +29,7 @@ public class CheckAndInitializeBD {
 
     @PostConstruct
     private void checkTables() {
+//        Query query = sessionFactory.openSession().createQuery("SELECT COUNT(*) FROM DEFAULT_MANUFACTURER");
         Query query = sessionFactory.openSession().createQuery("SELECT COUNT(*) FROM Manufacturer");
 
         long x = (long) query.getSingleResult();

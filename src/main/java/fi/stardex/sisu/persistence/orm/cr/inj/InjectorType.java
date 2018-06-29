@@ -1,10 +1,9 @@
 package fi.stardex.sisu.persistence.orm.cr.inj;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
+@Entity
+@Table(name = "injector_type")
 public class InjectorType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,10 +14,6 @@ public class InjectorType {
 
     public String getInjectorType() {
         return injectorType;
-    }
-
-    public void setInjectorType(String injectorType) {
-        this.injectorType = injectorType;
     }
 
     @Override

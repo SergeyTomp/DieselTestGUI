@@ -1,55 +1,44 @@
 package fi.stardex.sisu.ui.controllers.main;
 
 import fi.stardex.sisu.persistence.orm.Manufacturer;
-import fi.stardex.sisu.persistence.orm.Model;
+import fi.stardex.sisu.persistence.orm.interfaces.Model;
+import fi.stardex.sisu.ui.ViewHolder;
+import fi.stardex.sisu.ui.controllers.dialogs.ManufacturerMenuDialogController;
 import fi.stardex.sisu.util.ApplicationConfigHandler;
+import fi.stardex.sisu.util.obtainers.CurrentManufacturerObtainer;
 import fi.stardex.sisu.util.view.ApplicationAppearanceChanger;
 import fi.stardex.sisu.util.view.GUIType;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.transformation.FilteredList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
-import org.hibernate.SessionFactory;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
-import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class MainSectionController {
-
-
-
-    //TODO FOR TEST DELETE AFTER
-    @FXML
-    private TextField scriptTF;
-    @FXML
-    private Button scriptBtn;
-    @Autowired
-    private SessionFactory sessionFactory;
-    @Autowired
-    private DataSource dataSource;
-    //FINISHTESTBLOCK
-
-
     private List<String> versions = new LinkedList<>();
+
     {
-        versions.add("CR");
+        versions.add("CR Injectors");
+        versions.add("CR Pumps");
         versions.add("UIS");
     }
 
 
     @FXML
     private ComboBox<String> versionComboBox;
-    @FXML
-    private RadioButton pumpRB;
-    @FXML
-    private RadioButton injRB;
-    @FXML
-    private ToggleGroup injectorOrPump;
 
     @FXML
     private ListView<Manufacturer> manufacturerListView;
@@ -59,9 +48,15 @@ public class MainSectionController {
     private ListView<Model> modelListView;
 
     @Autowired
+    private CurrentManufacturerObtainer currentManufacturerObtainer;
+    @Autowired
     private ApplicationConfigHandler applicationConfigHandler;
     @Autowired
     private ApplicationAppearanceChanger applicationAppearanceChanger;
+    @Autowired
+    private ViewHolder manufacturerMenuDialog;
+
+    private Stage manufacturerDialogStage;
 
     @PostConstruct
     private void init() {
@@ -73,54 +68,63 @@ public class MainSectionController {
 
             switch (newValue) {
                 case "UIS":
-                    unselectAll();
-                    changeToUIS();
+                    applicationAppearanceChanger.changeToUIS();
                     break;
-                case "CR":
-                    unselectAll();
-                    changeToCR();
+                case "CR Injectors":
+                    applicationAppearanceChanger.changeToCRInj();
+                    break;
+                case "CR Pumps":
+                    applicationAppearanceChanger.changeToCRPump();
                     break;
             }
         });
 
-        injectorOrPump.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
-            if (versionComboBox.getSelectionModel().getSelectedItem().equalsIgnoreCase("CR")) {
-                if (injectorOrPump.getSelectedToggle() == injRB) {
-                    GUIType.setCurrentType(GUIType.CR_Inj);
-                    applicationConfigHandler.put("GUI_Type", "CR_Inj");
-                    applicationAppearanceChanger.changeToCRInj();
-                } else if (injectorOrPump.getSelectedToggle() == pumpRB) {
-                    GUIType.setCurrentType(GUIType.CR_Pump);
-                    applicationConfigHandler.put("GUI_Type", "CR_Pump");
-                    applicationAppearanceChanger.changeToCRPump();
-                }
-            }
-        });
 
         switch (GUIType.getByString(applicationConfigHandler.get("GUI_Type"))) {
             case UIS:
                 versionComboBox.getSelectionModel().select("UIS");
                 break;
             case CR_Inj:
-                versionComboBox.getSelectionModel().select("CR");
+                versionComboBox.getSelectionModel().select("CR Injectors");
                 break;
             case CR_Pump:
-                versionComboBox.getSelectionModel().select("CR");
+                versionComboBox.getSelectionModel().select("CR Pumps");
         }
 
+        ContextMenu manufacturerMenu = new ContextMenu();
+        MenuItem newManufacturer = new MenuItem("New");
+        newManufacturer.setOnAction(new ManufacturerMenuEventHandler("New manufacturer", ManufacturerMenuDialogController::setNew));
+        MenuItem editManufacturer = new MenuItem("Edit");
+        editManufacturer.setOnAction(new ManufacturerMenuEventHandler("Edit manufacturer.", ManufacturerMenuDialogController::setEdit));
+        MenuItem deleteManufacturer = new MenuItem("Delete");
+        deleteManufacturer.setOnAction(new ManufacturerMenuEventHandler("Delete manufacturer", ManufacturerMenuDialogController::setDelete));
+
+        manufacturerListView.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            if (event.getButton() == MouseButton.SECONDARY) {
+                manufacturerMenu.getItems().clear();
+                manufacturerMenu.getItems().add(newManufacturer);
+                if(currentManufacturerObtainer.getCurrentManufacturer().isCustom())
+                    manufacturerMenu.getItems().addAll(editManufacturer, deleteManufacturer);
+                manufacturerMenu.show(manufacturerListView, event.getScreenX(), event.getScreenY());
+            } else
+                manufacturerMenu.hide();
+        });
 
         manufacturerListView.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) -> {
-            System.err.println(newValue);
             ObservableList<Model> observableList = FXCollections.observableList(new ArrayList<>());
+            currentManufacturerObtainer.setDefaultManufacturer(newValue);
             switch (GUIType.getCurrentType()) {
                 case CR_Inj:
-                    System.err.println(newValue.getInjectorsCR());
-                    observableList.setAll(newValue.getInjectorsCR());
-                    modelListView.setItems(new FilteredList<>(observableList));
+                    //TODO
+                    System.err.println("IN DEVELOPMENT");
                     break;
                 case CR_Pump:
+                    //TODO
+                    System.err.println("IN DEVELOPMENT");
                     break;
                 case UIS:
+                    //TODO
+                    System.err.println("IN DEVELOPMENT");
                     break;
             }
 
@@ -128,25 +132,33 @@ public class MainSectionController {
 
     }
 
-    private void changeToUIS() {
-        GUIType.setCurrentType(GUIType.UIS);
-        applicationConfigHandler.put("GUI_Type", "UIS");
-        applicationAppearanceChanger.changeToUIS();
-        injRB.setSelected(true);
-        pumpRB.setDisable(true);
-    }
-
-    private void changeToCR() {
-        injRB.setSelected(true);
-        pumpRB.setDisable(false);
-    }
-
-    private void unselectAll() {
-        injRB.setSelected(false);
-        pumpRB.setSelected(false);
-    }
-
     public ListView<Manufacturer> getManufacturerListView() {
         return manufacturerListView;
+    }
+
+    private class ManufacturerMenuEventHandler implements EventHandler<ActionEvent> {
+        private String title;
+        private Consumer<ManufacturerMenuDialogController> dialogType;
+
+        public ManufacturerMenuEventHandler(String title, Consumer<ManufacturerMenuDialogController> dialogType) {
+            this.title = title;
+            this.dialogType = dialogType;
+        }
+
+        @Override
+        public void handle(ActionEvent event) {
+            if(manufacturerDialogStage == null) {
+                manufacturerDialogStage = new Stage();
+                manufacturerDialogStage.setScene(new Scene(manufacturerMenuDialog.getView(), 200, 130));
+                manufacturerDialogStage.setResizable(false);
+                manufacturerDialogStage.initModality(Modality.APPLICATION_MODAL);
+//                manufacturerDialogStage.initStyle(StageStyle.UNDECORATED);
+                ((ManufacturerMenuDialogController) manufacturerMenuDialog.getController()).setStage(manufacturerDialogStage);
+            }
+            System.err.println(title);
+            manufacturerDialogStage.setTitle(title);
+            dialogType.accept((ManufacturerMenuDialogController) manufacturerMenuDialog.getController());
+            manufacturerDialogStage.show();
+        }
     }
 }

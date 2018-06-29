@@ -18,8 +18,8 @@ import javax.sql.DataSource;
 import java.util.Properties;
 
 @Configuration
-@EnableJpaRepositories
-@PropertySource("classpath:properties/application.properties")
+@EnableJpaRepositories(basePackages = "fi.stardex.sisu.persistence.repos")
+@PropertySource("classpath:properties/app.properties")
 public class DbConfig {
 
     @Value("${data.source.url}")
@@ -42,7 +42,7 @@ public class DbConfig {
 
     @Bean
 //    @DependsOn("liquibase")
-    public LocalContainerEntityManagerFactoryBean entityManagerFactoryBean() {
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
         LocalContainerEntityManagerFactoryBean emFactory = new LocalContainerEntityManagerFactoryBean();
         emFactory.setDataSource(dataSource());
         emFactory.setPersistenceProviderClass(HibernatePersistenceProvider.class);
@@ -53,21 +53,21 @@ public class DbConfig {
         jpaProperties.setProperty("hibernate.format_sql", "true");
         jpaProperties.setProperty("hibernate.use_sql_comments", "true");
         emFactory.setJpaProperties(jpaProperties);
-        emFactory.setPackagesToScan("fi.stardex.sisu.persistence");
+        emFactory.setPackagesToScan("fi.stardex.sisu.persistence.orm");
         return emFactory;
     }
 
     @Bean
     public JpaTransactionManager transactionManager() {
         JpaTransactionManager transactionManager = new JpaTransactionManager();
-        transactionManager.setEntityManagerFactory(entityManagerFactoryBean().getObject());
+        transactionManager.setEntityManagerFactory(entityManagerFactory().getObject());
         return transactionManager;
     }
 
     @Bean
     public FactoryBean<SessionFactory> sessionFactory() {
         HibernateJpaSessionFactoryBean factoryBean = new HibernateJpaSessionFactoryBean();
-        factoryBean.setEntityManagerFactory(entityManagerFactoryBean().getObject());
+        factoryBean.setEntityManagerFactory(entityManagerFactory().getObject());
         return factoryBean;
     }
 

@@ -1,28 +1,27 @@
 package fi.stardex.sisu.persistence.orm;
 
-import fi.stardex.sisu.persistence.orm.cr.inj.InjectorCR;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 
-import javax.persistence.*;
-import java.util.List;
-
-@Entity(name = "Manufacturer")
-public class Manufacturer implements Comparable<Manufacturer> {
+@Entity
+@Table(name = "Manufacturer")
+public class Manufacturer {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int id;
-
     @Column(unique = true)
     private String manufacturer;
 
-    @Column(name = "display_order", unique = true, nullable = false)
-    private Integer displayOrder;
+    @Column(name = "is_custom")
+    private Boolean isCustom;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "manufacturer")
-    private List<InjectorCR> injectorsCR;
+    public void setManufacturer(String manufacturer) {
+        this.manufacturer = manufacturer;
+    }
 
-    public List<InjectorCR> getInjectorsCR() {
-        return injectorsCR;
+    public String getManufacturer() {
+        return manufacturer;
     }
 
     @Override
@@ -30,8 +29,11 @@ public class Manufacturer implements Comparable<Manufacturer> {
         return manufacturer;
     }
 
-    @Override
-    public int compareTo(Manufacturer o) {
-        return displayOrder - o.displayOrder;
+    public boolean isCustom() {
+        return isCustom;
+    }
+
+    public void setCustom(boolean custom) {
+        isCustom = custom;
     }
 }
