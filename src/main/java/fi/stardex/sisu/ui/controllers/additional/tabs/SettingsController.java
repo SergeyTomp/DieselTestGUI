@@ -122,7 +122,7 @@ public class SettingsController {
     }
 
     private void bindingI18N() {
-        pressureSensorLabel.textProperty().bind(i18N.createStringBinding("settings.pressureSensor"));
+        pressureSensorLabel.textProperty().bind(i18N.createStringBinding("settings.pressureSensor.Label"));
         autoResetCheckBox.textProperty().bind(i18N.createStringBinding("settings.autoReset.CheckBox"));
         fastCodingCheckBox.textProperty().bind(i18N.createStringBinding("settings.fastCoding.CheckBox"));
         fastMeasurementCheckBox.textProperty().bind(i18N.createStringBinding("settings.fastMeasurement.CheckBox"));

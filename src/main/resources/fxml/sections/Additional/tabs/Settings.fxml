@@ -13,7 +13,7 @@
 
 <GridPane prefHeight="241.0" prefWidth="506.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController">
     <children>
-        <Label fx:id="pressureSensorLabel" text="%settings.pressureSensor" GridPane.halignment="LEFT" GridPane.rowIndex="0">
+        <Label fx:id="pressureSensorLabel" text="%settings.pressureSensor.Label" GridPane.halignment="LEFT" GridPane.rowIndex="0">
             <GridPane.margin>
                 <Insets left="70.0" />
             </GridPane.margin>
