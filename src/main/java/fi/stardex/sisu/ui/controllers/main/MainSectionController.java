@@ -2,9 +2,14 @@ package fi.stardex.sisu.ui.controllers.main;
 
 import fi.stardex.sisu.persistence.orm.Manufacturer;
 import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
+import fi.stardex.sisu.persistence.orm.cr.inj.VoltAmpereProfile;
 import fi.stardex.sisu.persistence.orm.interfaces.Model;
 import fi.stardex.sisu.persistence.repos.cr.InjectorsRepository;
+import fi.stardex.sisu.persistence.repos.cr.VoltAmpereProfileRepository;
+import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
+import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.ViewHolder;
+import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
 import fi.stardex.sisu.ui.controllers.dialogs.ManufacturerMenuDialogController;
 import fi.stardex.sisu.ui.controllers.dialogs.NewEditInjectorDialogController;
 import fi.stardex.sisu.util.ApplicationConfigHandler;
@@ -26,6 +31,7 @@ import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 public class MainSectionController {
@@ -45,6 +51,7 @@ public class MainSectionController {
         versions.add("UIS");
     }
 
+    private static final float ONE_AMPERE_MULTIPLY = 93.07f;
 
     @FXML
     private ComboBox<String> versionComboBox;
@@ -66,6 +73,8 @@ public class MainSectionController {
     private ViewHolder manufacturerMenuDialog;
     @Autowired
     private ViewHolder newEditInjectorDialog;
+    @Autowired
+    private VoltAmpereProfileController voltAmpereProfileController;
 
     @Autowired
     private InjectorsRepository injectorsRepository;
@@ -93,7 +102,6 @@ public class MainSectionController {
                     break;
             }
         });
-
 
         switch (GUIType.getByString(applicationConfigHandler.get("GUI_Type"))) {
             case UIS:
@@ -130,6 +138,24 @@ public class MainSectionController {
             modelListView.getItems().setAll(injectorsRepository.findByManufacturerAndIsCustom(currentManufacturerObtainer.getCurrentManufacturer(),
                     !newValue.equals(defaultRB)));
         }));
+
+        modelListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                Injector injector = injectorsRepository.findByInjectorCode(newValue.toString());
+                VoltAmpereProfile voltAmpereProfile = injector.getVoltAmpereProfile();
+
+                voltAmpereProfileController.getBoostUSpinner().getValueFactory().setValue(voltAmpereProfile.getBoostU());
+                voltAmpereProfileController.getFirstWSpinner().getValueFactory().setValue(voltAmpereProfile.getFirstW());
+                voltAmpereProfileController.getFirstISpinner().getValueFactory().setValue(voltAmpereProfile.getFirstI());
+                voltAmpereProfileController.getSecondISpinner().getValueFactory().setValue(voltAmpereProfile.getSecondI());
+                voltAmpereProfileController.getBoostISpinner().getValueFactory().setValue(voltAmpereProfile.getBoostI());
+                voltAmpereProfileController.getBatteryUSpinner().getValueFactory().setValue(voltAmpereProfile.getBatteryU());
+                voltAmpereProfileController.getNegativeUSpinner().getValueFactory().setValue(voltAmpereProfile.getNegativeU());
+                voltAmpereProfileController.getEnableBoostToggleButton().setSelected(voltAmpereProfile.getBoostDisable());
+
+                voltAmpereProfileController.getApplyButton().fire();
+            }
+        });
 
     }
 

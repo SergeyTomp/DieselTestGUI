@@ -41,6 +41,50 @@ public class VoltAmpereProfile {
     @Column(name = "boost_disable")
     private Boolean boostDisable;
 
+    public String getProfileName() {
+        return profileName;
+    }
+
+    public InjectorType getInjectorType() {
+        return injectorType;
+    }
+
+    public Boolean getCustom() {
+        return isCustom;
+    }
+
+    public Integer getBoostU() {
+        return boostU;
+    }
+
+    public Integer getBatteryU() {
+        return batteryU;
+    }
+
+    public Double getBoostI() {
+        return boostI;
+    }
+
+    public Double getFirstI() {
+        return firstI;
+    }
+
+    public Integer getFirstW() {
+        return firstW;
+    }
+
+    public Double getSecondI() {
+        return secondI;
+    }
+
+    public Integer getNegativeU() {
+        return negativeU;
+    }
+
+    public Boolean getBoostDisable() {
+        return boostDisable;
+    }
+
     public VoltAmpereProfile() {
     }
 

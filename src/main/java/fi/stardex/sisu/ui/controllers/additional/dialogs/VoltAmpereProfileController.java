@@ -71,8 +71,6 @@ public class VoltAmpereProfileController {
 
     private Stage stage;
 
-    private boolean boostToggleButtonDisabled = true;
-
     private VoltageController voltageController;
 
     private List<Spinner> listOfVAPSpinners = new ArrayList<>();
@@ -139,6 +137,14 @@ public class VoltAmpereProfileController {
         return cancelButton;
     }
 
+    public Button getApplyButton() {
+        return applyButton;
+    }
+
+    public ToggleButton getEnableBoostToggleButton() {
+        return enableBoostToggleButton;
+    }
+
     // FIXME: при изменении значения в спиннере которое равно значению с прошивки красным перестают гореть оба значения, хотя значение спиннера еще не было подтверждено нажатием Apply
     @PostConstruct
     private void init() {
@@ -173,7 +179,7 @@ public class VoltAmpereProfileController {
 
     private void setupEnableBoostToggleButton() {
 
-        enableBoostToggleButton.setSelected(boostToggleButtonDisabled);
+        enableBoostToggleButton.setSelected(true);
         enableBoostToggleButton.setText("Boost_U disabled");
         enableBoostToggleButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
@@ -181,7 +187,6 @@ public class VoltAmpereProfileController {
             } else {
                 enableBoostToggleButton.setText("Boost_U enabled");
             }
-            boostToggleButtonDisabled = newValue;
         });
 
     }
@@ -223,7 +228,8 @@ public class VoltAmpereProfileController {
         applyButton.setOnAction(event -> {
             listOfVAPSpinners.forEach(e -> e.increment(0));
             sendVAPRegisters();
-            stage.close();
+            if (stage != null)
+                stage.close();
         });
 
     }
@@ -311,6 +317,7 @@ public class VoltAmpereProfileController {
         double secondIValue = secondISpinner.getValue();
         int firstWValue = firstWSpinner.getValue();
         int widthValue = widthCurrentSignal.getValue();
+        boolean boostToggleButtonSelected = enableBoostToggleButton.isSelected();
 
         firstIValue = (boostIValue - firstIValue >= 0.5) ? firstIValue : firstIValue - 0.5;
         secondIValue = (firstIValue - secondIValue >= 0.5) ? secondIValue : secondIValue - 0.5;
@@ -339,10 +346,10 @@ public class VoltAmpereProfileController {
         ultimaModbusWriter.add(ModbusMapUltima.SecondIBoardFour, secondIValue * ONE_AMPERE_MULTIPLY);
         ultimaModbusWriter.add(ModbusMapUltima.FirstWBoardFour, firstWValue);
         ultimaModbusWriter.add(ModbusMapUltima.WidthBoardFour, widthValue);
-        ultimaModbusWriter.add(ModbusMapUltima.StartOnBatteryUOne, boostToggleButtonDisabled);
-        ultimaModbusWriter.add(ModbusMapUltima.StartOnBatteryUTwo, boostToggleButtonDisabled);
-        ultimaModbusWriter.add(ModbusMapUltima.StartOnBatteryUThree, boostToggleButtonDisabled);
-        ultimaModbusWriter.add(ModbusMapUltima.StartOnBatteryUFour, boostToggleButtonDisabled);
+        ultimaModbusWriter.add(ModbusMapUltima.StartOnBatteryUOne, boostToggleButtonSelected);
+        ultimaModbusWriter.add(ModbusMapUltima.StartOnBatteryUTwo, boostToggleButtonSelected);
+        ultimaModbusWriter.add(ModbusMapUltima.StartOnBatteryUThree, boostToggleButtonSelected);
+        ultimaModbusWriter.add(ModbusMapUltima.StartOnBatteryUFour, boostToggleButtonSelected);
         System.err.println("boostUSpinner: " + boostUSpinner.getValue());
         System.err.println("batteryUSpinner: " + batteryUSpinner.getValue());
         System.err.println("negativeUSpinner: " + negativeValue);
@@ -351,10 +358,10 @@ public class VoltAmpereProfileController {
         System.err.println("secondISpinner: " + secondIValue);
         System.err.println("firstWSpinner: " + firstWValue);
         System.err.println("widthCurrentSignal: " + widthValue);
-        System.err.println("StartOnBatteryUOne: " + boostToggleButtonDisabled);
-        System.err.println("StartOnBatteryUTwo: " + boostToggleButtonDisabled);
-        System.err.println("StartOnBatteryUThree: " + boostToggleButtonDisabled);
-        System.err.println("StartOnBatteryUFour: " + boostToggleButtonDisabled);
+        System.err.println("StartOnBatteryUOne: " + boostToggleButtonSelected);
+        System.err.println("StartOnBatteryUTwo: " + boostToggleButtonSelected);
+        System.err.println("StartOnBatteryUThree: " + boostToggleButtonSelected);
+        System.err.println("StartOnBatteryUFour: " + boostToggleButtonSelected);
 
     }
 

@@ -16,7 +16,7 @@ public class Injector implements Model {
     @JoinColumn(name = "manufacturer")
     private Manufacturer manufacturer;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "volt_ampere_profile")
     private VoltAmpereProfile voltAmpereProfile;
 
@@ -34,6 +34,10 @@ public class Injector implements Model {
 
     @Column(name = "is_custom")
     private Boolean isCustom;
+
+    public VoltAmpereProfile getVoltAmpereProfile() {
+        return voltAmpereProfile;
+    }
 
     @Override
     public String toString() {
