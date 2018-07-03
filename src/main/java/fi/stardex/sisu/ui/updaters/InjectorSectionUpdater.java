@@ -2,21 +2,22 @@ package fi.stardex.sisu.ui.updaters;
 
 import fi.stardex.sisu.annotations.Module;
 import fi.stardex.sisu.devices.Device;
-import fi.stardex.sisu.registers.modbusmaps.ModbusMapUltima;
+import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
-import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
+import fi.stardex.sisu.util.converters.FirmwareDataConverter;
 
 @Module(value = Device.ULTIMA)
 public class InjectorSectionUpdater implements Updater {
 
     private VoltageController voltageController;
 
-    private InjectorSectionController injectorSectionController;
+    private FirmwareDataConverter firmwareDataConverter;
 
-    public InjectorSectionUpdater(VoltageController voltageController, InjectorSectionController injectorSectionController) {
+    private static final float ONE_AMPERE_MULTIPLY = 93.07f;
+
+    public InjectorSectionUpdater(VoltageController voltageController, FirmwareDataConverter firmwareDataConverter) {
         this.voltageController = voltageController;
-        this.injectorSectionController = injectorSectionController;
-        injectorSectionController.labelWidthPropertyProperty().bind(voltageController.getWidth().textProperty());
+        this.firmwareDataConverter = firmwareDataConverter;
     }
 
     @Override
@@ -26,7 +27,33 @@ public class InjectorSectionUpdater implements Updater {
 
     @Override
     public void run() {
-        if(ModbusMapUltima.WidthBoardOne.getLastValue() != null)
-            voltageController.getWidth().setText(ModbusMapUltima.WidthBoardOne.getLastValue().toString());
+
+        String value;
+        Float convertedValue;
+
+        if ((value = ModbusMapUltima.WidthBoardOne.getLastValue().toString()) != null)
+            voltageController.getWidth().setText(value);
+        if ((value = ModbusMapUltima.Boost_U.getLastValue().toString()) != null)
+            voltageController.getVoltage().setText(value);
+        if ((value = ModbusMapUltima.FirstWBoardOne.getLastValue().toString()) != null)
+            voltageController.getFirstWidth().setText(value);
+        if ((value = ModbusMapUltima.FirstIBoardOne.getLastValue().toString()) != null) {
+            convertedValue = firmwareDataConverter.roundToOneDecimalPlace(firmwareDataConverter.convertDataToFloat(value) / ONE_AMPERE_MULTIPLY);
+            voltageController.getFirstCurrent().setText(convertedValue.toString());
+        }
+        if ((value = ModbusMapUltima.SecondIBoardOne.getLastValue().toString()) != null) {
+            convertedValue = firmwareDataConverter.roundToOneDecimalPlace(firmwareDataConverter.convertDataToFloat(value) / ONE_AMPERE_MULTIPLY);
+            voltageController.getSecondCurrent().setText(convertedValue.toString());
+        }
+        if ((value = ModbusMapUltima.BoostIBoardOne.getLastValue().toString()) != null) {
+            convertedValue = firmwareDataConverter.roundToOneDecimalPlace(firmwareDataConverter.convertDataToFloat(value) / ONE_AMPERE_MULTIPLY);
+            voltageController.getBoostI().setText(convertedValue.toString());
+        }
+        if ((value = ModbusMapUltima.Battery_U.getLastValue().toString()) != null)
+            voltageController.getBatteryU().setText(value);
+        if ((value = ModbusMapUltima.Negative_U.getLastValue().toString()) != null)
+            voltageController.getNegativeU().setText(value);
+
     }
+
 }

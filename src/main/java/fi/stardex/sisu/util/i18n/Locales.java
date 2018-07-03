@@ -6,8 +6,9 @@ import org.slf4j.LoggerFactory;
 import java.util.Locale;
 
 public enum Locales {
-    ENGLISH(new Locale("en","EN")),
-    RUSSIAN(new Locale("ru","RU"));
+    ENGLISH(new Locale("en","English")),
+    RUSSIAN(new Locale("ru","Russian")),
+    KOREAN(new Locale("kor", "Korean"));
 
     private static final Logger logger = LoggerFactory.getLogger(Locales.class);
 

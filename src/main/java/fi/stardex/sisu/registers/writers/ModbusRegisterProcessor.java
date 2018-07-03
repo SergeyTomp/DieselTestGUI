@@ -1,38 +1,33 @@
 package fi.stardex.sisu.registers.writers;
 
+import fi.stardex.sisu.registers.ModbusMap;
 import fi.stardex.sisu.registers.RegisterProvider;
-import fi.stardex.sisu.registers.modbusmaps.ModbusMap;
-import fi.stardex.sisu.registers.modbusmaps.ModbusMapUltima;
-import fi.stardex.sisu.ui.updaters.Updater;
 import fi.stardex.sisu.util.Pair;
-import javafx.application.Platform;
 import net.wimpi.modbus.ModbusException;
 
 import javax.annotation.PreDestroy;
-import java.util.List;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.TimeUnit;
 
-public class ModbusRegisterProcessor {
+public abstract class ModbusRegisterProcessor {
+
     private final BlockingDeque<Pair<ModbusMap, Object>> writeQueue = new LinkedBlockingDeque<>();
 
     private RegisterProvider registerProvider;
 
     private ModbusMap[] readArray;
 
-    private List<Updater> updaters;
-
     private Thread loopThread;
 
-    public ModbusRegisterProcessor(RegisterProvider registerProvider, ModbusMap[] readList, String threadName, List<Updater> updaters) {
+    protected void setLoopThread(Thread loopThread) {
+        this.loopThread = loopThread;
+    }
+
+    public ModbusRegisterProcessor(RegisterProvider registerProvider, ModbusMap[] readList) {
         this.registerProvider = registerProvider;
         this.readArray = readList;
-        this.updaters = updaters;
-
-        loopThread = new Thread(new ProcessExecutor());
-        loopThread.setName(threadName);
-        loopThread.start();
+        initThread();
     }
 
     public RegisterProvider getRegisterProvider() {
@@ -43,19 +38,21 @@ public class ModbusRegisterProcessor {
         return writeQueue.add(new Pair<>(reg, value));
     }
 
+    protected abstract void initThread();
+
     @PreDestroy
     private void preDestroy() {
         loopThread.interrupt();
     }
 
-    private class ProcessExecutor implements Runnable {
+    protected abstract class ProcessExecutor implements Runnable {
         @Override
         public void run() {
             while (!Thread.currentThread().isInterrupted()) {
                 if (!registerProvider.isConnected())
                     continue;
                 try {
-                    writeAll(2000, TimeUnit.MILLISECONDS);
+                    writeAll();
                     readAll();
                     updateAll();
                 } catch (InterruptedException e) {
@@ -64,10 +61,10 @@ public class ModbusRegisterProcessor {
             }
         }
 
-        private void writeAll(long timeout, TimeUnit timeUnit) throws InterruptedException {
+        private void writeAll() throws InterruptedException {
             do {
                 Pair<ModbusMap, Object> toWrite;
-                toWrite = writeQueue.poll(timeout, timeUnit);
+                toWrite = writeQueue.poll(500, TimeUnit.MILLISECONDS);
                 if (toWrite != null) {
                     if (!registerProvider.isConnected()) {
                         writeQueue.addFirst(toWrite);
@@ -90,11 +87,7 @@ public class ModbusRegisterProcessor {
             }
         }
 
-        private void updateAll() {
-            for (Updater updater : updaters) {
-                Platform.runLater(updater);
-            }
-        }
+        protected abstract void updateAll();
 
     }
 }

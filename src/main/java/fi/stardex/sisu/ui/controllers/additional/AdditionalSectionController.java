@@ -1,10 +1,7 @@
 package fi.stardex.sisu.ui.controllers.additional;
 
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
-import fi.stardex.sisu.ui.controllers.additional.tabs.ConnectionController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.DelayController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.*;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
@@ -54,6 +51,14 @@ public class AdditionalSectionController {
     @FXML
     private SettingsController settingsController;
 
+    @FXML
+    private FlowController flowController;
+
+    @FXML
+    public FlowController getFlowController() {
+        return flowController;
+    }
+
     public ConnectionController getConnectionController() {
         return connectionController;
     }
@@ -68,16 +73,8 @@ public class AdditionalSectionController {
         return settingsController;
     }
 
-    public TabPane getTabPane() {
-        return tabPane;
-    }
-
     public Tab getTabVoltage() {
         return tabVoltage;
-    }
-
-    @PostConstruct
-    private void init() {
     }
 
 }

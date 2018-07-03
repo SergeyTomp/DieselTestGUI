@@ -12,7 +12,7 @@ public enum UltimaFirmwareVersion {
         return 256;
     }
 
-    private static UltimaFirmwareVersion ultimaFirmwareVersion = UltimaFirmwareVersion.MULTI_CHANNEL_FIRMWARE_W_ACTIVATION;
+    private static UltimaFirmwareVersion ultimaFirmwareVersion;
 
     public static UltimaFirmwareVersion getUltimaFirmwareVersion() {
         return ultimaFirmwareVersion;

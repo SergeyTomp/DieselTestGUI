@@ -1,8 +1,10 @@
 package fi.stardex.sisu.spring;
 
 import fi.stardex.sisu.annotations.Module;
-import fi.stardex.sisu.charts.ChartTask;
-import fi.stardex.sisu.charts.TimerTasksManager;
+import fi.stardex.sisu.charts.ChartTaskFour;
+import fi.stardex.sisu.charts.ChartTaskOne;
+import fi.stardex.sisu.charts.ChartTaskThree;
+import fi.stardex.sisu.charts.ChartTaskTwo;
 import fi.stardex.sisu.connect.ConnectProcessor;
 import fi.stardex.sisu.connect.InetAddressWrapper;
 import fi.stardex.sisu.connect.ModbusConnect;
@@ -14,9 +16,11 @@ import fi.stardex.sisu.persistence.CheckAndInitializeBD;
 import fi.stardex.sisu.persistence.orm.Manufacturer;
 import fi.stardex.sisu.persistence.repos.ManufacturerRepository;
 import fi.stardex.sisu.registers.RegisterProvider;
-import fi.stardex.sisu.registers.modbusmaps.ModbusMapUltima;
+import fi.stardex.sisu.registers.flow.ModbusMapFlow;
+import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.controllers.additional.tabs.ConnectionController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
 import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
@@ -25,18 +29,32 @@ import fi.stardex.sisu.ui.controllers.main.MainSectionController;
 import fi.stardex.sisu.ui.updaters.HighPressureSectionUpdater;
 import fi.stardex.sisu.ui.updaters.InjectorSectionUpdater;
 import fi.stardex.sisu.ui.updaters.Updater;
+import fi.stardex.sisu.ui.updaters.*;
 import fi.stardex.sisu.util.ApplicationConfigHandler;
+import fi.stardex.sisu.util.converters.FirmwareDataConverter;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.obtainers.CurrentManufacturerObtainer;
+import fi.stardex.sisu.util.rescalers.BackFlowRescaler;
+import fi.stardex.sisu.util.rescalers.DeliveryRescaler;
+import fi.stardex.sisu.util.rescalers.Rescaler;
 import fi.stardex.sisu.util.wrappers.StatusBarWrapper;
+import fi.stardex.sisu.version.FlowFirmwareVersion;
 import fi.stardex.sisu.version.UltimaFirmwareVersion;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.ListView;
+import javafx.application.Platform;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.*;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Scope;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import javax.sql.DataSource;
@@ -47,6 +65,8 @@ import java.util.List;
 @Import(JavaFXSpringConfigure.class)
 @EnableScheduling
 public class SpringJavaConfig {
+
+    private static final Logger logger = LoggerFactory.getLogger(SpringJavaConfig.class);
 
     @Bean
     public ConnectProcessor connectProcessor() {
@@ -115,7 +135,7 @@ public class SpringJavaConfig {
                                 UltimaFirmwareVersion.setUltimaFirmwareVersion(UltimaFirmwareVersion.MULTI_CHANNEL_FIRMWARE_WO_FILTER);
                                 break;
                             default:
-                                UltimaFirmwareVersion.setUltimaFirmwareVersion(UltimaFirmwareVersion.MULTI_CHANNEL_FIRMWARE_WO_FILTER);
+                                logger.error("Wrong Ultima firmware version!");
                                 break;
                         }
                     }
@@ -129,8 +149,23 @@ public class SpringJavaConfig {
     public RegisterProvider flowRegisterProvider(ModbusConnect flowModbusConnect) {
         return new RegisterProvider(flowModbusConnect) {
             @Override
-            protected void setupFirmwareVersionListener() {
-                // TODO: implement listener
+            public void setupFirmwareVersionListener() {
+                flowModbusConnect.connectedPropertyProperty().addListener((observable, oldValue, newValue) -> {
+                    if (newValue) {
+                        int firmwareVersionNumber = (int) read(ModbusMapFlow.FlowMeterVersion);
+                        switch (firmwareVersionNumber) {
+                            case 0xAACC:
+                                FlowFirmwareVersion.setFlowFirmwareVersion(FlowFirmwareVersion.FLOW_MASTER);
+                                break;
+                            case 0xAABB:
+                                FlowFirmwareVersion.setFlowFirmwareVersion(FlowFirmwareVersion.FLOW_STREAM);
+                                break;
+                            default:
+                                logger.error("Wrong Flow firmware version!");
+                                break;
+                        }
+                    }
+                });
             }
         };
     }
@@ -149,27 +184,68 @@ public class SpringJavaConfig {
     @Bean
     @Autowired
     public ModbusRegisterProcessor ultimaModbusWriter(List<Updater> updatersList, RegisterProvider ultimaRegisterProvider) {
-        final List<Updater> updaters = new LinkedList<>();
-        updatersList.forEach(updater -> {
-            Module module = updater.getClass().getAnnotation(Module.class);
-            for (Device device : module.value()) {
-                if (device == Device.ULTIMA)
-                    updaters.add(updater);
+        return new ModbusRegisterProcessor(ultimaRegisterProvider, ModbusMapUltima.values()) {
+            @Override
+            protected void initThread() {
+                List<Updater> updaters = addUpdaters(updatersList, Device.ULTIMA);
+                Thread loopThread = new Thread(new ProcessExecutor() {
+                    @Override
+                    protected void updateAll() {
+                        for (Updater updater : updaters)
+                            Platform.runLater(updater);
+                    }
+                });
+                setLoopThread(loopThread);
+                loopThread.setName("Ultima register processor");
+                loopThread.start();
             }
-        });
-        return new ModbusRegisterProcessor(ultimaRegisterProvider, ModbusMapUltima.values(), "Ultima register processor", updaters);
+        };
     }
 
     @Bean
     @Autowired
-    public ModbusRegisterProcessor flowModbusWriter(RegisterProvider flowRegisterProvider) {
-        return new ModbusRegisterProcessor(flowRegisterProvider, null, "Flow register processor", null);
+    public ModbusRegisterProcessor flowModbusWriter(List<Updater> updatersList, RegisterProvider flowRegisterProvider) {
+        return new ModbusRegisterProcessor(flowRegisterProvider, ModbusMapFlow.values()) {
+            @Override
+            protected void initThread() {
+                List<Updater> updaters = addUpdaters(updatersList, Device.MODBUS_FLOW);
+                Thread loopThread = new Thread(new ProcessExecutor() {
+                    @Override
+                    protected void updateAll() {
+                        for (Updater updater : updaters) {
+                            if ((updater instanceof FlowMasterUpdater) && (FlowFirmwareVersion.getFlowFirmwareVersion() == FlowFirmwareVersion.FLOW_MASTER))
+                                Platform.runLater(updater);
+                            else if ((updater instanceof FlowStreamUpdater) && (FlowFirmwareVersion.getFlowFirmwareVersion() == FlowFirmwareVersion.FLOW_STREAM))
+                                Platform.runLater(updater);
+                        }
+                    }
+                });
+                setLoopThread(loopThread);
+                loopThread.setName("Flow register processor");
+                loopThread.start();
+            }
+        };
     }
 
+    //TODO: implement
     @Bean
     @Autowired
     public ModbusRegisterProcessor standModbusWriter(RegisterProvider standRegisterProvider) {
-        return new ModbusRegisterProcessor(standRegisterProvider, null, "Stand register processor", null);
+        return new ModbusRegisterProcessor(standRegisterProvider, null) {
+            @Override
+            protected void initThread() {
+                List<Updater> updaters = null;
+                Thread loopThread = new Thread(new ProcessExecutor() {
+                    @Override
+                    protected void updateAll() {
+
+                    }
+                });
+                setLoopThread(loopThread);
+                loopThread.setName("Stand register processor");
+                loopThread.start();
+            }
+        };
     }
 
     @Bean
@@ -180,158 +256,77 @@ public class SpringJavaConfig {
 
     @Bean
     @Autowired
-    public InjectorSectionUpdater injectorSectionUpdater(VoltageController voltageController, InjectorSectionController injectorSectionController) {
-        return new InjectorSectionUpdater(voltageController, injectorSectionController);
+    public InjectorSectionUpdater injectorSectionUpdater(VoltageController voltageController, FirmwareDataConverter firmwareDataConverter) {
+        return new InjectorSectionUpdater(voltageController, firmwareDataConverter);
     }
 
     @Bean
     @Autowired
-    public TimerTasksManager timerTasksManager(ApplicationContext applicationContext) {
-        return new TimerTasksManager(applicationContext);
+    public FlowMasterUpdater flowMasterUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
+                                               SettingsController settingsController, FirmwareDataConverter firmwareDataConverter) {
+        return new FlowMasterUpdater(flowController, injectorSectionController, settingsController, firmwareDataConverter);
     }
 
     @Bean
+    @Autowired
+    public FlowStreamUpdater flowStreamUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
+                                               SettingsController settingsController, FirmwareDataConverter firmwareDataConverter) {
+        return new FlowStreamUpdater(flowController, injectorSectionController, settingsController, firmwareDataConverter);
+    }
+
+    @Bean
+    @Qualifier("chartTaskOne")
     @Scope("prototype")
-    @Autowired
-    public ChartTask chartTaskOne(VoltageController voltageController, ModbusRegisterProcessor ultimaModbusWriter,
-                                  PiezoCoilToggleGroup piezoCoilToggleGroup, SettingsController settingsController) {
-        return new ChartTask(ultimaModbusWriter, piezoCoilToggleGroup, settingsController, voltageController) {
-            @Override
-            public ModbusMapUltima getCurrentGraph() {
-                return ModbusMapUltima.Current_graph1;
-            }
-
-            @Override
-            public ModbusMapUltima getCurrentGraphFrameNum() {
-                return ModbusMapUltima.Current_graph1_frame_num;
-            }
-
-            @Override
-            public ModbusMapUltima getCurrentGraphUpdate() {
-                return ModbusMapUltima.Current_graph1_update;
-            }
-
-            @Override
-            protected ObservableList<XYChart.Data<Double, Double>> getData() {
-                return voltageController.getData1();
-            }
-
-            @Override
-            protected int getChartNumber() {
-                return 1;
-            }
-        };
+    public ChartTaskOne chartTaskOne() {
+        return new ChartTaskOne();
     }
 
     @Bean
+    @Qualifier("ChartTaskTwo")
     @Scope("prototype")
-    @Autowired
-    public ChartTask chartTaskTwo(VoltageController voltageController, ModbusRegisterProcessor ultimaModbusWriter,
-                                  PiezoCoilToggleGroup piezoCoilToggleGroup, SettingsController settingsController) {
-        return new ChartTask(ultimaModbusWriter, piezoCoilToggleGroup, settingsController, voltageController) {
-            @Override
-            public ModbusMapUltima getCurrentGraph() {
-                return ModbusMapUltima.Current_graph2;
-            }
-
-            @Override
-            public ModbusMapUltima getCurrentGraphFrameNum() {
-                return ModbusMapUltima.Current_graph2_frame_num;
-            }
-
-            @Override
-            public ModbusMapUltima getCurrentGraphUpdate() {
-                return ModbusMapUltima.Current_graph2_update;
-            }
-
-            @Override
-            protected ObservableList<XYChart.Data<Double, Double>> getData() {
-                return voltageController.getData2();
-            }
-
-            @Override
-            protected int getChartNumber() {
-                return 2;
-            }
-        };
+    public ChartTaskTwo chartTaskTwo() {
+        return new ChartTaskTwo();
     }
 
     @Bean
+    @Qualifier("chartTaskThree")
     @Scope("prototype")
-    @Autowired
-    public ChartTask chartTaskThree(VoltageController voltageController, ModbusRegisterProcessor ultimaModbusWriter,
-                                    PiezoCoilToggleGroup piezoCoilToggleGroup, SettingsController settingsController) {
-        return new ChartTask(ultimaModbusWriter, piezoCoilToggleGroup, settingsController, voltageController) {
-            @Override
-            public ModbusMapUltima getCurrentGraph() {
-                return ModbusMapUltima.Current_graph3;
-            }
-
-            @Override
-            public ModbusMapUltima getCurrentGraphFrameNum() {
-                return ModbusMapUltima.Current_graph3_frame_num;
-            }
-
-            @Override
-            public ModbusMapUltima getCurrentGraphUpdate() {
-                return ModbusMapUltima.Current_graph3_update;
-            }
-
-            @Override
-            protected ObservableList<XYChart.Data<Double, Double>> getData() {
-                return voltageController.getData3();
-            }
-
-            @Override
-            protected int getChartNumber() {
-                return 3;
-            }
-        };
+    public ChartTaskThree chartTaskThree() {
+        return new ChartTaskThree();
     }
 
     @Bean
+    @Qualifier("chartTaskFour")
     @Scope("prototype")
-    @Autowired
-    public ChartTask chartTaskFour(VoltageController voltageController, ModbusRegisterProcessor ultimaModbusWriter,
-                                   PiezoCoilToggleGroup piezoCoilToggleGroup, SettingsController settingsController) {
-        return new ChartTask(ultimaModbusWriter, piezoCoilToggleGroup, settingsController, voltageController) {
-            @Override
-            public ModbusMapUltima getCurrentGraph() {
-                return ModbusMapUltima.Current_graph4;
-            }
-
-            @Override
-            public ModbusMapUltima getCurrentGraphFrameNum() {
-                return ModbusMapUltima.Current_graph4_frame_num;
-            }
-
-            @Override
-            public ModbusMapUltima getCurrentGraphUpdate() {
-                return ModbusMapUltima.Current_graph4_update;
-            }
-
-            @Override
-            protected ObservableList<XYChart.Data<Double, Double>> getData() {
-                return voltageController.getData4();
-            }
-
-            @Override
-            protected int getChartNumber() {
-                return 4;
-            }
-        };
+    public ChartTaskFour chartTaskFour() {
+        return new ChartTaskFour();
     }
 
     @Bean
-    @Autowired
-    public PiezoCoilToggleGroup piezoCoilToggleGroup(InjectorSectionController injectorSectionController) {
-        return new PiezoCoilToggleGroup(injectorSectionController);
+    public FirmwareDataConverter firmwareDataConverter() {
+        return new FirmwareDataConverter();
     }
 
     @Bean
-    @Autowired
-    public ActiveLeds activeLeds(InjectorSectionController injectorSectionController) {
-        return new ActiveLeds(injectorSectionController.getLedControllers());
+    public Rescaler deliveryRescaler() {
+        return new DeliveryRescaler();
+    }
+
+    @Bean
+    public Rescaler backFlowRescaler() {
+        return new BackFlowRescaler();
+    }
+
+    private List<Updater> addUpdaters(List<Updater> updatersList, Device targetDevice) {
+        List<Updater> updaters = new LinkedList<>();
+        updatersList.forEach(updater -> {
+            Module module = updater.getClass().getAnnotation(Module.class);
+            for (Device device : module.value()) {
+                if (device == targetDevice)
+                    updaters.add(updater);
+            }
+        });
+        return updaters;
     }
 
 
@@ -359,3 +354,4 @@ public class SpringJavaConfig {
         return manufacturerListView;
     }
 }
+

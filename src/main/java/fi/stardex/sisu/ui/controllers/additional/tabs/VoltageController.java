@@ -1,9 +1,10 @@
 package fi.stardex.sisu.ui.controllers.additional.tabs;
 
-import fi.stardex.sisu.styles.FontColour;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.additional.AdditionalSectionController;
 import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
+import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
+import fi.stardex.sisu.util.converters.FirmwareDataConverter;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
@@ -17,7 +18,7 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.Tab;
+import javafx.scene.control.Spinner;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -33,12 +34,7 @@ public class VoltageController {
     private Label batteryU;
 
     @FXML
-    private Label negativeU1;
-
-    @FXML
-    private Label negativeU2;
-
-    private ViewHolder voltAmpereProfileDialog;
+    private Label negativeU;
 
     @FXML
     private LineChart<Double, Double> lineChart;
@@ -67,19 +63,30 @@ public class VoltageController {
     @FXML
     private Button pulseSettingsButton;
 
+    private ViewHolder voltAmpereProfileDialog;
+
     private Stage voapStage;
 
     private AdditionalSectionController additionalSectionController;
 
     private ObjectProperty<Boolean> isTabVoltageShowing = new SimpleObjectProperty<>();
 
+    private FirmwareDataConverter firmwareDataConverter;
+
     public ObjectProperty<Boolean> isTabVoltageShowingProperty() {
         return isTabVoltageShowing;
     }
 
+    private VoltAmpereProfileController voltAmpereProfileController;
+
+    private InjectorSectionController injectorSectionController;
+
     private ObservableList<XYChart.Data<Double, Double>> data1;
+
     private ObservableList<XYChart.Data<Double, Double>> data2;
+
     private ObservableList<XYChart.Data<Double, Double>> data3;
+
     private ObservableList<XYChart.Data<Double, Double>> data4;
 
     public ObservableList<XYChart.Data<Double, Double>> getData1() {
@@ -106,7 +113,6 @@ public class VoltageController {
         return width;
     }
 
-    // TODO: добавить чтение регистров в InjectorSectionUpdater и обновление этих labels
     public Label getBoostI() {
         return boostI;
     }
@@ -115,20 +121,38 @@ public class VoltageController {
         return batteryU;
     }
 
-    public Label getNegativeU1() {
-        return negativeU1;
+    public Label getNegativeU() {
+        return negativeU;
     }
 
-    public Label getNegativeU2() {
-        return negativeU2;
+    public Label getVoltage() {
+        return voltage;
     }
+
+    public Label getFirstWidth() {
+        return firstWidth;
+    }
+
+    public Label getFirstCurrent() {
+        return firstCurrent;
+    }
+
+    public Label getSecondCurrent() {
+        return secondCurrent;
+    }
+
+    private static final String RED_COLOR_STYLE = "-fx-text-fill: red";
 
     public void setParentController(AdditionalSectionController additionalSectionController) {
         this.additionalSectionController = additionalSectionController;
     }
 
-    public AdditionalSectionController getAdditionalSectionController() {
-        return additionalSectionController;
+    public void setFirmwareDataConverter(FirmwareDataConverter firmwareDataConverter) {
+        this.firmwareDataConverter = firmwareDataConverter;
+    }
+
+    public void setInjectorSectionController(InjectorSectionController injectorSectionController) {
+        this.injectorSectionController = injectorSectionController;
     }
 
     @PostConstruct
@@ -136,20 +160,23 @@ public class VoltageController {
 
         isTabVoltageShowing.bind(additionalSectionController.getTabVoltage().selectedProperty());
 
-        width.styleProperty().bindBidirectional(FontColour.fontColourPropertyProperty());
+        setupVoltAmpereProfileDialog();
 
-        width.styleProperty().addListener((observable, oldValue, newValue) -> width.setStyle(newValue));
+        setupVAPLabels();
 
-        width.setText("300"); // widthCurrentSignal initial value
-        voltage.setText("60"); // boostUSpinner initial value
-        firstWidth.setText("500"); // firstWSpinner initial value
-        firstCurrent.setText("15.0"); // firstISpinner initial value
-        secondCurrent.setText("5.5"); // secondISpinner initial value
+        configLineChartData();
 
-        VoltAmpereProfileController voltAmpereProfileController = (VoltAmpereProfileController) voltAmpereProfileDialog.getController();
+        setupYAxisResizable();
+
+    }
+
+    private void setupVoltAmpereProfileDialog() {
+
+        voltAmpereProfileController = (VoltAmpereProfileController) voltAmpereProfileDialog.getController();
 
         pulseSettingsButton.setOnMouseClicked(event -> {
-            if(voapStage == null) {
+
+            if (voapStage == null) {
                 voapStage = new Stage();
                 voapStage.setTitle("Settings");
                 voapStage.setScene(new Scene(voltAmpereProfileDialog.getView()));
@@ -161,7 +188,35 @@ public class VoltageController {
             voltAmpereProfileController.setStage(voapStage);
             voltAmpereProfileController.saveValues();
             voapStage.show();
+
         });
+
+    }
+
+    private void setupVAPLabels() {
+
+        width.setText("300"); // widthCurrentSignal initial value
+        voltage.setText("60"); // boostUSpinner initial value
+        firstWidth.setText("500"); // firstWSpinner initial value
+        firstCurrent.setText("15.0"); // firstISpinner initial value
+        secondCurrent.setText("5.5"); // secondISpinner initial value
+        boostI.setText("21.5"); // boostISpinner initial value
+        batteryU.setText("20"); // batteryUSpinner initial value
+        negativeU.setText("48"); // negativeUSpinner initial value
+
+        width.textProperty().addListener(new LabelListener(width, injectorSectionController.getWidthCurrentSignal()));
+        voltage.textProperty().addListener(new LabelListener(voltage, voltAmpereProfileController.getBoostUSpinner()));
+        firstWidth.textProperty().addListener(new LabelListener(firstWidth, voltAmpereProfileController.getFirstWSpinner()));
+        firstCurrent.textProperty().addListener(new LabelListener(firstCurrent, voltAmpereProfileController.getFirstISpinner()));
+        secondCurrent.textProperty().addListener(new LabelListener(secondCurrent, voltAmpereProfileController.getSecondISpinner()));
+        boostI.textProperty().addListener(new LabelListener(boostI, voltAmpereProfileController.getBoostISpinner()));
+        batteryU.textProperty().addListener(new LabelListener(batteryU, voltAmpereProfileController.getBatteryUSpinner()));
+        negativeU.textProperty().addListener(new LabelListener(negativeU, voltAmpereProfileController.getNegativeUSpinner()));
+
+    }
+
+
+    private void configLineChartData() {
 
         XYChart.Series<Double, Double> series1 = new XYChart.Series<>();
         series1.setName("");
@@ -197,11 +252,57 @@ public class VoltageController {
 
     }
 
-    public void refreshVoltageLabels(Integer voltageValue, Integer firstWidthValue, Double firstCurrentValue, Double secondCurrentValue) {
-        voltage.setText(voltageValue.toString());
-        firstWidth.setText(firstWidthValue.toString());
-        firstCurrent.setText(firstCurrentValue.toString());
-        secondCurrent.setText(secondCurrentValue.toString());
+
+    private void setupYAxisResizable() {
+
+        injectorSectionController.getPiezoCoilToggleGroup().selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+
+            if (newValue == injectorSectionController.getCoilRadioButton())
+                yAxis.setUpperBound(25);
+            else
+                yAxis.setUpperBound(15);
+
+        });
+
+    }
+
+    private class LabelListener implements ChangeListener<String> {
+
+        private Label label;
+
+        private Spinner<? extends Number> spinner;
+
+        LabelListener(Label label, Spinner<? extends Number> spinner) {
+
+            this.label = label;
+            this.spinner = spinner;
+
+        }
+
+        @Override
+        public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+
+            Number spinnerValue = spinner.getValue();
+            if (spinnerValue instanceof Double) {
+                if ((Double) spinnerValue != firmwareDataConverter.convertDataToDouble(newValue))
+                    setStyle(RED_COLOR_STYLE);
+                else
+                    setStyle(null);
+            } else if (spinnerValue instanceof Integer) {
+                if ((Integer) spinnerValue != firmwareDataConverter.convertDataToInt(newValue))
+                    setStyle(RED_COLOR_STYLE);
+                else
+                    setStyle(null);
+            }
+
+        }
+
+        private void setStyle(String style) {
+
+            spinner.getEditor().setStyle(style);
+            label.setStyle(style);
+
+        }
     }
 
 }

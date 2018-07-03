@@ -1,3 +1,17 @@
+.root-layout {
+    -fx-background-image: url("../img/blue.jpg");
+}
+
+.spinner{
+    /*-fx-background-color: #b65243;*/
+    /*-fx-border-color: #383db6;*/
+}
+
+.label{
+    -textFont-color: #f9ff4c;
+    -fx-text-fill:-textFont-color;
+}
+
 .led {
 
     -textFont-color: #ffff66;

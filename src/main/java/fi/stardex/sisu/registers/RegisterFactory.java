@@ -1,6 +1,5 @@
 package fi.stardex.sisu.registers;
 
-import fi.stardex.sisu.registers.modbusmaps.ModbusMap;
 import net.wimpi.modbus.msg.*;
 import net.wimpi.modbus.procimg.Register;
 import net.wimpi.modbus.procimg.SimpleRegister;
