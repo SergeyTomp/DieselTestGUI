@@ -125,8 +125,8 @@ public abstract class FlowUpdater {
         backFlow4TextField = flowController.getBackFlow4TextField();
         deliveryFlowComboBox = flowController.getDeliveryFlowComboBox();
         backFlowComboBox = flowController.getBackFlowComboBox();
-        checkBoxFlowVisible = settingsController.getCheckBoxFlowVisible();
-        comboInjectorConfig = settingsController.getComboInjectorConfig();
+        checkBoxFlowVisible = settingsController.getFlowVisibleCheckBox();
+        comboInjectorConfig = settingsController.getInjectorsConfigComboBox();
         ledBeaker1ToggleButton = injectorSectionController.getLedBeaker1Controller().getLedBeaker();
         ledBeaker2ToggleButton = injectorSectionController.getLedBeaker2Controller().getLedBeaker();
         ledBeaker3ToggleButton = injectorSectionController.getLedBeaker3Controller().getLedBeaker();

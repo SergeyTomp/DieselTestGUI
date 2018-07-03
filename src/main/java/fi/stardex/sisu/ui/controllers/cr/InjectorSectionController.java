@@ -179,9 +179,9 @@ public class InjectorSectionController {
 
     private void setupInjectorConfigComboBox() {
 
-        setToggleGroupToLeds(settingsController.getComboInjectorConfig().getSelectionModel().getSelectedItem() == InjectorChannel.SINGLE_CHANNEL ? toggleGroup : null);
+        setToggleGroupToLeds(settingsController.getInjectorsConfigComboBox().getSelectionModel().getSelectedItem() == InjectorChannel.SINGLE_CHANNEL ? toggleGroup : null);
 
-        settingsController.getComboInjectorConfig().getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
+        settingsController.getInjectorsConfigComboBox().getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
                 setToggleGroupToLeds(newValue == InjectorChannel.SINGLE_CHANNEL ? toggleGroup : null));
     }
 
@@ -205,7 +205,7 @@ public class InjectorSectionController {
 
         LedParametersChangeListener() {
             injectorTypeProperty = piezoCoilToggleGroup.selectedToggleProperty();
-            injectorChannelProperty = settingsController.getComboInjectorConfig().getSelectionModel().selectedItemProperty();
+            injectorChannelProperty = settingsController.getInjectorsConfigComboBox().getSelectionModel().selectedItemProperty();
             freqCurrentSignal.valueProperty().addListener(this);
             injectorTypeProperty.addListener(this);
             ledControllers.forEach(s -> s.getLedBeaker().selectedProperty().addListener(this));
@@ -221,7 +221,7 @@ public class InjectorSectionController {
             } else if (newValue instanceof Toggle) {
                 if (newValue == piezoDelphiRadioButton) {
                     disableLedsExceptFirst(true);
-                    settingsController.getComboInjectorConfig().getSelectionModel().select(InjectorChannel.SINGLE_CHANNEL);
+                    settingsController.getInjectorsConfigComboBox().getSelectionModel().select(InjectorChannel.SINGLE_CHANNEL);
                     ledBeaker1Controller.getLedBeaker().setSelected(true);
                 } else {
                     disableLedsExceptFirst(false);

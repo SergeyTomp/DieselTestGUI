@@ -139,7 +139,7 @@ public abstract class ChartTask extends TimerTask {
         if(injectorSectionController.getActiveControllers().size() == 0)
             return;
 
-        if (settingsController.getComboInjectorConfig().getSelectionModel().getSelectedItem() == InjectorChannel.SINGLE_CHANNEL) {
+        if (settingsController.getInjectorsConfigComboBox().getSelectionModel().getSelectedItem() == InjectorChannel.SINGLE_CHANNEL) {
             int number = getChartNumber();
             if(number == 2 | number == 3 | number == 4)
                 return;

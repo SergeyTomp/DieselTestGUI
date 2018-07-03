@@ -17,71 +17,87 @@ import java.util.prefs.Preferences;
 
 public class SettingsController {
 
-    @FXML
-    private ComboBox<Dimension> comboFlowOutputDimension;
+    private I18N i18N;
 
-    @FXML
-    private Label languagesLabel;
+    private Preferences prefs = Preferences.userNodeForPackage(this.getClass());
 
-    @FXML
-    private Label injectorsConfigLabel;
 
-    @FXML
-    private Label regulatorsConfigLabel;
 
-    @FXML
-    private ComboBox<String> comboRegulatorsConfig;
+    // Pressure sensor
 
-    @FXML
-    private ComboBox<Languages> comboLanguageConfig;
+    @FXML private Label pressureSensorLabel;
 
-    @FXML
-    private CheckBox checkBoxFlowVisible;
+    @FXML private RadioButton sensor1500RadioButton;
+
+    @FXML private RadioButton sensor1800RadioButton;
+
+    @FXML private RadioButton sensor2000RadioButton;
+
+    @FXML private RadioButton sensor2200RadioButton;
+
+    @FXML private RadioButton sensor2400RadioButton;
+
+    // Auto Reset
+
+    @FXML private CheckBox autoResetCheckBox;
+
+    // Fast Coding
+
+    @FXML private CheckBox fastCodingCheckBox;
+
+    // Fast Measurement
 
     @FXML
     private CheckBox fastMeasurementCheckBox;
 
-    @FXML
-    private CheckBox fastCodingCheckBox;
+    // DIMAS
 
-    @FXML
-    private Label pressureSensorLabel;
+    @FXML private Label isDIMASLabel;
 
-    @FXML
-    private RadioButton sensor1500RadioButton;
+    @FXML private CheckBox isDIMASCheckBox;
 
-    @FXML
-    private RadioButton sensor1800RadioButton;
+    // Flow Visible
 
-    @FXML
-    private RadioButton sensor2000RadioButton;
+    @FXML private Label flowVisibleLabel;
 
-    @FXML
-    private RadioButton sensor2200RadioButton;
+    @FXML private CheckBox flowVisibleCheckBox;
 
-    @FXML
-    private RadioButton sensor2400RadioButton;
+    // Regulators configuration
 
-    @FXML
-    private ComboBox<InjectorChannel> comboInjectorConfig;
+    @FXML private Label regulatorsConfigLabel;
 
-    @FXML
-    private CheckBox autoResetCheckBox;
+    @FXML private ComboBox<String> regulatorsConfigComboBox;
 
-    private I18N i18N;
+    // Injectors configuration
 
-    private Preferences prefs = Preferences.userNodeForPackage(this.getClass());
+    @FXML private Label injectorsConfigLabel;
+
+    @FXML private ComboBox<InjectorChannel> injectorsConfigComboBox;
+
+    // Languages
+
+    @FXML private Label languagesLabel;
+
+    @FXML private ComboBox<Languages> languagesConfigComboBox;
+
+    // Flow output dimensions
+
+    @FXML private Label flowOutputDimensionLabel;
+
+    @FXML private ComboBox<Dimension> flowOutputDimensionsComboBox;
+
+
 
     public void setI18N(I18N i18N) {
         this.i18N = i18N;
     }
 
-    public ComboBox<InjectorChannel> getComboInjectorConfig() {
-        return comboInjectorConfig;
+    public ComboBox<InjectorChannel> getInjectorsConfigComboBox() {
+        return injectorsConfigComboBox;
     }
 
-    public CheckBox getCheckBoxFlowVisible() {
-        return checkBoxFlowVisible;
+    public CheckBox getFlowVisibleCheckBox() {
+        return flowVisibleCheckBox;
     }
 
     @PostConstruct
@@ -89,78 +105,88 @@ public class SettingsController {
 
         bindingI18N();
 
-        comboFlowOutputDimension.setItems(FXCollections.observableArrayList(Dimension.LIMIT, Dimension.PLUS_OR_MINUS));
+        setupPressureSensor();
 
-        comboRegulatorsConfig.setItems(FXCollections.observableArrayList("3", "2", "1"));
+        setupCheckBox(autoResetCheckBox, "autoResetCheckBoxSelected", true);
 
-        comboLanguageConfig.setItems(FXCollections.observableArrayList(Languages.RUSSIAN, Languages.ENGLISH, Languages.KOREAN));
+        setupCheckBox(fastCodingCheckBox, "fastCodingCheckBoxSelected", false);
 
-        autoResetCheckBox.setSelected(prefs.getBoolean("autoResetCheckBoxSelected", true));
+        setupCheckBox(fastMeasurementCheckBox, "fastMeasurementCheckBoxSelected", false);
 
+        setupCheckBox(isDIMASCheckBox, "isDIMASCheckBoxSelected", true);
 
-        comboInjectorConfig.setItems(FXCollections.observableArrayList(InjectorChannel.SINGLE_CHANNEL, InjectorChannel.MULTI_CHANNEL));
-//        comboInjectorConfig.getSelectionModel().selectFirst();
+        setupCheckBox(flowVisibleCheckBox, "checkBoxFlowVisibleSelected", true);
 
-        sensor1500RadioButton.setSelected(prefs.getBoolean("sensor1500RadioButtonSelected", true));
+        regulatorsConfigComboBox.setItems(FXCollections.observableArrayList("3", "2", "1"));
 
-        sensor1800RadioButton.setSelected(prefs.getBoolean("sensor1800RadioButtonSelected", false));
+        injectorsConfigComboBox.setItems(FXCollections.observableArrayList(InjectorChannel.SINGLE_CHANNEL, InjectorChannel.MULTI_CHANNEL));
 
-        sensor2000RadioButton.setSelected(prefs.getBoolean("sensor2000RadioButtonSelected", false));
+        languagesConfigComboBox.setItems(FXCollections.observableArrayList(Languages.RUSSIAN, Languages.ENGLISH, Languages.KOREAN));
 
-        sensor2200RadioButton.setSelected(prefs.getBoolean("sensor2200RadioButtonSelected", false));
+        flowOutputDimensionsComboBox.setItems(FXCollections.observableArrayList(Dimension.LIMIT, Dimension.PLUS_OR_MINUS));
 
-        sensor2400RadioButton.setSelected(prefs.getBoolean("sensor2400RadioButtonSelected", false));
+        setupComboBoxes();
 
-        comboInjectorConfig.getSelectionModel().select(InjectorChannel.valueOf(prefs.get("injectorsConfigSelected", InjectorChannel.SINGLE_CHANNEL.name())));
-
-        comboInjectorConfig.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> prefs.put("injectorsConfigSelected", newValue.name()));
-
-//        comboRegulatorsConfig.getSelectionModel().select(prefs.getInt("regulatorsConfigSelected", 3));
-        comboRegulatorsConfig.getSelectionModel().select(prefs.get("regulatorsConfigSelected", "3"));
-
-        comboRegulatorsConfig.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
-                prefs.put("regulatorsConfigSelected", newValue));
-
-        comboLanguageConfig.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            prefs.put("languageSelected", newValue.name());
-            i18N.setLocale(Locales.getLocale(newValue.name()));
-        });
-
-        checkBoxFlowVisible.selectedProperty().addListener((observable, oldValue, newValue) -> prefs.putBoolean("checkBoxFlowVisibleSelected", newValue));
-
-        fastCodingCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> prefs.putBoolean("fastCodingCheckBoxSelected", newValue));
-
-        fastMeasurementCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> prefs.putBoolean("fastMeasurementCheckBoxSelected", newValue));
-
-        sensor1500RadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> prefs.putBoolean("sensor1500RadioButtonSelected", newValue));
-
-        sensor1800RadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> prefs.putBoolean("sensor1800RadioButtonSelected", newValue));
-
-        sensor2000RadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> prefs.putBoolean("sensor2000RadioButtonSelected", newValue));
-
-        sensor2200RadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> prefs.putBoolean("sensor2200RadioButtonSelected", newValue));
-
-        sensor2400RadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> prefs.putBoolean("sensor2400RadioButtonSelected", newValue));
-
-        comboLanguageConfig.getSelectionModel().select(Languages.valueOf(prefs.get("languageSelected", Languages.ENGLISH.name())));
-
-        autoResetCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> prefs.putBoolean("autoResetCheckBoxSelected", newValue));
-
-        checkBoxFlowVisible.setSelected(prefs.getBoolean("checkBoxFlowVisibleSelected", true));
-
-        fastCodingCheckBox.setSelected(prefs.getBoolean("fastCodingCheckBoxSelected", false));
-
-        fastMeasurementCheckBox.setSelected(prefs.getBoolean("fastMeasurementCheckBoxSelected", false));
     }
 
     private void bindingI18N() {
+
         pressureSensorLabel.textProperty().bind(i18N.createStringBinding("settings.pressureSensor.Label"));
         autoResetCheckBox.textProperty().bind(i18N.createStringBinding("settings.autoReset.CheckBox"));
         fastCodingCheckBox.textProperty().bind(i18N.createStringBinding("settings.fastCoding.CheckBox"));
         fastMeasurementCheckBox.textProperty().bind(i18N.createStringBinding("settings.fastMeasurement.CheckBox"));
         regulatorsConfigLabel.textProperty().bind(i18N.createStringBinding("settings.regulatorsConfig.ComboBox"));
         injectorsConfigLabel.textProperty().bind(i18N.createStringBinding("settings.injectorsConfig.ComboBox"));
-        languagesLabel.textProperty().bind(i18N.createStringBinding("settings.languages.Label"));
+        languagesLabel.textProperty().bind(i18N.createStringBinding("settings.languages.ComboBox"));
+        flowOutputDimensionLabel.textProperty().bind(i18N.createStringBinding("settings.FlowOutputDimension.ComboBox"));
+        isDIMASLabel.textProperty().bind(i18N.createStringBinding("settings.isDIMAS.CheckBox"));
+        flowVisibleLabel.textProperty().bind(i18N.createStringBinding("settings.flowVisible.CheckBox"));
+
+    }
+
+    private void setupPressureSensor() {
+
+        sensor1500RadioButton.setSelected(prefs.getBoolean("sensor1500RadioButtonSelected", true));
+        sensor1800RadioButton.setSelected(prefs.getBoolean("sensor1800RadioButtonSelected", false));
+        sensor2000RadioButton.setSelected(prefs.getBoolean("sensor2000RadioButtonSelected", false));
+        sensor2200RadioButton.setSelected(prefs.getBoolean("sensor2200RadioButtonSelected", false));
+        sensor2400RadioButton.setSelected(prefs.getBoolean("sensor2400RadioButtonSelected", false));
+
+        sensor1500RadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> prefs.putBoolean("sensor1500RadioButtonSelected", newValue));
+        sensor1800RadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> prefs.putBoolean("sensor1800RadioButtonSelected", newValue));
+        sensor2000RadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> prefs.putBoolean("sensor2000RadioButtonSelected", newValue));
+        sensor2200RadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> prefs.putBoolean("sensor2200RadioButtonSelected", newValue));
+        sensor2400RadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> prefs.putBoolean("sensor2400RadioButtonSelected", newValue));
+
+    }
+
+    private void setupCheckBox(CheckBox checkBox, String prefsKey, boolean prefsValue) {
+
+        checkBox.setSelected(prefs.getBoolean(prefsKey, prefsValue));
+        checkBox.selectedProperty().addListener((observable, oldValue, newValue) -> prefs.putBoolean(prefsKey, newValue));
+
+    }
+
+    private void setupComboBoxes() {
+
+        regulatorsConfigComboBox.getSelectionModel().select(prefs.get("regulatorsConfigSelected", "3"));
+        regulatorsConfigComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> prefs.put("regulatorsConfigSelected", newValue));
+
+
+        injectorsConfigComboBox.getSelectionModel().select(InjectorChannel.valueOf(prefs.get("injectorsConfigSelected", InjectorChannel.SINGLE_CHANNEL.name())));
+        injectorsConfigComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> prefs.put("injectorsConfigSelected", newValue.name()));
+
+        languagesConfigComboBox.getSelectionModel().select(Languages.valueOf(prefs.get("languageSelected", Languages.ENGLISH.name())));
+        languagesConfigComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            prefs.put("languageSelected", newValue.name());
+            i18N.setLocale(Locales.getLocale(newValue.name()));
+        });
+
+        flowOutputDimensionsComboBox.getSelectionModel().select(Dimension.valueOf(prefs.get("flowOutputDimensionSelected", Dimension.LIMIT.name())));
+        flowOutputDimensionsComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
+                prefs.put("flowOutputDimensionSelected", newValue.name()));
+
+
     }
 
 }
