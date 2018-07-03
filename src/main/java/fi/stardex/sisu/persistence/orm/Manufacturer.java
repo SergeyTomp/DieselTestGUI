@@ -1,9 +1,9 @@
 package fi.stardex.sisu.persistence.orm;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
+
+import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "Manufacturer")
@@ -15,6 +15,9 @@ public class Manufacturer {
 
     @Column(name = "is_custom")
     private Boolean isCustom;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "manufacturer")
+    private List<Injector> injectors;
 
     public void setManufacturer(String manufacturer) {
         this.manufacturer = manufacturer;

@@ -1,15 +1,16 @@
 package fi.stardex.sisu.ui.controllers.main;
 
 import fi.stardex.sisu.persistence.orm.Manufacturer;
+import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
 import fi.stardex.sisu.persistence.orm.interfaces.Model;
+import fi.stardex.sisu.persistence.repos.cr.InjectorsRepository;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.dialogs.ManufacturerMenuDialogController;
+import fi.stardex.sisu.ui.controllers.dialogs.NewEditInjectorDialogController;
 import fi.stardex.sisu.util.ApplicationConfigHandler;
 import fi.stardex.sisu.util.obtainers.CurrentManufacturerObtainer;
 import fi.stardex.sisu.util.view.ApplicationAppearanceChanger;
 import fi.stardex.sisu.util.view.GUIType;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -28,6 +29,14 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class MainSectionController {
+
+    @FXML
+    private ToggleGroup baseType;
+    @FXML
+    private RadioButton defaultRB;
+    @FXML
+    private RadioButton customRB;
+
     private List<String> versions = new LinkedList<>();
 
     {
@@ -55,8 +64,14 @@ public class MainSectionController {
     private ApplicationAppearanceChanger applicationAppearanceChanger;
     @Autowired
     private ViewHolder manufacturerMenuDialog;
+    @Autowired
+    private ViewHolder newEditInjectorDialog;
+
+    @Autowired
+    private InjectorsRepository injectorsRepository;
 
     private Stage manufacturerDialogStage;
+    private Stage modelDialogStage;
 
     @PostConstruct
     private void init() {
@@ -91,6 +106,38 @@ public class MainSectionController {
                 versionComboBox.getSelectionModel().select("CR Pumps");
         }
 
+        initManufacturerContextMenu();
+        initModelContextMenu();
+
+        manufacturerListView.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) -> {
+            currentManufacturerObtainer.setCurrentManufacturer(newValue);
+            switch (GUIType.getCurrentType()) {
+                case CR_Inj:
+                    modelListView.getItems().setAll(injectorsRepository.findByManufacturerAndIsCustom(newValue, !defaultRB.isSelected()));
+                    break;
+                case CR_Pump:
+                    //TODO
+                    System.err.println("IN DEVELOPMENT");
+                    break;
+                case UIS:
+                    //TODO
+                    System.err.println("IN DEVELOPMENT");
+                    break;
+            }
+        }));
+
+        baseType.selectedToggleProperty().addListener(((observable, oldValue, newValue) -> {
+            modelListView.getItems().setAll(injectorsRepository.findByManufacturerAndIsCustom(currentManufacturerObtainer.getCurrentManufacturer(),
+                    !newValue.equals(defaultRB)));
+        }));
+
+    }
+
+    public ListView<Manufacturer> getManufacturerListView() {
+        return manufacturerListView;
+    }
+
+    private void initManufacturerContextMenu() {
         ContextMenu manufacturerMenu = new ContextMenu();
         MenuItem newManufacturer = new MenuItem("New");
         newManufacturer.setOnAction(new ManufacturerMenuEventHandler("New manufacturer", ManufacturerMenuDialogController::setNew));
@@ -109,34 +156,32 @@ public class MainSectionController {
             } else
                 manufacturerMenu.hide();
         });
-
-        manufacturerListView.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) -> {
-            ObservableList<Model> observableList = FXCollections.observableList(new ArrayList<>());
-            currentManufacturerObtainer.setDefaultManufacturer(newValue);
-            switch (GUIType.getCurrentType()) {
-                case CR_Inj:
-                    //TODO
-                    System.err.println("IN DEVELOPMENT");
-                    break;
-                case CR_Pump:
-                    //TODO
-                    System.err.println("IN DEVELOPMENT");
-                    break;
-                case UIS:
-                    //TODO
-                    System.err.println("IN DEVELOPMENT");
-                    break;
-            }
-
-        }));
-
     }
 
-    public ListView<Manufacturer> getManufacturerListView() {
-        return manufacturerListView;
-    }
+    private void initModelContextMenu() {
+        ContextMenu modelMenu = new ContextMenu();
+        MenuItem newModel = new MenuItem("New");
+        newModel.setOnAction(new ModelMenuEventHandler("New injector", NewEditInjectorDialogController::setNew));
+        MenuItem copyModel = new MenuItem("Copy");
 
+        //TODO
+        modelListView.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            if(event.getButton() == MouseButton.SECONDARY) {
+                modelMenu.getItems().clear();
+                if(defaultRB.isSelected()) {
+                    modelMenu.getItems().add(copyModel);
+                } else {
+                    modelMenu.getItems().add(newModel);
+                    if(modelListView.getSelectionModel().getSelectedItem() != null)
+                        modelMenu.getItems().addAll(copyModel);
+                }
+                modelMenu.show(modelListView, event.getScreenX(), event.getScreenY());
+            } else
+                modelMenu.hide();
+        });
+    }
     private class ManufacturerMenuEventHandler implements EventHandler<ActionEvent> {
+
         private String title;
         private Consumer<ManufacturerMenuDialogController> dialogType;
 
@@ -155,10 +200,34 @@ public class MainSectionController {
 //                manufacturerDialogStage.initStyle(StageStyle.UNDECORATED);
                 ((ManufacturerMenuDialogController) manufacturerMenuDialog.getController()).setStage(manufacturerDialogStage);
             }
-            System.err.println(title);
             manufacturerDialogStage.setTitle(title);
             dialogType.accept((ManufacturerMenuDialogController) manufacturerMenuDialog.getController());
             manufacturerDialogStage.show();
+        }
+    }
+
+    private class ModelMenuEventHandler implements EventHandler<ActionEvent> {
+        private String title;
+        private Consumer<NewEditInjectorDialogController> dialogType;
+
+        public ModelMenuEventHandler(String title, Consumer<NewEditInjectorDialogController> dialogType) {
+            this.title = title;
+            this.dialogType = dialogType;
+        }
+
+        @Override
+        public void handle(ActionEvent event) {
+            if(modelDialogStage == null) {
+                modelDialogStage = new Stage();
+                modelDialogStage.setScene(new Scene(newEditInjectorDialog.getView(), 600, 400));
+                modelDialogStage.setResizable(false);
+                modelDialogStage.initModality(Modality.APPLICATION_MODAL);
+//                manufacturerDialogStage.initStyle(StageStyle.UNDECORATED);
+                ((NewEditInjectorDialogController) newEditInjectorDialog.getController()).setStage(modelDialogStage);
+            }
+            modelDialogStage.setTitle(title);
+            dialogType.accept((NewEditInjectorDialogController) newEditInjectorDialog.getController());
+            modelDialogStage.show();
         }
     }
 }

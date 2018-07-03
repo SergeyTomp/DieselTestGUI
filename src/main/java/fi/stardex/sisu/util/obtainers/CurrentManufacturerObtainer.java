@@ -9,7 +9,7 @@ public class CurrentManufacturerObtainer {
         return currentManufacturer;
     }
 
-    public void setDefaultManufacturer(Manufacturer currentManufacturer) {
+    public void setCurrentManufacturer(Manufacturer currentManufacturer) {
         this.currentManufacturer = currentManufacturer;
     }
 }

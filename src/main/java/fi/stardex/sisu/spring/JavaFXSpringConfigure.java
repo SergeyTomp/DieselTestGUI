@@ -15,8 +15,9 @@ import fi.stardex.sisu.ui.controllers.cr.CRSectionController;
 import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.cr.TestBenchSectionController;
-import fi.stardex.sisu.ui.controllers.dialogs.CRUDInjectorDialogController;
 import fi.stardex.sisu.ui.controllers.dialogs.ManufacturerMenuDialogController;
+import fi.stardex.sisu.ui.controllers.dialogs.NewEditInjectorDialogController;
+import fi.stardex.sisu.ui.controllers.dialogs.NewEditVOAPDialogController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.i18n.UTF8Control;
@@ -171,16 +172,6 @@ public class JavaFXSpringConfigure {
     }
 
     @Bean
-    public ViewHolder crudInjectorDialog() {
-        return loadView("/fxml/dialogs/CRUDInjectorDialog.fxml");
-    }
-
-    @Bean
-    public CRUDInjectorDialogController crudInjectorDialogController() {
-        return (CRUDInjectorDialogController) crudInjectorDialog().getController();
-    }
-
-    @Bean
     @Autowired
     public StatusBarWrapper statusBar(Devices devices) {
         return new StatusBarWrapper(devices, "Ready", "Device not connected", StardexVersion.VERSION);
@@ -194,6 +185,26 @@ public class JavaFXSpringConfigure {
     @Bean
     public ManufacturerMenuDialogController manufacturerMenuDialogController() {
         return (ManufacturerMenuDialogController) manufacturerMenuDialog().getController();
+    }
+
+    @Bean
+    public ViewHolder newEditVOAPDialog() {
+        return loadView("/fxml/dialogs/NewEditVOAPDialog.fxml");
+    }
+
+    @Bean
+    public NewEditVOAPDialogController newEditVOAPDialogController() {
+        return (NewEditVOAPDialogController) newEditVOAPDialog().getController();
+    }
+
+    @Bean
+    public ViewHolder newEditInjectorDialog() {
+        return loadView("/fxml/dialogs/NewEditInjectorDialog.fxml");
+    }
+
+    @Bean
+    public NewEditInjectorDialogController newEditInjectorDialogController() {
+        return (NewEditInjectorDialogController) newEditInjectorDialog().getController();
     }
 
     private ViewHolder loadView(String url) {

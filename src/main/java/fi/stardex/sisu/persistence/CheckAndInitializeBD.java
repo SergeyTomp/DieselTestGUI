@@ -1,5 +1,7 @@
 package fi.stardex.sisu.persistence;
 
+import fi.stardex.sisu.persistence.orm.Manufacturer;
+import fi.stardex.sisu.persistence.repos.ManufacturerRepository;
 import org.h2.tools.RunScript;
 import org.hibernate.SessionFactory;
 import org.hibernate.query.Query;
@@ -17,26 +19,23 @@ import java.io.FileReader;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-@Service
 public class CheckAndInitializeBD {
 
     private Logger logger = LoggerFactory.getLogger(CheckAndInitializeBD.class);
-
-    @Autowired
-    private SessionFactory sessionFactory;
-    @Autowired
+    private ManufacturerRepository manufacturerRepository;
     private DataSource dataSource;
+
+    public CheckAndInitializeBD(ManufacturerRepository manufacturerRepository, DataSource dataSource) {
+        this.manufacturerRepository = manufacturerRepository;
+        this.dataSource = dataSource;
+    }
+
 
     @PostConstruct
     private void checkTables() {
-//        Query query = sessionFactory.openSession().createQuery("SELECT COUNT(*) FROM DEFAULT_MANUFACTURER");
-        Query query = sessionFactory.openSession().createQuery("SELECT COUNT(*) FROM Manufacturer");
+        System.err.println(manufacturerRepository.count());
 
-        long x = (long) query.getSingleResult();
-
-        System.err.println(x);
-
-        if ((long) query.getSingleResult() == 0) {
+        if (manufacturerRepository.count() == 0) {
             fillTables();
         } else {
             System.err.println("Tables filled out");

@@ -10,6 +10,7 @@ import fi.stardex.sisu.devices.Device;
 import fi.stardex.sisu.devices.Devices;
 import fi.stardex.sisu.leds.ActiveLeds;
 import fi.stardex.sisu.parts.PiezoCoilToggleGroup;
+import fi.stardex.sisu.persistence.CheckAndInitializeBD;
 import fi.stardex.sisu.persistence.orm.Manufacturer;
 import fi.stardex.sisu.persistence.repos.ManufacturerRepository;
 import fi.stardex.sisu.registers.RegisterProvider;
@@ -38,6 +39,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.*;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import javax.sql.DataSource;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -336,6 +338,12 @@ public class SpringJavaConfig {
     @Bean
     public CurrentManufacturerObtainer currentManufacturerObtainer() {
         return new CurrentManufacturerObtainer();
+    }
+
+    @Bean
+    public CheckAndInitializeBD checkAndInitializeBD(ManufacturerRepository manufacturerRepository,
+                                                      DataSource dataSource) {
+        return new CheckAndInitializeBD(manufacturerRepository, dataSource);
     }
 
     @Bean
