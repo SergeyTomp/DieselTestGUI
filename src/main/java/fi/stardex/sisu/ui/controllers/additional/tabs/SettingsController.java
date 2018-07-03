@@ -107,15 +107,15 @@ public class SettingsController {
 
         setupPressureSensor();
 
-        setupCheckBox(autoResetCheckBox, "autoResetCheckBoxSelected", true);
+        setupCheckBoxPreference(autoResetCheckBox, "autoResetCheckBoxSelected", true);
 
-        setupCheckBox(fastCodingCheckBox, "fastCodingCheckBoxSelected", false);
+        setupCheckBoxPreference(fastCodingCheckBox, "fastCodingCheckBoxSelected", false);
 
-        setupCheckBox(fastMeasurementCheckBox, "fastMeasurementCheckBoxSelected", false);
+        setupCheckBoxPreference(fastMeasurementCheckBox, "fastMeasurementCheckBoxSelected", false);
 
-        setupCheckBox(isDIMASCheckBox, "isDIMASCheckBoxSelected", true);
+        setupCheckBoxPreference(isDIMASCheckBox, "isDIMASCheckBoxSelected", true);
 
-        setupCheckBox(flowVisibleCheckBox, "checkBoxFlowVisibleSelected", true);
+        setupCheckBoxPreference(flowVisibleCheckBox, "checkBoxFlowVisibleSelected", true);
 
         regulatorsConfigComboBox.setItems(FXCollections.observableArrayList("3", "2", "1"));
 
@@ -125,7 +125,7 @@ public class SettingsController {
 
         flowOutputDimensionsComboBox.setItems(FXCollections.observableArrayList(Dimension.LIMIT, Dimension.PLUS_OR_MINUS));
 
-        setupComboBoxes();
+        setupComboBoxesPreferences();
 
     }
 
@@ -160,14 +160,14 @@ public class SettingsController {
 
     }
 
-    private void setupCheckBox(CheckBox checkBox, String prefsKey, boolean prefsValue) {
+    private void setupCheckBoxPreference(CheckBox checkBox, String prefsKey, boolean prefsValue) {
 
         checkBox.setSelected(prefs.getBoolean(prefsKey, prefsValue));
         checkBox.selectedProperty().addListener((observable, oldValue, newValue) -> prefs.putBoolean(prefsKey, newValue));
 
     }
 
-    private void setupComboBoxes() {
+    private void setupComboBoxesPreferences() {
 
         regulatorsConfigComboBox.getSelectionModel().select(prefs.get("regulatorsConfigSelected", "3"));
         regulatorsConfigComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> prefs.put("regulatorsConfigSelected", newValue));
