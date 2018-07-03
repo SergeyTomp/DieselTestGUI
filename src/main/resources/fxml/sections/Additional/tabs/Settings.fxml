@@ -11,9 +11,9 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<GridPane prefHeight="241.0" prefWidth="506.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController">
+<GridPane prefHeight="241.0" prefWidth="506.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController">
     <children>
-        <Label fx:id="pressureSensorLabel" text="%settings.pressureSensor.Label" GridPane.halignment="LEFT" GridPane.rowIndex="0">
+        <Label fx:id="pressureSensorLabel" stylesheets="@../../../../css/Styling.css" text="%settings.pressureSensor.Label" GridPane.halignment="LEFT" GridPane.rowIndex="0">
             <GridPane.margin>
                 <Insets left="70.0" />
             </GridPane.margin>
@@ -76,44 +76,38 @@
                 <Insets left="70.0" />
             </GridPane.margin>
         </CheckBox>
-        <Label prefHeight="16.0" prefWidth="156.0" text="%h4.settings.label.regulatorsConf" GridPane.columnIndex="1" GridPane.rowIndex="0" />
-        <Label prefHeight="16.0" prefWidth="156.0" text="%h4.settings.label.injectorConf" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-        <Label prefHeight="16.0" prefWidth="156.0" text="%h4.settings.label.language" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-        <ComboBox fx:id="comboRegulatorsConfig" prefWidth="150.0" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="0">
+        <Label fx:id="regulatorsConfigLabel" prefHeight="16.0" prefWidth="156.0" stylesheets="@../../../../css/Styling.css" text="%settings.regulatorsConfig.ComboBox" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+        <Label fx:id="injectorsConfigLabel" prefHeight="16.0" prefWidth="156.0" stylesheets="@../../../../css/Styling.css" text="%settings.injectorsConfig.ComboBox" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+        <Label fx:id="languagesLabel" prefHeight="16.0" prefWidth="156.0" stylesheets="@../../../../css/Styling.css" text="%settings.languages.Label" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+        <ComboBox fx:id="comboRegulatorsConfig" prefWidth="150.0" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="1">
             <GridPane.margin>
                 <Insets left="15.0" />
             </GridPane.margin>
         </ComboBox>
-        <ComboBox fx:id="comboInjectorConfig" prefWidth="150.0" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="1">
+        <ComboBox fx:id="comboInjectorConfig" prefWidth="150.0" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="2">
             <GridPane.margin>
                 <Insets left="15.0" />
             </GridPane.margin>
         </ComboBox>
-        <ComboBox fx:id="comboLanguageConfig" prefWidth="150.0" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="2">
+        <ComboBox fx:id="comboLanguageConfig" prefWidth="150.0" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="3">
             <GridPane.margin>
                 <Insets left="15.0" />
             </GridPane.margin>
         </ComboBox>
-        <Label prefHeight="16.0" prefWidth="156.0" text="%h4.settings.checkBox.toolTips" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-        <ComboBox fx:id="comboToolTips" prefWidth="150.0" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="3">
+        <Label prefHeight="16.0" prefWidth="156.0" stylesheets="@../../../../css/Styling.css" text="%h4.settings.checkBox.FlowOutputSettings" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+        <ComboBox fx:id="comboFlowOutputDimension" prefWidth="150.0" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="4">
             <GridPane.margin>
                 <Insets left="15.0" />
             </GridPane.margin>
         </ComboBox>
-        <Label prefHeight="16.0" prefWidth="156.0" text="%h4.settings.checkBox.FlowOutputSettings" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-        <ComboBox fx:id="comboFlowOutputSettings" prefWidth="150.0" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="4">
-            <GridPane.margin>
-                <Insets left="15.0" />
-            </GridPane.margin>
-        </ComboBox>
-        <Label prefHeight="16.0" prefWidth="156.0" text="%h4.settings.label.benchType" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-        <CheckBox fx:id="checkBoxBenchType" mnemonicParsing="false" selected="true" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="5">
+        <Label prefHeight="16.0" prefWidth="156.0" stylesheets="@../../../../css/Styling.css" text="%h4.settings.label.benchType" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+        <CheckBox fx:id="checkBoxBenchType" mnemonicParsing="false" selected="true" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="6">
             <GridPane.margin>
                 <Insets left="15.0" />
             </GridPane.margin>
         </CheckBox>
-        <Label prefHeight="16.0" prefWidth="156.0" text="%h4.settings.label.flowVisible" GridPane.columnIndex="1" GridPane.rowIndex="6" />
-        <CheckBox fx:id="checkBoxFlowVisible" mnemonicParsing="false" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="6">
+        <Label prefHeight="16.0" prefWidth="156.0" stylesheets="@../../../../css/Styling.css" text="%h4.settings.label.flowVisible" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+        <CheckBox fx:id="checkBoxFlowVisible" mnemonicParsing="false" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="7">
             <GridPane.margin>
                 <Insets left="15.0" />
             </GridPane.margin>

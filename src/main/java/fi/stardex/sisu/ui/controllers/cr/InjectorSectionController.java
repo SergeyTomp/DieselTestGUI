@@ -16,9 +16,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.StackPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -182,7 +179,7 @@ public class InjectorSectionController {
 
     private void setupInjectorConfigComboBox() {
 
-        setToggleGroupToLeds(toggleGroup);
+        setToggleGroupToLeds(settingsController.getComboInjectorConfig().getSelectionModel().getSelectedItem() == InjectorChannel.SINGLE_CHANNEL ? toggleGroup : null);
 
         settingsController.getComboInjectorConfig().getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
                 setToggleGroupToLeds(newValue == InjectorChannel.SINGLE_CHANNEL ? toggleGroup : null));

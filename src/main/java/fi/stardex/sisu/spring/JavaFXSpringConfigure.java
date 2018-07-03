@@ -228,8 +228,11 @@ public class JavaFXSpringConfigure {
 
     @Bean
     @Autowired
-    public ConnectionController connectionController(AdditionalSectionController additionalSectionController) {
-        return additionalSectionController.getConnectionController();
+    public ConnectionController connectionController(AdditionalSectionController additionalSectionController,
+                                                     ApplicationConfigHandler applicationConfigHandler) {
+        ConnectionController connectionController = additionalSectionController.getConnectionController();
+        connectionController.setApplicationConfigHandler(applicationConfigHandler);
+        return connectionController;
     }
 
     @Bean
@@ -254,7 +257,9 @@ public class JavaFXSpringConfigure {
     @Bean
     @Autowired
     public SettingsController settingsController(AdditionalSectionController additionalSectionController) {
-        return additionalSectionController.getSettingsController();
+        SettingsController settingsController = additionalSectionController.getSettingsController();
+        settingsController.setI18N(i18N);
+        return settingsController;
     }
 
     @Bean(value = "voltAmpereProfileDialog")

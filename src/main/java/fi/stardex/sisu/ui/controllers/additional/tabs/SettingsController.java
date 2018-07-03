@@ -1,5 +1,6 @@
 package fi.stardex.sisu.ui.controllers.additional.tabs;
 
+import fi.stardex.sisu.combobox_values.Dimension;
 import fi.stardex.sisu.combobox_values.InjectorChannel;
 import fi.stardex.sisu.combobox_values.Languages;
 import fi.stardex.sisu.util.i18n.I18N;
@@ -10,12 +11,26 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
 import java.util.prefs.Preferences;
 
 public class SettingsController {
+
+    @FXML
+    private ComboBox<Dimension> comboFlowOutputDimension;
+
+    @FXML
+    private Label languagesLabel;
+
+    @FXML
+    private Label injectorsConfigLabel;
+
+    @FXML
+    private Label regulatorsConfigLabel;
+
+    @FXML
+    private ComboBox<String> comboRegulatorsConfig;
 
     @FXML
     private ComboBox<Languages> comboLanguageConfig;
@@ -53,10 +68,13 @@ public class SettingsController {
     @FXML
     private CheckBox autoResetCheckBox;
 
-    @Autowired
     private I18N i18N;
 
     private Preferences prefs = Preferences.userNodeForPackage(this.getClass());
+
+    public void setI18N(I18N i18N) {
+        this.i18N = i18N;
+    }
 
     public ComboBox<InjectorChannel> getComboInjectorConfig() {
         return comboInjectorConfig;
@@ -71,13 +89,17 @@ public class SettingsController {
 
         bindingI18N();
 
+        comboFlowOutputDimension.setItems(FXCollections.observableArrayList(Dimension.LIMIT, Dimension.PLUS_OR_MINUS));
+
+        comboRegulatorsConfig.setItems(FXCollections.observableArrayList("3", "2", "1"));
+
         comboLanguageConfig.setItems(FXCollections.observableArrayList(Languages.RUSSIAN, Languages.ENGLISH, Languages.KOREAN));
 
         autoResetCheckBox.setSelected(prefs.getBoolean("autoResetCheckBoxSelected", true));
 
 
         comboInjectorConfig.setItems(FXCollections.observableArrayList(InjectorChannel.SINGLE_CHANNEL, InjectorChannel.MULTI_CHANNEL));
-        comboInjectorConfig.getSelectionModel().selectFirst();
+//        comboInjectorConfig.getSelectionModel().selectFirst();
 
         sensor1500RadioButton.setSelected(prefs.getBoolean("sensor1500RadioButtonSelected", true));
 
@@ -88,6 +110,16 @@ public class SettingsController {
         sensor2200RadioButton.setSelected(prefs.getBoolean("sensor2200RadioButtonSelected", false));
 
         sensor2400RadioButton.setSelected(prefs.getBoolean("sensor2400RadioButtonSelected", false));
+
+        comboInjectorConfig.getSelectionModel().select(InjectorChannel.valueOf(prefs.get("injectorsConfigSelected", InjectorChannel.SINGLE_CHANNEL.name())));
+
+        comboInjectorConfig.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> prefs.put("injectorsConfigSelected", newValue.name()));
+
+//        comboRegulatorsConfig.getSelectionModel().select(prefs.getInt("regulatorsConfigSelected", 3));
+        comboRegulatorsConfig.getSelectionModel().select(prefs.get("regulatorsConfigSelected", "3"));
+
+        comboRegulatorsConfig.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
+                prefs.put("regulatorsConfigSelected", newValue));
 
         comboLanguageConfig.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             prefs.put("languageSelected", newValue.name());
@@ -126,6 +158,9 @@ public class SettingsController {
         autoResetCheckBox.textProperty().bind(i18N.createStringBinding("settings.autoReset.CheckBox"));
         fastCodingCheckBox.textProperty().bind(i18N.createStringBinding("settings.fastCoding.CheckBox"));
         fastMeasurementCheckBox.textProperty().bind(i18N.createStringBinding("settings.fastMeasurement.CheckBox"));
+        regulatorsConfigLabel.textProperty().bind(i18N.createStringBinding("settings.regulatorsConfig.ComboBox"));
+        injectorsConfigLabel.textProperty().bind(i18N.createStringBinding("settings.injectorsConfig.ComboBox"));
+        languagesLabel.textProperty().bind(i18N.createStringBinding("settings.languages.Label"));
     }
 
 }

@@ -36,8 +36,11 @@ public class ConnectionController {
     @FXML
     private Button acceptButton;
 
-    @Autowired
     private ApplicationConfigHandler applicationConfigHandler;
+
+    public void setApplicationConfigHandler(ApplicationConfigHandler applicationConfigHandler) {
+        this.applicationConfigHandler = applicationConfigHandler;
+    }
 
     @PostConstruct
     private void init() {
@@ -114,4 +117,5 @@ public class ConnectionController {
             }
         };
     }
+
 }
