@@ -71,11 +71,7 @@ public class JavaFXSpringConfigure {
     public MainSectionController mainSectionController(ApplicationConfigHandler applicationConfigHandler,
                                                        ApplicationAppearanceChanger applicationAppearanceChanger,
                                                        @Lazy ModbusRegisterProcessor flowModbusWriter) {
-        MainSectionController mainSectionController = (MainSectionController) mainSection().getController();
-        mainSectionController.setApplicationConfigHandler(applicationConfigHandler);
-        mainSectionController.setApplicationAppearanceChanger(applicationAppearanceChanger);
-        mainSectionController.setFlowModbusWriter(flowModbusWriter);
-        return mainSectionController;
+        return (MainSectionController) mainSection().getController();
     }
 
     @Bean
