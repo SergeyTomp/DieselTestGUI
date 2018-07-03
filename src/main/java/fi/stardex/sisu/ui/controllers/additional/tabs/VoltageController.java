@@ -34,10 +34,7 @@ public class VoltageController {
     private Label batteryU;
 
     @FXML
-    private Label negativeU1;
-
-    @FXML
-    private Label negativeU2;
+    private Label negativeU;
 
     @FXML
     private LineChart<Double, Double> lineChart;
@@ -124,12 +121,8 @@ public class VoltageController {
         return batteryU;
     }
 
-    public Label getNegativeU1() {
-        return negativeU1;
-    }
-
-    public Label getNegativeU2() {
-        return negativeU2;
+    public Label getNegativeU() {
+        return negativeU;
     }
 
     public Label getVoltage() {
@@ -209,8 +202,7 @@ public class VoltageController {
         secondCurrent.setText("5.5"); // secondISpinner initial value
         boostI.setText("21.5"); // boostISpinner initial value
         batteryU.setText("20"); // batteryUSpinner initial value
-        negativeU1.setText("48"); // negativeU1Spinner initial value
-        negativeU2.setText("36"); // negativeU2Spinner initial value
+        negativeU.setText("48"); // negativeUSpinner initial value
 
         width.textProperty().addListener(new LabelListener(width, injectorSectionController.getWidthCurrentSignal()));
         voltage.textProperty().addListener(new LabelListener(voltage, voltAmpereProfileController.getBoostUSpinner()));
@@ -219,8 +211,7 @@ public class VoltageController {
         secondCurrent.textProperty().addListener(new LabelListener(secondCurrent, voltAmpereProfileController.getSecondISpinner()));
         boostI.textProperty().addListener(new LabelListener(boostI, voltAmpereProfileController.getBoostISpinner()));
         batteryU.textProperty().addListener(new LabelListener(batteryU, voltAmpereProfileController.getBatteryUSpinner()));
-        negativeU1.textProperty().addListener(new LabelListener(negativeU1, voltAmpereProfileController.getNegativeU1Spinner()));
-        negativeU2.textProperty().addListener(new LabelListener(negativeU2, voltAmpereProfileController.getNegativeU2Spinner()));
+        negativeU.textProperty().addListener(new LabelListener(negativeU, voltAmpereProfileController.getNegativeUSpinner()));
 
     }
 

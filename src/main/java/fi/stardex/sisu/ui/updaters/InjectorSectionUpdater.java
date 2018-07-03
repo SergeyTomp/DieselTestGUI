@@ -51,10 +51,8 @@ public class InjectorSectionUpdater implements Updater {
         }
         if ((value = ModbusMapUltima.Battery_U.getLastValue().toString()) != null)
             voltageController.getBatteryU().setText(value);
-        if ((value = ModbusMapUltima.Negative_U1.getLastValue().toString()) != null)
-            voltageController.getNegativeU1().setText(value);
-        if ((value = ModbusMapUltima.Negative_U2.getLastValue().toString()) != null)
-            voltageController.getNegativeU2().setText(value);
+        if ((value = ModbusMapUltima.Negative_U.getLastValue().toString()) != null)
+            voltageController.getNegativeU().setText(value);
 
     }
 

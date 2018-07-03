@@ -35,13 +35,10 @@ public class VoltAmpereProfileController {
     private Spinner<Double> firstISpinner;
 
     @FXML
-    private Spinner<Integer> negativeU1Spinner;
+    private Spinner<Integer> negativeUSpinner;
 
     @FXML
     private Spinner<Double> secondISpinner;
-
-    @FXML
-    private Spinner<Integer> negativeU2Spinner;
 
     private Spinner<Integer> widthCurrentSignal;
 
@@ -64,9 +61,7 @@ public class VoltAmpereProfileController {
 
     private int batteryUSavedValue;
 
-    private int negativeU1SavedValue;
-
-    private int negativeU2SavedValue;
+    private int negativeUSavedValue;
 
     private int boostUSavedValue;
 
@@ -108,16 +103,12 @@ public class VoltAmpereProfileController {
         return firstISpinner;
     }
 
-    public Spinner<Integer> getNegativeU1Spinner() {
-        return negativeU1Spinner;
+    public Spinner<Integer> getNegativeUSpinner() {
+        return negativeUSpinner;
     }
 
     public Spinner<Double> getSecondISpinner() {
         return secondISpinner;
-    }
-
-    public Spinner<Integer> getNegativeU2Spinner() {
-        return negativeU2Spinner;
     }
 
     public void setUltimaModbusWriter(ModbusRegisterProcessor ultimaModbusWriter) {
@@ -202,8 +193,7 @@ public class VoltAmpereProfileController {
         firstISpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(2, 25.5, 15, 0.1));
         secondISpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(1, 25.5, 5.5, 0.1));
         batteryUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(11, 32, 20, 1));
-        negativeU1Spinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(17, 121, 48, 1));
-        negativeU2Spinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(12, 70, 36, 1));
+        negativeUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(17, 121, 48, 1));
         boostUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(30, 75, 60, 1));
 
         SpinnerManager.setupSpinner(widthCurrentSignal, 300, 120, 15500, new CustomTooltip(), widthCurrentSignalValueObtainer);
@@ -212,8 +202,7 @@ public class VoltAmpereProfileController {
         SpinnerManager.setupSpinner(firstISpinner, 15, 15.01, new CustomTooltip(), new SpinnerValueObtainer(15));
         SpinnerManager.setupSpinner(secondISpinner, 5.5, 5.51, new CustomTooltip(), new SpinnerValueObtainer(5.5));
         SpinnerManager.setupSpinner(batteryUSpinner, 20, 11, 32, new CustomTooltip(), new SpinnerValueObtainer(20));
-        SpinnerManager.setupSpinner(negativeU1Spinner, 48, 17, 121, new CustomTooltip(), new SpinnerValueObtainer(48));
-        SpinnerManager.setupSpinner(negativeU2Spinner, 36, 12, 70, new CustomTooltip(), new SpinnerValueObtainer(36));
+        SpinnerManager.setupSpinner(negativeUSpinner, 48, 17, 121, new CustomTooltip(), new SpinnerValueObtainer(48));
         SpinnerManager.setupSpinner(boostUSpinner, 60, 30, 75, new CustomTooltip(), new SpinnerValueObtainer(60));
 
         listOfVAPSpinners.add(widthCurrentSignal);
@@ -222,8 +211,7 @@ public class VoltAmpereProfileController {
         listOfVAPSpinners.add(firstISpinner);
         listOfVAPSpinners.add(secondISpinner);
         listOfVAPSpinners.add(batteryUSpinner);
-        listOfVAPSpinners.add(negativeU1Spinner);
-        listOfVAPSpinners.add(negativeU2Spinner);
+        listOfVAPSpinners.add(negativeUSpinner);
         listOfVAPSpinners.add(boostUSpinner);
 
         listOfVAPSpinners.forEach(e -> e.setEditable(true));
@@ -249,8 +237,7 @@ public class VoltAmpereProfileController {
             firstISpinner.getValueFactory().setValue(firstISavedValue);
             secondISpinner.getValueFactory().setValue(secondISavedValue);
             batteryUSpinner.getValueFactory().setValue(batteryUSavedValue);
-            negativeU1Spinner.getValueFactory().setValue(negativeU1SavedValue);
-            negativeU2Spinner.getValueFactory().setValue(negativeU2SavedValue);
+            negativeUSpinner.getValueFactory().setValue(negativeUSavedValue);
             boostUSpinner.getValueFactory().setValue(boostUSavedValue);
             stage.close();
         });
@@ -295,16 +282,10 @@ public class VoltAmpereProfileController {
                 setDefaultStyle(batteryUSpinner, batteryULabel);
         });
 
-        negativeU1Spinner.valueProperty().addListener((observable, oldValue, newValue) -> {
-            Label negativeU1Label = voltageController.getNegativeU1();
-            if (newValue.toString().equals(negativeU1Label.getText()))
-                setDefaultStyle(negativeU1Spinner, negativeU1Label);
-        });
-
-        negativeU2Spinner.valueProperty().addListener((observable, oldValue, newValue) -> {
-            Label negativeU2Label = voltageController.getNegativeU2();
-            if (newValue.toString().equals(negativeU2Label.getText()))
-                setDefaultStyle(negativeU2Spinner, negativeU2Label);
+        negativeUSpinner.valueProperty().addListener((observable, oldValue, newValue) -> {
+            Label negativeULabel = voltageController.getNegativeU();
+            if (newValue.toString().equals(negativeULabel.getText()))
+                setDefaultStyle(negativeUSpinner, negativeULabel);
         });
 
         boostUSpinner.valueProperty().addListener((observable, oldValue, newValue) -> {
@@ -324,23 +305,20 @@ public class VoltAmpereProfileController {
 
     private void sendVAPRegisters() {
 
-        int negative1Value = negativeU1Spinner.getValue();
-        int negative2Value = negativeU2Spinner.getValue();
+        int negativeValue = negativeUSpinner.getValue();
         double boostIValue = boostISpinner.getValue();
         double firstIValue = firstISpinner.getValue();
         double secondIValue = secondISpinner.getValue();
         int firstWValue = firstWSpinner.getValue();
         int widthValue = widthCurrentSignal.getValue();
 
-        negative1Value = (negative1Value - negative2Value >= 5) ? negative1Value : negative1Value + 5;
         firstIValue = (boostIValue - firstIValue >= 0.5) ? firstIValue : firstIValue - 0.5;
         secondIValue = (firstIValue - secondIValue >= 0.5) ? secondIValue : secondIValue - 0.5;
         firstWValue = (widthValue - firstWValue >= 30) ? firstWValue : firstWValue - 30;
 
         ultimaModbusWriter.add(ModbusMapUltima.Boost_U, boostUSpinner.getValue());
         ultimaModbusWriter.add(ModbusMapUltima.Battery_U, batteryUSpinner.getValue());
-        ultimaModbusWriter.add(ModbusMapUltima.Negative_U1, negative1Value);
-        ultimaModbusWriter.add(ModbusMapUltima.Negative_U2, negative2Value);
+        ultimaModbusWriter.add(ModbusMapUltima.Negative_U, negativeValue);
         ultimaModbusWriter.add(ModbusMapUltima.BoostIBoardOne, boostIValue * ONE_AMPERE_MULTIPLY);
         ultimaModbusWriter.add(ModbusMapUltima.FirstIBoardOne, firstIValue * ONE_AMPERE_MULTIPLY);
         ultimaModbusWriter.add(ModbusMapUltima.SecondIBoardOne, secondIValue * ONE_AMPERE_MULTIPLY);
@@ -367,8 +345,7 @@ public class VoltAmpereProfileController {
         ultimaModbusWriter.add(ModbusMapUltima.StartOnBatteryUFour, boostToggleButtonDisabled);
         System.err.println("boostUSpinner: " + boostUSpinner.getValue());
         System.err.println("batteryUSpinner: " + batteryUSpinner.getValue());
-        System.err.println("negativeU1Spinner: " + negative1Value);
-        System.err.println("negativeU2Spinner: " + negative2Value);
+        System.err.println("negativeUSpinner: " + negativeValue);
         System.err.println("boostISpinner: " + boostIValue);
         System.err.println("firstISpinner: " + firstIValue);
         System.err.println("secondISpinner: " + secondIValue);
@@ -388,8 +365,7 @@ public class VoltAmpereProfileController {
         firstISavedValue = firstISpinner.getValue();
         secondISavedValue = secondISpinner.getValue();
         batteryUSavedValue = batteryUSpinner.getValue();
-        negativeU1SavedValue = negativeU1Spinner.getValue();
-        negativeU2SavedValue = negativeU2Spinner.getValue();
+        negativeUSavedValue = negativeUSpinner.getValue();
         boostUSavedValue = boostUSpinner.getValue();
 
     }
