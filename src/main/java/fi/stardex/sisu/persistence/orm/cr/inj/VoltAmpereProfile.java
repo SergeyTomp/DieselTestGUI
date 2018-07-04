@@ -1,6 +1,9 @@
 package fi.stardex.sisu.persistence.orm.cr.inj;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "volt_ampere_profile")
@@ -10,7 +13,7 @@ public class VoltAmpereProfile {
     @Column(name = "profile_name")
     private String profileName;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "injector_type")
     private InjectorType injectorType;
 
@@ -43,6 +46,10 @@ public class VoltAmpereProfile {
 
     public String getProfileName() {
         return profileName;
+    }
+
+    public void setInjectorType(InjectorType injectorType) {
+        this.injectorType = injectorType;
     }
 
     public InjectorType getInjectorType() {

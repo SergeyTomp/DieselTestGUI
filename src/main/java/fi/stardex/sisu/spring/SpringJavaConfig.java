@@ -39,6 +39,10 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ListView;
+import org.hibernate.FlushMode;
+import org.hibernate.Hibernate;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +51,8 @@ import org.springframework.context.annotation.*;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import javax.sql.DataSource;
+import java.io.IOException;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -342,5 +348,5 @@ public class SpringJavaConfig {
 
         return manufacturerListView;
     }
-}
 
+}
