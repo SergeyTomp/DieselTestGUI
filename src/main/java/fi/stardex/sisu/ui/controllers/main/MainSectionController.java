@@ -11,9 +11,11 @@ import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
+import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.dialogs.ManufacturerMenuDialogController;
 import fi.stardex.sisu.ui.controllers.dialogs.NewEditInjectorDialogController;
 import fi.stardex.sisu.util.ApplicationConfigHandler;
+import fi.stardex.sisu.util.converters.FirmwareDataConverter;
 import fi.stardex.sisu.util.obtainers.CurrentManufacturerObtainer;
 import fi.stardex.sisu.util.view.ApplicationAppearanceChanger;
 import fi.stardex.sisu.util.view.GUIType;
@@ -78,6 +80,8 @@ public class MainSectionController {
     private ViewHolder newEditInjectorDialog;
     @Autowired
     private VoltAmpereProfileController voltAmpereProfileController;
+    @Autowired
+    private FirmwareDataConverter firmwareDataConverter;
 
     @Autowired
     private InjectorsRepository injectorsRepository;
@@ -146,24 +150,30 @@ public class MainSectionController {
             if (newValue != null) {
                 VoltAmpereProfile voltAmpereProfile = injectorsRepository.findByInjectorCode(newValue.toString()).getVoltAmpereProfile();
 
+                Double firstI = voltAmpereProfile.getFirstI();
+                Double secondI = voltAmpereProfile.getSecondI();
+                Double boostI = voltAmpereProfile.getBoostI();
+
                 voltAmpereProfileController.getBoostUSpinner().getValueFactory().setValue(voltAmpereProfile.getBoostU());
                 voltAmpereProfileController.getFirstWSpinner().getValueFactory().setValue(voltAmpereProfile.getFirstW());
-                voltAmpereProfileController.getFirstISpinner().getValueFactory().setValue(voltAmpereProfile.getFirstI());
-                voltAmpereProfileController.getSecondISpinner().getValueFactory().setValue(voltAmpereProfile.getSecondI());
-                voltAmpereProfileController.getBoostISpinner().getValueFactory().setValue(voltAmpereProfile.getBoostI());
+                voltAmpereProfileController.getFirstISpinner().getValueFactory().setValue((firstI * 100 % 10 != 0) ? firmwareDataConverter.roundToOneDecimalPlace(firstI) : firstI);
+                voltAmpereProfileController.getSecondISpinner().getValueFactory().setValue((secondI * 100 % 10 != 0) ? firmwareDataConverter.roundToOneDecimalPlace(secondI) : secondI);
+                voltAmpereProfileController.getBoostISpinner().getValueFactory().setValue((boostI * 100 % 10 != 0) ? firmwareDataConverter.roundToOneDecimalPlace(boostI) : boostI);
                 voltAmpereProfileController.getBatteryUSpinner().getValueFactory().setValue(voltAmpereProfile.getBatteryU());
                 voltAmpereProfileController.getNegativeUSpinner().getValueFactory().setValue(voltAmpereProfile.getNegativeU());
                 voltAmpereProfileController.getEnableBoostToggleButton().setSelected(voltAmpereProfile.getBoostDisable());
 
+                InjectorSectionController injectorSectionController = voltAmpereProfileController.getInjectorSectionController();
+
                 switch (voltAmpereProfile.getInjectorType().getInjectorType()) {
                     case "coil":
-                        voltAmpereProfileController.getInjectorSectionController().getCoilRadioButton().setSelected(true);
+                        injectorSectionController.getCoilRadioButton().setSelected(true);
                         break;
                     case "piezo":
-                        voltAmpereProfileController.getInjectorSectionController().getPiezoRadioButton().setSelected(true);
+                        injectorSectionController.getPiezoRadioButton().setSelected(true);
                         break;
                     case "piezoDelphi":
-                        voltAmpereProfileController.getInjectorSectionController().getPiezoDelphiRadioButton().setSelected(true);
+                        injectorSectionController.getPiezoDelphiRadioButton().setSelected(true);
                         break;
                     default:
                         throw new IllegalArgumentException("Wrong injector type parameter!");

@@ -17,4 +17,8 @@ public class FirmwareDataConverter {
     public float roundToOneDecimalPlace(float value) {
         return (float) Math.round(value * 10) / 10;
     }
+
+    public double roundToOneDecimalPlace(double value) {
+        return (double) Math.round(value * 10) / 10;
+    }
 }
