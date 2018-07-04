@@ -1,6 +1,7 @@
 package fi.stardex.sisu.persistence.orm;
 
 import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 import java.util.List;
@@ -18,6 +19,10 @@ public class Manufacturer {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "manufacturer")
     private List<Injector> injectors;
+
+    public List<Injector> getInjectors() {
+        return injectors;
+    }
 
     public void setManufacturer(String manufacturer) {
         this.manufacturer = manufacturer;

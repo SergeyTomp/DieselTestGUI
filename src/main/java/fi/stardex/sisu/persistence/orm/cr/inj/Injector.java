@@ -2,8 +2,6 @@ package fi.stardex.sisu.persistence.orm.cr.inj;
 
 import fi.stardex.sisu.persistence.orm.Manufacturer;
 import fi.stardex.sisu.persistence.orm.interfaces.Model;
-import org.springframework.data.jpa.repository.EntityGraph;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 
@@ -95,10 +93,6 @@ public class Injector implements Model {
 
     public VoltAmpereProfile getVoltAmpereProfile() {
         return voltAmpereProfile;
-    }
-
-    public void setVoltAmpereProfile(VoltAmpereProfile voltAmpereProfile) {
-        this.voltAmpereProfile = voltAmpereProfile;
     }
 
     @Override

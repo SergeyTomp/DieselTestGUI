@@ -1,5 +1,7 @@
 package fi.stardex.sisu.persistence.orm.cr.inj;
 
+import org.springframework.transaction.annotation.Transactional;
+
 import javax.persistence.*;
 
 @Entity

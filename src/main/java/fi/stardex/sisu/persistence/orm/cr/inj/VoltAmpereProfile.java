@@ -1,6 +1,7 @@
 package fi.stardex.sisu.persistence.orm.cr.inj;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "volt_ampere_profile")
@@ -43,10 +44,6 @@ public class VoltAmpereProfile {
 
     public String getProfileName() {
         return profileName;
-    }
-
-    public void setInjectorType(InjectorType injectorType) {
-        this.injectorType = injectorType;
     }
 
     public InjectorType getInjectorType() {
