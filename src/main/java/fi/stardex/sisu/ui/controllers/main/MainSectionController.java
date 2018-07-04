@@ -141,8 +141,7 @@ public class MainSectionController {
 
         modelListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null) {
-                Injector injector = injectorsRepository.findByInjectorCode(newValue.toString());
-                VoltAmpereProfile voltAmpereProfile = injector.getVoltAmpereProfile();
+                VoltAmpereProfile voltAmpereProfile = injectorsRepository.findByInjectorCode(newValue.toString()).getVoltAmpereProfile();
 
                 voltAmpereProfileController.getBoostUSpinner().getValueFactory().setValue(voltAmpereProfile.getBoostU());
                 voltAmpereProfileController.getFirstWSpinner().getValueFactory().setValue(voltAmpereProfile.getFirstW());
@@ -152,6 +151,20 @@ public class MainSectionController {
                 voltAmpereProfileController.getBatteryUSpinner().getValueFactory().setValue(voltAmpereProfile.getBatteryU());
                 voltAmpereProfileController.getNegativeUSpinner().getValueFactory().setValue(voltAmpereProfile.getNegativeU());
                 voltAmpereProfileController.getEnableBoostToggleButton().setSelected(voltAmpereProfile.getBoostDisable());
+
+                switch (voltAmpereProfile.getInjectorType().getInjectorType()) {
+                    case "coil":
+                        voltAmpereProfileController.getInjectorSectionController().getCoilRadioButton().setSelected(true);
+                        break;
+                    case "piezo":
+                        voltAmpereProfileController.getInjectorSectionController().getPiezoRadioButton().setSelected(true);
+                        break;
+                    case "piezoDelphi":
+                        voltAmpereProfileController.getInjectorSectionController().getPiezoDelphiRadioButton().setSelected(true);
+                        break;
+                    default:
+                        throw new IllegalArgumentException("Wrong injector type parameter!");
+                }
 
                 voltAmpereProfileController.getApplyButton().fire();
             }

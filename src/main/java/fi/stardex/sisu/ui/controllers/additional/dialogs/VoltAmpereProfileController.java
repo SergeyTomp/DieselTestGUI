@@ -145,6 +145,10 @@ public class VoltAmpereProfileController {
         return enableBoostToggleButton;
     }
 
+    public InjectorSectionController getInjectorSectionController() {
+        return injectorSectionController;
+    }
+
     // FIXME: при изменении значения в спиннере которое равно значению с прошивки красным перестают гореть оба значения, хотя значение спиннера еще не было подтверждено нажатием Apply
     @PostConstruct
     private void init() {

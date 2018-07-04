@@ -10,7 +10,7 @@ public class VoltAmpereProfile {
     @Column(name = "profile_name")
     private String profileName;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "injector_type")
     private InjectorType injectorType;
 
@@ -43,6 +43,10 @@ public class VoltAmpereProfile {
 
     public String getProfileName() {
         return profileName;
+    }
+
+    public void setInjectorType(InjectorType injectorType) {
+        this.injectorType = injectorType;
     }
 
     public InjectorType getInjectorType() {

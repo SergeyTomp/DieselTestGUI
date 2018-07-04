@@ -2,6 +2,8 @@ package fi.stardex.sisu.persistence.orm.cr.inj;
 
 import fi.stardex.sisu.persistence.orm.Manufacturer;
 import fi.stardex.sisu.persistence.orm.interfaces.Model;
+import org.springframework.data.jpa.repository.EntityGraph;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
 
@@ -16,7 +18,7 @@ public class Injector implements Model {
     @JoinColumn(name = "manufacturer")
     private Manufacturer manufacturer;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "volt_ampere_profile")
     private VoltAmpereProfile voltAmpereProfile;
 
@@ -35,8 +37,68 @@ public class Injector implements Model {
     @Column(name = "is_custom")
     private Boolean isCustom;
 
+    public String getInjectorCode() {
+        return injectorCode;
+    }
+
+    public void setInjectorCode(String injectorCode) {
+        this.injectorCode = injectorCode;
+    }
+
+    public Manufacturer getManufacturer() {
+        return manufacturer;
+    }
+
+    public void setManufacturer(Manufacturer manufacturer) {
+        this.manufacturer = manufacturer;
+    }
+
+    public String getCodetype() {
+        return codetype;
+    }
+
+    public void setCodetype(String codetype) {
+        this.codetype = codetype;
+    }
+
+    public String getCalibrationId() {
+        return calibrationId;
+    }
+
+    public void setCalibrationId(String calibrationId) {
+        this.calibrationId = calibrationId;
+    }
+
+    public Integer getChecksumM() {
+        return checksumM;
+    }
+
+    public void setChecksumM(Integer checksumM) {
+        this.checksumM = checksumM;
+    }
+
+    public Integer getkCoefficient() {
+        return kCoefficient;
+    }
+
+    public void setkCoefficient(Integer kCoefficient) {
+        this.kCoefficient = kCoefficient;
+    }
+
+    public Boolean getCustom() {
+        return isCustom;
+    }
+
+    public void setCustom(Boolean custom) {
+        isCustom = custom;
+    }
+
     public VoltAmpereProfile getVoltAmpereProfile() {
         return voltAmpereProfile;
+    }
+
+    public void setVoltAmpereProfile(VoltAmpereProfile voltAmpereProfile) {
+        this.voltAmpereProfile = voltAmpereProfile;
     }
 
     @Override

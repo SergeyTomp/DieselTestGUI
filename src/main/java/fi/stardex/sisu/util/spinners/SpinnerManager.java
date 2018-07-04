@@ -78,7 +78,7 @@ public class SpinnerManager {
                 // TODO: баг в расположении tooltips на экране, иногда в volt ampere dialog появляются относительно главной scene
                 Point2D p = spinner.localToScene(0.0, 0.0);
                 spinner.setTooltip(tooltip);
-                if (!tooltip.isShowing()) {
+                if (!tooltip.isShowing() && spinner.getScene() != null) {
                     tooltip.show(spinner,
                             p.getX() + spinner.getScene().getX() + spinner.getScene().getWindow().getX(),
                             p.getY() + spinner.getScene().getY() + spinner.getHeight() + spinner.getScene().getWindow().getY());
@@ -154,7 +154,7 @@ public class SpinnerManager {
                 }
                 Point2D p = spinner.localToScene(0.0, 0.0);
                 spinner.setTooltip(tooltip);
-                if (!tooltip.isShowing()) {
+                if (!tooltip.isShowing() && spinner.getScene() != null) {
                     tooltip.show(spinner,
                             p.getX() + spinner.getScene().getX() + spinner.getScene().getWindow().getX(),
                             p.getY() + spinner.getScene().getY() + spinner.getHeight() + spinner.getScene().getWindow().getY());

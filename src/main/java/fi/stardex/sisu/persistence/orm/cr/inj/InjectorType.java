@@ -5,11 +5,16 @@ import javax.persistence.*;
 @Entity
 @Table(name = "injector_type")
 public class InjectorType {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
 
-    @Column(name = "injector_type", unique = true)
+    @Id
+    @Column(name = "type_name")
+    private String typeName;
+
+    /*@Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;*/
+
+    @Column(name = "injector_type")
     private String injectorType;
 
     public String getInjectorType() {

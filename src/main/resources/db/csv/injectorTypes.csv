@@ -1,4 +1,4 @@
-id,injector_type
-1,COIL
-2,PIEZO
-3,NEG_PIEZO
+type_name,injector_type
+COIL,coil
+PIEZO,piezo
+NEG_PIEZO,piezoDelphi
