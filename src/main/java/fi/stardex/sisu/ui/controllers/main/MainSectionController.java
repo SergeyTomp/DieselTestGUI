@@ -124,7 +124,7 @@ public class MainSectionController {
             currentManufacturerObtainer.setCurrentManufacturer(newValue);
             switch (GUIType.getCurrentType()) {
                 case CR_Inj:
-                    modelListView.getItems().setAll(injectorsRepository.findByManufacturerAndIsCustom(newValue, !defaultRB.isSelected()));
+                    modelListView.getItems().setAll(newValue.getInjectors());
                     break;
                 case CR_Pump:
                     //TODO
@@ -143,34 +143,38 @@ public class MainSectionController {
         }));
 
         modelListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
-                VoltAmpereProfile voltAmpereProfile = injectorsRepository.findByInjectorCode(newValue.toString()).getVoltAmpereProfile();
+            if (newValue == null)
+                return;
 
-                voltAmpereProfileController.getBoostUSpinner().getValueFactory().setValue(voltAmpereProfile.getBoostU());
-                voltAmpereProfileController.getFirstWSpinner().getValueFactory().setValue(voltAmpereProfile.getFirstW());
-                voltAmpereProfileController.getFirstISpinner().getValueFactory().setValue(voltAmpereProfile.getFirstI());
-                voltAmpereProfileController.getSecondISpinner().getValueFactory().setValue(voltAmpereProfile.getSecondI());
-                voltAmpereProfileController.getBoostISpinner().getValueFactory().setValue(voltAmpereProfile.getBoostI());
-                voltAmpereProfileController.getBatteryUSpinner().getValueFactory().setValue(voltAmpereProfile.getBatteryU());
-                voltAmpereProfileController.getNegativeUSpinner().getValueFactory().setValue(voltAmpereProfile.getNegativeU());
-                voltAmpereProfileController.getEnableBoostToggleButton().setSelected(voltAmpereProfile.getBoostDisable());
 
-                switch (voltAmpereProfile.getInjectorType().getInjectorType()) {
-                    case "coil":
-                        voltAmpereProfileController.getInjectorSectionController().getCoilRadioButton().setSelected(true);
-                        break;
-                    case "piezo":
-                        voltAmpereProfileController.getInjectorSectionController().getPiezoRadioButton().setSelected(true);
-                        break;
-                    case "piezoDelphi":
-                        voltAmpereProfileController.getInjectorSectionController().getPiezoDelphiRadioButton().setSelected(true);
-                        break;
-                    default:
-                        throw new IllegalArgumentException("Wrong injector type parameter!");
-                }
+            Injector inj = (Injector) newValue;
+            System.err.println(inj.getVoltAmpereProfile().getInjectorType().getInjectorType());
+            VoltAmpereProfile voltAmpereProfile = inj.getVoltAmpereProfile();
 
-                voltAmpereProfileController.getApplyButton().fire();
+            voltAmpereProfileController.getBoostUSpinner().getValueFactory().setValue(voltAmpereProfile.getBoostU());
+            voltAmpereProfileController.getFirstWSpinner().getValueFactory().setValue(voltAmpereProfile.getFirstW());
+            voltAmpereProfileController.getFirstISpinner().getValueFactory().setValue(voltAmpereProfile.getFirstI());
+            voltAmpereProfileController.getSecondISpinner().getValueFactory().setValue(voltAmpereProfile.getSecondI());
+            voltAmpereProfileController.getBoostISpinner().getValueFactory().setValue(voltAmpereProfile.getBoostI());
+            voltAmpereProfileController.getBatteryUSpinner().getValueFactory().setValue(voltAmpereProfile.getBatteryU());
+            voltAmpereProfileController.getNegativeUSpinner().getValueFactory().setValue(voltAmpereProfile.getNegativeU());
+            voltAmpereProfileController.getEnableBoostToggleButton().setSelected(voltAmpereProfile.getBoostDisable());
+
+            switch (voltAmpereProfile.getInjectorType().getInjectorType()) {
+                case "coil":
+                    voltAmpereProfileController.getInjectorSectionController().getCoilRadioButton().setSelected(true);
+                    break;
+                case "piezo":
+                    voltAmpereProfileController.getInjectorSectionController().getPiezoRadioButton().setSelected(true);
+                    break;
+                case "piezoDelphi":
+                    voltAmpereProfileController.getInjectorSectionController().getPiezoDelphiRadioButton().setSelected(true);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Wrong injector type parameter!");
             }
+
+            voltAmpereProfileController.getApplyButton().fire();
         });
 
     }
@@ -192,7 +196,7 @@ public class MainSectionController {
             if (event.getButton() == MouseButton.SECONDARY) {
                 manufacturerMenu.getItems().clear();
                 manufacturerMenu.getItems().add(newManufacturer);
-                if(currentManufacturerObtainer.getCurrentManufacturer().isCustom())
+                if (currentManufacturerObtainer.getCurrentManufacturer().isCustom())
                     manufacturerMenu.getItems().addAll(editManufacturer, deleteManufacturer);
                 manufacturerMenu.show(manufacturerListView, event.getScreenX(), event.getScreenY());
             } else
@@ -208,13 +212,13 @@ public class MainSectionController {
 
         //TODO
         modelListView.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
-            if(event.getButton() == MouseButton.SECONDARY) {
+            if (event.getButton() == MouseButton.SECONDARY) {
                 modelMenu.getItems().clear();
-                if(defaultRB.isSelected()) {
+                if (defaultRB.isSelected()) {
                     modelMenu.getItems().add(copyModel);
                 } else {
                     modelMenu.getItems().add(newModel);
-                    if(modelListView.getSelectionModel().getSelectedItem() != null)
+                    if (modelListView.getSelectionModel().getSelectedItem() != null)
                         modelMenu.getItems().addAll(copyModel);
                 }
                 modelMenu.show(modelListView, event.getScreenX(), event.getScreenY());
@@ -222,6 +226,7 @@ public class MainSectionController {
                 modelMenu.hide();
         });
     }
+
     private class ManufacturerMenuEventHandler implements EventHandler<ActionEvent> {
 
         private String title;
@@ -234,7 +239,7 @@ public class MainSectionController {
 
         @Override
         public void handle(ActionEvent event) {
-            if(manufacturerDialogStage == null) {
+            if (manufacturerDialogStage == null) {
                 manufacturerDialogStage = new Stage();
                 manufacturerDialogStage.setScene(new Scene(manufacturerMenuDialog.getView(), 200, 130));
                 manufacturerDialogStage.setResizable(false);
@@ -259,7 +264,7 @@ public class MainSectionController {
 
         @Override
         public void handle(ActionEvent event) {
-            if(modelDialogStage == null) {
+            if (modelDialogStage == null) {
                 modelDialogStage = new Stage();
                 modelDialogStage.setScene(new Scene(newEditInjectorDialog.getView(), 600, 400));
                 modelDialogStage.setResizable(false);

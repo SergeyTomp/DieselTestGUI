@@ -337,16 +337,20 @@ public class SpringJavaConfig {
     }
 
     @Bean
-    @DependsOn("checkAndInitializeBD")
     @Autowired
-    public ListView<Manufacturer> manufacturerList(MainSectionController mainSectionController, ManufacturerRepository manufacturerRepository) {
-        List<Manufacturer> manufacturerList = new LinkedList<>();
-        manufacturerRepository.findAll().forEach(manufacturerList::add);
-        ObservableList<Manufacturer> observableList = FXCollections.observableList(manufacturerList);
-        ListView<Manufacturer> manufacturerListView = mainSectionController.getManufacturerListView();
-        manufacturerListView.setItems(observableList);
+    @SuppressWarnings("unchecked")
+    public ListView<Manufacturer> manufacturerList(SessionFactory sessionFactory, MainSectionController mainSectionController) throws IOException {
+        Session session = sessionFactory.openSession();
+        session.setFlushMode(FlushMode.MANUAL);
+        session.setDefaultReadOnly(true);
+        List<Manufacturer> manufacturers = session.createQuery("select manufacturer from Manufacturer manufacturer")
+                .list();
 
-        return manufacturerListView;
+        ObservableList<Manufacturer> observableList = FXCollections.observableList(manufacturers);
+        ListView<Manufacturer> manufacturerList = mainSectionController.getManufacturerListView();
+        manufacturerList.setItems(observableList);
+
+        return manufacturerList;
     }
 
 }
