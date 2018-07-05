@@ -11,7 +11,7 @@ public class VoltAmpereProfile {
     @Column(name = "profile_name")
     private String profileName;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "injector_type")
     private InjectorType injectorType;
 
