@@ -150,7 +150,6 @@ public class MainSectionController {
             if (newValue == null)
                 return;
 
-
             Injector inj = (Injector) newValue;
             System.err.println(inj.getVoltAmpereProfile().getInjectorType().getInjectorType());
             VoltAmpereProfile voltAmpereProfile = inj.getVoltAmpereProfile();
