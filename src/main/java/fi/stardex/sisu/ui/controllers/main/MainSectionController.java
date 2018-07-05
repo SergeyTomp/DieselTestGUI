@@ -5,6 +5,7 @@ import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
 import fi.stardex.sisu.persistence.orm.cr.inj.VoltAmpereProfile;
 import fi.stardex.sisu.persistence.orm.interfaces.Model;
 import fi.stardex.sisu.persistence.repos.cr.InjectorsRepository;
+import fi.stardex.sisu.registers.flow.ModbusMapFlow;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
@@ -93,6 +94,11 @@ public class MainSectionController {
 
     @PostConstruct
     private void init() {
+
+        // TODO: do not delete!
+//        setupStartStopToggleButton();
+//        setupResetButton()
+
         versionComboBox.getItems().addAll(versions);
 
         versionComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
@@ -288,4 +294,26 @@ public class MainSectionController {
             modelDialogStage.show();
         }
     }
+
+    // TODO: do not delete!
+//    private void setupStartStopToggleButton() {
+//
+//        startStopToggleButton.selectedProperty().addListener((observable, stopped, started) -> {
+//            if (started) {
+//                flowModbusWriter.add(ModbusMapFlow.StartMeasurementCycle, true);
+//                startStopToggleButton.setText("Stop");
+//            }
+//            else {
+//                flowModbusWriter.add(ModbusMapFlow.StopMeasurementCycle, true);
+//                startStopToggleButton.setText("Start");
+//            }
+//        });
+//
+//    }
+//
+//    private void setupResetButton() {
+//
+//        resetButton.setOnAction(event -> flowModbusWriter.add(ModbusMapFlow.StartMeasurementCycle, true));
+//
+//    }
 }
