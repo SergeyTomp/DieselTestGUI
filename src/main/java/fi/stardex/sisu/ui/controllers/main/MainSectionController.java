@@ -4,11 +4,7 @@ import fi.stardex.sisu.persistence.orm.Manufacturer;
 import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
 import fi.stardex.sisu.persistence.orm.cr.inj.VoltAmpereProfile;
 import fi.stardex.sisu.persistence.orm.interfaces.Model;
-import fi.stardex.sisu.persistence.orm.interfaces.VoltAmpereProfileProjection;
 import fi.stardex.sisu.persistence.repos.cr.InjectorsRepository;
-import fi.stardex.sisu.persistence.repos.cr.VoltAmpereProfileRepository;
-import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
-import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
@@ -19,8 +15,6 @@ import fi.stardex.sisu.util.converters.FirmwareDataConverter;
 import fi.stardex.sisu.util.obtainers.CurrentManufacturerObtainer;
 import fi.stardex.sisu.util.view.ApplicationAppearanceChanger;
 import fi.stardex.sisu.util.view.GUIType;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -30,18 +24,26 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 public class MainSectionController {
+
+    @FXML private ToggleGroup testsToggleGroup;
+
+    @FXML private TextField injNumberTextField;
+
+    @FXML private RadioButton manualTestRadioButton;
+
+    @FXML private RadioButton codingTestRadioButton;
+
+    @FXML private RadioButton autoTestRadioButton;
+
+    @FXML private RadioButton testPlanTestRadioButton;
 
     @FXML
     private ToggleGroup baseType;
