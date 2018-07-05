@@ -1,6 +1,5 @@
 package fi.stardex.sisu.ui.updaters;
 
-
 import fi.stardex.sisu.combobox_values.FlowUnits;
 import fi.stardex.sisu.combobox_values.InjectorChannel;
 import fi.stardex.sisu.registers.flow.ModbusMapFlow;

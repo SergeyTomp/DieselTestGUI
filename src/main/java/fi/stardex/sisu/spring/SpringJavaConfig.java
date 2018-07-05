@@ -245,14 +245,14 @@ public class SpringJavaConfig {
 
     @Bean
     @Autowired
-    public FlowMasterUpdater flowMasterUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
+    public FlowUpdater flowMasterUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
                                                SettingsController settingsController, FirmwareDataConverter firmwareDataConverter) {
         return new FlowMasterUpdater(flowController, injectorSectionController, settingsController, firmwareDataConverter);
     }
 
     @Bean
     @Autowired
-    public FlowStreamUpdater flowStreamUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
+    public FlowUpdater flowStreamUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
                                                SettingsController settingsController, FirmwareDataConverter firmwareDataConverter) {
         return new FlowStreamUpdater(flowController, injectorSectionController, settingsController, firmwareDataConverter);
     }

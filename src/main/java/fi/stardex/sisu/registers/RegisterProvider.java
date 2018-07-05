@@ -101,7 +101,6 @@ public abstract class RegisterProvider {
             chartDataSize = size - currRef;
 
         Integer[] chartData = new Integer[chartDataSize];
-        //TODO why IOOBEE if stepsize = 150;
         int stepSize = 125;
         int stepCount = chartDataSize / stepSize;
         int remainder = chartDataSize % stepSize;
