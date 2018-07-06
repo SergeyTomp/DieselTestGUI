@@ -2,6 +2,7 @@ package fi.stardex.sisu.ui.controllers.main;
 
 import fi.stardex.sisu.persistence.orm.Manufacturer;
 import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
+import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.persistence.orm.cr.inj.VoltAmpereProfile;
 import fi.stardex.sisu.persistence.orm.interfaces.Model;
 import fi.stardex.sisu.persistence.repos.cr.InjectorsRepository;
@@ -47,6 +48,7 @@ public class MainSectionController {
 
     @FXML private RadioButton testPlanTestRadioButton;
 
+
     @FXML
     private ToggleGroup baseType;
     @FXML
@@ -55,12 +57,12 @@ public class MainSectionController {
     private RadioButton customRB;
 
     private List<String> versions = new LinkedList<>();
-
     {
         versions.add("CR Injectors");
         versions.add("CR Pumps");
         versions.add("UIS");
     }
+
 
     @FXML
     private ComboBox<String> versionComboBox;
@@ -71,6 +73,8 @@ public class MainSectionController {
     private TextField searchModelTF;
     @FXML
     private ListView<Model> modelListView;
+    @FXML
+    private ListView<InjectorTest> testListView;
 
     @Autowired
     private CurrentManufacturerObtainer currentManufacturerObtainer;
@@ -209,6 +213,18 @@ public class MainSectionController {
             voltAmpereProfileController.getApplyButton().fire();
         });
 
+        testsToggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+            if(newValue == manualTestRadioButton) {
+
+            } else if(newValue == testPlanTestRadioButton) {
+                testListView.getItems().setAll(currentInjectorObtainer.getInjector().getInjectorTests());
+            } else if (newValue == autoTestRadioButton) {
+                //TODO in dev
+            } else {
+                //TODO in dev
+            }
+
+        });
     }
 
     public ListView<Manufacturer> getManufacturerListView() {

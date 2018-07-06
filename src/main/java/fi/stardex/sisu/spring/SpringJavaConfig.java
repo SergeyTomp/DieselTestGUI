@@ -343,6 +343,7 @@ public class SpringJavaConfig {
     }
 
     @Bean
+    @DependsOn("checkAndInitializeBD")
     @Autowired
     @SuppressWarnings("unchecked")
     public ListView<Manufacturer> manufacturerList(SessionFactory sessionFactory, MainSectionController mainSectionController) throws IOException {

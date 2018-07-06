@@ -53,4 +53,8 @@ public class InjectorTest {
     @NotFound
     private VoltAmpereProfile voltAmpereProfile;
 
+    @Override
+    public String toString() {
+        return testName.toString();
+    }
 }

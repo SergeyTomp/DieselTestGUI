@@ -4,6 +4,7 @@ import fi.stardex.sisu.persistence.orm.Manufacturer;
 import fi.stardex.sisu.persistence.orm.interfaces.Model;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 public class Injector implements Model {
@@ -34,6 +35,9 @@ public class Injector implements Model {
 
     @Column(name = "is_custom")
     private Boolean isCustom;
+
+    @OneToMany(mappedBy = "injector")
+    private List<InjectorTest> injectorTests;
 
     public Injector() {
     }
@@ -107,6 +111,14 @@ public class Injector implements Model {
 
     public void setVoltAmpereProfile(VoltAmpereProfile voltAmpereProfile) {
         this.voltAmpereProfile = voltAmpereProfile;
+    }
+
+    public List<InjectorTest> getInjectorTests() {
+        return injectorTests;
+    }
+
+    public void setInjectorTests(List<InjectorTest> injectorTests) {
+        this.injectorTests = injectorTests;
     }
 
     @Override

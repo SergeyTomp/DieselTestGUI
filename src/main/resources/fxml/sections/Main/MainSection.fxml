@@ -15,7 +15,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<GridPane maxHeight="1.7976931348623157E308" maxWidth="300.0" minHeight="-Infinity" minWidth="300.0" prefHeight="600.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.main.MainSectionController">
+<GridPane maxHeight="1.7976931348623157E308" maxWidth="300.0" minHeight="-Infinity" minWidth="300.0" prefHeight="600.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/10.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.main.MainSectionController">
     <columnConstraints>
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
     </columnConstraints>
@@ -92,24 +92,24 @@
                           <ToggleGroup fx:id="testsToggleGroup" />
                       </toggleGroup>
                   </RadioButton>
-                  <RadioButton fx:id="codingTestRadioButton" toggleGroup="$testsToggleGroup" mnemonicParsing="false" styleClass="label" stylesheets="@../../../css/Styling.css" text="Coding" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                  <RadioButton fx:id="codingTestRadioButton" mnemonicParsing="false" styleClass="label" stylesheets="@../../../css/Styling.css" text="Coding" toggleGroup="$testsToggleGroup" GridPane.columnIndex="2" GridPane.rowIndex="1">
                      <GridPane.margin>
                         <Insets />
                      </GridPane.margin>
                   </RadioButton>
-                  <RadioButton fx:id="autoTestRadioButton" toggleGroup="$testsToggleGroup" mnemonicParsing="false" styleClass="label" stylesheets="@../../../css/Styling.css" text="Auto" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                  <RadioButton fx:id="autoTestRadioButton" mnemonicParsing="false" styleClass="label" stylesheets="@../../../css/Styling.css" text="Auto" toggleGroup="$testsToggleGroup" GridPane.columnIndex="1" GridPane.rowIndex="1">
                      <GridPane.margin>
                         <Insets />
                      </GridPane.margin>
                   </RadioButton>
-                  <RadioButton fx:id="testPlanTestRadioButton" toggleGroup="$testsToggleGroup" mnemonicParsing="false" styleClass="label" stylesheets="@../../../css/Styling.css" text="TestPlan" GridPane.columnIndex="2">
+                  <RadioButton fx:id="testPlanTestRadioButton" mnemonicParsing="false" styleClass="label" stylesheets="@../../../css/Styling.css" text="TestPlan" toggleGroup="$testsToggleGroup" GridPane.columnIndex="2">
                      <GridPane.margin>
                         <Insets />
                      </GridPane.margin>
                   </RadioButton>
                </children>
             </GridPane>
-            <ListView prefHeight="129.0" prefWidth="300.0" />
+            <ListView fx:id="testListView" prefHeight="129.0" prefWidth="300.0" />
          </children>
       </VBox>
     </children>
