@@ -7,8 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
+import java.io.*;
 import java.sql.SQLException;
 
 public class CheckAndInitializeBD {
@@ -36,9 +35,11 @@ public class CheckAndInitializeBD {
     }
 
     private void fillTables() {
+
         try {
-            RunScript.execute(dataSource.getConnection(), new FileReader(getClass().getResource("/db/scripts/fill_tables.sql").getPath()));
-        } catch (SQLException | FileNotFoundException e) {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("/db/scripts/fill_tables.sql")));
+            RunScript.execute(dataSource.getConnection(), reader);
+        } catch (SQLException e) {
             e.printStackTrace();
         }
 //        String filePath = getClass().getResource("/db/csv/manufacturers.csv").getPath();

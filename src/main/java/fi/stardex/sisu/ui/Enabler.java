@@ -32,18 +32,18 @@ public class Enabler {
 
     public Enabler selectInjector(boolean selected) {
 
-        if (!selected) {
-            testPlanTestRadioButton.setDisable(true);
-            autoTestRadioButton.setDisable(true);
-            codingTestRadioButton.setDisable(true);
-            manualTestRadioButton.setSelected(true);
-            testListView.getItems().clear();
-        } else {
+        if (selected) {
             testPlanTestRadioButton.setDisable(false);
             autoTestRadioButton.setDisable(false);
             codingTestRadioButton.setDisable(false);
             if (!manualTestRadioButton.isSelected())
                 fillTestListView();
+        } else {
+            testPlanTestRadioButton.setDisable(true);
+            autoTestRadioButton.setDisable(true);
+            codingTestRadioButton.setDisable(true);
+            manualTestRadioButton.setSelected(true);
+            testListView.getItems().clear();
         }
 
         return this;
@@ -52,6 +52,7 @@ public class Enabler {
     public Enabler selectTest(Tests test) {
         switch (test) {
             case MANUAL:
+                testListView.setDisable(false);
                 testListView.getItems().clear();
                 break;
             case TESTPLAN:
