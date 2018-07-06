@@ -17,6 +17,7 @@ import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.flow.ModbusMapFlow;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
+import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.ui.controllers.additional.tabs.ConnectionController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
@@ -358,6 +359,13 @@ public class SpringJavaConfig {
         manufacturerList.setItems(observableList);
 
         return manufacturerList;
+    }
+
+    @Bean
+    @Lazy
+    @Autowired
+    public Enabler enabler(MainSectionController mainSectionController, CurrentInjectorObtainer currentInjectorObtainer) {
+        return new Enabler(mainSectionController, currentInjectorObtainer);
     }
 
 }
