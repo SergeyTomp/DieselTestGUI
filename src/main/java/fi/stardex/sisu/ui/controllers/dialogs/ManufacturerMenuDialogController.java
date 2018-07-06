@@ -2,6 +2,7 @@ package fi.stardex.sisu.ui.controllers.dialogs;
 
 import fi.stardex.sisu.persistence.orm.Manufacturer;
 import fi.stardex.sisu.persistence.repos.ManufacturerRepository;
+import fi.stardex.sisu.util.obtainers.CurrentManufacturerObtainer;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -41,9 +42,6 @@ public class ManufacturerMenuDialogController {
                 case NEW:
                     create();
                     break;
-                case EDIT:
-                    edit();
-                    break;
                 case DELETE:
                     delete();
                     break;
@@ -62,16 +60,11 @@ public class ManufacturerMenuDialogController {
             notUniqueLabel.setVisible(false);
             manufacturerRepository.save(newManufacturer);
             manufacturerList.getItems().add(newManufacturer);
+            manufacturerList.getSelectionModel().select(newManufacturer);
             stage.close();
         }
     }
 
-    //TODO Edit manufacturer and all children injectors
-    private void edit() {
-        stage.close();
-    }
-
-    //TODO Delete manufacturer and children injectors
     private void delete() {
         Manufacturer manufacturer = manufacturerList.getSelectionModel().getSelectedItem();
         manufacturerList.getItems().remove(manufacturer);
@@ -86,12 +79,6 @@ public class ManufacturerMenuDialogController {
         currentState = State.NEW;
     }
 
-    public void setEdit() {
-        nameTF.setDisable(false);
-        nameLabel.setVisible(true);
-        nameTF.setText("");
-        currentState = State.EDIT;
-    }
 
     public void setDelete() {
         nameTF.setDisable(true);
@@ -105,6 +92,6 @@ public class ManufacturerMenuDialogController {
     }
 
     private enum State {
-        NEW, EDIT, DELETE
+        NEW, DELETE
     }
 }

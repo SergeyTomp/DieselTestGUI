@@ -2,6 +2,7 @@ package fi.stardex.sisu.persistence.orm.cr.inj;
 
 import javax.persistence.*;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "volt_ampere_profile")
@@ -11,7 +12,7 @@ public class VoltAmpereProfile {
     @Column(name = "profile_name")
     private String profileName;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "injector_type")
     private InjectorType injectorType;
 
@@ -104,6 +105,19 @@ public class VoltAmpereProfile {
         this.secondI = secondI;
         this.negativeU = negativeU;
         this.boostDisable = boostDisable;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        VoltAmpereProfile that = (VoltAmpereProfile) o;
+        return Objects.equals(getProfileName(), that.getProfileName());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getProfileName());
     }
 
     @Override

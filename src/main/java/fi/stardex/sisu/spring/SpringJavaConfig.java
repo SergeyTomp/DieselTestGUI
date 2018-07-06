@@ -28,6 +28,7 @@ import fi.stardex.sisu.ui.updaters.*;
 import fi.stardex.sisu.util.ApplicationConfigHandler;
 import fi.stardex.sisu.util.converters.FirmwareDataConverter;
 import fi.stardex.sisu.util.i18n.I18N;
+import fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer;
 import fi.stardex.sisu.util.obtainers.CurrentManufacturerObtainer;
 import fi.stardex.sisu.util.rescalers.BackFlowRescaler;
 import fi.stardex.sisu.util.rescalers.DeliveryRescaler;
@@ -328,6 +329,11 @@ public class SpringJavaConfig {
     @Bean
     public CurrentManufacturerObtainer currentManufacturerObtainer() {
         return new CurrentManufacturerObtainer();
+    }
+
+    @Bean
+    public CurrentInjectorObtainer currentInjectorObtainer() {
+        return new CurrentInjectorObtainer();
     }
 
     @Bean

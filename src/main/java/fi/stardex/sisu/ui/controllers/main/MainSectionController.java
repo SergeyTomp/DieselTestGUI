@@ -4,21 +4,16 @@ import fi.stardex.sisu.persistence.orm.Manufacturer;
 import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
 import fi.stardex.sisu.persistence.orm.cr.inj.VoltAmpereProfile;
 import fi.stardex.sisu.persistence.orm.interfaces.Model;
-import fi.stardex.sisu.persistence.orm.interfaces.VoltAmpereProfileProjection;
 import fi.stardex.sisu.persistence.repos.cr.InjectorsRepository;
-import fi.stardex.sisu.persistence.repos.cr.VoltAmpereProfileRepository;
-import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
-import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
 import fi.stardex.sisu.ui.controllers.dialogs.ManufacturerMenuDialogController;
 import fi.stardex.sisu.ui.controllers.dialogs.NewEditInjectorDialogController;
 import fi.stardex.sisu.util.ApplicationConfigHandler;
+import fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer;
 import fi.stardex.sisu.util.obtainers.CurrentManufacturerObtainer;
 import fi.stardex.sisu.util.view.ApplicationAppearanceChanger;
 import fi.stardex.sisu.util.view.GUIType;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -28,15 +23,11 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Consumer;
 
 public class MainSectionController {
@@ -78,6 +69,8 @@ public class MainSectionController {
     private ViewHolder newEditInjectorDialog;
     @Autowired
     private VoltAmpereProfileController voltAmpereProfileController;
+    @Autowired
+    private CurrentInjectorObtainer currentInjectorObtainer;
 
     @Autowired
     private InjectorsRepository injectorsRepository;
@@ -122,9 +115,16 @@ public class MainSectionController {
 
         manufacturerListView.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) -> {
             currentManufacturerObtainer.setCurrentManufacturer(newValue);
+
+            if (newValue.isCustom()) {
+                defaultRB.setDisable(true);
+                customRB.setSelected(true);
+            } else
+                defaultRB.setDisable(false);
+
             switch (GUIType.getCurrentType()) {
                 case CR_Inj:
-                    modelListView.getItems().setAll(newValue.getInjectors());
+                    modelListView.getItems().setAll(newValue.getInjectors(customRB.isSelected()));
                     break;
                 case CR_Pump:
                     //TODO
@@ -138,16 +138,20 @@ public class MainSectionController {
         }));
 
         baseType.selectedToggleProperty().addListener(((observable, oldValue, newValue) -> {
-            modelListView.getItems().setAll(injectorsRepository.findByManufacturerAndIsCustom(currentManufacturerObtainer.getCurrentManufacturer(),
-                    !newValue.equals(defaultRB)));
+            Manufacturer selectedItem = manufacturerListView.getSelectionModel().getSelectedItem();
+
+            if (selectedItem == null)
+                return;
+
+            modelListView.getItems().setAll(selectedItem.getInjectors(customRB.isSelected()));
         }));
 
         modelListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == null)
                 return;
 
-
             Injector inj = (Injector) newValue;
+            currentInjectorObtainer.setInjector(inj);
             System.err.println(inj.getVoltAmpereProfile().getInjectorType().getInjectorType());
             VoltAmpereProfile voltAmpereProfile = inj.getVoltAmpereProfile();
 
@@ -187,8 +191,6 @@ public class MainSectionController {
         ContextMenu manufacturerMenu = new ContextMenu();
         MenuItem newManufacturer = new MenuItem("New");
         newManufacturer.setOnAction(new ManufacturerMenuEventHandler("New manufacturer", ManufacturerMenuDialogController::setNew));
-        MenuItem editManufacturer = new MenuItem("Edit");
-        editManufacturer.setOnAction(new ManufacturerMenuEventHandler("Edit manufacturer.", ManufacturerMenuDialogController::setEdit));
         MenuItem deleteManufacturer = new MenuItem("Delete");
         deleteManufacturer.setOnAction(new ManufacturerMenuEventHandler("Delete manufacturer", ManufacturerMenuDialogController::setDelete));
 
@@ -196,8 +198,9 @@ public class MainSectionController {
             if (event.getButton() == MouseButton.SECONDARY) {
                 manufacturerMenu.getItems().clear();
                 manufacturerMenu.getItems().add(newManufacturer);
-                if (currentManufacturerObtainer.getCurrentManufacturer().isCustom())
-                    manufacturerMenu.getItems().addAll(editManufacturer, deleteManufacturer);
+                if (currentManufacturerObtainer.getCurrentManufacturer() != null &&
+                        currentManufacturerObtainer.getCurrentManufacturer().isCustom())
+                    manufacturerMenu.getItems().addAll(deleteManufacturer);
                 manufacturerMenu.show(manufacturerListView, event.getScreenX(), event.getScreenY());
             } else
                 manufacturerMenu.hide();
@@ -208,7 +211,12 @@ public class MainSectionController {
         ContextMenu modelMenu = new ContextMenu();
         MenuItem newModel = new MenuItem("New");
         newModel.setOnAction(new ModelMenuEventHandler("New injector", NewEditInjectorDialogController::setNew));
+        MenuItem editModel = new MenuItem("Edit");
+        editModel.setOnAction(new ModelMenuEventHandler("Edit injector", NewEditInjectorDialogController::setEdit));
         MenuItem copyModel = new MenuItem("Copy");
+
+        MenuItem deleteModel = new MenuItem("Delete");
+        deleteModel.setOnAction(new ModelMenuEventHandler("Delete injector", NewEditInjectorDialogController::setDelete));
 
         //TODO
         modelListView.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
@@ -219,7 +227,7 @@ public class MainSectionController {
                 } else {
                     modelMenu.getItems().add(newModel);
                     if (modelListView.getSelectionModel().getSelectedItem() != null)
-                        modelMenu.getItems().addAll(copyModel);
+                        modelMenu.getItems().addAll(copyModel, editModel, deleteModel);
                 }
                 modelMenu.show(modelListView, event.getScreenX(), event.getScreenY());
             } else
@@ -264,16 +272,19 @@ public class MainSectionController {
 
         @Override
         public void handle(ActionEvent event) {
+            NewEditInjectorDialogController controller = (NewEditInjectorDialogController) newEditInjectorDialog.getController();
             if (modelDialogStage == null) {
                 modelDialogStage = new Stage();
                 modelDialogStage.setScene(new Scene(newEditInjectorDialog.getView(), 600, 400));
                 modelDialogStage.setResizable(false);
                 modelDialogStage.initModality(Modality.APPLICATION_MODAL);
 //                manufacturerDialogStage.initStyle(StageStyle.UNDECORATED);
-                ((NewEditInjectorDialogController) newEditInjectorDialog.getController()).setStage(modelDialogStage);
+                controller.setStage(modelDialogStage);
+                controller.setModelListView(modelListView);
+
             }
             modelDialogStage.setTitle(title);
-            dialogType.accept((NewEditInjectorDialogController) newEditInjectorDialog.getController());
+            dialogType.accept(controller);
             modelDialogStage.show();
         }
     }

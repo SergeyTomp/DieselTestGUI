@@ -354,18 +354,6 @@ public class VoltAmpereProfileController {
         ultimaModbusWriter.add(ModbusMapUltima.StartOnBatteryUTwo, boostToggleButtonSelected);
         ultimaModbusWriter.add(ModbusMapUltima.StartOnBatteryUThree, boostToggleButtonSelected);
         ultimaModbusWriter.add(ModbusMapUltima.StartOnBatteryUFour, boostToggleButtonSelected);
-        System.err.println("boostUSpinner: " + boostUSpinner.getValue());
-        System.err.println("batteryUSpinner: " + batteryUSpinner.getValue());
-        System.err.println("negativeUSpinner: " + negativeValue);
-        System.err.println("boostISpinner: " + boostIValue);
-        System.err.println("firstISpinner: " + firstIValue);
-        System.err.println("secondISpinner: " + secondIValue);
-        System.err.println("firstWSpinner: " + firstWValue);
-        System.err.println("widthCurrentSignal: " + widthValue);
-        System.err.println("StartOnBatteryUOne: " + boostToggleButtonSelected);
-        System.err.println("StartOnBatteryUTwo: " + boostToggleButtonSelected);
-        System.err.println("StartOnBatteryUThree: " + boostToggleButtonSelected);
-        System.err.println("StartOnBatteryUFour: " + boostToggleButtonSelected);
 
     }
 

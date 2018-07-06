@@ -4,6 +4,7 @@ import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
+import java.util.LinkedList;
 import java.util.List;
 
 @Entity
@@ -17,12 +18,25 @@ public class Manufacturer {
     @Column(name = "is_custom")
     private Boolean isCustom;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "manufacturer")
-    private List<Injector> injectors;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "manufacturer", cascade = CascadeType.ALL)
+    private List<Injector> injectors = new LinkedList<>();
 
     public List<Injector> getInjectors() {
         return injectors;
     }
+
+    public List<Injector> getInjectors(boolean isCustom) {
+        List<Injector> forReturn = new LinkedList<>();
+        if (injectors.size() != 0) {
+            injectors.forEach(injector -> {
+                if (injector.getCustom() == isCustom)
+                    forReturn.add(injector);
+            });
+        }
+
+        return forReturn;
+    }
+
 
     public void setManufacturer(String manufacturer) {
         this.manufacturer = manufacturer;
