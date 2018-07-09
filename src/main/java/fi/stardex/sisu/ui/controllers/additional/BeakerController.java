@@ -31,6 +31,8 @@ public class BeakerController {
 
     private static List<BeakerController> beakerControllers = new ArrayList<>();
 
+    private LedController ledBeakerController;
+
     public static List<BeakerController> getBeakerControllers() {
         return beakerControllers;
     }
@@ -82,6 +84,10 @@ public class BeakerController {
         this.textField = textField;
     }
 
+    public void setLedController(LedController ledBeakerController) {
+        this.ledBeakerController = ledBeakerController;
+    }
+
     public void setRescaler(Rescaler rescaler) {
         this.rescaler = rescaler;
     }
@@ -99,11 +105,23 @@ public class BeakerController {
 
         beakerControllers.add(this);
 
+        setupLedBeakerListener();
+
         setupResizeable();
 
         setupRescaler();
 
         makeEmpty();
+
+    }
+
+    private void setupLedBeakerListener() {
+
+        ledBeakerController.getLedBeaker().selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+
+            }
+        });
 
     }
 

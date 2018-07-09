@@ -291,6 +291,26 @@ public class FlowController {
 
     private static final int TEXT_FIELD_MAX_LENGTH = 7;
 
+    private double[] currentDeliveryFlowLevels;
+
+    private double[] currentBackFlowLevels;
+
+    public double[] getCurrentDeliveryFlowLevels() {
+        return currentDeliveryFlowLevels;
+    }
+
+    public void setCurrentDeliveryFlowLevels(double[] currentDeliveryFlowLevels) {
+        this.currentDeliveryFlowLevels = currentDeliveryFlowLevels;
+    }
+
+    public double[] getCurrentBackFlowLevels() {
+        return currentBackFlowLevels;
+    }
+
+    public void setCurrentBackFlowLevels(double[] currentBackFlowLevels) {
+        this.currentBackFlowLevels = currentBackFlowLevels;
+    }
+
     @PostConstruct
     private void init() {
 

@@ -370,8 +370,9 @@ public class SpringJavaConfig {
     @Bean
     @Autowired
     public FlowResolver flowResolver(MainSectionController mainSectionController,SettingsController settingsController,
-                                     FlowController flowController, DataConverter dataConverter) {
-        return new FlowResolver(mainSectionController, settingsController, flowController, dataConverter);
+                                     FlowController flowController, InjectorSectionController injectorSectionController,
+                                     DataConverter dataConverter) {
+        return new FlowResolver(mainSectionController, settingsController, flowController, injectorSectionController, dataConverter);
     }
 
 }

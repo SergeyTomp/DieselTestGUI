@@ -24,10 +24,6 @@ public class FlowResolver {
 
     private static final double PERCENT = 0.01;
 
-    private double currentNominalFlow;
-
-    private double currentFlowRange;
-
     public FlowResolver(MainSectionController mainSectionController, SettingsController settingsController,
                         FlowController flowController, DataConverter dataConverter) {
         this.mainSectionController = mainSectionController;
@@ -38,13 +34,25 @@ public class FlowResolver {
 
     @PostConstruct
     private void init() {
+
         mainSectionController.getTestListView().getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
                 setFlowLabels(newValue, settingsController.getFlowOutputDimensionsComboBox().getSelectionModel().getSelectedItem()));
+
         settingsController.getFlowOutputDimensionsComboBox().getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
-                updateFlowLabels(newValue);
+                setFlowLabels(mainSectionController.getTestListView().getSelectionModel().getSelectedItem(), newValue));
+
+        flowController.getDeliveryFlowComboBox().getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
+                setFlowLabels(mainSectionController.getTestListView().getSelectionModel().getSelectedItem(),
+                        settingsController.getFlowOutputDimensionsComboBox().getSelectionModel().getSelectedItem()));
+
+        flowController.getBackFlowComboBox().getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
+                setFlowLabels(mainSectionController.getTestListView().getSelectionModel().getSelectedItem(),
+                        settingsController.getFlowOutputDimensionsComboBox().getSelectionModel().getSelectedItem()));
+
     }
 
     private void setFlowLabels(InjectorTest injectorTest, Dimension dimension) {
+
         if (injectorTest == null)
             return;
 
@@ -70,21 +78,22 @@ public class FlowResolver {
                 return;
         }
 
-        currentNominalFlow = injectorTest.getNominalFlow();
-        currentFlowRange = injectorTest.getFlowRange();
+        double currentNominalFlow = injectorTest.getNominalFlow();
+        double currentFlowRange = injectorTest.getFlowRange();
 
         switch (dimension) {
             case LIMIT:
-                double[] results = calculateLIMIT(currentNominalFlow, currentFlowRange, flowUnit);
+                double[] results = calculateLIMIT(currentNominalFlow, currentFlowRange, flowUnit, measurement);
                 flowLabel.setText(String.format("%.1f - %.1f", results[0], results[1]));
                 break;
             case PLUS_OR_MINUS:
                 double result = calculatePLUSMINUS(currentNominalFlow, currentFlowRange, flowUnit);
                 flowLabel.setText(String.format("%.1f \\u00B1 %.1f", currentNominalFlow, result));
         }
+
     }
 
-    private double[] calculateLIMIT(double nominalFlow, double flowRange, String flowUnit) {
+    private double[] calculateLIMIT(double nominalFlow, double flowRange, String flowUnit, Measurement measurement) {
 
         double[] result = new double[2];
 
@@ -92,6 +101,17 @@ public class FlowResolver {
 
         result[0] = dataConverter.roundToOneDecimalPlace((nominalFlow - nominalFlow * (flowRange * PERCENT)) * flowUnitsConvertValue);
         result[1] = dataConverter.roundToOneDecimalPlace((nominalFlow + nominalFlow * (flowRange * PERCENT)) * flowUnitsConvertValue);
+
+        switch (measurement) {
+            case DIRECT:
+                flowController.setCurrentDeliveryFlowLevels(result);
+                break;
+            case BACK_FLOW:
+                flowController.setCurrentBackFlowLevels(result);
+                break;
+            default:
+                return result;
+        }
 
         return result;
 
@@ -102,14 +122,6 @@ public class FlowResolver {
         float flowUnitsConvertValue = FlowUnits.getMapOfFlowUnits().get(flowUnit);
 
         return dataConverter.roundToOneDecimalPlace((nominalFlow * (flowRange * PERCENT)) * flowUnitsConvertValue);
-    }
-
-    private void updateFlowLabels(Dimension dimension) {
-
-        if (currentNominalFlow == 0d || currentFlowRange == 0d)
-            return;
-
-
 
     }
 
