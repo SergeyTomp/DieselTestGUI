@@ -14,14 +14,13 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.additional.tabs.FlowController">
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.additional.tabs.FlowController">
     <HBox alignment="CENTER" prefHeight="290.0" prefWidth="495.0" AnchorPane.bottomAnchor="1.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="-1.0">
         <children>
             <VBox alignment="CENTER" prefHeight="329.0" prefWidth="392.0" HBox.hgrow="ALWAYS">
                 <children>
                     <GridPane prefHeight="55.0" prefWidth="421.0" VBox.vgrow="NEVER">
                         <children>
-                            <Label fx:id="deliveryLowHighLabel" text="%h4.flow.label.delivery" GridPane.columnIndex="0" GridPane.rowIndex="0" />
                             <ComboBox fx:id="deliveryFlowComboBox" maxHeight="30.0" maxWidth="130.0" minHeight="30.0" minWidth="130.0" prefHeight="30.0" prefWidth="130.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
                                 <GridPane.margin>
                                     <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
@@ -30,13 +29,22 @@
                                     <Tooltip text="%h4.spin.tip.del.formula" />
                                 </tooltip>
                             </ComboBox>
+                     <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.valignment="CENTER">
+                        <children>
+                                  <Label fx:id="deliveryLabel" alignment="CENTER" contentDisplay="TOP" text="%h4.flow.label.delivery" />
+                           <Label fx:id="deliveryRangeLabel" alignment="CENTER">
+                              <padding>
+                                 <Insets left="10.0" />
+                              </padding></Label>
+                        </children>
+                     </HBox>
                         </children>
                         <columnConstraints>
                             <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0" />
                             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                         </columnConstraints>
                         <rowConstraints>
-                            <RowConstraints minHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="30.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
                         </rowConstraints>
                     </GridPane>
                     <GridPane prefHeight="279.0" prefWidth="421.0" VBox.vgrow="ALWAYS">
@@ -117,7 +125,6 @@
                 <children>
                     <GridPane prefHeight="55.0" prefWidth="350.0" VBox.vgrow="NEVER">
                         <children>
-                            <Label fx:id="backFlowLowHighLabel" text="%h4.flow.label.backflow" GridPane.columnIndex="0" GridPane.rowIndex="0" />
                             <ComboBox fx:id="backFlowComboBox" maxHeight="30.0" maxWidth="130.0" minHeight="30.0" minWidth="130.0" prefHeight="30.0" prefWidth="130.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
                                 <GridPane.margin>
                                     <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
@@ -126,13 +133,23 @@
                                     <Tooltip text="%h4.spin.tip.back.formula" />
                                 </tooltip>
                             </ComboBox>
+                     <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" GridPane.valignment="CENTER">
+                        <children>
+                                  <Label fx:id="backFlowLabel" contentDisplay="CENTER" text="%h4.flow.label.backflow" />
+                           <Label fx:id="backFlowRangeLabel" contentDisplay="CENTER">
+                              <padding>
+                                 <Insets left="10.0" />
+                              </padding>
+                           </Label>
+                        </children>
+                     </HBox>
                         </children>
                         <columnConstraints>
                             <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" minWidth="10.0" prefWidth="100.0" />
                             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                         </columnConstraints>
                         <rowConstraints>
-                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
                         </rowConstraints>
                     </GridPane>
                     <GridPane alignment="CENTER" prefHeight="279.0" prefWidth="421.0" VBox.vgrow="ALWAYS">

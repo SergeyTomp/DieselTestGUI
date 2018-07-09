@@ -53,6 +53,18 @@ public class InjectorTest {
     @NotFound
     private VoltAmpereProfile voltAmpereProfile;
 
+    public TestName getTestName() {
+        return testName;
+    }
+
+    public Double getNominalFlow() {
+        return nominalFlow;
+    }
+
+    public Double getFlowRange() {
+        return flowRange;
+    }
+
     @Override
     public String toString() {
         return testName.toString();

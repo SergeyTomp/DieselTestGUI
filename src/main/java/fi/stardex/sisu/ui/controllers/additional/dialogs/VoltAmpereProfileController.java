@@ -4,7 +4,7 @@ import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
-import fi.stardex.sisu.util.converters.FirmwareDataConverter;
+import fi.stardex.sisu.util.converters.DataConverter;
 import fi.stardex.sisu.util.spinners.SpinnerManager;
 import fi.stardex.sisu.util.spinners.SpinnerValueObtainer;
 import fi.stardex.sisu.util.spinners.WidthSpinnerValueObtainer;
@@ -79,7 +79,7 @@ public class VoltAmpereProfileController {
 
     private InjectorSectionController injectorSectionController;
 
-    private FirmwareDataConverter firmwareDataConverter;
+    private DataConverter firmwareDataConverter;
 
     public Spinner<Integer> getFirstWSpinner() {
         return firstWSpinner;
@@ -125,7 +125,7 @@ public class VoltAmpereProfileController {
         this.voltageController = voltageController;
     }
 
-    public void setFirmwareDataConverter(FirmwareDataConverter firmwareDataConverter) {
+    public void setFirmwareDataConverter(DataConverter firmwareDataConverter) {
         this.firmwareDataConverter = firmwareDataConverter;
     }
 

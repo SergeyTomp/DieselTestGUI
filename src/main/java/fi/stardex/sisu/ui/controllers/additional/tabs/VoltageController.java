@@ -4,7 +4,7 @@ import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.additional.AdditionalSectionController;
 import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
-import fi.stardex.sisu.util.converters.FirmwareDataConverter;
+import fi.stardex.sisu.util.converters.DataConverter;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
@@ -71,7 +71,7 @@ public class VoltageController {
 
     private ObjectProperty<Boolean> isTabVoltageShowing = new SimpleObjectProperty<>();
 
-    private FirmwareDataConverter firmwareDataConverter;
+    private DataConverter firmwareDataConverter;
 
     public ObjectProperty<Boolean> isTabVoltageShowingProperty() {
         return isTabVoltageShowing;
@@ -147,7 +147,7 @@ public class VoltageController {
         this.additionalSectionController = additionalSectionController;
     }
 
-    public void setFirmwareDataConverter(FirmwareDataConverter firmwareDataConverter) {
+    public void setFirmwareDataConverter(DataConverter firmwareDataConverter) {
         this.firmwareDataConverter = firmwareDataConverter;
     }
 

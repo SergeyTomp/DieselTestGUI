@@ -12,15 +12,19 @@ public class TestName {
     @Id
     @Column(name = "id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Integer id;
+    private Integer id;
 
     @NonNull
     @Column(name = "test_name", unique = true, length = 45)
-    String testName;
+    private String testName;
 
     @Column(name = "measurement")
     @Enumerated(EnumType.STRING)
-    Measurement measurement;
+    private Measurement measurement;
+
+    public Measurement getMeasurement() {
+        return measurement;
+    }
 
     @Override
     public String toString() {

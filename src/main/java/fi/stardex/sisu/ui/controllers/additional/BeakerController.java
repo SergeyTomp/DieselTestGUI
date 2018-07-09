@@ -1,6 +1,6 @@
 package fi.stardex.sisu.ui.controllers.additional;
 
-import fi.stardex.sisu.util.converters.FirmwareDataConverter;
+import fi.stardex.sisu.util.converters.DataConverter;
 import fi.stardex.sisu.util.rescalers.Rescaler;
 import javafx.application.Platform;
 import javafx.collections.MapChangeListener;
@@ -39,7 +39,7 @@ public class BeakerController {
 
     private Rescaler rescaler;
 
-    private FirmwareDataConverter firmwareDataConverter;
+    private DataConverter dataConverter;
 
     private String name;
 
@@ -86,8 +86,8 @@ public class BeakerController {
         this.rescaler = rescaler;
     }
 
-    public void setFirmwareDataConverter(FirmwareDataConverter firmwareDataConverter) {
-        this.firmwareDataConverter = firmwareDataConverter;
+    public void setDataConverter(DataConverter dataConverter) {
+        this.dataConverter = dataConverter;
     }
 
     public void setName(String name) {
@@ -153,7 +153,7 @@ public class BeakerController {
                 return;
             }
 
-            float currentVal = firmwareDataConverter.roundToOneDecimalPlace(firmwareDataConverter.convertDataToFloat(newValue));
+            float currentVal = dataConverter.roundToOneDecimalPlace(dataConverter.convertDataToFloat(newValue));
 
             rescaler.getObservableMapOfLevels().put(name, currentVal);
 

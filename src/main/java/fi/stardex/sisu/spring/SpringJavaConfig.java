@@ -27,12 +27,13 @@ import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
 import fi.stardex.sisu.ui.updaters.*;
 import fi.stardex.sisu.util.ApplicationConfigHandler;
-import fi.stardex.sisu.util.converters.FirmwareDataConverter;
+import fi.stardex.sisu.util.converters.DataConverter;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer;
 import fi.stardex.sisu.util.obtainers.CurrentManufacturerObtainer;
 import fi.stardex.sisu.util.rescalers.BackFlowRescaler;
 import fi.stardex.sisu.util.rescalers.DeliveryRescaler;
+import fi.stardex.sisu.util.rescalers.FlowResolver;
 import fi.stardex.sisu.util.rescalers.Rescaler;
 import fi.stardex.sisu.util.wrappers.StatusBarWrapper;
 import fi.stardex.sisu.version.FlowFirmwareVersion;
@@ -42,7 +43,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ListView;
 import org.hibernate.FlushMode;
-import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
@@ -54,7 +54,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 import javax.sql.DataSource;
 import java.io.IOException;
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -253,21 +252,21 @@ public class SpringJavaConfig {
 
     @Bean
     @Autowired
-    public InjectorSectionUpdater injectorSectionUpdater(VoltageController voltageController, FirmwareDataConverter firmwareDataConverter) {
+    public InjectorSectionUpdater injectorSectionUpdater(VoltageController voltageController, DataConverter firmwareDataConverter) {
         return new InjectorSectionUpdater(voltageController, firmwareDataConverter);
     }
 
     @Bean
     @Autowired
     public FlowMasterUpdater flowMasterUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
-                                               SettingsController settingsController, FirmwareDataConverter firmwareDataConverter) {
+                                               SettingsController settingsController, DataConverter firmwareDataConverter) {
         return new FlowMasterUpdater(flowController, injectorSectionController, settingsController, firmwareDataConverter);
     }
 
     @Bean
     @Autowired
     public FlowStreamUpdater flowStreamUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
-                                               SettingsController settingsController, FirmwareDataConverter firmwareDataConverter) {
+                                               SettingsController settingsController, DataConverter firmwareDataConverter) {
         return new FlowStreamUpdater(flowController, injectorSectionController, settingsController, firmwareDataConverter);
     }
 
@@ -300,8 +299,8 @@ public class SpringJavaConfig {
     }
 
     @Bean
-    public FirmwareDataConverter firmwareDataConverter() {
-        return new FirmwareDataConverter();
+    public DataConverter dataConverter() {
+        return new DataConverter();
     }
 
     @Bean
@@ -366,6 +365,13 @@ public class SpringJavaConfig {
     @Autowired
     public Enabler enabler(MainSectionController mainSectionController, CurrentInjectorObtainer currentInjectorObtainer) {
         return new Enabler(mainSectionController, currentInjectorObtainer);
+    }
+
+    @Bean
+    @Autowired
+    public FlowResolver flowResolver(MainSectionController mainSectionController,SettingsController settingsController,
+                                     FlowController flowController, DataConverter dataConverter) {
+        return new FlowResolver(mainSectionController, settingsController, flowController, dataConverter);
     }
 
 }

@@ -14,6 +14,12 @@ import javax.annotation.PostConstruct;
 public class FlowController {
 
     @FXML
+    private Label deliveryRangeLabel;
+
+    @FXML
+    private Label backFlowRangeLabel;
+
+    @FXML
     private TextField delivery1TextField;
 
     @FXML
@@ -138,6 +144,14 @@ public class FlowController {
 
     @FXML
     private BeakerController beakerBackFlow4Controller;
+
+    public Label getDeliveryRangeLabel() {
+        return deliveryRangeLabel;
+    }
+
+    public Label getBackFlowRangeLabel() {
+        return backFlowRangeLabel;
+    }
 
     public Label getTemperature1Delivery1() {
         return temperature1Delivery1;
@@ -295,10 +309,10 @@ public class FlowController {
 
     private void setupDeliveryAndBackFlowComboBox() {
 
-        deliveryFlowComboBox.getItems().setAll(FlowUnits.getArrayOfFlowUnits());
+        deliveryFlowComboBox.getItems().setAll(FlowUnits.getMapOfFlowUnits().keySet());
         deliveryFlowComboBox.getSelectionModel().selectFirst();
 
-        backFlowComboBox.getItems().setAll(FlowUnits.getArrayOfFlowUnits());
+        backFlowComboBox.getItems().setAll(FlowUnits.getMapOfFlowUnits().keySet());
         backFlowComboBox.getSelectionModel().selectFirst();
 
     }

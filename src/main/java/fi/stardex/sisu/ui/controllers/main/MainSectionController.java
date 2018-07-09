@@ -6,7 +6,6 @@ import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.persistence.orm.cr.inj.VoltAmpereProfile;
 import fi.stardex.sisu.persistence.orm.interfaces.Model;
 import fi.stardex.sisu.persistence.repos.cr.InjectorsRepository;
-import fi.stardex.sisu.registers.flow.ModbusMapFlow;
 import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
@@ -14,7 +13,7 @@ import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.dialogs.ManufacturerMenuDialogController;
 import fi.stardex.sisu.ui.controllers.dialogs.NewEditInjectorDialogController;
 import fi.stardex.sisu.util.ApplicationConfigHandler;
-import fi.stardex.sisu.util.converters.FirmwareDataConverter;
+import fi.stardex.sisu.util.converters.DataConverter;
 import fi.stardex.sisu.util.enums.Tests;
 import fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer;
 import fi.stardex.sisu.util.obtainers.CurrentManufacturerObtainer;
@@ -30,7 +29,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 
 import javax.annotation.PostConstruct;
 import java.util.LinkedList;
@@ -100,7 +98,7 @@ public class MainSectionController {
     @Autowired
     private VoltAmpereProfileController voltAmpereProfileController;
     @Autowired
-    private FirmwareDataConverter firmwareDataConverter;
+    private DataConverter firmwareDataConverter;
     @Autowired
     private CurrentInjectorObtainer currentInjectorObtainer;
 
@@ -274,6 +272,7 @@ public class MainSectionController {
                 enabler.selectTest(Tests.CODING);
 
         });
+
     }
 
     private void initManufacturerContextMenu() {
