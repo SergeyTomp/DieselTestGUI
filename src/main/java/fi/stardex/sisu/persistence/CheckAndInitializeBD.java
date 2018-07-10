@@ -37,7 +37,7 @@ public class CheckAndInitializeBD {
     private void fillTables() {
 
         try {
-            BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getClassLoader().getResourceAsStream("/db/scripts/fill_tables.sql")));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/db/scripts/fill_tables.sql")));
             RunScript.execute(dataSource.getConnection(), reader);
         } catch (SQLException e) {
             e.printStackTrace();

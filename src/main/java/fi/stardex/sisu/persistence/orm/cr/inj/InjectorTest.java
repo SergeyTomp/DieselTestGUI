@@ -41,7 +41,7 @@ public class InjectorTest {
     private Integer injectionRate;
 
     @Column(name = "total_pulse_time")
-    private Double totalPulseTime;
+    private Integer totalPulseTime;
 
     @Column(name = "nominal_flow")
     private Double nominalFlow;
@@ -62,7 +62,7 @@ public class InjectorTest {
 
     public InjectorTest(Injector injector, TestName testName, Integer motorSpeed, Integer settedPressure,
                         Integer adjustingTime, Integer measurementTime, Integer injectionRate,
-                        Double totalPulseTime, Double nominalFlow, Double flowRange) {
+                        Integer totalPulseTime, Double nominalFlow, Double flowRange) {
         this.injector = injector;
         this.testName = testName;
         this.motorSpeed = motorSpeed;
@@ -100,7 +100,7 @@ public class InjectorTest {
         return injectionRate;
     }
 
-    public Double getTotalPulseTime() {
+    public Integer getTotalPulseTime() {
         return totalPulseTime;
     }
 

@@ -1,5 +1,5 @@
 id,injector_code,test_name,motor_speed,setted_pressure,adjusting_time,measurement_time,codefield,injection_rate,total_pulse_time,nominal_flow,flow_range,volt_ampere_profile
-1,77550,2,1000,1350,60,60,,,,,,
+1,77550,2,1000,1350,60,60,,,0,,,
 2,77550,3,1000,1600,60,60,,60,600,,,
 3,77550,4,1000,1350,60,60,,60,810,38,70,
 4,77550,5,1000,250,60,60,,60,540,5,60,

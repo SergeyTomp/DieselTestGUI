@@ -5,7 +5,6 @@ import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.persistence.orm.cr.inj.VoltAmpereProfile;
 import fi.stardex.sisu.persistence.orm.interfaces.Model;
-import fi.stardex.sisu.persistence.repos.cr.InjectorsRepository;
 import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
@@ -101,9 +100,11 @@ public class MainSectionController {
     @Autowired
     private VoltAmpereProfileController voltAmpereProfileController;
     @Autowired
-    private DataConverter firmwareDataConverter;
+    private DataConverter dataConverter;
     @Autowired
     private CurrentInjectorObtainer currentInjectorObtainer;
+    @Autowired
+    private InjectorSectionController injectorSectionController;
 
     private Stage manufacturerDialogStage;
     private Stage modelDialogStage;
@@ -236,9 +237,9 @@ public class MainSectionController {
 
             voltAmpereProfileController.getBoostUSpinner().getValueFactory().setValue(voltAmpereProfile.getBoostU());
             voltAmpereProfileController.getFirstWSpinner().getValueFactory().setValue(voltAmpereProfile.getFirstW());
-            voltAmpereProfileController.getFirstISpinner().getValueFactory().setValue((firstI * 100 % 10 != 0) ? firmwareDataConverter.roundToOneDecimalPlace(firstI) : firstI);
-            voltAmpereProfileController.getSecondISpinner().getValueFactory().setValue((secondI * 100 % 10 != 0) ? firmwareDataConverter.roundToOneDecimalPlace(secondI) : secondI);
-            voltAmpereProfileController.getBoostISpinner().getValueFactory().setValue((boostI * 100 % 10 != 0) ? firmwareDataConverter.roundToOneDecimalPlace(boostI) : boostI);
+            voltAmpereProfileController.getFirstISpinner().getValueFactory().setValue((firstI * 100 % 10 != 0) ? dataConverter.roundToOneDecimalPlace(firstI) : firstI);
+            voltAmpereProfileController.getSecondISpinner().getValueFactory().setValue((secondI * 100 % 10 != 0) ? dataConverter.roundToOneDecimalPlace(secondI) : secondI);
+            voltAmpereProfileController.getBoostISpinner().getValueFactory().setValue((boostI * 100 % 10 != 0) ? dataConverter.roundToOneDecimalPlace(boostI) : boostI);
             voltAmpereProfileController.getBatteryUSpinner().getValueFactory().setValue(voltAmpereProfile.getBatteryU());
             voltAmpereProfileController.getNegativeUSpinner().getValueFactory().setValue(voltAmpereProfile.getNegativeU());
             voltAmpereProfileController.getEnableBoostToggleButton().setSelected(voltAmpereProfile.getBoostDisable());
@@ -260,6 +261,21 @@ public class MainSectionController {
             }
 
             voltAmpereProfileController.getApplyButton().fire();
+        });
+
+        testListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+
+            if (newValue == null)
+                return;
+
+            Integer freqValue = newValue.getInjectionRate();
+
+            Integer totalPulseTimeValue = newValue.getTotalPulseTime();
+
+            injectorSectionController.getFreqCurrentSignal().getValueFactory().setValue((freqValue != null) ? 1000d / freqValue : 0);
+
+            injectorSectionController.getWidthCurrentSignal().getValueFactory().setValue(totalPulseTimeValue);
+
         });
 
         testsToggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
