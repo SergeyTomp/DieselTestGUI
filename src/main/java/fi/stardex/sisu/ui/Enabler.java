@@ -74,6 +74,9 @@ public class Enabler {
     }
 
     private void fillTestListView() {
+        if(currentInjectorObtainer.getInjector().getInjectorTests() == null)
+            return;
+
         testListView.getItems().setAll(currentInjectorObtainer.getInjector().getInjectorTests());
         testListView.getSelectionModel().select(0);
         testListView.scrollTo(0);

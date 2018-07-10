@@ -84,6 +84,7 @@ public class NewEditTestDialogController {
 
         stage.close();
     }
+
     private void deleteTest() {
         InjectorTest currentTest = testListView.getSelectionModel().getSelectedItem();
         injectorTestRepository.delete(currentTest);
@@ -111,7 +112,9 @@ public class NewEditTestDialogController {
         if (currentState == State.NEW) {
             testComboBox.setDisable(false);
             testComboBox.getItems().setAll(testNames);
-            currentInjectorObtainer.getInjector().getInjectorTests().forEach(injectorTest -> testComboBox.getItems().remove(injectorTest.getTestName()));
+            List<InjectorTest> injectorTests = currentInjectorObtainer.getInjector().getInjectorTests();
+            if (injectorTests != null)
+                injectorTests.forEach(injectorTest -> testComboBox.getItems().remove(injectorTest.getTestName()));
 
             rpmTF.setText("");
             barTF.setText("");
@@ -149,7 +152,6 @@ public class NewEditTestDialogController {
             measureTimeTF.setDisable(true);
         }
     }
-
 
 
     public void setStage(Stage stage) {
