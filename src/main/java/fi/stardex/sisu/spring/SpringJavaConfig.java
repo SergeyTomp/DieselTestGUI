@@ -33,7 +33,7 @@ import fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer;
 import fi.stardex.sisu.util.obtainers.CurrentManufacturerObtainer;
 import fi.stardex.sisu.util.rescalers.BackFlowRescaler;
 import fi.stardex.sisu.util.rescalers.DeliveryRescaler;
-import fi.stardex.sisu.util.rescalers.FlowResolver;
+import fi.stardex.sisu.util.converters.FlowResolver;
 import fi.stardex.sisu.util.rescalers.Rescaler;
 import fi.stardex.sisu.util.wrappers.StatusBarWrapper;
 import fi.stardex.sisu.version.FlowFirmwareVersion;
@@ -370,9 +370,8 @@ public class SpringJavaConfig {
     @Bean
     @Autowired
     public FlowResolver flowResolver(MainSectionController mainSectionController,SettingsController settingsController,
-                                     FlowController flowController, InjectorSectionController injectorSectionController,
-                                     DataConverter dataConverter) {
-        return new FlowResolver(mainSectionController, settingsController, flowController, injectorSectionController, dataConverter);
+                                     FlowController flowController, DataConverter dataConverter) {
+        return new FlowResolver(mainSectionController, settingsController, flowController, dataConverter);
     }
 
 }

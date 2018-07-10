@@ -1,4 +1,4 @@
-package fi.stardex.sisu.util.rescalers;
+package fi.stardex.sisu.util.converters;
 
 import fi.stardex.sisu.combobox_values.Dimension;
 import fi.stardex.sisu.combobox_values.FlowUnits;
@@ -6,7 +6,6 @@ import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
-import fi.stardex.sisu.util.converters.DataConverter;
 import fi.stardex.sisu.util.enums.Measurement;
 import javafx.scene.control.Label;
 
@@ -53,8 +52,11 @@ public class FlowResolver {
 
     private void setFlowLabels(InjectorTest injectorTest, Dimension dimension) {
 
-        if (injectorTest == null)
+        if (injectorTest == null) {
+            setLevelsToNull();
             return;
+        }
+
 
         Label flowLabel;
         String flowUnit;
@@ -73,27 +75,36 @@ public class FlowResolver {
                 flowController.getDeliveryRangeLabel().setText("");
                 break;
             default:
-                flowController.getDeliveryRangeLabel().setText("");
-                flowController.getBackFlowRangeLabel().setText("");
+                setLevelsToNull();
                 return;
         }
 
         double currentNominalFlow = injectorTest.getNominalFlow();
         double currentFlowRange = injectorTest.getFlowRange();
 
+        double[] results = setupCurrentFlowLevels(currentNominalFlow, currentFlowRange, flowUnit, measurement);
+
         switch (dimension) {
             case LIMIT:
-                double[] results = calculateLIMIT(currentNominalFlow, currentFlowRange, flowUnit, measurement);
                 flowLabel.setText(String.format("%.1f - %.1f", results[0], results[1]));
                 break;
             case PLUS_OR_MINUS:
-                double result = calculatePLUSMINUS(currentNominalFlow, currentFlowRange, flowUnit);
-                flowLabel.setText(String.format("%.1f \\u00B1 %.1f", currentNominalFlow, result));
+                double[] resultsPlusOrMinus = calculatePLUSMINUS(currentNominalFlow, currentFlowRange, flowUnit);
+                flowLabel.setText(String.format("%.1f \u00B1 %.1f", resultsPlusOrMinus[0], resultsPlusOrMinus[1]));
         }
 
     }
 
-    private double[] calculateLIMIT(double nominalFlow, double flowRange, String flowUnit, Measurement measurement) {
+    private void setLevelsToNull() {
+
+        flowController.getDeliveryRangeLabel().setText("");
+        flowController.getBackFlowRangeLabel().setText("");
+        flowController.setCurrentDeliveryFlowLevels(null);
+        flowController.setCurrentBackFlowLevels(null);
+
+    }
+
+    private double[] setupCurrentFlowLevels(double nominalFlow, double flowRange, String flowUnit, Measurement measurement) {
 
         double[] result = new double[2];
 
@@ -114,14 +125,19 @@ public class FlowResolver {
         }
 
         return result;
-
     }
 
-    private double calculatePLUSMINUS(double nominalFlow, double flowRange, String flowUnit) {
+    private double[] calculatePLUSMINUS(double nominalFlow, double flowRange, String flowUnit) {
+
+        double[] result = new double[2];
 
         float flowUnitsConvertValue = FlowUnits.getMapOfFlowUnits().get(flowUnit);
 
-        return dataConverter.roundToOneDecimalPlace((nominalFlow * (flowRange * PERCENT)) * flowUnitsConvertValue);
+        result[0] = dataConverter.roundToOneDecimalPlace(nominalFlow * flowUnitsConvertValue);
+
+        result[1] = dataConverter.roundToOneDecimalPlace((nominalFlow * (flowRange * PERCENT)) * flowUnitsConvertValue);
+
+        return result;
 
     }
 

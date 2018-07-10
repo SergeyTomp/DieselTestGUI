@@ -2,6 +2,8 @@ package fi.stardex.sisu.ui.controllers.additional.tabs;
 
 import fi.stardex.sisu.combobox_values.FlowUnits;
 import fi.stardex.sisu.ui.controllers.additional.BeakerController;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -151,6 +153,18 @@ public class FlowController {
 
     public Label getBackFlowRangeLabel() {
         return backFlowRangeLabel;
+    }
+
+    private ObjectProperty<String> deliveryRangeLabelProperty = new SimpleObjectProperty<>();
+
+    private ObjectProperty<String> backFlowRangeLabelProperty = new SimpleObjectProperty<>();
+
+    public ObjectProperty<String> deliveryRangeLabelPropertyProperty() {
+        return deliveryRangeLabelProperty;
+    }
+
+    public ObjectProperty<String> backFlowRangeLabelPropertyProperty() {
+        return backFlowRangeLabelProperty;
     }
 
     public Label getTemperature1Delivery1() {
@@ -313,6 +327,10 @@ public class FlowController {
 
     @PostConstruct
     private void init() {
+
+        deliveryRangeLabelProperty.bind(deliveryRangeLabel.textProperty());
+
+        backFlowRangeLabelProperty.bind(backFlowRangeLabel.textProperty());
 
         setupDeliveryAndBackFlowComboBox();
 
