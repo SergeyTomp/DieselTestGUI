@@ -15,6 +15,7 @@ import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.cr.TestBenchSectionController;
 import fi.stardex.sisu.ui.controllers.dialogs.ManufacturerMenuDialogController;
 import fi.stardex.sisu.ui.controllers.dialogs.NewEditInjectorDialogController;
+import fi.stardex.sisu.ui.controllers.dialogs.NewEditTestDialogController;
 import fi.stardex.sisu.ui.controllers.dialogs.NewEditVOAPDialogController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
 import fi.stardex.sisu.util.ApplicationConfigHandler;
@@ -364,6 +365,16 @@ public class JavaFXSpringConfigure {
     @Bean
     public NewEditInjectorDialogController newEditInjectorDialogController() {
         return (NewEditInjectorDialogController) newEditInjectorDialog().getController();
+    }
+
+    @Bean
+    public ViewHolder newEditTestDialog() {
+        return loadView("/fxml/dialogs/NewEditTestDialog.fxml");
+    }
+
+    @Bean
+    public NewEditTestDialogController newEditTestDialogController() {
+        return (NewEditTestDialogController) newEditTestDialog().getController();
     }
 
     private ViewHolder loadView(String url) {

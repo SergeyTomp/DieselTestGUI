@@ -12,6 +12,7 @@ import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileContro
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.dialogs.ManufacturerMenuDialogController;
 import fi.stardex.sisu.ui.controllers.dialogs.NewEditInjectorDialogController;
+import fi.stardex.sisu.ui.controllers.dialogs.NewEditTestDialogController;
 import fi.stardex.sisu.util.ApplicationConfigHandler;
 import fi.stardex.sisu.util.converters.DataConverter;
 import fi.stardex.sisu.util.enums.Tests;
@@ -96,17 +97,17 @@ public class MainSectionController {
     @Autowired
     private ViewHolder newEditInjectorDialog;
     @Autowired
+    private ViewHolder newEditTestDialog;
+    @Autowired
     private VoltAmpereProfileController voltAmpereProfileController;
     @Autowired
     private DataConverter firmwareDataConverter;
     @Autowired
     private CurrentInjectorObtainer currentInjectorObtainer;
 
-    @Autowired
-    private InjectorsRepository injectorsRepository;
-
     private Stage manufacturerDialogStage;
     private Stage modelDialogStage;
+    private Stage testDialogStage;
 
     public ListView<Manufacturer> getManufacturerListView() {
         return manufacturerListView;
@@ -179,6 +180,7 @@ public class MainSectionController {
 
         initManufacturerContextMenu();
         initModelContextMenu();
+        initTestContextMenu();
 
         manufacturerListView.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) -> {
             currentManufacturerObtainer.setCurrentManufacturer(newValue);
@@ -323,6 +325,24 @@ public class MainSectionController {
         });
     }
 
+    private void initTestContextMenu() {
+        ContextMenu testMenu = new ContextMenu();
+        MenuItem newTest = new MenuItem("New");
+        newTest.setOnAction(new TestMenuEventHandler("New test", NewEditTestDialogController::setNew));
+        MenuItem editTest = new MenuItem("Edit");
+        editTest.setOnAction(new TestMenuEventHandler("Edit test", NewEditTestDialogController::setEdit));
+        MenuItem deleteTest = new MenuItem("Delete");
+        deleteTest.setOnAction(new TestMenuEventHandler("Delete test", NewEditTestDialogController::setDelete));
+
+        testMenu.getItems().add(newTest);
+        testListView.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
+            if(event.getButton() == MouseButton.SECONDARY) {
+                testMenu.show(testListView, event.getScreenX(), event.getScreenY());
+            } else
+                testMenu.hide();
+        });
+
+    }
     private class ManufacturerMenuEventHandler implements EventHandler<ActionEvent> {
 
         private String title;
@@ -374,6 +394,34 @@ public class MainSectionController {
             modelDialogStage.setTitle(title);
             dialogType.accept(controller);
             modelDialogStage.show();
+        }
+    }
+
+    private class TestMenuEventHandler implements EventHandler<ActionEvent> {
+        private String title;
+        private Consumer<NewEditTestDialogController> dialogType;
+
+        public TestMenuEventHandler(String title, Consumer<NewEditTestDialogController> dialogType) {
+            this.title = title;
+            this.dialogType = dialogType;
+        }
+
+        @Override
+        public void handle(ActionEvent event) {
+            NewEditTestDialogController controller = (NewEditTestDialogController) newEditTestDialog.getController();
+            if (testDialogStage == null) {
+                testDialogStage = new Stage();
+                testDialogStage.setScene(new Scene(newEditTestDialog.getView()));
+                testDialogStage.setResizable(false);
+                testDialogStage.initModality(Modality.APPLICATION_MODAL);
+//                manufacturerDialogStage.initStyle(StageStyle.UNDECORATED);
+                controller.setStage(testDialogStage);
+                controller.setTestListView(testListView);
+
+            }
+            testDialogStage.setTitle(title);
+            dialogType.accept(controller);
+            testDialogStage.show();
         }
     }
 
