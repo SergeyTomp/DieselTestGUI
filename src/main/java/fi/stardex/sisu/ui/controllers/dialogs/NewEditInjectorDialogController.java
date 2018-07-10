@@ -167,6 +167,7 @@ public class NewEditInjectorDialogController {
         injectorsRepository.save(newInj);
         modelListView.getItems().add(newInj);
         modelListView.getSelectionModel().select(newInj);
+        modelListView.scrollTo(newInj);
         currentManufacturerObtainer.getCurrentManufacturer().getInjectors().add(newInj);
 
         stage.close();
@@ -227,6 +228,7 @@ public class NewEditInjectorDialogController {
         injTypeCB.getSelectionModel().select(0);
         defaultRB.setSelected(true);
         voapListView.getSelectionModel().select(0);
+        voapListView.scrollTo(0);
     }
 
     public void setEdit() {
@@ -249,9 +251,10 @@ public class NewEditInjectorDialogController {
             defaultRB.setSelected(true);
 
         System.err.println(injector.getVoltAmpereProfile());
+        System.err.println(voapListView.getItems().contains(injector.getVoltAmpereProfile()));
 
+        voapListView.scrollTo(injector.getVoltAmpereProfile());
         voapListView.getSelectionModel().select(injector.getVoltAmpereProfile());
-//        voapListView.getSelectionModel().select(3);
     }
 
     public void setDelete() {
@@ -260,7 +263,7 @@ public class NewEditInjectorDialogController {
 
         injectorCodeTF.setDisable(true);
         injTypeCB.setDisable(true);
-//        voapListView.setDisable(true);
+        voapListView.setDisable(true);
         defaultRB.setDisable(true);
         customRB.setDisable(true);
 

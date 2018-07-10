@@ -4,6 +4,7 @@ import fi.stardex.sisu.util.enums.Measurement;
 import org.springframework.lang.*;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 @Entity
 @Table(name = "test_name")
@@ -21,6 +22,20 @@ public class TestName {
     @Column(name = "measurement")
     @Enumerated(EnumType.STRING)
     Measurement measurement;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TestName testName1 = (TestName) o;
+        return Objects.equals(testName, testName1.testName);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(testName);
+    }
 
     @Override
     public String toString() {
