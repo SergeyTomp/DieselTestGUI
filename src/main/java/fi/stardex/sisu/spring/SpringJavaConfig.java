@@ -13,6 +13,7 @@ import fi.stardex.sisu.devices.Devices;
 import fi.stardex.sisu.persistence.CheckAndInitializeBD;
 import fi.stardex.sisu.persistence.orm.Manufacturer;
 import fi.stardex.sisu.persistence.repos.ManufacturerRepository;
+import fi.stardex.sisu.persistence.repos.cr.InjectorTestRepository;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.flow.ModbusMapFlow;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
@@ -30,6 +31,7 @@ import fi.stardex.sisu.util.ApplicationConfigHandler;
 import fi.stardex.sisu.util.converters.DataConverter;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer;
+import fi.stardex.sisu.util.obtainers.CurrentInjectorTestsObtainer;
 import fi.stardex.sisu.util.obtainers.CurrentManufacturerObtainer;
 import fi.stardex.sisu.util.rescalers.BackFlowRescaler;
 import fi.stardex.sisu.util.rescalers.DeliveryRescaler;
@@ -42,9 +44,6 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ListView;
-import org.hibernate.FlushMode;
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,6 +53,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 import javax.sql.DataSource;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -337,23 +337,43 @@ public class SpringJavaConfig {
     }
 
     @Bean
+    public CurrentInjectorTestsObtainer currentInjectorTestObtainer() {
+        return new CurrentInjectorTestsObtainer();
+    }
+
+    @Bean
     public CheckAndInitializeBD checkAndInitializeBD(ManufacturerRepository manufacturerRepository,
                                                       DataSource dataSource) {
         return new CheckAndInitializeBD(manufacturerRepository, dataSource);
     }
 
+//    @Bean
+//    @DependsOn("checkAndInitializeBD")
+//    @Autowired
+//    @SuppressWarnings("unchecked")
+//    public ListView<Manufacturer> manufacturerList(SessionFactory sessionFactory, MainSectionController mainSectionController) throws IOException {
+//        Session session = sessionFactory.openSession();
+//        session.setFlushMode(FlushMode.MANUAL);
+//        session.setDefaultReadOnly(true);
+//        List<Manufacturer> manufacturers = session.createQuery("select manufacturer from Manufacturer manufacturer")
+//                .list();
+//
+//        ObservableList<Manufacturer> observableList = FXCollections.observableList(manufacturers);
+//        ListView<Manufacturer> manufacturerList = mainSectionController.getManufacturerListView();
+//        manufacturerList.setItems(observableList);
+//
+//        return manufacturerList;
+//    }
+
     @Bean
     @DependsOn("checkAndInitializeBD")
     @Autowired
-    @SuppressWarnings("unchecked")
-    public ListView<Manufacturer> manufacturerList(SessionFactory sessionFactory, MainSectionController mainSectionController) throws IOException {
-        Session session = sessionFactory.openSession();
-        session.setFlushMode(FlushMode.MANUAL);
-        session.setDefaultReadOnly(true);
-        List<Manufacturer> manufacturers = session.createQuery("select manufacturer from Manufacturer manufacturer")
-                .list();
+    public ListView<Manufacturer> manufacturerList(ManufacturerRepository manufacturerRepository, MainSectionController mainSectionController) throws IOException {
+        Iterable<Manufacturer> manufacturers = manufacturerRepository.findAll();
+        List<Manufacturer> listOfManufacturers = new ArrayList<>();
+        manufacturers.forEach(listOfManufacturers::add);
 
-        ObservableList<Manufacturer> observableList = FXCollections.observableList(manufacturers);
+        ObservableList<Manufacturer> observableList = FXCollections.observableList(listOfManufacturers);
         ListView<Manufacturer> manufacturerList = mainSectionController.getManufacturerListView();
         manufacturerList.setItems(observableList);
 
@@ -363,8 +383,8 @@ public class SpringJavaConfig {
     @Bean
     @Lazy
     @Autowired
-    public Enabler enabler(MainSectionController mainSectionController, CurrentInjectorObtainer currentInjectorObtainer) {
-        return new Enabler(mainSectionController, currentInjectorObtainer);
+    public Enabler enabler(MainSectionController mainSectionController) {
+        return new Enabler(mainSectionController);
     }
 
     @Bean

@@ -5,6 +5,9 @@ import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.persistence.orm.cr.inj.VoltAmpereProfile;
 import fi.stardex.sisu.persistence.orm.interfaces.Model;
+import fi.stardex.sisu.persistence.repos.ManufacturerRepository;
+import fi.stardex.sisu.persistence.repos.cr.InjectorTestRepository;
+import fi.stardex.sisu.persistence.repos.cr.InjectorsRepository;
 import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
@@ -16,9 +19,11 @@ import fi.stardex.sisu.util.ApplicationConfigHandler;
 import fi.stardex.sisu.util.converters.DataConverter;
 import fi.stardex.sisu.util.enums.Tests;
 import fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer;
+import fi.stardex.sisu.util.obtainers.CurrentInjectorTestsObtainer;
 import fi.stardex.sisu.util.obtainers.CurrentManufacturerObtainer;
 import fi.stardex.sisu.util.view.ApplicationAppearanceChanger;
 import fi.stardex.sisu.util.view.GUIType;
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -105,6 +110,18 @@ public class MainSectionController {
     private CurrentInjectorObtainer currentInjectorObtainer;
     @Autowired
     private InjectorSectionController injectorSectionController;
+    @Autowired
+    private InjectorsRepository injectorsRepository;
+    @Autowired
+    private ManufacturerRepository manufacturerRepository;
+    @Autowired
+    private InjectorTestRepository injectorTestRepository;
+    @Autowired
+    private CurrentInjectorTestsObtainer currentInjectorTestsObtainer;
+
+    public CurrentInjectorTestsObtainer getCurrentInjectorTestsObtainer() {
+        return currentInjectorTestsObtainer;
+    }
 
     private Stage manufacturerDialogStage;
     private Stage modelDialogStage;
@@ -192,9 +209,10 @@ public class MainSectionController {
             } else
                 defaultRB.setDisable(false);
 
+
             switch (GUIType.getCurrentType()) {
                 case CR_Inj:
-                    modelListView.getItems().setAll(newValue.getInjectors(customRB.isSelected()));
+                    modelListView.getItems().setAll(injectorsRepository.findByManufacturerAndIsCustom(newValue, customRB.isSelected()));
                     break;
                 case CR_Pump:
                     //TODO
@@ -213,12 +231,13 @@ public class MainSectionController {
             if (selectedItem == null)
                 return;
 
-            modelListView.getItems().setAll(selectedItem.getInjectors(customRB.isSelected()));
+            modelListView.getItems().setAll(injectorsRepository.findByManufacturerAndIsCustom(selectedItem, customRB.isSelected()));
         }));
 
         modelListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 
             if (newValue == null) {
+                currentInjectorObtainer.setInjector(null);
                 enabler.selectInjector(false);
                 return;
             }
@@ -228,8 +247,9 @@ public class MainSectionController {
 
             enabler.selectInjector(true);
 
-            System.err.println(inj.getVoltAmpereProfile().getInjectorType().getInjectorType());
-            VoltAmpereProfile voltAmpereProfile = inj.getVoltAmpereProfile();
+            VoltAmpereProfile voltAmpereProfile = injectorsRepository.findByInjectorCode(inj.getInjectorCode()).getVoltAmpereProfile();
+
+            System.err.println(voltAmpereProfile.getInjectorType().getInjectorType());
 
             Double firstI = voltAmpereProfile.getFirstI();
             Double secondI = voltAmpereProfile.getSecondI();
@@ -293,6 +313,34 @@ public class MainSectionController {
 
     }
 
+    public void fillTestListView() {
+
+        currentInjectorTestsObtainer.setInjectorTests(injectorTestRepository.findAllByInjector(currentInjectorObtainer.getInjector()));
+
+        pointToFirstTest();
+
+    }
+
+    public void refreshTestListView() {
+
+        if (currentInjectorObtainer.getInjector() == null)
+            return;
+
+        if (currentInjectorTestsObtainer.getInjectorTests() == null)
+            currentInjectorTestsObtainer.setInjectorTests(injectorTestRepository.findAllByInjector(currentInjectorObtainer.getInjector()));
+
+        pointToFirstTest();
+
+    }
+
+    private void pointToFirstTest() {
+
+        testListView.getItems().setAll(currentInjectorTestsObtainer.getInjectorTests());
+        testListView.getSelectionModel().select(0);
+        testListView.scrollTo(0);
+
+    }
+
     private void initManufacturerContextMenu() {
         ContextMenu manufacturerMenu = new ContextMenu();
         MenuItem newManufacturer = new MenuItem("New");
@@ -352,13 +400,14 @@ public class MainSectionController {
 
         testMenu.getItems().add(newTest);
         testListView.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
-            if(event.getButton() == MouseButton.SECONDARY) {
+            if (event.getButton() == MouseButton.SECONDARY) {
                 testMenu.show(testListView, event.getScreenX(), event.getScreenY());
             } else
                 testMenu.hide();
         });
 
     }
+
     private class ManufacturerMenuEventHandler implements EventHandler<ActionEvent> {
 
         private String title;

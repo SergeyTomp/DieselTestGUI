@@ -36,7 +36,7 @@ public class Injector implements Model {
     @Column(name = "is_custom")
     private Boolean isCustom;
 
-    @OneToMany(mappedBy = "injector")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "injector")
     private List<InjectorTest> injectorTests;
 
     public Injector() {

@@ -6,6 +6,7 @@ import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
+@NamedEntityGraph(name = "InjectorTest.testName", attributeNodes = @NamedAttributeNode("testName"))
 @Table(name = "injector_test")
 public class InjectorTest {
 

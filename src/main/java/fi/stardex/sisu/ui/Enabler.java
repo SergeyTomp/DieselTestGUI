@@ -3,13 +3,12 @@ package fi.stardex.sisu.ui;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
 import fi.stardex.sisu.util.enums.Tests;
-import fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer;
 import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
 
 public class Enabler {
 
-    private CurrentInjectorObtainer currentInjectorObtainer;
+    private MainSectionController mainSectionController;
 
     private RadioButton manualTestRadioButton;
 
@@ -21,8 +20,8 @@ public class Enabler {
 
     private ListView<InjectorTest> testListView;
 
-    public Enabler(MainSectionController mainSectionController, CurrentInjectorObtainer currentInjectorObtainer) {
-        this.currentInjectorObtainer = currentInjectorObtainer;
+    public Enabler(MainSectionController mainSectionController) {
+        this.mainSectionController = mainSectionController;
         manualTestRadioButton = mainSectionController.getManualTestRadioButton();
         testPlanTestRadioButton = mainSectionController.getTestPlanTestRadioButton();
         autoTestRadioButton = mainSectionController.getAutoTestRadioButton();
@@ -37,7 +36,7 @@ public class Enabler {
             autoTestRadioButton.setDisable(false);
             codingTestRadioButton.setDisable(false);
             if (!manualTestRadioButton.isSelected())
-                fillTestListView();
+                mainSectionController.fillTestListView();
         } else {
             testPlanTestRadioButton.setDisable(true);
             autoTestRadioButton.setDisable(true);
@@ -54,32 +53,24 @@ public class Enabler {
             case MANUAL:
                 testListView.setDisable(false);
                 testListView.getItems().clear();
+                mainSectionController.getCurrentInjectorTestsObtainer().setInjectorTests(null);
                 break;
             case TESTPLAN:
                 testListView.setDisable(false);
-                fillTestListView();
+                mainSectionController.refreshTestListView();
                 break;
             case AUTO:
                 testListView.setDisable(true);
-                fillTestListView();
+                mainSectionController.refreshTestListView();
                 break;
             case CODING:
                 testListView.setDisable(true);
-                fillTestListView();
+                mainSectionController.refreshTestListView();
                 break;
             default:
                 break;
         }
         return this;
-    }
-
-    private void fillTestListView() {
-        if(currentInjectorObtainer.getInjector().getInjectorTests() == null)
-            return;
-
-        testListView.getItems().setAll(currentInjectorObtainer.getInjector().getInjectorTests());
-        testListView.getSelectionModel().select(0);
-        testListView.scrollTo(0);
     }
 
 }
