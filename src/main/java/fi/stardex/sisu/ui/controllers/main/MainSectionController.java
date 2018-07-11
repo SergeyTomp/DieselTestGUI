@@ -24,6 +24,9 @@ import fi.stardex.sisu.util.obtainers.CurrentManufacturerObtainer;
 import fi.stardex.sisu.util.view.ApplicationAppearanceChanger;
 import fi.stardex.sisu.util.view.GUIType;
 import javafx.application.Platform;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -243,13 +246,12 @@ public class MainSectionController {
             }
 
             Injector inj = (Injector) newValue;
+            System.err.println(inj);
             currentInjectorObtainer.setInjector(inj);
 
             enabler.selectInjector(true);
 
             VoltAmpereProfile voltAmpereProfile = injectorsRepository.findByInjectorCode(inj.getInjectorCode()).getVoltAmpereProfile();
-
-            System.err.println(voltAmpereProfile.getInjectorType().getInjectorType());
 
             Double firstI = voltAmpereProfile.getFirstI();
             Double secondI = voltAmpereProfile.getSecondI();
@@ -315,9 +317,7 @@ public class MainSectionController {
 
     public void fillTestListView() {
 
-        currentInjectorTestsObtainer.setInjectorTests(injectorTestRepository.findAllByInjector(currentInjectorObtainer.getInjector()));
-
-        pointToFirstTest();
+        setupTaskExecution();
 
     }
 
@@ -327,15 +327,38 @@ public class MainSectionController {
             return;
 
         if (currentInjectorTestsObtainer.getInjectorTests() == null)
-            currentInjectorTestsObtainer.setInjectorTests(injectorTestRepository.findAllByInjector(currentInjectorObtainer.getInjector()));
+            setupTaskExecution();
+         else
+            pointToFirstTest();
 
-        pointToFirstTest();
+    }
+
+    private void setupTaskExecution() {
+
+        ObjectProperty<List<InjectorTest>> property = new SimpleObjectProperty<>();
+
+        Task<List<InjectorTest>> task = new Task<List<InjectorTest>>() {
+            @Override
+            protected List<InjectorTest> call() {
+                return injectorTestRepository.findAllByInjector(currentInjectorObtainer.getInjector());
+            }
+        };
+
+        property.bind(task.valueProperty());
+
+        property.addListener((observable, oldValue, newValue) -> {
+            currentInjectorTestsObtainer.setInjectorTests(newValue);
+            testListView.getItems().setAll(currentInjectorTestsObtainer.getInjectorTests());
+            Platform.runLater(this::pointToFirstTest);
+
+        });
+
+        new Thread(task).start();
 
     }
 
     private void pointToFirstTest() {
 
-        testListView.getItems().setAll(currentInjectorTestsObtainer.getInjectorTests());
         testListView.getSelectionModel().select(0);
         testListView.scrollTo(0);
 

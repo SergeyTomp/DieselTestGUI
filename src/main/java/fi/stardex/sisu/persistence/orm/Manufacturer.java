@@ -24,19 +24,6 @@ public class Manufacturer {
         return injectors;
     }
 
-    public List<Injector> getInjectors(boolean isCustom) {
-        List<Injector> forReturn = new LinkedList<>();
-        if (injectors.size() != 0) {
-            injectors.forEach(injector -> {
-                if (injector.getCustom() == isCustom)
-                    forReturn.add(injector);
-            });
-        }
-
-        return forReturn;
-    }
-
-
     public void setManufacturer(String manufacturer) {
         this.manufacturer = manufacturer;
     }

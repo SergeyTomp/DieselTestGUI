@@ -114,14 +114,12 @@ public class NewEditInjectorDialogController {
 
         injectorTypeRepository.findAll().forEach(injectorType -> injTypeCB.getItems().add(injectorType));
 
-        injTypeCB.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            voapListView.getItems().setAll(voltAmpereProfileRepository.findByIsCustomAndInjectorType(!defaultRB.isSelected(), newValue));
-        });
+        injTypeCB.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
+                voapListView.getItems().setAll(voltAmpereProfileRepository.findByIsCustomAndInjectorType(!defaultRB.isSelected(), newValue)));
 
-        baseType.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
-            voapListView.getItems().setAll(voltAmpereProfileRepository.findByIsCustomAndInjectorType(!defaultRB.isSelected(),
-                    injTypeCB.getSelectionModel().getSelectedItem()));
-        });
+        baseType.selectedToggleProperty().addListener((observable, oldValue, newValue) ->
+                voapListView.getItems().setAll(voltAmpereProfileRepository.findByIsCustomAndInjectorType(!defaultRB.isSelected(),
+                injTypeCB.getSelectionModel().getSelectedItem())));
 
         voapListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             changeLabels(newValue);
@@ -168,8 +166,6 @@ public class NewEditInjectorDialogController {
         modelListView.getItems().add(newInj);
         modelListView.getSelectionModel().select(newInj);
         modelListView.scrollTo(newInj);
-        currentManufacturerObtainer.getCurrentManufacturer().getInjectors().add(newInj);
-
         stage.close();
     }
 
