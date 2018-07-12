@@ -181,7 +181,7 @@ public class NewEditInjectorDialogController {
         Injector injector = currentInjectorObtainer.getInjector();
         injectorsRepository.delete(injector);
         modelListView.getItems().remove(injector);
-        currentManufacturerObtainer.getCurrentManufacturer().getInjectors().remove(injector);
+//        currentManufacturerObtainer.getCurrentManufacturer().getInjectors().remove(injector);
 
         stage.close();
     }
@@ -239,18 +239,17 @@ public class NewEditInjectorDialogController {
 
         sureLabel.setVisible(false);
 
+        VoltAmpereProfile voltAmpereProfile = injector.getVoltAmpereProfile();
+
         injectorCodeTF.setText(injector.getInjectorCode());
-        injTypeCB.getSelectionModel().select(injector.getVoltAmpereProfile().getInjectorType());
-        if(injector.getVoltAmpereProfile().getCustom())
+        injTypeCB.getSelectionModel().select(voltAmpereProfile.getInjectorType());
+        if(voltAmpereProfile.getCustom())
             customRB.setSelected(true);
         else
             defaultRB.setSelected(true);
 
-        System.err.println(injector.getVoltAmpereProfile());
-        System.err.println(voapListView.getItems().contains(injector.getVoltAmpereProfile()));
-
-        voapListView.scrollTo(injector.getVoltAmpereProfile());
-        voapListView.getSelectionModel().select(injector.getVoltAmpereProfile());
+        voapListView.scrollTo(voltAmpereProfile);
+        voapListView.getSelectionModel().select(voltAmpereProfile);
     }
 
     public void setDelete() {
@@ -266,12 +265,15 @@ public class NewEditInjectorDialogController {
         sureLabel.setVisible(true);
 
         injectorCodeTF.setText(injector.getInjectorCode());
-        injTypeCB.getSelectionModel().select(injector.getVoltAmpereProfile().getInjectorType());
-        if(injector.getVoltAmpereProfile().getCustom())
+
+        VoltAmpereProfile voltAmpereProfile = injector.getVoltAmpereProfile();
+
+        injTypeCB.getSelectionModel().select(voltAmpereProfile.getInjectorType());
+        if(voltAmpereProfile.getCustom())
             customRB.setSelected(true);
         else
             defaultRB.setSelected(true);
-        voapListView.getSelectionModel().select(injector.getVoltAmpereProfile());
+        voapListView.getSelectionModel().select(voltAmpereProfile);
     }
 
     public void setStage(Stage stage) {

@@ -246,12 +246,12 @@ public class MainSectionController {
             }
 
             Injector inj = (Injector) newValue;
-            System.err.println(inj);
+            VoltAmpereProfile voltAmpereProfile = injectorsRepository.findByInjectorCode(inj.getInjectorCode()).getVoltAmpereProfile();
+            inj.setVoltAmpereProfile(voltAmpereProfile);
             currentInjectorObtainer.setInjector(inj);
 
             enabler.selectInjector(true);
 
-            VoltAmpereProfile voltAmpereProfile = injectorsRepository.findByInjectorCode(inj.getInjectorCode()).getVoltAmpereProfile();
 
             Double firstI = voltAmpereProfile.getFirstI();
             Double secondI = voltAmpereProfile.getSecondI();

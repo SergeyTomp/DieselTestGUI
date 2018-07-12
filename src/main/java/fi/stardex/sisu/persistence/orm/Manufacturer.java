@@ -17,7 +17,7 @@ public class Manufacturer {
     @Column(name = "is_custom")
     private Boolean isCustom;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "manufacturer", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "manufacturer")
     private List<Injector> injectors = new LinkedList<>();
 
     public List<Injector> getInjectors() {

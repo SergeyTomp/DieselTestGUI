@@ -107,12 +107,13 @@ public class NewEditTestDialogController {
         setLabels();
     }
 
-    @SuppressWarnings("Duplicates")
     private void setLabels() {
         if (currentState == State.NEW) {
             testComboBox.setDisable(false);
             testComboBox.getItems().setAll(testNames);
-            List<InjectorTest> injectorTests = currentInjectorObtainer.getInjector().getInjectorTests();
+
+            List<InjectorTest> injectorTests = injectorTestRepository.findAllByInjector(currentInjectorObtainer.getInjector());
+
             if (injectorTests != null)
                 injectorTests.forEach(injectorTest -> testComboBox.getItems().remove(injectorTest.getTestName()));
 
