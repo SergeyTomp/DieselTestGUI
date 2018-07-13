@@ -150,6 +150,17 @@ public class BeakerController {
         ledBeakerController.getLedBeaker().selectedProperty().addListener((observable, oldValue, newValue) ->
                 showBeakerLevels(flowController.getDeliveryRangeLabel().getText(), flowController.getBackFlowRangeLabel().getText(), newValue));
 
+        textField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                switch (beakerType) {
+                    case DELIVERY:
+                        if (flowController.getDeliveryRangeLabel().getText() != null) {
+
+                        }
+                }
+            }
+        });
+
     }
 
     private void showBeakerLevels(String deliveryRangeLabel, String backFlowRangeLabel, boolean ledSelected) {
