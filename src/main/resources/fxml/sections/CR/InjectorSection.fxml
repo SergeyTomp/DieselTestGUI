@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 
-<HBox alignment="CENTER" fillHeight="true" maxHeight="130.0" maxWidth="1.7976931348623157E308" minHeight="100.0" minWidth="500.0" pickOnBounds="true" prefHeight="130.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.cr.InjectorSectionController">
+<HBox alignment="CENTER" fillHeight="true" maxHeight="130.0" maxWidth="1.7976931348623157E308" minHeight="100.0" minWidth="500.0" pickOnBounds="true" prefHeight="130.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.cr.InjectorSectionController">
     <children>
         <GridPane alignment="CENTER" gridLinesVisible="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="130.0" minWidth="150.0">
             <children>
@@ -39,7 +39,7 @@
         </GridPane>
         <GridPane alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="130.0" minWidth="50.0" HBox.hgrow="ALWAYS">
             <children>
-                <RadioButton fx:id="piezoRadioButton" minHeight="-Infinity" minWidth="50.0" mnemonicParsing="false" text="%injSection.radio.piezo" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" GridPane.vgrow="ALWAYS">
+                <RadioButton fx:id="piezoRadioButton" minHeight="-Infinity" minWidth="50.0" mnemonicParsing="false" styleClass="label" stylesheets="@../../../css/Styling.css" text="%injSection.radio.piezo" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" GridPane.vgrow="ALWAYS">
                     <GridPane.margin>
                         <Insets bottom="2.0" left="5.0" right="2.0" top="2.0" />
                     </GridPane.margin>
@@ -47,12 +47,12 @@
                         <ToggleGroup fx:id="piezoCoilToggleGroup" />
                     </toggleGroup>
                 </RadioButton>
-                <RadioButton fx:id="coilRadioButton" minHeight="-Infinity" minWidth="50.0" mnemonicParsing="false" selected="true" text="%injSection.radio.coil" toggleGroup="$piezoCoilToggleGroup" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
+                <RadioButton fx:id="coilRadioButton" minHeight="-Infinity" minWidth="50.0" mnemonicParsing="false" selected="true" styleClass="label" stylesheets="@../../../css/Styling.css" text="%injSection.radio.coil" toggleGroup="$piezoCoilToggleGroup" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
                     <GridPane.margin>
                         <Insets bottom="2.0" left="5.0" right="2.0" top="2.0" />
                     </GridPane.margin>
                 </RadioButton>
-                <RadioButton fx:id="piezoDelphiRadioButton" minHeight="-Infinity" minWidth="50.0" mnemonicParsing="false" text="%injSection.radio.piezoDelphi" toggleGroup="$piezoCoilToggleGroup" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="ALWAYS">
+                <RadioButton fx:id="piezoDelphiRadioButton" minHeight="-Infinity" minWidth="50.0" mnemonicParsing="false" styleClass="label" stylesheets="@../../../css/Styling.css" text="%injSection.radio.piezoDelphi" toggleGroup="$piezoCoilToggleGroup" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="ALWAYS">
                     <GridPane.margin>
                         <Insets bottom="2.0" left="5.0" right="2.0" top="2.0" />
                     </GridPane.margin>

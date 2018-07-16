@@ -1,10 +1,13 @@
 package fi.stardex.sisu.ui.controllers.additional;
 
-import fi.stardex.sisu.util.converters.FirmwareDataConverter;
+import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
+import fi.stardex.sisu.util.converters.DataConverter;
+import fi.stardex.sisu.util.enums.BeakerType;
 import fi.stardex.sisu.util.rescalers.Rescaler;
 import javafx.application.Platform;
 import javafx.collections.MapChangeListener;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
@@ -18,6 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,11 +29,21 @@ public class BeakerController {
 
     private static final Logger logger = LoggerFactory.getLogger(BeakerController.class);
 
-    private static final double ELLIPSE_TOP_FUEL_DEVIATION = 8;
+    private static final int ELLIPSE_TOP_FUEL_DEVIATION = 8;
+
+    private final static int ARC_DEVIATION = 11;
+
+    private final static double PERCENT_075 = 0.75;
+
+    private final static double PERCENT_025 = 0.25;
+
+    private final static int TEXT_DEVIATION = 3;
 
     private static final String REGEX = "[0-9.]*[^.]";
 
     private static List<BeakerController> beakerControllers = new ArrayList<>();
+
+    private LedController ledBeakerController;
 
     public static List<BeakerController> getBeakerControllers() {
         return beakerControllers;
@@ -39,11 +53,15 @@ public class BeakerController {
 
     private Rescaler rescaler;
 
-    private FirmwareDataConverter firmwareDataConverter;
+    private DataConverter dataConverter;
 
     private String name;
 
     private float currentMaxLevel;
+
+    private BeakerType beakerType;
+
+    private FlowController flowController;
 
     @FXML
     private AnchorPane beakerPane;
@@ -82,16 +100,28 @@ public class BeakerController {
         this.textField = textField;
     }
 
+    public void setLedController(LedController ledBeakerController) {
+        this.ledBeakerController = ledBeakerController;
+    }
+
     public void setRescaler(Rescaler rescaler) {
         this.rescaler = rescaler;
     }
 
-    public void setFirmwareDataConverter(FirmwareDataConverter firmwareDataConverter) {
-        this.firmwareDataConverter = firmwareDataConverter;
+    public void setDataConverter(DataConverter dataConverter) {
+        this.dataConverter = dataConverter;
     }
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public void setBeakerType(BeakerType beakerType) {
+        this.beakerType = beakerType;
+    }
+
+    public void setFlowController(FlowController flowController) {
+        this.flowController = flowController;
     }
 
     @PostConstruct
@@ -99,11 +129,84 @@ public class BeakerController {
 
         beakerControllers.add(this);
 
+        setupListeners();
+
         setupResizeable();
 
         setupRescaler();
 
         makeEmpty();
+
+    }
+
+    private void setupListeners() {
+
+        flowController.deliveryRangeLabelPropertyProperty().addListener((observable, oldValue, newValue) ->
+                showBeakerLevels(newValue, flowController.getBackFlowRangeLabel().getText(), ledBeakerController.getLedBeaker().isSelected()));
+
+        flowController.backFlowRangeLabelPropertyProperty().addListener((observable, oldValue, newValue) ->
+                showBeakerLevels(flowController.getDeliveryRangeLabel().getText(), newValue, ledBeakerController.getLedBeaker().isSelected()));
+
+        ledBeakerController.getLedBeaker().selectedProperty().addListener((observable, oldValue, newValue) ->
+                showBeakerLevels(flowController.getDeliveryRangeLabel().getText(), flowController.getBackFlowRangeLabel().getText(), newValue));
+
+        textField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null) {
+                switch (beakerType) {
+                    case DELIVERY:
+                        if (flowController.getDeliveryRangeLabel().getText() != null) {
+
+                        }
+                }
+            }
+        });
+
+    }
+
+    private void showBeakerLevels(String deliveryRangeLabel, String backFlowRangeLabel, boolean ledSelected) {
+
+        if (ledSelected) {
+            switch (beakerType) {
+                case DELIVERY:
+                    if (!deliveryRangeLabel.isEmpty()) {
+                        double[] currentDeliveryFlowLevels = flowController.getCurrentDeliveryFlowLevels();
+                        textTop.setText(String.valueOf(currentDeliveryFlowLevels[1]));
+                        textBottom.setText(String.valueOf(currentDeliveryFlowLevels[0]));
+                        setArcs();
+                        AnchorPane.setBottomAnchor(textTop, AnchorPane.getBottomAnchor(arcTickTop) + TEXT_DEVIATION);
+                        AnchorPane.setBottomAnchor(textBottom, AnchorPane.getBottomAnchor(arcTickBottom) + TEXT_DEVIATION);
+
+                    } else {
+                        makeEmpty();
+                    }
+                    break;
+                case BACKFLOW:
+                    if (!backFlowRangeLabel.isEmpty()) {
+                        double[] currentBackFlowLevels = flowController.getCurrentBackFlowLevels();
+                        textTop.setText(String.valueOf(currentBackFlowLevels[1]));
+                        textBottom.setText(String.valueOf(currentBackFlowLevels[0]));
+                        setArcs();
+                        AnchorPane.setBottomAnchor(textTop, AnchorPane.getBottomAnchor(arcTickTop) + TEXT_DEVIATION);
+                        AnchorPane.setBottomAnchor(textBottom, AnchorPane.getBottomAnchor(arcTickBottom) + TEXT_DEVIATION);
+                    } else {
+                        makeEmpty();
+                    }
+                    break;
+                default:
+                    break;
+            }
+        } else {
+            makeEmpty();
+        }
+
+    }
+
+    private void setArcs() {
+
+        setBiggerArc(arcTickTop, PERCENT_075);
+        setLowerArc(arcTickBottom, PERCENT_025);
+        arcTickTop.setOpacity(1d);
+        arcTickBottom.setOpacity(1d);
 
     }
 
@@ -144,7 +247,7 @@ public class BeakerController {
 
             if (newValue == null || newValue.equals("") || newValue.equals("0.0") || newValue.equals("0")) {
                 rescaler.getMapOfLevels().put(name, 0f);
-                makeEmpty();
+                makeLevelEmpty();
                 return;
             }
 
@@ -153,7 +256,7 @@ public class BeakerController {
                 return;
             }
 
-            float currentVal = firmwareDataConverter.roundToOneDecimalPlace(firmwareDataConverter.convertDataToFloat(newValue));
+            float currentVal = dataConverter.roundToOneDecimalPlace(dataConverter.convertDataToFloat(newValue));
 
             rescaler.getObservableMapOfLevels().put(name, currentVal);
 
@@ -179,6 +282,13 @@ public class BeakerController {
         rectangleFuel.setOpacity(0);
     }
 
+    private void makeLevelEmpty() {
+        ellipseBottomFuel.setOpacity(0);
+        ellipseTopFuel.setOpacity(0);
+        rectangleFuel.setHeight(0);
+        rectangleFuel.setOpacity(0);
+    }
+
     private void setLevel(double level) {
 
         rectangleFuel.setOpacity(0.8);
@@ -197,6 +307,14 @@ public class BeakerController {
 
     private double opacityByLevel(double level) {
         return level == 0 ? 0 : 1;
+    }
+
+    private void setBiggerArc(Arc arc, double value) {
+        AnchorPane.setBottomAnchor(arc, rectangleBeaker.getHeight() * value - ARC_DEVIATION);
+    }
+
+    private void setLowerArc(Arc arc, double value) {
+        AnchorPane.setBottomAnchor(arc, rectangleBeaker.getHeight() * value - ARC_DEVIATION);
     }
 
 }

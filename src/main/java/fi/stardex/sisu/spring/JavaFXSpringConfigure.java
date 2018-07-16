@@ -13,9 +13,14 @@ import fi.stardex.sisu.ui.controllers.cr.CRSectionController;
 import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.cr.TestBenchSectionController;
+import fi.stardex.sisu.ui.controllers.dialogs.ManufacturerMenuDialogController;
+import fi.stardex.sisu.ui.controllers.dialogs.NewEditInjectorDialogController;
+import fi.stardex.sisu.ui.controllers.dialogs.NewEditTestDialogController;
+import fi.stardex.sisu.ui.controllers.dialogs.NewEditVOAPDialogController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
 import fi.stardex.sisu.util.ApplicationConfigHandler;
-import fi.stardex.sisu.util.converters.FirmwareDataConverter;
+import fi.stardex.sisu.util.converters.DataConverter;
+import fi.stardex.sisu.util.enums.BeakerType;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.i18n.UTF8Control;
 import fi.stardex.sisu.util.rescalers.Rescaler;
@@ -68,11 +73,7 @@ public class JavaFXSpringConfigure {
     public MainSectionController mainSectionController(ApplicationConfigHandler applicationConfigHandler,
                                                        ApplicationAppearanceChanger applicationAppearanceChanger,
                                                        @Lazy ModbusRegisterProcessor flowModbusWriter) {
-        MainSectionController mainSectionController = (MainSectionController) mainSection().getController();
-        mainSectionController.setApplicationConfigHandler(applicationConfigHandler);
-        mainSectionController.setApplicationAppearanceChanger(applicationAppearanceChanger);
-        mainSectionController.setFlowModbusWriter(flowModbusWriter);
-        return mainSectionController;
+        return (MainSectionController) mainSection().getController();
     }
 
     @Bean
@@ -132,97 +133,137 @@ public class JavaFXSpringConfigure {
 
     @Bean
     @Autowired
-    public BeakerController beakerDelivery1Controller(FlowController flowController, Rescaler deliveryRescaler,
-                                                      FirmwareDataConverter firmwareDataConverter) {
+    public BeakerController beakerDelivery1Controller(FlowController flowController,
+                                                      InjectorSectionController injectorSectionController,
+                                                      Rescaler deliveryRescaler,
+                                                      DataConverter firmwareDataConverter) {
         BeakerController beakerDelivery1Controller = flowController.getBeakerDelivery1Controller();
+        beakerDelivery1Controller.setFlowController(flowController);
         beakerDelivery1Controller.setTextField(flowController.getDelivery1TextField());
+        beakerDelivery1Controller.setLedController(injectorSectionController.getLedBeaker1Controller());
         beakerDelivery1Controller.setRescaler(deliveryRescaler);
-        beakerDelivery1Controller.setFirmwareDataConverter(firmwareDataConverter);
+        beakerDelivery1Controller.setDataConverter(firmwareDataConverter);
         beakerDelivery1Controller.setName("Delivery1");
+        beakerDelivery1Controller.setBeakerType(BeakerType.DELIVERY);
         return beakerDelivery1Controller;
     }
 
     @Bean
     @Autowired
-    public BeakerController beakerDelivery2Controller(FlowController flowController, Rescaler deliveryRescaler,
-                                                      FirmwareDataConverter firmwareDataConverter) {
+    public BeakerController beakerDelivery2Controller(FlowController flowController,
+                                                      InjectorSectionController injectorSectionController,
+                                                      Rescaler deliveryRescaler,
+                                                      DataConverter firmwareDataConverter) {
         BeakerController beakerDelivery2Controller = flowController.getBeakerDelivery2Controller();
+        beakerDelivery2Controller.setFlowController(flowController);
         beakerDelivery2Controller.setTextField(flowController.getDelivery2TextField());
+        beakerDelivery2Controller.setLedController(injectorSectionController.getLedBeaker2Controller());
         beakerDelivery2Controller.setRescaler(deliveryRescaler);
-        beakerDelivery2Controller.setFirmwareDataConverter(firmwareDataConverter);
+        beakerDelivery2Controller.setDataConverter(firmwareDataConverter);
         beakerDelivery2Controller.setName("Delivery2");
+        beakerDelivery2Controller.setBeakerType(BeakerType.DELIVERY);
         return beakerDelivery2Controller;
     }
 
     @Bean
     @Autowired
-    public BeakerController beakerDelivery3Controller(FlowController flowController, Rescaler deliveryRescaler,
-                                                      FirmwareDataConverter firmwareDataConverter) {
+    public BeakerController beakerDelivery3Controller(FlowController flowController,
+                                                      InjectorSectionController injectorSectionController,
+                                                      Rescaler deliveryRescaler,
+                                                      DataConverter firmwareDataConverter) {
         BeakerController beakerDelivery3Controller = flowController.getBeakerDelivery3Controller();
+        beakerDelivery3Controller.setFlowController(flowController);
         beakerDelivery3Controller.setTextField(flowController.getDelivery3TextField());
+        beakerDelivery3Controller.setLedController(injectorSectionController.getLedBeaker3Controller());
         beakerDelivery3Controller.setRescaler(deliveryRescaler);
-        beakerDelivery3Controller.setFirmwareDataConverter(firmwareDataConverter);
+        beakerDelivery3Controller.setDataConverter(firmwareDataConverter);
         beakerDelivery3Controller.setName("Delivery3");
+        beakerDelivery3Controller.setBeakerType(BeakerType.DELIVERY);
         return beakerDelivery3Controller;
     }
 
     @Bean
     @Autowired
-    public BeakerController beakerDelivery4Controller(FlowController flowController, Rescaler deliveryRescaler,
-                                                      FirmwareDataConverter firmwareDataConverter) {
+    public BeakerController beakerDelivery4Controller(FlowController flowController,
+                                                      InjectorSectionController injectorSectionController,
+                                                      Rescaler deliveryRescaler,
+                                                      DataConverter firmwareDataConverter) {
         BeakerController beakerDelivery4Controller = flowController.getBeakerDelivery4Controller();
+        beakerDelivery4Controller.setFlowController(flowController);
         beakerDelivery4Controller.setTextField(flowController.getDelivery4TextField());
+        beakerDelivery4Controller.setLedController(injectorSectionController.getLedBeaker4Controller());
         beakerDelivery4Controller.setRescaler(deliveryRescaler);
-        beakerDelivery4Controller.setFirmwareDataConverter(firmwareDataConverter);
+        beakerDelivery4Controller.setDataConverter(firmwareDataConverter);
         beakerDelivery4Controller.setName("Delivery4");
+        beakerDelivery4Controller.setBeakerType(BeakerType.DELIVERY);
         return beakerDelivery4Controller;
     }
 
     @Bean
     @Autowired
-    public BeakerController beakerBackFlow1Controller(FlowController flowController, Rescaler backFlowRescaler,
-                                                      FirmwareDataConverter firmwareDataConverter) {
+    public BeakerController beakerBackFlow1Controller(FlowController flowController,
+                                                      InjectorSectionController injectorSectionController,
+                                                      Rescaler backFlowRescaler,
+                                                      DataConverter firmwareDataConverter) {
         BeakerController beakerBackFlow1Controller = flowController.getBeakerBackFlow1Controller();
+        beakerBackFlow1Controller.setFlowController(flowController);
         beakerBackFlow1Controller.setTextField(flowController.getBackFlow1TextField());
+        beakerBackFlow1Controller.setLedController(injectorSectionController.getLedBeaker1Controller());
         beakerBackFlow1Controller.setRescaler(backFlowRescaler);
-        beakerBackFlow1Controller.setFirmwareDataConverter(firmwareDataConverter);
+        beakerBackFlow1Controller.setDataConverter(firmwareDataConverter);
         beakerBackFlow1Controller.setName("Backflow1");
+        beakerBackFlow1Controller.setBeakerType(BeakerType.BACKFLOW);
         return beakerBackFlow1Controller;
     }
 
     @Bean
     @Autowired
-    public BeakerController beakerBackFlow2Controller(FlowController flowController, Rescaler backFlowRescaler,
-                                                      FirmwareDataConverter firmwareDataConverter) {
+    public BeakerController beakerBackFlow2Controller(FlowController flowController,
+                                                      InjectorSectionController injectorSectionController,
+                                                      Rescaler backFlowRescaler,
+                                                      DataConverter firmwareDataConverter) {
         BeakerController beakerBackFlow2Controller = flowController.getBeakerBackFlow2Controller();
+        beakerBackFlow2Controller.setFlowController(flowController);
         beakerBackFlow2Controller.setTextField(flowController.getBackFlow2TextField());
+        beakerBackFlow2Controller.setLedController(injectorSectionController.getLedBeaker2Controller());
         beakerBackFlow2Controller.setRescaler(backFlowRescaler);
-        beakerBackFlow2Controller.setFirmwareDataConverter(firmwareDataConverter);
+        beakerBackFlow2Controller.setDataConverter(firmwareDataConverter);
         beakerBackFlow2Controller.setName("Backflow2");
+        beakerBackFlow2Controller.setBeakerType(BeakerType.BACKFLOW);
         return beakerBackFlow2Controller;
     }
 
     @Bean
     @Autowired
-    public BeakerController beakerBackFlow3Controller(FlowController flowController, Rescaler backFlowRescaler,
-                                                      FirmwareDataConverter firmwareDataConverter) {
+    public BeakerController beakerBackFlow3Controller(FlowController flowController,
+                                                      InjectorSectionController injectorSectionController,
+                                                      Rescaler backFlowRescaler,
+                                                      DataConverter firmwareDataConverter) {
         BeakerController beakerBackFlow3Controller = flowController.getBeakerBackFlow3Controller();
+        beakerBackFlow3Controller.setFlowController(flowController);
         beakerBackFlow3Controller.setTextField(flowController.getBackFlow3TextField());
+        beakerBackFlow3Controller.setLedController(injectorSectionController.getLedBeaker3Controller());
         beakerBackFlow3Controller.setRescaler(backFlowRescaler);
-        beakerBackFlow3Controller.setFirmwareDataConverter(firmwareDataConverter);
+        beakerBackFlow3Controller.setDataConverter(firmwareDataConverter);
         beakerBackFlow3Controller.setName("Backflow3");
+        beakerBackFlow3Controller.setBeakerType(BeakerType.BACKFLOW);
         return beakerBackFlow3Controller;
     }
 
     @Bean
     @Autowired
-    public BeakerController beakerBackFlow4Controller(FlowController flowController, Rescaler backFlowRescaler,
-                                                      FirmwareDataConverter firmwareDataConverter) {
+    public BeakerController beakerBackFlow4Controller(FlowController flowController,
+                                                      InjectorSectionController injectorSectionController,
+                                                      Rescaler backFlowRescaler,
+                                                      DataConverter firmwareDataConverter) {
         BeakerController beakerBackFlow4Controller = flowController.getBeakerBackFlow4Controller();
+        beakerBackFlow4Controller.setFlowController(flowController);
         beakerBackFlow4Controller.setTextField(flowController.getBackFlow4TextField());
+        beakerBackFlow4Controller.setLedController(injectorSectionController.getLedBeaker4Controller());
         beakerBackFlow4Controller.setRescaler(backFlowRescaler);
-        beakerBackFlow4Controller.setFirmwareDataConverter(firmwareDataConverter);
+        beakerBackFlow4Controller.setDataConverter(firmwareDataConverter);
         beakerBackFlow4Controller.setName("Backflow4");
+        beakerBackFlow4Controller.setBeakerType(BeakerType.BACKFLOW);
         return beakerBackFlow4Controller;
     }
 
@@ -238,7 +279,7 @@ public class JavaFXSpringConfigure {
     @Bean
     @Autowired
     public VoltageController voltageController(AdditionalSectionController additionalSectionController,
-                                               FirmwareDataConverter firmwareDataConverter,
+                                               DataConverter firmwareDataConverter,
                                                InjectorSectionController injectorSectionController) {
         VoltageController voltageController = additionalSectionController.getVoltageController();
         voltageController.setVoltAmpereProfileDialog(voltAmpereProfileDialog());
@@ -272,7 +313,7 @@ public class JavaFXSpringConfigure {
     public VoltAmpereProfileController voltAmpereProfileController(ModbusRegisterProcessor ultimaModbusWriter,
                                                                    InjectorSectionController injectorSectionController,
                                                                    VoltageController voltageController,
-                                                                   FirmwareDataConverter firmwareDataConverter) {
+                                                                   DataConverter firmwareDataConverter) {
         VoltAmpereProfileController voltAmpereProfileController = (VoltAmpereProfileController) voltAmpereProfileDialog().getController();
         voltAmpereProfileController.setUltimaModbusWriter(ultimaModbusWriter);
         voltAmpereProfileController.setInjectorSectionController(injectorSectionController);
@@ -294,6 +335,46 @@ public class JavaFXSpringConfigure {
     @Autowired
     public StatusBarWrapper statusBar(Devices devices) {
         return new StatusBarWrapper(devices, "Ready", "Device not connected", StardexVersion.VERSION);
+    }
+
+    @Bean
+    public ViewHolder manufacturerMenuDialog() {
+        return loadView("/fxml/dialogs/ManufacturerMenuDialog.fxml");
+    }
+
+    @Bean
+    public ManufacturerMenuDialogController manufacturerMenuDialogController() {
+        return (ManufacturerMenuDialogController) manufacturerMenuDialog().getController();
+    }
+
+    @Bean
+    public ViewHolder newEditVOAPDialog() {
+        return loadView("/fxml/dialogs/NewEditVOAPDialog.fxml");
+    }
+
+    @Bean
+    public NewEditVOAPDialogController newEditVOAPDialogController() {
+        return (NewEditVOAPDialogController) newEditVOAPDialog().getController();
+    }
+
+    @Bean
+    public ViewHolder newEditInjectorDialog() {
+        return loadView("/fxml/dialogs/NewEditInjectorDialog.fxml");
+    }
+
+    @Bean
+    public NewEditInjectorDialogController newEditInjectorDialogController() {
+        return (NewEditInjectorDialogController) newEditInjectorDialog().getController();
+    }
+
+    @Bean
+    public ViewHolder newEditTestDialog() {
+        return loadView("/fxml/dialogs/NewEditTestDialog.fxml");
+    }
+
+    @Bean
+    public NewEditTestDialogController newEditTestDialogController() {
+        return (NewEditTestDialogController) newEditTestDialog().getController();
     }
 
     private ViewHolder loadView(String url) {

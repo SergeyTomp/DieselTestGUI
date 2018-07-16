@@ -100,6 +100,10 @@ public class SettingsController {
         return flowVisibleCheckBox;
     }
 
+    public ComboBox<Dimension> getFlowOutputDimensionsComboBox() {
+        return flowOutputDimensionsComboBox;
+    }
+
     @PostConstruct
     private void init() {
 

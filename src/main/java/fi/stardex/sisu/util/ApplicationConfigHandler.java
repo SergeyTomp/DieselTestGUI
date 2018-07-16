@@ -16,7 +16,7 @@ public class ApplicationConfigHandler {
     private String filePath;
 
     {
-        config.put("GUI_Type", "UIS");
+        config.put("GUI_Type", "CR");
         config.put("Language", "ENGLISH");
         config.put("UltimaIP", "192.168.10.206");
         config.put("UltimaPort", "502");

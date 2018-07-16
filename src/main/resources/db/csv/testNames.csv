@@ -1,0 +1,34 @@
+id,test_name,measurement
+1,Back flow pressure levelling,VISUAL
+2,Static Leak,NO
+3,Air Cleaning,VISUAL
+4,Back Flow,BACK_FLOW
+5,Back Flow 2,BACK_FLOW
+6,Maximum Load,DIRECT
+7,Emission Point,DIRECT
+8,Emission Point 2,DIRECT
+9,Emission Point 3,DIRECT
+10,Part Load,DIRECT
+11,Pre-injection,DIRECT
+12,Pre-injection 2,DIRECT
+13,Idle,DIRECT
+14,Test Point 01,DIRECT
+15,Test Point 02,DIRECT
+16,Test Point 03,DIRECT
+17,Test Point 04,DIRECT
+18,Test Point 05,DIRECT
+19,Test Point 06,DIRECT
+20,Test Point 07,DIRECT
+21,Test Point 08,DIRECT
+22,Test Point 09,DIRECT
+23,Test Point 10,DIRECT
+24,Test Point 11,DIRECT
+25,Test Point 12,DIRECT
+26,Test Point 13,DIRECT
+27,Test Point 14,DIRECT
+28,Test Point 15,DIRECT
+29,Emission Point 4,DIRECT
+30,ISA Detection,DIRECT
+31,Static Leak 2,NO
+32,Maximum Load 2,DIRECT
+33,Pre-injection 3,DIRECT

@@ -82,6 +82,7 @@ public abstract class ModbusRegisterProcessor {
         private void readAll() {
             for (ModbusMap register : readArray) {
                 if (register.isAutoUpdate()) {
+
                     registerProvider.read(register);
                 }
             }

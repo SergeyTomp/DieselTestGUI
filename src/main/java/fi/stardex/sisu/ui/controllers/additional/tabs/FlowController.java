@@ -2,6 +2,8 @@ package fi.stardex.sisu.ui.controllers.additional.tabs;
 
 import fi.stardex.sisu.combobox_values.FlowUnits;
 import fi.stardex.sisu.ui.controllers.additional.BeakerController;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
@@ -12,6 +14,12 @@ import javafx.scene.layout.AnchorPane;
 import javax.annotation.PostConstruct;
 
 public class FlowController {
+
+    @FXML
+    private Label deliveryRangeLabel;
+
+    @FXML
+    private Label backFlowRangeLabel;
 
     @FXML
     private TextField delivery1TextField;
@@ -138,6 +146,26 @@ public class FlowController {
 
     @FXML
     private BeakerController beakerBackFlow4Controller;
+
+    public Label getDeliveryRangeLabel() {
+        return deliveryRangeLabel;
+    }
+
+    public Label getBackFlowRangeLabel() {
+        return backFlowRangeLabel;
+    }
+
+    private ObjectProperty<String> deliveryRangeLabelProperty = new SimpleObjectProperty<>();
+
+    private ObjectProperty<String> backFlowRangeLabelProperty = new SimpleObjectProperty<>();
+
+    public ObjectProperty<String> deliveryRangeLabelPropertyProperty() {
+        return deliveryRangeLabelProperty;
+    }
+
+    public ObjectProperty<String> backFlowRangeLabelPropertyProperty() {
+        return backFlowRangeLabelProperty;
+    }
 
     public Label getTemperature1Delivery1() {
         return temperature1Delivery1;
@@ -277,8 +305,32 @@ public class FlowController {
 
     private static final int TEXT_FIELD_MAX_LENGTH = 7;
 
+    private double[] currentDeliveryFlowLevels;
+
+    private double[] currentBackFlowLevels;
+
+    public double[] getCurrentDeliveryFlowLevels() {
+        return currentDeliveryFlowLevels;
+    }
+
+    public void setCurrentDeliveryFlowLevels(double[] currentDeliveryFlowLevels) {
+        this.currentDeliveryFlowLevels = currentDeliveryFlowLevels;
+    }
+
+    public double[] getCurrentBackFlowLevels() {
+        return currentBackFlowLevels;
+    }
+
+    public void setCurrentBackFlowLevels(double[] currentBackFlowLevels) {
+        this.currentBackFlowLevels = currentBackFlowLevels;
+    }
+
     @PostConstruct
     private void init() {
+
+        deliveryRangeLabelProperty.bind(deliveryRangeLabel.textProperty());
+
+        backFlowRangeLabelProperty.bind(backFlowRangeLabel.textProperty());
 
         setupDeliveryAndBackFlowComboBox();
 
@@ -295,10 +347,10 @@ public class FlowController {
 
     private void setupDeliveryAndBackFlowComboBox() {
 
-        deliveryFlowComboBox.getItems().setAll(FlowUnits.getArrayOfFlowUnits());
+        deliveryFlowComboBox.getItems().setAll(FlowUnits.getMapOfFlowUnits().keySet());
         deliveryFlowComboBox.getSelectionModel().selectFirst();
 
-        backFlowComboBox.getItems().setAll(FlowUnits.getArrayOfFlowUnits());
+        backFlowComboBox.getItems().setAll(FlowUnits.getMapOfFlowUnits().keySet());
         backFlowComboBox.getSelectionModel().selectFirst();
 
     }

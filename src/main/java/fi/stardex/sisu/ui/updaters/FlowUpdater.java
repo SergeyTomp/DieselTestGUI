@@ -6,7 +6,7 @@ import fi.stardex.sisu.registers.flow.ModbusMapFlow;
 import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
-import fi.stardex.sisu.util.converters.FirmwareDataConverter;
+import fi.stardex.sisu.util.converters.DataConverter;
 import fi.stardex.sisu.version.FlowFirmwareVersion;
 import javafx.scene.control.*;
 
@@ -16,7 +16,7 @@ import java.util.List;
 
 public abstract class FlowUpdater {
 
-    protected FirmwareDataConverter firmwareDataConverter;
+    protected DataConverter dataConverter;
 
     protected static final String DEGREES_CELSIUS = " \u2103";
 
@@ -95,9 +95,9 @@ public abstract class FlowUpdater {
     protected ToggleButton injectorSectionPowerSwitch;
 
     public FlowUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
-                       SettingsController settingsController, FirmwareDataConverter firmwareDataConverter) {
+                       SettingsController settingsController, DataConverter firmwareDataConverter) {
 
-        this.firmwareDataConverter = firmwareDataConverter;
+        this.dataConverter = firmwareDataConverter;
         temperature1Delivery1Label = flowController.getTemperature1Delivery1();
         temperature1Delivery2Label = flowController.getTemperature1Delivery2();
         temperature1Delivery3Label = flowController.getTemperature1Delivery3();
@@ -235,82 +235,46 @@ public abstract class FlowUpdater {
 
     }
 
-    // TODO: реализовать 3 последние опции Combo box
     private void showOnChosenFlowUnit(String value, String selectedItem, Flow flow) {
 
-        float convertedValueFloat = firmwareDataConverter.
-                roundToOneDecimalPlace(firmwareDataConverter.convertDataToFloat(value));
+        float convertedValueFloat = dataConverter.
+                roundToOneDecimalPlace(dataConverter.convertDataToFloat(value) * FlowUnits.getMapOfFlowUnits().get(selectedItem));
 
         TextField field1 = (flow == Flow.DELIVERY) ? delivery1TextField : backFlow1TextField;
         TextField field2 = (flow == Flow.DELIVERY) ? delivery2TextField : backFlow2TextField;
         TextField field3 = (flow == Flow.DELIVERY) ? delivery3TextField : backFlow3TextField;
         TextField field4 = (flow == Flow.DELIVERY) ? delivery4TextField : backFlow4TextField;
 
-        switch (selectedItem) {
-            case FlowUnits.MILLILITRE_PER_MINUTE:
-                setDeliveryBackFlowFields(field1, field2, field3, field4, String.valueOf(convertedValueFloat));
-                break;
-            case FlowUnits.LITRE_PER_HOUR:
-                setDeliveryBackFlowFields(field1, field2, field3, field4, String.valueOf(firmwareDataConverter.
-                        roundToOneDecimalPlace(convertedValueFloat * 0.06f)));
-                break;
-            case FlowUnits.MILLILITRE_PER_100RPM:
-                break;
-            case FlowUnits.MILLILITRE_PER_200RPM:
-                break;
-            case FlowUnits.MILLILITRE_PER_1000RPM:
-                break;
-            default:
-                break;
-        }
+        setDeliveryBackFlowFields(field1, field2, field3, field4, String.valueOf(convertedValueFloat));
 
     }
 
     // TODO: реализовать 3 последние опции Combo box
     private void showOnChosenFlowUnit(List<String> listOfValues, String selectedItem, Flow flow) {
 
-        listOfConvertedValues.add(firmwareDataConverter.
-                roundToOneDecimalPlace(firmwareDataConverter.convertDataToFloat(listOfValues.get(0))));
-        listOfConvertedValues.add(firmwareDataConverter.
-                roundToOneDecimalPlace(firmwareDataConverter.convertDataToFloat(listOfValues.get(1))));
-        listOfConvertedValues.add(firmwareDataConverter.
-                roundToOneDecimalPlace(firmwareDataConverter.convertDataToFloat(listOfValues.get(2))));
-        listOfConvertedValues.add(firmwareDataConverter.
-                roundToOneDecimalPlace(firmwareDataConverter.convertDataToFloat(listOfValues.get(3))));
+        float flowUnitsConvertValue = FlowUnits.getMapOfFlowUnits().get(selectedItem);
+
+        listOfConvertedValues.add(dataConverter.
+                roundToOneDecimalPlace(dataConverter.convertDataToFloat(listOfValues.get(0)) * flowUnitsConvertValue));
+        listOfConvertedValues.add(dataConverter.
+                roundToOneDecimalPlace(dataConverter.convertDataToFloat(listOfValues.get(1)) * flowUnitsConvertValue));
+        listOfConvertedValues.add(dataConverter.
+                roundToOneDecimalPlace(dataConverter.convertDataToFloat(listOfValues.get(2)) * flowUnitsConvertValue));
+        listOfConvertedValues.add(dataConverter.
+                roundToOneDecimalPlace(dataConverter.convertDataToFloat(listOfValues.get(3)) * flowUnitsConvertValue));
 
         TextField field1 = (flow == Flow.DELIVERY) ? delivery1TextField : backFlow1TextField;
         TextField field2 = (flow == Flow.DELIVERY) ? delivery2TextField : backFlow2TextField;
         TextField field3 = (flow == Flow.DELIVERY) ? delivery3TextField : backFlow3TextField;
         TextField field4 = (flow == Flow.DELIVERY) ? delivery4TextField : backFlow4TextField;
 
-        switch (selectedItem) {
-            case FlowUnits.MILLILITRE_PER_MINUTE:
-                field1.setText(ledBeaker1ToggleButton.isSelected() ? listOfConvertedValues.get(0).toString() : null);
-                field2.setText(ledBeaker2ToggleButton.isSelected() ? listOfConvertedValues.get(1).toString() : null);
-                field3.setText(ledBeaker3ToggleButton.isSelected() ? listOfConvertedValues.get(2).toString() : null);
-                field4.setText(ledBeaker4ToggleButton.isSelected() ? listOfConvertedValues.get(3).toString() : null);
-                break;
-            case FlowUnits.LITRE_PER_HOUR:
-                field1.setText(ledBeaker1ToggleButton.isSelected() ? String.valueOf(firmwareDataConverter.
-                        roundToOneDecimalPlace(listOfConvertedValues.get(0) * 0.06f)) : null);
-                field2.setText(ledBeaker2ToggleButton.isSelected() ? String.valueOf(firmwareDataConverter.
-                        roundToOneDecimalPlace(listOfConvertedValues.get(1) * 0.06f)) : null);
-                field3.setText(ledBeaker3ToggleButton.isSelected() ? String.valueOf(firmwareDataConverter.
-                        roundToOneDecimalPlace(listOfConvertedValues.get(2) * 0.06f)) : null);
-                field4.setText(ledBeaker4ToggleButton.isSelected() ? String.valueOf(firmwareDataConverter.
-                        roundToOneDecimalPlace(listOfConvertedValues.get(3) * 0.06f)) : null);
-                break;
-            case FlowUnits.MILLILITRE_PER_100RPM:
-                break;
-            case FlowUnits.MILLILITRE_PER_200RPM:
-                break;
-            case FlowUnits.MILLILITRE_PER_1000RPM:
-                break;
-            default:
-                break;
-        }
+        field1.setText(ledBeaker1ToggleButton.isSelected() ? listOfConvertedValues.get(0).toString() : null);
+        field2.setText(ledBeaker2ToggleButton.isSelected() ? listOfConvertedValues.get(1).toString() : null);
+        field3.setText(ledBeaker3ToggleButton.isSelected() ? listOfConvertedValues.get(2).toString() : null);
+        field4.setText(ledBeaker4ToggleButton.isSelected() ? listOfConvertedValues.get(3).toString() : null);
 
         listOfConvertedValues.clear();
+
     }
 
     private void setDeliveryBackFlowFields(TextField field1, TextField field2, TextField field3, TextField field4, String value) {
@@ -368,31 +332,31 @@ public abstract class FlowUpdater {
             showOnChosenFlowUnit(value, backFlowComboBox.getSelectionModel().getSelectedItem(), Flow.BACK_FLOW);
 
         if ((value = ModbusMapFlow.Channel1Temperature1.getLastValue().toString()) != null) {
-            convertedValue.append(firmwareDataConverter.
-                    roundToOneDecimalPlace(firmwareDataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
+            convertedValue.append(dataConverter.
+                    roundToOneDecimalPlace(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
             setTempLabels(temperature1Delivery1Label, temperature1Delivery2Label,
                     temperature1Delivery3Label, temperature1Delivery4Label, convertedValue.toString());
             convertedValue.setLength(0);
         }
         if ((value = ModbusMapFlow.Channel1Temperature2.getLastValue().toString()) != null) {
-            convertedValue.append(firmwareDataConverter.
-                    roundToOneDecimalPlace(firmwareDataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
+            convertedValue.append(dataConverter.
+                    roundToOneDecimalPlace(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
             setTempLabels(temperature2Delivery1Label, temperature2Delivery2Label,
                     temperature2Delivery3Label, temperature2Delivery4Label, convertedValue.toString());
             convertedValue.setLength(0);
         }
         if ((value = (version == FlowFirmwareVersion.FLOW_MASTER) ? ModbusMapFlow.Channel2Temperature1.getLastValue().toString()
                 : ModbusMapFlow.Channel5Temperature1.getLastValue().toString()) != null) {
-            convertedValue.append(firmwareDataConverter.
-                    roundToOneDecimalPlace(firmwareDataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
+            convertedValue.append(dataConverter.
+                    roundToOneDecimalPlace(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
             setTempLabels(temperature1BackFlow1Label, temperature1BackFlow2Label,
                     temperature1BackFlow3Label, temperature1BackFlow4Label, convertedValue.toString());
             convertedValue.setLength(0);
         }
         if ((value = (version == FlowFirmwareVersion.FLOW_MASTER) ? ModbusMapFlow.Channel2Temperature2.getLastValue().toString()
                 : ModbusMapFlow.Channel5Temperature2.getLastValue().toString()) != null) {
-            convertedValue.append(firmwareDataConverter.
-                    roundToOneDecimalPlace(firmwareDataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
+            convertedValue.append(dataConverter.
+                    roundToOneDecimalPlace(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
             setTempLabels(temperature2BackFlow1Label, temperature2BackFlow2Label,
                     temperature2BackFlow3Label, temperature2BackFlow4Label, convertedValue.toString());
             convertedValue.setLength(0);

@@ -10,37 +10,50 @@ import fi.stardex.sisu.connect.InetAddressWrapper;
 import fi.stardex.sisu.connect.ModbusConnect;
 import fi.stardex.sisu.devices.Device;
 import fi.stardex.sisu.devices.Devices;
+import fi.stardex.sisu.persistence.CheckAndInitializeBD;
+import fi.stardex.sisu.persistence.orm.Manufacturer;
+import fi.stardex.sisu.persistence.repos.ManufacturerRepository;
+import fi.stardex.sisu.persistence.repos.cr.InjectorTestRepository;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.flow.ModbusMapFlow;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
+import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.ui.controllers.additional.tabs.ConnectionController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
 import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
+import fi.stardex.sisu.ui.controllers.main.MainSectionController;
 import fi.stardex.sisu.ui.updaters.*;
 import fi.stardex.sisu.util.ApplicationConfigHandler;
-import fi.stardex.sisu.util.converters.FirmwareDataConverter;
+import fi.stardex.sisu.util.converters.DataConverter;
 import fi.stardex.sisu.util.i18n.I18N;
+import fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer;
+import fi.stardex.sisu.util.obtainers.CurrentInjectorTestsObtainer;
+import fi.stardex.sisu.util.obtainers.CurrentManufacturerObtainer;
 import fi.stardex.sisu.util.rescalers.BackFlowRescaler;
 import fi.stardex.sisu.util.rescalers.DeliveryRescaler;
+import fi.stardex.sisu.util.converters.FlowResolver;
 import fi.stardex.sisu.util.rescalers.Rescaler;
 import fi.stardex.sisu.util.wrappers.StatusBarWrapper;
 import fi.stardex.sisu.version.FlowFirmwareVersion;
 import fi.stardex.sisu.version.UltimaFirmwareVersion;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.scene.control.ListView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.*;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import javax.sql.DataSource;
+import java.io.IOException;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -239,7 +252,7 @@ public class SpringJavaConfig {
 
     @Bean
     @Autowired
-    public InjectorSectionUpdater injectorSectionUpdater(VoltageController voltageController, FirmwareDataConverter firmwareDataConverter) {
+    public InjectorSectionUpdater injectorSectionUpdater(VoltageController voltageController, DataConverter firmwareDataConverter) {
         return new InjectorSectionUpdater(voltageController, firmwareDataConverter);
     }
 
@@ -286,8 +299,8 @@ public class SpringJavaConfig {
     }
 
     @Bean
-    public FirmwareDataConverter firmwareDataConverter() {
-        return new FirmwareDataConverter();
+    public DataConverter dataConverter() {
+        return new DataConverter();
     }
 
     @Bean
@@ -311,5 +324,74 @@ public class SpringJavaConfig {
         });
         return updaters;
     }
-}
 
+
+    @Bean
+    public CurrentManufacturerObtainer currentManufacturerObtainer() {
+        return new CurrentManufacturerObtainer();
+    }
+
+    @Bean
+    public CurrentInjectorObtainer currentInjectorObtainer() {
+        return new CurrentInjectorObtainer();
+    }
+
+    @Bean
+    public CurrentInjectorTestsObtainer currentInjectorTestObtainer() {
+        return new CurrentInjectorTestsObtainer();
+    }
+
+    @Bean
+    public CheckAndInitializeBD checkAndInitializeBD(ManufacturerRepository manufacturerRepository,
+                                                      DataSource dataSource) {
+        return new CheckAndInitializeBD(manufacturerRepository, dataSource);
+    }
+
+//    @Bean
+//    @DependsOn("checkAndInitializeBD")
+//    @Autowired
+//    @SuppressWarnings("unchecked")
+//    public ListView<Manufacturer> manufacturerList(SessionFactory sessionFactory, MainSectionController mainSectionController) throws IOException {
+//        Session session = sessionFactory.openSession();
+//        session.setFlushMode(FlushMode.MANUAL);
+//        session.setDefaultReadOnly(true);
+//        List<Manufacturer> manufacturers = session.createQuery("select manufacturer from Manufacturer manufacturer")
+//                .list();
+//
+//        ObservableList<Manufacturer> observableList = FXCollections.observableList(manufacturers);
+//        ListView<Manufacturer> manufacturerList = mainSectionController.getManufacturerListView();
+//        manufacturerList.setItems(observableList);
+//
+//        return manufacturerList;
+//    }
+
+    @Bean
+    @DependsOn("checkAndInitializeBD")
+    @Autowired
+    public ListView<Manufacturer> manufacturerList(ManufacturerRepository manufacturerRepository, MainSectionController mainSectionController) throws IOException {
+        Iterable<Manufacturer> manufacturers = manufacturerRepository.findAll();
+        List<Manufacturer> listOfManufacturers = new ArrayList<>();
+        manufacturers.forEach(listOfManufacturers::add);
+
+        ObservableList<Manufacturer> observableList = FXCollections.observableList(listOfManufacturers);
+        ListView<Manufacturer> manufacturerList = mainSectionController.getManufacturerListView();
+        manufacturerList.setItems(observableList);
+
+        return manufacturerList;
+    }
+
+    @Bean
+    @Lazy
+    @Autowired
+    public Enabler enabler(MainSectionController mainSectionController) {
+        return new Enabler(mainSectionController);
+    }
+
+    @Bean
+    @Autowired
+    public FlowResolver flowResolver(MainSectionController mainSectionController,SettingsController settingsController,
+                                     FlowController flowController, DataConverter dataConverter) {
+        return new FlowResolver(mainSectionController, settingsController, flowController, dataConverter);
+    }
+
+}

@@ -1,7 +1,8 @@
 package fi.stardex.sisu.combobox_values;
 
-import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class FlowUnits {
 
@@ -15,17 +16,18 @@ public class FlowUnits {
 
     public static final String MILLILITRE_PER_1000RPM = "ml/1000str";
 
-    private static List<String> arrayOfFlowUnits = new ArrayList<>();
+    private static Map<String, Float> mapOfFlowUnits = new LinkedHashMap<>();
 
+    // TODO: implement for RPM
     static {
-        arrayOfFlowUnits.add(MILLILITRE_PER_MINUTE);
-        arrayOfFlowUnits.add(LITRE_PER_HOUR);
-        arrayOfFlowUnits.add(MILLILITRE_PER_100RPM);
-        arrayOfFlowUnits.add(MILLILITRE_PER_200RPM);
-        arrayOfFlowUnits.add(MILLILITRE_PER_1000RPM);
+        mapOfFlowUnits.put(MILLILITRE_PER_MINUTE, 1f);
+        mapOfFlowUnits.put(LITRE_PER_HOUR, 0.06f);
+        mapOfFlowUnits.put(MILLILITRE_PER_100RPM, 1f);
+        mapOfFlowUnits.put(MILLILITRE_PER_200RPM, 1f);
+        mapOfFlowUnits.put(MILLILITRE_PER_1000RPM, 1f);
     }
 
-    public static List<String> getArrayOfFlowUnits() {
-        return arrayOfFlowUnits;
+    public static Map<String, Float> getMapOfFlowUnits() {
+        return mapOfFlowUnits;
     }
 }

@@ -85,6 +85,10 @@ public class InjectorSectionController {
         return widthCurrentSignal;
     }
 
+    public Spinner<Double> getFreqCurrentSignal() {
+        return freqCurrentSignal;
+    }
+
     public ToggleGroup getPiezoCoilToggleGroup() {
         return piezoCoilToggleGroup;
     }
