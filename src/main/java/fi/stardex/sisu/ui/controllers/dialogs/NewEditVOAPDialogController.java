@@ -100,6 +100,8 @@ public class NewEditVOAPDialogController {
                     negativeUSpinner.getValue(), enableBoostToggleButton.isSelected());
             voltAmpereProfileRepository.save(newProfile);
             voapList.getItems().add(newProfile);
+            voapList.getSelectionModel().select(newProfile);
+            voapList.scrollTo(newProfile);
             stage.close();
         }
     }

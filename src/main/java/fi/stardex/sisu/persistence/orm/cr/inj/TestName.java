@@ -4,6 +4,8 @@ import fi.stardex.sisu.util.enums.Measurement;
 import org.springframework.lang.*;
 
 import javax.persistence.*;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -22,6 +24,9 @@ public class TestName {
     @Column(name = "measurement")
     @Enumerated(EnumType.STRING)
     private Measurement measurement;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "testName", cascade = CascadeType.ALL)
+    private List<InjectorTest> injectorTests = new LinkedList<>();
 
     public Measurement getMeasurement() {
         return measurement;

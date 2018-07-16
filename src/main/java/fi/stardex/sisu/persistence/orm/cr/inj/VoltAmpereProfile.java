@@ -1,6 +1,7 @@
 package fi.stardex.sisu.persistence.orm.cr.inj;
 
 import javax.persistence.*;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 
@@ -42,6 +43,9 @@ public class VoltAmpereProfile {
 
     @Column(name = "boost_disable")
     private Boolean boostDisable;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "voltAmpereProfile")
+    private List<Injector> injectors = new LinkedList<>();
 
     public String getProfileName() {
         return profileName;

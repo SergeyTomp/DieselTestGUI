@@ -23,6 +23,7 @@ import javafx.stage.Stage;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -142,12 +143,16 @@ public class NewEditInjectorDialogController {
 
         injectorTypeRepository.findAll().forEach(injectorType -> injTypeCB.getItems().add(injectorType));
 
-        injTypeCB.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
-                voapListView.getItems().setAll(voltAmpereProfileRepository.findByIsCustomAndInjectorType(!defaultRB.isSelected(), newValue)));
+        injTypeCB.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            voapListView.getItems().setAll(voltAmpereProfileRepository.findByIsCustomAndInjectorType(!defaultRB.isSelected(), newValue));
+            selectFirst();
+        });
 
-        baseType.selectedToggleProperty().addListener((observable, oldValue, newValue) ->
-                voapListView.getItems().setAll(voltAmpereProfileRepository.findByIsCustomAndInjectorType(!defaultRB.isSelected(),
-                injTypeCB.getSelectionModel().getSelectedItem())));
+        baseType.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+            voapListView.getItems().setAll(voltAmpereProfileRepository.findByIsCustomAndInjectorType(!defaultRB.isSelected(),
+                    injTypeCB.getSelectionModel().getSelectedItem()));
+            selectFirst();
+        });
 
         voapListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             changeLabels(newValue);
@@ -200,6 +205,8 @@ public class NewEditInjectorDialogController {
     private void updateInjector() {
         Injector injectorForUpdate = currentInjectorObtainer.getInjector();
         injectorForUpdate.setVoltAmpereProfile(voapListView.getSelectionModel().getSelectedItem());
+        injectorForUpdate.getInjectorTests().clear();
+        injectorForUpdate.getInjectorTests().addAll(new LinkedList<>());
         injectorsRepository.save(injectorForUpdate);
 
         stage.close();
@@ -251,8 +258,7 @@ public class NewEditInjectorDialogController {
 
         injTypeCB.getSelectionModel().select(0);
         defaultRB.setSelected(true);
-        voapListView.getSelectionModel().select(0);
-        voapListView.scrollTo(0);
+        selectFirst();
     }
 
     public void setEdit() {
@@ -271,7 +277,7 @@ public class NewEditInjectorDialogController {
 
         injectorCodeTF.setText(injector.getInjectorCode());
         injTypeCB.getSelectionModel().select(voltAmpereProfile.getInjectorType());
-        if(voltAmpereProfile.getCustom())
+        if (voltAmpereProfile.getCustom())
             customRB.setSelected(true);
         else
             defaultRB.setSelected(true);
@@ -297,7 +303,7 @@ public class NewEditInjectorDialogController {
         VoltAmpereProfile voltAmpereProfile = injector.getVoltAmpereProfile();
 
         injTypeCB.getSelectionModel().select(voltAmpereProfile.getInjectorType());
-        if(voltAmpereProfile.getCustom())
+        if (voltAmpereProfile.getCustom())
             customRB.setSelected(true);
         else
             defaultRB.setSelected(true);
@@ -306,6 +312,11 @@ public class NewEditInjectorDialogController {
 
     private enum State {
         NEW, EDIT, DELETE
+    }
+
+    private void selectFirst() {
+        voapListView.getSelectionModel().select(0);
+        voapListView.scrollTo(0);
     }
 
     private class VoapListEventHandler implements EventHandler<ActionEvent> {

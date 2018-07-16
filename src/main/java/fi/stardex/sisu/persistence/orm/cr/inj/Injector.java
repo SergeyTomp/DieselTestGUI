@@ -4,6 +4,7 @@ import fi.stardex.sisu.persistence.orm.Manufacturer;
 import fi.stardex.sisu.persistence.orm.interfaces.Model;
 
 import javax.persistence.*;
+import java.util.LinkedList;
 import java.util.List;
 
 @Entity
@@ -13,11 +14,11 @@ public class Injector implements Model {
     @Column(name = "injector_code")
     private String injectorCode;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "manufacturer")
     private Manufacturer manufacturer;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "volt_ampere_profile")
     private VoltAmpereProfile voltAmpereProfile;
 
@@ -36,8 +37,8 @@ public class Injector implements Model {
     @Column(name = "is_custom")
     private Boolean isCustom;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "injector")
-    private List<InjectorTest> injectorTests;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "injector", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<InjectorTest> injectorTests = new LinkedList<>();
 
     public Injector() {
     }

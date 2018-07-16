@@ -101,8 +101,6 @@ public class NewEditTestDialogController {
 
         injectorTestRepository.save(injectorTest);
         testListView.getItems().add(injectorTest);
-        currentInjectorObtainer.getInjector().getInjectorTests().add(injectorTest);
-
         stage.close();
     }
 
@@ -110,7 +108,6 @@ public class NewEditTestDialogController {
         InjectorTest currentTest = testListView.getSelectionModel().getSelectedItem();
         injectorTestRepository.delete(currentTest);
         testListView.getItems().remove(currentTest);
-        currentInjectorObtainer.getInjector().getInjectorTests().remove(currentTest);
     }
 
     public void setNew() {
