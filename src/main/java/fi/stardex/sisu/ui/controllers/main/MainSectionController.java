@@ -5,7 +5,6 @@ import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.persistence.orm.cr.inj.VoltAmpereProfile;
 import fi.stardex.sisu.persistence.orm.interfaces.Model;
-import fi.stardex.sisu.persistence.repos.ManufacturerRepository;
 import fi.stardex.sisu.persistence.repos.cr.InjectorTestRepository;
 import fi.stardex.sisu.persistence.repos.cr.InjectorsRepository;
 import fi.stardex.sisu.ui.Enabler;
@@ -36,7 +35,6 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
 import java.util.LinkedList;
@@ -91,35 +89,32 @@ public class MainSectionController {
     @FXML
     private ListView<InjectorTest> testListView;
 
-    @Autowired
     private Enabler enabler;
-    @Autowired
+
     private CurrentManufacturerObtainer currentManufacturerObtainer;
-    @Autowired
+
     private ApplicationConfigHandler applicationConfigHandler;
-    @Autowired
+
     private ApplicationAppearanceChanger applicationAppearanceChanger;
-    @Autowired
+
     private ViewHolder manufacturerMenuDialog;
-    @Autowired
+
     private ViewHolder newEditInjectorDialog;
-    @Autowired
+
     private ViewHolder newEditTestDialog;
-    @Autowired
+
     private VoltAmpereProfileController voltAmpereProfileController;
-    @Autowired
+    
     private DataConverter dataConverter;
-    @Autowired
+    
     private CurrentInjectorObtainer currentInjectorObtainer;
-    @Autowired
+
     private InjectorSectionController injectorSectionController;
-    @Autowired
+
     private InjectorsRepository injectorsRepository;
-    @Autowired
-    private ManufacturerRepository manufacturerRepository;
-    @Autowired
+
     private InjectorTestRepository injectorTestRepository;
-    @Autowired
+
     private CurrentInjectorTestsObtainer currentInjectorTestsObtainer;
 
     public CurrentInjectorTestsObtainer getCurrentInjectorTestsObtainer() {
@@ -127,7 +122,9 @@ public class MainSectionController {
     }
 
     private Stage manufacturerDialogStage;
+
     private Stage modelDialogStage;
+
     private Stage testDialogStage;
 
     public ListView<Manufacturer> getManufacturerListView() {
@@ -160,6 +157,62 @@ public class MainSectionController {
 
     public ListView<InjectorTest> getTestListView() {
         return testListView;
+    }
+
+    public void setEnabler(Enabler enabler) {
+        this.enabler = enabler;
+    }
+
+    public void setCurrentManufacturerObtainer(CurrentManufacturerObtainer currentManufacturerObtainer) {
+        this.currentManufacturerObtainer = currentManufacturerObtainer;
+    }
+
+    public void setApplicationConfigHandler(ApplicationConfigHandler applicationConfigHandler) {
+        this.applicationConfigHandler = applicationConfigHandler;
+    }
+
+    public void setApplicationAppearanceChanger(ApplicationAppearanceChanger applicationAppearanceChanger) {
+        this.applicationAppearanceChanger = applicationAppearanceChanger;
+    }
+
+    public void setManufacturerMenuDialog(ViewHolder manufacturerMenuDialog) {
+        this.manufacturerMenuDialog = manufacturerMenuDialog;
+    }
+
+    public void setNewEditInjectorDialog(ViewHolder newEditInjectorDialog) {
+        this.newEditInjectorDialog = newEditInjectorDialog;
+    }
+
+    public void setNewEditTestDialog(ViewHolder newEditTestDialog) {
+        this.newEditTestDialog = newEditTestDialog;
+    }
+
+    public void setVoltAmpereProfileController(VoltAmpereProfileController voltAmpereProfileController) {
+        this.voltAmpereProfileController = voltAmpereProfileController;
+    }
+
+    public void setDataConverter(DataConverter dataConverter) {
+        this.dataConverter = dataConverter;
+    }
+
+    public void setCurrentInjectorObtainer(CurrentInjectorObtainer currentInjectorObtainer) {
+        this.currentInjectorObtainer = currentInjectorObtainer;
+    }
+
+    public void setInjectorSectionController(InjectorSectionController injectorSectionController) {
+        this.injectorSectionController = injectorSectionController;
+    }
+
+    public void setInjectorsRepository(InjectorsRepository injectorsRepository) {
+        this.injectorsRepository = injectorsRepository;
+    }
+
+    public void setInjectorTestRepository(InjectorTestRepository injectorTestRepository) {
+        this.injectorTestRepository = injectorTestRepository;
+    }
+
+    public void setCurrentInjectorTestsObtainer(CurrentInjectorTestsObtainer currentInjectorTestsObtainer) {
+        this.currentInjectorTestsObtainer = currentInjectorTestsObtainer;
     }
 
     @PostConstruct

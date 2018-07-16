@@ -1,4 +1,4 @@
-injector_code,manufacturer,volt_ampere_profile,codetype,calibration_id,checksum_m,k_coefficient,is_custom
+injector_code,manufacturerName,volt_ampere_profile,codetype,calibration_id,checksum_m,k_coefficient,is_custom
 A04011000001,AZPI,AZPI_COIL,,,,,FALSE
 A04011000003,AZPI,AZPI_COIL,,,,,FALSE
 2645A747,Caterpillar,CATERPILLAR_COIL,,,,,FALSE

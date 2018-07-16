@@ -54,7 +54,6 @@ public class NewEditInjectorDialogController {
     @FXML
     private Button cancelBtn;
 
-
     @FXML
     private Label boostUvalue;
     @FXML
@@ -73,27 +72,56 @@ public class NewEditInjectorDialogController {
     private Label negativeUvalue;
 
     private Stage stage;
+
     private State currentState;
+
     private ListView<Model> modelListView;
 
     public void setModelListView(ListView<Model> modelListView) {
         this.modelListView = modelListView;
     }
 
-    @Autowired
     private InjectorTypeRepository injectorTypeRepository;
-    @Autowired
+
     private VoltAmpereProfileRepository voltAmpereProfileRepository;
-    @Autowired
+
     private InjectorsRepository injectorsRepository;
-    @Autowired
+
     private ViewHolder newEditVOAPDialog;
-    @Autowired
+
     private CurrentManufacturerObtainer currentManufacturerObtainer;
-    @Autowired
+
     private CurrentInjectorObtainer currentInjectorObtainer;
 
+    public void setInjectorTypeRepository(InjectorTypeRepository injectorTypeRepository) {
+        this.injectorTypeRepository = injectorTypeRepository;
+    }
+
+    public void setVoltAmpereProfileRepository(VoltAmpereProfileRepository voltAmpereProfileRepository) {
+        this.voltAmpereProfileRepository = voltAmpereProfileRepository;
+    }
+
+    public void setInjectorsRepository(InjectorsRepository injectorsRepository) {
+        this.injectorsRepository = injectorsRepository;
+    }
+
+    public void setNewEditVOAPDialog(ViewHolder newEditVOAPDialog) {
+        this.newEditVOAPDialog = newEditVOAPDialog;
+    }
+
+    public void setCurrentManufacturerObtainer(CurrentManufacturerObtainer currentManufacturerObtainer) {
+        this.currentManufacturerObtainer = currentManufacturerObtainer;
+    }
+
+    public void setCurrentInjectorObtainer(CurrentInjectorObtainer currentInjectorObtainer) {
+        this.currentInjectorObtainer = currentInjectorObtainer;
+    }
+
     private Stage newVOAPStage;
+
+    public void setStage(Stage stage) {
+        this.stage = stage;
+    }
 
     @PostConstruct
     private void init() {
@@ -276,10 +304,6 @@ public class NewEditInjectorDialogController {
         voapListView.getSelectionModel().select(voltAmpereProfile);
     }
 
-    public void setStage(Stage stage) {
-        this.stage = stage;
-    }
-
     private enum State {
         NEW, EDIT, DELETE
     }
@@ -301,7 +325,6 @@ public class NewEditInjectorDialogController {
                 newVOAPStage.setScene(new Scene(newEditVOAPDialog.getView(), 600, 400));
                 newVOAPStage.setResizable(false);
                 newVOAPStage.initModality(Modality.APPLICATION_MODAL);
-//                manufacturerDialogStage.initStyle(StageStyle.UNDECORATED);
                 controller.setStage(newVOAPStage);
                 controller.setVoapList(voapListView);
             }

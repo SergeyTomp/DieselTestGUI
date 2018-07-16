@@ -11,7 +11,6 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
 import java.util.LinkedList;
@@ -43,16 +42,38 @@ public class NewEditTestDialogController {
     private Button cancelBtn;
 
     private List<TestName> testNames = new LinkedList<>();
-    @Autowired
+
     private CurrentInjectorObtainer currentInjectorObtainer;
-    @Autowired
+
     private InjectorTestRepository injectorTestRepository;
-    @Autowired
+
     private TestNamesRepository testNamesRepository;
 
     private Stage stage;
+
     private ListView<InjectorTest> testListView;
+
     private State currentState;
+
+    public void setCurrentInjectorObtainer(CurrentInjectorObtainer currentInjectorObtainer) {
+        this.currentInjectorObtainer = currentInjectorObtainer;
+    }
+
+    public void setInjectorTestRepository(InjectorTestRepository injectorTestRepository) {
+        this.injectorTestRepository = injectorTestRepository;
+    }
+
+    public void setTestNamesRepository(TestNamesRepository testNamesRepository) {
+        this.testNamesRepository = testNamesRepository;
+    }
+
+    public void setStage(Stage stage) {
+        this.stage = stage;
+    }
+
+    public void setTestListView(ListView<InjectorTest> testListView) {
+        this.testListView = testListView;
+    }
 
     @PostConstruct
     private void init() {
@@ -152,15 +173,6 @@ public class NewEditTestDialogController {
             adjTimeTF.setDisable(true);
             measureTimeTF.setDisable(true);
         }
-    }
-
-
-    public void setStage(Stage stage) {
-        this.stage = stage;
-    }
-
-    public void setTestListView(ListView<InjectorTest> testListView) {
-        this.testListView = testListView;
     }
 
     private enum State {

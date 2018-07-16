@@ -2,7 +2,6 @@ package fi.stardex.sisu.ui.controllers.dialogs;
 
 import fi.stardex.sisu.persistence.orm.Manufacturer;
 import fi.stardex.sisu.persistence.repos.ManufacturerRepository;
-import fi.stardex.sisu.util.obtainers.CurrentManufacturerObtainer;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -28,12 +27,19 @@ public class ManufacturerMenuDialogController {
     @FXML
     private Label notUniqueLabel;
 
-    @Autowired
     private ListView<Manufacturer> manufacturerList;
-    @Autowired
+
     private ManufacturerRepository manufacturerRepository;
 
     private Stage stage;
+
+    public void setManufacturerList(ListView<Manufacturer> manufacturerList) {
+        this.manufacturerList = manufacturerList;
+    }
+
+    public void setManufacturerRepository(ManufacturerRepository manufacturerRepository) {
+        this.manufacturerRepository = manufacturerRepository;
+    }
 
     @PostConstruct
     private void init() {
@@ -52,7 +58,7 @@ public class ManufacturerMenuDialogController {
 
     private void create() {
         Manufacturer newManufacturer = new Manufacturer();
-        newManufacturer.setManufacturer(nameTF.getText());
+        newManufacturer.setManufacturerName(nameTF.getText());
         newManufacturer.setCustom(true);
         if (manufacturerList.getItems().contains(newManufacturer)) {
             notUniqueLabel.setVisible(true);
@@ -83,7 +89,7 @@ public class ManufacturerMenuDialogController {
     public void setDelete() {
         nameTF.setDisable(true);
         nameLabel.setVisible(false);
-        nameTF.setText(manufacturerList.getSelectionModel().getSelectedItem().getManufacturer());
+        nameTF.setText(manufacturerList.getSelectionModel().getSelectedItem().getManufacturerName());
         currentState = State.DELETE;
     }
 

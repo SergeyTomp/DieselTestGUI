@@ -13,7 +13,9 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaSessionFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.transaction.PlatformTransactionManager;
 
+import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import java.util.Properties;
 
@@ -31,34 +33,24 @@ public class DbConfig {
     }
 
     @Bean
-//    @DependsOn("liquibase")
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
-        LocalContainerEntityManagerFactoryBean emFactory = new LocalContainerEntityManagerFactoryBean();
-        emFactory.setDataSource(dataSource());
-        emFactory.setPersistenceProviderClass(HibernatePersistenceProvider.class);
-        emFactory.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
-        Properties jpaProperties = new Properties();
-        jpaProperties.setProperty("hibernate.dialect", "org.hibernate.dialect.H2Dialect");
-        jpaProperties.setProperty("hibernate.hbm2ddl.auto", "update");
-        jpaProperties.setProperty("hibernate.format_sql", "true");
-        jpaProperties.setProperty("hibernate.use_sql_comments", "true");
-        emFactory.setJpaProperties(jpaProperties);
-        emFactory.setPackagesToScan("fi.stardex.sisu.persistence.orm");
-        return emFactory;
+
+        HibernateJpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+        vendorAdapter.setGenerateDdl(true);
+
+        LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
+        factory.setJpaVendorAdapter(vendorAdapter);
+        factory.setPackagesToScan("fi.stardex.sisu.persistence.orm");
+        factory.setDataSource(dataSource());
+        return factory;
     }
 
     @Bean
-    public JpaTransactionManager transactionManager() {
-        JpaTransactionManager transactionManager = new JpaTransactionManager();
-        transactionManager.setEntityManagerFactory(entityManagerFactory().getObject());
-        return transactionManager;
-    }
+    public PlatformTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) {
 
-    @Bean
-    public FactoryBean<SessionFactory> sessionFactory() {
-        HibernateJpaSessionFactoryBean factoryBean = new HibernateJpaSessionFactoryBean();
-        factoryBean.setEntityManagerFactory(entityManagerFactory().getObject());
-        return factoryBean;
+        JpaTransactionManager txManager = new JpaTransactionManager();
+        txManager.setEntityManagerFactory(entityManagerFactory);
+        return txManager;
     }
 
 }

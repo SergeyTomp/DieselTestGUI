@@ -42,13 +42,19 @@ public class NewEditVOAPDialogController {
     @FXML
     private Button cancelBtn;
 
-    @Autowired
     private VoltAmpereProfileRepository voltAmpereProfileRepository;
 
     private InjectorType injectorType;
+
     private State currentState;
+
     private Stage stage;
+
     private ListView<VoltAmpereProfile> voapList;
+
+    public void setVoltAmpereProfileRepository(VoltAmpereProfileRepository voltAmpereProfileRepository) {
+        this.voltAmpereProfileRepository = voltAmpereProfileRepository;
+    }
 
     @PostConstruct
     private void init() {

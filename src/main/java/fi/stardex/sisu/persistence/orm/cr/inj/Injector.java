@@ -13,7 +13,7 @@ public class Injector implements Model {
     @Column(name = "injector_code")
     private String injectorCode;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "manufacturer")
     private Manufacturer manufacturer;
 

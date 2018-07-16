@@ -2,7 +2,15 @@ package fi.stardex.sisu.spring;
 
 import fi.stardex.sisu.charts.TimerTasksManager;
 import fi.stardex.sisu.devices.Devices;
+import fi.stardex.sisu.persistence.orm.Manufacturer;
+import fi.stardex.sisu.persistence.repos.InjectorTypeRepository;
+import fi.stardex.sisu.persistence.repos.ManufacturerRepository;
+import fi.stardex.sisu.persistence.repos.cr.InjectorTestRepository;
+import fi.stardex.sisu.persistence.repos.cr.InjectorsRepository;
+import fi.stardex.sisu.persistence.repos.cr.TestNamesRepository;
+import fi.stardex.sisu.persistence.repos.cr.VoltAmpereProfileRepository;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
+import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.RootLayoutController;
 import fi.stardex.sisu.ui.controllers.additional.AdditionalSectionController;
@@ -23,11 +31,15 @@ import fi.stardex.sisu.util.converters.DataConverter;
 import fi.stardex.sisu.util.enums.BeakerType;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.i18n.UTF8Control;
+import fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer;
+import fi.stardex.sisu.util.obtainers.CurrentInjectorTestsObtainer;
+import fi.stardex.sisu.util.obtainers.CurrentManufacturerObtainer;
 import fi.stardex.sisu.util.rescalers.Rescaler;
 import fi.stardex.sisu.util.view.ApplicationAppearanceChanger;
 import fi.stardex.sisu.util.wrappers.StatusBarWrapper;
 import fi.stardex.sisu.version.StardexVersion;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.control.ListView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,10 +82,34 @@ public class JavaFXSpringConfigure {
 
     @Bean
     @Autowired
-    public MainSectionController mainSectionController(ApplicationConfigHandler applicationConfigHandler,
+    public MainSectionController mainSectionController(@Lazy Enabler enabler,
+                                                       CurrentManufacturerObtainer currentManufacturerObtainer,
+                                                       ApplicationConfigHandler applicationConfigHandler,
                                                        ApplicationAppearanceChanger applicationAppearanceChanger,
+                                                       VoltAmpereProfileController voltAmpereProfileController,
+                                                       DataConverter dataConverter,
+                                                       CurrentInjectorObtainer currentInjectorObtainer,
+                                                       InjectorSectionController injectorSectionController,
+                                                       InjectorsRepository injectorsRepository,
+                                                       InjectorTestRepository injectorTestRepository,
+                                                       CurrentInjectorTestsObtainer currentInjectorTestsObtainer,
                                                        @Lazy ModbusRegisterProcessor flowModbusWriter) {
-        return (MainSectionController) mainSection().getController();
+        MainSectionController mainSectionController = (MainSectionController) mainSection().getController();
+        mainSectionController.setEnabler(enabler);
+        mainSectionController.setCurrentManufacturerObtainer(currentManufacturerObtainer);
+        mainSectionController.setApplicationConfigHandler(applicationConfigHandler);
+        mainSectionController.setApplicationAppearanceChanger(applicationAppearanceChanger);
+        mainSectionController.setManufacturerMenuDialog(manufacturerMenuDialog());
+        mainSectionController.setNewEditInjectorDialog(newEditInjectorDialog());
+        mainSectionController.setNewEditTestDialog(newEditTestDialog());
+        mainSectionController.setVoltAmpereProfileController(voltAmpereProfileController);
+        mainSectionController.setDataConverter(dataConverter);
+        mainSectionController.setCurrentInjectorObtainer(currentInjectorObtainer);
+        mainSectionController.setInjectorSectionController(injectorSectionController);
+        mainSectionController.setInjectorsRepository(injectorsRepository);
+        mainSectionController.setInjectorTestRepository(injectorTestRepository);
+        mainSectionController.setCurrentInjectorTestsObtainer(currentInjectorTestsObtainer);
+        return mainSectionController;
     }
 
     @Bean
@@ -343,8 +379,13 @@ public class JavaFXSpringConfigure {
     }
 
     @Bean
-    public ManufacturerMenuDialogController manufacturerMenuDialogController() {
-        return (ManufacturerMenuDialogController) manufacturerMenuDialog().getController();
+    @Autowired
+    public ManufacturerMenuDialogController manufacturerMenuDialogController(ListView<Manufacturer> manufacturerList,
+                                                                             ManufacturerRepository manufacturerRepository) {
+        ManufacturerMenuDialogController manufacturerMenuDialogController = (ManufacturerMenuDialogController) manufacturerMenuDialog().getController();
+        manufacturerMenuDialogController.setManufacturerList(manufacturerList);
+        manufacturerMenuDialogController.setManufacturerRepository(manufacturerRepository);
+        return manufacturerMenuDialogController;
     }
 
     @Bean
@@ -353,8 +394,11 @@ public class JavaFXSpringConfigure {
     }
 
     @Bean
-    public NewEditVOAPDialogController newEditVOAPDialogController() {
-        return (NewEditVOAPDialogController) newEditVOAPDialog().getController();
+    @Autowired
+    public NewEditVOAPDialogController newEditVOAPDialogController(VoltAmpereProfileRepository voltAmpereProfileRepository) {
+        NewEditVOAPDialogController newEditVOAPDialogController = (NewEditVOAPDialogController) newEditVOAPDialog().getController();
+        newEditVOAPDialogController.setVoltAmpereProfileRepository(voltAmpereProfileRepository);
+        return newEditVOAPDialogController;
     }
 
     @Bean
@@ -363,8 +407,20 @@ public class JavaFXSpringConfigure {
     }
 
     @Bean
-    public NewEditInjectorDialogController newEditInjectorDialogController() {
-        return (NewEditInjectorDialogController) newEditInjectorDialog().getController();
+    @Autowired
+    public NewEditInjectorDialogController newEditInjectorDialogController(InjectorTypeRepository injectorTypeRepository,
+                                                                           VoltAmpereProfileRepository voltAmpereProfileRepository,
+                                                                           InjectorsRepository injectorsRepository,
+                                                                           CurrentManufacturerObtainer currentManufacturerObtainer,
+                                                                           CurrentInjectorObtainer currentInjectorObtainer) {
+        NewEditInjectorDialogController newEditInjectorDialogController = (NewEditInjectorDialogController) newEditInjectorDialog().getController();
+        newEditInjectorDialogController.setInjectorTypeRepository(injectorTypeRepository);
+        newEditInjectorDialogController.setVoltAmpereProfileRepository(voltAmpereProfileRepository);
+        newEditInjectorDialogController.setInjectorsRepository(injectorsRepository);
+        newEditInjectorDialogController.setNewEditVOAPDialog(newEditVOAPDialog());
+        newEditInjectorDialogController.setCurrentManufacturerObtainer(currentManufacturerObtainer);
+        newEditInjectorDialogController.setCurrentInjectorObtainer(currentInjectorObtainer);
+        return newEditInjectorDialogController;
     }
 
     @Bean
@@ -373,8 +429,15 @@ public class JavaFXSpringConfigure {
     }
 
     @Bean
-    public NewEditTestDialogController newEditTestDialogController() {
-        return (NewEditTestDialogController) newEditTestDialog().getController();
+    @Autowired
+    public NewEditTestDialogController newEditTestDialogController(CurrentInjectorObtainer currentInjectorObtainer,
+                                                                   InjectorTestRepository injectorTestRepository,
+                                                                   TestNamesRepository testNamesRepositor) {
+        NewEditTestDialogController newEditTestDialogController = (NewEditTestDialogController) newEditTestDialog().getController();
+        newEditTestDialogController.setCurrentInjectorObtainer(currentInjectorObtainer);
+        newEditTestDialogController.setInjectorTestRepository(injectorTestRepository);
+        newEditTestDialogController.setTestNamesRepository(testNamesRepositor);
+        return newEditTestDialogController;
     }
 
     private ViewHolder loadView(String url) {
