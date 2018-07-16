@@ -30,16 +30,6 @@ public class DbConfig {
         return JdbcConnectionPool.create(dataSourceUrl, "sisu", "GjhEepRr");
     }
 
-//    @Bean
-//    public SpringLiquibase liquibase() {
-//        SpringLiquibase springLiquibase = new SpringLiquibase();
-//        springLiquibase.setDataSource(dataSource());
-//        springLiquibase.setChangeLog("classpath:db/db-changelog.xml");
-//        springLiquibase.setDefaultSchema("PUBLIC");
-//
-//        return springLiquibase;
-//    }
-
     @Bean
 //    @DependsOn("liquibase")
     public LocalContainerEntityManagerFactoryBean entityManagerFactory() {

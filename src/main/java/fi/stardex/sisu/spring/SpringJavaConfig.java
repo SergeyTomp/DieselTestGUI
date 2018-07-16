@@ -13,7 +13,6 @@ import fi.stardex.sisu.devices.Devices;
 import fi.stardex.sisu.persistence.CheckAndInitializeBD;
 import fi.stardex.sisu.persistence.orm.Manufacturer;
 import fi.stardex.sisu.persistence.repos.ManufacturerRepository;
-import fi.stardex.sisu.persistence.repos.cr.InjectorTestRepository;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.flow.ModbusMapFlow;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
@@ -29,13 +28,13 @@ import fi.stardex.sisu.ui.controllers.main.MainSectionController;
 import fi.stardex.sisu.ui.updaters.*;
 import fi.stardex.sisu.util.ApplicationConfigHandler;
 import fi.stardex.sisu.util.converters.DataConverter;
+import fi.stardex.sisu.util.converters.FlowResolver;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer;
 import fi.stardex.sisu.util.obtainers.CurrentInjectorTestsObtainer;
 import fi.stardex.sisu.util.obtainers.CurrentManufacturerObtainer;
 import fi.stardex.sisu.util.rescalers.BackFlowRescaler;
 import fi.stardex.sisu.util.rescalers.DeliveryRescaler;
-import fi.stardex.sisu.util.converters.FlowResolver;
 import fi.stardex.sisu.util.rescalers.Rescaler;
 import fi.stardex.sisu.util.wrappers.StatusBarWrapper;
 import fi.stardex.sisu.version.FlowFirmwareVersion;
@@ -52,7 +51,6 @@ import org.springframework.context.annotation.*;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import javax.sql.DataSource;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -259,15 +257,15 @@ public class SpringJavaConfig {
     @Bean
     @Autowired
     public FlowUpdater flowMasterUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
-                                               SettingsController settingsController, FirmwareDataConverter firmwareDataConverter) {
-        return new FlowMasterUpdater(flowController, injectorSectionController, settingsController, firmwareDataConverter);
+                                               SettingsController settingsController, DataConverter dataConverter) {
+        return new FlowMasterUpdater(flowController, injectorSectionController, settingsController, dataConverter);
     }
 
     @Bean
     @Autowired
     public FlowUpdater flowStreamUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
-                                               SettingsController settingsController, FirmwareDataConverter firmwareDataConverter) {
-        return new FlowStreamUpdater(flowController, injectorSectionController, settingsController, firmwareDataConverter);
+                                               SettingsController settingsController, DataConverter dataConverter) {
+        return new FlowStreamUpdater(flowController, injectorSectionController, settingsController, dataConverter);
     }
 
     @Bean
@@ -347,28 +345,10 @@ public class SpringJavaConfig {
         return new CheckAndInitializeBD(manufacturerRepository, dataSource);
     }
 
-//    @Bean
-//    @DependsOn("checkAndInitializeBD")
-//    @Autowired
-//    @SuppressWarnings("unchecked")
-//    public ListView<Manufacturer> manufacturerList(SessionFactory sessionFactory, MainSectionController mainSectionController) throws IOException {
-//        Session session = sessionFactory.openSession();
-//        session.setFlushMode(FlushMode.MANUAL);
-//        session.setDefaultReadOnly(true);
-//        List<Manufacturer> manufacturers = session.createQuery("select manufacturer from Manufacturer manufacturer")
-//                .list();
-//
-//        ObservableList<Manufacturer> observableList = FXCollections.observableList(manufacturers);
-//        ListView<Manufacturer> manufacturerList = mainSectionController.getManufacturerListView();
-//        manufacturerList.setItems(observableList);
-//
-//        return manufacturerList;
-//    }
-
     @Bean
     @DependsOn("checkAndInitializeBD")
     @Autowired
-    public ListView<Manufacturer> manufacturerList(ManufacturerRepository manufacturerRepository, MainSectionController mainSectionController) throws IOException {
+    public ListView<Manufacturer> manufacturerList(ManufacturerRepository manufacturerRepository, MainSectionController mainSectionController) {
         Iterable<Manufacturer> manufacturers = manufacturerRepository.findAll();
         List<Manufacturer> listOfManufacturers = new ArrayList<>();
         manufacturers.forEach(listOfManufacturers::add);
