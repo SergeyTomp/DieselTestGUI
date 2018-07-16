@@ -1,10 +1,12 @@
 package fi.stardex.sisu.ui.controllers.dialogs;
 
 import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
+import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorType;
 import fi.stardex.sisu.persistence.orm.cr.inj.VoltAmpereProfile;
 import fi.stardex.sisu.persistence.orm.interfaces.Model;
 import fi.stardex.sisu.persistence.repos.InjectorTypeRepository;
+import fi.stardex.sisu.persistence.repos.cr.InjectorTestRepository;
 import fi.stardex.sisu.persistence.repos.cr.InjectorsRepository;
 import fi.stardex.sisu.persistence.repos.cr.VoltAmpereProfileRepository;
 import fi.stardex.sisu.ui.ViewHolder;
@@ -83,6 +85,8 @@ public class NewEditInjectorDialogController {
     }
 
     private InjectorTypeRepository injectorTypeRepository;
+
+    private InjectorTestRepository injectorTestRepository;
 
     private VoltAmpereProfileRepository voltAmpereProfileRepository;
 
@@ -205,8 +209,11 @@ public class NewEditInjectorDialogController {
     private void updateInjector() {
         Injector injectorForUpdate = currentInjectorObtainer.getInjector();
         injectorForUpdate.setVoltAmpereProfile(voapListView.getSelectionModel().getSelectedItem());
-        injectorForUpdate.getInjectorTests().clear();
-        injectorForUpdate.getInjectorTests().addAll(new LinkedList<>());
+        List<InjectorTest> injectorTests = injectorTestRepository.findAllByInjector(injectorForUpdate);
+        injectorTests.clear();
+        injectorTests.addAll(new LinkedList<>());
+//        injectorForUpdate.getInjectorTests().clear();
+//        injectorForUpdate.getInjectorTests().addAll(new LinkedList<>());
         injectorsRepository.save(injectorForUpdate);
 
         stage.close();
@@ -308,6 +315,10 @@ public class NewEditInjectorDialogController {
         else
             defaultRB.setSelected(true);
         voapListView.getSelectionModel().select(voltAmpereProfile);
+    }
+
+    public void setInjectorTestRepository(InjectorTestRepository injectorTestRepository) {
+        this.injectorTestRepository = injectorTestRepository;
     }
 
     private enum State {

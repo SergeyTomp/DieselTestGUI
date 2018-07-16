@@ -3,6 +3,7 @@ package fi.stardex.sisu.spring;
 import fi.stardex.sisu.charts.TimerTasksManager;
 import fi.stardex.sisu.devices.Devices;
 import fi.stardex.sisu.persistence.orm.Manufacturer;
+import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.persistence.repos.InjectorTypeRepository;
 import fi.stardex.sisu.persistence.repos.ManufacturerRepository;
 import fi.stardex.sisu.persistence.repos.cr.InjectorTestRepository;
@@ -409,12 +410,14 @@ public class JavaFXSpringConfigure {
     @Bean
     @Autowired
     public NewEditInjectorDialogController newEditInjectorDialogController(InjectorTypeRepository injectorTypeRepository,
+                                                                           InjectorTestRepository injectorTestRepository,
                                                                            VoltAmpereProfileRepository voltAmpereProfileRepository,
                                                                            InjectorsRepository injectorsRepository,
                                                                            CurrentManufacturerObtainer currentManufacturerObtainer,
                                                                            CurrentInjectorObtainer currentInjectorObtainer) {
         NewEditInjectorDialogController newEditInjectorDialogController = (NewEditInjectorDialogController) newEditInjectorDialog().getController();
         newEditInjectorDialogController.setInjectorTypeRepository(injectorTypeRepository);
+        newEditInjectorDialogController.setInjectorTestRepository(injectorTestRepository);
         newEditInjectorDialogController.setVoltAmpereProfileRepository(voltAmpereProfileRepository);
         newEditInjectorDialogController.setInjectorsRepository(injectorsRepository);
         newEditInjectorDialogController.setNewEditVOAPDialog(newEditVOAPDialog());
