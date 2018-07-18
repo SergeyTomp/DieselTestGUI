@@ -49,4 +49,13 @@ public class CheckAndInitializeBD {
 
     }
 
+    private void dropTables() {
+        try {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(getClass().getResourceAsStream("/db/scripts/drop_tables.sql")));
+            RunScript.execute(dataSource.getConnection(), reader);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
 }
