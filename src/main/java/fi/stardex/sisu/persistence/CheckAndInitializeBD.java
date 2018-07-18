@@ -4,17 +4,29 @@ import fi.stardex.sisu.persistence.repos.ManufacturerRepository;
 import org.h2.tools.RunScript;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 import java.io.*;
 import java.sql.SQLException;
 
+@PropertySource("classpath:properties/app.properties")
 public class CheckAndInitializeBD {
 
     private Logger logger = LoggerFactory.getLogger(CheckAndInitializeBD.class);
     private ManufacturerRepository manufacturerRepository;
     private DataSource dataSource;
+
+    @Value("${stardex.version.directory}")
+    private String versionDirectory;
+
+    @Value("${stardex.version.file.name}")
+    private String versionFileName;
+
+    @Value("${stardex.version}")
+    private String version;
 
     public CheckAndInitializeBD(ManufacturerRepository manufacturerRepository, DataSource dataSource) {
         this.manufacturerRepository = manufacturerRepository;
@@ -23,15 +35,70 @@ public class CheckAndInitializeBD {
 
 
     @PostConstruct
-    private void checkTables() {
-        System.err.println(manufacturerRepository.count());
+    private void check() {
 
-        if (manufacturerRepository.count() == 0) {
-            fillTables();
-        } else {
-            System.err.println("Tables filled out");
+        try {
+            if (isCurrentVersion()) {
+                updateDB();
+            } else {
+                if (manufacturerRepository.count() == 0) {
+                    fillTables();
+                } else {
+                    logger.info("Tables filled out");
+                }
+            }
+        } catch (IOException e) {
+            if (e instanceof FileNotFoundException) {
+                logger.error("Version file not found!", e);
+                throw new RuntimeException(e);
+            }
         }
 
+//        if (manufacturerRepository.count() == 0) {
+//            fillTables();
+//        } else {
+//            System.err.println("Tables filled out");
+//        }
+
+    }
+
+    private boolean isCurrentVersion() throws IOException {
+
+        boolean isCurrent;
+
+        File fileDir = new File(System.getProperty("user.home") + File.separator + versionDirectory);
+
+        fileDir.mkdirs();
+
+        File file = new File(fileDir, versionFileName);
+
+        if (file.exists() && file.isFile()) {
+            try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
+                String line = reader.readLine();
+                if (!line.equals(version)) {
+                    try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+                        writer.write("");
+                        writer.write(version);
+                    }
+                    isCurrent = false;
+                } else
+                    isCurrent = true;
+            }
+        } else {
+            file.createNewFile();
+            try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+                writer.write("");
+                writer.write(version);
+            }
+            isCurrent = false;
+        }
+
+        return isCurrent;
+    }
+
+    private void updateDB() {
+        dropTables();
+        fillTables();
     }
 
     private void fillTables() {
