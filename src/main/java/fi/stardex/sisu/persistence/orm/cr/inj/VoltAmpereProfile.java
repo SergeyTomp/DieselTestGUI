@@ -1,5 +1,7 @@
 package fi.stardex.sisu.persistence.orm.cr.inj;
 
+import fi.stardex.sisu.persistence.orm.EntityUpdates;
+
 import javax.persistence.*;
 import java.util.LinkedList;
 import java.util.List;
@@ -47,6 +49,21 @@ public class VoltAmpereProfile {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "voltAmpereProfile")
     private List<Injector> injectors = new LinkedList<>();
 
+    @PostPersist
+    private void onPostPersist() {
+        EntityUpdates.getMapOfEntityUpdates().put(this.getClass().getSimpleName(), true);
+    }
+
+    @PostUpdate
+    private void onPostUpdate() {
+        EntityUpdates.getMapOfEntityUpdates().put(this.getClass().getSimpleName(), true);
+    }
+
+    @PostRemove
+    private void onPostRemove() {
+        EntityUpdates.getMapOfEntityUpdates().put(this.getClass().getSimpleName(), true);
+    }
+
     public String getProfileName() {
         return profileName;
     }
@@ -55,7 +72,7 @@ public class VoltAmpereProfile {
         return injectorType;
     }
 
-    public Boolean getCustom() {
+    public Boolean isCustom() {
         return isCustom;
     }
 

@@ -8,5 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface VoltAmpereProfileRepository extends CrudRepository<VoltAmpereProfile, String> {
-    List<VoltAmpereProfile> findByIsCustomAndInjectorType(Boolean isCustom, InjectorType injectorType);
+    List<VoltAmpereProfile> findByIsCustomAndInjectorType(boolean isCustom, InjectorType injectorType);
+
+    List<VoltAmpereProfile> findByIsCustom(boolean isCustom);
 }

@@ -22,7 +22,6 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
 import java.util.LinkedList;
@@ -284,7 +283,7 @@ public class NewEditInjectorDialogController {
 
         injectorCodeTF.setText(injector.getInjectorCode());
         injTypeCB.getSelectionModel().select(voltAmpereProfile.getInjectorType());
-        if (voltAmpereProfile.getCustom())
+        if (voltAmpereProfile.isCustom())
             customRB.setSelected(true);
         else
             defaultRB.setSelected(true);
@@ -310,7 +309,7 @@ public class NewEditInjectorDialogController {
         VoltAmpereProfile voltAmpereProfile = injector.getVoltAmpereProfile();
 
         injTypeCB.getSelectionModel().select(voltAmpereProfile.getInjectorType());
-        if (voltAmpereProfile.getCustom())
+        if (voltAmpereProfile.isCustom())
             customRB.setSelected(true);
         else
             defaultRB.setSelected(true);
