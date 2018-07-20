@@ -23,25 +23,21 @@ public class CheckAndInitializeBD {
 
     private File stardexDirectory;
 
-    private File customCSVSDirectoryFile;
+    private File customCSVSDirectory;
 
     private static final String NEW_LINE_SEPARATOR = "\n";
 
-    private static final String CUSTOM_MANUFACTURERS_HEADER = "manufacturer_name,is_custom";
+    @Value("${stardex.custom_csvs.manufacturers.header}")
+    private String custom_manufacturers_header;
 
-    private static final String CUSTOM_INJECTOR_TYPES_HEADER = "type_name,injector_type";
+    @Value("${stardex.custom_csvs.voltAmpereProfiles.header}")
+    private String custom_voap_header;
 
-    private static final String CUSTOM_VOAP_HEADER =
-            "profile_name,injector_type,is_custom,boost_u,battery_u,boost_i,first_i,first_w,second_i,negative_u,boost_disable";
+    @Value("${stardex.custom_csvs.injectors.header}")
+    private String custom_injectors_header;
 
-    private static final String CUSTOM_INJECTORS_HEADER =
-            "injector_code,manufacturerName,volt_ampere_profile,codetype,calibration_id,checksum_m,k_coefficient,is_custom";
-
-    private static final String CUSTOM_TEST_NAMES_HEADER = "id,test_name,measurement";
-
-    private static final String CUSTOM_INJECTOR_TESTS_HEADER =
-            "id,injector_code,test_name,motor_speed,setted_pressure,adjusting_time,measurement_time,codefield," +
-                    "injection_rate,total_pulse_time,nominal_flow,flow_range,volt_ampere_profile";
+    @Value("${stardex.custom_csvs.injectorTests.header}")
+    private String custom_injector_tests_header;
 
     @Value("${stardex.custom_csvs.directory}")
     private String customCSVSDirectoryName;
@@ -58,17 +54,11 @@ public class CheckAndInitializeBD {
     @Value("${stardex.custom_csvs.manufacturers}")
     private String customManufacturers;
 
-    @Value("${stardex.custom_csvs.injectorTypes}")
-    private String customInjectorTypes;
-
     @Value("${stardex.custom_csvs.voltAmpereProfiles}")
     private String customVOAP;
 
     @Value("${stardex.custom_csvs.injectors}")
     private String customInjectors;
-
-    @Value("${stardex.custom_csvs.testNames}")
-    private String customTestNames;
 
     @Value("${stardex.custom_csvs.injectorTests}")
     private String customInjectorTests;
@@ -83,10 +73,10 @@ public class CheckAndInitializeBD {
 
         stardexDirectory = new File(System.getProperty("user.home"), directoryName);
 
-        customCSVSDirectoryFile = new File(stardexDirectory, customCSVSDirectoryName);
+        customCSVSDirectory = new File(stardexDirectory, customCSVSDirectoryName);
 
-        if (!customCSVSDirectoryFile.exists() || !customCSVSDirectoryFile.isDirectory())
-            customCSVSDirectoryFile.mkdirs();
+        if (!customCSVSDirectory.exists() || !customCSVSDirectory.isDirectory())
+            customCSVSDirectory.mkdirs();
 
         try {
             checkCustomCSVS();
@@ -112,35 +102,25 @@ public class CheckAndInitializeBD {
 
     private void checkCustomCSVS() throws IOException {
 
-        File customManufacturersFile = new File(customCSVSDirectoryFile, customManufacturers);
+        File customManufacturersFile = new File(customCSVSDirectory, customManufacturers);
 
-        File customInjectorTypesFile = new File(customCSVSDirectoryFile, customInjectorTypes);
+        File customVOAPFile = new File(customCSVSDirectory, customVOAP);
 
-        File customVOAPFile = new File(customCSVSDirectoryFile, customVOAP);
+        File customInjectorsFile = new File(customCSVSDirectory, customInjectors);
 
-        File customInjectorsFile = new File(customCSVSDirectoryFile, customInjectors);
-
-        File customTestNamesFile = new File(customCSVSDirectoryFile, customTestNames);
-
-        File customInjectorTestsFile = new File(customCSVSDirectoryFile, customInjectorTests);
+        File customInjectorTestsFile = new File(customCSVSDirectory, customInjectorTests);
 
         if (!customManufacturersFile.exists() || !customManufacturersFile.isFile())
-            createCustomCSV(customManufacturersFile, CUSTOM_MANUFACTURERS_HEADER);
-
-        if (!customInjectorTypesFile.exists() || !customInjectorTypesFile.isFile())
-            createCustomCSV(customInjectorTypesFile, CUSTOM_INJECTOR_TYPES_HEADER);
+            createCustomCSV(customManufacturersFile, custom_manufacturers_header);
 
         if (!customVOAPFile.exists() || !customVOAPFile.isFile())
-            createCustomCSV(customVOAPFile, CUSTOM_VOAP_HEADER);
+            createCustomCSV(customVOAPFile, custom_voap_header);
 
         if (!customInjectorsFile.exists() || !customInjectorsFile.isFile())
-            createCustomCSV(customInjectorsFile, CUSTOM_INJECTORS_HEADER);
-
-        if (!customTestNamesFile.exists() || !customTestNamesFile.isFile())
-            createCustomCSV(customTestNamesFile, CUSTOM_TEST_NAMES_HEADER);
+            createCustomCSV(customInjectorsFile, custom_injectors_header);
 
         if (!customInjectorTestsFile.exists() || !customInjectorTestsFile.isFile())
-            createCustomCSV(customInjectorTestsFile, CUSTOM_INJECTOR_TESTS_HEADER);
+            createCustomCSV(customInjectorTestsFile, custom_injector_tests_header);
 
     }
 
@@ -165,7 +145,7 @@ public class CheckAndInitializeBD {
                 String line = reader.readLine();
                 if (!line.equals(version)) {
                     try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-                        writer.write("");
+//                        writer.write("");
                         writer.write(version);
                     }
                     isCurrent = false;
@@ -175,7 +155,7 @@ public class CheckAndInitializeBD {
         } else {
             file.createNewFile();
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-                writer.write("");
+//                writer.write("");
                 writer.write(version);
             }
             isCurrent = false;

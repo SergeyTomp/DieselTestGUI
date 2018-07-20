@@ -19,6 +19,16 @@ public class Manufacturer {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "manufacturer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Injector> injectors = new LinkedList<>();
 
+    @PostPersist
+    private void onPostPersist() {
+        EntityUpdates.getMapOfEntityUpdates().put(this.getClass().getSimpleName(), true);
+    }
+
+    @PostRemove
+    private void onPostRemove() {
+        EntityUpdates.getMapOfEntityUpdates().put(this.getClass().getSimpleName(), true);
+    }
+
     public List<Injector> getInjectors() {
         return injectors;
     }
@@ -43,4 +53,5 @@ public class Manufacturer {
     public void setCustom(boolean custom) {
         isCustom = custom;
     }
+
 }

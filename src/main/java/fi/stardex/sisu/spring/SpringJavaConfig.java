@@ -11,8 +11,13 @@ import fi.stardex.sisu.connect.ModbusConnect;
 import fi.stardex.sisu.devices.Device;
 import fi.stardex.sisu.devices.Devices;
 import fi.stardex.sisu.persistence.CheckAndInitializeBD;
+import fi.stardex.sisu.persistence.orm.CSVSUpdater;
+import fi.stardex.sisu.persistence.orm.EntityUpdates;
 import fi.stardex.sisu.persistence.orm.Manufacturer;
 import fi.stardex.sisu.persistence.repos.ManufacturerRepository;
+import fi.stardex.sisu.persistence.repos.cr.InjectorTestRepository;
+import fi.stardex.sisu.persistence.repos.cr.InjectorsRepository;
+import fi.stardex.sisu.persistence.repos.cr.VoltAmpereProfileRepository;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.flow.ModbusMapFlow;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
@@ -47,10 +52,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
+import javax.annotation.PreDestroy;
 import javax.sql.DataSource;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -257,14 +265,14 @@ public class SpringJavaConfig {
     @Bean
     @Autowired
     public FlowUpdater flowMasterUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
-                                               SettingsController settingsController, DataConverter dataConverter) {
+                                         SettingsController settingsController, DataConverter dataConverter) {
         return new FlowMasterUpdater(flowController, injectorSectionController, settingsController, dataConverter);
     }
 
     @Bean
     @Autowired
     public FlowUpdater flowStreamUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
-                                               SettingsController settingsController, DataConverter dataConverter) {
+                                         SettingsController settingsController, DataConverter dataConverter) {
         return new FlowStreamUpdater(flowController, injectorSectionController, settingsController, dataConverter);
     }
 
@@ -341,7 +349,7 @@ public class SpringJavaConfig {
 
     @Bean
     public CheckAndInitializeBD checkAndInitializeBD(ManufacturerRepository manufacturerRepository,
-                                                      DataSource dataSource) {
+                                                     DataSource dataSource) {
         return new CheckAndInitializeBD(manufacturerRepository, dataSource);
     }
 
@@ -369,9 +377,18 @@ public class SpringJavaConfig {
 
     @Bean
     @Autowired
-    public FlowResolver flowResolver(MainSectionController mainSectionController,SettingsController settingsController,
+    public FlowResolver flowResolver(MainSectionController mainSectionController, SettingsController settingsController,
                                      FlowController flowController, DataConverter dataConverter) {
         return new FlowResolver(mainSectionController, settingsController, flowController, dataConverter);
+    }
+
+    @Bean
+    @Autowired
+    public CSVSUpdater csvsUpdater(ManufacturerRepository manufacturerRepository,
+                                   VoltAmpereProfileRepository voltAmpereProfileRepository,
+                                   InjectorsRepository injectorsRepository,
+                                   InjectorTestRepository injectorTestRepository) {
+        return new CSVSUpdater(manufacturerRepository, voltAmpereProfileRepository, injectorsRepository, injectorTestRepository);
     }
 
 }
