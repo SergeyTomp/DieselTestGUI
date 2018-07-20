@@ -11,25 +11,43 @@ import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 import java.io.*;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 @PropertySource("classpath:properties/app.properties")
 public class CheckAndInitializeBD {
 
     private Logger logger = LoggerFactory.getLogger(CheckAndInitializeBD.class);
+
     private ManufacturerRepository manufacturerRepository;
+
     private DataSource dataSource;
 
-    private static final String COMMA_DELIMITER = ",";
+    private File stardexDirectory;
+
+    private File customCSVSDirectoryFile;
 
     private static final String NEW_LINE_SEPARATOR = "\n";
 
+    private static final String CUSTOM_MANUFACTURERS_HEADER = "manufacturer_name,is_custom";
+
+    private static final String CUSTOM_INJECTOR_TYPES_HEADER = "type_name,injector_type";
+
+    private static final String CUSTOM_VOAP_HEADER =
+            "profile_name,injector_type,is_custom,boost_u,battery_u,boost_i,first_i,first_w,second_i,negative_u,boost_disable";
+
+    private static final String CUSTOM_INJECTORS_HEADER =
+            "injector_code,manufacturerName,volt_ampere_profile,codetype,calibration_id,checksum_m,k_coefficient,is_custom";
+
+    private static final String CUSTOM_TEST_NAMES_HEADER = "id,test_name,measurement";
+
+    private static final String CUSTOM_INJECTOR_TESTS_HEADER =
+            "id,injector_code,test_name,motor_speed,setted_pressure,adjusting_time,measurement_time,codefield," +
+                    "injection_rate,total_pulse_time,nominal_flow,flow_range,volt_ampere_profile";
+
     @Value("${stardex.custom_csvs.directory}")
-    private String customCSVSDirectory;
+    private String customCSVSDirectoryName;
 
     @Value("${stardex.directory}")
-    private String directory;
+    private String directoryName;
 
     @Value("${stardex.version.file.name}")
     private String versionFileName;
@@ -60,11 +78,18 @@ public class CheckAndInitializeBD {
         this.dataSource = dataSource;
     }
 
-
     @PostConstruct
     private void check() {
 
+        stardexDirectory = new File(System.getProperty("user.home"), directoryName);
+
+        customCSVSDirectoryFile = new File(stardexDirectory, customCSVSDirectoryName);
+
+        if (!customCSVSDirectoryFile.exists() || !customCSVSDirectoryFile.isDirectory())
+            customCSVSDirectoryFile.mkdirs();
+
         try {
+            checkCustomCSVS();
             if (!isCurrentVersion()) {
                 updateDB();
             } else {
@@ -78,48 +103,54 @@ public class CheckAndInitializeBD {
             if (e instanceof FileNotFoundException) {
                 logger.error("Version file not found!", e);
                 throw new RuntimeException(e);
+            } else {
+                logger.error("IO Exception occured!", e);
             }
         }
 
     }
 
-    private void checkCustomCSVS() {
+    private void checkCustomCSVS() throws IOException {
 
-        File fileDir = new File(System.getProperty("user.home") + File.separator + directory + File.separator + customCSVSDirectory);
+        File customManufacturersFile = new File(customCSVSDirectoryFile, customManufacturers);
 
-        fileDir.mkdirs();
+        File customInjectorTypesFile = new File(customCSVSDirectoryFile, customInjectorTypes);
 
-        File customManufacturersFile = new File(fileDir, customManufacturers);
+        File customVOAPFile = new File(customCSVSDirectoryFile, customVOAP);
 
-        File customInjectorTypesFile = new File(fileDir, customInjectorTypes);
+        File customInjectorsFile = new File(customCSVSDirectoryFile, customInjectors);
 
-        File customVOAPFile = new File(fileDir, customVOAP);
+        File customTestNamesFile = new File(customCSVSDirectoryFile, customTestNames);
 
-        File customInjectorsFile = new File(fileDir, customInjectors);
+        File customInjectorTestsFile = new File(customCSVSDirectoryFile, customInjectorTests);
 
-        File customTestNamesFile = new File(fileDir, customTestNames);
+        if (!customManufacturersFile.exists() || !customManufacturersFile.isFile())
+            createCustomCSV(customManufacturersFile, CUSTOM_MANUFACTURERS_HEADER);
 
-        File customInjectorTestsFile = new File(fileDir, customInjectorTests);
+        if (!customInjectorTypesFile.exists() || !customInjectorTypesFile.isFile())
+            createCustomCSV(customInjectorTypesFile, CUSTOM_INJECTOR_TYPES_HEADER);
 
-//        List<File> listOfCustomCSVSFiles = new ArrayList<>();
-//
-//        listOfCustomCSVSFiles.add(customManufacturersFile);
-//
-//        listOfCustomCSVSFiles.add(customInjectorTypesFile);
-//
-//        listOfCustomCSVSFiles.add(customVOAPFile);
-//
-//        listOfCustomCSVSFiles.add(customInjectorsFile);
-//
-//        listOfCustomCSVSFiles.add(customTestNamesFile);
-//
-//        listOfCustomCSVSFiles.add(customInjectorTestsFile);
-//
-//        listOfCustomCSVSFiles.forEach(file -> {
-//            if (!file.exists() || !file.isFile()) {
-//
-//            }
-//        });
+        if (!customVOAPFile.exists() || !customVOAPFile.isFile())
+            createCustomCSV(customVOAPFile, CUSTOM_VOAP_HEADER);
+
+        if (!customInjectorsFile.exists() || !customInjectorsFile.isFile())
+            createCustomCSV(customInjectorsFile, CUSTOM_INJECTORS_HEADER);
+
+        if (!customTestNamesFile.exists() || !customTestNamesFile.isFile())
+            createCustomCSV(customTestNamesFile, CUSTOM_TEST_NAMES_HEADER);
+
+        if (!customInjectorTestsFile.exists() || !customInjectorTestsFile.isFile())
+            createCustomCSV(customInjectorTestsFile, CUSTOM_INJECTOR_TESTS_HEADER);
+
+    }
+
+    private void createCustomCSV(File file, String header) throws IOException {
+
+        file.createNewFile();
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            writer.append(header).append(NEW_LINE_SEPARATOR);
+        }
 
     }
 
@@ -127,11 +158,7 @@ public class CheckAndInitializeBD {
 
         boolean isCurrent;
 
-        File fileDir = new File(System.getProperty("user.home") + File.separator + directory);
-
-        fileDir.mkdirs();
-
-        File file = new File(fileDir, versionFileName);
+        File file = new File(stardexDirectory, versionFileName);
 
         if (file.exists() && file.isFile()) {
             try (BufferedReader reader = new BufferedReader(new FileReader(file))) {
