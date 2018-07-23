@@ -30,7 +30,6 @@ import java.util.function.Consumer;
 
 public class NewEditInjectorDialogController {
 
-
     @FXML
     private GridPane rootGridPane;
     @FXML

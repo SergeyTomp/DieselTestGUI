@@ -129,11 +129,11 @@ public class BeakerController {
 
         beakerControllers.add(this);
 
+        setupRescaler();
+
         setupListeners();
 
         setupResizeable();
-
-        setupRescaler();
 
         makeEmpty();
 
@@ -151,15 +151,89 @@ public class BeakerController {
                 showBeakerLevels(flowController.getDeliveryRangeLabel().getText(), flowController.getBackFlowRangeLabel().getText(), newValue));
 
         textField.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null) {
+
+            if ((flowController.getDeliveryRangeLabel().getText() == null) && (flowController.getBackFlowRangeLabel().getText() == null)) {
+
+                if (newValue == null || newValue.equals("") || newValue.equals("0.0") || newValue.equals("0")) {
+                    rescaler.getMapOfLevels().put(name, 0f);
+                    makeLevelEmpty();
+                    return;
+                }
+
+                if (!newValue.matches(REGEX)) {
+                    rescaler.getMapOfLevels().put(name, 0f);
+                    return;
+                }
+
+                float currentVal = dataConverter.roundToOneDecimalPlace(dataConverter.convertDataToFloat(newValue));
+
+                rescaler.getObservableMapOfLevels().put(name, currentVal);
+
+            } else if (newValue != null) {
+
+                if (newValue.equals("") || newValue.equals("0.0") || newValue.equals("0")) {
+                    makeLevelEmpty();
+                    return;
+                }
+
+                if (!newValue.matches(REGEX)) {
+                    return;
+                }
+
+                double currentVal = dataConverter.roundToOneDecimalPlace(dataConverter.convertDataToDouble(newValue));
+
                 switch (beakerType) {
                     case DELIVERY:
                         if (flowController.getDeliveryRangeLabel().getText() != null) {
 
+                            double lowFlowLevelValue = flowController.getCurrentDeliveryFlowLevels()[0];
+                            double highFlowLevelValue = flowController.getCurrentDeliveryFlowLevels()[1];
+
+                            if (currentVal <= lowFlowLevelValue)
+                                Platform.runLater(() -> setLevel(calculateBelowRangeLevel(currentVal, lowFlowLevelValue)));
+                            else if ((currentVal > lowFlowLevelValue) && (currentVal <= highFlowLevelValue))
+                                Platform.runLater(() -> setLevel(calculateInRangeLevel(currentVal, lowFlowLevelValue, highFlowLevelValue)));
+                            else if (currentVal > highFlowLevelValue)
+                                Platform.runLater(() -> setLevel(calculateAboveRangeLevel(currentVal, lowFlowLevelValue, highFlowLevelValue)));
                         }
+                        break;
                 }
+
             }
         });
+
+    }
+
+    private double calculateBelowRangeLevel(double currentVal, double lowFlowLevelValue) {
+
+        return (rectangleBeaker.getHeight() * PERCENT_025) * (currentVal / lowFlowLevelValue);
+
+    }
+
+    private double calculateInRangeLevel(double currentVal, double lowFlowLevelValue, double highFlowLevelValue) {
+
+        double ratio = (currentVal - lowFlowLevelValue) / (highFlowLevelValue - lowFlowLevelValue);
+
+        double intermediateValue = (3 - 1) * ratio + 1;
+
+        return (rectangleBeaker.getHeight() * PERCENT_075) * (intermediateValue / 3);
+
+    }
+
+    private double calculateAboveRangeLevel(double currentVal, double lowFlowLevelValue, double highFlowLevelValue) {
+
+        double maxLevel = lowFlowLevelValue + highFlowLevelValue;
+
+        double ratio;
+
+        if (currentVal >= maxLevel)
+            ratio = 1;
+        else
+            ratio = (currentVal - highFlowLevelValue) / (maxLevel - highFlowLevelValue);
+
+        double intermediateValue = (4 - 3) * ratio + 3;
+
+        return rectangleBeaker.getHeight() * (intermediateValue / 4);
 
     }
 
@@ -242,25 +316,6 @@ public class BeakerController {
     private void setupRescaler() {
 
         rescaler.getMapOfLevels().put(name, 0f);
-
-        textField.textProperty().addListener((observable, oldValue, newValue) -> {
-
-            if (newValue == null || newValue.equals("") || newValue.equals("0.0") || newValue.equals("0")) {
-                rescaler.getMapOfLevels().put(name, 0f);
-                makeLevelEmpty();
-                return;
-            }
-
-            if (!newValue.matches(REGEX)) {
-                rescaler.getMapOfLevels().put(name, 0f);
-                return;
-            }
-
-            float currentVal = dataConverter.roundToOneDecimalPlace(dataConverter.convertDataToFloat(newValue));
-
-            rescaler.getObservableMapOfLevels().put(name, currentVal);
-
-        });
 
         rescaler.getObservableMapOfLevels().addListener((MapChangeListener<String, Float>) change -> {
 
