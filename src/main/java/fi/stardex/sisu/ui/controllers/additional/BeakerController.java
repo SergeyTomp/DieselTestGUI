@@ -1,5 +1,7 @@
 package fi.stardex.sisu.ui.controllers.additional;
 
+import com.sun.org.apache.regexp.internal.RE;
+import fi.stardex.sisu.combobox_values.FlowUnits;
 import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
 import fi.stardex.sisu.util.converters.DataConverter;
 import fi.stardex.sisu.util.enums.BeakerType;
@@ -147,12 +149,24 @@ public class BeakerController {
         flowController.backFlowRangeLabelPropertyProperty().addListener((observable, oldValue, newValue) ->
                 showBeakerLevels(flowController.getDeliveryRangeLabel().getText(), newValue, ledBeakerController.getLedBeaker().isSelected()));
 
+        flowController.getDeliveryFlowComboBox().getSelectionModel().selectedItemProperty().addListener((observable) -> {
+            String textFieldValue = textField.getText();
+            if ((textFieldValue != null) && (!textFieldValue.equals("")) && (!textFieldValue.equals("0.0")) && (!textFieldValue.equals("0")) && (textFieldValue.matches(REGEX)))
+                textField.setText(String.valueOf(dataConverter.roundToOneDecimalPlace(dataConverter.convertDataToDouble(textFieldValue))));
+        });
+
+        flowController.getBackFlowComboBox().getSelectionModel().selectedItemProperty().addListener((observable) -> {
+            String textFieldValue = textField.getText();
+            if ((textFieldValue != null) && (!textFieldValue.equals("")) && (!textFieldValue.equals("0.0")) && (!textFieldValue.equals("0")) && (textFieldValue.matches(REGEX)))
+                textField.setText(String.valueOf(dataConverter.roundToOneDecimalPlace(dataConverter.convertDataToDouble(textFieldValue))));
+        });
+
         ledBeakerController.getLedBeaker().selectedProperty().addListener((observable, oldValue, newValue) ->
                 showBeakerLevels(flowController.getDeliveryRangeLabel().getText(), flowController.getBackFlowRangeLabel().getText(), newValue));
 
         textField.textProperty().addListener((observable, oldValue, newValue) -> {
 
-            if ((flowController.getDeliveryRangeLabel().getText() == null) && (flowController.getBackFlowRangeLabel().getText() == null)) {
+            if ((flowController.getDeliveryRangeLabel().getText().isEmpty()) && (flowController.getBackFlowRangeLabel().getText().isEmpty())) {
 
                 if (newValue == null || newValue.equals("") || newValue.equals("0.0") || newValue.equals("0")) {
                     rescaler.getMapOfLevels().put(name, 0f);
@@ -180,27 +194,36 @@ public class BeakerController {
                     return;
                 }
 
-                double currentVal = dataConverter.roundToOneDecimalPlace(dataConverter.convertDataToDouble(newValue));
+                float flowUnitCoeff = FlowUnits.getMapOfFlowUnits().get(flowController.getDeliveryFlowComboBox().getSelectionModel().getSelectedItem());
+                double currentVal = dataConverter.roundToOneDecimalPlace(dataConverter.convertDataToDouble(newValue) * flowUnitCoeff);
 
                 switch (beakerType) {
                     case DELIVERY:
-                        if (flowController.getDeliveryRangeLabel().getText() != null) {
-
-                            double lowFlowLevelValue = flowController.getCurrentDeliveryFlowLevels()[0];
-                            double highFlowLevelValue = flowController.getCurrentDeliveryFlowLevels()[1];
-
-                            if (currentVal <= lowFlowLevelValue)
-                                Platform.runLater(() -> setLevel(calculateBelowRangeLevel(currentVal, lowFlowLevelValue)));
-                            else if ((currentVal > lowFlowLevelValue) && (currentVal <= highFlowLevelValue))
-                                Platform.runLater(() -> setLevel(calculateInRangeLevel(currentVal, lowFlowLevelValue, highFlowLevelValue)));
-                            else if (currentVal > highFlowLevelValue)
-                                Platform.runLater(() -> setLevel(calculateAboveRangeLevel(currentVal, lowFlowLevelValue, highFlowLevelValue)));
-                        }
+                        double lowDeliveryFlowLevelValue = dataConverter.roundToOneDecimalPlace(flowController.getCurrentDeliveryFlowLevels()[0] + flowUnitCoeff);
+                        double highDeliveryFlowLevelValue = dataConverter.roundToOneDecimalPlace(flowController.getCurrentDeliveryFlowLevels()[1] * flowUnitCoeff);
+                        if (!flowController.getDeliveryRangeLabel().getText().isEmpty())
+                            setBeakerLevel(currentVal, lowDeliveryFlowLevelValue, highDeliveryFlowLevelValue);
                         break;
+                    case BACKFLOW:
+                        double lowBackFlowLevelValue = dataConverter.roundToOneDecimalPlace(flowController.getCurrentBackFlowLevels()[0] * flowUnitCoeff);
+                        double highBackFlowLevelValue = dataConverter.roundToOneDecimalPlace(flowController.getCurrentBackFlowLevels()[1] * flowUnitCoeff);
+                        if (!flowController.getBackFlowRangeLabel().getText().isEmpty())
+                            setBeakerLevel(currentVal, lowBackFlowLevelValue, highBackFlowLevelValue);
                 }
 
             }
         });
+
+    }
+
+    private void setBeakerLevel(double currentVal, double lowFlowLevelValue, double highFlowLevelValue) {
+
+        if (currentVal <= lowFlowLevelValue)
+            Platform.runLater(() -> setLevel(calculateBelowRangeLevel(currentVal, lowFlowLevelValue)));
+        else if ((currentVal > lowFlowLevelValue) && (currentVal <= highFlowLevelValue))
+            Platform.runLater(() -> setLevel(calculateInRangeLevel(currentVal, lowFlowLevelValue, highFlowLevelValue)));
+        else if (currentVal > highFlowLevelValue)
+            Platform.runLater(() -> setLevel(calculateAboveRangeLevel(currentVal, lowFlowLevelValue, highFlowLevelValue)));
 
     }
 
