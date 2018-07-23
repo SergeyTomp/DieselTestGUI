@@ -1,12 +1,18 @@
 package fi.stardex.sisu.persistence.orm.cr.inj;
 
+import fi.stardex.sisu.persistence.orm.EntityUpdates;
 import org.hibernate.annotations.NotFound;
 
 import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-@NamedEntityGraph(name = "InjectorTest.testName", attributeNodes = @NamedAttributeNode("testName"))
+@NamedEntityGraphs({
+        @NamedEntityGraph(name = "InjectorTest.testName", attributeNodes = @NamedAttributeNode("testName")),
+        @NamedEntityGraph(name = "InjectorTest.allLazy", attributeNodes = {
+                @NamedAttributeNode("injector"),
+                @NamedAttributeNode("testName"),
+                @NamedAttributeNode("voltAmpereProfile")})})
 @Table(name = "injector_test")
 public class InjectorTest {
 
@@ -58,6 +64,21 @@ public class InjectorTest {
     @NotFound
     private VoltAmpereProfile voltAmpereProfile;
 
+    @PostPersist
+    private void onPostPersist() {
+        EntityUpdates.getMapOfEntityUpdates().put(this.getClass().getSimpleName(), true);
+    }
+
+    @PostUpdate
+    private void onPostUpdate() {
+        EntityUpdates.getMapOfEntityUpdates().put(this.getClass().getSimpleName(), true);
+    }
+
+    @PostRemove
+    private void onPostRemove() {
+        EntityUpdates.getMapOfEntityUpdates().put(this.getClass().getSimpleName(), true);
+    }
+
     public InjectorTest() {
     }
 
@@ -75,6 +96,18 @@ public class InjectorTest {
         this.nominalFlow = nominalFlow;
         this.flowRange = flowRange;
         this.isCustom = true;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public Injector getInjector() {
+        return injector;
+    }
+
+    public Boolean getCustom() {
+        return isCustom;
     }
 
     public Integer getMotorSpeed() {
@@ -113,7 +146,7 @@ public class InjectorTest {
         return flowRange;
     }
 
-    public Boolean getCustom() {
+    public Boolean isCustom() {
         return isCustom;
     }
 

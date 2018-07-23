@@ -12,5 +12,6 @@ public interface InjectorTestRepository extends CrudRepository<InjectorTest, Int
     @EntityGraph(value = "InjectorTest.testName", type = EntityGraph.EntityGraphType.LOAD)
     List<InjectorTest> findAllByInjector(Injector injector);
 
-
+    @EntityGraph(value = "InjectorTest.allLazy", type = EntityGraph.EntityGraphType.LOAD)
+    List<InjectorTest> findByIsCustom(boolean isCustom);
 }

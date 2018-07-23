@@ -1,5 +1,6 @@
 package fi.stardex.sisu.persistence.orm.cr.inj;
 
+import fi.stardex.sisu.persistence.orm.EntityUpdates;
 import fi.stardex.sisu.persistence.orm.Manufacturer;
 import fi.stardex.sisu.persistence.orm.interfaces.Model;
 
@@ -8,6 +9,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Entity
+@NamedEntityGraph(name = "Injector.allLazy", attributeNodes = {@NamedAttributeNode("manufacturer"), @NamedAttributeNode("voltAmpereProfile")})
 public class Injector implements Model {
 
     @Id
@@ -39,6 +41,21 @@ public class Injector implements Model {
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "injector", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<InjectorTest> injectorTests = new LinkedList<>();
+
+    @PostPersist
+    private void onPostPersist() {
+        EntityUpdates.getMapOfEntityUpdates().put(this.getClass().getSimpleName(), true);
+    }
+
+    @PostUpdate
+    private void onPostUpdate() {
+        EntityUpdates.getMapOfEntityUpdates().put(this.getClass().getSimpleName(), true);
+    }
+
+    @PostRemove
+    private void onPostRemove() {
+        EntityUpdates.getMapOfEntityUpdates().put(this.getClass().getSimpleName(), true);
+    }
 
     public Injector() {
     }
@@ -98,7 +115,7 @@ public class Injector implements Model {
         this.kCoefficient = kCoefficient;
     }
 
-    public Boolean getCustom() {
+    public Boolean isCustom() {
         return isCustom;
     }
 
