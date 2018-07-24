@@ -154,6 +154,11 @@
             </GridPane>
          </children>
       </VBox>
-      <ToggleButton mnemonicParsing="false" prefHeight="50.0" prefWidth="150.0" text="Start" GridPane.rowIndex="4" />
+      <HBox prefHeight="100.0" prefWidth="200.0" GridPane.rowIndex="4">
+         <children>
+            <ToggleButton mnemonicParsing="false" prefHeight="50.0" prefWidth="150.0" text="Start" />
+            <ToggleButton fx:id="startStopToggleButton" mnemonicParsing="false" text="start/stop flow" />
+         </children>
+      </HBox>
     </children>
 </GridPane>

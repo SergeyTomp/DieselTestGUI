@@ -216,11 +216,13 @@ public abstract class FlowUpdater {
     private void refreshValues(String selectedItem, Flow flow) {
 
         if (FlowFirmwareVersion.getFlowFirmwareVersion() == FlowFirmwareVersion.FLOW_MASTER) {
+            System.err.println("refresh values if");
             if (flow == Flow.DELIVERY)
                 showOnChosenFlowUnit(ModbusMapFlow.Channel1Level.getLastValue().toString(), selectedItem, flow);
             else if (flow == Flow.BACK_FLOW)
                 showOnChosenFlowUnit(ModbusMapFlow.Channel2Level.getLastValue().toString(), selectedItem, flow);
         } else if (FlowFirmwareVersion.getFlowFirmwareVersion() == FlowFirmwareVersion.FLOW_STREAM) {
+            System.err.println("refresh values else");
             if (flow == Flow.DELIVERY)
                 showOnChosenFlowUnit(Arrays.asList(ModbusMapFlow.Channel1Level.getLastValue().toString(),
                         ModbusMapFlow.Channel2Level.getLastValue().toString(),
@@ -238,7 +240,7 @@ public abstract class FlowUpdater {
     private void showOnChosenFlowUnit(String value, String selectedItem, Flow flow) {
 
         float convertedValueFloat = dataConverter.
-                roundToOneDecimalPlace(dataConverter.convertDataToFloat(value) * FlowUnits.getMapOfFlowUnits().get(selectedItem));
+                round(dataConverter.convertDataToFloat(value) * FlowUnits.getMapOfFlowUnits().get(selectedItem));
 
         TextField field1 = (flow == Flow.DELIVERY) ? delivery1TextField : backFlow1TextField;
         TextField field2 = (flow == Flow.DELIVERY) ? delivery2TextField : backFlow2TextField;
@@ -255,13 +257,13 @@ public abstract class FlowUpdater {
         float flowUnitsConvertValue = FlowUnits.getMapOfFlowUnits().get(selectedItem);
 
         listOfConvertedValues.add(dataConverter.
-                roundToOneDecimalPlace(dataConverter.convertDataToFloat(listOfValues.get(0)) * flowUnitsConvertValue));
+                round(dataConverter.convertDataToFloat(listOfValues.get(0)) * flowUnitsConvertValue));
         listOfConvertedValues.add(dataConverter.
-                roundToOneDecimalPlace(dataConverter.convertDataToFloat(listOfValues.get(1)) * flowUnitsConvertValue));
+                round(dataConverter.convertDataToFloat(listOfValues.get(1)) * flowUnitsConvertValue));
         listOfConvertedValues.add(dataConverter.
-                roundToOneDecimalPlace(dataConverter.convertDataToFloat(listOfValues.get(2)) * flowUnitsConvertValue));
+                round(dataConverter.convertDataToFloat(listOfValues.get(2)) * flowUnitsConvertValue));
         listOfConvertedValues.add(dataConverter.
-                roundToOneDecimalPlace(dataConverter.convertDataToFloat(listOfValues.get(3)) * flowUnitsConvertValue));
+                round(dataConverter.convertDataToFloat(listOfValues.get(3)) * flowUnitsConvertValue));
 
         TextField field1 = (flow == Flow.DELIVERY) ? delivery1TextField : backFlow1TextField;
         TextField field2 = (flow == Flow.DELIVERY) ? delivery2TextField : backFlow2TextField;
@@ -333,14 +335,14 @@ public abstract class FlowUpdater {
 
         if ((value = ModbusMapFlow.Channel1Temperature1.getLastValue().toString()) != null) {
             convertedValue.append(dataConverter.
-                    roundToOneDecimalPlace(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
+                    round(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
             setTempLabels(temperature1Delivery1Label, temperature1Delivery2Label,
                     temperature1Delivery3Label, temperature1Delivery4Label, convertedValue.toString());
             convertedValue.setLength(0);
         }
         if ((value = ModbusMapFlow.Channel1Temperature2.getLastValue().toString()) != null) {
             convertedValue.append(dataConverter.
-                    roundToOneDecimalPlace(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
+                    round(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
             setTempLabels(temperature2Delivery1Label, temperature2Delivery2Label,
                     temperature2Delivery3Label, temperature2Delivery4Label, convertedValue.toString());
             convertedValue.setLength(0);
@@ -348,7 +350,7 @@ public abstract class FlowUpdater {
         if ((value = (version == FlowFirmwareVersion.FLOW_MASTER) ? ModbusMapFlow.Channel2Temperature1.getLastValue().toString()
                 : ModbusMapFlow.Channel5Temperature1.getLastValue().toString()) != null) {
             convertedValue.append(dataConverter.
-                    roundToOneDecimalPlace(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
+                    round(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
             setTempLabels(temperature1BackFlow1Label, temperature1BackFlow2Label,
                     temperature1BackFlow3Label, temperature1BackFlow4Label, convertedValue.toString());
             convertedValue.setLength(0);
@@ -356,7 +358,7 @@ public abstract class FlowUpdater {
         if ((value = (version == FlowFirmwareVersion.FLOW_MASTER) ? ModbusMapFlow.Channel2Temperature2.getLastValue().toString()
                 : ModbusMapFlow.Channel5Temperature2.getLastValue().toString()) != null) {
             convertedValue.append(dataConverter.
-                    roundToOneDecimalPlace(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
+                    round(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
             setTempLabels(temperature2BackFlow1Label, temperature2BackFlow2Label,
                     temperature2BackFlow3Label, temperature2BackFlow4Label, convertedValue.toString());
             convertedValue.setLength(0);

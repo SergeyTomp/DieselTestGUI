@@ -38,15 +38,15 @@ public class InjectorSectionUpdater implements Updater {
         if ((value = ModbusMapUltima.FirstWBoardOne.getLastValue().toString()) != null)
             voltageController.getFirstWidth().setText(value);
         if ((value = ModbusMapUltima.FirstIBoardOne.getLastValue().toString()) != null) {
-            convertedValue = firmwareDataConverter.roundToOneDecimalPlace(firmwareDataConverter.convertDataToFloat(value) / ONE_AMPERE_MULTIPLY);
+            convertedValue = firmwareDataConverter.round(firmwareDataConverter.convertDataToFloat(value) / ONE_AMPERE_MULTIPLY);
             voltageController.getFirstCurrent().setText(convertedValue.toString());
         }
         if ((value = ModbusMapUltima.SecondIBoardOne.getLastValue().toString()) != null) {
-            convertedValue = firmwareDataConverter.roundToOneDecimalPlace(firmwareDataConverter.convertDataToFloat(value) / ONE_AMPERE_MULTIPLY);
+            convertedValue = firmwareDataConverter.round(firmwareDataConverter.convertDataToFloat(value) / ONE_AMPERE_MULTIPLY);
             voltageController.getSecondCurrent().setText(convertedValue.toString());
         }
         if ((value = ModbusMapUltima.BoostIBoardOne.getLastValue().toString()) != null) {
-            convertedValue = firmwareDataConverter.roundToOneDecimalPlace(firmwareDataConverter.convertDataToFloat(value) / ONE_AMPERE_MULTIPLY);
+            convertedValue = firmwareDataConverter.round(firmwareDataConverter.convertDataToFloat(value) / ONE_AMPERE_MULTIPLY);
             voltageController.getBoostI().setText(convertedValue.toString());
         }
         if ((value = ModbusMapUltima.Battery_U.getLastValue().toString()) != null)

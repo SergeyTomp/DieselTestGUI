@@ -7,6 +7,8 @@ import fi.stardex.sisu.persistence.orm.cr.inj.VoltAmpereProfile;
 import fi.stardex.sisu.persistence.orm.interfaces.Model;
 import fi.stardex.sisu.persistence.repos.cr.InjectorTestRepository;
 import fi.stardex.sisu.persistence.repos.cr.InjectorsRepository;
+import fi.stardex.sisu.registers.flow.ModbusMapFlow;
+import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
@@ -35,6 +37,7 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
 import java.util.LinkedList;
@@ -42,6 +45,9 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public class MainSectionController {
+
+    @FXML
+    private ToggleButton startStopToggleButton;
 
     @FXML
     private ToggleGroup testsToggleGroup;
@@ -88,6 +94,9 @@ public class MainSectionController {
     private ListView<Model> modelListView;
     @FXML
     private ListView<InjectorTest> testListView;
+
+    @Autowired
+    private ModbusRegisterProcessor flowModbusWriter;
 
     private Enabler enabler;
 
@@ -219,8 +228,8 @@ public class MainSectionController {
     private void init() {
 
         // TODO: do not delete!
-//        setupStartStopToggleButton();
-//        setupResetButton()
+        setupStartStopToggleButton();
+//        setupResetButton();
 
         versionComboBox.getItems().addAll(versions);
 
@@ -312,9 +321,9 @@ public class MainSectionController {
 
             voltAmpereProfileController.getBoostUSpinner().getValueFactory().setValue(voltAmpereProfile.getBoostU());
             voltAmpereProfileController.getFirstWSpinner().getValueFactory().setValue(voltAmpereProfile.getFirstW());
-            voltAmpereProfileController.getFirstISpinner().getValueFactory().setValue((firstI * 100 % 10 != 0) ? dataConverter.roundToOneDecimalPlace(firstI) : firstI);
-            voltAmpereProfileController.getSecondISpinner().getValueFactory().setValue((secondI * 100 % 10 != 0) ? dataConverter.roundToOneDecimalPlace(secondI) : secondI);
-            voltAmpereProfileController.getBoostISpinner().getValueFactory().setValue((boostI * 100 % 10 != 0) ? dataConverter.roundToOneDecimalPlace(boostI) : boostI);
+            voltAmpereProfileController.getFirstISpinner().getValueFactory().setValue((firstI * 100 % 10 != 0) ? dataConverter.round(firstI) : firstI);
+            voltAmpereProfileController.getSecondISpinner().getValueFactory().setValue((secondI * 100 % 10 != 0) ? dataConverter.round(secondI) : secondI);
+            voltAmpereProfileController.getBoostISpinner().getValueFactory().setValue((boostI * 100 % 10 != 0) ? dataConverter.round(boostI) : boostI);
             voltAmpereProfileController.getBatteryUSpinner().getValueFactory().setValue(voltAmpereProfile.getBatteryU());
             voltAmpereProfileController.getNegativeUSpinner().getValueFactory().setValue(voltAmpereProfile.getNegativeU());
             voltAmpereProfileController.getEnableBoostToggleButton().setSelected(voltAmpereProfile.getBoostDisable());
@@ -567,21 +576,21 @@ public class MainSectionController {
     }
 
     // TODO: do not delete!
-//    private void setupStartStopToggleButton() {
-//
-//        startStopToggleButton.selectedProperty().addListener((observable, stopped, started) -> {
-//            if (started) {
-//                flowModbusWriter.add(ModbusMapFlow.StartMeasurementCycle, true);
-//                startStopToggleButton.setText("Stop");
-//            }
-//            else {
-//                flowModbusWriter.add(ModbusMapFlow.StopMeasurementCycle, true);
-//                startStopToggleButton.setText("Start");
-//            }
-//        });
-//
-//    }
-//
+    private void setupStartStopToggleButton() {
+
+        startStopToggleButton.selectedProperty().addListener((observable, stopped, started) -> {
+            if (started) {
+                flowModbusWriter.add(ModbusMapFlow.StartMeasurementCycle, true);
+                startStopToggleButton.setText("Stop");
+            }
+            else {
+                flowModbusWriter.add(ModbusMapFlow.StopMeasurementCycle, true);
+                startStopToggleButton.setText("Start");
+            }
+        });
+
+    }
+
 //    private void setupResetButton() {
 //
 //        resetButton.setOnAction(event -> flowModbusWriter.add(ModbusMapFlow.StartMeasurementCycle, true));

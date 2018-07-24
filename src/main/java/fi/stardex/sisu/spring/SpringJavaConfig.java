@@ -163,6 +163,7 @@ public class SpringJavaConfig {
                                 FlowFirmwareVersion.setFlowFirmwareVersion(FlowFirmwareVersion.FLOW_STREAM);
                                 break;
                             default:
+                                FlowFirmwareVersion.setFlowFirmwareVersion(null);
                                 logger.error("Wrong Flow firmware version!");
                                 break;
                         }
@@ -264,14 +265,14 @@ public class SpringJavaConfig {
 
     @Bean
     @Autowired
-    public FlowUpdater flowMasterUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
+    public FlowMasterUpdater flowMasterUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
                                          SettingsController settingsController, DataConverter dataConverter) {
         return new FlowMasterUpdater(flowController, injectorSectionController, settingsController, dataConverter);
     }
 
     @Bean
     @Autowired
-    public FlowUpdater flowStreamUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
+    public FlowStreamUpdater flowStreamUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
                                          SettingsController settingsController, DataConverter dataConverter) {
         return new FlowStreamUpdater(flowController, injectorSectionController, settingsController, dataConverter);
     }

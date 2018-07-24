@@ -110,8 +110,8 @@ public class FlowResolver {
 
         float flowUnitsConvertValue = FlowUnits.getMapOfFlowUnits().get(flowUnit);
 
-        result[0] = dataConverter.roundToOneDecimalPlace((nominalFlow - nominalFlow * (flowRange * PERCENT)) * flowUnitsConvertValue);
-        result[1] = dataConverter.roundToOneDecimalPlace((nominalFlow + nominalFlow * (flowRange * PERCENT)) * flowUnitsConvertValue);
+        result[0] = dataConverter.round((nominalFlow - nominalFlow * (flowRange * PERCENT)) * flowUnitsConvertValue);
+        result[1] = dataConverter.round((nominalFlow + nominalFlow * (flowRange * PERCENT)) * flowUnitsConvertValue);
 
         switch (measurement) {
             case DIRECT:
@@ -133,9 +133,9 @@ public class FlowResolver {
 
         float flowUnitsConvertValue = FlowUnits.getMapOfFlowUnits().get(flowUnit);
 
-        result[0] = dataConverter.roundToOneDecimalPlace(nominalFlow * flowUnitsConvertValue);
+        result[0] = dataConverter.round(nominalFlow * flowUnitsConvertValue);
 
-        result[1] = dataConverter.roundToOneDecimalPlace((nominalFlow * (flowRange * PERCENT)) * flowUnitsConvertValue);
+        result[1] = dataConverter.round((nominalFlow * (flowRange * PERCENT)) * flowUnitsConvertValue);
 
         return result;
 
