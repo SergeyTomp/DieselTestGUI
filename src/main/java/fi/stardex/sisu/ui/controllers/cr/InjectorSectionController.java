@@ -275,7 +275,7 @@ public class InjectorSectionController {
             else if (Objects.equals(piezoDelphiRadioButton, injectorTypeProperty.get()))
                 ultimaModbusWriter.add(ModbusMapUltima.Injector_type, 2);
             else
-                throw new AssertionError("Coil or piezo buttons have not been set.");
+                throw new AssertionError("Coil or piezo buttons have not been changeFlow.");
         }
 
         private void disableLedsExceptFirst(boolean disable) {

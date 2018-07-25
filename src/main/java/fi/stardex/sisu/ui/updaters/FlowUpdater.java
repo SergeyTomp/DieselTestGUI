@@ -16,6 +16,8 @@ import java.util.List;
 
 public abstract class FlowUpdater {
 
+    protected FlowController flowController;
+
     protected DataConverter dataConverter;
 
     protected static final String DEGREES_CELSIUS = " \u2103";
@@ -95,9 +97,11 @@ public abstract class FlowUpdater {
     protected ToggleButton injectorSectionPowerSwitch;
 
     public FlowUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
-                       SettingsController settingsController, DataConverter firmwareDataConverter) {
+                       SettingsController settingsController, DataConverter dataConverter) {
 
-        this.dataConverter = firmwareDataConverter;
+        this.flowController = flowController;
+
+        this.dataConverter = dataConverter;
         temperature1Delivery1Label = flowController.getTemperature1Delivery1();
         temperature1Delivery2Label = flowController.getTemperature1Delivery2();
         temperature1Delivery3Label = flowController.getTemperature1Delivery3();
@@ -270,10 +274,25 @@ public abstract class FlowUpdater {
         TextField field3 = (flow == Flow.DELIVERY) ? delivery3TextField : backFlow3TextField;
         TextField field4 = (flow == Flow.DELIVERY) ? delivery4TextField : backFlow4TextField;
 
-        field1.setText(ledBeaker1ToggleButton.isSelected() ? listOfConvertedValues.get(0).toString() : null);
-        field2.setText(ledBeaker2ToggleButton.isSelected() ? listOfConvertedValues.get(1).toString() : null);
-        field3.setText(ledBeaker3ToggleButton.isSelected() ? listOfConvertedValues.get(2).toString() : null);
-        field4.setText(ledBeaker4ToggleButton.isSelected() ? listOfConvertedValues.get(3).toString() : null);
+        if (ledBeaker1ToggleButton.isSelected())
+            flowController.changeFlow(field1, listOfConvertedValues.get(0).toString());
+        else
+            field1.setText(null);
+
+        if (ledBeaker2ToggleButton.isSelected())
+            flowController.changeFlow(field2, listOfConvertedValues.get(1).toString());
+        else
+            field1.setText(null);
+
+        if (ledBeaker3ToggleButton.isSelected())
+            flowController.changeFlow(field3, listOfConvertedValues.get(2).toString());
+        else
+            field1.setText(null);
+
+        if (ledBeaker4ToggleButton.isSelected())
+            flowController.changeFlow(field4, listOfConvertedValues.get(3).toString());
+        else
+            field1.setText(null);
 
         listOfConvertedValues.clear();
 
@@ -281,16 +300,31 @@ public abstract class FlowUpdater {
 
     private void setDeliveryBackFlowFields(TextField field1, TextField field2, TextField field3, TextField field4, String value) {
 
-        field1.setText(ledBeaker1ToggleButton.isSelected() ? value : null);
-        field2.setText(ledBeaker2ToggleButton.isSelected() ? value : null);
-        field3.setText(ledBeaker3ToggleButton.isSelected() ? value : null);
-        field4.setText(ledBeaker4ToggleButton.isSelected() ? value : null);
+        if (ledBeaker1ToggleButton.isSelected())
+            flowController.changeFlow(field1, value);
+        else
+            field1.setText(null);
+
+        if (ledBeaker2ToggleButton.isSelected())
+            flowController.changeFlow(field2, value);
+        else
+            field2.setText(null);
+
+        if (ledBeaker3ToggleButton.isSelected())
+            flowController.changeFlow(field3, value);
+        else
+            field2.setText(null);
+
+        if (ledBeaker4ToggleButton.isSelected())
+            flowController.changeFlow(field4, value);
+        else
+            field2.setText(null);
 
     }
 
 
     private void setTempLabelsToNull(Label temperature1DeliveryLabel, Label temperature2DeliveryLabel,
-                                       Label temperature1BackFlowLabel, Label temperature2BackFlowLabel) {
+                                     Label temperature1BackFlowLabel, Label temperature2BackFlowLabel) {
 
         temperature1DeliveryLabel.setText(null);
         temperature2DeliveryLabel.setText(null);

@@ -14,7 +14,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 
 @Module(value = Device.MODBUS_FLOW)
-public class FlowStreamUpdater extends FlowUpdater implements Updater{
+public class FlowStreamUpdater extends FlowUpdater implements Updater {
 
     public FlowStreamUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
                              SettingsController settingsController, DataConverter firmwareDataConverter) {
@@ -231,7 +231,10 @@ public class FlowStreamUpdater extends FlowUpdater implements Updater{
                 break;
         }
 
-        field.setText(led.isSelected() ? String.valueOf(convertedValueFloat) : null);
+        if (led.isSelected())
+            flowController.changeFlow(field, String.valueOf(convertedValueFloat));
+        else
+            field.setText(null);
 
     }
 

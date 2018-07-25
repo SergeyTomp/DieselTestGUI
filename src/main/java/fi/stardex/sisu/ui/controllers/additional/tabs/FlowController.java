@@ -325,6 +325,59 @@ public class FlowController {
         this.currentBackFlowLevels = currentBackFlowLevels;
     }
 
+    public void changeFlow(TextField field, String value) {
+
+        if (field == delivery1TextField) {
+            if (!deliveryRangeLabel.getText().isEmpty())
+                beakerDelivery1Controller.changeFlow(value);
+            else
+                beakerDelivery1Controller.changeFlow(null);
+        }
+        else if (field == delivery2TextField) {
+            if (!deliveryRangeLabel.getText().isEmpty())
+                beakerDelivery2Controller.changeFlow(value);
+            else
+                beakerDelivery2Controller.changeFlow(null);
+        }
+        else if (field == delivery3TextField) {
+            if (!deliveryRangeLabel.getText().isEmpty())
+                beakerDelivery3Controller.changeFlow(value);
+            else
+                beakerDelivery3Controller.changeFlow(null);
+        }
+        else if (field == delivery4TextField) {
+            if (!deliveryRangeLabel.getText().isEmpty())
+                beakerDelivery4Controller.changeFlow(value);
+            else
+                beakerDelivery4Controller.changeFlow(null);
+        }
+        else if (field == backFlow1TextField) {
+            if (!backFlowRangeLabel.getText().isEmpty())
+                beakerBackFlow1Controller.changeFlow(value);
+            else
+                beakerBackFlow1Controller.changeFlow(null);
+        }
+        else if (field == backFlow2TextField) {
+            if (!backFlowRangeLabel.getText().isEmpty())
+                beakerBackFlow2Controller.changeFlow(value);
+            else
+                beakerBackFlow2Controller.changeFlow(null);
+        }
+        else if (field == backFlow3TextField) {
+            if (!backFlowRangeLabel.getText().isEmpty())
+                beakerBackFlow3Controller.changeFlow(value);
+            else
+                beakerBackFlow3Controller.changeFlow(null);
+        }
+        else if (field == backFlow4TextField) {
+            if (!backFlowRangeLabel.getText().isEmpty())
+                beakerBackFlow4Controller.changeFlow(value);
+            else
+                beakerBackFlow4Controller.changeFlow(null);
+        }
+
+    }
+
     @PostConstruct
     private void init() {
 

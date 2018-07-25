@@ -138,6 +138,19 @@ public class BeakerController {
 
     }
 
+    private void setupRescaler() {
+
+        rescaler.getMapOfLevels().put(name, 0f);
+
+        rescaler.getObservableMapOfLevels().addListener((MapChangeListener<String, Float>) change -> {
+
+            currentMaxLevel = rescaler.getMapOfLevels().values().stream().max(Float::compare).get();
+            Platform.runLater(() -> setLevel((rectangleBeaker.getHeight() / 2) * (rescaler.getMapOfLevels().get(name) / currentMaxLevel)));
+
+        });
+
+    }
+
     private void setupListeners() {
 
         flowController.deliveryRangeLabelPropertyProperty().addListener((observable, oldValue, newValue) ->
@@ -145,22 +158,6 @@ public class BeakerController {
 
         flowController.backFlowRangeLabelPropertyProperty().addListener((observable, oldValue, newValue) ->
                 showBeakerLevels(flowController.getDeliveryRangeLabel().getText(), newValue, ledBeakerController.getLedBeaker().isSelected()));
-
-//        flowController.getDeliveryFlowComboBox().getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-//            String textFieldValue = textField.getText();
-//            float oldCoeff = FlowUnits.getMapOfFlowUnits().get(oldValue);
-//            float newCoeff = FlowUnits.getMapOfFlowUnits().get(newValue);
-//            if ((textFieldValue != null) && (!textFieldValue.equals("")))
-//                textField.setText(String.valueOf(dataConverter.round(dataConverter.convertDataToDouble(textFieldValue) * (newCoeff / oldCoeff))));
-//        });
-//
-//        flowController.getBackFlowComboBox().getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-//            String textFieldValue = textField.getText();
-//            float oldCoeff = FlowUnits.getMapOfFlowUnits().get(oldValue);
-//            float newCoeff = FlowUnits.getMapOfFlowUnits().get(newValue);
-//            if ((textFieldValue != null) && (!textFieldValue.equals("")))
-//                textField.setText(String.valueOf(dataConverter.round(dataConverter.convertDataToDouble(textFieldValue) * (newCoeff / oldCoeff))));
-//        });
 
         ledBeakerController.getLedBeaker().selectedProperty().addListener((observable, oldValue, newValue) ->
                 showBeakerLevels(flowController.getDeliveryRangeLabel().getText(), flowController.getBackFlowRangeLabel().getText(), newValue));
@@ -195,29 +192,50 @@ public class BeakerController {
                     return;
                 }
 
-                float flowUnitCoeff;
-                double currentVal;
+                setNewLevel(newValue);
 
-                switch (beakerType) {
-                    case DELIVERY:
-                        flowUnitCoeff = FlowUnits.getMapOfFlowUnits().get(flowController.getDeliveryFlowComboBox().getSelectionModel().getSelectedItem());
-                        currentVal = dataConverter.round(dataConverter.convertDataToDouble(newValue) * flowUnitCoeff);
-                        double lowDeliveryFlowLevelValue = dataConverter.round(flowController.getCurrentDeliveryFlowLevels()[0] * flowUnitCoeff);
-                        double highDeliveryFlowLevelValue = dataConverter.round(flowController.getCurrentDeliveryFlowLevels()[1] * flowUnitCoeff);
-                        if (!flowController.getDeliveryRangeLabel().getText().isEmpty())
-                            setBeakerLevel(currentVal, lowDeliveryFlowLevelValue, highDeliveryFlowLevelValue);
-                        break;
-                    case BACKFLOW:
-                        flowUnitCoeff = FlowUnits.getMapOfFlowUnits().get(flowController.getBackFlowComboBox().getSelectionModel().getSelectedItem());
-                        currentVal = dataConverter.round(dataConverter.convertDataToDouble(newValue) * flowUnitCoeff);
-                        double lowBackFlowLevelValue = dataConverter.round(flowController.getCurrentBackFlowLevels()[0] * flowUnitCoeff);
-                        double highBackFlowLevelValue = dataConverter.round(flowController.getCurrentBackFlowLevels()[1] * flowUnitCoeff);
-                        if (!flowController.getBackFlowRangeLabel().getText().isEmpty())
-                            setBeakerLevel(currentVal, lowBackFlowLevelValue, highBackFlowLevelValue);
-                }
-
+            } else {
+                makeLevelEmpty();
             }
         });
+
+    }
+
+    public void changeFlow(String value) {
+
+        if (value == null)
+            textField.setText(null);
+        else if (value.equals(textField.getText()))
+            setNewLevel(value);
+        else
+            textField.setText(value);
+
+    }
+
+    private void setNewLevel(String value) {
+
+        float flowUnitCoeff;
+        double currentVal;
+
+        switch (beakerType) {
+            case DELIVERY:
+                if (flowController.getDeliveryRangeLabel().getText().isEmpty())
+                    break;
+                flowUnitCoeff = FlowUnits.getMapOfFlowUnits().get(flowController.getDeliveryFlowComboBox().getSelectionModel().getSelectedItem());
+                currentVal = dataConverter.round(dataConverter.convertDataToDouble(value) * flowUnitCoeff);
+                double lowDeliveryFlowLevelValue = dataConverter.round(flowController.getCurrentDeliveryFlowLevels()[0] * flowUnitCoeff);
+                double highDeliveryFlowLevelValue = dataConverter.round(flowController.getCurrentDeliveryFlowLevels()[1] * flowUnitCoeff);
+                setBeakerLevel(currentVal, lowDeliveryFlowLevelValue, highDeliveryFlowLevelValue);
+                break;
+            case BACKFLOW:
+                if (flowController.getBackFlowRangeLabel().getText().isEmpty())
+                    break;
+                flowUnitCoeff = FlowUnits.getMapOfFlowUnits().get(flowController.getBackFlowComboBox().getSelectionModel().getSelectedItem());
+                currentVal = dataConverter.round(dataConverter.convertDataToDouble(value) * flowUnitCoeff);
+                double lowBackFlowLevelValue = dataConverter.round(flowController.getCurrentBackFlowLevels()[0] * flowUnitCoeff);
+                double highBackFlowLevelValue = dataConverter.round(flowController.getCurrentBackFlowLevels()[1] * flowUnitCoeff);
+                setBeakerLevel(currentVal, lowBackFlowLevelValue, highBackFlowLevelValue);
+        }
 
     }
 
@@ -312,6 +330,7 @@ public class BeakerController {
 
     }
 
+    // TODO: доделать resize для FlowMaster/Stream
     private void setupResizeable() {
 
         rectangleBeaker.heightProperty().bind(((StackPane) beakerPane.getParent()).heightProperty());
@@ -337,19 +356,6 @@ public class BeakerController {
         ((StackPane) beakerPane.getParent()).widthProperty().addListener((observable, oldValue, newValue) -> {
             AnchorPane.setLeftAnchor(textTop, arcTickTop.getCenterX() + arcTickTop.getRadiusX() - textTop.getWrappingWidth() / 2);
             AnchorPane.setLeftAnchor(textBottom, arcTickBottom.getCenterX() + arcTickBottom.getRadiusX() - textBottom.getWrappingWidth() / 2);
-        });
-
-    }
-
-    private void setupRescaler() {
-
-        rescaler.getMapOfLevels().put(name, 0f);
-
-        rescaler.getObservableMapOfLevels().addListener((MapChangeListener<String, Float>) change -> {
-
-            currentMaxLevel = rescaler.getMapOfLevels().values().stream().max(Float::compare).get();
-            Platform.runLater(() -> setLevel((rectangleBeaker.getHeight() / 2) * (rescaler.getMapOfLevels().get(name) / currentMaxLevel)));
-
         });
 
     }
