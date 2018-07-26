@@ -14,5 +14,4 @@ public interface ModbusMap {
 
     boolean isAutoUpdate();
 
-    void setAutoUpdate(boolean autoUpdate);
 }

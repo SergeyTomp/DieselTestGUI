@@ -6,7 +6,7 @@ import fi.stardex.sisu.registers.stand.ModbusMapStand;
 import javafx.scene.control.Spinner;
 
 @Module(value = Device.MODBUS_STAND)
-public class TestBenchSectionUpdater implements Updater{
+public class TestBenchSectionUpdater implements Updater {
 
     private Spinner<Integer> targetRPMSpinner;
 
@@ -22,7 +22,10 @@ public class TestBenchSectionUpdater implements Updater{
     @Override
     public void run() {
 
-        targetRPMSpinner.getValueFactory().setValue(Integer.valueOf(ModbusMapStand.TargetRPM.getLastValue().toString()));
+        if (ModbusMapStand.TargetRPM.isSyncWriteRead())
+            ModbusMapStand.TargetRPM.setSyncWriteRead(false);
+        else
+            targetRPMSpinner.getValueFactory().setValue(Integer.valueOf(ModbusMapStand.TargetRPM.getLastValue().toString()));
 
     }
 }

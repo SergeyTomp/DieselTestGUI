@@ -78,10 +78,10 @@ public enum ModbusMapUltima implements ModbusMap {
 
 
 
-    private RegisterType type;
-    private int ref;
-    private int count;
-    private boolean autoUpdate;
+    private final RegisterType type;
+    private final int ref;
+    private final int count;
+    private final boolean autoUpdate;
     private Object lastValue;
 
     public static final List<ModbusMapUltima> slotNumbersList = new LinkedList<>();
@@ -145,11 +145,6 @@ public enum ModbusMapUltima implements ModbusMap {
     @Override
     public boolean isAutoUpdate() {
         return autoUpdate;
-    }
-
-    @Override
-    public void setAutoUpdate(boolean autoUpdate) {
-        this.autoUpdate = autoUpdate;
     }
 
     @Override

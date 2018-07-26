@@ -21,11 +21,12 @@ public enum ModbusMapStand implements ModbusMap {
 
 
 
-    private RegisterType type;
-    private int ref;
-    private int count;
-    private boolean autoUpdate;
+    private final RegisterType type;
+    private final int ref;
+    private final int count;
+    private final boolean autoUpdate;
     private Object lastValue;
+    private boolean syncWriteRead;
 
     ModbusMapStand(RegisterType type, int ref, int count, boolean autoUpdate) {
         this.type = type;
@@ -64,8 +65,11 @@ public enum ModbusMapStand implements ModbusMap {
         return autoUpdate;
     }
 
-    @Override
-    public void setAutoUpdate(boolean autoUpdate) {
-        this.autoUpdate = autoUpdate;
+    public boolean isSyncWriteRead() {
+        return syncWriteRead;
+    }
+
+    public void setSyncWriteRead(boolean syncWriteRead) {
+        this.syncWriteRead = syncWriteRead;
     }
 }

@@ -17,6 +17,7 @@ import fi.stardex.sisu.persistence.repos.ManufacturerRepository;
 import fi.stardex.sisu.persistence.repos.cr.InjectorTestRepository;
 import fi.stardex.sisu.persistence.repos.cr.InjectorsRepository;
 import fi.stardex.sisu.persistence.repos.cr.VoltAmpereProfileRepository;
+import fi.stardex.sisu.registers.ModbusMap;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.flow.ModbusMapFlow;
 import fi.stardex.sisu.registers.stand.ModbusMapStand;
@@ -245,6 +246,14 @@ public class SpringJavaConfig {
     @Autowired
     public ModbusRegisterProcessor standModbusWriter(List<Updater> updatersList, RegisterProvider standRegisterProvider) {
         return new ModbusRegisterProcessor(standRegisterProvider, ModbusMapStand.values()) {
+
+            @Override
+            public boolean add(ModbusMap reg, Object value) {
+                if (reg == ModbusMapStand.TargetRPM)
+                    ((ModbusMapStand) reg).setSyncWriteRead(true);
+                return super.add(reg, value);
+            }
+
             @Override
             protected void initThread() {
                 List<Updater> updaters = addUpdaters(updatersList, Device.MODBUS_STAND);
