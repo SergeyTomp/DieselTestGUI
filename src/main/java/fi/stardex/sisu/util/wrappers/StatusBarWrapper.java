@@ -3,6 +3,7 @@ package fi.stardex.sisu.util.wrappers;
 import fi.stardex.sisu.devices.Device;
 import fi.stardex.sisu.devices.Devices;
 import fi.stardex.sisu.version.FlowFirmwareVersion;
+import fi.stardex.sisu.version.StandFirmwareVersion;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.layout.StackPane;
@@ -71,9 +72,19 @@ public class StatusBarWrapper {
         Iterator<Device> iterator = devices.connectedDevices();
         while (iterator.hasNext()) {
             Device device = iterator.next();
-            stringBuilder.append(device.getLabel());
-            if (device == Device.MODBUS_FLOW)
-                doIfDeviceIsFlow(stringBuilder);
+            switch (device) {
+                case ULTIMA:
+                    doIfDeviceIsUltima(stringBuilder, device);
+                    break;
+                case MODBUS_FLOW:
+                    doIfDeviceIsFlow(stringBuilder, device);
+                    break;
+                case MODBUS_STAND:
+                    doIfDeviceIsStand(stringBuilder, device);
+                    break;
+                default:
+                    break;
+            }
             if (iterator.hasNext()) {
                 stringBuilder.append(", ");
             }
@@ -82,11 +93,24 @@ public class StatusBarWrapper {
         textfield2.setText(stringBuilder.toString());
     }
 
-    private void doIfDeviceIsFlow(StringBuilder sb) {
+    private void doIfDeviceIsUltima(StringBuilder sb, Device device) {
+        sb.append(device.getLabel());
+    }
+
+    private void doIfDeviceIsFlow(StringBuilder sb, Device device) {
+        sb.append(device.getLabel());
         FlowFirmwareVersion version = FlowFirmwareVersion.getFlowFirmwareVersion();
         if (version == FlowFirmwareVersion.FLOW_MASTER)
             sb.append(" CH04");
         else if (version == FlowFirmwareVersion.FLOW_STREAM)
             sb.append(" CH10");
+    }
+
+    private void doIfDeviceIsStand(StringBuilder sb, Device device) {
+        StandFirmwareVersion version = StandFirmwareVersion.getStandFirmwareVersion();
+        if (version == StandFirmwareVersion.STAND)
+            sb.append(device.getLabel());
+        else if (version == null)
+            sb.append("Unknown Device");
     }
 }

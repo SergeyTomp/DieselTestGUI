@@ -10,7 +10,7 @@ public enum FlowFirmwareVersion {
         return flowFirmwareVersion;
     }
 
-    public static void setFlowFirmwareVersion(FlowFirmwareVersion flowFirmwareVersion) {
-        FlowFirmwareVersion.flowFirmwareVersion = flowFirmwareVersion;
+    public static void setFlowFirmwareVersion(FlowFirmwareVersion flowVersion) {
+        flowFirmwareVersion = flowVersion;
     }
 }

@@ -18,7 +18,7 @@ public enum UltimaFirmwareVersion {
         return ultimaFirmwareVersion;
     }
 
-    public static void setUltimaFirmwareVersion(UltimaFirmwareVersion ultimaFirmware) {
-        ultimaFirmwareVersion = ultimaFirmware;
+    public static void setUltimaFirmwareVersion(UltimaFirmwareVersion ultimaVersion) {
+        ultimaFirmwareVersion = ultimaVersion;
     }
 }

@@ -5,7 +5,7 @@ import fi.stardex.sisu.registers.RegisterType;
 
 public enum ModbusMapFlow implements ModbusMap {
 
-    FlowMeterVersion(RegisterType.REGISTER_INPUT, 0, 1, false),
+    FirmwareVersion(RegisterType.REGISTER_INPUT, 0, 1, false),
 
     StartMeasurementCycle(RegisterType.DISCRETE_COIL, 0, 1, false),
     StopMeasurementCycle(RegisterType.DISCRETE_COIL, 1, 1, false),

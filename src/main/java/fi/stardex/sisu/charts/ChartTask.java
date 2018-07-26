@@ -40,7 +40,7 @@ public abstract class ChartTask extends TimerTask {
     protected VoltageController voltageController;
 
     @Autowired
-    private DataConverter firmwareDataConverter;
+    private DataConverter dataConverter;
 
     @Autowired
     private InjectorSectionController injectorSectionController;
@@ -150,7 +150,7 @@ public abstract class ChartTask extends TimerTask {
         }
 
         int n;
-        firmwareWidth = firmwareDataConverter.convertDataToInt(ModbusMapUltima.WidthBoardOne.getLastValue().toString());
+        firmwareWidth = dataConverter.convertDataToInt(ModbusMapUltima.WidthBoardOne.getLastValue().toString());
         Toggle selectedToggle = injectorSectionController.getPiezoCoilToggleGroup().getSelectedToggle();
         int offset;
 

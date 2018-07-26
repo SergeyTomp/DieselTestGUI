@@ -1,12 +1,22 @@
 package fi.stardex.sisu.ui.controllers.cr;
 
+import fi.stardex.sisu.registers.stand.ModbusMapStand;
+import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
+import fi.stardex.sisu.util.spinners.SpinnerManager;
+import fi.stardex.sisu.util.spinners.SpinnerValueObtainer;
+import fi.stardex.sisu.util.tooltips.CustomTooltip;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+
+import javax.annotation.PostConstruct;
 
 public class TestBenchSectionController {
 
     @FXML
-    public ToggleButton testBenchStartBtn;
+    private ToggleButton testBenchStartBtn;
+
+    @FXML
+    private Spinner<Integer> targetRPMSpinner;
 
     @FXML
     private ToggleButton buttonPumpControl;
@@ -16,4 +26,24 @@ public class TestBenchSectionController {
 
     @FXML
     private ProgressBar oilTank;
+
+    private ModbusRegisterProcessor standModbusWriter;
+
+    public Spinner<Integer> getTargetRPMSpinner() {
+        return targetRPMSpinner;
+    }
+
+    public void setStandModbusWriter(ModbusRegisterProcessor standModbusWriter) {
+        this.standModbusWriter = standModbusWriter;
+    }
+
+    @PostConstruct
+    private void init() {
+
+        targetRPMSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 3000, 0, 50));
+        SpinnerManager.setupSpinner(targetRPMSpinner, 0, 0, 3000, new CustomTooltip(), new SpinnerValueObtainer(0));
+
+        targetRPMSpinner.valueProperty().addListener((observable, oldValue, newValue) -> standModbusWriter.add(ModbusMapStand.TargetRPM, newValue));
+    }
+
 }
