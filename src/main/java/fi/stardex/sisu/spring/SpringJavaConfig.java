@@ -251,6 +251,8 @@ public class SpringJavaConfig {
             public boolean add(ModbusMap reg, Object value) {
                 if (reg == ModbusMapStand.TargetRPM)
                     ((ModbusMapStand) reg).setSyncWriteRead(true);
+                else if (reg == ModbusMapStand.RotationDirection)
+                    ((ModbusMapStand) reg).setSyncWriteRead(true);
                 return super.add(reg, value);
             }
 
@@ -299,7 +301,7 @@ public class SpringJavaConfig {
     @Bean
     @Autowired
     public TestBenchSectionUpdater testBenchSectionUpdater(TestBenchSectionController testBenchSectionController) {
-        return new TestBenchSectionUpdater(testBenchSectionController.getTargetRPMSpinner());
+        return new TestBenchSectionUpdater(testBenchSectionController);
     }
 
     @Bean

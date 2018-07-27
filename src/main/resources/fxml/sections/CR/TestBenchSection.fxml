@@ -5,6 +5,7 @@
 <?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.Spinner?>
 <?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
@@ -25,6 +26,30 @@
          <children>
             <Spinner fx:id="targetRPMSpinner" editable="true" maxHeight="30.0" maxWidth="90.0" minHeight="30.0" minWidth="90.0" prefHeight="30.0" prefWidth="90.0" GridPane.rowIndex="1" />
             <Label text="%bench.label.rpm" />
+            <GridPane GridPane.rowIndex="2">
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <ToggleButton fx:id="leftDirectionRotationToggleButton" mnemonicParsing="false" prefHeight="26.0" prefWidth="33.0" styleClass="leftArrow-button" stylesheets="@../../../css/Styling.css" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                      <toggleGroup>
+                          <ToggleGroup fx:id="rotationDirectionToggleGroup" />
+                      </toggleGroup>
+                     <GridPane.margin>
+                        <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                     </GridPane.margin>
+                  </ToggleButton>
+                  <ToggleButton fx:id="rightDirectionRotationToggleButton" mnemonicParsing="false" prefHeight="26.0" prefWidth="32.0" styleClass="rightArrow-button" stylesheets="@../../../css/Styling.css" toggleGroup="$rotationDirectionToggleGroup" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                     <GridPane.margin>
+                        <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                     </GridPane.margin>
+                  </ToggleButton>
+               </children>
+            </GridPane>
          </children>
       </GridPane>
       <GridPane alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="100.0" minWidth="100.0" HBox.hgrow="ALWAYS">
@@ -67,7 +92,7 @@
                   <Font name="Calibri" size="12.0" />
                </font>
             </ToggleButton>
-            <ToggleButton fx:id="testBenchStartBtn" minHeight="90.0" minWidth="50.0" mnemonicParsing="false" prefWidth="50.0" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+            <ToggleButton fx:id="testBenchStartBtn" minHeight="147.0" minWidth="150.0" mnemonicParsing="false" styleClass="switcher" stylesheets="@../../../css/Styling.css" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                <GridPane.margin>
                   <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
                </GridPane.margin></ToggleButton>

@@ -13,6 +13,15 @@ import javax.annotation.PostConstruct;
 public class TestBenchSectionController {
 
     @FXML
+    private ToggleButton leftDirectionRotationToggleButton;
+
+    @FXML
+    private ToggleGroup rotationDirectionToggleGroup;
+
+    @FXML
+    private ToggleButton rightDirectionRotationToggleButton;
+
+    @FXML
     private ToggleButton testBenchStartBtn;
 
     @FXML
@@ -33,12 +42,28 @@ public class TestBenchSectionController {
         return targetRPMSpinner;
     }
 
+    public ToggleButton getLeftDirectionRotationToggleButton() {
+        return leftDirectionRotationToggleButton;
+    }
+
+    public ToggleButton getRightDirectionRotationToggleButton() {
+        return rightDirectionRotationToggleButton;
+    }
+
     public void setStandModbusWriter(ModbusRegisterProcessor standModbusWriter) {
         this.standModbusWriter = standModbusWriter;
     }
 
     @PostConstruct
     private void init() {
+
+        leftDirectionRotationToggleButton.setUserData(false);
+        rightDirectionRotationToggleButton.setUserData(true);
+
+        rotationDirectionToggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue != null)
+                standModbusWriter.add(ModbusMapStand.RotationDirection, newValue.getUserData());
+        });
 
         targetRPMSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 3000, 0, 50));
         SpinnerManager.setupSpinner(targetRPMSpinner, 0, 0, 3000, new CustomTooltip(), new SpinnerValueObtainer(0));
