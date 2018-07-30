@@ -70,7 +70,7 @@
         </GridPane>
         <GridPane fx:id="gridLedBeaker" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="130.0" minWidth="300.0" prefHeight="130.0" prefWidth="300.0" HBox.hgrow="ALWAYS">
             <children>
-                <ToggleButton fx:id="powerSwitch" minHeight="90.0" minWidth="50.0" mnemonicParsing="false" prefWidth="50.0" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                <ToggleButton fx:id="powerSwitch" minHeight="90.0" minWidth="50.0" mnemonicParsing="false" prefWidth="50.0" styleClass="switcher" stylesheets="@../../../css/Styling.css" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                     <GridPane.margin>
                         <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
                     </GridPane.margin>

@@ -154,8 +154,10 @@
 }
 
 .switcher{
-    -fx-background-image: url("../img/turn-off.jpg");
+
+    -fx-background-image: url("../img/switcher_off.png");
     -fx-background-color: transparent;
+    -fx-background-repeat: no-repeat;
     -fx-opacity: 0.8;
 }
 
@@ -171,16 +173,57 @@
 
 .switcher:armed{
 
-    -fx-background-image: url("../img/turn-on.jpg");
+    -fx-background-image: url("../img/switcher_on.png");
     -fx-opacity: 1;
 }
 
 .switcher:selected{
 
-    -fx-background-image: url("../img/turn-on.jpg");
+    -fx-background-image: url("../img/switcher_on.png");
     -fx-opacity: 1;
 }
 
 .switcher:disabled{
-    -fx-background-image: url("../img/turn-disable.jpg");
+    -fx-background-image: url("../img/switcher_disabled.png");
+}
+
+.pump-button{
+
+    -fx-background-image: url("../img/pump_button-off.png");
+    -fx-background-color: transparent;
+    -fx-background-repeat: no-repeat;
+    -fx-opacity: 0.8;
+}
+
+.pump-button:hover{
+
+    -fx-opacity: 1;
+}
+
+.pump-button:focused{
+
+    -fx-opacity: 1;
+}
+
+.pump-button:armed{
+
+    -fx-opacity: 1;
+}
+
+.pump-button:selected{
+
+    -fx-opacity: 1;
+}
+
+
+.pump-button-on{
+
+    -fx-background-image: url("../img/pump_button-on.png");
+    -fx-opacity: 1;
+}
+
+.pump-button-off{
+
+    -fx-background-image: url("../img/pump_button-off.png");
+    -fx-opacity: 1;
 }

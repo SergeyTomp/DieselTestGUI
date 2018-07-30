@@ -16,10 +16,13 @@ public class TestBenchSectionUpdater implements Updater {
 
     private ToggleButton rightDirectionRotationToggleButton;
 
+    private ToggleButton testBenchStartToggleButton;
+
     public TestBenchSectionUpdater(TestBenchSectionController testBenchSectionController) {
         targetRPMSpinner = testBenchSectionController.getTargetRPMSpinner();
         leftDirectionRotationToggleButton = testBenchSectionController.getLeftDirectionRotationToggleButton();
         rightDirectionRotationToggleButton = testBenchSectionController.getRightDirectionRotationToggleButton();
+        testBenchStartToggleButton = testBenchSectionController.getTestBenchStartToggleButton();
     }
 
     @Override
@@ -35,6 +38,7 @@ public class TestBenchSectionUpdater implements Updater {
         else
             targetRPMSpinner.getValueFactory().setValue(Integer.valueOf(ModbusMapStand.TargetRPM.getLastValue().toString()));
 
+
         if (ModbusMapStand.RotationDirection.isSyncWriteRead())
             ModbusMapStand.RotationDirection.setSyncWriteRead(false);
         else {
@@ -44,6 +48,11 @@ public class TestBenchSectionUpdater implements Updater {
             else
                 leftDirectionRotationToggleButton.selectedProperty().setValue(true);
         }
+
+        if (ModbusMapStand.Rotation.isSyncWriteRead())
+            ModbusMapStand.Rotation.setSyncWriteRead(false);
+        else
+            testBenchStartToggleButton.selectedProperty().setValue((Boolean)ModbusMapStand.Rotation.getLastValue());
 
     }
 }

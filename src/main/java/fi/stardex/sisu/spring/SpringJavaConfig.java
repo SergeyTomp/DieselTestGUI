@@ -253,6 +253,12 @@ public class SpringJavaConfig {
                     ((ModbusMapStand) reg).setSyncWriteRead(true);
                 else if (reg == ModbusMapStand.RotationDirection)
                     ((ModbusMapStand) reg).setSyncWriteRead(true);
+                else if (reg == ModbusMapStand.Rotation)
+                    ((ModbusMapStand) reg).setSyncWriteRead(true);
+                else if (reg == ModbusMapStand.PumpTurnOn)
+                    ((ModbusMapStand) reg).setSyncWriteRead(true);
+                else if (reg == ModbusMapStand.PumpAutoMode)
+                    ((ModbusMapStand) reg).setSyncWriteRead(true);
                 return super.add(reg, value);
             }
 

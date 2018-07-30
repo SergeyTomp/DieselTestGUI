@@ -15,6 +15,7 @@ public enum ModbusMapStand implements ModbusMap {
     FanTurnOn(RegisterType.DISCRETE_COIL, 3, 1, true),
     LightTurnOn(RegisterType.DISCRETE_COIL, 4, 1, true),
     HeatingTurnOn(RegisterType.DISCRETE_COIL, 5, 1, true),
+    PumpAutoMode(RegisterType.DISCRETE_COIL, 11, 1, true),
 
     CurrentRPM(RegisterType.REGISTER_INPUT, 13, 1, true),
     Pressure1(RegisterType.REGISTER_INPUT, 16, 2, true);
