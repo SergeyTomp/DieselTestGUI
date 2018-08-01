@@ -18,7 +18,14 @@ public class TestBenchSectionUpdater implements Updater {
 
     private ToggleButton testBenchStartToggleButton;
 
+    private ToggleButton pumpControlToggleButton;
+
+    private TestBenchSectionController testBenchSectionController;
+
     public TestBenchSectionUpdater(TestBenchSectionController testBenchSectionController) {
+        this.testBenchSectionController = testBenchSectionController;
+
+        pumpControlToggleButton = testBenchSectionController.getPumpControlToggleButton();
         targetRPMSpinner = testBenchSectionController.getTargetRPMSpinner();
         leftDirectionRotationToggleButton = testBenchSectionController.getLeftDirectionRotationToggleButton();
         rightDirectionRotationToggleButton = testBenchSectionController.getRightDirectionRotationToggleButton();
@@ -33,26 +40,54 @@ public class TestBenchSectionUpdater implements Updater {
     @Override
     public void run() {
 
+        Object targetRPMLastValue = ModbusMapStand.TargetRPM.getLastValue();
+
         if (ModbusMapStand.TargetRPM.isSyncWriteRead())
             ModbusMapStand.TargetRPM.setSyncWriteRead(false);
-        else
-            targetRPMSpinner.getValueFactory().setValue(Integer.valueOf(ModbusMapStand.TargetRPM.getLastValue().toString()));
+        else if (targetRPMLastValue != null) {
+            targetRPMSpinner.getValueFactory().setValue(Integer.valueOf(targetRPMLastValue.toString()));
+        }
 
+        Object rotationDirectionLastValue = ModbusMapStand.RotationDirection.getLastValue();
 
         if (ModbusMapStand.RotationDirection.isSyncWriteRead())
             ModbusMapStand.RotationDirection.setSyncWriteRead(false);
-        else {
-            boolean lastValue = (Boolean) ModbusMapStand.RotationDirection.getLastValue();
+        else if (rotationDirectionLastValue != null) {
+            boolean lastValue = (Boolean) rotationDirectionLastValue;
             if (lastValue)
                 rightDirectionRotationToggleButton.selectedProperty().setValue(true);
             else
                 leftDirectionRotationToggleButton.selectedProperty().setValue(true);
         }
 
+        Object rotationLastValue = ModbusMapStand.Rotation.getLastValue();
+
         if (ModbusMapStand.Rotation.isSyncWriteRead())
             ModbusMapStand.Rotation.setSyncWriteRead(false);
-        else
-            testBenchStartToggleButton.selectedProperty().setValue((Boolean)ModbusMapStand.Rotation.getLastValue());
+        else if (rotationLastValue != null)
+            testBenchStartToggleButton.selectedProperty().setValue((Boolean) rotationLastValue);
+
+
+        Object pumpTurnOnLastValue = ModbusMapStand.PumpTurnOn.getLastValue();
+        Object pumpAutoModeLastValue = ModbusMapStand.PumpAutoMode.getLastValue();
+
+        if (pumpAutoModeLastValue != null) {
+            if ((Boolean)pumpAutoModeLastValue) {
+                testBenchSectionController.setPumpState(testBenchStartToggleButton.isSelected() ?
+                        TestBenchSectionController.StatePump.AUTO_ON : TestBenchSectionController.StatePump.AUTO_OFF);
+            } else {
+                if (pumpTurnOnLastValue != null) {
+                    if ((Boolean) pumpTurnOnLastValue)
+                        testBenchSectionController.setPumpState(TestBenchSectionController.StatePump.ON);
+                    else
+                        testBenchSectionController.setPumpState(TestBenchSectionController.StatePump.OFF);
+                }
+            }
+            TestBenchSectionController.StatePump currentStatePump = testBenchSectionController.getPumpState();
+
+            pumpControlToggleButton.getStyleClass().set(1, currentStatePump.getStyle());
+            pumpControlToggleButton.setText(currentStatePump.getText());
+        }
 
     }
 }

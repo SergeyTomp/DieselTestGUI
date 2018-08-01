@@ -227,3 +227,32 @@
     -fx-background-image: url("../img/pump_button-off.png");
     -fx-opacity: 1;
 }
+
+.cooler{
+
+    -fx-background-image: url("../img/pump_button-off.png");
+    -fx-background-color: transparent;
+    -fx-background-repeat: no-repeat;
+    -fx-opacity: 0.8;
+}
+
+.cooler:hover{
+
+    -fx-opacity: 1;
+}
+
+.cooler:focused{
+
+    -fx-opacity: 1;
+}
+
+.cooler:armed{
+
+    -fx-background-image: url("../img/pump_button-on.png");
+}
+
+.cooler:selected{
+
+    -fx-background-image: url("../img/pump_button-on.png");
+    -fx-opacity: 1;
+}

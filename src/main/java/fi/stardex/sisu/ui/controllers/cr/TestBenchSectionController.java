@@ -37,7 +37,7 @@ public class TestBenchSectionController {
     private ToggleButton pumpControlToggleButton;
 
     @FXML
-    private ToggleButton buttonFanControl;
+    private ToggleButton fanControlToggleButton;
 
     @FXML
     private ProgressBar oilTank;
@@ -60,6 +60,10 @@ public class TestBenchSectionController {
 
     public ToggleButton getRightDirectionRotationToggleButton() {
         return rightDirectionRotationToggleButton;
+    }
+
+    public ToggleButton getPumpControlToggleButton() {
+        return pumpControlToggleButton;
     }
 
     public ToggleButton getTestBenchStartToggleButton() {
@@ -142,6 +146,8 @@ public class TestBenchSectionController {
 
         setupPumpControlToggleButton();
 
+        setupFanControlToggleButton();
+
     }
 
     private void setupRotationDirectionToggleButton() {
@@ -188,6 +194,13 @@ public class TestBenchSectionController {
         pumpControlToggleButton.setText(pumpState.getText());
 
         pumpControlToggleButton.setOnMouseClicked(this::mouseHandler);
+
+    }
+
+    private void setupFanControlToggleButton() {
+
+        fanControlToggleButton.selectedProperty().addListener((observable, oldValue, newValue) ->
+                standModbusWriter.add(ModbusMapStand.FanTurnOn, newValue));
 
     }
 
