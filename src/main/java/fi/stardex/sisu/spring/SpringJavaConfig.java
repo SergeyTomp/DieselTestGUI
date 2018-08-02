@@ -388,11 +388,4 @@ public class SpringJavaConfig {
         return new CSVSUpdater(manufacturerRepository, voltAmpereProfileRepository, injectorsRepository, injectorTestRepository);
     }
 
-
-    @Bean
-    public Object test() {
-        return new Object();
-    }
-
-
 }
