@@ -223,6 +223,9 @@ public abstract class ChartTask extends TimerTask {
         } catch (ModbusException e) {
             logger.error("Cannot obtain graphic 2", e);
             return;
+        } catch (ClassCastException e) {
+            logger.error("Cast Exception: ", e);
+            return;
         }
         Platform.runLater(() -> addData(resultDataList, getData()));
     }
