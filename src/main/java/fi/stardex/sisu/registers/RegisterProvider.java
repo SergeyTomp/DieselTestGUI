@@ -63,6 +63,9 @@ public abstract class RegisterProvider {
             logger.warn(e.getMessage());
             modbusConnect.disconnect2();
             return register.getLastValue();
+        } catch (ClassCastException e) {
+            logger.error("Cast Exception: ", e);
+            return register.getLastValue();
         }
     }
 
