@@ -294,7 +294,6 @@ public class InjectorSectionController {
         @Override
         public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
             if (newValue) {
-                powerSwitch.setText("On");
                 ultimaModbusWriter.add(ModbusMapUltima.Injectors_Running_En, true);
                 ledParametersChangeListener.sendLedRegisters();
                 // FIXME: throws NPE if there is no connection
@@ -302,7 +301,6 @@ public class InjectorSectionController {
                 timerTasksManager.start();
                 disableInjectorSectionLedsAndToggleGroup(true);
             } else {
-                powerSwitch.setText("Off");
                 ultimaModbusWriter.add(ModbusMapUltima.Injectors_Running_En, false);
                 ledParametersChangeListener.switchOffAll();
                 timerTasksManager.stop();

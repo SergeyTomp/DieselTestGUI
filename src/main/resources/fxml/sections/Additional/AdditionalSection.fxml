@@ -11,7 +11,7 @@
         <Tab fx:id="tabVoltage" text="%additional.voltage">
             <fx:include fx:id="voltage" source="tabs/Voltage.fxml" />
         </Tab>
-        <Tab text="%additional.delay">
+        <Tab fx:id="tabDelay" text="%additional.delay">
             <fx:include fx:id="delay" source="tabs/Delay.fxml" />
         </Tab>
         <Tab text="%additional.flow">

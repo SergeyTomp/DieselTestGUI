@@ -31,6 +31,13 @@ public enum ModbusMapUltima implements ModbusMap {
     Current_graph4_frame_num(RegisterType.REGISTER_HOLDING, 1027, 1, false),
     Current_graph4_update(RegisterType.DISCRETE_COIL, 1021, 1, false),
 
+    // DelayChartTask
+    Delay_graph(RegisterType.REGISTER_INPUT_CHART, 4220, 4476, false),
+    Delay_graph_channel_num(RegisterType.REGISTER_HOLDING, 115, 1, false),
+    Delay_graph_update(RegisterType.DISCRETE_COIL, 96, 1, false),
+
+
+
     Injectors_Running_En(RegisterType.DISCRETE_COIL, 42, 1, false),
 
 
@@ -78,10 +85,10 @@ public enum ModbusMapUltima implements ModbusMap {
 
 
 
-    private RegisterType type;
-    private int ref;
-    private int count;
-    private boolean autoUpdate;
+    private final RegisterType type;
+    private final int ref;
+    private final int count;
+    private final boolean autoUpdate;
     private Object lastValue;
 
     public static final List<ModbusMapUltima> slotNumbersList = new LinkedList<>();
@@ -145,11 +152,6 @@ public enum ModbusMapUltima implements ModbusMap {
     @Override
     public boolean isAutoUpdate() {
         return autoUpdate;
-    }
-
-    @Override
-    public void setAutoUpdate(boolean autoUpdate) {
-        this.autoUpdate = autoUpdate;
     }
 
     @Override

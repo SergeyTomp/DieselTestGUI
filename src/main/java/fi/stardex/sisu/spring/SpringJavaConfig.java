@@ -1,10 +1,7 @@
 package fi.stardex.sisu.spring;
 
 import fi.stardex.sisu.annotations.Module;
-import fi.stardex.sisu.charts.ChartTaskFour;
-import fi.stardex.sisu.charts.ChartTaskOne;
-import fi.stardex.sisu.charts.ChartTaskThree;
-import fi.stardex.sisu.charts.ChartTaskTwo;
+import fi.stardex.sisu.charts.*;
 import fi.stardex.sisu.connect.ConnectProcessor;
 import fi.stardex.sisu.connect.InetAddressWrapper;
 import fi.stardex.sisu.connect.ModbusConnect;
@@ -17,20 +14,21 @@ import fi.stardex.sisu.persistence.repos.ManufacturerRepository;
 import fi.stardex.sisu.persistence.repos.cr.InjectorTestRepository;
 import fi.stardex.sisu.persistence.repos.cr.InjectorsRepository;
 import fi.stardex.sisu.persistence.repos.cr.VoltAmpereProfileRepository;
+import fi.stardex.sisu.registers.ModbusMap;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.flow.ModbusMapFlow;
+import fi.stardex.sisu.registers.stand.ModbusMapStand;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.Enabler;
-import fi.stardex.sisu.ui.controllers.additional.tabs.ConnectionController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.*;
 import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
+import fi.stardex.sisu.ui.controllers.cr.TestBenchSectionController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
 import fi.stardex.sisu.ui.updaters.*;
 import fi.stardex.sisu.util.ApplicationConfigHandler;
+import fi.stardex.sisu.util.DelayCalculator;
 import fi.stardex.sisu.util.converters.DataConverter;
 import fi.stardex.sisu.util.converters.FlowResolver;
 import fi.stardex.sisu.util.i18n.I18N;
@@ -42,6 +40,7 @@ import fi.stardex.sisu.util.rescalers.DeliveryRescaler;
 import fi.stardex.sisu.util.rescalers.Rescaler;
 import fi.stardex.sisu.util.wrappers.StatusBarWrapper;
 import fi.stardex.sisu.version.FlowFirmwareVersion;
+import fi.stardex.sisu.version.StandFirmwareVersion;
 import fi.stardex.sisu.version.UltimaFirmwareVersion;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
@@ -150,7 +149,7 @@ public class SpringJavaConfig {
             public void setupFirmwareVersionListener() {
                 flowModbusConnect.connectedPropertyProperty().addListener((observable, oldValue, newValue) -> {
                     if (newValue) {
-                        int firmwareVersionNumber = (int) read(ModbusMapFlow.FlowMeterVersion);
+                        int firmwareVersionNumber = (int) read(ModbusMapFlow.FirmwareVersion);
                         switch (firmwareVersionNumber) {
                             case 0xAACC:
                                 FlowFirmwareVersion.setFlowFirmwareVersion(FlowFirmwareVersion.FLOW_MASTER);
@@ -174,8 +173,21 @@ public class SpringJavaConfig {
     public RegisterProvider standRegisterProvider(ModbusConnect standModbusConnect) {
         return new RegisterProvider(standModbusConnect) {
             @Override
-            protected void setupFirmwareVersionListener() {
-                // TODO: implement listener
+            public void setupFirmwareVersionListener() {
+                standModbusConnect.connectedPropertyProperty().addListener((observable, oldValue, newValue) -> {
+                    if (newValue) {
+                        int firmwareVersionNumber = (int) read(ModbusMapStand.FirmwareVersion);
+                        switch (firmwareVersionNumber) {
+                            case 0x1122:
+                                StandFirmwareVersion.setStandFirmwareVersion(StandFirmwareVersion.STAND);
+                                break;
+                            default:
+                                StandFirmwareVersion.setStandFirmwareVersion(null);
+                                logger.error("Wrong Stand firmware version!");
+                                break;
+                        }
+                    }
+                });
             }
         };
     }
@@ -190,8 +202,7 @@ public class SpringJavaConfig {
                 Thread loopThread = new Thread(new ProcessExecutor() {
                     @Override
                     protected void updateAll() {
-                        for (Updater updater : updaters)
-                            Platform.runLater(updater);
+                        updaters.forEach(Platform::runLater);
                     }
                 });
                 setLoopThread(loopThread);
@@ -226,18 +237,31 @@ public class SpringJavaConfig {
         };
     }
 
-    //TODO: implement
     @Bean
     @Autowired
-    public ModbusRegisterProcessor standModbusWriter(RegisterProvider standRegisterProvider) {
-        return new ModbusRegisterProcessor(standRegisterProvider, null) {
+    public ModbusRegisterProcessor standModbusWriter(List<Updater> updatersList, RegisterProvider standRegisterProvider) {
+        return new ModbusRegisterProcessor(standRegisterProvider, ModbusMapStand.values()) {
+
+            @Override
+            public boolean add(ModbusMap reg, Object value) {
+                if (reg == ModbusMapStand.TargetRPM)
+                    ((ModbusMapStand) reg).setSyncWriteRead(true);
+                else if (reg == ModbusMapStand.RotationDirection)
+                    ((ModbusMapStand) reg).setSyncWriteRead(true);
+                else if (reg == ModbusMapStand.Rotation)
+                    ((ModbusMapStand) reg).setSyncWriteRead(true);
+                else if (reg == ModbusMapStand.FanTurnOn)
+                    ((ModbusMapStand) reg).setSyncWriteRead(true);
+                return super.add(reg, value);
+            }
+
             @Override
             protected void initThread() {
-                List<Updater> updaters = null;
+                List<Updater> updaters = addUpdaters(updatersList, Device.MODBUS_STAND);
                 Thread loopThread = new Thread(new ProcessExecutor() {
                     @Override
                     protected void updateAll() {
-
+                        updaters.forEach(Platform::runLater);
                     }
                 });
                 setLoopThread(loopThread);
@@ -255,22 +279,28 @@ public class SpringJavaConfig {
 
     @Bean
     @Autowired
-    public InjectorSectionUpdater injectorSectionUpdater(VoltageController voltageController, DataConverter firmwareDataConverter) {
-        return new InjectorSectionUpdater(voltageController, firmwareDataConverter);
+    public InjectorSectionUpdater injectorSectionUpdater(VoltageController voltageController, DataConverter dataConverter) {
+        return new InjectorSectionUpdater(voltageController, dataConverter);
     }
 
     @Bean
     @Autowired
     public FlowMasterUpdater flowMasterUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
-                                         SettingsController settingsController, DataConverter dataConverter) {
+                                               SettingsController settingsController, DataConverter dataConverter) {
         return new FlowMasterUpdater(flowController, injectorSectionController, settingsController, dataConverter);
     }
 
     @Bean
     @Autowired
     public FlowStreamUpdater flowStreamUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
-                                         SettingsController settingsController, DataConverter dataConverter) {
+                                               SettingsController settingsController, DataConverter dataConverter) {
         return new FlowStreamUpdater(flowController, injectorSectionController, settingsController, dataConverter);
+    }
+
+    @Bean
+    @Autowired
+    public TestBenchSectionUpdater testBenchSectionUpdater(TestBenchSectionController testBenchSectionController) {
+        return new TestBenchSectionUpdater(testBenchSectionController);
     }
 
     @Bean
@@ -299,6 +329,17 @@ public class SpringJavaConfig {
     @Scope("prototype")
     public ChartTaskFour chartTaskFour() {
         return new ChartTaskFour();
+    }
+
+//    @Bean
+//    @Qualifier("delayChartTask")
+//    @Scope("prototype")
+//    public DelayChartTask delayChartTask(InjectorSectionController injectorSectionController, DelayController delayController){
+//        return new DelayChartTask(injectorSectionController, delayController);
+//    }
+    @Bean
+    public DelayCalculator delayCalculator (){
+        return new DelayCalculator();
     }
 
     @Bean

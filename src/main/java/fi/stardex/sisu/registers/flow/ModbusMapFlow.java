@@ -5,7 +5,7 @@ import fi.stardex.sisu.registers.RegisterType;
 
 public enum ModbusMapFlow implements ModbusMap {
 
-    FlowMeterVersion(RegisterType.REGISTER_INPUT, 0, 1, false),
+    FirmwareVersion(RegisterType.REGISTER_INPUT, 0, 1, false),
 
     StartMeasurementCycle(RegisterType.DISCRETE_COIL, 0, 1, false),
     StopMeasurementCycle(RegisterType.DISCRETE_COIL, 1, 1, false),
@@ -50,10 +50,10 @@ public enum ModbusMapFlow implements ModbusMap {
     Channel10Temperature1(RegisterType.REGISTER_INPUT, 124, 2, true),
     Channel10Temperature2(RegisterType.REGISTER_INPUT, 126, 2, true);
 
-    private RegisterType type;
-    private int ref;
-    private int count;
-    private boolean autoUpdate;
+    private final RegisterType type;
+    private final int ref;
+    private final int count;
+    private final boolean autoUpdate;
     private Object lastValue;
 
     ModbusMapFlow(RegisterType type, int ref, int count, boolean autoUpdate) {
@@ -93,8 +93,4 @@ public enum ModbusMapFlow implements ModbusMap {
         return autoUpdate;
     }
 
-    @Override
-    public void setAutoUpdate(boolean autoUpdate) {
-        this.autoUpdate = autoUpdate;
-    }
 }
