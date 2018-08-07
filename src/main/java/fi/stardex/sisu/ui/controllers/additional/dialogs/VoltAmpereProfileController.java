@@ -17,6 +17,8 @@ import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 
+import static fi.stardex.sisu.ui.controllers.SpinnerDefaults.*;
+
 public class VoltAmpereProfileController {
 
     @FXML
@@ -197,22 +199,79 @@ public class VoltAmpereProfileController {
 
     private void setupVAPSpinners() {
 
-        firstWSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(90, 15500, 500, 10));
-        boostISpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(3, 25.5, 21.5, 0.1));
-        firstISpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(2, 25.5, 15, 0.1));
-        secondISpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(1, 25.5, 5.5, 0.1));
-        batteryUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(11, 32, 20, 1));
-        negativeUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(17, 121, 48, 1));
-        boostUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(30, 75, 60, 1));
+        firstWSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory((int)FirstWSpinner.getMin(),
+                                                                                        (int)FirstWSpinner.getMax(),
+                                                                                        (int)FirstWSpinner.getInit(),
+                                                                                        (int)FirstWSpinner.getStep()));
+        boostISpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(BoostISpinner.getMin(),
+                                                                                        BoostISpinner.getMax(),
+                                                                                        BoostISpinner.getInit(),
+                                                                                        BoostISpinner.getStep()));
+        firstISpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(FirstISpinner.getMin(),
+                                                                                        FirstISpinner.getMax(),
+                                                                                        FirstISpinner.getInit(),
+                                                                                        FirstISpinner.getStep()));
+        secondISpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(SecondISpinner.getMin(),
+                                                                                        SecondISpinner.getMax(),
+                                                                                        SecondISpinner.getInit(),
+                                                                                        SecondISpinner.getStep()));
+        batteryUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory((int)BatteryUSpinner.getMin(),
+                                                                                            (int)BatteryUSpinner.getMax(),
+                                                                                            (int)BatteryUSpinner.getInit(),
+                                                                                            (int)BatteryUSpinner.getStep()));
+        negativeUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory((int)NegativeUSpinner.getMin(),
+                                                                                            (int)NegativeUSpinner.getMax(),
+                                                                                            (int)NegativeUSpinner.getInit(),
+                                                                                            (int)NegativeUSpinner.getStep()));
+        boostUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory((int)BoostUSpinner.getMin(),
+                                                                                            (int)BoostUSpinner.getMax(),
+                                                                                            (int)BoostUSpinner.getInit(),
+                                                                                            (int)BoostUSpinner.getStep()));
 
-        SpinnerManager.setupSpinner(widthCurrentSignal, 300, 120, 15500, new CustomTooltip(), widthCurrentSignalValueObtainer);
-        SpinnerManager.setupSpinner(firstWSpinner, 500, 90, 15500, new CustomTooltip(), new SpinnerValueObtainer(500));
-        SpinnerManager.setupSpinner(boostISpinner, 21.5, 21.51, new CustomTooltip(), new SpinnerValueObtainer(21.5));
-        SpinnerManager.setupSpinner(firstISpinner, 15, 15.01, new CustomTooltip(), new SpinnerValueObtainer(15));
-        SpinnerManager.setupSpinner(secondISpinner, 5.5, 5.51, new CustomTooltip(), new SpinnerValueObtainer(5.5));
-        SpinnerManager.setupSpinner(batteryUSpinner, 20, 11, 32, new CustomTooltip(), new SpinnerValueObtainer(20));
-        SpinnerManager.setupSpinner(negativeUSpinner, 48, 17, 121, new CustomTooltip(), new SpinnerValueObtainer(48));
-        SpinnerManager.setupSpinner(boostUSpinner, 60, 30, 75, new CustomTooltip(), new SpinnerValueObtainer(60));
+        SpinnerManager.setupSpinner(widthCurrentSignal,
+                                    (int)WidthCurrentSignalSpinner.getInit(),
+                                    (int)WidthCurrentSignalSpinner.getMin(),
+                                    (int)WidthCurrentSignalSpinner.getMax(),
+                                    new CustomTooltip(),
+                                    widthCurrentSignalValueObtainer);
+        SpinnerManager.setupSpinner(firstWSpinner, (int)FirstWSpinner.getInit(),
+                                                    (int)FirstWSpinner.getMin(),
+                                                    (int)FirstWSpinner.getMax(),
+                                                    new CustomTooltip(),
+                                                    new SpinnerValueObtainer((int)FirstWSpinner.getInit()));
+        SpinnerManager.setupSpinner(boostISpinner,
+                                    BoostISpinner.getInit(),
+                                    BoostISpinner.getFake(),
+                                    new CustomTooltip(),
+                                    new SpinnerValueObtainer(BoostISpinner.getInit()));
+        SpinnerManager.setupSpinner(firstISpinner,
+                                    FirstISpinner.getInit(),
+                                    FirstISpinner.getFake(),
+                                    new CustomTooltip(),
+                                    new SpinnerValueObtainer(FirstISpinner.getInit()));
+        SpinnerManager.setupSpinner(secondISpinner,
+                                    SecondISpinner.getInit(),
+                                    SecondISpinner.getFake(),
+                                    new CustomTooltip(),
+                                    new SpinnerValueObtainer(SecondISpinner.getInit()));
+        SpinnerManager.setupSpinner(batteryUSpinner,
+                                    (int)BatteryUSpinner.getInit(),
+                                    (int)BatteryUSpinner.getMin(),
+                                    (int)BatteryUSpinner.getMax(),
+                                    new CustomTooltip(),
+                                    new SpinnerValueObtainer((int)BatteryUSpinner.getInit()));
+        SpinnerManager.setupSpinner(negativeUSpinner,
+                                    (int)NegativeUSpinner.getInit(),
+                                    (int)NegativeUSpinner.getMin(),
+                                    (int)NegativeUSpinner.getMax(),
+                                    new CustomTooltip(),
+                                    new SpinnerValueObtainer((int)NegativeUSpinner.getInit()));
+        SpinnerManager.setupSpinner(boostUSpinner,
+                                    (int)BoostUSpinner.getInit(),
+                                    (int)BoostUSpinner.getMin(),
+                                    (int)BoostUSpinner.getMax(),
+                                    new CustomTooltip(),
+                                    new SpinnerValueObtainer((int)BoostUSpinner.getInit()));
 
         listOfVAPSpinners.add(widthCurrentSignal);
         listOfVAPSpinners.add(firstWSpinner);
