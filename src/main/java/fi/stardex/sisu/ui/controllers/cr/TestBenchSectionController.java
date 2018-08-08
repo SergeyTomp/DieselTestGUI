@@ -1,6 +1,5 @@
 package fi.stardex.sisu.ui.controllers.cr;
 
-import fi.stardex.sisu.registers.stand.ModbusMapStand;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.util.spinners.SpinnerManager;
 import fi.stardex.sisu.util.spinners.SpinnerValueObtainer;
@@ -13,6 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
+
+import static fi.stardex.sisu.registers.stand.ModbusMapStand.*;
 
 public class TestBenchSectionController {
 
@@ -68,6 +69,10 @@ public class TestBenchSectionController {
 
     public ToggleButton getTestBenchStartToggleButton() {
         return testBenchStartToggleButton;
+    }
+
+    public ToggleButton getFanControlToggleButton() {
+        return fanControlToggleButton;
     }
 
     public void setStandModbusWriter(ModbusRegisterProcessor standModbusWriter) {
@@ -157,7 +162,7 @@ public class TestBenchSectionController {
 
         rotationDirectionToggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null)
-                standModbusWriter.add(ModbusMapStand.RotationDirection, newValue.getUserData());
+                standModbusWriter.add(RotationDirection, newValue.getUserData());
         });
 
     }
@@ -168,14 +173,14 @@ public class TestBenchSectionController {
 
         SpinnerManager.setupSpinner(targetRPMSpinner, 0, 0, 3000, new CustomTooltip(), new SpinnerValueObtainer(0));
 
-        targetRPMSpinner.valueProperty().addListener((observable, oldValue, newValue) -> standModbusWriter.add(ModbusMapStand.TargetRPM, newValue));
+        targetRPMSpinner.valueProperty().addListener((observable, oldValue, newValue) -> standModbusWriter.add(TargetRPM, newValue));
 
     }
 
     private void setupTestBenchStartToggleButton() {
 
         testBenchStartToggleButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            standModbusWriter.add(ModbusMapStand.Rotation, newValue);
+            standModbusWriter.add(Rotation, newValue);
             if (StatePump.isAuto(pumpState))
                 setPumpAuto(newValue);
         });
@@ -200,7 +205,7 @@ public class TestBenchSectionController {
     private void setupFanControlToggleButton() {
 
         fanControlToggleButton.selectedProperty().addListener((observable, oldValue, newValue) ->
-                standModbusWriter.add(ModbusMapStand.FanTurnOn, newValue));
+                standModbusWriter.add(FanTurnOn, newValue));
 
     }
 
@@ -211,11 +216,11 @@ public class TestBenchSectionController {
                 logger.warn("Double clicked");
                 if (isAuto()) {
                     setPumpState(TestBenchSectionController.StatePump.OFF);
-                    standModbusWriter.add(ModbusMapStand.PumpAutoMode, false);
+                    standModbusWriter.add(PumpAutoMode, false);
                 } else {
                     setPumpState(testBenchStartToggleButton.isSelected() ?
                             TestBenchSectionController.StatePump.AUTO_ON : TestBenchSectionController.StatePump.AUTO_OFF);
-                    standModbusWriter.add(ModbusMapStand.PumpAutoMode, true);
+                    standModbusWriter.add(PumpAutoMode, true);
                 }
             } else if (mouseEvent.getClickCount() == 1) {
                 if (pumpState == TestBenchSectionController.StatePump.OFF)
@@ -232,7 +237,7 @@ public class TestBenchSectionController {
 
         pumpControlToggleButton.getStyleClass().set(1, pumpState.getStyle());
         pumpControlToggleButton.setText(pumpState.getText());
-        standModbusWriter.add(ModbusMapStand.PumpTurnOn, pumpState.isActive);
+        standModbusWriter.add(PumpTurnOn, pumpState.isActive);
 
     }
 

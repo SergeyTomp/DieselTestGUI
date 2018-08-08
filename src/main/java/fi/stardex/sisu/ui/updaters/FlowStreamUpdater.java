@@ -4,7 +4,6 @@ import fi.stardex.sisu.annotations.Module;
 import fi.stardex.sisu.combobox_values.FlowUnits;
 import fi.stardex.sisu.combobox_values.InjectorChannel;
 import fi.stardex.sisu.devices.Device;
-import fi.stardex.sisu.registers.flow.ModbusMapFlow;
 import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
@@ -12,6 +11,8 @@ import fi.stardex.sisu.util.converters.DataConverter;
 import fi.stardex.sisu.version.FlowFirmwareVersion;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
+
+import static fi.stardex.sisu.registers.flow.ModbusMapFlow.*;
 
 @Module(value = Device.MODBUS_FLOW)
 public class FlowStreamUpdater extends FlowUpdater implements Updater {
@@ -48,136 +49,136 @@ public class FlowStreamUpdater extends FlowUpdater implements Updater {
 
             String value;
 
-            if ((value = ModbusMapFlow.Channel1Level.getLastValue().toString()) != null)
+            if ((value = Channel1Level.getLastValue().toString()) != null)
                 show(value, deliveryFlowComboBox.getSelectionModel().getSelectedItem(), Flow.DELIVERY_1);
 
-            if ((value = ModbusMapFlow.Channel2Level.getLastValue().toString()) != null)
+            if ((value = Channel2Level.getLastValue().toString()) != null)
                 show(value, deliveryFlowComboBox.getSelectionModel().getSelectedItem(), Flow.DELIVERY_2);
 
-            if ((value = ModbusMapFlow.Channel3Level.getLastValue().toString()) != null)
+            if ((value = Channel3Level.getLastValue().toString()) != null)
                 show(value, deliveryFlowComboBox.getSelectionModel().getSelectedItem(), Flow.DELIVERY_3);
 
-            if ((value = ModbusMapFlow.Channel4Level.getLastValue().toString()) != null)
+            if ((value = Channel4Level.getLastValue().toString()) != null)
                 show(value, deliveryFlowComboBox.getSelectionModel().getSelectedItem(), Flow.DELIVERY_4);
 
-            if ((value = ModbusMapFlow.Channel5Level.getLastValue().toString()) != null)
+            if ((value = Channel5Level.getLastValue().toString()) != null)
                 show(value, backFlowComboBox.getSelectionModel().getSelectedItem(), Flow.BACK_FLOW_1);
 
-            if ((value = ModbusMapFlow.Channel6Level.getLastValue().toString()) != null)
+            if ((value = Channel6Level.getLastValue().toString()) != null)
                 show(value, backFlowComboBox.getSelectionModel().getSelectedItem(), Flow.BACK_FLOW_2);
 
-            if ((value = ModbusMapFlow.Channel7Level.getLastValue().toString()) != null)
+            if ((value = Channel7Level.getLastValue().toString()) != null)
                 show(value, backFlowComboBox.getSelectionModel().getSelectedItem(), Flow.BACK_FLOW_3);
 
-            if ((value = ModbusMapFlow.Channel8Level.getLastValue().toString()) != null)
+            if ((value = Channel8Level.getLastValue().toString()) != null)
                 show(value, backFlowComboBox.getSelectionModel().getSelectedItem(), Flow.BACK_FLOW_4);
 
-            if ((value = ModbusMapFlow.Channel1Temperature1.getLastValue().toString()) != null) {
+            if ((value = Channel1Temperature1.getLastValue().toString()) != null) {
                 convertedValue.append(dataConverter.
                         round(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
                 temperature1Delivery1Label.setText(ledBeaker1ToggleButton.isSelected() ? convertedValue.toString() : null);
                 convertedValue.setLength(0);
             }
 
-            if ((value = ModbusMapFlow.Channel1Temperature2.getLastValue().toString()) != null) {
+            if ((value = Channel1Temperature2.getLastValue().toString()) != null) {
                 convertedValue.append(dataConverter.
                         round(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
                 temperature2Delivery1Label.setText(ledBeaker1ToggleButton.isSelected() ? convertedValue.toString() : null);
                 convertedValue.setLength(0);
             }
 
-            if ((value = ModbusMapFlow.Channel2Temperature1.getLastValue().toString()) != null) {
+            if ((value = Channel2Temperature1.getLastValue().toString()) != null) {
                 convertedValue.append(dataConverter.
                         round(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
                 temperature1Delivery2Label.setText(ledBeaker2ToggleButton.isSelected() ? convertedValue.toString() : null);
                 convertedValue.setLength(0);
             }
 
-            if ((value = ModbusMapFlow.Channel2Temperature2.getLastValue().toString()) != null) {
+            if ((value = Channel2Temperature2.getLastValue().toString()) != null) {
                 convertedValue.append(dataConverter.
                         round(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
                 temperature2Delivery2Label.setText(ledBeaker2ToggleButton.isSelected() ? convertedValue.toString() : null);
                 convertedValue.setLength(0);
             }
 
-            if ((value = ModbusMapFlow.Channel3Temperature1.getLastValue().toString()) != null) {
+            if ((value = Channel3Temperature1.getLastValue().toString()) != null) {
                 convertedValue.append(dataConverter.
                         round(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
                 temperature1Delivery3Label.setText(ledBeaker3ToggleButton.isSelected() ? convertedValue.toString() : null);
                 convertedValue.setLength(0);
             }
 
-            if ((value = ModbusMapFlow.Channel3Temperature2.getLastValue().toString()) != null) {
+            if ((value = Channel3Temperature2.getLastValue().toString()) != null) {
                 convertedValue.append(dataConverter.
                         round(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
                 temperature2Delivery3Label.setText(ledBeaker3ToggleButton.isSelected() ? convertedValue.toString() : null);
                 convertedValue.setLength(0);
             }
 
-            if ((value = ModbusMapFlow.Channel4Temperature1.getLastValue().toString()) != null) {
+            if ((value = Channel4Temperature1.getLastValue().toString()) != null) {
                 convertedValue.append(dataConverter.
                         round(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
                 temperature1Delivery4Label.setText(ledBeaker4ToggleButton.isSelected() ? convertedValue.toString() : null);
                 convertedValue.setLength(0);
             }
 
-            if ((value = ModbusMapFlow.Channel4Temperature2.getLastValue().toString()) != null) {
+            if ((value = Channel4Temperature2.getLastValue().toString()) != null) {
                 convertedValue.append(dataConverter.
                         round(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
                 temperature2Delivery4Label.setText(ledBeaker4ToggleButton.isSelected() ? convertedValue.toString() : null);
                 convertedValue.setLength(0);
             }
 
-            if ((value = ModbusMapFlow.Channel5Temperature1.getLastValue().toString()) != null) {
+            if ((value = Channel5Temperature1.getLastValue().toString()) != null) {
                 convertedValue.append(dataConverter.
                         round(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
                 temperature1BackFlow1Label.setText(ledBeaker1ToggleButton.isSelected() ? convertedValue.toString() : null);
                 convertedValue.setLength(0);
             }
 
-            if ((value = ModbusMapFlow.Channel5Temperature2.getLastValue().toString()) != null) {
+            if ((value = Channel5Temperature2.getLastValue().toString()) != null) {
                 convertedValue.append(dataConverter.
                         round(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
                 temperature2BackFlow1Label.setText(ledBeaker1ToggleButton.isSelected() ? convertedValue.toString() : null);
                 convertedValue.setLength(0);
             }
 
-            if ((value = ModbusMapFlow.Channel6Temperature1.getLastValue().toString()) != null) {
+            if ((value = Channel6Temperature1.getLastValue().toString()) != null) {
                 convertedValue.append(dataConverter.
                         round(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
                 temperature1BackFlow2Label.setText(ledBeaker2ToggleButton.isSelected() ? convertedValue.toString() : null);
                 convertedValue.setLength(0);
             }
 
-            if ((value = ModbusMapFlow.Channel6Temperature2.getLastValue().toString()) != null) {
+            if ((value = Channel6Temperature2.getLastValue().toString()) != null) {
                 convertedValue.append(dataConverter.
                         round(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
                 temperature2BackFlow2Label.setText(ledBeaker2ToggleButton.isSelected() ? convertedValue.toString() : null);
                 convertedValue.setLength(0);
             }
 
-            if ((value = ModbusMapFlow.Channel7Temperature1.getLastValue().toString()) != null) {
+            if ((value = Channel7Temperature1.getLastValue().toString()) != null) {
                 convertedValue.append(dataConverter.
                         round(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
                 temperature1BackFlow3Label.setText(ledBeaker3ToggleButton.isSelected() ? convertedValue.toString() : null);
                 convertedValue.setLength(0);
             }
 
-            if ((value = ModbusMapFlow.Channel7Temperature2.getLastValue().toString()) != null) {
+            if ((value = Channel7Temperature2.getLastValue().toString()) != null) {
                 convertedValue.append(dataConverter.
                         round(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
                 temperature2BackFlow3Label.setText(ledBeaker3ToggleButton.isSelected() ? convertedValue.toString() : null);
                 convertedValue.setLength(0);
             }
 
-            if ((value = ModbusMapFlow.Channel8Temperature1.getLastValue().toString()) != null) {
+            if ((value = Channel8Temperature1.getLastValue().toString()) != null) {
                 convertedValue.append(dataConverter.
                         round(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
                 temperature1BackFlow4Label.setText(ledBeaker4ToggleButton.isSelected() ? convertedValue.toString() : null);
                 convertedValue.setLength(0);
             }
 
-            if ((value = ModbusMapFlow.Channel8Temperature2.getLastValue().toString()) != null) {
+            if ((value = Channel8Temperature2.getLastValue().toString()) != null) {
                 convertedValue.append(dataConverter.
                         round(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
                 temperature2BackFlow4Label.setText(ledBeaker4ToggleButton.isSelected() ? convertedValue.toString() : null);

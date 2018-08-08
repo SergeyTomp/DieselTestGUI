@@ -22,6 +22,8 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.PostConstruct;
 import java.util.*;
 
+import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.*;
+
 public class InjectorSectionController {
 
     private Logger logger = LoggerFactory.getLogger(InjectorSectionController.class);
@@ -199,9 +201,9 @@ public class InjectorSectionController {
 
         private ReadOnlyObjectProperty<InjectorChannel> injectorChannelProperty;
 
-        private List<ModbusMapUltima> slotNumbersList = ModbusMapUltima.getSlotNumbersList();
+        private List<ModbusMapUltima> slotNumbersList = getSlotNumbersList();
 
-        private List<ModbusMapUltima> slotPulsesList = ModbusMapUltima.getSlotPulsesList();
+        private List<ModbusMapUltima> slotPulsesList = getSlotPulsesList();
 
         private static final int OFF_COMMAND_NUMBER = 255;
 
@@ -247,7 +249,7 @@ public class InjectorSectionController {
             Iterator<LedController> activeControllersIterator = activeControllers.iterator();
             int activeLeds = activeControllers.size();
             double frequency = freqCurrentSignal.getValue();
-            ultimaModbusWriter.add(ModbusMapUltima.GImpulsesPeriod, 1000 / frequency);
+            ultimaModbusWriter.add(GImpulsesPeriod, 1000 / frequency);
             if (activeLeds == 0) {
                 return;
             }
@@ -269,11 +271,11 @@ public class InjectorSectionController {
 
         private void writeInjectorTypeRegister() {
             if (Objects.equals(coilRadioButton, injectorTypeProperty.get()))
-                ultimaModbusWriter.add(ModbusMapUltima.Injector_type, 0);
+                ultimaModbusWriter.add(Injector_type, 0);
             else if (Objects.equals(piezoRadioButton, injectorTypeProperty.get()))
-                ultimaModbusWriter.add(ModbusMapUltima.Injector_type, 1);
+                ultimaModbusWriter.add(Injector_type, 1);
             else if (Objects.equals(piezoDelphiRadioButton, injectorTypeProperty.get()))
-                ultimaModbusWriter.add(ModbusMapUltima.Injector_type, 2);
+                ultimaModbusWriter.add(Injector_type, 2);
             else
                 throw new AssertionError("Coil or piezo buttons have not been changeFlow.");
         }
@@ -294,14 +296,14 @@ public class InjectorSectionController {
         @Override
         public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
             if (newValue) {
-                ultimaModbusWriter.add(ModbusMapUltima.Injectors_Running_En, true);
+                ultimaModbusWriter.add(Injectors_Running_En, true);
                 ledParametersChangeListener.sendLedRegisters();
                 // FIXME: throws NPE if there is no connection
                 // при коннекте должен строиться хотя бы нулевой график
                 timerTasksManager.start();
                 disableInjectorSectionLedsAndToggleGroup(true);
             } else {
-                ultimaModbusWriter.add(ModbusMapUltima.Injectors_Running_En, false);
+                ultimaModbusWriter.add(Injectors_Running_En, false);
                 ledParametersChangeListener.switchOffAll();
                 timerTasksManager.stop();
                 disableInjectorSectionLedsAndToggleGroup(false);

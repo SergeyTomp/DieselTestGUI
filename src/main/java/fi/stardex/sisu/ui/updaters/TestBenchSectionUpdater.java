@@ -2,10 +2,11 @@ package fi.stardex.sisu.ui.updaters;
 
 import fi.stardex.sisu.annotations.Module;
 import fi.stardex.sisu.devices.Device;
-import fi.stardex.sisu.registers.stand.ModbusMapStand;
 import fi.stardex.sisu.ui.controllers.cr.TestBenchSectionController;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.ToggleButton;
+
+import static fi.stardex.sisu.registers.stand.ModbusMapStand.*;
 
 @Module(value = Device.MODBUS_STAND)
 public class TestBenchSectionUpdater implements Updater {
@@ -20,6 +21,8 @@ public class TestBenchSectionUpdater implements Updater {
 
     private ToggleButton pumpControlToggleButton;
 
+    private ToggleButton fanControlToggleButton;
+
     private TestBenchSectionController testBenchSectionController;
 
     public TestBenchSectionUpdater(TestBenchSectionController testBenchSectionController) {
@@ -30,6 +33,7 @@ public class TestBenchSectionUpdater implements Updater {
         leftDirectionRotationToggleButton = testBenchSectionController.getLeftDirectionRotationToggleButton();
         rightDirectionRotationToggleButton = testBenchSectionController.getRightDirectionRotationToggleButton();
         testBenchStartToggleButton = testBenchSectionController.getTestBenchStartToggleButton();
+        fanControlToggleButton = testBenchSectionController.getFanControlToggleButton();
     }
 
     @Override
@@ -40,18 +44,18 @@ public class TestBenchSectionUpdater implements Updater {
     @Override
     public void run() {
 
-        Object targetRPMLastValue = ModbusMapStand.TargetRPM.getLastValue();
+        Object targetRPMLastValue = TargetRPM.getLastValue();
 
-        if (ModbusMapStand.TargetRPM.isSyncWriteRead())
-            ModbusMapStand.TargetRPM.setSyncWriteRead(false);
+        if (TargetRPM.isSyncWriteRead())
+            TargetRPM.setSyncWriteRead(false);
         else if (targetRPMLastValue != null) {
             targetRPMSpinner.getValueFactory().setValue(Integer.valueOf(targetRPMLastValue.toString()));
         }
 
-        Object rotationDirectionLastValue = ModbusMapStand.RotationDirection.getLastValue();
+        Object rotationDirectionLastValue = RotationDirection.getLastValue();
 
-        if (ModbusMapStand.RotationDirection.isSyncWriteRead())
-            ModbusMapStand.RotationDirection.setSyncWriteRead(false);
+        if (RotationDirection.isSyncWriteRead())
+            RotationDirection.setSyncWriteRead(false);
         else if (rotationDirectionLastValue != null) {
             boolean lastValue = (Boolean) rotationDirectionLastValue;
             if (lastValue)
@@ -60,16 +64,16 @@ public class TestBenchSectionUpdater implements Updater {
                 leftDirectionRotationToggleButton.selectedProperty().setValue(true);
         }
 
-        Object rotationLastValue = ModbusMapStand.Rotation.getLastValue();
+        Object rotationLastValue = Rotation.getLastValue();
 
-        if (ModbusMapStand.Rotation.isSyncWriteRead())
-            ModbusMapStand.Rotation.setSyncWriteRead(false);
+        if (Rotation.isSyncWriteRead())
+            Rotation.setSyncWriteRead(false);
         else if (rotationLastValue != null)
             testBenchStartToggleButton.selectedProperty().setValue((Boolean) rotationLastValue);
 
 
-        Object pumpTurnOnLastValue = ModbusMapStand.PumpTurnOn.getLastValue();
-        Object pumpAutoModeLastValue = ModbusMapStand.PumpAutoMode.getLastValue();
+        Object pumpTurnOnLastValue = PumpTurnOn.getLastValue();
+        Object pumpAutoModeLastValue = PumpAutoMode.getLastValue();
 
         if (pumpAutoModeLastValue != null) {
             if ((Boolean)pumpAutoModeLastValue) {
@@ -89,5 +93,11 @@ public class TestBenchSectionUpdater implements Updater {
             pumpControlToggleButton.setText(currentStatePump.getText());
         }
 
+        Object fanTurnOnLastValue = FanTurnOn.getLastValue();
+
+        if (FanTurnOn.isSyncWriteRead())
+            FanTurnOn.setSyncWriteRead(false);
+        else if (fanTurnOnLastValue != null)
+            fanControlToggleButton.selectedProperty().setValue((Boolean) fanTurnOnLastValue);
     }
 }

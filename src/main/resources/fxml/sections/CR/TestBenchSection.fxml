@@ -81,7 +81,7 @@
         </rowConstraints>
          <children>
             <ProgressBar fx:id="oilTank" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="88.0" prefWidth="66.0" progress="0.0" GridPane.columnIndex="2" />
-            <ToggleButton fx:id="buttonFanControl" contentDisplay="CENTER" lineSpacing="2.0" maxHeight="94.0" maxWidth="94.0" minHeight="30.0" minWidth="30.0" mnemonicParsing="false" pickOnBounds="true" textAlignment="CENTER" textFill="#36231dc1" wrapText="true">
+            <ToggleButton fx:id="fanControlToggleButton" contentDisplay="CENTER" lineSpacing="2.0" maxHeight="94.0" maxWidth="94.0" minHeight="30.0" minWidth="30.0" mnemonicParsing="false" pickOnBounds="true" styleClass="cooler" stylesheets="@../../../css/Styling.css" textAlignment="CENTER" textFill="#36231dc1" wrapText="true">
                <font>
                   <Font name="Calibri" size="12.0" />
                </font>
