@@ -390,9 +390,9 @@ public class VoltAmpereProfileController {
         int widthValue = widthCurrentSignal.getValue();
         boolean boostToggleButtonSelected = enableBoostToggleButton.isSelected();
 
-        firstIValue = (boostIValue - firstIValue >= 0.5) ? firstIValue : firstIValue - 0.5;
-        secondIValue = (firstIValue - secondIValue >= 0.5) ? secondIValue : secondIValue - 0.5;
-        firstWValue = (widthValue - firstWValue >= 30) ? firstWValue : firstWValue - 30;
+        firstIValue = (boostIValue - firstIValue >= 0.5) ? firstIValue : boostIValue - 0.5;
+        secondIValue = (firstIValue - secondIValue >= 0.5) ? secondIValue : firstIValue - 0.5;
+        firstWValue = (widthValue - firstWValue >= 30) ? firstWValue : widthValue - 30;
 
         ultimaModbusWriter.add(ModbusMapUltima.Boost_U, boostUSpinner.getValue());
         ultimaModbusWriter.add(ModbusMapUltima.Battery_U, batteryUSpinner.getValue());

@@ -220,13 +220,11 @@ public abstract class FlowUpdater {
     private void refreshValues(String selectedItem, Flow flow) {
 
         if (FlowFirmwareVersion.getFlowFirmwareVersion() == FlowFirmwareVersion.FLOW_MASTER) {
-            System.err.println("refresh values if");
             if (flow == Flow.DELIVERY)
                 showOnChosenFlowUnit(ModbusMapFlow.Channel1Level.getLastValue().toString(), selectedItem, flow);
             else if (flow == Flow.BACK_FLOW)
                 showOnChosenFlowUnit(ModbusMapFlow.Channel2Level.getLastValue().toString(), selectedItem, flow);
         } else if (FlowFirmwareVersion.getFlowFirmwareVersion() == FlowFirmwareVersion.FLOW_STREAM) {
-            System.err.println("refresh values else");
             if (flow == Flow.DELIVERY)
                 showOnChosenFlowUnit(Arrays.asList(ModbusMapFlow.Channel1Level.getLastValue().toString(),
                         ModbusMapFlow.Channel2Level.getLastValue().toString(),

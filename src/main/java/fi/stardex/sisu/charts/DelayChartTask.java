@@ -168,7 +168,6 @@ public class DelayChartTask extends ChartTask {
             if (!updateOSC) {
                 return;
             }
-//            System.err.println(resultDataList);
             Platform.runLater(() -> addData(resultDataList, delayData));
         }
     }
