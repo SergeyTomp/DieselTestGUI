@@ -4,20 +4,22 @@ import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.XYChart;
 
+import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.*;
+
 public class ChartTaskOne extends ChartTask {
     @Override
     protected ModbusMapUltima getCurrentGraph() {
-        return ModbusMapUltima.Current_graph1;
+        return Current_graph1;
     }
 
     @Override
     protected ModbusMapUltima getCurrentGraphFrameNum() {
-        return ModbusMapUltima.Current_graph1_frame_num;
+        return Current_graph1_frame_num;
     }
 
     @Override
     protected ModbusMapUltima getCurrentGraphUpdate() {
-        return ModbusMapUltima.Current_graph1_update;
+        return Current_graph1_update;
     }
 
     @Override

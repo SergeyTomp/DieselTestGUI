@@ -2,7 +2,6 @@ package fi.stardex.sisu.ui.updaters;
 
 import fi.stardex.sisu.combobox_values.FlowUnits;
 import fi.stardex.sisu.combobox_values.InjectorChannel;
-import fi.stardex.sisu.registers.flow.ModbusMapFlow;
 import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
@@ -13,6 +12,8 @@ import javafx.scene.control.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import static fi.stardex.sisu.registers.flow.ModbusMapFlow.*;
 
 public abstract class FlowUpdater {
 
@@ -208,8 +209,7 @@ public abstract class FlowUpdater {
                                        Label temperature1BackFlow, Label temperature2BackFlow, TextField delivery, TextField backFlow) {
         ledBeaker.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue) {
-                setTempLabelsToNull(temperature1Delivery, temperature2Delivery,
-                        temperature1BackFlow, temperature2BackFlow);
+                setTempLabelsToNull(temperature1Delivery, temperature2Delivery, temperature1BackFlow, temperature2BackFlow);
                 setDeliveryBackFlowFieldsToNull(delivery, backFlow);
             }
             delivery.setEditable(newValue);
@@ -221,20 +221,20 @@ public abstract class FlowUpdater {
 
         if (FlowFirmwareVersion.getFlowFirmwareVersion() == FlowFirmwareVersion.FLOW_MASTER) {
             if (flow == Flow.DELIVERY)
-                showOnChosenFlowUnit(ModbusMapFlow.Channel1Level.getLastValue().toString(), selectedItem, flow);
+                showOnChosenFlowUnit(Channel1Level.getLastValue().toString(), selectedItem, flow);
             else if (flow == Flow.BACK_FLOW)
-                showOnChosenFlowUnit(ModbusMapFlow.Channel2Level.getLastValue().toString(), selectedItem, flow);
+                showOnChosenFlowUnit(Channel2Level.getLastValue().toString(), selectedItem, flow);
         } else if (FlowFirmwareVersion.getFlowFirmwareVersion() == FlowFirmwareVersion.FLOW_STREAM) {
             if (flow == Flow.DELIVERY)
-                showOnChosenFlowUnit(Arrays.asList(ModbusMapFlow.Channel1Level.getLastValue().toString(),
-                        ModbusMapFlow.Channel2Level.getLastValue().toString(),
-                        ModbusMapFlow.Channel3Level.getLastValue().toString(),
-                        ModbusMapFlow.Channel4Level.getLastValue().toString()), selectedItem, flow);
+                showOnChosenFlowUnit(Arrays.asList(Channel1Level.getLastValue().toString(),
+                        Channel2Level.getLastValue().toString(),
+                        Channel3Level.getLastValue().toString(),
+                        Channel4Level.getLastValue().toString()), selectedItem, flow);
             else if (flow == Flow.BACK_FLOW)
-                showOnChosenFlowUnit(Arrays.asList(ModbusMapFlow.Channel5Level.getLastValue().toString(),
-                        ModbusMapFlow.Channel6Level.getLastValue().toString(),
-                        ModbusMapFlow.Channel7Level.getLastValue().toString(),
-                        ModbusMapFlow.Channel8Level.getLastValue().toString()), selectedItem, flow);
+                showOnChosenFlowUnit(Arrays.asList(Channel5Level.getLastValue().toString(),
+                        Channel6Level.getLastValue().toString(),
+                        Channel7Level.getLastValue().toString(),
+                        Channel8Level.getLastValue().toString()), selectedItem, flow);
         }
 
     }
@@ -258,14 +258,10 @@ public abstract class FlowUpdater {
 
         float flowUnitsConvertValue = FlowUnits.getMapOfFlowUnits().get(selectedItem);
 
-        listOfConvertedValues.add(dataConverter.
-                round(dataConverter.convertDataToFloat(listOfValues.get(0)) * flowUnitsConvertValue));
-        listOfConvertedValues.add(dataConverter.
-                round(dataConverter.convertDataToFloat(listOfValues.get(1)) * flowUnitsConvertValue));
-        listOfConvertedValues.add(dataConverter.
-                round(dataConverter.convertDataToFloat(listOfValues.get(2)) * flowUnitsConvertValue));
-        listOfConvertedValues.add(dataConverter.
-                round(dataConverter.convertDataToFloat(listOfValues.get(3)) * flowUnitsConvertValue));
+        listOfConvertedValues.add(dataConverter.round(dataConverter.convertDataToFloat(listOfValues.get(0)) * flowUnitsConvertValue));
+        listOfConvertedValues.add(dataConverter.round(dataConverter.convertDataToFloat(listOfValues.get(1)) * flowUnitsConvertValue));
+        listOfConvertedValues.add(dataConverter.round(dataConverter.convertDataToFloat(listOfValues.get(2)) * flowUnitsConvertValue));
+        listOfConvertedValues.add(dataConverter.round(dataConverter.convertDataToFloat(listOfValues.get(3)) * flowUnitsConvertValue));
 
         TextField field1 = (flow == Flow.DELIVERY) ? delivery1TextField : backFlow1TextField;
         TextField field2 = (flow == Flow.DELIVERY) ? delivery2TextField : backFlow2TextField;
@@ -358,39 +354,35 @@ public abstract class FlowUpdater {
 
         String value;
 
-        if ((value = ModbusMapFlow.Channel1Level.getLastValue().toString()) != null)
+        if ((value = Channel1Level.getLastValue().toString()) != null)
             showOnChosenFlowUnit(value, deliveryFlowComboBox.getSelectionModel().getSelectedItem(), Flow.DELIVERY);
 
-        if ((value = (version == FlowFirmwareVersion.FLOW_MASTER) ? ModbusMapFlow.Channel2Level.getLastValue().toString()
-                : ModbusMapFlow.Channel5Level.getLastValue().toString()) != null)
+        if ((value = (version == FlowFirmwareVersion.FLOW_MASTER) ? Channel2Level.getLastValue().toString()
+                : Channel5Level.getLastValue().toString()) != null)
             showOnChosenFlowUnit(value, backFlowComboBox.getSelectionModel().getSelectedItem(), Flow.BACK_FLOW);
 
-        if ((value = ModbusMapFlow.Channel1Temperature1.getLastValue().toString()) != null) {
-            convertedValue.append(dataConverter.
-                    round(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
+        if ((value = Channel1Temperature1.getLastValue().toString()) != null) {
+            convertedValue.append(dataConverter.round(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
             setTempLabels(temperature1Delivery1Label, temperature1Delivery2Label,
                     temperature1Delivery3Label, temperature1Delivery4Label, convertedValue.toString());
             convertedValue.setLength(0);
         }
-        if ((value = ModbusMapFlow.Channel1Temperature2.getLastValue().toString()) != null) {
-            convertedValue.append(dataConverter.
-                    round(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
+        if ((value = Channel1Temperature2.getLastValue().toString()) != null) {
+            convertedValue.append(dataConverter.round(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
             setTempLabels(temperature2Delivery1Label, temperature2Delivery2Label,
                     temperature2Delivery3Label, temperature2Delivery4Label, convertedValue.toString());
             convertedValue.setLength(0);
         }
-        if ((value = (version == FlowFirmwareVersion.FLOW_MASTER) ? ModbusMapFlow.Channel2Temperature1.getLastValue().toString()
-                : ModbusMapFlow.Channel5Temperature1.getLastValue().toString()) != null) {
-            convertedValue.append(dataConverter.
-                    round(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
+        if ((value = (version == FlowFirmwareVersion.FLOW_MASTER) ? Channel2Temperature1.getLastValue().toString()
+                : Channel5Temperature1.getLastValue().toString()) != null) {
+            convertedValue.append(dataConverter.round(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
             setTempLabels(temperature1BackFlow1Label, temperature1BackFlow2Label,
                     temperature1BackFlow3Label, temperature1BackFlow4Label, convertedValue.toString());
             convertedValue.setLength(0);
         }
-        if ((value = (version == FlowFirmwareVersion.FLOW_MASTER) ? ModbusMapFlow.Channel2Temperature2.getLastValue().toString()
-                : ModbusMapFlow.Channel5Temperature2.getLastValue().toString()) != null) {
-            convertedValue.append(dataConverter.
-                    round(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
+        if ((value = (version == FlowFirmwareVersion.FLOW_MASTER) ? Channel2Temperature2.getLastValue().toString()
+                : Channel5Temperature2.getLastValue().toString()) != null) {
+            convertedValue.append(dataConverter.round(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
             setTempLabels(temperature2BackFlow1Label, temperature2BackFlow2Label,
                     temperature2BackFlow3Label, temperature2BackFlow4Label, convertedValue.toString());
             convertedValue.setLength(0);

@@ -19,6 +19,8 @@ import java.util.List;
 
 import static fi.stardex.sisu.util.SpinnerDefaults.*;
 
+import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.*;
+
 public class VoltAmpereProfileController {
 
     @FXML
@@ -394,33 +396,33 @@ public class VoltAmpereProfileController {
         secondIValue = (firstIValue - secondIValue >= 0.5) ? secondIValue : firstIValue - 0.5;
         firstWValue = (widthValue - firstWValue >= 30) ? firstWValue : widthValue - 30;
 
-        ultimaModbusWriter.add(ModbusMapUltima.Boost_U, boostUSpinner.getValue());
-        ultimaModbusWriter.add(ModbusMapUltima.Battery_U, batteryUSpinner.getValue());
-        ultimaModbusWriter.add(ModbusMapUltima.Negative_U, negativeValue);
-        ultimaModbusWriter.add(ModbusMapUltima.BoostIBoardOne, boostIValue * ONE_AMPERE_MULTIPLY);
-        ultimaModbusWriter.add(ModbusMapUltima.FirstIBoardOne, firstIValue * ONE_AMPERE_MULTIPLY);
-        ultimaModbusWriter.add(ModbusMapUltima.SecondIBoardOne, secondIValue * ONE_AMPERE_MULTIPLY);
-        ultimaModbusWriter.add(ModbusMapUltima.FirstWBoardOne, firstWValue);
-        ultimaModbusWriter.add(ModbusMapUltima.WidthBoardOne, widthValue);
-        ultimaModbusWriter.add(ModbusMapUltima.BoostIBoardTwo, boostIValue * ONE_AMPERE_MULTIPLY);
-        ultimaModbusWriter.add(ModbusMapUltima.FirstIBoardTwo, firstIValue * ONE_AMPERE_MULTIPLY);
-        ultimaModbusWriter.add(ModbusMapUltima.SecondIBoardTwo, secondIValue * ONE_AMPERE_MULTIPLY);
-        ultimaModbusWriter.add(ModbusMapUltima.FirstWBoardTwo, firstWValue);
-        ultimaModbusWriter.add(ModbusMapUltima.WidthBoardTwo, widthValue);
-        ultimaModbusWriter.add(ModbusMapUltima.BoostIBoardThree, boostIValue * ONE_AMPERE_MULTIPLY);
-        ultimaModbusWriter.add(ModbusMapUltima.FirstIBoardThree, firstIValue * ONE_AMPERE_MULTIPLY);
-        ultimaModbusWriter.add(ModbusMapUltima.SecondIBoardThree, secondIValue * ONE_AMPERE_MULTIPLY);
-        ultimaModbusWriter.add(ModbusMapUltima.FirstWBoardThree, firstWValue);
-        ultimaModbusWriter.add(ModbusMapUltima.WidthBoardThree, widthValue);
-        ultimaModbusWriter.add(ModbusMapUltima.BoostIBoardFour, boostIValue * ONE_AMPERE_MULTIPLY);
-        ultimaModbusWriter.add(ModbusMapUltima.FirstIBoardFour, firstIValue * ONE_AMPERE_MULTIPLY);
-        ultimaModbusWriter.add(ModbusMapUltima.SecondIBoardFour, secondIValue * ONE_AMPERE_MULTIPLY);
-        ultimaModbusWriter.add(ModbusMapUltima.FirstWBoardFour, firstWValue);
-        ultimaModbusWriter.add(ModbusMapUltima.WidthBoardFour, widthValue);
-        ultimaModbusWriter.add(ModbusMapUltima.StartOnBatteryUOne, boostToggleButtonSelected);
-        ultimaModbusWriter.add(ModbusMapUltima.StartOnBatteryUTwo, boostToggleButtonSelected);
-        ultimaModbusWriter.add(ModbusMapUltima.StartOnBatteryUThree, boostToggleButtonSelected);
-        ultimaModbusWriter.add(ModbusMapUltima.StartOnBatteryUFour, boostToggleButtonSelected);
+        ultimaModbusWriter.add(Boost_U, boostUSpinner.getValue());
+        ultimaModbusWriter.add(Battery_U, batteryUSpinner.getValue());
+        ultimaModbusWriter.add(Negative_U, negativeValue);
+        ultimaModbusWriter.add(BoostIBoardOne, boostIValue * ONE_AMPERE_MULTIPLY);
+        ultimaModbusWriter.add(FirstIBoardOne, firstIValue * ONE_AMPERE_MULTIPLY);
+        ultimaModbusWriter.add(SecondIBoardOne, secondIValue * ONE_AMPERE_MULTIPLY);
+        ultimaModbusWriter.add(FirstWBoardOne, firstWValue);
+        ultimaModbusWriter.add(WidthBoardOne, widthValue);
+        ultimaModbusWriter.add(BoostIBoardTwo, boostIValue * ONE_AMPERE_MULTIPLY);
+        ultimaModbusWriter.add(FirstIBoardTwo, firstIValue * ONE_AMPERE_MULTIPLY);
+        ultimaModbusWriter.add(SecondIBoardTwo, secondIValue * ONE_AMPERE_MULTIPLY);
+        ultimaModbusWriter.add(FirstWBoardTwo, firstWValue);
+        ultimaModbusWriter.add(WidthBoardTwo, widthValue);
+        ultimaModbusWriter.add(BoostIBoardThree, boostIValue * ONE_AMPERE_MULTIPLY);
+        ultimaModbusWriter.add(FirstIBoardThree, firstIValue * ONE_AMPERE_MULTIPLY);
+        ultimaModbusWriter.add(SecondIBoardThree, secondIValue * ONE_AMPERE_MULTIPLY);
+        ultimaModbusWriter.add(FirstWBoardThree, firstWValue);
+        ultimaModbusWriter.add(WidthBoardThree, widthValue);
+        ultimaModbusWriter.add(BoostIBoardFour, boostIValue * ONE_AMPERE_MULTIPLY);
+        ultimaModbusWriter.add(FirstIBoardFour, firstIValue * ONE_AMPERE_MULTIPLY);
+        ultimaModbusWriter.add(SecondIBoardFour, secondIValue * ONE_AMPERE_MULTIPLY);
+        ultimaModbusWriter.add(FirstWBoardFour, firstWValue);
+        ultimaModbusWriter.add(WidthBoardFour, widthValue);
+        ultimaModbusWriter.add(StartOnBatteryUOne, boostToggleButtonSelected);
+        ultimaModbusWriter.add(StartOnBatteryUTwo, boostToggleButtonSelected);
+        ultimaModbusWriter.add(StartOnBatteryUThree, boostToggleButtonSelected);
+        ultimaModbusWriter.add(StartOnBatteryUFour, boostToggleButtonSelected);
 
     }
 

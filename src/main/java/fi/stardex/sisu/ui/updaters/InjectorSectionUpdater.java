@@ -2,9 +2,10 @@ package fi.stardex.sisu.ui.updaters;
 
 import fi.stardex.sisu.annotations.Module;
 import fi.stardex.sisu.devices.Device;
-import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
 import fi.stardex.sisu.util.converters.DataConverter;
+
+import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.*;
 
 @Module(value = Device.ULTIMA)
 public class InjectorSectionUpdater implements Updater {
@@ -29,29 +30,29 @@ public class InjectorSectionUpdater implements Updater {
     public void run() {
 
         String value;
-        Float convertedValue;
+        float convertedValue;
 
-        if ((value = ModbusMapUltima.WidthBoardOne.getLastValue().toString()) != null)
+        if ((value = WidthBoardOne.getLastValue().toString()) != null)
             voltageController.getWidth().setText(value);
-        if ((value = ModbusMapUltima.Boost_U.getLastValue().toString()) != null)
+        if ((value = Boost_U.getLastValue().toString()) != null)
             voltageController.getVoltage().setText(value);
-        if ((value = ModbusMapUltima.FirstWBoardOne.getLastValue().toString()) != null)
+        if ((value = FirstWBoardOne.getLastValue().toString()) != null)
             voltageController.getFirstWidth().setText(value);
-        if ((value = ModbusMapUltima.FirstIBoardOne.getLastValue().toString()) != null) {
+        if ((value = FirstIBoardOne.getLastValue().toString()) != null) {
             convertedValue = firmwareDataConverter.round(firmwareDataConverter.convertDataToFloat(value) / ONE_AMPERE_MULTIPLY);
-            voltageController.getFirstCurrent().setText(convertedValue.toString());
+            voltageController.getFirstCurrent().setText(Float.toString(convertedValue));
         }
-        if ((value = ModbusMapUltima.SecondIBoardOne.getLastValue().toString()) != null) {
+        if ((value = SecondIBoardOne.getLastValue().toString()) != null) {
             convertedValue = firmwareDataConverter.round(firmwareDataConverter.convertDataToFloat(value) / ONE_AMPERE_MULTIPLY);
-            voltageController.getSecondCurrent().setText(convertedValue.toString());
+            voltageController.getSecondCurrent().setText(Float.toString(convertedValue));
         }
-        if ((value = ModbusMapUltima.BoostIBoardOne.getLastValue().toString()) != null) {
+        if ((value = BoostIBoardOne.getLastValue().toString()) != null) {
             convertedValue = firmwareDataConverter.round(firmwareDataConverter.convertDataToFloat(value) / ONE_AMPERE_MULTIPLY);
-            voltageController.getBoostI().setText(convertedValue.toString());
+            voltageController.getBoostI().setText(Float.toString(convertedValue));
         }
-        if ((value = ModbusMapUltima.Battery_U.getLastValue().toString()) != null)
+        if ((value = Battery_U.getLastValue().toString()) != null)
             voltageController.getBatteryU().setText(value);
-        if ((value = ModbusMapUltima.Negative_U.getLastValue().toString()) != null)
+        if ((value = Negative_U.getLastValue().toString()) != null)
             voltageController.getNegativeU().setText(value);
 
     }
