@@ -13,13 +13,13 @@ public enum ModbusMapStand implements ModbusMap {
     Rotation(RegisterType.DISCRETE_COIL, 1, 1, true),
     PumpTurnOn(RegisterType.DISCRETE_COIL, 2, 1, true),
     FanTurnOn(RegisterType.DISCRETE_COIL, 3, 1, true),
-    LightTurnOn(RegisterType.DISCRETE_COIL, 4, 1, true),
-    HeatingTurnOn(RegisterType.DISCRETE_COIL, 5, 1, true),
     PumpAutoMode(RegisterType.DISCRETE_COIL, 11, 1, true),
 
     CurrentRPM(RegisterType.REGISTER_INPUT, 13, 1, true),
-    Pressure1(RegisterType.REGISTER_INPUT, 16, 2, true);
-
+    Pressure1(RegisterType.REGISTER_INPUT, 16, 2, true),
+    TankOilLevel(RegisterType.REGISTER_INPUT, 20, 1, true),
+    Temperature1(RegisterType.REGISTER_INPUT, 21, 2, true),
+    Temperature2(RegisterType.REGISTER_INPUT, 23, 2, true);
 
 
     private final RegisterType type;
