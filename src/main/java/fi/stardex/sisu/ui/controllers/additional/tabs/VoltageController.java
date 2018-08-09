@@ -198,9 +198,9 @@ public class VoltageController {
         width.setText("1000"); // widthCurrentSignal initial value
         voltage.setText("60"); // boostUSpinner initial value
         firstWidth.setText("500"); // firstWSpinner initial value
-        firstCurrent.setText("11.0"); // firstISpinner initial value
-        secondCurrent.setText("6.6"); // secondISpinner initial value
-        boostI.setText("21.8"); // boostISpinner initial value
+        firstCurrent.setText("15.0"); // firstISpinner initial value
+        secondCurrent.setText("5.4"); // secondISpinner initial value
+        boostI.setText("21.5"); // boostISpinner initial value
         batteryU.setText("20"); // batteryUSpinner initial value
         negativeU.setText("48"); // negativeUSpinner initial value
 

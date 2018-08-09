@@ -22,6 +22,8 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.PostConstruct;
 import java.util.*;
 
+import static fi.stardex.sisu.util.SpinnerDefaults.*;
+
 public class InjectorSectionController {
 
     private Logger logger = LoggerFactory.getLogger(InjectorSectionController.class);
@@ -169,11 +171,21 @@ public class InjectorSectionController {
 
         setupInjectorConfigComboBox();
 
-        widthCurrentSignal.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(120, 15500, 1000, 10));
+        widthCurrentSignal.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(WIDTH_CURRENT_SIGNAL_SPINNER_MIN,
+                                                                                                WIDTH_CURRENT_SIGNAL_SPINNER_MAX,
+                                                                                                WIDTH_CURRENT_SIGNAL_SPINNER_INIT,
+                                                                                                WIDTH_CURRENT_SIGNAL_SPINNER_STEP));
 
-        freqCurrentSignal.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0.5, 50, 16.67, 0.01));
+        freqCurrentSignal.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(FREQ_CURRENT_SIGNAL_MIN,
+                                                                                            FREQ_CURRENT_SIGNAL_MAX,
+                                                                                            FREQ_CURRENT_SIGNAL_INIT,
+                                                                                            FREQ_CURRENT_SIGNAL_STEP));
 
-        SpinnerManager.setupSpinner(freqCurrentSignal, 16.67, 16.671, new CustomTooltip(), new SpinnerValueObtainer(16.67));
+        SpinnerManager.setupSpinner(freqCurrentSignal,
+                                    FREQ_CURRENT_SIGNAL_INIT,
+                                    FREQ_CURRENT_SIGNAL_FAKE,
+                                    new CustomTooltip(),
+                                    new SpinnerValueObtainer(FREQ_CURRENT_SIGNAL_INIT));
 
         ledParametersChangeListener = new LedParametersChangeListener();
 
@@ -219,7 +231,7 @@ public class InjectorSectionController {
         public void changed(ObservableValue<?> observable, Object oldValue, Object newValue) {
             switchOffAll();
             if (newValue instanceof Double) {
-                if (((Double) newValue <= 50 && (Double) newValue >= 0.5) && (Double) newValue != 16.671) {
+                if (((Double) newValue <= 50 && (Double) newValue >= 0.5) && (Double) newValue != FREQ_CURRENT_SIGNAL_FAKE) {
                     sendLedRegisters();
                 }
             } else if (newValue instanceof Toggle) {

@@ -8,13 +8,13 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.Button;
-import javafx.scene.control.Spinner;
-import javafx.scene.control.SpinnerValueFactory;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
+import javafx.scene.layout.GridPane;
+
 import javax.annotation.PostConstruct;
 import java.util.regex.Pattern;
 
@@ -46,6 +46,12 @@ public class DelayController {
 
     @FXML
     private TextField addingTime;
+
+    @FXML
+    private Label delayAttentionLabel;
+
+    @FXML
+    private GridPane delayGridPane;
 
     private ObservableList<XYChart.Data<Double, Double>> delayData;
 
@@ -140,5 +146,12 @@ public class DelayController {
 
     public void setDelayCalculator(DelayCalculator delayCalculator) {
         this.delayCalculator = delayCalculator;
+    }
+
+    public void showAttentionLabel(boolean isConnected) {
+        delayAttentionLabel.setVisible(!isConnected);
+        for (Node node : delayGridPane.getChildren()) {
+            node.setDisable(!isConnected);
+        }
     }
 }

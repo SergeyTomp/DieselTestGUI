@@ -3,15 +3,12 @@ package fi.stardex.sisu.ui.controllers.dialogs;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorType;
 import fi.stardex.sisu.persistence.orm.cr.inj.VoltAmpereProfile;
 import fi.stardex.sisu.persistence.repos.cr.VoltAmpereProfileRepository;
-import fi.stardex.sisu.util.spinners.SpinnerManager;
-import fi.stardex.sisu.util.spinners.SpinnerValueObtainer;
-import fi.stardex.sisu.util.tooltips.CustomTooltip;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
+import static fi.stardex.sisu.util.SpinnerDefaults.*;
 
 public class NewEditVOAPDialogController {
 
@@ -80,13 +77,34 @@ public class NewEditVOAPDialogController {
         });
 
         //TODO: Boost U для Piezo/PiezoDelphi [30; 350]
-        firstWSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(90, 15500, 500, 10));
-        boostISpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(3, 25.5, 21.8, 0.1));
-        firstISpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(2, 25.5, 11, 0.1));
-        secondISpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(1, 25.5, 6.6, 0.1));
-        batteryUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(11, 32, 20, 1));
-        negativeUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(17, 121, 48, 1));
-        boostUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(30, 75, 60, 1));
+        firstWSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(FIRST_W_SPINNER_MIN,
+                                                                                        FIRST_W_SPINNER_MAX,
+                                                                                        FIRST_W_SPINNER_INIT,
+                                                                                        FIRST_W_SPINNER_STEP));
+        boostISpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(BOOST_I_SPINNER_MIN,
+                                                                                        BOOST_I_SPINNER_MAX,
+                                                                                        BOOST_I_SPINNER_INIT,
+                                                                                        BOOST_I_SPINNER_STEP));
+        firstISpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(FIRST_I_SPINNER_MIN,
+                                                                                        FIRST_I_SPINNER_MAX,
+                                                                                        FIRST_I_SPINNER_INIT,
+                                                                                        FIRST_I_SPINNER_STEP));
+        secondISpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(SECOND_I_SPINNER_MIN,
+                                                                                        SECOND_I_SPINNER_MAX,
+                                                                                        SECOND_I_SPINNER_INIT,
+                                                                                        SECOND_I_SPINNER_STEP));
+        batteryUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(BATTERY_U_SPINNER_MIN,
+                                                                                        BATTERY_U_SPINNER_MAX,
+                                                                                        BATTERY_U_SPINNER_INIT,
+                                                                                        BATTERY_U_SPINNER_STEP));
+        negativeUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(NEGATIVE_U_SPINNER_MIN,
+                                                                                            NEGATIVE_U_SPINNER_MAX,
+                                                                                            NEGATIVE_U_SPINNER_INIT,
+                                                                                            NEGATIVE_U_SPINNER_STEP));
+        boostUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(BOOST_U_SPINNER_MIN,
+                                                                                        BOOST_U_SPINNER_MAX,
+                                                                                        BOOST_U_SPINNER_INIT,
+                                                                                        BOOST_U_SPINNER_STEP));
 
     }
 
