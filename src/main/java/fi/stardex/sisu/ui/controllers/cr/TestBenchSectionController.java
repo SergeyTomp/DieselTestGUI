@@ -23,53 +23,37 @@ public class TestBenchSectionController {
 
     private Logger logger = LoggerFactory.getLogger(TestBenchSectionController.class);
 
-    @FXML
-    private StackPane lcdStackPane;
+    @FXML private StackPane lcdStackPane;
 
-    @FXML
-    private ToggleButton leftDirectionRotationToggleButton;
+    @FXML private Spinner<Integer> targetRPMSpinner;
 
-    @FXML
-    private ToggleGroup rotationDirectionToggleGroup;
+    @FXML private ToggleButton leftDirectionRotationToggleButton;
 
-    @FXML
-    private ToggleButton rightDirectionRotationToggleButton;
+    @FXML private ToggleGroup rotationDirectionToggleGroup;
 
-    @FXML
-    private ToggleButton testBenchStartToggleButton;
+    @FXML private ToggleButton rightDirectionRotationToggleButton;
 
-    @FXML
-    private Spinner<Integer> targetRPMSpinner;
+    @FXML private ToggleButton testBenchStartToggleButton;
 
-    @FXML
-    private ToggleButton pumpControlToggleButton;
+    @FXML private ToggleButton pumpControlToggleButton;
 
-    @FXML
-    private ToggleButton fanControlToggleButton;
+    @FXML private ToggleButton fanControlToggleButton;
 
-    @FXML
-    private ProgressBar tempProgressBar1;
+    @FXML private ProgressBar tempProgressBar1;
 
-    @FXML
-    private ProgressBar tempProgressBar2;
+    @FXML private ProgressBar tempProgressBar2;
 
-    @FXML
-    private ProgressBar pressProgressBar1;
+    @FXML private ProgressBar pressProgressBar1;
 
-    @FXML
-    private ProgressBar tankOil;
+    @FXML private ProgressBar tankOil;
 
-    @FXML
-    private Text tankOilText;
+    @FXML private Text tankOilText;
 
-    @FXML
-    private Text tempText1;
+    @FXML private Text tempText1;
 
-    @FXML
-    private Text pressText1;
+    @FXML private Text pressText1;
 
-    @FXML
-    private Text tempText2;
+    @FXML private Text tempText2;
 
     private static final String PUMP_BUTTON_ON = "pump-button-on";
 
@@ -79,7 +63,7 @@ public class TestBenchSectionController {
 
     private ModbusRegisterProcessor standModbusWriter;
 
-    private Lcd currentRPMlcd;
+    private Lcd currentRPMLcd;
 
     public Spinner<Integer> getTargetRPMSpinner() {
         return targetRPMSpinner;
@@ -105,8 +89,8 @@ public class TestBenchSectionController {
         return fanControlToggleButton;
     }
 
-    public Lcd getCurrentRPMlcd() {
-        return currentRPMlcd;
+    public Lcd getCurrentRPMLcd() {
+        return currentRPMLcd;
     }
 
     public ProgressBar getTempProgressBar1() {
@@ -145,35 +129,41 @@ public class TestBenchSectionController {
         this.standModbusWriter = standModbusWriter;
     }
 
+    public boolean isOn() {
+        return pumpState == StatePump.ON;
+    }
+
+    private boolean isAuto() {
+        return pumpState == StatePump.AUTO_ON || pumpState == StatePump.AUTO_OFF;
+    }
+
+    public StatePump getPumpState() {
+        return pumpState;
+    }
+
+    public void setPumpState(StatePump pumpState) {
+        this.pumpState = pumpState;
+    }
+
     public enum StatePump {
 
-        ON("PUMP\n ON", "1", true, PUMP_BUTTON_ON),
-        OFF("PUMP\n OFF ", "0", false, PUMP_BUTTON_OFF),
-        AUTO_ON("PUMP\nAUTO", "1", true, PUMP_BUTTON_ON),
-        AUTO_OFF("PUMP\nAUTO", "0", false, PUMP_BUTTON_OFF);
+        ON("PUMP\n ON", true, PUMP_BUTTON_ON),
+        OFF("PUMP\n OFF ", false, PUMP_BUTTON_OFF),
+        AUTO_ON("PUMP\nAUTO", true, PUMP_BUTTON_ON),
+        AUTO_OFF("PUMP\nAUTO", false, PUMP_BUTTON_OFF);
 
         private String text;
-        private String code;
         private Boolean isActive;
         private String style;
 
-        StatePump(String text, String code, Boolean isActive, String style) {
+        StatePump(String text, Boolean isActive, String style) {
             this.text = text;
-            this.code = code;
             this.isActive = isActive;
             this.style = style;
         }
 
         public String getText() {
             return text;
-        }
-
-        public String getCode() {
-            return code;
-        }
-
-        public Boolean getActive() {
-            return isActive;
         }
 
         public String getStyle() {
@@ -184,26 +174,6 @@ public class TestBenchSectionController {
             return statePump == AUTO_ON || statePump == AUTO_OFF;
         }
 
-    }
-
-    public boolean isOn() {
-        return pumpState == StatePump.ON;
-    }
-
-    public boolean isOff() {
-        return pumpState == StatePump.OFF;
-    }
-
-    public boolean isAuto() {
-        return pumpState == StatePump.AUTO_ON || pumpState == StatePump.AUTO_OFF;
-    }
-
-    public StatePump getPumpState() {
-        return pumpState;
-    }
-
-    public void setPumpState(StatePump pumpState) {
-        this.pumpState = pumpState;
     }
 
     @PostConstruct
@@ -225,7 +195,7 @@ public class TestBenchSectionController {
 
     private void setupLCD() {
 
-        currentRPMlcd = LcdBuilder.create().prefWidth(130).prefHeight(60).styleClass(Lcd.STYLE_CLASS_BLACK_YELLOW)
+        currentRPMLcd = LcdBuilder.create().prefWidth(130).prefHeight(60).styleClass(Lcd.STYLE_CLASS_BLACK_YELLOW)
                 .backgroundVisible(true).foregroundShadowVisible(true).crystalOverlayVisible(true)
                 .title("").titleVisible(false).batteryVisible(false).signalVisible(false).alarmVisible(false)
                 .unit("rpm").unitVisible(true).decimals(0).minMeasuredValueDecimals(4).minMeasuredValueVisible(false)
@@ -233,16 +203,18 @@ public class TestBenchSectionController {
                 .thresholdVisible(false).trendVisible(false).trend(Lcd.Trend.RISING).numberSystemVisible(false)
                 .lowerRightTextVisible(true).valueFont(Lcd.LcdFont.DIGITAL_BOLD).animated(false).build();
 
-        currentRPMlcd.setMaxValue(5000.0);
-        currentRPMlcd.setValue(0);
+        currentRPMLcd.setMaxValue(5000.0);
 
-        lcdStackPane.getChildren().add(currentRPMlcd);
+        currentRPMLcd.setValue(0);
+
+        lcdStackPane.getChildren().add(currentRPMLcd);
 
     }
 
     private void setupRotationDirectionToggleButton() {
 
         leftDirectionRotationToggleButton.setUserData(false);
+
         rightDirectionRotationToggleButton.setUserData(true);
 
         rotationDirectionToggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
@@ -277,10 +249,13 @@ public class TestBenchSectionController {
         pumpState = StatePump.OFF;
 
         pumpControlToggleButton.getStyleClass().add(1, "pump-button");
+
         pumpControlToggleButton.getStyleClass().add(1, PUMP_BUTTON_ON);
+
         pumpControlToggleButton.getStyleClass().add(1, PUMP_BUTTON_OFF);
 
         pumpControlToggleButton.getStyleClass().set(1, PUMP_BUTTON_OFF);
+
         pumpControlToggleButton.setText(pumpState.getText());
 
         pumpControlToggleButton.setOnMouseClicked(this::mouseHandler);
@@ -289,8 +264,7 @@ public class TestBenchSectionController {
 
     private void setupFanControlToggleButton() {
 
-        fanControlToggleButton.selectedProperty().addListener((observable, oldValue, newValue) ->
-                standModbusWriter.add(FanTurnOn, newValue));
+        fanControlToggleButton.selectedProperty().addListener((observable, oldValue, newValue) -> standModbusWriter.add(FanTurnOn, newValue));
 
     }
 
@@ -321,7 +295,9 @@ public class TestBenchSectionController {
     private void pumpStateChange() {
 
         pumpControlToggleButton.getStyleClass().set(1, pumpState.getStyle());
+
         pumpControlToggleButton.setText(pumpState.getText());
+
         standModbusWriter.add(PumpTurnOn, pumpState.isActive);
 
     }
@@ -329,6 +305,7 @@ public class TestBenchSectionController {
     private void setPumpAuto(boolean deviceStateOn) {
 
         setPumpState(deviceStateOn ? StatePump.AUTO_ON : TestBenchSectionController.StatePump.AUTO_OFF);
+
         pumpStateChange();
 
     }

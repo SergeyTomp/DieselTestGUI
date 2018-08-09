@@ -18,6 +18,8 @@ public class TestBenchSectionUpdater implements Updater {
 
     private Spinner<Integer> targetRPMSpinner;
 
+    private Lcd currentRPMLcd;
+
     private ToggleButton leftDirectionRotationToggleButton;
 
     private ToggleButton rightDirectionRotationToggleButton;
@@ -28,21 +30,19 @@ public class TestBenchSectionUpdater implements Updater {
 
     private ToggleButton fanControlToggleButton;
 
-    private Lcd currentRPMlcd;
-
     private ProgressBar tempProgressBar1;
 
     private ProgressBar tempProgressBar2;
 
     private ProgressBar pressProgressBar1;
 
+    private ProgressBar tankOil;
+
     private Text tempText1;
 
     private Text tempText2;
 
     private Text pressText1;
-
-    private ProgressBar tankOil;
 
     private Text tankOilText;
 
@@ -51,6 +51,7 @@ public class TestBenchSectionUpdater implements Updater {
     private VisualUtils visualUtils;
 
     public TestBenchSectionUpdater(TestBenchSectionController testBenchSectionController, VisualUtils visualUtils) {
+
         this.testBenchSectionController = testBenchSectionController;
         this.visualUtils = visualUtils;
 
@@ -60,7 +61,7 @@ public class TestBenchSectionUpdater implements Updater {
         rightDirectionRotationToggleButton = testBenchSectionController.getRightDirectionRotationToggleButton();
         testBenchStartToggleButton = testBenchSectionController.getTestBenchStartToggleButton();
         fanControlToggleButton = testBenchSectionController.getFanControlToggleButton();
-        currentRPMlcd = testBenchSectionController.getCurrentRPMlcd();
+        currentRPMLcd = testBenchSectionController.getCurrentRPMLcd();
         tempProgressBar1 = testBenchSectionController.getTempProgressBar1();
         tempProgressBar2 = testBenchSectionController.getTempProgressBar2();
         pressProgressBar1 = testBenchSectionController.getPressProgressBar1();
@@ -69,6 +70,7 @@ public class TestBenchSectionUpdater implements Updater {
         pressText1 = testBenchSectionController.getPressText1();
         tankOil = testBenchSectionController.getTankOil();
         tankOilText = testBenchSectionController.getTankOilText();
+
     }
 
     @Override
@@ -79,46 +81,88 @@ public class TestBenchSectionUpdater implements Updater {
     @Override
     public void run() {
 
-        Object targetRPMLastValue = TargetRPM.getLastValue();
+        runSyncWriteReadBooleanRegisters(Rotation, testBenchStartToggleButton);
+
+        runSyncWriteReadBooleanRegisters(FanTurnOn, fanControlToggleButton);
+
+        runPressureAndTemperatureRegisters(Pressure1, pressProgressBar1, pressText1);
+
+        runPressureAndTemperatureRegisters(Temperature1, tempProgressBar1, tempText1);
+
+        runPressureAndTemperatureRegisters(Temperature2, tempProgressBar2, tempText2);
+
+        runTargetRPMRegister();
+
+        runRotationDirectionRegister();
+
+        runPumpRegisters();
+
+        runCurrentRPMRegister();
+
+        runTankOilRegister();
+
+    }
+
+    private void runSyncWriteReadBooleanRegisters(ModbusMapStand register, ToggleButton toggleButton) {
+
+        Boolean registerLastValue = (Boolean) register.getLastValue();
+
+        if (register.isSyncWriteRead())
+            register.setSyncWriteRead(false);
+        else if (registerLastValue != null)
+            toggleButton.selectedProperty().setValue(registerLastValue);
+
+    }
+
+    private void runPressureAndTemperatureRegisters(ModbusMapStand register, ProgressBar progressBar, Text text) {
+
+        Double registerLastValue = (Double) register.getLastValue();
+
+        if (registerLastValue != null)
+            visualUtils.setPressureProgress(progressBar, text, registerLastValue);
+
+    }
+
+    private void runTargetRPMRegister() {
+
+        Integer targetRPMLastValue = (Integer) TargetRPM.getLastValue();
 
         if (TargetRPM.isSyncWriteRead())
             TargetRPM.setSyncWriteRead(false);
         else if (targetRPMLastValue != null) {
-            targetRPMSpinner.getValueFactory().setValue(Integer.valueOf(targetRPMLastValue.toString()));
+            targetRPMSpinner.getValueFactory().setValue(targetRPMLastValue);
         }
 
-        Object rotationDirectionLastValue = RotationDirection.getLastValue();
+    }
+
+    private void runRotationDirectionRegister() {
+
+        Boolean rotationDirectionLastValue = (Boolean) RotationDirection.getLastValue();
 
         if (RotationDirection.isSyncWriteRead())
             RotationDirection.setSyncWriteRead(false);
         else if (rotationDirectionLastValue != null) {
-            boolean lastValue = (Boolean) rotationDirectionLastValue;
+            boolean lastValue = rotationDirectionLastValue;
             if (lastValue)
                 rightDirectionRotationToggleButton.selectedProperty().setValue(true);
             else
                 leftDirectionRotationToggleButton.selectedProperty().setValue(true);
         }
 
-        runSyncWriteReadableBooleanRegisters(Rotation, testBenchStartToggleButton);
+    }
 
-        Object rotationLastValue = Rotation.getLastValue();
+    private void runPumpRegisters() {
 
-        if (Rotation.isSyncWriteRead())
-            Rotation.setSyncWriteRead(false);
-        else if (rotationLastValue != null)
-            testBenchStartToggleButton.selectedProperty().setValue((Boolean) rotationLastValue);
-
-
-        Object pumpTurnOnLastValue = PumpTurnOn.getLastValue();
-        Object pumpAutoModeLastValue = PumpAutoMode.getLastValue();
+        Boolean pumpTurnOnLastValue = (Boolean) PumpTurnOn.getLastValue();
+        Boolean pumpAutoModeLastValue = (Boolean) PumpAutoMode.getLastValue();
 
         if (pumpAutoModeLastValue != null) {
-            if ((Boolean)pumpAutoModeLastValue) {
+            if (pumpAutoModeLastValue) {
                 testBenchSectionController.setPumpState(testBenchStartToggleButton.isSelected() ?
                         TestBenchSectionController.StatePump.AUTO_ON : TestBenchSectionController.StatePump.AUTO_OFF);
             } else {
                 if (pumpTurnOnLastValue != null) {
-                    if ((Boolean) pumpTurnOnLastValue)
+                    if (pumpTurnOnLastValue)
                         testBenchSectionController.setPumpState(TestBenchSectionController.StatePump.ON);
                     else
                         testBenchSectionController.setPumpState(TestBenchSectionController.StatePump.OFF);
@@ -130,63 +174,40 @@ public class TestBenchSectionUpdater implements Updater {
             pumpControlToggleButton.setText(currentStatePump.getText());
         }
 
-        Object fanTurnOnLastValue = FanTurnOn.getLastValue();
+    }
 
-        if (FanTurnOn.isSyncWriteRead())
-            FanTurnOn.setSyncWriteRead(false);
-        else if (fanTurnOnLastValue != null)
-            fanControlToggleButton.selectedProperty().setValue((Boolean) fanTurnOnLastValue);
+    private void runCurrentRPMRegister() {
 
-        Object currentRPMLastValue = CurrentRPM.getLastValue();
+        Integer currentRPMLastValue = (Integer) CurrentRPM.getLastValue();
 
         if (currentRPMLastValue != null)
-            currentRPMlcd.setValue((Integer)currentRPMLastValue);
+            currentRPMLcd.setValue(currentRPMLastValue);
 
-        Object pressure1LastValue = Pressure1.getLastValue();
+    }
 
-        if (pressure1LastValue != null)
-            visualUtils.setPressureProgress(pressProgressBar1, pressText1, (Double) pressure1LastValue);
-
-        Object temperature1LastValue = Temperature1.getLastValue();
-
-        if (temperature1LastValue != null)
-            visualUtils.setTemperatureProgress(tempProgressBar1, tempText1, (Double) temperature1LastValue);
-
-        Object temperature2LastValue = Temperature2.getLastValue();
-
-        if (temperature2LastValue != null)
-            visualUtils.setTemperatureProgress(tempProgressBar2, tempText2, (Double) temperature2LastValue);
+    private void runTankOilRegister() {
 
         Integer tankOilLevelLastValue = (Integer) TankOilLevel.getLastValue();
 
         if (tankOilLevelLastValue != null) {
-            if(tankOilLevelLastValue > 10) {
-                tankOil.getStyleClass().clear();
-                tankOil.getStyleClass().add("green-oil-bar");
-                tankOilText.setText("NORMAL");
-            } else if(tankOilLevelLastValue > 1) {
-                tankOil.getStyleClass().clear();
-                tankOil.getStyleClass().add("yellow-oil-bar");
-                tankOilText.setText("LOW");
-            } else {
-                tankOil.getStyleClass().clear();
-                tankOil.getStyleClass().add("red-oil-bar");
-                tankOilText.setText("VERY\nLOW");
-            }
+            if (tankOilLevelLastValue > 10)
+                changeTankOil("green-oil-bar", "NORMAL");
+            else if (tankOilLevelLastValue > 1)
+                changeTankOil("yellow-oil-bar", "LOW");
+            else
+                changeTankOil("red-oil-bar", "VERY\nLOW");
 
             tankOil.setProgress(tankOilLevelLastValue / 100.0);
         }
 
     }
 
-    private void runSyncWriteReadableBooleanRegisters(ModbusMapStand register, ToggleButton targetToggleButton) {
+    private void changeTankOil(String style, String text) {
 
-        Boolean registerLastValue = (Boolean) register.getLastValue();
-
-        if (register.isSyncWriteRead())
-            register.setSyncWriteRead(false);
-        else if (registerLastValue != null)
-            targetToggleButton.selectedProperty().setValue((Boolean) registerLastValue);
+        tankOil.getStyleClass().clear();
+        tankOil.getStyleClass().add(style);
+        tankOilText.setText(text);
 
     }
+
 }
