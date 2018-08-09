@@ -25,6 +25,8 @@ import javafx.stage.StageStyle;
 
 import javax.annotation.PostConstruct;
 
+import static fi.stardex.sisu.util.SpinnerDefaults.*;
+
 public class VoltageController {
 
     @FXML
@@ -195,14 +197,14 @@ public class VoltageController {
 
     private void setupVAPLabels() {
 
-        width.setText("1000"); // widthCurrentSignal initial value
-        voltage.setText("60"); // boostUSpinner initial value
-        firstWidth.setText("500"); // firstWSpinner initial value
-        firstCurrent.setText("15.0"); // firstISpinner initial value
-        secondCurrent.setText("5.4"); // secondISpinner initial value
-        boostI.setText("21.5"); // boostISpinner initial value
-        batteryU.setText("20"); // batteryUSpinner initial value
-        negativeU.setText("48"); // negativeUSpinner initial value
+        width.setText(Integer.toString(WIDTH_CURRENT_SIGNAL_SPINNER_INIT)); // widthCurrentSignal initial value
+        voltage.setText(Integer.toString(BOOST_U_SPINNER_INIT));            // boostUSpinner initial value
+        firstWidth.setText(Integer.toString(FIRST_W_SPINNER_INIT));         // firstWSpinner initial value
+        firstCurrent.setText(Double.toString(FIRST_I_SPINNER_INIT));        // firstISpinner initial value
+        secondCurrent.setText(Double.toString(SECOND_I_SPINNER_INIT));      // secondISpinner initial value
+        boostI.setText(Double.toString(BOOST_I_SPINNER_INIT));              // boostISpinner initial value
+        batteryU.setText(Integer.toString(BATTERY_U_SPINNER_INIT));         // batteryUSpinner initial value
+        negativeU.setText(Integer.toString(NEGATIVE_U_SPINNER_INIT));       // negativeUSpinner initial value
 
         width.textProperty().addListener(new LabelListener(width, injectorSectionController.getWidthCurrentSignal()));
         voltage.textProperty().addListener(new LabelListener(voltage, voltAmpereProfileController.getBoostUSpinner()));

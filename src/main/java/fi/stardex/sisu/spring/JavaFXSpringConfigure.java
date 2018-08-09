@@ -1,5 +1,6 @@
 package fi.stardex.sisu.spring;
 
+import fi.stardex.sisu.charts.DelayChartTask;
 import fi.stardex.sisu.charts.TimerTasksManager;
 import fi.stardex.sisu.devices.Devices;
 import fi.stardex.sisu.persistence.orm.Manufacturer;
@@ -143,11 +144,12 @@ public class JavaFXSpringConfigure {
     @Autowired
     public InjectorSectionController injectorSectionController(SettingsController settingsController,
                                                                @Lazy ModbusRegisterProcessor ultimaModbusWriter,
-                                                               TimerTasksManager timerTasksManager) {
+                                                               TimerTasksManager timerTasksManager, DelayController delayController) {
         InjectorSectionController injectorSectionController = crSectionController().getInjectorSectionController();
         injectorSectionController.setSettingsController(settingsController);
         injectorSectionController.setUltimaModbusWriter(ultimaModbusWriter);
         injectorSectionController.setTimerTasksManager(timerTasksManager);
+        injectorSectionController.setDelayController(delayController);
         return injectorSectionController;
     }
 

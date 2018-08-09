@@ -51,7 +51,7 @@ public class DelayController {
     private Label delayAttentionLabel;
 
     @FXML
-    private GridPane delayGridPane;
+    private GridPane delayResults;
 
     private ObservableList<XYChart.Data<Double, Double>> delayData;
 
@@ -104,10 +104,8 @@ public class DelayController {
 
             if (newValue.isEmpty()) {
                 DelayChartTask.setAddingTime(0);
-//                configLoader.put("AddingTime", "0");
             } else {
                 DelayChartTask.setAddingTime(Integer.parseInt(newValue));
-//                configLoader.put("AddingTime", newValue);
             }
 
         });
@@ -148,10 +146,14 @@ public class DelayController {
         this.delayCalculator = delayCalculator;
     }
 
-    public void showAttentionLabel(boolean isConnected) {
-        delayAttentionLabel.setVisible(!isConnected);
-        for (Node node : delayGridPane.getChildren()) {
-            node.setDisable(!isConnected);
+    public void showAttentionLabel(boolean notSingle) {
+        delayAttentionLabel.setVisible(notSingle);
+        for (Node node : delayChart.getChildrenUnmodifiable()) {
+            node.setDisable(notSingle);
+            node.setVisible(!notSingle);
+        }
+        for(Node node : delayResults.getChildrenUnmodifiable()){
+            node.setDisable(notSingle);
         }
     }
 }

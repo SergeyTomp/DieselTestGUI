@@ -1,10 +1,12 @@
 package fi.stardex.sisu.ui.controllers.cr;
 
+import fi.stardex.sisu.charts.DelayChartTask;
 import fi.stardex.sisu.charts.TimerTasksManager;
 import fi.stardex.sisu.combobox_values.InjectorChannel;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.controllers.additional.LedController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.DelayController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
 import fi.stardex.sisu.util.spinners.SpinnerManager;
 import fi.stardex.sisu.util.spinners.SpinnerValueObtainer;
@@ -70,6 +72,8 @@ public class InjectorSectionController {
     private LedController ledBeaker4Controller;
 
     private SettingsController settingsController;
+
+    private  DelayController delayController;
 
     private ModbusRegisterProcessor ultimaModbusWriter;
 
@@ -139,6 +143,8 @@ public class InjectorSectionController {
         this.timerTasksManager = timerTasksManager;
     }
 
+
+
     public synchronized List<LedController> getActiveControllers() {
         activeControllers.clear();
         for (LedController s : ledControllers) {
@@ -156,7 +162,6 @@ public class InjectorSectionController {
 
     @PostConstruct
     private void init() {
-
         ledBeaker1Controller.setNumber(1);
         ledBeaker2Controller.setNumber(2);
         ledBeaker3Controller.setNumber(3);
@@ -203,6 +208,10 @@ public class InjectorSectionController {
 
     private void setToggleGroupToLeds(ToggleGroup toggleGroup) {
         ledControllers.forEach(s -> s.getLedBeaker().setToggleGroup(toggleGroup));
+    }
+
+    public void setDelayController(DelayController delayController) {
+        this.delayController = delayController;
     }
 
     private class LedParametersChangeListener implements ChangeListener<Object> {
@@ -258,6 +267,8 @@ public class InjectorSectionController {
             List<LedController> activeControllers = getActiveControllers();
             Iterator<LedController> activeControllersIterator = activeControllers.iterator();
             int activeLeds = activeControllers.size();
+            delayController.showAttentionLabel(activeLeds > 1);
+
             double frequency = freqCurrentSignal.getValue();
             ultimaModbusWriter.add(ModbusMapUltima.GImpulsesPeriod, 1000 / frequency);
             if (activeLeds == 0) {

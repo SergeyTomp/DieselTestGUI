@@ -45,7 +45,6 @@ public class DelayChartTask extends ChartTask {
     private  TextField averageDelayTextField;
     private List<LedController> activeControllers;
     private boolean updateOSC;
-//    private final List<Double> delayValuesList = new ArrayList<>();
 
     @Autowired
     private ModbusRegisterProcessor ultimaModbusWriter;
@@ -60,16 +59,6 @@ public class DelayChartTask extends ChartTask {
     @Autowired
     private DelayController delayController;
 
-//    public DelayChartTask(InjectorSectionController injectorSectionController, DelayController delayController) {
-//        delayData = delayController.getDelayData();
-//        injectorChannelComboBox = settingsController.getInjectorsConfigComboBox();
-//        sensitivitySpinner = delayController.getSensitivitySpinner();
-//        minimumDelayTextField = delayController.getMinimumDelay();
-//        maximumDelayTextField = delayController.getMaximumDelay();
-//        averageDelayTextField = delayController.getAverageDelay();
-//        this.injectorSectionController = injectorSectionController;
-//    }
-
     @PostConstruct
     private void init(){
         delayData = delayController.getDelayData();
@@ -78,8 +67,6 @@ public class DelayChartTask extends ChartTask {
         minimumDelayTextField = delayController.getMinimumDelay();
         maximumDelayTextField = delayController.getMaximumDelay();
         averageDelayTextField = delayController.getAverageDelay();
-
-
     }
 
     @Override
@@ -118,58 +105,60 @@ public class DelayChartTask extends ChartTask {
         updateOSC = delayController.isTabDelayShowingProperty().get();
         activeControllers = injectorSectionController.getActiveControllers();
         LedController ledController = singleSelected();
+        System.err.println(ledController);
+        if(ledController == null){
+            delayController.showAttentionLabel(true);
+            return;
+        }
+        delayController.showAttentionLabel(false);
+        double pulseLengthStep = UltimaFirmwareVersion.getUltimaFirmwareVersion().getPulseLengthStep();
+        int delaySampleSize = UltimaFirmwareVersion.getUltimaFirmwareVersion().getDelaySampleSize();
 
-        if (ledController != null) {
-            double pulseLengthStep = UltimaFirmwareVersion.getUltimaFirmwareVersion().getPulseLengthStep();
-            int delaySampleSize = UltimaFirmwareVersion.getUltimaFirmwareVersion().getDelaySampleSize();
+        int n = (int) ((injectorSectionController.getWidthCurrentSignal().getValue() + addingTime) / pulseLengthStep) > delaySampleSize - 1 ?
+                delaySampleSize - 1 : (int) ((injectorSectionController.getWidthCurrentSignal().getValue() + addingTime) / pulseLengthStep);
 
-            int n = (int) ((injectorSectionController.getWidthCurrentSignal().getValue() + addingTime) / pulseLengthStep) > delaySampleSize - 1 ?
-                    delaySampleSize - 1 : (int) ((injectorSectionController.getWidthCurrentSignal().getValue() + addingTime) / pulseLengthStep);
+        int remainder = n % delaySampleSize;
 
-            int remainder = n % delaySampleSize;
+        int injectorModbusChannel = injectorChannelComboBox.getSelectionModel().getSelectedItem() == InjectorChannel.SINGLE_CHANNEL ?
+                1 : ledController.getNumber();
 
-            int injectorModbusChannel = injectorChannelComboBox.getSelectionModel().getSelectedItem() == InjectorChannel.SINGLE_CHANNEL ?
-                    1 : ledController.getNumber();
-
-            ArrayList<Integer> resultDataList = new ArrayList<>();
-            try {
-                if (!updateOSC) {
-                    return;
-                }
-                ultimaModbusWriter.add(getCurrentGraphFrameNum(), injectorModbusChannel);
-                ultimaModbusWriter.add(getCurrentGraphUpdate(), true);
-                boolean ready;
-                do {
-                    try {
-                        Thread.sleep(300);
-                    } catch (InterruptedException e) {
-                        logger.error("Interrupted 1.", e);
-                    }
-                    try {
-                        if (!updateOSC) {
-                            return;
-                        }
-//                        ready = delayOSCUpdate.read();
-                        ready = (boolean) ultimaRegisterProvider.read(getCurrentGraphUpdate());
-                    } catch (ClassCastException e) {
-                        logger.error("Cast Exception: ", e);
-                        return;
-                    }
-                } while (ready);
-                Integer[] data = ultimaRegisterProvider.readBytePacket(getCurrentGraph().getRef(), remainder);
-                addModbusData(resultDataList, data);
-            } catch (ModbusException e) {
-                logger.error("Cannot obtain delay graphic", e);
-                return;
-            }catch (ClassCastException e) {
-                logger.error("Cast Exception: ", e);
-                return;
-            }
+        ArrayList<Integer> resultDataList = new ArrayList<>();
+        try {
             if (!updateOSC) {
                 return;
             }
-            Platform.runLater(() -> addData(resultDataList, delayData));
+            ultimaModbusWriter.add(getCurrentGraphFrameNum(), injectorModbusChannel);
+            ultimaModbusWriter.add(getCurrentGraphUpdate(), true);
+            boolean ready;
+            do {
+                try {
+                    Thread.sleep(300);
+                } catch (InterruptedException e) {
+                    logger.error("Interrupted 1.", e);
+                }
+                try {
+                    if (!updateOSC) {
+                        return;
+                    }
+                    ready = (boolean) ultimaRegisterProvider.read(getCurrentGraphUpdate());
+                } catch (ClassCastException e) {
+                    logger.error("Cast Exception: ", e);
+                    return;
+                }
+            } while (ready);
+            Integer[] data = ultimaRegisterProvider.readBytePacket(getCurrentGraph().getRef(), remainder);
+            addModbusData(resultDataList, data);
+        } catch (ModbusException e) {
+            logger.error("Cannot obtain delay graphic", e);
+            return;
+        }catch (ClassCastException e) {
+            logger.error("Cast Exception: ", e);
+            return;
         }
+        if (!updateOSC) {
+            return;
+        }
+        Platform.runLater(() -> addData(resultDataList, delayData));
     }
 
     private LedController singleSelected() {
@@ -250,9 +239,9 @@ public class DelayChartTask extends ChartTask {
         return  (t1*spinner - t2*spinner + t2*v1 - t1*v2) / (v1 - v2);
     }
     private void setDelayValues() {
-        minimumDelayTextField.setText(String.format("%.1f", delayCalculator.getMinimumDelay()));
-        maximumDelayTextField.setText(String.format("%.1f", delayCalculator.getMaximumDelay()));
-        averageDelayTextField.setText(String.format("%.1f", delayCalculator.getAverageDelay()));
+        minimumDelayTextField.setText(String.format("%.0f", delayCalculator.getMinimumDelay()));
+        maximumDelayTextField.setText(String.format("%.0f", delayCalculator.getMaximumDelay()));
+        averageDelayTextField.setText(String.format("%.0f", delayCalculator.getAverageDelay()));
 
     }
 }
