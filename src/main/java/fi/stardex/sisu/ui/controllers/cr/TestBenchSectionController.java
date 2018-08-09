@@ -1,6 +1,7 @@
 package fi.stardex.sisu.ui.controllers.cr;
 
-import fi.stardex.sisu.registers.stand.ModbusMapStand;
+import eu.hansolo.enzo.lcd.Lcd;
+import eu.hansolo.enzo.lcd.LcdBuilder;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.util.spinners.SpinnerManager;
 import fi.stardex.sisu.util.spinners.SpinnerValueObtainer;
@@ -9,14 +10,21 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.StackPane;
+import javafx.scene.text.Text;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 
+import static fi.stardex.sisu.registers.stand.ModbusMapStand.*;
+
 public class TestBenchSectionController {
 
     private Logger logger = LoggerFactory.getLogger(TestBenchSectionController.class);
+
+    @FXML
+    private StackPane lcdStackPane;
 
     @FXML
     private ToggleButton leftDirectionRotationToggleButton;
@@ -40,7 +48,28 @@ public class TestBenchSectionController {
     private ToggleButton fanControlToggleButton;
 
     @FXML
-    private ProgressBar oilTank;
+    private ProgressBar tempProgressBar1;
+
+    @FXML
+    private ProgressBar tempProgressBar2;
+
+    @FXML
+    private ProgressBar pressProgressBar1;
+
+    @FXML
+    private ProgressBar tankOil;
+
+    @FXML
+    private Text tankOilText;
+
+    @FXML
+    private Text tempText1;
+
+    @FXML
+    private Text pressText1;
+
+    @FXML
+    private Text tempText2;
 
     private static final String PUMP_BUTTON_ON = "pump-button-on";
 
@@ -49,6 +78,8 @@ public class TestBenchSectionController {
     private StatePump pumpState;
 
     private ModbusRegisterProcessor standModbusWriter;
+
+    private Lcd currentRPMlcd;
 
     public Spinner<Integer> getTargetRPMSpinner() {
         return targetRPMSpinner;
@@ -68,6 +99,46 @@ public class TestBenchSectionController {
 
     public ToggleButton getTestBenchStartToggleButton() {
         return testBenchStartToggleButton;
+    }
+
+    public ToggleButton getFanControlToggleButton() {
+        return fanControlToggleButton;
+    }
+
+    public Lcd getCurrentRPMlcd() {
+        return currentRPMlcd;
+    }
+
+    public ProgressBar getTempProgressBar1() {
+        return tempProgressBar1;
+    }
+
+    public ProgressBar getTempProgressBar2() {
+        return tempProgressBar2;
+    }
+
+    public ProgressBar getPressProgressBar1() {
+        return pressProgressBar1;
+    }
+
+    public Text getTempText1() {
+        return tempText1;
+    }
+
+    public Text getPressText1() {
+        return pressText1;
+    }
+
+    public Text getTempText2() {
+        return tempText2;
+    }
+
+    public ProgressBar getTankOil() {
+        return tankOil;
+    }
+
+    public Text getTankOilText() {
+        return tankOilText;
     }
 
     public void setStandModbusWriter(ModbusRegisterProcessor standModbusWriter) {
@@ -138,6 +209,8 @@ public class TestBenchSectionController {
     @PostConstruct
     private void init() {
 
+        setupLCD();
+
         setupRotationDirectionToggleButton();
 
         setupTargetRPMSpinner();
@@ -150,6 +223,23 @@ public class TestBenchSectionController {
 
     }
 
+    private void setupLCD() {
+
+        currentRPMlcd = LcdBuilder.create().prefWidth(130).prefHeight(60).styleClass(Lcd.STYLE_CLASS_BLACK_YELLOW)
+                .backgroundVisible(true).foregroundShadowVisible(true).crystalOverlayVisible(true)
+                .title("").titleVisible(false).batteryVisible(false).signalVisible(false).alarmVisible(false)
+                .unit("rpm").unitVisible(true).decimals(0).minMeasuredValueDecimals(4).minMeasuredValueVisible(false)
+                .maxMeasuredValueDecimals(4).maxMeasuredValueVisible(false).formerValueVisible(false).threshold(26)
+                .thresholdVisible(false).trendVisible(false).trend(Lcd.Trend.RISING).numberSystemVisible(false)
+                .lowerRightTextVisible(true).valueFont(Lcd.LcdFont.DIGITAL_BOLD).animated(false).build();
+
+        currentRPMlcd.setMaxValue(5000.0);
+        currentRPMlcd.setValue(0);
+
+        lcdStackPane.getChildren().add(currentRPMlcd);
+
+    }
+
     private void setupRotationDirectionToggleButton() {
 
         leftDirectionRotationToggleButton.setUserData(false);
@@ -157,7 +247,7 @@ public class TestBenchSectionController {
 
         rotationDirectionToggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue != null)
-                standModbusWriter.add(ModbusMapStand.RotationDirection, newValue.getUserData());
+                standModbusWriter.add(RotationDirection, newValue.getUserData());
         });
 
     }
@@ -168,14 +258,14 @@ public class TestBenchSectionController {
 
         SpinnerManager.setupSpinner(targetRPMSpinner, 0, 0, 3000, new CustomTooltip(), new SpinnerValueObtainer(0));
 
-        targetRPMSpinner.valueProperty().addListener((observable, oldValue, newValue) -> standModbusWriter.add(ModbusMapStand.TargetRPM, newValue));
+        targetRPMSpinner.valueProperty().addListener((observable, oldValue, newValue) -> standModbusWriter.add(TargetRPM, newValue));
 
     }
 
     private void setupTestBenchStartToggleButton() {
 
         testBenchStartToggleButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            standModbusWriter.add(ModbusMapStand.Rotation, newValue);
+            standModbusWriter.add(Rotation, newValue);
             if (StatePump.isAuto(pumpState))
                 setPumpAuto(newValue);
         });
@@ -200,7 +290,7 @@ public class TestBenchSectionController {
     private void setupFanControlToggleButton() {
 
         fanControlToggleButton.selectedProperty().addListener((observable, oldValue, newValue) ->
-                standModbusWriter.add(ModbusMapStand.FanTurnOn, newValue));
+                standModbusWriter.add(FanTurnOn, newValue));
 
     }
 
@@ -211,11 +301,11 @@ public class TestBenchSectionController {
                 logger.warn("Double clicked");
                 if (isAuto()) {
                     setPumpState(TestBenchSectionController.StatePump.OFF);
-                    standModbusWriter.add(ModbusMapStand.PumpAutoMode, false);
+                    standModbusWriter.add(PumpAutoMode, false);
                 } else {
                     setPumpState(testBenchStartToggleButton.isSelected() ?
                             TestBenchSectionController.StatePump.AUTO_ON : TestBenchSectionController.StatePump.AUTO_OFF);
-                    standModbusWriter.add(ModbusMapStand.PumpAutoMode, true);
+                    standModbusWriter.add(PumpAutoMode, true);
                 }
             } else if (mouseEvent.getClickCount() == 1) {
                 if (pumpState == TestBenchSectionController.StatePump.OFF)
@@ -232,7 +322,7 @@ public class TestBenchSectionController {
 
         pumpControlToggleButton.getStyleClass().set(1, pumpState.getStyle());
         pumpControlToggleButton.setText(pumpState.getText());
-        standModbusWriter.add(ModbusMapStand.PumpTurnOn, pumpState.isActive);
+        standModbusWriter.add(PumpTurnOn, pumpState.isActive);
 
     }
 

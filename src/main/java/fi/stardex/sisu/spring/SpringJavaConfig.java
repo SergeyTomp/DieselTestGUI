@@ -34,6 +34,7 @@ import fi.stardex.sisu.ui.controllers.cr.TestBenchSectionController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
 import fi.stardex.sisu.ui.updaters.*;
 import fi.stardex.sisu.util.ApplicationConfigHandler;
+import fi.stardex.sisu.util.VisualUtils;
 import fi.stardex.sisu.util.converters.DataConverter;
 import fi.stardex.sisu.util.converters.FlowResolver;
 import fi.stardex.sisu.util.i18n.I18N;
@@ -304,8 +305,9 @@ public class SpringJavaConfig {
 
     @Bean
     @Autowired
-    public TestBenchSectionUpdater testBenchSectionUpdater(TestBenchSectionController testBenchSectionController) {
-        return new TestBenchSectionUpdater(testBenchSectionController);
+    public TestBenchSectionUpdater testBenchSectionUpdater(TestBenchSectionController testBenchSectionController,
+                                                           VisualUtils visualUtils) {
+        return new TestBenchSectionUpdater(testBenchSectionController, visualUtils);
     }
 
     @Bean
@@ -421,6 +423,11 @@ public class SpringJavaConfig {
                                    InjectorsRepository injectorsRepository,
                                    InjectorTestRepository injectorTestRepository) {
         return new CSVSUpdater(manufacturerRepository, voltAmpereProfileRepository, injectorsRepository, injectorTestRepository);
+    }
+
+    @Bean
+    public VisualUtils visualUtils() {
+        return new VisualUtils();
     }
 
 }

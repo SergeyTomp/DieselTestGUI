@@ -66,12 +66,6 @@
             <version>1.4.197</version>
         </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>org.liquibase</groupId>-->
-            <!--<artifactId>liquibase-core</artifactId>-->
-            <!--<version>3.6.1</version>-->
-        <!--</dependency>-->
-
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-orm</artifactId>
@@ -90,7 +84,19 @@
             <version>2.0.7.RELEASE</version>
         </dependency>
 
+        <!-- https://mvnrepository.com/artifact/eu.hansolo/Medusa -->
+        <dependency>
+            <groupId>eu.hansolo</groupId>
+            <artifactId>Medusa</artifactId>
+            <version>8.0</version>
+        </dependency>
 
+        <!-- https://mvnrepository.com/artifact/eu.hansolo.enzo/Enzo -->
+        <dependency>
+            <groupId>eu.hansolo.enzo</groupId>
+            <artifactId>Enzo</artifactId>
+            <version>0.3.6</version>
+        </dependency>
 
     </dependencies>
 
