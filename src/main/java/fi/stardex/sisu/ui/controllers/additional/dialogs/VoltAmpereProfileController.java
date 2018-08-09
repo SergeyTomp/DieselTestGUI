@@ -17,6 +17,8 @@ import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 
+import static fi.stardex.sisu.util.SpinnerDefaults.*;
+
 public class VoltAmpereProfileController {
 
     @FXML
@@ -75,7 +77,7 @@ public class VoltAmpereProfileController {
 
     private List<Spinner> listOfVAPSpinners = new ArrayList<>();
 
-    private WidthSpinnerValueObtainer widthCurrentSignalValueObtainer = new WidthSpinnerValueObtainer(300);
+    private WidthSpinnerValueObtainer widthCurrentSignalValueObtainer = new WidthSpinnerValueObtainer(WIDTH_CURRENT_SIGNAL_SPINNER_INIT);
 
     private InjectorSectionController injectorSectionController;
 
@@ -159,11 +161,17 @@ public class VoltAmpereProfileController {
 
         injectorSectionController.getPiezoCoilToggleGroup().selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == injectorSectionController.getPiezoRadioButton()) {
-                boostUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(30, 350, 60, 1));
+                boostUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(BOOST_U_SPINNER_MIN,
+                                                                                                BOOST_U_SPINNER_MAX_PIEZO,
+                                                                                                BOOST_U_SPINNER_INIT,
+                                                                                                BATTERY_U_SPINNER_STEP));
             } else {
-                if (firmwareDataConverter.convertDataToInt(voltageController.getVoltage().getText()) > 75)
-                    ultimaModbusWriter.add(ModbusMapUltima.Boost_U, 60);
-                boostUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(30, 75, 60, 1));
+                if (firmwareDataConverter.convertDataToInt(voltageController.getVoltage().getText()) > BOOST_U_SPINNER_MAX)
+                    ultimaModbusWriter.add(ModbusMapUltima.Boost_U, BOOST_U_SPINNER_INIT);
+                boostUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(BOOST_U_SPINNER_MIN,
+                                                                                                BOOST_U_SPINNER_MAX,
+                                                                                                BOOST_U_SPINNER_INIT,
+                                                                                                BOOST_U_SPINNER_STEP));
             }
         });
 
@@ -172,7 +180,9 @@ public class VoltAmpereProfileController {
         setupCancelButton();
 
         widthCurrentSignal.valueProperty().addListener((observable, oldValue, newValue) -> {
-            if ((newValue >= 120) && (newValue <= 15500) && (!(newValue == widthCurrentSignalValueObtainer.getGeneratedFakeValue()))) {
+            if ((newValue >= WIDTH_CURRENT_SIGNAL_SPINNER_MIN) &&
+                    (newValue <= WIDTH_CURRENT_SIGNAL_SPINNER_MAX) &&
+                    (!(newValue == widthCurrentSignalValueObtainer.getGeneratedFakeValue()))) {
                 sendVAPRegisters();
             }
         });
@@ -182,7 +192,6 @@ public class VoltAmpereProfileController {
     }
 
     private void setupEnableBoostToggleButton() {
-
         enableBoostToggleButton.setSelected(true);
         enableBoostToggleButton.setText("Boost_U disabled");
         enableBoostToggleButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
@@ -197,22 +206,80 @@ public class VoltAmpereProfileController {
 
     private void setupVAPSpinners() {
 
-        firstWSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(90, 15500, 500, 10));
-        boostISpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(3, 25.5, 21.5, 0.1));
-        firstISpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(2, 25.5, 15, 0.1));
-        secondISpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(1, 25.5, 5.5, 0.1));
-        batteryUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(11, 32, 20, 1));
-        negativeUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(17, 121, 48, 1));
-        boostUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(30, 75, 60, 1));
+        firstWSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(FIRST_W_SPINNER_MIN,
+                                                                                         FIRST_W_SPINNER_MAX,
+                                                                                         FIRST_W_SPINNER_INIT,
+                                                                                         FIRST_W_SPINNER_STEP));
+        boostISpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(BOOST_I_SPINNER_MIN,
+                                                                                        BOOST_I_SPINNER_MAX,
+                                                                                        BOOST_I_SPINNER_INIT,
+                                                                                        BOOST_I_SPINNER_STEP));
+        firstISpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(FIRST_I_SPINNER_MIN,
+                                                                                        FIRST_I_SPINNER_MAX,
+                                                                                        FIRST_I_SPINNER_INIT,
+                                                                                        FIRST_I_SPINNER_STEP));
+        secondISpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(SECOND_I_SPINNER_MIN,
+                                                                                        SECOND_I_SPINNER_MAX,
+                                                                                        SECOND_I_SPINNER_INIT,
+                                                                                        SECOND_I_SPINNER_STEP));
+        batteryUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory (BATTERY_U_SPINNER_MIN,
+                                                                                            BATTERY_U_SPINNER_MAX,
+                                                                                            BATTERY_U_SPINNER_INIT,
+                                                                                            BATTERY_U_SPINNER_STEP));
+        negativeUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(NEGATIVE_U_SPINNER_MIN,
+                                                                                            NEGATIVE_U_SPINNER_MAX,
+                                                                                            NEGATIVE_U_SPINNER_INIT,
+                                                                                            NEGATIVE_U_SPINNER_STEP));
+        boostUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(BOOST_U_SPINNER_MIN,
+                                                                                            BOOST_U_SPINNER_MAX,
+                                                                                            BOOST_U_SPINNER_INIT,
+                                                                                            BOOST_U_SPINNER_STEP));
 
-        SpinnerManager.setupSpinner(widthCurrentSignal, 300, 120, 15500, new CustomTooltip(), widthCurrentSignalValueObtainer);
-        SpinnerManager.setupSpinner(firstWSpinner, 500, 90, 15500, new CustomTooltip(), new SpinnerValueObtainer(500));
-        SpinnerManager.setupSpinner(boostISpinner, 21.5, 21.51, new CustomTooltip(), new SpinnerValueObtainer(21.5));
-        SpinnerManager.setupSpinner(firstISpinner, 15, 15.01, new CustomTooltip(), new SpinnerValueObtainer(15));
-        SpinnerManager.setupSpinner(secondISpinner, 5.5, 5.51, new CustomTooltip(), new SpinnerValueObtainer(5.5));
-        SpinnerManager.setupSpinner(batteryUSpinner, 20, 11, 32, new CustomTooltip(), new SpinnerValueObtainer(20));
-        SpinnerManager.setupSpinner(negativeUSpinner, 48, 17, 121, new CustomTooltip(), new SpinnerValueObtainer(48));
-        SpinnerManager.setupSpinner(boostUSpinner, 60, 30, 75, new CustomTooltip(), new SpinnerValueObtainer(60));
+        SpinnerManager.setupSpinner(widthCurrentSignal,
+                                    WIDTH_CURRENT_SIGNAL_SPINNER_INIT,
+                                    WIDTH_CURRENT_SIGNAL_SPINNER_MIN,
+                                    WIDTH_CURRENT_SIGNAL_SPINNER_MAX,
+                                    new CustomTooltip(),
+                                    widthCurrentSignalValueObtainer);
+        SpinnerManager.setupSpinner(firstWSpinner,
+                                    FIRST_W_SPINNER_INIT,
+                                    FIRST_W_SPINNER_MIN,
+                                    FIRST_W_SPINNER_MAX,
+                                    new CustomTooltip(),
+                                    new SpinnerValueObtainer(FIRST_W_SPINNER_INIT));
+        SpinnerManager.setupSpinner(boostISpinner,
+                                    BOOST_I_SPINNER_INIT,
+                                    BOOST_U_SPINNER_FAKE,
+                                    new CustomTooltip(),
+                                    new SpinnerValueObtainer(BOOST_U_SPINNER_INIT));
+        SpinnerManager.setupSpinner(firstISpinner,
+                                    FIRST_I_SPINNER_INIT,
+                                    FIRST_I_SPINNER_FAKE,
+                                    new CustomTooltip(),
+                                    new SpinnerValueObtainer(FIRST_W_SPINNER_INIT));
+        SpinnerManager.setupSpinner(secondISpinner,
+                                    SECOND_I_SPINNER_INIT,
+                                    SECOND_I_SPINNER_FAKE,
+                                    new CustomTooltip(),
+                                    new SpinnerValueObtainer(SECOND_I_SPINNER_INIT));
+        SpinnerManager.setupSpinner(batteryUSpinner,
+                                    BATTERY_U_SPINNER_INIT,
+                                    BATTERY_U_SPINNER_MIN,
+                                    BATTERY_U_SPINNER_MAX,
+                                    new CustomTooltip(),
+                                    new SpinnerValueObtainer(BATTERY_U_SPINNER_INIT));
+        SpinnerManager.setupSpinner(negativeUSpinner,
+                                    NEGATIVE_U_SPINNER_INIT,
+                                    NEGATIVE_U_SPINNER_MIN,
+                                    NEGATIVE_U_SPINNER_MAX,
+                                    new CustomTooltip(),
+                                    new SpinnerValueObtainer(NEGATIVE_U_SPINNER_INIT));
+        SpinnerManager.setupSpinner(boostUSpinner,
+                                    BOOST_U_SPINNER_INIT,
+                                    BOOST_U_SPINNER_MIN,
+                                    BOOST_U_SPINNER_MAX,
+                                    new CustomTooltip(),
+                                    new SpinnerValueObtainer(BOOST_U_SPINNER_INIT));
 
         listOfVAPSpinners.add(widthCurrentSignal);
         listOfVAPSpinners.add(firstWSpinner);
@@ -323,9 +390,9 @@ public class VoltAmpereProfileController {
         int widthValue = widthCurrentSignal.getValue();
         boolean boostToggleButtonSelected = enableBoostToggleButton.isSelected();
 
-        firstIValue = (boostIValue - firstIValue >= 0.5) ? firstIValue : firstIValue - 0.5;
-        secondIValue = (firstIValue - secondIValue >= 0.5) ? secondIValue : secondIValue - 0.5;
-        firstWValue = (widthValue - firstWValue >= 30) ? firstWValue : firstWValue - 30;
+        firstIValue = (boostIValue - firstIValue >= 0.5) ? firstIValue : boostIValue - 0.5;
+        secondIValue = (firstIValue - secondIValue >= 0.5) ? secondIValue : firstIValue - 0.5;
+        firstWValue = (widthValue - firstWValue >= 30) ? firstWValue : widthValue - 30;
 
         ultimaModbusWriter.add(ModbusMapUltima.Boost_U, boostUSpinner.getValue());
         ultimaModbusWriter.add(ModbusMapUltima.Battery_U, batteryUSpinner.getValue());

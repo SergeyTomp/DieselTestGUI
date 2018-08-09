@@ -1,5 +1,6 @@
 package fi.stardex.sisu.spring;
 
+import fi.stardex.sisu.charts.DelayChartTask;
 import fi.stardex.sisu.charts.TimerTasksManager;
 import fi.stardex.sisu.devices.Devices;
 import fi.stardex.sisu.persistence.orm.Manufacturer;
@@ -28,7 +29,7 @@ import fi.stardex.sisu.ui.controllers.dialogs.NewEditTestDialogController;
 import fi.stardex.sisu.ui.controllers.dialogs.NewEditVOAPDialogController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
 import fi.stardex.sisu.util.ApplicationConfigHandler;
-import fi.stardex.sisu.util.VisualUtils;
+import fi.stardex.sisu.util.DelayCalculator;
 import fi.stardex.sisu.util.converters.DataConverter;
 import fi.stardex.sisu.util.enums.BeakerType;
 import fi.stardex.sisu.util.i18n.I18N;
@@ -62,7 +63,7 @@ public class JavaFXSpringConfigure {
 
     private final Logger logger = LoggerFactory.getLogger(JavaFXSpringConfigure.class);
 
-    public JavaFXSpringConfigure (I18N i18N) {
+    public JavaFXSpringConfigure(I18N i18N) {
         this.i18N = i18N;
         this.utf8Control = new UTF8Control();
     }
@@ -143,11 +144,12 @@ public class JavaFXSpringConfigure {
     @Autowired
     public InjectorSectionController injectorSectionController(SettingsController settingsController,
                                                                @Lazy ModbusRegisterProcessor ultimaModbusWriter,
-                                                               TimerTasksManager timerTasksManager) {
+                                                               TimerTasksManager timerTasksManager, DelayController delayController) {
         InjectorSectionController injectorSectionController = crSectionController().getInjectorSectionController();
         injectorSectionController.setSettingsController(settingsController);
         injectorSectionController.setUltimaModbusWriter(ultimaModbusWriter);
         injectorSectionController.setTimerTasksManager(timerTasksManager);
+        injectorSectionController.setDelayController(delayController);
         return injectorSectionController;
     }
 
@@ -319,9 +321,7 @@ public class JavaFXSpringConfigure {
 
     @Bean
     @Autowired
-    public VoltageController voltageController(AdditionalSectionController additionalSectionController,
-                                               DataConverter dataConverter,
-                                               InjectorSectionController injectorSectionController) {
+    public VoltageController voltageController(AdditionalSectionController additionalSectionController, DataConverter dataConverter, InjectorSectionController injectorSectionController) {
         VoltageController voltageController = additionalSectionController.getVoltageController();
         voltageController.setVoltAmpereProfileDialog(voltAmpereProfileDialog());
         voltageController.setParentController(additionalSectionController);
@@ -332,8 +332,12 @@ public class JavaFXSpringConfigure {
 
     @Bean
     @Autowired
-    public DelayController delayController(AdditionalSectionController additionalSectionController) {
-        return additionalSectionController.getDelayController();
+    public DelayController delayController(AdditionalSectionController additionalSectionController,
+                                           DelayCalculator delayCalculator) {
+        DelayController delayController = additionalSectionController.getDelayController();
+        delayController.setDelayCalculator(delayCalculator);
+        delayController.setAdditionalSectionController(additionalSectionController);
+        return delayController;
     }
 
     @Bean

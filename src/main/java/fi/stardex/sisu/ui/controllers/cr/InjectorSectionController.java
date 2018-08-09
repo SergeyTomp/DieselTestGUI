@@ -1,10 +1,12 @@
 package fi.stardex.sisu.ui.controllers.cr;
 
+import fi.stardex.sisu.charts.DelayChartTask;
 import fi.stardex.sisu.charts.TimerTasksManager;
 import fi.stardex.sisu.combobox_values.InjectorChannel;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.controllers.additional.LedController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.DelayController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
 import fi.stardex.sisu.util.spinners.SpinnerManager;
 import fi.stardex.sisu.util.spinners.SpinnerValueObtainer;
@@ -21,6 +23,8 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
+
+import static fi.stardex.sisu.util.SpinnerDefaults.*;
 
 public class InjectorSectionController {
 
@@ -68,6 +72,8 @@ public class InjectorSectionController {
     private LedController ledBeaker4Controller;
 
     private SettingsController settingsController;
+
+    private  DelayController delayController;
 
     private ModbusRegisterProcessor ultimaModbusWriter;
 
@@ -137,6 +143,8 @@ public class InjectorSectionController {
         this.timerTasksManager = timerTasksManager;
     }
 
+
+
     public synchronized List<LedController> getActiveControllers() {
         activeControllers.clear();
         for (LedController s : ledControllers) {
@@ -154,7 +162,6 @@ public class InjectorSectionController {
 
     @PostConstruct
     private void init() {
-
         ledBeaker1Controller.setNumber(1);
         ledBeaker2Controller.setNumber(2);
         ledBeaker3Controller.setNumber(3);
@@ -169,11 +176,21 @@ public class InjectorSectionController {
 
         setupInjectorConfigComboBox();
 
-        widthCurrentSignal.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(120, 15500, 300, 10));
+        widthCurrentSignal.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(WIDTH_CURRENT_SIGNAL_SPINNER_MIN,
+                                                                                                WIDTH_CURRENT_SIGNAL_SPINNER_MAX,
+                                                                                                WIDTH_CURRENT_SIGNAL_SPINNER_INIT,
+                                                                                                WIDTH_CURRENT_SIGNAL_SPINNER_STEP));
 
-        freqCurrentSignal.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0.5, 50, 16.67, 0.01));
+        freqCurrentSignal.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(FREQ_CURRENT_SIGNAL_MIN,
+                                                                                            FREQ_CURRENT_SIGNAL_MAX,
+                                                                                            FREQ_CURRENT_SIGNAL_INIT,
+                                                                                            FREQ_CURRENT_SIGNAL_STEP));
 
-        SpinnerManager.setupSpinner(freqCurrentSignal, 16.67, 16.671, new CustomTooltip(), new SpinnerValueObtainer(16.67));
+        SpinnerManager.setupSpinner(freqCurrentSignal,
+                                    FREQ_CURRENT_SIGNAL_INIT,
+                                    FREQ_CURRENT_SIGNAL_FAKE,
+                                    new CustomTooltip(),
+                                    new SpinnerValueObtainer(FREQ_CURRENT_SIGNAL_INIT));
 
         ledParametersChangeListener = new LedParametersChangeListener();
 
@@ -191,6 +208,10 @@ public class InjectorSectionController {
 
     private void setToggleGroupToLeds(ToggleGroup toggleGroup) {
         ledControllers.forEach(s -> s.getLedBeaker().setToggleGroup(toggleGroup));
+    }
+
+    public void setDelayController(DelayController delayController) {
+        this.delayController = delayController;
     }
 
     private class LedParametersChangeListener implements ChangeListener<Object> {
@@ -219,7 +240,7 @@ public class InjectorSectionController {
         public void changed(ObservableValue<?> observable, Object oldValue, Object newValue) {
             switchOffAll();
             if (newValue instanceof Double) {
-                if (((Double) newValue <= 50 && (Double) newValue >= 0.5) && (Double) newValue != 16.671) {
+                if (((Double) newValue <= 50 && (Double) newValue >= 0.5) && (Double) newValue != FREQ_CURRENT_SIGNAL_FAKE) {
                     sendLedRegisters();
                 }
             } else if (newValue instanceof Toggle) {
@@ -246,6 +267,8 @@ public class InjectorSectionController {
             List<LedController> activeControllers = getActiveControllers();
             Iterator<LedController> activeControllersIterator = activeControllers.iterator();
             int activeLeds = activeControllers.size();
+            delayController.showAttentionLabel(activeLeds > 1);
+
             double frequency = freqCurrentSignal.getValue();
             ultimaModbusWriter.add(ModbusMapUltima.GImpulsesPeriod, 1000 / frequency);
             if (activeLeds == 0) {

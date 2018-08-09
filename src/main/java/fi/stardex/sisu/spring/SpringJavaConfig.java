@@ -1,10 +1,7 @@
 package fi.stardex.sisu.spring;
 
 import fi.stardex.sisu.annotations.Module;
-import fi.stardex.sisu.charts.ChartTaskFour;
-import fi.stardex.sisu.charts.ChartTaskOne;
-import fi.stardex.sisu.charts.ChartTaskThree;
-import fi.stardex.sisu.charts.ChartTaskTwo;
+import fi.stardex.sisu.charts.*;
 import fi.stardex.sisu.connect.ConnectProcessor;
 import fi.stardex.sisu.connect.InetAddressWrapper;
 import fi.stardex.sisu.connect.ModbusConnect;
@@ -24,17 +21,14 @@ import fi.stardex.sisu.registers.stand.ModbusMapStand;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.Enabler;
-import fi.stardex.sisu.ui.controllers.additional.tabs.ConnectionController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.*;
 import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.cr.TestBenchSectionController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
 import fi.stardex.sisu.ui.updaters.*;
 import fi.stardex.sisu.util.ApplicationConfigHandler;
-import fi.stardex.sisu.util.VisualUtils;
+import fi.stardex.sisu.util.DelayCalculator;
 import fi.stardex.sisu.util.converters.DataConverter;
 import fi.stardex.sisu.util.converters.FlowResolver;
 import fi.stardex.sisu.util.i18n.I18N;
@@ -305,9 +299,8 @@ public class SpringJavaConfig {
 
     @Bean
     @Autowired
-    public TestBenchSectionUpdater testBenchSectionUpdater(TestBenchSectionController testBenchSectionController,
-                                                           VisualUtils visualUtils) {
-        return new TestBenchSectionUpdater(testBenchSectionController, visualUtils);
+    public TestBenchSectionUpdater testBenchSectionUpdater(TestBenchSectionController testBenchSectionController) {
+        return new TestBenchSectionUpdater(testBenchSectionController);
     }
 
     @Bean
@@ -336,6 +329,17 @@ public class SpringJavaConfig {
     @Scope("prototype")
     public ChartTaskFour chartTaskFour() {
         return new ChartTaskFour();
+    }
+
+//    @Bean
+//    @Qualifier("delayChartTask")
+//    @Scope("prototype")
+//    public DelayChartTask delayChartTask(InjectorSectionController injectorSectionController, DelayController delayController){
+//        return new DelayChartTask(injectorSectionController, delayController);
+//    }
+    @Bean
+    public DelayCalculator delayCalculator (){
+        return new DelayCalculator();
     }
 
     @Bean
@@ -423,11 +427,6 @@ public class SpringJavaConfig {
                                    InjectorsRepository injectorsRepository,
                                    InjectorTestRepository injectorTestRepository) {
         return new CSVSUpdater(manufacturerRepository, voltAmpereProfileRepository, injectorsRepository, injectorTestRepository);
-    }
-
-    @Bean
-    public VisualUtils visualUtils() {
-        return new VisualUtils();
     }
 
 }

@@ -126,6 +126,8 @@ public class MainSectionController {
 
     private CurrentInjectorTestsObtainer currentInjectorTestsObtainer;
 
+    private VoltAmpereProfile currentVoltAmpereProfile;
+
     public CurrentInjectorTestsObtainer getCurrentInjectorTestsObtainer() {
         return currentInjectorTestsObtainer;
     }
@@ -281,11 +283,9 @@ public class MainSectionController {
                     break;
                 case CR_Pump:
                     //TODO
-                    System.err.println("IN DEVELOPMENT");
                     break;
                 case UIS:
                     //TODO
-                    System.err.println("IN DEVELOPMENT");
                     break;
             }
         }));
@@ -308,29 +308,32 @@ public class MainSectionController {
             }
 
             Injector inj = (Injector) newValue;
-            VoltAmpereProfile voltAmpereProfile = injectorsRepository.findByInjectorCode(inj.getInjectorCode()).getVoltAmpereProfile();
-            inj.setVoltAmpereProfile(voltAmpereProfile);
+            currentVoltAmpereProfile = injectorsRepository.findByInjectorCode(inj.getInjectorCode()).getVoltAmpereProfile();
+            inj.setVoltAmpereProfile(currentVoltAmpereProfile);
             currentInjectorObtainer.setInjector(inj);
 
             enabler.selectInjector(true);
 
 
-            Double firstI = voltAmpereProfile.getFirstI();
-            Double secondI = voltAmpereProfile.getSecondI();
-            Double boostI = voltAmpereProfile.getBoostI();
+            Double firstI = currentVoltAmpereProfile.getFirstI();
+            Double secondI = currentVoltAmpereProfile.getSecondI();
+            Double boostI = currentVoltAmpereProfile.getBoostI();
 
-            voltAmpereProfileController.getBoostUSpinner().getValueFactory().setValue(voltAmpereProfile.getBoostU());
-            voltAmpereProfileController.getFirstWSpinner().getValueFactory().setValue(voltAmpereProfile.getFirstW());
+            firstI = (boostI - firstI >= 0.5) ? firstI : boostI - 0.5;
+            secondI = (firstI - secondI >= 0.5) ? secondI : firstI - 0.5;
+
+            voltAmpereProfileController.getBoostUSpinner().getValueFactory().setValue(currentVoltAmpereProfile.getBoostU());
+            voltAmpereProfileController.getFirstWSpinner().getValueFactory().setValue(currentVoltAmpereProfile.getFirstW());
             voltAmpereProfileController.getFirstISpinner().getValueFactory().setValue((firstI * 100 % 10 != 0) ? dataConverter.round(firstI) : firstI);
             voltAmpereProfileController.getSecondISpinner().getValueFactory().setValue((secondI * 100 % 10 != 0) ? dataConverter.round(secondI) : secondI);
             voltAmpereProfileController.getBoostISpinner().getValueFactory().setValue((boostI * 100 % 10 != 0) ? dataConverter.round(boostI) : boostI);
-            voltAmpereProfileController.getBatteryUSpinner().getValueFactory().setValue(voltAmpereProfile.getBatteryU());
-            voltAmpereProfileController.getNegativeUSpinner().getValueFactory().setValue(voltAmpereProfile.getNegativeU());
-            voltAmpereProfileController.getEnableBoostToggleButton().setSelected(voltAmpereProfile.getBoostDisable());
+            voltAmpereProfileController.getBatteryUSpinner().getValueFactory().setValue(currentVoltAmpereProfile.getBatteryU());
+            voltAmpereProfileController.getNegativeUSpinner().getValueFactory().setValue(currentVoltAmpereProfile.getNegativeU());
+            voltAmpereProfileController.getEnableBoostToggleButton().setSelected(currentVoltAmpereProfile.getBoostDisable());
 
             InjectorSectionController injectorSectionController = voltAmpereProfileController.getInjectorSectionController();
 
-            switch (voltAmpereProfile.getInjectorType().getInjectorType()) {
+            switch (currentVoltAmpereProfile.getInjectorType().getInjectorType()) {
                 case "coil":
                     injectorSectionController.getCoilRadioButton().setSelected(true);
                     break;
@@ -352,13 +355,19 @@ public class MainSectionController {
             if (newValue == null)
                 return;
 
-            Integer freqValue = newValue.getInjectionRate();
+            Integer freq = newValue.getInjectionRate();
 
-            Integer totalPulseTimeValue = newValue.getTotalPulseTime();
+            Integer width = newValue.getTotalPulseTime();
 
-            injectorSectionController.getFreqCurrentSignal().getValueFactory().setValue((freqValue != null) ? 1000d / freqValue : 0);
+            Integer firstW = currentVoltAmpereProfile.getFirstW();
 
-            injectorSectionController.getWidthCurrentSignal().getValueFactory().setValue(totalPulseTimeValue);
+            firstW = (width - firstW >= 30) ? firstW : width - 30;
+
+            injectorSectionController.getFreqCurrentSignal().getValueFactory().setValue((freq != null) ? 1000d / freq : 0);
+
+            voltAmpereProfileController.getFirstWSpinner().getValueFactory().setValue(firstW);
+
+            injectorSectionController.getWidthCurrentSignal().getValueFactory().setValue(width);
 
         });
 

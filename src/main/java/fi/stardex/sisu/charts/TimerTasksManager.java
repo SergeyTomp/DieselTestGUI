@@ -6,10 +6,7 @@ import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Timer;
+import java.util.*;
 
 @Service
 public class TimerTasksManager {
@@ -20,6 +17,7 @@ public class TimerTasksManager {
 
     private static final int DELAY = 0;
     private static final int PERIOD = 100;
+    private static final int DELAY_CHART_PERIOD = 3000;
 
     private volatile boolean running;
 
@@ -51,16 +49,25 @@ public class TimerTasksManager {
         return null;
     }
 
+    @Lookup
+    @Qualifier("delayChartTask")
+    public DelayChartTask getDelayChartTask() {
+        return null;
+    }
+
     public void start() {
         if (running)
             return;
 
-        listOfCharts = new ArrayList<>(Arrays.asList(getChartTaskOne(), getChartTaskTwo(), getChartTaskThree(), getChartTaskFour()));
+        listOfCharts = new ArrayList<>(Arrays.asList(getChartTaskOne(), getChartTaskTwo(), getChartTaskThree(), getChartTaskFour(), getDelayChartTask()));
 
         listOfCharts.forEach(e -> {
             e.setUpdateOSC(true);
             timer = new Timer();
-            timer.schedule(e, DELAY, PERIOD);
+            if(e.getClass().isAssignableFrom(DelayChartTask.class)){
+                timer.schedule(e, DELAY, DELAY_CHART_PERIOD);
+            }
+            else{ timer.schedule(e, DELAY, PERIOD); }
             timersList.add(timer);
         });
 
@@ -76,8 +83,8 @@ public class TimerTasksManager {
             });
             timersList.clear();
             listOfCharts.forEach(e -> {
-                e.setUpdateOSC(false);
-                e.getData().clear();
+                    e.setUpdateOSC(false);
+                    e.getData().clear();
             });
             running = false;
             logger.debug("STOP timers");

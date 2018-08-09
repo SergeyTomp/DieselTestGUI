@@ -1,19 +1,18 @@
 package fi.stardex.sisu.ui.controllers.additional;
 
-import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.controllers.additional.tabs.*;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
+import javafx.scene.control.Spinner;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 
-import javax.annotation.PostConstruct;
 
 public class AdditionalSectionController {
+    @FXML
+    private Tab tabDelay;
 
     @FXML
     private Tab tabVoltage;
@@ -55,6 +54,9 @@ public class AdditionalSectionController {
     private FlowController flowController;
 
     @FXML
+    private Spinner<Double> sensitivitySpinner;
+
+    @FXML
     public FlowController getFlowController() {
         return flowController;
     }
@@ -77,4 +79,7 @@ public class AdditionalSectionController {
         return tabVoltage;
     }
 
+    public Tab getTabDelay() {
+        return tabDelay;
+    }
 }
