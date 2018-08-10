@@ -14,9 +14,9 @@ import javax.annotation.PostConstruct;
 public class FlowMasterUpdater extends FlowUpdater implements Updater {
 
     public FlowMasterUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
-                             SettingsController settingsController, DataConverter firmwareDataConverter) {
+                             SettingsController settingsController, DataConverter dataConverter) {
 
-        super(flowController, injectorSectionController, settingsController, firmwareDataConverter);
+        super(flowController, injectorSectionController, settingsController, dataConverter);
 
     }
 

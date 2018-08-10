@@ -6,6 +6,7 @@ import fi.stardex.sisu.devices.Device;
 import fi.stardex.sisu.registers.stand.ModbusMapStand;
 import fi.stardex.sisu.ui.controllers.cr.TestBenchSectionController;
 import fi.stardex.sisu.util.VisualUtils;
+import fi.stardex.sisu.version.FlowFirmwareVersion;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.ToggleButton;
@@ -13,7 +14,7 @@ import javafx.scene.text.Text;
 
 import static fi.stardex.sisu.registers.stand.ModbusMapStand.*;
 
-@Module(value = Device.MODBUS_STAND)
+@Module(value = {Device.MODBUS_FLOW, Device.MODBUS_STAND})
 public class TestBenchSectionUpdater implements Updater {
 
     private Spinner<Integer> targetRPMSpinner;
@@ -81,25 +82,27 @@ public class TestBenchSectionUpdater implements Updater {
     @Override
     public void run() {
 
-        runSyncWriteReadBooleanRegisters(Rotation, testBenchStartToggleButton);
+        boolean isStandFMVersion = (FlowFirmwareVersion.getFlowFirmwareVersion() == FlowFirmwareVersion.STAND_FM);
 
-        runSyncWriteReadBooleanRegisters(FanTurnOn, fanControlToggleButton);
+        runSyncWriteReadBooleanRegisters(isStandFMVersion ? RotationStandFM : Rotation, testBenchStartToggleButton);
 
-        runPressureAndTemperatureRegisters(Pressure1, pressProgressBar1, pressText1);
+        runSyncWriteReadBooleanRegisters(isStandFMVersion ? FanTurnOnStandFM : FanTurnOn, fanControlToggleButton);
 
-        runPressureAndTemperatureRegisters(Temperature1, tempProgressBar1, tempText1);
+        runPressureAndTemperatureRegisters(isStandFMVersion ? Pressure1StandFM : Pressure1, pressProgressBar1, pressText1);
 
-        runPressureAndTemperatureRegisters(Temperature2, tempProgressBar2, tempText2);
+        runPressureAndTemperatureRegisters(isStandFMVersion ? Temperature1StandFM : Temperature1, tempProgressBar1, tempText1);
 
-        runTargetRPMRegister();
+        runPressureAndTemperatureRegisters(isStandFMVersion ? Temperature2StandFM : Temperature2, tempProgressBar2, tempText2);
 
-        runRotationDirectionRegister();
+        runTargetRPMRegister(isStandFMVersion ? TargetRPMStandFM : TargetRPM);
 
-        runPumpRegisters();
+        runRotationDirectionRegister(isStandFMVersion ? RotationDirectionStandFM : RotationDirection);
 
-        runCurrentRPMRegister();
+        runPumpRegisters(isStandFMVersion ? PumpTurnOnStandFM : PumpTurnOn, isStandFMVersion ? PumpAutoModeStandFM : PumpAutoMode);
 
-        runTankOilRegister();
+        runCurrentRPMRegister(isStandFMVersion ? CurrentRPMStandFM : CurrentRPM);
+
+        runTankOilRegister(isStandFMVersion ? TankOilLevelStandFM : TankOilLevel);
 
     }
 
@@ -123,24 +126,24 @@ public class TestBenchSectionUpdater implements Updater {
 
     }
 
-    private void runTargetRPMRegister() {
+    private void runTargetRPMRegister(ModbusMapStand register) {
 
-        Integer targetRPMLastValue = (Integer) TargetRPM.getLastValue();
+        Integer targetRPMLastValue = (Integer) register.getLastValue();
 
-        if (TargetRPM.isSyncWriteRead())
-            TargetRPM.setSyncWriteRead(false);
+        if (register.isSyncWriteRead())
+            register.setSyncWriteRead(false);
         else if (targetRPMLastValue != null) {
             targetRPMSpinner.getValueFactory().setValue(targetRPMLastValue);
         }
 
     }
 
-    private void runRotationDirectionRegister() {
+    private void runRotationDirectionRegister(ModbusMapStand register) {
 
-        Boolean rotationDirectionLastValue = (Boolean) RotationDirection.getLastValue();
+        Boolean rotationDirectionLastValue = (Boolean) register.getLastValue();
 
-        if (RotationDirection.isSyncWriteRead())
-            RotationDirection.setSyncWriteRead(false);
+        if (register.isSyncWriteRead())
+            register.setSyncWriteRead(false);
         else if (rotationDirectionLastValue != null) {
             boolean lastValue = rotationDirectionLastValue;
             if (lastValue)
@@ -151,10 +154,10 @@ public class TestBenchSectionUpdater implements Updater {
 
     }
 
-    private void runPumpRegisters() {
+    private void runPumpRegisters(ModbusMapStand pumpTurnOnRegister, ModbusMapStand pumpAutoModeRegister) {
 
-        Boolean pumpTurnOnLastValue = (Boolean) PumpTurnOn.getLastValue();
-        Boolean pumpAutoModeLastValue = (Boolean) PumpAutoMode.getLastValue();
+        Boolean pumpTurnOnLastValue = (Boolean) pumpTurnOnRegister.getLastValue();
+        Boolean pumpAutoModeLastValue = (Boolean) pumpAutoModeRegister.getLastValue();
 
         if (pumpAutoModeLastValue != null) {
             if (pumpAutoModeLastValue) {
@@ -176,18 +179,18 @@ public class TestBenchSectionUpdater implements Updater {
 
     }
 
-    private void runCurrentRPMRegister() {
+    private void runCurrentRPMRegister(ModbusMapStand register) {
 
-        Integer currentRPMLastValue = (Integer) CurrentRPM.getLastValue();
+        Integer currentRPMLastValue = (Integer) register.getLastValue();
 
         if (currentRPMLastValue != null)
             currentRPMLcd.setValue(currentRPMLastValue);
 
     }
 
-    private void runTankOilRegister() {
+    private void runTankOilRegister(ModbusMapStand register) {
 
-        Integer tankOilLevelLastValue = (Integer) TankOilLevel.getLastValue();
+        Integer tankOilLevelLastValue = (Integer) register.getLastValue();
 
         if (tankOilLevelLastValue != null) {
             if (tankOilLevelLastValue > 10)

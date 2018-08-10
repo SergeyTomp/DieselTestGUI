@@ -98,12 +98,21 @@ public class StatusBarWrapper {
     }
 
     private void doIfDeviceIsFlow(StringBuilder sb, Device device) {
-        sb.append(device.getLabel());
+
         FlowFirmwareVersion version = FlowFirmwareVersion.getFlowFirmwareVersion();
-        if (version == FlowFirmwareVersion.FLOW_MASTER)
-            sb.append(" CH04");
-        else if (version == FlowFirmwareVersion.FLOW_STREAM)
-            sb.append(" CH10");
+
+        switch (version) {
+            case FLOW_MASTER:
+                sb.append(device.getLabel()).append(" CH04");
+                break;
+            case FLOW_STREAM:
+                sb.append(device.getLabel()).append(" CH10");
+                break;
+            case STAND_FM:
+                sb.append("Stand FM");
+                break;
+        }
+
     }
 
     private void doIfDeviceIsStand(StringBuilder sb, Device device) {

@@ -2,6 +2,7 @@ package fi.stardex.sisu.connect;
 
 import fi.stardex.sisu.devices.Device;
 import fi.stardex.sisu.devices.Devices;
+import fi.stardex.sisu.ui.controllers.additional.tabs.ConnectionController;
 import fi.stardex.sisu.util.Pair;
 import fi.stardex.sisu.util.wrappers.StatusBarWrapper;
 import javafx.application.Platform;
@@ -33,6 +34,8 @@ public class ModbusConnect {
     private ConnectProcessor connectProcessor;
 
     private ConnectCallable connectCallable;
+
+    private ConnectionController connectionController;
 
     private Future<Boolean> connectionStatus;
     private ModbusTransaction modbusTransaction;

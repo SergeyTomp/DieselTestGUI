@@ -14,9 +14,9 @@ public abstract class ModbusRegisterProcessor {
 
     private final BlockingDeque<Pair<ModbusMap, Object>> writeQueue = new LinkedBlockingDeque<>();
 
-    private RegisterProvider registerProvider;
+    protected RegisterProvider registerProvider;
 
-    private ModbusMap[] readArray;
+    protected ModbusMap[] readArray;
 
     private Thread loopThread;
 
@@ -79,7 +79,7 @@ public abstract class ModbusRegisterProcessor {
             } while (!writeQueue.isEmpty());
         }
 
-        private void readAll() {
+        protected void readAll() {
             for (ModbusMap register : readArray) {
                 if (register.isAutoUpdate()) {
 
@@ -89,6 +89,10 @@ public abstract class ModbusRegisterProcessor {
         }
 
         protected abstract void updateAll();
+
+        protected boolean isStand(ModbusMap register) {
+            return false;
+        }
 
     }
 }

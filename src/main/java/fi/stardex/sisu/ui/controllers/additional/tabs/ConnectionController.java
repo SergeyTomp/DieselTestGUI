@@ -38,6 +38,14 @@ public class ConnectionController {
 
     private ApplicationConfigHandler applicationConfigHandler;
 
+    public TextField getStandIPField() {
+        return standIPField;
+    }
+
+    public TextField getStandPortField() {
+        return standPortField;
+    }
+
     public void setApplicationConfigHandler(ApplicationConfigHandler applicationConfigHandler) {
         this.applicationConfigHandler = applicationConfigHandler;
     }

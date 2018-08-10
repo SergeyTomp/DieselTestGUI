@@ -18,9 +18,9 @@ import static fi.stardex.sisu.registers.flow.ModbusMapFlow.*;
 public class FlowStreamUpdater extends FlowUpdater implements Updater {
 
     public FlowStreamUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
-                             SettingsController settingsController, DataConverter firmwareDataConverter) {
+                             SettingsController settingsController, DataConverter dataConverter) {
 
-        super(flowController, injectorSectionController, settingsController, firmwareDataConverter);
+        super(flowController, injectorSectionController, settingsController, dataConverter);
 
     }
 
