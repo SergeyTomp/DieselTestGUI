@@ -196,6 +196,8 @@ public class InjectorSectionController {
 
         new PowerButtonChangeListener();
 
+
+
     }
 
     private void setupInjectorConfigComboBox() {

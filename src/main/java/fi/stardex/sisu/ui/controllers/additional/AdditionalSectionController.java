@@ -18,6 +18,9 @@ public class AdditionalSectionController {
     private Tab tabVoltage;
 
     @FXML
+    private Tab tabRLC;
+
+    @FXML
     private TabPane tabPane;
 
     @FXML
@@ -39,6 +42,9 @@ public class AdditionalSectionController {
     private GridPane settings;
 
     @FXML
+    private GridPane rlc;
+
+    @FXML
     private ConnectionController connectionController;
 
     @FXML
@@ -54,9 +60,19 @@ public class AdditionalSectionController {
     private FlowController flowController;
 
     @FXML
-    private Spinner<Double> sensitivitySpinner;
+    private RLCController rlcController;
 
     @FXML
+    private Spinner<Double> sensitivitySpinner;
+
+
+
+
+    public RLCController getRlCController() {
+        return rlcController;
+    public RLCController getRlCController() {
+        return rlcController;
+    }
     public FlowController getFlowController() {
         return flowController;
     }
@@ -69,7 +85,9 @@ public class AdditionalSectionController {
         return voltageController;
     }
 
-    public DelayController getDelayController() { return delayController; }
+    public DelayController getDelayController() {
+        return delayController;
+    }
 
     public SettingsController getSettingsController() {
         return settingsController;

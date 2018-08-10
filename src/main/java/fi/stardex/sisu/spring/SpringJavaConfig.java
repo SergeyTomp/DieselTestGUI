@@ -429,4 +429,9 @@ public class SpringJavaConfig {
         return new CSVSUpdater(manufacturerRepository, voltAmpereProfileRepository, injectorsRepository, injectorTestRepository);
     }
 
+    @Bean
+    public MeasurementResultsStorage measurementResultsStorage(){
+        return new MeasurementResultsStorage();
+    }
+
 }

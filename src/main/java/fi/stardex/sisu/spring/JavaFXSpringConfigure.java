@@ -1,16 +1,15 @@
 package fi.stardex.sisu.spring;
 
-import fi.stardex.sisu.charts.DelayChartTask;
 import fi.stardex.sisu.charts.TimerTasksManager;
 import fi.stardex.sisu.devices.Devices;
 import fi.stardex.sisu.persistence.orm.Manufacturer;
-import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.persistence.repos.InjectorTypeRepository;
 import fi.stardex.sisu.persistence.repos.ManufacturerRepository;
 import fi.stardex.sisu.persistence.repos.cr.InjectorTestRepository;
 import fi.stardex.sisu.persistence.repos.cr.InjectorsRepository;
 import fi.stardex.sisu.persistence.repos.cr.TestNamesRepository;
 import fi.stardex.sisu.persistence.repos.cr.VoltAmpereProfileRepository;
+import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.ui.ViewHolder;
@@ -96,7 +95,8 @@ public class JavaFXSpringConfigure {
                                                        InjectorsRepository injectorsRepository,
                                                        InjectorTestRepository injectorTestRepository,
                                                        CurrentInjectorTestsObtainer currentInjectorTestsObtainer,
-                                                       @Lazy ModbusRegisterProcessor flowModbusWriter) {
+                                                       @Lazy ModbusRegisterProcessor flowModbusWriter,
+                                                       RLCController RLCController) {
         MainSectionController mainSectionController = (MainSectionController) mainSection().getController();
         mainSectionController.setEnabler(enabler);
         mainSectionController.setCurrentManufacturerObtainer(currentManufacturerObtainer);
@@ -112,6 +112,7 @@ public class JavaFXSpringConfigure {
         mainSectionController.setInjectorsRepository(injectorsRepository);
         mainSectionController.setInjectorTestRepository(injectorTestRepository);
         mainSectionController.setCurrentInjectorTestsObtainer(currentInjectorTestsObtainer);
+        mainSectionController.setRLCController(RLCController);
         return mainSectionController;
     }
 
@@ -461,5 +462,25 @@ public class JavaFXSpringConfigure {
         }
         viewHolder.setController(fxmlLoader.getController());
         return viewHolder;
+    }
+
+    @Bean
+    @Autowired
+    public RLCController rlcController(InjectorSectionController injectorSectionController,
+                                       SettingsController settingsController,
+                                       ModbusRegisterProcessor ultimaModbusWriter,
+                                       RegisterProvider ultimaRegisterProvider,
+                                       CurrentInjectorObtainer currentInjectorObtainer,
+                                       MeasurementResultsStorage measurementResultsStorage,
+                                       AdditionalSectionController additionalSectionController){
+        RLCController RLCController = additionalSectionController.getRlCController();
+        RLCController.setInjectorSectionController(injectorSectionController);
+        RLCController.setSettingsController(settingsController);
+        RLCController.setUltimaModbusWriter(ultimaModbusWriter);
+        RLCController.setUltimaRegisterProvider(ultimaRegisterProvider);
+        RLCController.setCurrentInjectorObtainer(currentInjectorObtainer);
+        RLCController.setMeasurementResultsStorage(measurementResultsStorage);
+        return RLCController;
+
     }
 }

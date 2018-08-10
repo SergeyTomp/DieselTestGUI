@@ -105,7 +105,6 @@ public class DelayChartTask extends ChartTask {
         updateOSC = delayController.isTabDelayShowingProperty().get();
         activeControllers = injectorSectionController.getActiveControllers();
         LedController ledController = singleSelected();
-        System.err.println(ledController);
         if(ledController == null){
             delayController.showAttentionLabel(true);
             return;
