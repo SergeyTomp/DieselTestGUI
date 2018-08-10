@@ -12,6 +12,7 @@ import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.MeasurementController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.dialogs.ManufacturerMenuDialogController;
 import fi.stardex.sisu.ui.controllers.dialogs.NewEditInjectorDialogController;
@@ -138,6 +139,8 @@ public class MainSectionController {
 
     private Stage testDialogStage;
 
+    private MeasurementController measurementController;
+
     public ListView<Manufacturer> getManufacturerListView() {
         return manufacturerListView;
     }
@@ -224,6 +227,10 @@ public class MainSectionController {
 
     public void setCurrentInjectorTestsObtainer(CurrentInjectorTestsObtainer currentInjectorTestsObtainer) {
         this.currentInjectorTestsObtainer = currentInjectorTestsObtainer;
+    }
+
+    public void setMeasurementController(MeasurementController measurementController) {
+        this.measurementController = measurementController;
     }
 
     @PostConstruct
@@ -336,6 +343,7 @@ public class MainSectionController {
             switch (currentVoltAmpereProfile.getInjectorType().getInjectorType()) {
                 case "coil":
                     injectorSectionController.getCoilRadioButton().setSelected(true);
+                    measurementController.setupCoil(true);
                     break;
                 case "piezo":
                     injectorSectionController.getPiezoRadioButton().setSelected(true);
