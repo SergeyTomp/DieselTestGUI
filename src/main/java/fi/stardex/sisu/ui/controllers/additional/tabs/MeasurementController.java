@@ -94,9 +94,8 @@ public class MeasurementController {
 
     @PostConstruct
     private void init() {
-        logger.info("inside");
-        storeButton.setDisable(true);
-        measureButton.setDisable(true);
+        storeButton.setDisable(false);
+        measureButton.setDisable(false);
         parameter1Gauge = createGauge();
         parameter2Gauge = createGauge();
         parameter3Gauge = createGauge();
