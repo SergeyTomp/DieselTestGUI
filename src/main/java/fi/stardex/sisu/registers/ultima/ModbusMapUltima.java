@@ -36,7 +36,13 @@ public enum ModbusMapUltima implements ModbusMap {
     Delay_graph_channel_num(RegisterType.REGISTER_HOLDING, 115, 1, false),
     Delay_graph_update(RegisterType.DISCRETE_COIL, 96, 1, false),
 
-
+    //RLC measurement
+    RLC_measure_channel_num(RegisterType.REGISTER_HOLDING, 41, 1, false),
+    RLC_measure_request(RegisterType.DISCRETE_COIL, 41, 1, false),
+    Inductance_result(RegisterType.REGISTER_INPUT, 4200, 2, false),
+    Resistance_result(RegisterType.REGISTER_INPUT, 4202, 2, false),
+    Capacitance_result_piezo(RegisterType.REGISTER_INPUT, 4204, 2, false),
+    Resistance_result_piezo(RegisterType.REGISTER_INPUT, 4206, 2, false),
 
     Injectors_Running_En(RegisterType.DISCRETE_COIL, 42, 1, false),
 

@@ -11,6 +11,7 @@ import fi.stardex.sisu.persistence.repos.cr.InjectorTestRepository;
 import fi.stardex.sisu.persistence.repos.cr.InjectorsRepository;
 import fi.stardex.sisu.persistence.repos.cr.TestNamesRepository;
 import fi.stardex.sisu.persistence.repos.cr.VoltAmpereProfileRepository;
+import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.ui.ViewHolder;
@@ -461,5 +462,24 @@ public class JavaFXSpringConfigure {
         }
         viewHolder.setController(fxmlLoader.getController());
         return viewHolder;
+    }
+
+    @Bean
+    @Autowired
+    public MeasurementController measurementController(InjectorSectionController injectorSectionController,
+                                                       SettingsController settingsController,
+                                                       ModbusRegisterProcessor ultimaModbusWriter,
+                                                       RegisterProvider ultimaRegisterProvider,
+                                                       CurrentInjectorObtainer currentInjectorObtainer,
+                                                       MeasurementResultsStorage measurementResultsStorage){
+        MeasurementController measurementController = new MeasurementController();
+        measurementController.setInjectorSectionController(injectorSectionController);
+        measurementController.setSettingsController(settingsController);
+        measurementController.setUltimaModbusWriter(ultimaModbusWriter);
+        measurementController.setUltimaRegisterProvider(ultimaRegisterProvider);
+        measurementController.setCurrentInjectorObtainer(currentInjectorObtainer);
+        measurementController.setMeasurementResultsStorage(measurementResultsStorage);
+        return measurementController;
+
     }
 }

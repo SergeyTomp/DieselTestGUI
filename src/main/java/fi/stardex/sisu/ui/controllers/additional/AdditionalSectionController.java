@@ -18,6 +18,9 @@ public class AdditionalSectionController {
     private Tab tabVoltage;
 
     @FXML
+    private Tab tabMeasurement;
+
+    @FXML
     private TabPane tabPane;
 
     @FXML
