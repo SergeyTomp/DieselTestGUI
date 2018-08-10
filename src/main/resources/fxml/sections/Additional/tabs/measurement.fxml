@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 
-<GridPane minHeight="0" minWidth="0" prefHeight="399.0" prefWidth="881.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.additional.tabs.MeasurementController">
+<GridPane fx:id="RLC" minHeight="0" minWidth="0" prefHeight="399.0" prefWidth="881.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.additional.tabs.MeasurementController">
     <rowConstraints>
         <RowConstraints percentHeight="85.0" />
         <RowConstraints percentHeight="15.0" />
@@ -31,7 +31,7 @@
                             <RowConstraints percentHeight="85.0" />
                         </rowConstraints>
                         <children>
-                            <Label fx:id="attentionLabel" styleClass="labelAttention" stylesheets="@../../css/Styling.css" text="Available for Stardex Ultima only" />
+                            <Label fx:id="attentionLabel" styleClass="labelAttention" text="Available for Stardex Ultima only" />
                             <GridPane GridPane.rowIndex="1">
                                 <columnConstraints>
                                     <ColumnConstraints percentWidth="20.0" />
@@ -81,8 +81,8 @@
                 <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" percentWidth="20.0" prefWidth="100.0" />
             </columnConstraints>
             <children>
-                <Button fx:id="measureButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="38.0" prefWidth="120.0" stylesheets="@../../css/Styling.css" text="Measure" GridPane.columnIndex="2" />
-                <Button fx:id="storeButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="38.0" prefWidth="120.0" stylesheets="@../../css/Styling.css" text="Store" GridPane.columnIndex="1" />
+                <Button fx:id="measureButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="38.0" prefWidth="120.0" text="Measure" GridPane.columnIndex="2" />
+                <Button fx:id="storeButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="38.0" prefWidth="120.0" text="Store" GridPane.columnIndex="1" />
             </children>
             <rowConstraints>
                 <RowConstraints />

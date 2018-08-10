@@ -471,8 +471,9 @@ public class JavaFXSpringConfigure {
                                                        ModbusRegisterProcessor ultimaModbusWriter,
                                                        RegisterProvider ultimaRegisterProvider,
                                                        CurrentInjectorObtainer currentInjectorObtainer,
-                                                       MeasurementResultsStorage measurementResultsStorage){
-        MeasurementController measurementController = new MeasurementController();
+                                                       MeasurementResultsStorage measurementResultsStorage,
+                                                       AdditionalSectionController additionalSectionController){
+        MeasurementController measurementController = additionalSectionController.getMeasurementController();
         measurementController.setInjectorSectionController(injectorSectionController);
         measurementController.setSettingsController(settingsController);
         measurementController.setUltimaModbusWriter(ultimaModbusWriter);

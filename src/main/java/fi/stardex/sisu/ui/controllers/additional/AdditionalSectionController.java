@@ -42,6 +42,9 @@ public class AdditionalSectionController {
     private GridPane settings;
 
     @FXML
+    private GridPane measurement;
+
+    @FXML
     private ConnectionController connectionController;
 
     @FXML
@@ -57,9 +60,15 @@ public class AdditionalSectionController {
     private FlowController flowController;
 
     @FXML
-    private Spinner<Double> sensitivitySpinner;
+    private MeasurementController measurementController;
 
     @FXML
+    private Spinner<Double> sensitivitySpinner;
+
+
+    public MeasurementController getMeasurementController() {
+        return measurementController;
+    }
     public FlowController getFlowController() {
         return flowController;
     }
@@ -72,7 +81,9 @@ public class AdditionalSectionController {
         return voltageController;
     }
 
-    public DelayController getDelayController() { return delayController; }
+    public DelayController getDelayController() {
+        return delayController;
+    }
 
     public SettingsController getSettingsController() {
         return settingsController;

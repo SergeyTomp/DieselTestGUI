@@ -93,7 +93,8 @@ public class MeasurementController {
     private ComboBox<InjectorChannel> injectorChannelComboBox;
 
     @PostConstruct
-    public void init() {
+    private void init() {
+        logger.info("inside");
         storeButton.setDisable(true);
         measureButton.setDisable(true);
         parameter1Gauge = createGauge();
@@ -108,19 +109,11 @@ public class MeasurementController {
         injectorChannelComboBox = settingsController.getInjectorsConfigComboBox();
         coilRadioButton = injectorSectionController.getCoilRadioButton();
 
-        measureButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                measureButton.setDisable(true);
-                new Thread(()-> measure()).start();
-            }
+        measureButton.setOnAction(event -> {
+            measureButton.setDisable(true);
+            new Thread(()-> measure()).start();
         });
-        storeButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                store();
-            }
-        });
+        storeButton.setOnAction(event -> store());
     }
 
     public void setupNull() {
@@ -279,28 +272,28 @@ public class MeasurementController {
             Platform.runLater(() -> measureButton.setDisable(false));
         }
     }
-
+    //FIXME: next step
     private void store(){
-        Injector injector = currentInjectorObtainer.getInjector();
-        if (null == injector) {
-            return;
-        }
-        if (null != measurementResultsStorage.getMeasurementResults(injector)) {
-            List<MeasurementResult> measurementResults = measurementResultsStorage.getMeasurementResults(injector);
-            setMeasurementResultValue(measurementResults.get(0), String.format("%.2f", parameter1Gauge.getValue()));
-            setMeasurementResultValue(measurementResults.get(1), String.format("%.2f", parameter2Gauge.getValue()));
-        } else {
-            List<MeasurementResult> measurementResults = new ArrayList<>();
-            MeasurementResult measurementResult1 = new MeasurementResult(parameter1Gauge.getTitle(), parameter1Gauge.getUnit());
-            MeasurementResult measurementResult2 = new MeasurementResult(parameter2Gauge.getTitle(), parameter2Gauge.getUnit());
-            setMeasurementResultValue(measurementResult1, String.format("%.2f", parameter1Gauge.getValue()));
-            setMeasurementResultValue(measurementResult2, String.format("%.2f", parameter2Gauge.getValue()));
-            measurementResults.add(measurementResult1);
-            measurementResults.add(measurementResult2);
-
-            measurementResultsStorage.putMeasurementResults(injector, measurementResults);
-        }
-        measurementTableReportWrapper.setMeasureResults();
+//        Injector injector = currentInjectorObtainer.getInjector();
+//        if (null == injector) {
+//            return;
+//        }
+//        if (null != measurementResultsStorage.getMeasurementResults(injector)) {
+//            List<MeasurementResult> measurementResults = measurementResultsStorage.getMeasurementResults(injector);
+//            setMeasurementResultValue(measurementResults.get(0), String.format("%.2f", parameter1Gauge.getValue()));
+//            setMeasurementResultValue(measurementResults.get(1), String.format("%.2f", parameter2Gauge.getValue()));
+//        } else {
+//            List<MeasurementResult> measurementResults = new ArrayList<>();
+//            MeasurementResult measurementResult1 = new MeasurementResult(parameter1Gauge.getTitle(), parameter1Gauge.getUnit());
+//            MeasurementResult measurementResult2 = new MeasurementResult(parameter2Gauge.getTitle(), parameter2Gauge.getUnit());
+//            setMeasurementResultValue(measurementResult1, String.format("%.2f", parameter1Gauge.getValue()));
+//            setMeasurementResultValue(measurementResult2, String.format("%.2f", parameter2Gauge.getValue()));
+//            measurementResults.add(measurementResult1);
+//            measurementResults.add(measurementResult2);
+//
+//            measurementResultsStorage.putMeasurementResults(injector, measurementResults);
+//        }
+//        measurementTableReportWrapper.setMeasureResults();
     }
 
     private void setMeasurementResultValue(MeasurementResult measurementResult, String value) {
