@@ -344,14 +344,29 @@ public class MainSectionController {
                 case "coil":
                     injectorSectionController.getCoilRadioButton().setSelected(true);
                     measurementController.setupCoil();
+                    injectorSectionController.getCoilRadioButton().setDisable(false);
+                    injectorSectionController.getPiezoRadioButton().setSelected(false);
+                    injectorSectionController.getPiezoRadioButton().setDisable(true);
+                    injectorSectionController.getPiezoDelphiRadioButton().setSelected(false);
+                    injectorSectionController.getPiezoDelphiRadioButton().setDisable(true);
                     break;
                 case "piezo":
                     injectorSectionController.getPiezoRadioButton().setSelected(true);
                     measurementController.setupPiezo( 10d, 2000);
+                    injectorSectionController.getPiezoRadioButton().setDisable(false);
+                    injectorSectionController.getCoilRadioButton().setSelected(false);
+                    injectorSectionController.getCoilRadioButton().setDisable(true);
+                    injectorSectionController.getPiezoDelphiRadioButton().setSelected(false);
+                    injectorSectionController.getPiezoDelphiRadioButton().setDisable(true);
                     break;
                 case "piezoDelphi":
                     injectorSectionController.getPiezoDelphiRadioButton().setSelected(true);
                     measurementController.setupPiezo( 20d, 2000);
+                    injectorSectionController.getPiezoDelphiRadioButton().setDisable(false);
+                    injectorSectionController.getCoilRadioButton().setSelected(false);
+                    injectorSectionController.getCoilRadioButton().setDisable(true);
+                    injectorSectionController.getPiezoRadioButton().setDisable(true);
+                    injectorSectionController.getPiezoRadioButton().setSelected(false);
                     break;
                 default:
                     throw new IllegalArgumentException("Wrong injector type parameter!");
