@@ -12,7 +12,7 @@ import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.MeasurementController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.RLCController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.dialogs.ManufacturerMenuDialogController;
 import fi.stardex.sisu.ui.controllers.dialogs.NewEditInjectorDialogController;
@@ -139,7 +139,7 @@ public class MainSectionController {
 
     private Stage testDialogStage;
 
-    private MeasurementController measurementController;
+    private RLCController RLCController;
 
     public ListView<Manufacturer> getManufacturerListView() {
         return manufacturerListView;
@@ -229,8 +229,8 @@ public class MainSectionController {
         this.currentInjectorTestsObtainer = currentInjectorTestsObtainer;
     }
 
-    public void setMeasurementController(MeasurementController measurementController) {
-        this.measurementController = measurementController;
+    public void setRLCController(RLCController RLCController) {
+        this.RLCController = RLCController;
     }
 
     @PostConstruct
@@ -343,7 +343,7 @@ public class MainSectionController {
             switch (currentVoltAmpereProfile.getInjectorType().getInjectorType()) {
                 case "coil":
                     injectorSectionController.getCoilRadioButton().setSelected(true);
-                    measurementController.setupCoil();
+                    RLCController.setupCoil();
                     injectorSectionController.getCoilRadioButton().setDisable(false);
                     injectorSectionController.getPiezoRadioButton().setSelected(false);
                     injectorSectionController.getPiezoRadioButton().setDisable(true);
@@ -352,7 +352,7 @@ public class MainSectionController {
                     break;
                 case "piezo":
                     injectorSectionController.getPiezoRadioButton().setSelected(true);
-                    measurementController.setupPiezo( 10d, 2000);
+                    RLCController.setupPiezo( 10d, 2000);
                     injectorSectionController.getPiezoRadioButton().setDisable(false);
                     injectorSectionController.getCoilRadioButton().setSelected(false);
                     injectorSectionController.getCoilRadioButton().setDisable(true);
@@ -361,7 +361,7 @@ public class MainSectionController {
                     break;
                 case "piezoDelphi":
                     injectorSectionController.getPiezoDelphiRadioButton().setSelected(true);
-                    measurementController.setupPiezo( 20d, 2000);
+                    RLCController.setupPiezo( 20d, 2000);
                     injectorSectionController.getPiezoDelphiRadioButton().setDisable(false);
                     injectorSectionController.getCoilRadioButton().setSelected(false);
                     injectorSectionController.getCoilRadioButton().setDisable(true);

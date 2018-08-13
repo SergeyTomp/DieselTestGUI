@@ -1,10 +1,8 @@
 package fi.stardex.sisu.spring;
 
-import fi.stardex.sisu.charts.DelayChartTask;
 import fi.stardex.sisu.charts.TimerTasksManager;
 import fi.stardex.sisu.devices.Devices;
 import fi.stardex.sisu.persistence.orm.Manufacturer;
-import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.persistence.repos.InjectorTypeRepository;
 import fi.stardex.sisu.persistence.repos.ManufacturerRepository;
 import fi.stardex.sisu.persistence.repos.cr.InjectorTestRepository;
@@ -98,7 +96,7 @@ public class JavaFXSpringConfigure {
                                                        InjectorTestRepository injectorTestRepository,
                                                        CurrentInjectorTestsObtainer currentInjectorTestsObtainer,
                                                        @Lazy ModbusRegisterProcessor flowModbusWriter,
-                                                       MeasurementController measurementController) {
+                                                       RLCController RLCController) {
         MainSectionController mainSectionController = (MainSectionController) mainSection().getController();
         mainSectionController.setEnabler(enabler);
         mainSectionController.setCurrentManufacturerObtainer(currentManufacturerObtainer);
@@ -114,7 +112,7 @@ public class JavaFXSpringConfigure {
         mainSectionController.setInjectorsRepository(injectorsRepository);
         mainSectionController.setInjectorTestRepository(injectorTestRepository);
         mainSectionController.setCurrentInjectorTestsObtainer(currentInjectorTestsObtainer);
-        mainSectionController.setMeasurementController(measurementController);
+        mainSectionController.setRLCController(RLCController);
         return mainSectionController;
     }
 
@@ -468,21 +466,21 @@ public class JavaFXSpringConfigure {
 
     @Bean
     @Autowired
-    public MeasurementController measurementController(InjectorSectionController injectorSectionController,
-                                                       SettingsController settingsController,
-                                                       ModbusRegisterProcessor ultimaModbusWriter,
-                                                       RegisterProvider ultimaRegisterProvider,
-                                                       CurrentInjectorObtainer currentInjectorObtainer,
-                                                       MeasurementResultsStorage measurementResultsStorage,
-                                                       AdditionalSectionController additionalSectionController){
-        MeasurementController measurementController = additionalSectionController.getMeasurementController();
-        measurementController.setInjectorSectionController(injectorSectionController);
-        measurementController.setSettingsController(settingsController);
-        measurementController.setUltimaModbusWriter(ultimaModbusWriter);
-        measurementController.setUltimaRegisterProvider(ultimaRegisterProvider);
-        measurementController.setCurrentInjectorObtainer(currentInjectorObtainer);
-        measurementController.setMeasurementResultsStorage(measurementResultsStorage);
-        return measurementController;
+    public RLCController rlcController(InjectorSectionController injectorSectionController,
+                                       SettingsController settingsController,
+                                       ModbusRegisterProcessor ultimaModbusWriter,
+                                       RegisterProvider ultimaRegisterProvider,
+                                       CurrentInjectorObtainer currentInjectorObtainer,
+                                       MeasurementResultsStorage measurementResultsStorage,
+                                       AdditionalSectionController additionalSectionController){
+        RLCController RLCController = additionalSectionController.getRlCController();
+        RLCController.setInjectorSectionController(injectorSectionController);
+        RLCController.setSettingsController(settingsController);
+        RLCController.setUltimaModbusWriter(ultimaModbusWriter);
+        RLCController.setUltimaRegisterProvider(ultimaRegisterProvider);
+        RLCController.setCurrentInjectorObtainer(currentInjectorObtainer);
+        RLCController.setMeasurementResultsStorage(measurementResultsStorage);
+        return RLCController;
 
     }
 }

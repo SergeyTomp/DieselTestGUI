@@ -53,10 +53,10 @@ public class MeasurementTableReportWrapper {
 //        additionalSectionController.getMeasureColumn3().setCellValueFactory(new PropertyValueFactory<>("parameterValue3"));
 //        additionalSectionController.getMeasureColumn4().setCellValueFactory(new PropertyValueFactory<>("parameterValue4"));
 //
-//        parameter1Gauge = additionalSectionController.getMeasurementController().getParameter1Gauge();
-//        parameter2Gauge = additionalSectionController.getMeasurementController().getParameter2Gauge();
-//        parameter3Gauge = additionalSectionController.getMeasurementController().getParameter3Gauge();
-//        parameter4Gauge = additionalSectionController.getMeasurementController().getParameter4Gauge();
+//        parameter1Gauge = additionalSectionController.getRlCController().getParameter1Gauge();
+//        parameter2Gauge = additionalSectionController.getRlCController().getParameter2Gauge();
+//        parameter3Gauge = additionalSectionController.getRlCController().getParameter3Gauge();
+//        parameter4Gauge = additionalSectionController.getRlCController().getParameter4Gauge();
 //
 //        measurementResultTableView = additionalSectionController.getMeasurementTableView();
 //    }

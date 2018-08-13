@@ -23,8 +23,8 @@
         <Tab text="%additional.settings">
             <fx:include fx:id="settings" source="tabs/Settings.fxml" />
         </Tab>
-        <Tab fx:id="tabMeasurement" text="RLC">
-             <fx:include fx:id="measurement" source="tabs/measurement.fxml"/>
+        <Tab fx:id="tabRLC" text="RLC">
+             <fx:include fx:id="rlc" source="tabs/RLC.fxml"/>
         </Tab>
 
     </tabs>

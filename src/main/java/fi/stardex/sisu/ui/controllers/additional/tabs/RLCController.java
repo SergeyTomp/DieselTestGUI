@@ -3,7 +3,6 @@ package fi.stardex.sisu.ui.controllers.additional.tabs;
 import eu.hansolo.medusa.Gauge;
 import eu.hansolo.medusa.GaugeBuilder;
 import fi.stardex.sisu.combobox_values.InjectorChannel;
-import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
@@ -11,17 +10,14 @@ import fi.stardex.sisu.ui.controllers.additional.LedController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer;
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -29,8 +25,8 @@ import java.util.List;
  * @version 0.1
  * @since 12.08.16
  */
-public class MeasurementController {
-    private static final Logger logger = LoggerFactory.getLogger(MeasurementController.class);
+public class RLCController {
+    private static final Logger logger = LoggerFactory.getLogger(RLCController.class);
 
     @FXML
     private Label attentionLabel;

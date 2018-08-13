@@ -18,7 +18,7 @@ public class AdditionalSectionController {
     private Tab tabVoltage;
 
     @FXML
-    private Tab tabMeasurement;
+    private Tab tabRLC;
 
     @FXML
     private TabPane tabPane;
@@ -42,7 +42,7 @@ public class AdditionalSectionController {
     private GridPane settings;
 
     @FXML
-    private GridPane measurement;
+    private GridPane rlc;
 
     @FXML
     private ConnectionController connectionController;
@@ -60,14 +60,14 @@ public class AdditionalSectionController {
     private FlowController flowController;
 
     @FXML
-    private MeasurementController measurementController;
+    private RLCController rlcController;
 
     @FXML
     private Spinner<Double> sensitivitySpinner;
 
 
-    public MeasurementController getMeasurementController() {
-        return measurementController;
+    public RLCController getRlCController() {
+        return rlcController;
     }
     public FlowController getFlowController() {
         return flowController;
