@@ -28,8 +28,14 @@ import fi.stardex.sisu.util.view.GUIType;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
+import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
@@ -44,6 +50,7 @@ import javax.annotation.PostConstruct;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 
 public class MainSectionController {
 
@@ -95,7 +102,6 @@ public class MainSectionController {
     private ListView<Model> modelListView;
     @FXML
     private ListView<InjectorTest> testListView;
-
     @Autowired
     private ModbusRegisterProcessor flowModbusWriter;
 
@@ -140,6 +146,9 @@ public class MainSectionController {
     private Stage testDialogStage;
 
     private RLCController RLCController;
+
+//    private ObservableList<Model> rawData = null;
+    private FilteredList<Model> filteredList = null;
 
     public ListView<Manufacturer> getManufacturerListView() {
         return manufacturerListView;
@@ -233,12 +242,17 @@ public class MainSectionController {
         this.RLCController = RLCController;
     }
 
+
+
+
     @PostConstruct
     private void init() {
 
         // TODO: do not delete!
         setupStartStopToggleButton();
 //        setupResetButton();
+
+
 
         versionComboBox.getItems().addAll(versions);
 
@@ -274,6 +288,7 @@ public class MainSectionController {
         initModelContextMenu();
         initTestContextMenu();
 
+
         manufacturerListView.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) -> {
             currentManufacturerObtainer.setCurrentManufacturer(newValue);
 
@@ -295,6 +310,46 @@ public class MainSectionController {
                     //TODO
                     break;
             }
+
+            filteredList = modelListView.getItems().filtered(new Predicate<Model>() {
+                @Override
+                public boolean test(Model model) {
+                    return true;
+                }
+            });
+            modelListView.setItems(filteredList);
+        }));
+
+
+
+//        filteredList = modelListView.getItems().filtered(new Predicate<Model>() {
+//            @Override
+//            public boolean test(Model model) {
+//                return true;
+//            }
+//        });
+//        modelListView.setItems(filteredList);
+
+        searchModelTF.textProperty().addListener((new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+
+                filteredList.setPredicate(new Predicate<Model>() {
+                    @Override
+                    public boolean test(Model data) {
+                        if (newValue == null || newValue.isEmpty()) {
+                            return true;
+                        }
+                        else {
+                            return (
+                                data.toString().contains(newValue.toUpperCase())
+                                || data.toString().replace("-", "").contains(newValue.toUpperCase())
+                                || data.toString().replace("#", "").contains(newValue.toUpperCase())
+                                || data.toString().replaceFirst("-", "").contains(newValue.toUpperCase()));
+                        }
+                    }
+                });
+            }
         }));
 
         baseType.selectedToggleProperty().addListener(((observable, oldValue, newValue) -> {
@@ -304,6 +359,15 @@ public class MainSectionController {
                 return;
 
             modelListView.getItems().setAll(injectorsRepository.findByManufacturerAndIsCustom(selectedItem, customRB.isSelected()));
+
+            filteredList = modelListView.getItems().filtered(new Predicate<Model>() {
+                @Override
+                public boolean test(Model model) {
+                    return true;
+                }
+            });
+            modelListView.setItems(filteredList);
+
         }));
 
         modelListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {

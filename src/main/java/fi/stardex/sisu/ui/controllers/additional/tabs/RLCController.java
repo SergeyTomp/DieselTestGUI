@@ -3,6 +3,7 @@ package fi.stardex.sisu.ui.controllers.additional.tabs;
 import eu.hansolo.medusa.Gauge;
 import eu.hansolo.medusa.GaugeBuilder;
 import fi.stardex.sisu.combobox_values.InjectorChannel;
+import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
@@ -18,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -83,6 +85,22 @@ public class RLCController {
     }
     public void setCurrentInjectorObtainer(CurrentInjectorObtainer currentInjectorObtainer) {
         this.currentInjectorObtainer = currentInjectorObtainer;
+    }
+
+    public Gauge getParameter1Gauge() {
+        return parameter1Gauge;
+    }
+
+    public Gauge getParameter2Gauge() {
+        return parameter2Gauge;
+    }
+
+    public Gauge getParameter3Gauge() {
+        return parameter3Gauge;
+    }
+
+    public Gauge getParameter4Gauge() {
+        return parameter4Gauge;
     }
 
     private List<LedController> activeControllers;
