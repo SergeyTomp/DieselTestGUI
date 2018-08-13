@@ -94,8 +94,8 @@ public class MeasurementController {
 
     @PostConstruct
     private void init() {
-        storeButton.setDisable(false);
-        measureButton.setDisable(false);
+        storeButton.setDisable(true);
+        measureButton.setDisable(true);
         parameter1Gauge = createGauge();
         parameter2Gauge = createGauge();
         parameter3Gauge = createGauge();
@@ -107,6 +107,7 @@ public class MeasurementController {
         measurementTabPane.getTabs().remove(tabCoilTwo);
         injectorChannelComboBox = settingsController.getInjectorsConfigComboBox();
         coilRadioButton = injectorSectionController.getCoilRadioButton();
+        attentionLabel.setVisible(false);                                           //for this GUI this label is not used
 
         measureButton.setOnAction(event -> {
             measureButton.setDisable(true);
@@ -133,9 +134,9 @@ public class MeasurementController {
         parameter2Gauge.setMaxValue(3d);
     }
 
-    public void setupCoil(boolean isUltimaConnected) {
-        storeButton.setDisable(!isUltimaConnected);
-        measureButton.setDisable(!isUltimaConnected);
+    public void setupCoil() {
+        storeButton.setDisable(false);
+        measureButton.setDisable(false);
 
         parameter1Gauge.setDecimals(0);
         parameter1Gauge.setTitle("Inductance");
@@ -151,9 +152,9 @@ public class MeasurementController {
         measurementTabPane.getTabs().remove(tabCoilTwo);
     }
 
-    public void setupPiezo(double capacitanceMaxValue, boolean isUltimaConnected) {
-        storeButton.setDisable(!isUltimaConnected);
-        measureButton.setDisable(!isUltimaConnected);
+    public void setupPiezo(double capacitanceMaxValue) {
+        storeButton.setDisable(false);
+        measureButton.setDisable(false);
 
         parameter1Gauge.setDecimals(1);
         parameter1Gauge.setTitle("Capacitance");
@@ -169,9 +170,9 @@ public class MeasurementController {
         tabCoilOne.setText("PIEZO");
     }
 
-    public void setupPiezo(double capacitanceMaxValue, double resistanceMaxValue, boolean isUltimaConnected) {
-        storeButton.setDisable(!isUltimaConnected);
-        measureButton.setDisable(!isUltimaConnected);
+    public void setupPiezo(double capacitanceMaxValue, double resistanceMaxValue) {
+        storeButton.setDisable(false);
+        measureButton.setDisable(false);
 
         parameter1Gauge.setDecimals(1);
         parameter1Gauge.setTitle("Capacitance");
@@ -188,7 +189,7 @@ public class MeasurementController {
     }
 
     public void setupDoubleCoil(){
-        setupCoil(true);
+        setupCoil();
         parameter3Gauge.setDecimals(0);
         parameter3Gauge.setTitle("Inductance");
         parameter3Gauge.setUnit("\u03BCH");

@@ -343,13 +343,15 @@ public class MainSectionController {
             switch (currentVoltAmpereProfile.getInjectorType().getInjectorType()) {
                 case "coil":
                     injectorSectionController.getCoilRadioButton().setSelected(true);
-                    measurementController.setupCoil(true);
+                    measurementController.setupCoil();
                     break;
                 case "piezo":
                     injectorSectionController.getPiezoRadioButton().setSelected(true);
+                    measurementController.setupPiezo( 10d, 2000);
                     break;
                 case "piezoDelphi":
                     injectorSectionController.getPiezoDelphiRadioButton().setSelected(true);
+                    measurementController.setupPiezo( 20d, 2000);
                     break;
                 default:
                     throw new IllegalArgumentException("Wrong injector type parameter!");

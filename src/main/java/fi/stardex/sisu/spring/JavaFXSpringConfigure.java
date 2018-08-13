@@ -97,7 +97,8 @@ public class JavaFXSpringConfigure {
                                                        InjectorsRepository injectorsRepository,
                                                        InjectorTestRepository injectorTestRepository,
                                                        CurrentInjectorTestsObtainer currentInjectorTestsObtainer,
-                                                       @Lazy ModbusRegisterProcessor flowModbusWriter) {
+                                                       @Lazy ModbusRegisterProcessor flowModbusWriter,
+                                                       MeasurementController measurementController) {
         MainSectionController mainSectionController = (MainSectionController) mainSection().getController();
         mainSectionController.setEnabler(enabler);
         mainSectionController.setCurrentManufacturerObtainer(currentManufacturerObtainer);
@@ -113,6 +114,7 @@ public class JavaFXSpringConfigure {
         mainSectionController.setInjectorsRepository(injectorsRepository);
         mainSectionController.setInjectorTestRepository(injectorTestRepository);
         mainSectionController.setCurrentInjectorTestsObtainer(currentInjectorTestsObtainer);
+        mainSectionController.setMeasurementController(measurementController);
         return mainSectionController;
     }
 
