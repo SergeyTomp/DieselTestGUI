@@ -103,7 +103,6 @@ public class MainSectionController {
     private ListView<Model> modelListView;
     @FXML
     private ListView<InjectorTest> testListView;
-
     @Autowired
     private ModbusRegisterProcessor flowModbusWriter;
 
@@ -252,7 +251,6 @@ public class MainSectionController {
 //        setupResetButton();
 
         versionComboBox.getItems().addAll(versions);
-
         versionComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == null)
                 return;

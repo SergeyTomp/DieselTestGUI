@@ -70,8 +70,6 @@ public class AdditionalSectionController {
 
     public RLCController getRlCController() {
         return rlcController;
-    public RLCController getRlCController() {
-        return rlcController;
     }
     public FlowController getFlowController() {
         return flowController;
