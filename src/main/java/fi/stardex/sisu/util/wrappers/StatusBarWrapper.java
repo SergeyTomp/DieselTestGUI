@@ -2,8 +2,7 @@ package fi.stardex.sisu.util.wrappers;
 
 import fi.stardex.sisu.devices.Device;
 import fi.stardex.sisu.devices.Devices;
-import fi.stardex.sisu.version.FlowFirmwareVersion;
-import fi.stardex.sisu.version.StandFirmwareVersion;
+import fi.stardex.sisu.version.FirmwareVersion;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.layout.StackPane;
@@ -12,7 +11,11 @@ import javafx.scene.text.Text;
 
 import java.util.Iterator;
 
+import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions;
+import static fi.stardex.sisu.version.StandFirmwareVersion.StandVersions;
+
 public class StatusBarWrapper {
+
     private static final String TEXT_FIELD_COLOR = "#ddff99";
     private static final String STYLE = "-fx-background-color: #15151e;-fx-border-width: 3px; -fx-border-color: #000000;";
 
@@ -22,8 +25,14 @@ public class StatusBarWrapper {
     private final Text textfield2;
     private final Text textfield3;
 
-    public StatusBarWrapper(Devices devices, String processStatus, String deviceConnected, String statusData) {
+    private final FirmwareVersion<FlowVersions> flowFirmwareVersion;
+    private final FirmwareVersion<StandVersions> standFirmwareVersion;
+
+    public StatusBarWrapper(Devices devices, String processStatus, String deviceConnected, String statusData,
+                            FirmwareVersion<FlowVersions> flowFirmwareVersion, FirmwareVersion<StandVersions> standFirmwareVersion) {
         this.devices = devices;
+        this.flowFirmwareVersion = flowFirmwareVersion;
+        this.standFirmwareVersion = standFirmwareVersion;
         this.statusBar = new StackPane();
         this.statusBar.setPrefSize(400, 20);
         this.statusBar.setStyle(STYLE);
@@ -39,7 +48,7 @@ public class StatusBarWrapper {
         this.textfield1.setText("Process Status: " + processStatus);
         this.textfield2.setText("  Device status: " + deviceConnected);
         this.textfield2.setFill(Color.RED);
-        this.textfield3.setText("  Version: " + statusData);
+        this.textfield3.setText("  version: " + statusData);
         this.statusBar.getChildren().add(textfield1);
         this.statusBar.getChildren().add(textfield2);
         this.statusBar.getChildren().add(textfield3);
@@ -94,18 +103,20 @@ public class StatusBarWrapper {
     }
 
     private void doIfDeviceIsUltima(StringBuilder sb, Device device) {
+
         sb.append(device.getLabel());
+
     }
 
     private void doIfDeviceIsFlow(StringBuilder sb, Device device) {
 
-        FlowFirmwareVersion version = FlowFirmwareVersion.getFlowFirmwareVersion();
+        FlowVersions version = flowFirmwareVersion.getVersions();
 
         switch (version) {
-            case FLOW_MASTER:
+            case MASTER:
                 sb.append(device.getLabel()).append(" CH04");
                 break;
-            case FLOW_STREAM:
+            case STREAM:
                 sb.append(device.getLabel()).append(" CH10");
                 break;
             case STAND_FM:
@@ -116,10 +127,17 @@ public class StatusBarWrapper {
     }
 
     private void doIfDeviceIsStand(StringBuilder sb, Device device) {
-        StandFirmwareVersion version = StandFirmwareVersion.getStandFirmwareVersion();
-        if (version == StandFirmwareVersion.STAND)
-            sb.append(device.getLabel());
-        else if (version == null)
-            sb.append("Unknown Device");
+
+        StandVersions version = standFirmwareVersion.getVersions();
+
+        switch (version) {
+            case STAND:
+                sb.append(device.getLabel());
+                break;
+            default:
+                sb.append("Unknown Device");
+                break;
+        }
+
     }
 }

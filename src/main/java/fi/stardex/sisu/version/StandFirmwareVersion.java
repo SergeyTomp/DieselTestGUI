@@ -1,16 +1,16 @@
 package fi.stardex.sisu.version;
 
-public enum StandFirmwareVersion {
+public class StandFirmwareVersion<T extends Versions> extends FirmwareVersion<T> {
 
-    STAND;
-
-    private static StandFirmwareVersion standFirmwareVersion;
-
-    public static StandFirmwareVersion getStandFirmwareVersion() {
-        return standFirmwareVersion;
+    public StandFirmwareVersion(T version) {
+        super(version);
     }
 
-    public static void setStandFirmwareVersion(StandFirmwareVersion standVersion) {
-        standFirmwareVersion = standVersion;
+    public enum StandVersions implements Versions {
+
+        STAND
+
     }
+
+
 }

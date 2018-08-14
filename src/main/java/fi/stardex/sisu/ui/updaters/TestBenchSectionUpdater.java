@@ -6,13 +6,15 @@ import fi.stardex.sisu.devices.Device;
 import fi.stardex.sisu.registers.stand.ModbusMapStand;
 import fi.stardex.sisu.ui.controllers.cr.TestBenchSectionController;
 import fi.stardex.sisu.util.VisualUtils;
-import fi.stardex.sisu.version.FlowFirmwareVersion;
+import fi.stardex.sisu.version.FirmwareVersion;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.text.Text;
 
 import static fi.stardex.sisu.registers.stand.ModbusMapStand.*;
+import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions;
+import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions.STAND_FM;
 
 @Module(value = {Device.MODBUS_FLOW, Device.MODBUS_STAND})
 public class TestBenchSectionUpdater implements Updater {
@@ -51,10 +53,14 @@ public class TestBenchSectionUpdater implements Updater {
 
     private VisualUtils visualUtils;
 
-    public TestBenchSectionUpdater(TestBenchSectionController testBenchSectionController, VisualUtils visualUtils) {
+    private FirmwareVersion<FlowVersions> flowFirmwareVersion;
+
+    public TestBenchSectionUpdater(TestBenchSectionController testBenchSectionController, VisualUtils visualUtils,
+                                   FirmwareVersion<FlowVersions> flowFirmwareVersion) {
 
         this.testBenchSectionController = testBenchSectionController;
         this.visualUtils = visualUtils;
+        this.flowFirmwareVersion = flowFirmwareVersion;
 
         pumpControlToggleButton = testBenchSectionController.getPumpControlToggleButton();
         targetRPMSpinner = testBenchSectionController.getTargetRPMSpinner();
@@ -82,7 +88,7 @@ public class TestBenchSectionUpdater implements Updater {
     @Override
     public void run() {
 
-        boolean isStandFMVersion = (FlowFirmwareVersion.getFlowFirmwareVersion() == FlowFirmwareVersion.STAND_FM);
+        boolean isStandFMVersion = (flowFirmwareVersion.getVersions() == STAND_FM);
 
         runSyncWriteReadBooleanRegisters(isStandFMVersion ? RotationStandFM : Rotation, testBenchStartToggleButton);
 

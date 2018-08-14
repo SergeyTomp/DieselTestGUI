@@ -1,16 +1,15 @@
 package fi.stardex.sisu.version;
 
-public enum FlowFirmwareVersion {
+public class FlowFirmwareVersion<T extends Versions> extends FirmwareVersion<T> {
 
-    FLOW_MASTER, FLOW_STREAM, STAND_FM;
-
-    private static FlowFirmwareVersion flowFirmwareVersion = FLOW_MASTER;
-
-    public static FlowFirmwareVersion getFlowFirmwareVersion() {
-        return flowFirmwareVersion;
+    public FlowFirmwareVersion(T version) {
+        super(version);
     }
 
-    public static void setFlowFirmwareVersion(FlowFirmwareVersion flowVersion) {
-        flowFirmwareVersion = flowVersion;
+    public enum FlowVersions implements Versions{
+
+        MASTER, STREAM, STAND_FM
+
     }
+
 }

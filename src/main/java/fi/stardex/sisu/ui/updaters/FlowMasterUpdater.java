@@ -6,17 +6,20 @@ import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.util.converters.DataConverter;
-import fi.stardex.sisu.version.FlowFirmwareVersion;
+import fi.stardex.sisu.version.FirmwareVersion;
 
 import javax.annotation.PostConstruct;
+
+import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions;
+import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions.*;
 
 @Module(value = Device.MODBUS_FLOW)
 public class FlowMasterUpdater extends FlowUpdater implements Updater {
 
     public FlowMasterUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
-                             SettingsController settingsController, DataConverter dataConverter) {
+                             SettingsController settingsController, DataConverter dataConverter, FirmwareVersion<FlowVersions> flowFirmwareVersion) {
 
-        super(flowController, injectorSectionController, settingsController, dataConverter);
+        super(flowController, injectorSectionController, settingsController, dataConverter, flowFirmwareVersion);
 
     }
 
@@ -40,7 +43,7 @@ public class FlowMasterUpdater extends FlowUpdater implements Updater {
         if ((!checkBoxFlowVisible.isSelected()) && (!injectorSectionPowerSwitch.isSelected()))
             return;
 
-        runOnSingleChannelMode(FlowFirmwareVersion.FLOW_MASTER);
+        runOnSingleChannelMode(MASTER);
 
     }
 

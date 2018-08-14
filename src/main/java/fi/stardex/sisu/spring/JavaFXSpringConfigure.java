@@ -1,10 +1,8 @@
 package fi.stardex.sisu.spring;
 
-import fi.stardex.sisu.charts.DelayChartTask;
 import fi.stardex.sisu.charts.TimerTasksManager;
 import fi.stardex.sisu.devices.Devices;
 import fi.stardex.sisu.persistence.orm.Manufacturer;
-import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.persistence.repos.InjectorTypeRepository;
 import fi.stardex.sisu.persistence.repos.ManufacturerRepository;
 import fi.stardex.sisu.persistence.repos.cr.InjectorTestRepository;
@@ -30,7 +28,6 @@ import fi.stardex.sisu.ui.controllers.dialogs.NewEditVOAPDialogController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
 import fi.stardex.sisu.util.ApplicationConfigHandler;
 import fi.stardex.sisu.util.DelayCalculator;
-import fi.stardex.sisu.util.VisualUtils;
 import fi.stardex.sisu.util.converters.DataConverter;
 import fi.stardex.sisu.util.enums.BeakerType;
 import fi.stardex.sisu.util.i18n.I18N;
@@ -41,6 +38,8 @@ import fi.stardex.sisu.util.obtainers.CurrentManufacturerObtainer;
 import fi.stardex.sisu.util.rescalers.Rescaler;
 import fi.stardex.sisu.util.view.ApplicationAppearanceChanger;
 import fi.stardex.sisu.util.wrappers.StatusBarWrapper;
+import fi.stardex.sisu.version.FirmwareVersion;
+import fi.stardex.sisu.version.StandFirmwareVersion;
 import fi.stardex.sisu.version.StardexVersion;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ListView;
@@ -54,6 +53,9 @@ import org.springframework.context.annotation.Lazy;
 
 import java.io.IOException;
 import java.util.ResourceBundle;
+
+import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions;
+import static fi.stardex.sisu.version.StandFirmwareVersion.StandVersions;
 
 @Configuration
 @ComponentScan(value = "fi.stardex.sisu")
@@ -113,6 +115,7 @@ public class JavaFXSpringConfigure {
         mainSectionController.setInjectorsRepository(injectorsRepository);
         mainSectionController.setInjectorTestRepository(injectorTestRepository);
         mainSectionController.setCurrentInjectorTestsObtainer(currentInjectorTestsObtainer);
+        mainSectionController.setFlowModbusWriter(flowModbusWriter);
         return mainSectionController;
     }
 
@@ -379,8 +382,10 @@ public class JavaFXSpringConfigure {
 
     @Bean
     @Autowired
-    public StatusBarWrapper statusBar(Devices devices) {
-        return new StatusBarWrapper(devices, "Ready", "Device not connected", StardexVersion.VERSION);
+    public StatusBarWrapper statusBar(Devices devices, FirmwareVersion<FlowVersions> flowFirmwareVersion,
+                                      FirmwareVersion<StandVersions> standFirmwareVersion) {
+        return new StatusBarWrapper(devices, "Ready", "Device not connected",
+                StardexVersion.VERSION, flowFirmwareVersion, standFirmwareVersion);
     }
 
     @Bean

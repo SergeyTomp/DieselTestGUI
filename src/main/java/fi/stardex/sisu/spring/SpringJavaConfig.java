@@ -46,9 +46,7 @@ import fi.stardex.sisu.util.rescalers.BackFlowRescaler;
 import fi.stardex.sisu.util.rescalers.DeliveryRescaler;
 import fi.stardex.sisu.util.rescalers.Rescaler;
 import fi.stardex.sisu.util.wrappers.StatusBarWrapper;
-import fi.stardex.sisu.version.FlowFirmwareVersion;
-import fi.stardex.sisu.version.StandFirmwareVersion;
-import fi.stardex.sisu.version.UltimaFirmwareVersion;
+import fi.stardex.sisu.version.*;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -68,6 +66,13 @@ import java.util.LinkedList;
 import java.util.List;
 
 import static fi.stardex.sisu.registers.stand.ModbusMapStand.*;
+import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.FirmwareVersion;
+import static fi.stardex.sisu.version.FlowFirmwareVersion.*;
+import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions.*;
+import static fi.stardex.sisu.version.UltimaFirmwareVersion.UltimaVersions.*;
+import static fi.stardex.sisu.version.UltimaFirmwareVersion.UltimaVersions;
+import static fi.stardex.sisu.version.StandFirmwareVersion.StandVersions.*;
+import static fi.stardex.sisu.version.StandFirmwareVersion.StandVersions;
 
 @Configuration
 @Import(JavaFXSpringConfigure.class)
@@ -125,22 +130,22 @@ public class SpringJavaConfig {
 
     @Bean
     @Autowired
-    public RegisterProvider ultimaRegisterProvider(ModbusConnect ultimaModbusConnect) {
+    public RegisterProvider ultimaRegisterProvider(ModbusConnect ultimaModbusConnect, FirmwareVersion<UltimaVersions> ultimaFirmwareVersion) {
         return new RegisterProvider(ultimaModbusConnect) {
             @Override
             public void setupFirmwareVersionListener() {
                 ultimaModbusConnect.connectedPropertyProperty().addListener((observable, oldValue, newValue) -> {
                     if (newValue) {
-                        int firmwareVersionNumber = (int) read(ModbusMapUltima.FirmwareVersion);
+                        int firmwareVersionNumber = (int) read(FirmwareVersion);
                         switch (firmwareVersionNumber) {
                             case 221:
-                                UltimaFirmwareVersion.setUltimaFirmwareVersion(UltimaFirmwareVersion.MULTI_CHANNEL_FIRMWARE_WO_ACTIVATION);
+                                ultimaFirmwareVersion.setVersions(WITHOUT_A);
                                 break;
                             case 238:
-                                UltimaFirmwareVersion.setUltimaFirmwareVersion(UltimaFirmwareVersion.MULTI_CHANNEL_FIRMWARE_W_ACTIVATION);
+                                ultimaFirmwareVersion.setVersions(WITH_A);
                                 break;
                             case 241:
-                                UltimaFirmwareVersion.setUltimaFirmwareVersion(UltimaFirmwareVersion.MULTI_CHANNEL_FIRMWARE_WO_FILTER);
+                                ultimaFirmwareVersion.setVersions(WITHOUT_F);
                                 break;
                             default:
                                 logger.error("Wrong Ultima firmware version!");
@@ -154,7 +159,8 @@ public class SpringJavaConfig {
 
     @Bean
     @Autowired
-    public RegisterProvider flowRegisterProvider(ModbusConnect flowModbusConnect, ConnectionController connectionController) {
+    public RegisterProvider flowRegisterProvider(ModbusConnect flowModbusConnect, ConnectionController connectionController,
+                                                 FirmwareVersion<FlowVersions> flowFirmwareVersion) {
         return new RegisterProvider(flowModbusConnect) {
             @Override
             public void setupFirmwareVersionListener() {
@@ -165,23 +171,24 @@ public class SpringJavaConfig {
                         int firmwareVersionNumber = (int) read(ModbusMapFlow.FirmwareVersion);
                         switch (firmwareVersionNumber) {
                             case 0xAACC:
-                                FlowFirmwareVersion.setFlowFirmwareVersion(FlowFirmwareVersion.FLOW_MASTER);
+                                flowFirmwareVersion.setVersions(MASTER);
                                 standIPField.setDisable(false);
                                 standPortField.setDisable(false);
                                 break;
                             case 0xAABB:
-                                FlowFirmwareVersion.setFlowFirmwareVersion(FlowFirmwareVersion.FLOW_STREAM);
+                                flowFirmwareVersion.setVersions(STREAM);
                                 standIPField.setDisable(false);
                                 standPortField.setDisable(false);
                                 break;
                             case 0xBBCC:
-                                FlowFirmwareVersion.setFlowFirmwareVersion(FlowFirmwareVersion.STAND_FM);
+                                flowFirmwareVersion.setVersions(STAND_FM);
                                 standIPField.setDisable(true);
                                 standPortField.setDisable(true);
                                 break;
                         }
                     } else {
-                        FlowFirmwareVersion.setFlowFirmwareVersion(null);
+                        logger.error("Invalid flow firmware version!!!");
+                        flowFirmwareVersion.setVersions(null);
                         standIPField.setDisable(false);
                         standPortField.setDisable(false);
                     }
@@ -192,7 +199,7 @@ public class SpringJavaConfig {
 
     @Bean
     @Autowired
-    public RegisterProvider standRegisterProvider(ModbusConnect standModbusConnect) {
+    public RegisterProvider standRegisterProvider(ModbusConnect standModbusConnect, FirmwareVersion<StandVersions> standFirmwareVersion) {
         return new RegisterProvider(standModbusConnect) {
             @Override
             public void setupFirmwareVersionListener() {
@@ -201,11 +208,11 @@ public class SpringJavaConfig {
                         int firmwareVersionNumber = (int) read(ModbusMapStand.FirmwareVersion);
                         switch (firmwareVersionNumber) {
                             case 0x1122:
-                                StandFirmwareVersion.setStandFirmwareVersion(StandFirmwareVersion.STAND);
+                                standFirmwareVersion.setVersions(STAND);
                                 break;
                             default:
-                                StandFirmwareVersion.setStandFirmwareVersion(null);
                                 logger.error("Wrong Stand firmware version!");
+                                standFirmwareVersion.setVersions(null);
                                 break;
                         }
                     }
@@ -236,7 +243,8 @@ public class SpringJavaConfig {
 
     @Bean
     @Autowired
-    public ModbusRegisterProcessor flowModbusWriter(List<Updater> updatersList, RegisterProvider flowRegisterProvider) {
+    public ModbusRegisterProcessor flowModbusWriter(List<Updater> updatersList, RegisterProvider flowRegisterProvider,
+                                                    FirmwareVersion<FlowVersions> flowFirmwareVersion) {
         return new ModbusRegisterProcessor(flowRegisterProvider, ModbusMapFlow.values()) {
             @Override
             protected void initThread() {
@@ -254,7 +262,7 @@ public class SpringJavaConfig {
                     @Override
                     protected void readAll() {
 
-                        FlowFirmwareVersion version = FlowFirmwareVersion.getFlowFirmwareVersion();
+                        FlowVersions version = flowFirmwareVersion.getVersions();
                         switch (version) {
                             case STAND_FM:
                                 Arrays.stream(standRegisters).filter(this::isStand).forEach(registerProvider::read);
@@ -269,17 +277,23 @@ public class SpringJavaConfig {
 
                     @Override
                     protected void updateAll() {
-                        for (Updater updater : updaters) {
-                            if ((updater instanceof FlowMasterUpdater) &&
-                                    (FlowFirmwareVersion.getFlowFirmwareVersion() == FlowFirmwareVersion.FLOW_MASTER))
-                                Platform.runLater(updater);
-                            else if ((updater instanceof FlowStreamUpdater) &&
-                                    (FlowFirmwareVersion.getFlowFirmwareVersion() == FlowFirmwareVersion.FLOW_STREAM))
-                                Platform.runLater(updater);
-                            else if (((updater instanceof FlowMasterUpdater) || (updater instanceof TestBenchSectionUpdater))
-                                    && (FlowFirmwareVersion.getFlowFirmwareVersion() == FlowFirmwareVersion.STAND_FM))
-                                Platform.runLater(updater);
+
+                        FlowVersions version = flowFirmwareVersion.getVersions();
+                        switch (version) {
+                            case MASTER:
+                                updaters.stream().filter(updater -> updater instanceof FlowMasterUpdater).forEach(Platform::runLater);
+                                break;
+                            case STREAM:
+                                updaters.stream().filter(updater -> updater instanceof FlowMasterUpdater).forEach(Platform::runLater);
+                                break;
+                            case STAND_FM:
+                                updaters.stream().filter(updater -> updater instanceof FlowMasterUpdater
+                                        || updater instanceof TestBenchSectionUpdater).forEach(Platform::runLater);
+                                break;
+                            default:
+                                break;
                         }
+
                     }
                 });
                 setLoopThread(loopThread);
@@ -291,13 +305,14 @@ public class SpringJavaConfig {
 
     @Bean
     @Autowired
-    public ModbusRegisterProcessor standModbusWriter(List<Updater> updatersList, RegisterProvider standRegisterProvider) {
+    public ModbusRegisterProcessor standModbusWriter(List<Updater> updatersList, RegisterProvider standRegisterProvider,
+                                                     FirmwareVersion<FlowVersions> flowFirmwareVersion) {
         return new ModbusRegisterProcessor(standRegisterProvider, ModbusMapStand.values()) {
 
             @Override
             public boolean add(ModbusMap reg, Object value) {
 
-                boolean isStandFMVersion = (FlowFirmwareVersion.getFlowFirmwareVersion() == FlowFirmwareVersion.STAND_FM);
+                boolean isStandFMVersion = (flowFirmwareVersion.getVersions() == STAND_FM);
 
                 switch ((ModbusMapStand) reg) {
                     case TargetRPM:
@@ -345,7 +360,7 @@ public class SpringJavaConfig {
                     @Override
                     protected void readAll() {
 
-                        FlowFirmwareVersion version = FlowFirmwareVersion.getFlowFirmwareVersion();
+                        FlowVersions version = flowFirmwareVersion.getVersions();
                         switch (version) {
                             case STAND_FM:
                                 Arrays.stream(readArray).filter(this::isStand).forEach(registerProvider::read);
@@ -384,22 +399,24 @@ public class SpringJavaConfig {
     @Bean
     @Autowired
     public FlowMasterUpdater flowMasterUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
-                                               SettingsController settingsController, DataConverter dataConverter) {
-        return new FlowMasterUpdater(flowController, injectorSectionController, settingsController, dataConverter);
+                                               SettingsController settingsController, DataConverter dataConverter,
+                                               FirmwareVersion<FlowVersions> flowFirmwareVersion) {
+        return new FlowMasterUpdater(flowController, injectorSectionController, settingsController, dataConverter, flowFirmwareVersion);
     }
 
     @Bean
     @Autowired
     public FlowStreamUpdater flowStreamUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
-                                               SettingsController settingsController, DataConverter dataConverter) {
-        return new FlowStreamUpdater(flowController, injectorSectionController, settingsController, dataConverter);
+                                               SettingsController settingsController, DataConverter dataConverter,
+                                               FirmwareVersion<FlowVersions> flowFirmwareVersion) {
+        return new FlowStreamUpdater(flowController, injectorSectionController, settingsController, dataConverter, flowFirmwareVersion);
     }
 
     @Bean
     @Autowired
     public TestBenchSectionUpdater testBenchSectionUpdater(TestBenchSectionController testBenchSectionController,
-                                                           VisualUtils visualUtils) {
-        return new TestBenchSectionUpdater(testBenchSectionController, visualUtils);
+                                                           VisualUtils visualUtils, FirmwareVersion<FlowVersions> flowFirmwareVersion) {
+        return new TestBenchSectionUpdater(testBenchSectionController, visualUtils, flowFirmwareVersion);
     }
 
     @Bean
@@ -512,6 +529,21 @@ public class SpringJavaConfig {
     @Bean
     public VisualUtils visualUtils() {
         return new VisualUtils();
+    }
+
+    @Bean
+    public FirmwareVersion<UltimaVersions> ultimaFirmwareVersion() {
+        return new UltimaFirmwareVersion<>(WITH_A);
+    }
+
+    @Bean
+    public FirmwareVersion<FlowVersions> flowFirmwareVersion() {
+        return new FlowFirmwareVersion<>(MASTER);
+    }
+
+    @Bean
+    public FirmwareVersion<StandVersions> standFirmwareVersion() {
+        return new StandFirmwareVersion<>(STAND);
     }
 
     private List<Updater> addUpdaters(List<Updater> updatersList, Device targetDevice) {

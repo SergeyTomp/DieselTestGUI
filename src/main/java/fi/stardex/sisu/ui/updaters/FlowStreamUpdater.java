@@ -8,19 +8,22 @@ import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.util.converters.DataConverter;
-import fi.stardex.sisu.version.FlowFirmwareVersion;
+import fi.stardex.sisu.version.FirmwareVersion;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 
 import static fi.stardex.sisu.registers.flow.ModbusMapFlow.*;
+import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions;
+import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions.STREAM;
 
 @Module(value = Device.MODBUS_FLOW)
 public class FlowStreamUpdater extends FlowUpdater implements Updater {
 
     public FlowStreamUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
-                             SettingsController settingsController, DataConverter dataConverter) {
+                             SettingsController settingsController, DataConverter dataConverter,
+                             FirmwareVersion<FlowVersions> flowFirmwareVersion) {
 
-        super(flowController, injectorSectionController, settingsController, dataConverter);
+        super(flowController, injectorSectionController, settingsController, dataConverter, flowFirmwareVersion);
 
     }
 
@@ -43,7 +46,7 @@ public class FlowStreamUpdater extends FlowUpdater implements Updater {
 
         if (comboInjectorConfig.getSelectionModel().getSelectedItem() == InjectorChannel.SINGLE_CHANNEL)
 
-            runOnSingleChannelMode(FlowFirmwareVersion.FLOW_STREAM);
+            runOnSingleChannelMode(STREAM);
 
         else {
 

@@ -9,7 +9,7 @@ import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.util.converters.DataConverter;
 import fi.stardex.sisu.util.filters.FilterInputChartData;
-import fi.stardex.sisu.version.UltimaFirmwareVersion;
+import fi.stardex.sisu.version.FirmwareVersion;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.XYChart;
@@ -25,16 +25,19 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.TimerTask;
 
+import static fi.stardex.sisu.version.UltimaFirmwareVersion.UltimaVersions;
+import static fi.stardex.sisu.version.UltimaFirmwareVersion.UltimaVersions.*;
+
 @Component
 public abstract class ChartTask extends TimerTask {
 
     private static final Logger logger = LoggerFactory.getLogger(ChartTask.class);
 
     @Autowired
-    private ModbusRegisterProcessor ultimaModbusWriter;
+    protected ModbusRegisterProcessor ultimaModbusWriter;
 
     @Autowired
-    private SettingsController settingsController;
+    protected SettingsController settingsController;
 
     @Autowired
     protected VoltageController voltageController;
@@ -43,7 +46,10 @@ public abstract class ChartTask extends TimerTask {
     private DataConverter dataConverter;
 
     @Autowired
-    private InjectorSectionController injectorSectionController;
+    protected InjectorSectionController injectorSectionController;
+
+    @Autowired
+    protected FirmwareVersion<UltimaVersions> ultimaFirmwareVersion;
 
     private boolean updateOSC;
 
@@ -80,7 +86,7 @@ public abstract class ChartTask extends TimerTask {
             doubleData[i] = resultDataList.get(i).doubleValue();
         }
 
-        if (UltimaFirmwareVersion.getUltimaFirmwareVersion() != UltimaFirmwareVersion.MULTI_CHANNEL_FIRMWARE_WO_FILTER)
+        if (ultimaFirmwareVersion.getVersions() != WITHOUT_F)
             return FilterInputChartData.medianFilter(doubleData, STEP_SIZE);
         else
             return doubleData;

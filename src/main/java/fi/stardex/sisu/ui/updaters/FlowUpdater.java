@@ -6,20 +6,28 @@ import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.util.converters.DataConverter;
-import fi.stardex.sisu.version.FlowFirmwareVersion;
+import fi.stardex.sisu.version.FirmwareVersion;
+import fi.stardex.sisu.version.Versions;
 import javafx.scene.control.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
 import static fi.stardex.sisu.registers.flow.ModbusMapFlow.*;
+import static fi.stardex.sisu.ui.updaters.FlowUpdater.Flow.BACK_FLOW;
+import static fi.stardex.sisu.ui.updaters.FlowUpdater.Flow.DELIVERY;
+import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions;
+import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions.MASTER;
 
 public abstract class FlowUpdater {
 
     protected FlowController flowController;
 
     protected DataConverter dataConverter;
+
+    private FirmwareVersion<FlowVersions> flowFirmwareVersion;
 
     protected static final String DEGREES_CELSIUS = " \u2103";
 
@@ -98,10 +106,11 @@ public abstract class FlowUpdater {
     protected ToggleButton injectorSectionPowerSwitch;
 
     public FlowUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
-                       SettingsController settingsController, DataConverter dataConverter) {
+                       SettingsController settingsController, DataConverter dataConverter,
+                       FirmwareVersion<FlowVersions> flowFirmwareVersion) {
 
         this.flowController = flowController;
-
+        this.flowFirmwareVersion = flowFirmwareVersion;
         this.dataConverter = dataConverter;
         temperature1Delivery1Label = flowController.getTemperature1Delivery1();
         temperature1Delivery2Label = flowController.getTemperature1Delivery2();
@@ -197,11 +206,11 @@ public abstract class FlowUpdater {
 
         // FIXME: баг при выключенном instant flow: выбираю тип измерения - показывается поток
         deliveryFlowComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
-                refreshValues(newValue, Flow.DELIVERY));
+                refreshValues(newValue, DELIVERY));
 
         // FIXME: баг при выключенном instant flow: выбираю тип измерения - показывается поток
         backFlowComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
-                refreshValues(newValue, Flow.BACK_FLOW));
+                refreshValues(newValue, BACK_FLOW));
 
     }
 
@@ -219,22 +228,35 @@ public abstract class FlowUpdater {
 
     private void refreshValues(String selectedItem, Flow flow) {
 
-        if (FlowFirmwareVersion.getFlowFirmwareVersion() == FlowFirmwareVersion.FLOW_MASTER) {
-            if (flow == Flow.DELIVERY)
-                showOnChosenFlowUnit(Channel1Level.getLastValue().toString(), selectedItem, flow);
-            else if (flow == Flow.BACK_FLOW)
-                showOnChosenFlowUnit(Channel2Level.getLastValue().toString(), selectedItem, flow);
-        } else if (FlowFirmwareVersion.getFlowFirmwareVersion() == FlowFirmwareVersion.FLOW_STREAM) {
-            if (flow == Flow.DELIVERY)
-                showOnChosenFlowUnit(Arrays.asList(Channel1Level.getLastValue().toString(),
-                        Channel2Level.getLastValue().toString(),
-                        Channel3Level.getLastValue().toString(),
-                        Channel4Level.getLastValue().toString()), selectedItem, flow);
-            else if (flow == Flow.BACK_FLOW)
-                showOnChosenFlowUnit(Arrays.asList(Channel5Level.getLastValue().toString(),
-                        Channel6Level.getLastValue().toString(),
-                        Channel7Level.getLastValue().toString(),
-                        Channel8Level.getLastValue().toString()), selectedItem, flow);
+        FlowVersions version = flowFirmwareVersion.getVersions();
+
+        switch (version) {
+            case MASTER:
+                switch (flow) {
+                    case DELIVERY:
+                        showOnChosenFlowUnit(Channel1Level.getLastValue().toString(), selectedItem, flow);
+                        break;
+                    case BACK_FLOW:
+                        showOnChosenFlowUnit(Channel2Level.getLastValue().toString(), selectedItem, flow);
+                        break;
+                }
+                break;
+            case STREAM:
+                switch (flow) {
+                    case DELIVERY:
+                        showOnChosenFlowUnit(Arrays.asList(Channel1Level.getLastValue().toString(),
+                                Channel2Level.getLastValue().toString(),
+                                Channel3Level.getLastValue().toString(),
+                                Channel4Level.getLastValue().toString()), selectedItem, flow);
+                        break;
+                    case BACK_FLOW:
+                        showOnChosenFlowUnit(Arrays.asList(Channel5Level.getLastValue().toString(),
+                                Channel6Level.getLastValue().toString(),
+                                Channel7Level.getLastValue().toString(),
+                                Channel8Level.getLastValue().toString()), selectedItem, flow);
+                        break;
+                }
+                break;
         }
 
     }
@@ -244,10 +266,10 @@ public abstract class FlowUpdater {
         float convertedValueFloat = dataConverter.
                 round(dataConverter.convertDataToFloat(value) * FlowUnits.getMapOfFlowUnits().get(selectedItem));
 
-        TextField field1 = (flow == Flow.DELIVERY) ? delivery1TextField : backFlow1TextField;
-        TextField field2 = (flow == Flow.DELIVERY) ? delivery2TextField : backFlow2TextField;
-        TextField field3 = (flow == Flow.DELIVERY) ? delivery3TextField : backFlow3TextField;
-        TextField field4 = (flow == Flow.DELIVERY) ? delivery4TextField : backFlow4TextField;
+        TextField field1 = (flow == DELIVERY) ? delivery1TextField : backFlow1TextField;
+        TextField field2 = (flow == DELIVERY) ? delivery2TextField : backFlow2TextField;
+        TextField field3 = (flow == DELIVERY) ? delivery3TextField : backFlow3TextField;
+        TextField field4 = (flow == DELIVERY) ? delivery4TextField : backFlow4TextField;
 
         setDeliveryBackFlowFields(field1, field2, field3, field4, String.valueOf(convertedValueFloat));
 
@@ -263,10 +285,10 @@ public abstract class FlowUpdater {
         listOfConvertedValues.add(dataConverter.round(dataConverter.convertDataToFloat(listOfValues.get(2)) * flowUnitsConvertValue));
         listOfConvertedValues.add(dataConverter.round(dataConverter.convertDataToFloat(listOfValues.get(3)) * flowUnitsConvertValue));
 
-        TextField field1 = (flow == Flow.DELIVERY) ? delivery1TextField : backFlow1TextField;
-        TextField field2 = (flow == Flow.DELIVERY) ? delivery2TextField : backFlow2TextField;
-        TextField field3 = (flow == Flow.DELIVERY) ? delivery3TextField : backFlow3TextField;
-        TextField field4 = (flow == Flow.DELIVERY) ? delivery4TextField : backFlow4TextField;
+        TextField field1 = (flow == DELIVERY) ? delivery1TextField : backFlow1TextField;
+        TextField field2 = (flow == DELIVERY) ? delivery2TextField : backFlow2TextField;
+        TextField field3 = (flow == DELIVERY) ? delivery3TextField : backFlow3TextField;
+        TextField field4 = (flow == DELIVERY) ? delivery4TextField : backFlow4TextField;
 
         if (ledBeaker1ToggleButton.isSelected())
             flowController.changeFlow(field1, listOfConvertedValues.get(0).toString());
@@ -276,17 +298,17 @@ public abstract class FlowUpdater {
         if (ledBeaker2ToggleButton.isSelected())
             flowController.changeFlow(field2, listOfConvertedValues.get(1).toString());
         else
-            field1.setText(null);
+            field2.setText(null);
 
         if (ledBeaker3ToggleButton.isSelected())
             flowController.changeFlow(field3, listOfConvertedValues.get(2).toString());
         else
-            field1.setText(null);
+            field3.setText(null);
 
         if (ledBeaker4ToggleButton.isSelected())
             flowController.changeFlow(field4, listOfConvertedValues.get(3).toString());
         else
-            field1.setText(null);
+            field4.setText(null);
 
         listOfConvertedValues.clear();
 
@@ -307,37 +329,32 @@ public abstract class FlowUpdater {
         if (ledBeaker3ToggleButton.isSelected())
             flowController.changeFlow(field3, value);
         else
-            field2.setText(null);
+            field3.setText(null);
 
         if (ledBeaker4ToggleButton.isSelected())
             flowController.changeFlow(field4, value);
         else
-            field2.setText(null);
+            field4.setText(null);
 
     }
 
 
-    private void setTempLabelsToNull(Label temperature1DeliveryLabel, Label temperature2DeliveryLabel,
-                                     Label temperature1BackFlowLabel, Label temperature2BackFlowLabel) {
+    private void setTempLabelsToNull(Label ... labels) {
 
-        temperature1DeliveryLabel.setText(null);
-        temperature2DeliveryLabel.setText(null);
-        temperature1BackFlowLabel.setText(null);
-        temperature2BackFlowLabel.setText(null);
+        Stream.of(labels).forEach(label -> label.setText(null));
 
     }
 
-    private void setDeliveryBackFlowFieldsToNull(TextField deliveryTextField, TextField backFlowTextField) {
+    private void setDeliveryBackFlowFieldsToNull(TextField ... textFields) {
 
-        deliveryTextField.setText(null);
-        backFlowTextField.setText(null);
+        Stream.of(textFields).forEach(textField -> textField.setText(null));
 
     }
 
     private void setAllLabelsAndFieldsToNull() {
 
-        allFlowLabels.forEach(e -> e.setText(null));
-        allFlowTextFields.forEach(e -> e.setText(null));
+        allFlowLabels.forEach(label -> label.setText(null));
+        allFlowTextFields.forEach(textField -> textField.setText(null));
 
     }
 
@@ -350,16 +367,16 @@ public abstract class FlowUpdater {
 
     }
 
-    protected void runOnSingleChannelMode(FlowFirmwareVersion version) {
+    protected void runOnSingleChannelMode(Versions version) {
 
         String value;
 
         if ((value = Channel1Level.getLastValue().toString()) != null)
-            showOnChosenFlowUnit(value, deliveryFlowComboBox.getSelectionModel().getSelectedItem(), Flow.DELIVERY);
+            showOnChosenFlowUnit(value, deliveryFlowComboBox.getSelectionModel().getSelectedItem(), DELIVERY);
 
-        if ((value = (version == FlowFirmwareVersion.FLOW_MASTER) ? Channel2Level.getLastValue().toString()
+        if ((value = (version == MASTER) ? Channel2Level.getLastValue().toString()
                 : Channel5Level.getLastValue().toString()) != null)
-            showOnChosenFlowUnit(value, backFlowComboBox.getSelectionModel().getSelectedItem(), Flow.BACK_FLOW);
+            showOnChosenFlowUnit(value, backFlowComboBox.getSelectionModel().getSelectedItem(), BACK_FLOW);
 
         if ((value = Channel1Temperature1.getLastValue().toString()) != null) {
             convertedValue.append(dataConverter.round(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
@@ -373,14 +390,14 @@ public abstract class FlowUpdater {
                     temperature2Delivery3Label, temperature2Delivery4Label, convertedValue.toString());
             convertedValue.setLength(0);
         }
-        if ((value = (version == FlowFirmwareVersion.FLOW_MASTER) ? Channel2Temperature1.getLastValue().toString()
+        if ((value = (version == MASTER) ? Channel2Temperature1.getLastValue().toString()
                 : Channel5Temperature1.getLastValue().toString()) != null) {
             convertedValue.append(dataConverter.round(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
             setTempLabels(temperature1BackFlow1Label, temperature1BackFlow2Label,
                     temperature1BackFlow3Label, temperature1BackFlow4Label, convertedValue.toString());
             convertedValue.setLength(0);
         }
-        if ((value = (version == FlowFirmwareVersion.FLOW_MASTER) ? Channel2Temperature2.getLastValue().toString()
+        if ((value = (version == MASTER) ? Channel2Temperature2.getLastValue().toString()
                 : Channel5Temperature2.getLastValue().toString()) != null) {
             convertedValue.append(dataConverter.round(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
             setTempLabels(temperature2BackFlow1Label, temperature2BackFlow2Label,

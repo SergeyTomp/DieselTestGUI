@@ -1,24 +1,16 @@
 package fi.stardex.sisu.version;
 
-public enum UltimaFirmwareVersion {
+public class UltimaFirmwareVersion<T extends Versions> extends FirmwareVersion<T> {
 
-    MULTI_CHANNEL_FIRMWARE_W_ACTIVATION, MULTI_CHANNEL_FIRMWARE_WO_ACTIVATION, MULTI_CHANNEL_FIRMWARE_WO_FILTER;
-
-    public double getPulseLengthStep() {
-        return 32.888;
+    public UltimaFirmwareVersion(T version) {
+        super(version);
     }
 
-    public int getDelaySampleSize() {
-        return 256;
+    public enum UltimaVersions implements Versions{
+
+        WITH_A, WITHOUT_A, WITHOUT_F
+
     }
 
-    private static UltimaFirmwareVersion ultimaFirmwareVersion;
 
-    public static UltimaFirmwareVersion getUltimaFirmwareVersion() {
-        return ultimaFirmwareVersion;
-    }
-
-    public static void setUltimaFirmwareVersion(UltimaFirmwareVersion ultimaVersion) {
-        ultimaFirmwareVersion = ultimaVersion;
-    }
 }

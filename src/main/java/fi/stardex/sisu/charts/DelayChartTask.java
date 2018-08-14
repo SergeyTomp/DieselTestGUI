@@ -3,14 +3,10 @@ package fi.stardex.sisu.charts;
 import fi.stardex.sisu.combobox_values.InjectorChannel;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
-import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.controllers.additional.LedController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.DelayController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
-import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.util.DelayCalculator;
 import fi.stardex.sisu.util.filters.FilterInputChartData;
-import fi.stardex.sisu.version.UltimaFirmwareVersion;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.XYChart;
@@ -25,7 +21,12 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
+
+import static fi.stardex.sisu.version.UltimaFirmwareVersion.UltimaVersions.WITHOUT_F;
 
 @Component
 @Scope("prototype")
@@ -39,23 +40,26 @@ public class DelayChartTask extends ChartTask {
     private  ObservableList<XYChart.Data<Double, Double>> delayData;
 
     private  Spinner<Double> sensitivitySpinner;
+
     private  ComboBox<InjectorChannel> injectorChannelComboBox;
+
     private  TextField minimumDelayTextField;
+
     private  TextField maximumDelayTextField;
+
     private  TextField averageDelayTextField;
+
     private List<LedController> activeControllers;
+
     private boolean updateOSC;
 
-    @Autowired
-    private ModbusRegisterProcessor ultimaModbusWriter;
+    private static final double PULSE_LENGTH_STEP = 32.888;
+
+    private static final int DELAY_SAMPLE_SIZE = 256;
+
     @Autowired
     private DelayCalculator delayCalculator;
-    @Autowired
-    private SettingsController settingsController;
-    @Autowired
-    private  InjectorSectionController injectorSectionController;
-    @Autowired
-    private RegisterProvider ultimaRegisterProvider;
+
     @Autowired
     private DelayController delayController;
 
@@ -110,18 +114,16 @@ public class DelayChartTask extends ChartTask {
             return;
         }
         delayController.showAttentionLabel(false);
-        double pulseLengthStep = UltimaFirmwareVersion.getUltimaFirmwareVersion().getPulseLengthStep();
-        int delaySampleSize = UltimaFirmwareVersion.getUltimaFirmwareVersion().getDelaySampleSize();
+        int n = (int) ((injectorSectionController.getWidthCurrentSignal().getValue() + addingTime) / PULSE_LENGTH_STEP) > DELAY_SAMPLE_SIZE - 1 ?
+                DELAY_SAMPLE_SIZE - 1 : (int) ((injectorSectionController.getWidthCurrentSignal().getValue() + addingTime) / PULSE_LENGTH_STEP);
 
-        int n = (int) ((injectorSectionController.getWidthCurrentSignal().getValue() + addingTime) / pulseLengthStep) > delaySampleSize - 1 ?
-                delaySampleSize - 1 : (int) ((injectorSectionController.getWidthCurrentSignal().getValue() + addingTime) / pulseLengthStep);
-
-        int remainder = n % delaySampleSize;
+        int remainder = n % DELAY_SAMPLE_SIZE;
 
         int injectorModbusChannel = injectorChannelComboBox.getSelectionModel().getSelectedItem() == InjectorChannel.SINGLE_CHANNEL ?
                 1 : ledController.getNumber();
 
         ArrayList<Integer> resultDataList = new ArrayList<>();
+        RegisterProvider ultimaRegisterProvider = ultimaModbusWriter.getRegisterProvider();
         try {
             if (!updateOSC) {
                 return;
@@ -179,7 +181,7 @@ public class DelayChartTask extends ChartTask {
             doubleData[i] = resultDataList.get(i).doubleValue();
         }
 
-        if (UltimaFirmwareVersion.getUltimaFirmwareVersion() != UltimaFirmwareVersion.MULTI_CHANNEL_FIRMWARE_WO_FILTER)
+        if (ultimaFirmwareVersion.getVersions() != WITHOUT_F)
             return FilterInputChartData.medianFilter(doubleData, STEP_SIZE);
         else
             return doubleData;
@@ -191,12 +193,11 @@ public class DelayChartTask extends ChartTask {
 
     private void addDataToChart(double[] data, ObservableList<XYChart.Data<Double, Double>> chartData) {
         chartData.clear();
-        double pulseLengthStep = UltimaFirmwareVersion.getUltimaFirmwareVersion().getPulseLengthStep();
         double xValue = 0;
         List<XYChart.Data<Double, Double>> pointsList = new ArrayList<>();
         for (Double aData : data) {
             pointsList.add(new XYChart.Data<>(xValue, aData / 4095 * 3.3));
-            xValue += pulseLengthStep;
+            xValue += PULSE_LENGTH_STEP;
         }
         chartData.addAll(pointsList);
         setDelay(pointsList);

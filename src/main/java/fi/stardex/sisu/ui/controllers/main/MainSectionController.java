@@ -37,7 +37,6 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
 import java.util.LinkedList;
@@ -95,7 +94,6 @@ public class MainSectionController {
     @FXML
     private ListView<InjectorTest> testListView;
 
-    @Autowired
     private ModbusRegisterProcessor flowModbusWriter;
 
     private Enabler enabler;
@@ -224,6 +222,10 @@ public class MainSectionController {
 
     public void setCurrentInjectorTestsObtainer(CurrentInjectorTestsObtainer currentInjectorTestsObtainer) {
         this.currentInjectorTestsObtainer = currentInjectorTestsObtainer;
+    }
+
+    public void setFlowModbusWriter(ModbusRegisterProcessor flowModbusWriter) {
+        this.flowModbusWriter = flowModbusWriter;
     }
 
     @PostConstruct
