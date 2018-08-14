@@ -558,9 +558,4 @@ public class SpringJavaConfig {
         return updaters;
     }
 
-    @Bean
-    public MeasurementResultsStorage measurementResultsStorage(){
-        return new MeasurementResultsStorage();
-    }
-
 }

@@ -479,7 +479,6 @@ public class JavaFXSpringConfigure {
                                        ModbusRegisterProcessor ultimaModbusWriter,
                                        RegisterProvider ultimaRegisterProvider,
                                        CurrentInjectorObtainer currentInjectorObtainer,
-                                       MeasurementResultsStorage measurementResultsStorage,
                                        AdditionalSectionController additionalSectionController){
         RLCController RLCController = additionalSectionController.getRlCController();
         RLCController.setInjectorSectionController(injectorSectionController);
@@ -487,7 +486,6 @@ public class JavaFXSpringConfigure {
         RLCController.setUltimaModbusWriter(ultimaModbusWriter);
         RLCController.setUltimaRegisterProvider(ultimaRegisterProvider);
         RLCController.setCurrentInjectorObtainer(currentInjectorObtainer);
-        RLCController.setMeasurementResultsStorage(measurementResultsStorage);
         return RLCController;
 
     }

@@ -65,7 +65,6 @@ public class RLCController {
     private SettingsController settingsController;
     private ModbusRegisterProcessor ultimaModbusWriter;
     private RegisterProvider ultimaRegisterProvider;
-    private MeasurementResultsStorage measurementResultsStorage;
     private CurrentInjectorObtainer currentInjectorObtainer;
 
     public void setInjectorSectionController(InjectorSectionController injectorSectionController) {
@@ -79,9 +78,6 @@ public class RLCController {
     }
     public void setUltimaRegisterProvider(RegisterProvider ultimaRegisterProvider) {
         this.ultimaRegisterProvider = ultimaRegisterProvider;
-    }
-    public void setMeasurementResultsStorage(MeasurementResultsStorage measurementResultsStorage) {
-        this.measurementResultsStorage = measurementResultsStorage;
     }
     public void setCurrentInjectorObtainer(CurrentInjectorObtainer currentInjectorObtainer) {
         this.currentInjectorObtainer = currentInjectorObtainer;
