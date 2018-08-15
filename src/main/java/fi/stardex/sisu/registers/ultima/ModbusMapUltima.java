@@ -39,12 +39,12 @@ public enum ModbusMapUltima implements ModbusMap {
     Delay_graph_update(DISCRETE_COIL, 96, 1, false),
 
     //RLC measurement
-    RLC_measure_channel_num(RegisterType.REGISTER_HOLDING, 41, 1, false),
-    RLC_measure_request(RegisterType.DISCRETE_COIL, 41, 1, false),
-    Inductance_result(RegisterType.REGISTER_INPUT, 4200, 2, false),
-    Resistance_result(RegisterType.REGISTER_INPUT, 4202, 2, false),
-    Capacitance_result_piezo(RegisterType.REGISTER_INPUT, 4204, 2, false),
-    Resistance_result_piezo(RegisterType.REGISTER_INPUT, 4206, 2, false),
+    RLC_measure_channel_num(REGISTER_HOLDING, 41, 1, false),
+    RLC_measure_request(DISCRETE_COIL, 41, 1, false),
+    Inductance_result(REGISTER_INPUT, 4200, 2, false),
+    Resistance_result(REGISTER_INPUT, 4202, 2, false),
+    Capacitance_result_piezo(REGISTER_INPUT, 4204, 2, false),
+    Resistance_result_piezo(REGISTER_INPUT, 4206, 2, false),
 
     Injectors_Running_En(DISCRETE_COIL, 42, 1, false),
 
@@ -63,14 +63,14 @@ public enum ModbusMapUltima implements ModbusMap {
 
 
     //слепок регистров ВАП
-    Boost_U(REGISTER_HOLDING, 120, 2, true), // boostUSpinner
-    Battery_U(REGISTER_HOLDING, 122, 2, true), // batteryUSpinner
-    Negative_U(REGISTER_HOLDING, 124, 2, true), // negativeUSpinner
-    BoostIBoardOne(REGISTER_HOLDING, 1, 1, true), // boostISpinner
-    FirstIBoardOne(REGISTER_HOLDING, 2, 1, true), // firstISpinner
-    SecondIBoardOne(REGISTER_HOLDING, 3, 1, true), // secondISpinner
-    FirstWBoardOne(REGISTER_HOLDING, 4, 1, true), // firstWSpinner
-    WidthBoardOne(REGISTER_HOLDING, 5, 1, true), // widthCurrentSignal
+    Boost_U(REGISTER_HOLDING, 120, 2, true),            // boostUSpinner
+    Battery_U(REGISTER_HOLDING, 122, 2, true),          // batteryUSpinner
+    Negative_U(REGISTER_HOLDING, 124, 2, true),         // negativeUSpinner
+    BoostIBoardOne(REGISTER_HOLDING, 1, 1, true),       // boostISpinner
+    FirstIBoardOne(REGISTER_HOLDING, 2, 1, true),       // firstISpinner
+    SecondIBoardOne(REGISTER_HOLDING, 3, 1, true),      // secondISpinner
+    FirstWBoardOne(REGISTER_HOLDING, 4, 1, true),       // firstWSpinner
+    WidthBoardOne(REGISTER_HOLDING, 5, 1, true),        // widthCurrentSignal
     BoostIBoardTwo(REGISTER_HOLDING, 21, 1, false),
     FirstIBoardTwo(REGISTER_HOLDING, 22, 1, false),
     SecondIBoardTwo(REGISTER_HOLDING, 23, 1, false),
@@ -86,12 +86,48 @@ public enum ModbusMapUltima implements ModbusMap {
     SecondIBoardFour(REGISTER_HOLDING, 1023, 1, false),
     FirstWBoardFour(REGISTER_HOLDING, 1024, 1, false),
     WidthBoardFour(REGISTER_HOLDING, 1025, 1, true),
-    StartOnBatteryUOne(DISCRETE_COIL, 2, 1, false), // Boost_U enabled - true disabled - false
-    StartOnBatteryUTwo(DISCRETE_COIL, 22, 1, false), // Boost_U enabled - true disabled - false
-    StartOnBatteryUThree(DISCRETE_COIL, 1002, 1, false), // Boost_U enabled - true disabled - false
-    StartOnBatteryUFour(DISCRETE_COIL, 1022, 1, false); // Boost_U enabled - true disabled - false
+    StartOnBatteryUOne(DISCRETE_COIL, 2, 1, false),         // Boost_U enabled - true disabled - false
+    StartOnBatteryUTwo(DISCRETE_COIL, 22, 1, false),        // Boost_U enabled - true disabled - false
+    StartOnBatteryUThree(DISCRETE_COIL, 1002, 1, false),    // Boost_U enabled - true disabled - false
+    StartOnBatteryUFour(DISCRETE_COIL, 1022, 1, false),     // Boost_U enabled - true disabled - false
 
+    // регистры регуляторов
+    // секция регулятора 1
+    PressureReg1_ON(DISCRETE_COIL, 81, 1, false),
 
+    PressureReg1_PressMode(DISCRETE_COIL, 91, 1, false),
+    PressureReg1_PressTask(REGISTER_HOLDING, 101, 2, false),
+    PressureReg1_PressFact(REGISTER_INPUT, 4096, 2, true),
+
+    PressureReg1_DutyMode(DISCRETE_COIL, 82, 1, false),     // не используется, вместо него PressureReg1_I_Mode (1/0 - ток/скважность)
+    PressureReg1_DutyTask(REGISTER_HOLDING, 80, 2, false),
+    PressureReg1_DutyFact(REGISTER_INPUT, 4104, 2, true),
+
+    PressureReg1_I_Mode(DISCRETE_COIL, 82, 1, false),       //реж. тока - 1, реж.скважности - 0
+    PressureReg1_I_Task(REGISTER_HOLDING, 82, 2, false),
+    PressureReg1_I_Fact(REGISTER_INPUT, 4106, 2, true),
+
+    // секция регулятора 2
+    PressureReg2_ON(DISCRETE_COIL, 83, 1, false),
+
+    PressureReg2_DutyMode(DISCRETE_COIL, 84, 1, false),     // реж. скважности - 0
+    PressureReg2_DutyTask(REGISTER_HOLDING, 84, 2, false),
+    PressureReg2_DutyFact(REGISTER_INPUT, 4108, 2, true),
+
+    PressureReg2_I_Mode(DISCRETE_COIL, 84, 1, false),       // реж. тока - 1
+    PressureReg2_I_Task(REGISTER_HOLDING, 86, 2, false),
+    PressureReg2_I_Fact(REGISTER_INPUT, 4110, 2, true),
+
+    // секция регулятора 3
+    PressureReg3_ON(DISCRETE_COIL, 85, 1, false),
+
+    PressureReg3_DutyMode(DISCRETE_COIL, 86, 1, false),     // реж. скважности - 0
+    PressureReg3_DutyTask(REGISTER_HOLDING, 88, 2, false),
+    PressureReg3_DutyFact(REGISTER_INPUT, 4112, 2, true),
+
+    PressureReg3_I_Mode(DISCRETE_COIL, 86, 1, false),       // реж. тока - 1
+    PressureReg3_I_Task(REGISTER_HOLDING, 90, 2, false),
+    PressureReg3_I_Fact(REGISTER_INPUT, 4114, 2, true);
 
     private final RegisterType type;
     private final int ref;

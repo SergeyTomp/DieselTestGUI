@@ -208,7 +208,7 @@ public abstract class RegisterProvider {
             return request;
 
         }
-
+        //TODO проверка value instanceof не нужна
         private static ModbusRequest createWriteRegisters(ModbusMap reg, Object value) {
 
             WriteMultipleRegistersRequest request;
@@ -224,7 +224,7 @@ public abstract class RegisterProvider {
                     byteData = ModbusUtil.floatToRegisters(floatValue);
 
                 } else
-                    byteData = ModbusUtil.floatToRegisters((float) value);
+                    byteData = ModbusUtil.floatToRegisters(((Number) value).floatValue());
 
                 short firstWord = (short) (((byteData[0] & 0xFF) << 8) | (byteData[1] & 0xFF));
                 short secondWord = (short) (((byteData[2] & 0xFF) << 8) | (byteData[3] & 0xFF));

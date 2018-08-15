@@ -24,6 +24,7 @@ import fi.stardex.sisu.registers.stand.ModbusMapStand;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.Enabler;
+import fi.stardex.sisu.ui.controllers.additional.AdditionalSectionController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.ConnectionController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
@@ -390,8 +391,10 @@ public class SpringJavaConfig {
 
     @Bean
     @Autowired
-    public HighPressureSectionUpdater highPressureSectionUpdater(HighPressureSectionController highPressureSectionController) {
-        return new HighPressureSectionUpdater(highPressureSectionController);
+    public HighPressureSectionUpdater highPressureSectionUpdater(HighPressureSectionController highPressureSectionController,
+                                                                 AdditionalSectionController additionalSectionController,
+                                                                 DataConverter dataConverter) {
+        return new HighPressureSectionUpdater(highPressureSectionController, additionalSectionController, dataConverter);
     }
 
     @Bean

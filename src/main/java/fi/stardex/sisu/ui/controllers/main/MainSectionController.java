@@ -13,6 +13,7 @@ import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.RLCController;
+import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.dialogs.ManufacturerMenuDialogController;
 import fi.stardex.sisu.ui.controllers.dialogs.NewEditInjectorDialogController;
@@ -46,6 +47,8 @@ import java.util.function.Consumer;
 import java.util.prefs.Preferences;
 
 import static fi.stardex.sisu.util.enums.Tests.TestType.*;
+
+import static fi.stardex.sisu.util.enums.RegActive.*;
 
 public class MainSectionController {
 
@@ -106,6 +109,8 @@ public class MainSectionController {
     private CurrentInjectorObtainer currentInjectorObtainer;
 
     private InjectorSectionController injectorSectionController;
+
+    private HighPressureSectionController highPressureSectionController;
 
     private InjectorsRepository injectorsRepository;
 
@@ -223,9 +228,12 @@ public class MainSectionController {
         this.RLCController = RLCController;
     }
 
-
     public void setFlowModbusWriter(ModbusRegisterProcessor flowModbusWriter) {
         this.flowModbusWriter = flowModbusWriter;
+    }
+
+    public void setHighPressureSectionController(HighPressureSectionController highPressureSectionController) {
+        this.highPressureSectionController = highPressureSectionController;
     }
 
     public void setTests(Tests tests) {
@@ -247,6 +255,7 @@ public class MainSectionController {
 
         manufacturerListView.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) -> {
             currentManufacturerObtainer.setCurrentManufacturer(newValue);
+
 
             if (newValue.isCustom()) {
                 defaultRB.setDisable(true);
@@ -374,13 +383,16 @@ public class MainSectionController {
 
             firstW = (width - firstW >= 30) ? firstW : width - 30;
 
+            Integer regParam1 = newValue.getSettedPressure();
+
             injectorSectionController.getFreqCurrentSignal().getValueFactory().setValue((freq != null) ? 1000d / freq : 0);
 
             voltAmpereProfileController.getFirstWSpinner().getValueFactory().setValue(firstW);
 
             injectorSectionController.getWidthCurrentSignal().getValueFactory().setValue(width);
 
-        });
+            highPressureSectionController.pressureModeON(regParam1);
+                });
 
         testsToggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
 

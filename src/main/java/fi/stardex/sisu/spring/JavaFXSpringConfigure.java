@@ -29,6 +29,7 @@ import fi.stardex.sisu.ui.controllers.dialogs.NewEditTestDialogController;
 import fi.stardex.sisu.ui.controllers.dialogs.NewEditVOAPDialogController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
 import fi.stardex.sisu.util.DelayCalculator;
+import fi.stardex.sisu.util.VisualUtils;
 import fi.stardex.sisu.util.converters.DataConverter;
 import fi.stardex.sisu.util.enums.BeakerType;
 import fi.stardex.sisu.util.enums.Tests;
@@ -103,7 +104,8 @@ public class JavaFXSpringConfigure {
                                                        InjectorTestRepository injectorTestRepository,
                                                        CurrentInjectorTestsObtainer currentInjectorTestsObtainer,
                                                        @Lazy ModbusRegisterProcessor flowModbusWriter,
-                                                       RLCController RLCController, Tests tests) {
+                                                       RLCController RLCController,Tests tests,
+                                                       HighPressureSectionController highPressureSectionController) {
         MainSectionController mainSectionController = (MainSectionController) mainSection().getController();
         mainSectionController.setEnabler(enabler);
         mainSectionController.setCurrentManufacturerObtainer(currentManufacturerObtainer);
@@ -120,6 +122,7 @@ public class JavaFXSpringConfigure {
         mainSectionController.setCurrentInjectorTestsObtainer(currentInjectorTestsObtainer);
         mainSectionController.setFlowModbusWriter(flowModbusWriter);
         mainSectionController.setRLCController(RLCController);
+        mainSectionController.setHighPressureSectionController(highPressureSectionController);
         mainSectionController.setTests(tests);
         return mainSectionController;
     }
@@ -145,8 +148,13 @@ public class JavaFXSpringConfigure {
 
     @Bean
     @Autowired
-    public HighPressureSectionController highPressureSectionController(CRSectionController crSectionController) {
-        return crSectionController.getHighPressureSectionController();
+    public HighPressureSectionController highPressureSectionController(CRSectionController crSectionController,
+                                                                       @Lazy ModbusRegisterProcessor ultimaModbusWriter,
+                                                                       VisualUtils visualUtils) {
+        HighPressureSectionController highPressureSectionController = crSectionController.getHighPressureSectionController();
+        highPressureSectionController.setUltimaModbusWriter(ultimaModbusWriter);
+        highPressureSectionController.setVisualUtils(visualUtils);
+        return highPressureSectionController;
     }
 
     @Bean

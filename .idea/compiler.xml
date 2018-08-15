@@ -9,5 +9,8 @@
         <module name="sisu" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="sisu" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
 </project>

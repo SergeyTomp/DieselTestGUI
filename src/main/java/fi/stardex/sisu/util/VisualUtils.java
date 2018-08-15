@@ -59,7 +59,7 @@ public class VisualUtils {
     }
 
 
-    public void setVisible(boolean visible, Node...nodes){
+    public  void setVisible(boolean visible, Node... nodes){
         for (Node node: nodes) {
             if (node instanceof Toggle && !visible) {
                 ((Toggle)node).setSelected(false);
