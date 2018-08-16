@@ -6,6 +6,7 @@ import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.util.converters.DataConverter;
+import fi.stardex.sisu.util.enums.Tests;
 import fi.stardex.sisu.version.FirmwareVersion;
 
 import javax.annotation.PostConstruct;
@@ -17,9 +18,10 @@ import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions.*;
 public class FlowMasterUpdater extends FlowUpdater implements Updater {
 
     public FlowMasterUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
-                             SettingsController settingsController, DataConverter dataConverter, FirmwareVersion<FlowVersions> flowFirmwareVersion) {
+                             SettingsController settingsController, DataConverter dataConverter,
+                             FirmwareVersion<FlowVersions> flowFirmwareVersion, Tests tests) {
 
-        super(flowController, injectorSectionController, settingsController, dataConverter, flowFirmwareVersion);
+        super(flowController, injectorSectionController, settingsController, dataConverter, flowFirmwareVersion, tests);
 
     }
 
@@ -40,8 +42,10 @@ public class FlowMasterUpdater extends FlowUpdater implements Updater {
     @Override
     public void run() {
 
-        if ((!checkBoxFlowVisible.isSelected()) && (!injectorSectionPowerSwitch.isSelected()))
+        if (isNotInstantFlow() || isNotMeasuring()) {
+            setAllLabelsAndFieldsToNull();
             return;
+        }
 
         runOnSingleChannelMode(MASTER);
 

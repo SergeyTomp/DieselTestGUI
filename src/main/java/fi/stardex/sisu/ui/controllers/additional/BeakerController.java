@@ -8,6 +8,7 @@ import fi.stardex.sisu.util.rescalers.Rescaler;
 import javafx.application.Platform;
 import javafx.collections.MapChangeListener;
 import javafx.fxml.FXML;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
@@ -62,6 +63,10 @@ public class BeakerController {
 
     private FlowController flowController;
 
+    private Label deliveryRangeLabel;
+
+    private Label backFlowRangeLabel;
+
     @FXML
     private AnchorPane beakerPane;
     @FXML
@@ -95,6 +100,10 @@ public class BeakerController {
     @FXML
     private Line lineRight;
 
+    public TextField getTextField() {
+        return textField;
+    }
+
     public void setTextField(TextField textField) {
         this.textField = textField;
     }
@@ -121,6 +130,14 @@ public class BeakerController {
 
     public void setFlowController(FlowController flowController) {
         this.flowController = flowController;
+    }
+
+    public void setDeliveryRangeLabel(Label deliveryRangeLabel) {
+        this.deliveryRangeLabel = deliveryRangeLabel;
+    }
+
+    public void setBackFlowRangeLabel(Label backFlowRangeLabel) {
+        this.backFlowRangeLabel = backFlowRangeLabel;
     }
 
     @PostConstruct
@@ -154,17 +171,17 @@ public class BeakerController {
     private void setupListeners() {
 
         flowController.deliveryRangeLabelPropertyProperty().addListener((observable, oldValue, newValue) ->
-                showBeakerLevels(newValue, flowController.getBackFlowRangeLabel().getText(), ledBeakerController.getLedBeaker().isSelected()));
+                showBeakerLevels(newValue, backFlowRangeLabel.getText(), ledBeakerController.getLedBeaker().isSelected()));
 
         flowController.backFlowRangeLabelPropertyProperty().addListener((observable, oldValue, newValue) ->
-                showBeakerLevels(flowController.getDeliveryRangeLabel().getText(), newValue, ledBeakerController.getLedBeaker().isSelected()));
+                showBeakerLevels(deliveryRangeLabel.getText(), newValue, ledBeakerController.getLedBeaker().isSelected()));
 
         ledBeakerController.getLedBeaker().selectedProperty().addListener((observable, oldValue, newValue) ->
-                showBeakerLevels(flowController.getDeliveryRangeLabel().getText(), flowController.getBackFlowRangeLabel().getText(), newValue));
+                showBeakerLevels(deliveryRangeLabel.getText(), backFlowRangeLabel.getText(), newValue));
 
         textField.textProperty().addListener((observable, oldValue, newValue) -> {
 
-            if ((flowController.getDeliveryRangeLabel().getText().isEmpty()) && (flowController.getBackFlowRangeLabel().getText().isEmpty())) {
+            if ((deliveryRangeLabel.getText().isEmpty()) && (backFlowRangeLabel.getText().isEmpty())) {
 
                 if (newValue == null || newValue.equals("") || newValue.equals("0.0") || newValue.equals("0")) {
                     rescaler.getMapOfLevels().put(name, 0f);
@@ -219,7 +236,7 @@ public class BeakerController {
 
         switch (beakerType) {
             case DELIVERY:
-                if (flowController.getDeliveryRangeLabel().getText().isEmpty())
+                if (deliveryRangeLabel.getText().isEmpty())
                     break;
                 flowUnitCoeff = FlowUnits.getMapOfFlowUnits().get(flowController.getDeliveryFlowComboBox().getSelectionModel().getSelectedItem());
                 currentVal = dataConverter.round(dataConverter.convertDataToDouble(value) * flowUnitCoeff);
@@ -228,7 +245,7 @@ public class BeakerController {
                 setBeakerLevel(currentVal, lowDeliveryFlowLevelValue, highDeliveryFlowLevelValue);
                 break;
             case BACKFLOW:
-                if (flowController.getBackFlowRangeLabel().getText().isEmpty())
+                if (backFlowRangeLabel.getText().isEmpty())
                     break;
                 flowUnitCoeff = FlowUnits.getMapOfFlowUnits().get(flowController.getBackFlowComboBox().getSelectionModel().getSelectedItem());
                 currentVal = dataConverter.round(dataConverter.convertDataToDouble(value) * flowUnitCoeff);

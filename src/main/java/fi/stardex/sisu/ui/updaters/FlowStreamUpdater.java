@@ -8,6 +8,7 @@ import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.util.converters.DataConverter;
+import fi.stardex.sisu.util.enums.Tests;
 import fi.stardex.sisu.version.FirmwareVersion;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
@@ -21,9 +22,9 @@ public class FlowStreamUpdater extends FlowUpdater implements Updater {
 
     public FlowStreamUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
                              SettingsController settingsController, DataConverter dataConverter,
-                             FirmwareVersion<FlowVersions> flowFirmwareVersion) {
+                             FirmwareVersion<FlowVersions> flowFirmwareVersion, Tests tests) {
 
-        super(flowController, injectorSectionController, settingsController, dataConverter, flowFirmwareVersion);
+        super(flowController, injectorSectionController, settingsController, dataConverter, flowFirmwareVersion, tests);
 
     }
 
@@ -41,8 +42,10 @@ public class FlowStreamUpdater extends FlowUpdater implements Updater {
     @Override
     public void run() {
 
-        if ((!checkBoxFlowVisible.isSelected()) && (!injectorSectionPowerSwitch.isSelected()))
+        if (isNotInstantFlow() || isNotMeasuring()) {
+            setAllLabelsAndFieldsToNull();
             return;
+        }
 
         if (comboInjectorConfig.getSelectionModel().getSelectedItem() == InjectorChannel.SINGLE_CHANNEL)
 

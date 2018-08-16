@@ -6,6 +6,7 @@ import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.util.converters.DataConverter;
+import fi.stardex.sisu.util.enums.Tests;
 import fi.stardex.sisu.version.FirmwareVersion;
 import fi.stardex.sisu.version.Versions;
 import javafx.scene.control.*;
@@ -18,6 +19,7 @@ import java.util.stream.Stream;
 import static fi.stardex.sisu.registers.flow.ModbusMapFlow.*;
 import static fi.stardex.sisu.ui.updaters.FlowUpdater.Flow.BACK_FLOW;
 import static fi.stardex.sisu.ui.updaters.FlowUpdater.Flow.DELIVERY;
+import static fi.stardex.sisu.util.enums.Tests.TestType.MANUAL;
 import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions;
 import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions.MASTER;
 
@@ -34,6 +36,10 @@ public abstract class FlowUpdater {
     protected StringBuilder convertedValue = new StringBuilder();
 
     private List<Float> listOfConvertedValues = new ArrayList<>();
+
+    protected Label deliveryRangeLabel;
+
+    protected Label backFlowRangeLabel;
 
     protected Label temperature1Delivery1Label;
 
@@ -105,13 +111,18 @@ public abstract class FlowUpdater {
 
     protected ToggleButton injectorSectionPowerSwitch;
 
+    protected Tests tests;
+
     public FlowUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
                        SettingsController settingsController, DataConverter dataConverter,
-                       FirmwareVersion<FlowVersions> flowFirmwareVersion) {
+                       FirmwareVersion<FlowVersions> flowFirmwareVersion, Tests tests) {
 
         this.flowController = flowController;
         this.flowFirmwareVersion = flowFirmwareVersion;
         this.dataConverter = dataConverter;
+        this.tests = tests;
+        deliveryRangeLabel = flowController.getDeliveryRangeLabel();
+        backFlowRangeLabel = flowController.getBackFlowRangeLabel();
         temperature1Delivery1Label = flowController.getTemperature1Delivery1();
         temperature1Delivery2Label = flowController.getTemperature1Delivery2();
         temperature1Delivery3Label = flowController.getTemperature1Delivery3();
@@ -351,7 +362,7 @@ public abstract class FlowUpdater {
 
     }
 
-    private void setAllLabelsAndFieldsToNull() {
+    protected void setAllLabelsAndFieldsToNull() {
 
         allFlowLabels.forEach(label -> label.setText(null));
         allFlowTextFields.forEach(textField -> textField.setText(null));
@@ -405,6 +416,14 @@ public abstract class FlowUpdater {
             convertedValue.setLength(0);
         }
 
+    }
+
+    protected boolean isNotInstantFlow() {
+        return !checkBoxFlowVisible.isSelected() && !injectorSectionPowerSwitch.isSelected();
+    }
+
+    protected boolean isNotMeasuring() {
+        return tests.getTest() != MANUAL && deliveryRangeLabel.getText().isEmpty() && backFlowRangeLabel.getText().isEmpty();
     }
 
 }

@@ -3,6 +3,7 @@ package fi.stardex.sisu.ui;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
 import fi.stardex.sisu.util.enums.Tests;
+import fi.stardex.sisu.util.enums.Tests.TestType;
 import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
 
@@ -20,6 +21,8 @@ public class Enabler {
 
     private ListView<InjectorTest> testListView;
 
+    private Tests tests;
+
     public Enabler(MainSectionController mainSectionController) {
         this.mainSectionController = mainSectionController;
         manualTestRadioButton = mainSectionController.getManualTestRadioButton();
@@ -27,6 +30,7 @@ public class Enabler {
         autoTestRadioButton = mainSectionController.getAutoTestRadioButton();
         codingTestRadioButton = mainSectionController.getCodingTestRadioButton();
         testListView = mainSectionController.getTestListView();
+        tests = mainSectionController.getTests();
     }
 
     public Enabler selectInjector(boolean selected) {
@@ -48,7 +52,10 @@ public class Enabler {
         return this;
     }
 
-    public Enabler selectTest(Tests test) {
+    public Enabler selectTest() {
+
+        TestType test = tests.getTest();
+
         switch (test) {
             case MANUAL:
                 testListView.setDisable(false);

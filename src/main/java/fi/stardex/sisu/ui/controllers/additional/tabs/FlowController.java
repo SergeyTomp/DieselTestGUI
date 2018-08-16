@@ -331,49 +331,49 @@ public class FlowController {
             if (!deliveryRangeLabel.getText().isEmpty())
                 beakerDelivery1Controller.changeFlow(value);
             else
-                beakerDelivery1Controller.changeFlow(null);
+                beakerDelivery1Controller.getTextField().setText(value);
         }
         else if (field == delivery2TextField) {
             if (!deliveryRangeLabel.getText().isEmpty())
                 beakerDelivery2Controller.changeFlow(value);
             else
-                beakerDelivery2Controller.changeFlow(null);
+                beakerDelivery2Controller.getTextField().setText(value);
         }
         else if (field == delivery3TextField) {
             if (!deliveryRangeLabel.getText().isEmpty())
                 beakerDelivery3Controller.changeFlow(value);
             else
-                beakerDelivery3Controller.changeFlow(null);
+                beakerDelivery3Controller.getTextField().setText(value);
         }
         else if (field == delivery4TextField) {
             if (!deliveryRangeLabel.getText().isEmpty())
                 beakerDelivery4Controller.changeFlow(value);
             else
-                beakerDelivery4Controller.changeFlow(null);
+                beakerDelivery4Controller.getTextField().setText(value);
         }
         else if (field == backFlow1TextField) {
             if (!backFlowRangeLabel.getText().isEmpty())
                 beakerBackFlow1Controller.changeFlow(value);
             else
-                beakerBackFlow1Controller.changeFlow(null);
+                beakerBackFlow1Controller.getTextField().setText(value);
         }
         else if (field == backFlow2TextField) {
             if (!backFlowRangeLabel.getText().isEmpty())
                 beakerBackFlow2Controller.changeFlow(value);
             else
-                beakerBackFlow2Controller.changeFlow(null);
+                beakerBackFlow2Controller.getTextField().setText(value);
         }
         else if (field == backFlow3TextField) {
             if (!backFlowRangeLabel.getText().isEmpty())
                 beakerBackFlow3Controller.changeFlow(value);
             else
-                beakerBackFlow3Controller.changeFlow(null);
+                beakerBackFlow3Controller.getTextField().setText(value);
         }
         else if (field == backFlow4TextField) {
             if (!backFlowRangeLabel.getText().isEmpty())
                 beakerBackFlow4Controller.changeFlow(value);
             else
-                beakerBackFlow4Controller.changeFlow(null);
+                beakerBackFlow4Controller.getTextField().setText(value);
         }
 
     }

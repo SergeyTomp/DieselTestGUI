@@ -38,6 +38,7 @@ import fi.stardex.sisu.util.DelayCalculator;
 import fi.stardex.sisu.util.VisualUtils;
 import fi.stardex.sisu.util.converters.DataConverter;
 import fi.stardex.sisu.util.converters.FlowResolver;
+import fi.stardex.sisu.util.enums.Tests;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer;
 import fi.stardex.sisu.util.obtainers.CurrentInjectorTestsObtainer;
@@ -46,7 +47,10 @@ import fi.stardex.sisu.util.rescalers.BackFlowRescaler;
 import fi.stardex.sisu.util.rescalers.DeliveryRescaler;
 import fi.stardex.sisu.util.rescalers.Rescaler;
 import fi.stardex.sisu.util.wrappers.StatusBarWrapper;
-import fi.stardex.sisu.version.*;
+import fi.stardex.sisu.version.FirmwareVersion;
+import fi.stardex.sisu.version.FlowFirmwareVersion;
+import fi.stardex.sisu.version.StandFirmwareVersion;
+import fi.stardex.sisu.version.UltimaFirmwareVersion;
 import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -67,12 +71,12 @@ import java.util.List;
 
 import static fi.stardex.sisu.registers.stand.ModbusMapStand.*;
 import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.FirmwareVersion;
-import static fi.stardex.sisu.version.FlowFirmwareVersion.*;
+import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions;
 import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions.*;
-import static fi.stardex.sisu.version.UltimaFirmwareVersion.UltimaVersions.*;
-import static fi.stardex.sisu.version.UltimaFirmwareVersion.UltimaVersions;
-import static fi.stardex.sisu.version.StandFirmwareVersion.StandVersions.*;
 import static fi.stardex.sisu.version.StandFirmwareVersion.StandVersions;
+import static fi.stardex.sisu.version.StandFirmwareVersion.StandVersions.STAND;
+import static fi.stardex.sisu.version.UltimaFirmwareVersion.UltimaVersions;
+import static fi.stardex.sisu.version.UltimaFirmwareVersion.UltimaVersions.*;
 
 @Configuration
 @Import(JavaFXSpringConfigure.class)
@@ -400,16 +404,16 @@ public class SpringJavaConfig {
     @Autowired
     public FlowMasterUpdater flowMasterUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
                                                SettingsController settingsController, DataConverter dataConverter,
-                                               FirmwareVersion<FlowVersions> flowFirmwareVersion) {
-        return new FlowMasterUpdater(flowController, injectorSectionController, settingsController, dataConverter, flowFirmwareVersion);
+                                               FirmwareVersion<FlowVersions> flowFirmwareVersion, Tests tests) {
+        return new FlowMasterUpdater(flowController, injectorSectionController, settingsController, dataConverter, flowFirmwareVersion, tests);
     }
 
     @Bean
     @Autowired
     public FlowStreamUpdater flowStreamUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
                                                SettingsController settingsController, DataConverter dataConverter,
-                                               FirmwareVersion<FlowVersions> flowFirmwareVersion) {
-        return new FlowStreamUpdater(flowController, injectorSectionController, settingsController, dataConverter, flowFirmwareVersion);
+                                               FirmwareVersion<FlowVersions> flowFirmwareVersion, Tests tests) {
+        return new FlowStreamUpdater(flowController, injectorSectionController, settingsController, dataConverter, flowFirmwareVersion, tests);
     }
 
     @Bean
@@ -544,6 +548,11 @@ public class SpringJavaConfig {
     @Bean
     public FirmwareVersion<StandVersions> standFirmwareVersion() {
         return new StandFirmwareVersion<>(STAND);
+    }
+
+    @Bean
+    public Tests tests() {
+        return new Tests();
     }
 
     private List<Updater> addUpdaters(List<Updater> updatersList, Device targetDevice) {

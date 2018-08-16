@@ -28,8 +28,6 @@ import fi.stardex.sisu.util.view.GUIType;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -43,45 +41,37 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
-import javax.persistence.criteria.CriteriaBuilder;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
+
+import static fi.stardex.sisu.util.enums.Tests.TestType.*;
 
 public class MainSectionController {
 
-    @FXML
-    private ToggleButton startStopToggleButton;
+    @FXML private Button resetButton;
 
-    @FXML
-    private ToggleGroup testsToggleGroup;
+    @FXML private ToggleGroup testsToggleGroup;
 
-    @FXML
-    private TextField injNumberTextField;
+    @FXML private TextField injNumberTextField;
 
-    @FXML
-    private RadioButton manualTestRadioButton;
+    @FXML private RadioButton manualTestRadioButton;
 
-    @FXML
-    private RadioButton testPlanTestRadioButton;
+    @FXML private RadioButton testPlanTestRadioButton;
 
-    @FXML
-    private RadioButton autoTestRadioButton;
+    @FXML private RadioButton autoTestRadioButton;
 
-    @FXML
-    private RadioButton codingTestRadioButton;
+    @FXML private RadioButton codingTestRadioButton;
 
-    @FXML
-    private ToggleGroup baseType;
-    @FXML
-    private RadioButton defaultRB;
-    @FXML
-    private RadioButton customRB;
+    @FXML private ToggleGroup baseType;
+
+    @FXML private RadioButton defaultRB;
+
+    @FXML private RadioButton customRB;
+
+    @FXML private ComboBox<String> versionComboBox;
 
     private List<String> versions = new LinkedList<>();
 
@@ -91,18 +81,13 @@ public class MainSectionController {
         versions.add("UIS");
     }
 
+    @FXML private ListView<Manufacturer> manufacturerListView;
 
-    @FXML
-    private ComboBox<String> versionComboBox;
+    @FXML private TextField searchModelTF;
 
-    @FXML
-    private ListView<Manufacturer> manufacturerListView;
-    @FXML
-    private TextField searchModelTF;
-    @FXML
-    private ListView<Model> modelListView;
-    @FXML
-    private ListView<InjectorTest> testListView;
+    @FXML private ListView<Model> modelListView;
+
+    @FXML private ListView<InjectorTest> testListView;
 
     private ModbusRegisterProcessor flowModbusWriter;
 
@@ -121,9 +106,9 @@ public class MainSectionController {
     private ViewHolder newEditTestDialog;
 
     private VoltAmpereProfileController voltAmpereProfileController;
-    
+
     private DataConverter dataConverter;
-    
+
     private CurrentInjectorObtainer currentInjectorObtainer;
 
     private InjectorSectionController injectorSectionController;
@@ -149,6 +134,12 @@ public class MainSectionController {
     private RLCController RLCController;
 
     private FilteredList<Model> filteredModelList;
+
+    private Tests tests;
+
+    public Tests getTests() {
+        return tests;
+    }
 
     public ListView<Manufacturer> getManufacturerListView() {
         return manufacturerListView;
@@ -247,12 +238,14 @@ public class MainSectionController {
         this.flowModbusWriter = flowModbusWriter;
     }
 
+    public void setTests(Tests tests) {
+        this.tests = tests;
+    }
+
     @PostConstruct
     private void init() {
 
-        // TODO: do not delete!
-        setupStartStopToggleButton();
-//        setupResetButton();
+        setupResetButton();
 
         versionComboBox.getItems().addAll(versions);
 
@@ -316,6 +309,7 @@ public class MainSectionController {
         }));
 
         searchModelTF.textProperty().addListener(((observable, oldValue, newValue) -> filteredModelList.setPredicate(data -> {
+
             if (newValue == null || newValue.isEmpty()) {
                 return true;
             } else {
@@ -327,137 +321,121 @@ public class MainSectionController {
             }
         })));
 
-        baseType.selectedToggleProperty().
+        baseType.selectedToggleProperty().addListener(((observable, oldValue, newValue) -> {
 
-                addListener(((observable, oldValue, newValue) ->
+            Manufacturer selectedItem = manufacturerListView.getSelectionModel().getSelectedItem();
 
-                {
-                    Manufacturer selectedItem = manufacturerListView.getSelectionModel().getSelectedItem();
+            if (selectedItem == null)
+                return;
 
-                    if (selectedItem == null)
-                        return;
+            modelListView.getItems().setAll(injectorsRepository.findByManufacturerAndIsCustom(selectedItem, customRB.isSelected()));
 
-                    modelListView.getItems().setAll(injectorsRepository.findByManufacturerAndIsCustom(selectedItem, customRB.isSelected()));
-                }));
+        }));
 
-        modelListView.getSelectionModel().
+        modelListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 
-                selectedItemProperty().
+            if (newValue == null) {
+                currentInjectorObtainer.setInjector(null);
+                enabler.selectInjector(false);
+                return;
+            }
 
-                addListener((observable, oldValue, newValue) ->
+            Injector inj = (Injector) newValue;
+            currentVoltAmpereProfile = injectorsRepository.findByInjectorCode(inj.getInjectorCode()).getVoltAmpereProfile();
+            inj.setVoltAmpereProfile(currentVoltAmpereProfile);
+            currentInjectorObtainer.setInjector(inj);
 
-                {
-
-                    if (newValue == null) {
-                        currentInjectorObtainer.setInjector(null);
-                        enabler.selectInjector(false);
-                        return;
-                    }
-
-                    Injector inj = (Injector) newValue;
-                    currentVoltAmpereProfile = injectorsRepository.findByInjectorCode(inj.getInjectorCode()).getVoltAmpereProfile();
-                    inj.setVoltAmpereProfile(currentVoltAmpereProfile);
-                    currentInjectorObtainer.setInjector(inj);
-
-                    enabler.selectInjector(true);
+            enabler.selectInjector(true);
 
 
-                    Double firstI = currentVoltAmpereProfile.getFirstI();
-                    Double secondI = currentVoltAmpereProfile.getSecondI();
-                    Double boostI = currentVoltAmpereProfile.getBoostI();
+            Double firstI = currentVoltAmpereProfile.getFirstI();
+            Double secondI = currentVoltAmpereProfile.getSecondI();
+            Double boostI = currentVoltAmpereProfile.getBoostI();
 
-                    firstI = (boostI - firstI >= 0.5) ? firstI : boostI - 0.5;
-                    secondI = (firstI - secondI >= 0.5) ? secondI : firstI - 0.5;
+            firstI = (boostI - firstI >= 0.5) ? firstI : boostI - 0.5;
+            secondI = (firstI - secondI >= 0.5) ? secondI : firstI - 0.5;
 
-                    voltAmpereProfileController.getBoostUSpinner().getValueFactory().setValue(currentVoltAmpereProfile.getBoostU());
-                    voltAmpereProfileController.getFirstWSpinner().getValueFactory().setValue(currentVoltAmpereProfile.getFirstW());
-                    voltAmpereProfileController.getFirstISpinner().getValueFactory().setValue((firstI * 100 % 10 != 0) ? dataConverter.round(firstI) : firstI);
-                    voltAmpereProfileController.getSecondISpinner().getValueFactory().setValue((secondI * 100 % 10 != 0) ? dataConverter.round(secondI) : secondI);
-                    voltAmpereProfileController.getBoostISpinner().getValueFactory().setValue((boostI * 100 % 10 != 0) ? dataConverter.round(boostI) : boostI);
-                    voltAmpereProfileController.getBatteryUSpinner().getValueFactory().setValue(currentVoltAmpereProfile.getBatteryU());
-                    voltAmpereProfileController.getNegativeUSpinner().getValueFactory().setValue(currentVoltAmpereProfile.getNegativeU());
-                    voltAmpereProfileController.getEnableBoostToggleButton().setSelected(currentVoltAmpereProfile.getBoostDisable());
+            voltAmpereProfileController.getBoostUSpinner().getValueFactory().setValue(currentVoltAmpereProfile.getBoostU());
+            voltAmpereProfileController.getFirstWSpinner().getValueFactory().setValue(currentVoltAmpereProfile.getFirstW());
+            voltAmpereProfileController.getFirstISpinner().getValueFactory().setValue((firstI * 100 % 10 != 0) ? dataConverter.round(firstI) : firstI);
+            voltAmpereProfileController.getSecondISpinner().getValueFactory().setValue((secondI * 100 % 10 != 0) ? dataConverter.round(secondI) : secondI);
+            voltAmpereProfileController.getBoostISpinner().getValueFactory().setValue((boostI * 100 % 10 != 0) ? dataConverter.round(boostI) : boostI);
+            voltAmpereProfileController.getBatteryUSpinner().getValueFactory().setValue(currentVoltAmpereProfile.getBatteryU());
+            voltAmpereProfileController.getNegativeUSpinner().getValueFactory().setValue(currentVoltAmpereProfile.getNegativeU());
+            voltAmpereProfileController.getEnableBoostToggleButton().setSelected(currentVoltAmpereProfile.getBoostDisable());
 
-                    InjectorSectionController injectorSectionController = voltAmpereProfileController.getInjectorSectionController();
+            InjectorSectionController injectorSectionController = voltAmpereProfileController.getInjectorSectionController();
 
-                    switch (currentVoltAmpereProfile.getInjectorType().getInjectorType()) {
-                        case "coil":
-                            injectorSectionController.getCoilRadioButton().setSelected(true);
-                            RLCController.setupCoil();
-                            injectorSectionController.getCoilRadioButton().setDisable(false);
-                            injectorSectionController.getPiezoRadioButton().setSelected(false);
-                            injectorSectionController.getPiezoRadioButton().setDisable(true);
-                            injectorSectionController.getPiezoDelphiRadioButton().setSelected(false);
-                            injectorSectionController.getPiezoDelphiRadioButton().setDisable(true);
-                            break;
-                        case "piezo":
-                            injectorSectionController.getPiezoRadioButton().setSelected(true);
-                            RLCController.setupPiezo(10d, 2000);
-                            injectorSectionController.getPiezoRadioButton().setDisable(false);
-                            injectorSectionController.getCoilRadioButton().setSelected(false);
-                            injectorSectionController.getCoilRadioButton().setDisable(true);
-                            injectorSectionController.getPiezoDelphiRadioButton().setSelected(false);
-                            injectorSectionController.getPiezoDelphiRadioButton().setDisable(true);
-                            break;
-                        case "piezoDelphi":
-                            injectorSectionController.getPiezoDelphiRadioButton().setSelected(true);
-                            RLCController.setupPiezo(20d, 2000);
-                            injectorSectionController.getPiezoDelphiRadioButton().setDisable(false);
-                            injectorSectionController.getCoilRadioButton().setSelected(false);
-                            injectorSectionController.getCoilRadioButton().setDisable(true);
-                            injectorSectionController.getPiezoRadioButton().setDisable(true);
-                            injectorSectionController.getPiezoRadioButton().setSelected(false);
-                            break;
-                        default:
-                            throw new IllegalArgumentException("Wrong injector type parameter!");
-                    }
+            switch (currentVoltAmpereProfile.getInjectorType().getInjectorType()) {
+                case "coil":
+                    injectorSectionController.getCoilRadioButton().setSelected(true);
+                    RLCController.setupCoil();
+                    injectorSectionController.getCoilRadioButton().setDisable(false);
+                    injectorSectionController.getPiezoRadioButton().setSelected(false);
+                    injectorSectionController.getPiezoRadioButton().setDisable(true);
+                    injectorSectionController.getPiezoDelphiRadioButton().setSelected(false);
+                    injectorSectionController.getPiezoDelphiRadioButton().setDisable(true);
+                    break;
+                case "piezo":
+                    injectorSectionController.getPiezoRadioButton().setSelected(true);
+                    RLCController.setupPiezo(10d, 2000);
+                    injectorSectionController.getPiezoRadioButton().setDisable(false);
+                    injectorSectionController.getCoilRadioButton().setSelected(false);
+                    injectorSectionController.getCoilRadioButton().setDisable(true);
+                    injectorSectionController.getPiezoDelphiRadioButton().setSelected(false);
+                    injectorSectionController.getPiezoDelphiRadioButton().setDisable(true);
+                    break;
+                case "piezoDelphi":
+                    injectorSectionController.getPiezoDelphiRadioButton().setSelected(true);
+                    RLCController.setupPiezo(20d, 2000);
+                    injectorSectionController.getPiezoDelphiRadioButton().setDisable(false);
+                    injectorSectionController.getCoilRadioButton().setSelected(false);
+                    injectorSectionController.getCoilRadioButton().setDisable(true);
+                    injectorSectionController.getPiezoRadioButton().setDisable(true);
+                    injectorSectionController.getPiezoRadioButton().setSelected(false);
+                    break;
+                default:
+                    throw new IllegalArgumentException("Wrong injector type parameter!");
+            }
 
-                    voltAmpereProfileController.getApplyButton().fire();
-                });
+            voltAmpereProfileController.getApplyButton().fire();
+        });
 
-        testListView.getSelectionModel().
+        testListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 
-                selectedItemProperty().
+            if (newValue == null)
+                return;
 
-                addListener((observable, oldValue, newValue) ->
+            Integer freq = newValue.getInjectionRate();
 
-                {
+            Integer width = newValue.getTotalPulseTime();
 
-                    if (newValue == null)
-                        return;
+            Integer firstW = currentVoltAmpereProfile.getFirstW();
 
-                    Integer freq = newValue.getInjectionRate();
+            firstW = (width - firstW >= 30) ? firstW : width - 30;
 
-                    Integer width = newValue.getTotalPulseTime();
+            injectorSectionController.getFreqCurrentSignal().getValueFactory().setValue((freq != null) ? 1000d / freq : 0);
 
-                    Integer firstW = currentVoltAmpereProfile.getFirstW();
+            voltAmpereProfileController.getFirstWSpinner().getValueFactory().setValue(firstW);
 
-                    firstW = (width - firstW >= 30) ? firstW : width - 30;
+            injectorSectionController.getWidthCurrentSignal().getValueFactory().setValue(width);
 
-                    injectorSectionController.getFreqCurrentSignal().getValueFactory().setValue((freq != null) ? 1000d / freq : 0);
+        });
 
-                    voltAmpereProfileController.getFirstWSpinner().getValueFactory().setValue(firstW);
+        testsToggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
 
-                    injectorSectionController.getWidthCurrentSignal().getValueFactory().setValue(width);
+            if (newValue == manualTestRadioButton)
+                tests.setTest(MANUAL);
+            else if (newValue == testPlanTestRadioButton)
+                tests.setTest(TESTPLAN);
+            else if (newValue == autoTestRadioButton)
+                tests.setTest(AUTO);
+            else if (newValue == codingTestRadioButton)
+                tests.setTest(CODING);
 
-                });
+            enabler.selectTest();
 
-        testsToggleGroup.selectedToggleProperty().
-
-                addListener((observable, oldValue, newValue) ->
-
-                {
-
-                    if (newValue == manualTestRadioButton)
-                        enabler.selectTest(Tests.MANUAL);
-                    else if (newValue == testPlanTestRadioButton)
-                        enabler.selectTest(Tests.TESTPLAN);
-                    else if (newValue == autoTestRadioButton)
-                        enabler.selectTest(Tests.AUTO);
-                    else if (newValue == codingTestRadioButton)
-                        enabler.selectTest(Tests.CODING);
-
-                });
+        });
 
     }
 
@@ -659,24 +637,24 @@ public class MainSectionController {
         }
     }
 
-    // TODO: do not delete!
-    private void setupStartStopToggleButton() {
-
-        startStopToggleButton.selectedProperty().addListener((observable, stopped, started) -> {
-            if (started) {
-                flowModbusWriter.add(ModbusMapFlow.StartMeasurementCycle, true);
-                startStopToggleButton.setText("Stop");
-            } else {
-                flowModbusWriter.add(ModbusMapFlow.StopMeasurementCycle, true);
-                startStopToggleButton.setText("Start");
-            }
-        });
-
-    }
-
+//    // TODO: do not delete!
 //    private void setupResetButton() {
 //
-//        resetButton.setOnAction(event -> flowModbusWriter.add(ModbusMapFlow.StartMeasurementCycle, true));
+//        startStopToggleButton.selectedProperty().addListener((observable, stopped, started) -> {
+//            if (started) {
+//                flowModbusWriter.add(ModbusMapFlow.StartMeasurementCycle, true);
+//                startStopToggleButton.setText("Stop");
+//            } else {
+//                flowModbusWriter.add(ModbusMapFlow.StopMeasurementCycle, true);
+//                startStopToggleButton.setText("Start");
+//            }
+//        });
 //
 //    }
+
+    private void setupResetButton() {
+
+        resetButton.setOnAction(event -> flowModbusWriter.add(ModbusMapFlow.StartMeasurementCycle, true));
+
+    }
 }

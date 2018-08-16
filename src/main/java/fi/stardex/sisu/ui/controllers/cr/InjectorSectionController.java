@@ -1,6 +1,5 @@
 package fi.stardex.sisu.ui.controllers.cr;
 
-import fi.stardex.sisu.charts.DelayChartTask;
 import fi.stardex.sisu.charts.TimerTasksManager;
 import fi.stardex.sisu.combobox_values.InjectorChannel;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
@@ -24,9 +23,8 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.PostConstruct;
 import java.util.*;
 
-import static fi.stardex.sisu.util.SpinnerDefaults.*;
-
 import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.*;
+import static fi.stardex.sisu.util.SpinnerDefaults.*;
 
 public class InjectorSectionController {
 
