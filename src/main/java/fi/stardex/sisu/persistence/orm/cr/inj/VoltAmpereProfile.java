@@ -115,6 +115,7 @@ public class VoltAmpereProfile {
                              Boolean isCustom, Integer boostU, Integer batteryU,
                              Double boostI, Double firstI, Integer firstW,
                              Double secondI, Integer negativeU, Boolean boostDisable) {
+
         this.profileName = profileName;
         this.injectorType = injectorType;
         this.isCustom = isCustom;
@@ -126,6 +127,7 @@ public class VoltAmpereProfile {
         this.secondI = secondI;
         this.negativeU = negativeU;
         this.boostDisable = boostDisable;
+
     }
 
     @Override

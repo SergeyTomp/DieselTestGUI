@@ -2,39 +2,37 @@ package fi.stardex.sisu.ui.controllers.additional.tabs;
 
 import fi.stardex.sisu.util.ApplicationConfigHandler;
 import fi.stardex.sisu.util.Pair;
-import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
 import java.util.function.UnaryOperator;
 
 public class ConnectionController {
 
+    @FXML private TextField ultimaIPField;
+
+    @FXML private TextField flowMeterIPField;
+
+    @FXML private TextField standIPField;
+
+    @FXML private TextField ultimaPortField;
+
+    @FXML private TextField flowMeterPortField;
+
+    @FXML private TextField standPortField;
+
+    @FXML private Button acceptButton;
+
     private Pair<String, String> ultimaConnect = new Pair<>();
+
     private Pair<String, String> flowMeterConnect = new Pair<>();
+
     private Pair<String, String> standConnect = new Pair<>();
 
     private final String ipRegex = makePartialIPRegex();
-    private final String portRegex = "^(6553[0-5]|655[0-2]\\d|65[0-4]\\d\\d|6[0-4]\\d{3}|[1-5]\\d{4}|[1-9]\\d{0,3}|0)$";
-
-    @FXML
-    private TextField ultimaIPField;
-    @FXML
-    private TextField flowMeterIPField;
-    @FXML
-    private TextField standIPField;
-    @FXML
-    private TextField ultimaPortField;
-    @FXML
-    private TextField flowMeterPortField;
-    @FXML
-    private TextField standPortField;
-    @FXML
-    private Button acceptButton;
 
     private ApplicationConfigHandler applicationConfigHandler;
 
@@ -56,6 +54,8 @@ public class ConnectionController {
         ultimaIPField.setTextFormatter(new TextFormatter<>(getFilter(ipRegex)));
         flowMeterIPField.setTextFormatter(new TextFormatter<>(getFilter(ipRegex)));
         standIPField.setTextFormatter(new TextFormatter<>(getFilter(ipRegex)));
+
+        String portRegex = "^(6553[0-5]|655[0-2]\\d|65[0-4]\\d\\d|6[0-4]\\d{3}|[1-5]\\d{4}|[1-9]\\d{0,3}|0)$";
 
         ultimaPortField.setTextFormatter(new TextFormatter<>(getFilter(portRegex)));
         flowMeterPortField.setTextFormatter(new TextFormatter<>(getFilter(portRegex)));
@@ -109,10 +109,12 @@ public class ConnectionController {
     }
 
     private String makePartialIPRegex() {
+
         String partialBlock = "(([01]?[0-9]{0,2})|(2[0-4][0-9])|(25[0-5]))" ;
         String subsequentPartialBlock = "(\\."+partialBlock+")" ;
         String ipAddress = partialBlock+"?"+subsequentPartialBlock+"{0,3}";
         return "^"+ipAddress ;
+
     }
 
     private UnaryOperator<TextFormatter.Change> getFilter(String regex) {

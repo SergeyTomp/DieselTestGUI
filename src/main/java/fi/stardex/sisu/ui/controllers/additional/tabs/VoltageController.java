@@ -29,41 +29,31 @@ import static fi.stardex.sisu.util.SpinnerDefaults.*;
 
 public class VoltageController {
 
-    @FXML
-    private Label boostI;
+    @FXML private Label boostI;
 
-    @FXML
-    private Label batteryU;
+    @FXML private Label batteryU;
 
-    @FXML
-    private Label negativeU;
+    @FXML private Label negativeU;
 
-    @FXML
-    private LineChart<Double, Double> lineChart;
+    @FXML private LineChart<Double, Double> lineChart;
 
-    @FXML
-    private NumberAxis xAxis;
+    @FXML private NumberAxis xAxis;
 
-    @FXML
-    private NumberAxis yAxis;
+    @FXML private NumberAxis yAxis;
 
-    @FXML
-    private Label width;
+    @FXML private Label width;
 
-    @FXML
-    private Label voltage;
+    @FXML private Label voltage;
 
-    @FXML
-    private Label firstWidth;
+    @FXML private Label firstWidth;
 
-    @FXML
-    private Label firstCurrent;
+    @FXML private Label firstCurrent;
 
-    @FXML
-    private Label secondCurrent;
+    @FXML private Label secondCurrent;
 
-    @FXML
-    private Button pulseSettingsButton;
+    @FXML private Button pulseSettingsButton;
+
+    private static final String RED_COLOR_STYLE = "-fx-text-fill: red";
 
     private ViewHolder voltAmpereProfileDialog;
 
@@ -74,10 +64,6 @@ public class VoltageController {
     private ObjectProperty<Boolean> isTabVoltageShowing = new SimpleObjectProperty<>();
 
     private DataConverter firmwareDataConverter;
-
-    public ObjectProperty<Boolean> isTabVoltageShowingProperty() {
-        return isTabVoltageShowing;
-    }
 
     private VoltAmpereProfileController voltAmpereProfileController;
 
@@ -105,10 +91,6 @@ public class VoltageController {
 
     public ObservableList<XYChart.Data<Double, Double>> getData4() {
         return data4;
-    }
-
-    public void setVoltAmpereProfileDialog(ViewHolder voltAmpereProfileDialog) {
-        this.voltAmpereProfileDialog = voltAmpereProfileDialog;
     }
 
     public Label getWidth() {
@@ -143,7 +125,13 @@ public class VoltageController {
         return secondCurrent;
     }
 
-    private static final String RED_COLOR_STYLE = "-fx-text-fill: red";
+    public ObjectProperty<Boolean> isTabVoltageShowingProperty() {
+        return isTabVoltageShowing;
+    }
+
+    public void setVoltAmpereProfileDialog(ViewHolder voltAmpereProfileDialog) {
+        this.voltAmpereProfileDialog = voltAmpereProfileDialog;
+    }
 
     public void setParentController(AdditionalSectionController additionalSectionController) {
         this.additionalSectionController = additionalSectionController;

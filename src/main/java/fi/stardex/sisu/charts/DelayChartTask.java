@@ -31,23 +31,18 @@ import static fi.stardex.sisu.version.UltimaFirmwareVersion.UltimaVersions.WITHO
 @Component
 @Scope("prototype")
 public class DelayChartTask extends ChartTask {
-    private static Logger logger = LoggerFactory.getLogger(DelayChartTask.class);
 
-    private static final int STEP_SIZE = 10;
+    private Logger logger = LoggerFactory.getLogger(DelayChartTask.class);
 
-    private static int addingTime;
+    private ObservableList<XYChart.Data<Double, Double>> delayData;
 
-    private  ObservableList<XYChart.Data<Double, Double>> delayData;
+    private Spinner<Double> sensitivitySpinner;
 
-    private  Spinner<Double> sensitivitySpinner;
+    private TextField minimumDelayTextField;
 
-    private  ComboBox<InjectorChannel> injectorChannelComboBox;
+    private TextField maximumDelayTextField;
 
-    private  TextField minimumDelayTextField;
-
-    private  TextField maximumDelayTextField;
-
-    private  TextField averageDelayTextField;
+    private TextField averageDelayTextField;
 
     private List<LedController> activeControllers;
 
@@ -57,20 +52,21 @@ public class DelayChartTask extends ChartTask {
 
     private static final int DELAY_SAMPLE_SIZE = 256;
 
-    @Autowired
-    private DelayCalculator delayCalculator;
+    private final DelayCalculator delayCalculator;
+
+    private final DelayController delayController;
 
     @Autowired
-    private DelayController delayController;
+    public DelayChartTask(DelayCalculator delayCalculator, DelayController delayController) {
 
-    @PostConstruct
-    private void init(){
+        this.delayCalculator = delayCalculator;
+        this.delayController = delayController;
         delayData = delayController.getDelayData();
-        injectorChannelComboBox = settingsController.getInjectorsConfigComboBox();
         sensitivitySpinner = delayController.getSensitivitySpinner();
         minimumDelayTextField = delayController.getMinimumDelay();
         maximumDelayTextField = delayController.getMaximumDelay();
         averageDelayTextField = delayController.getAverageDelay();
+
     }
 
     @Override
@@ -101,147 +97,151 @@ public class DelayChartTask extends ChartTask {
     public void setUpdateOSC(boolean updateOSC) {
         this.updateOSC = updateOSC;
     }
-    public static void setAddingTime(int newTime) {
-        addingTime = newTime;
-    }
+
     @Override
     public void run() {
+
         updateOSC = delayController.isTabDelayShowingProperty().get();
+
         activeControllers = injectorSectionController.getActiveControllers();
+
         LedController ledController = singleSelected();
-        if(ledController == null){
+
+        if (ledController == null) {
+
             delayController.showAttentionLabel(true);
             return;
-        }
-        delayController.showAttentionLabel(false);
+
+        } else
+            delayController.showAttentionLabel(false);
+
+        int addingTime = delayController.getAddingTimeValue();
+
         int n = (int) ((injectorSectionController.getWidthCurrentSignal().getValue() + addingTime) / PULSE_LENGTH_STEP) > DELAY_SAMPLE_SIZE - 1 ?
                 DELAY_SAMPLE_SIZE - 1 : (int) ((injectorSectionController.getWidthCurrentSignal().getValue() + addingTime) / PULSE_LENGTH_STEP);
 
         int remainder = n % DELAY_SAMPLE_SIZE;
 
-        int injectorModbusChannel = injectorChannelComboBox.getSelectionModel().getSelectedItem() == InjectorChannel.SINGLE_CHANNEL ?
-                1 : ledController.getNumber();
+        int injectorModbusChannel = settingsController
+                .getInjectorsConfigComboBox().getSelectionModel().getSelectedItem()
+                == InjectorChannel.SINGLE_CHANNEL ? 1 : ledController.getNumber();
 
         ArrayList<Integer> resultDataList = new ArrayList<>();
+
         RegisterProvider ultimaRegisterProvider = ultimaModbusWriter.getRegisterProvider();
+
         try {
+
             if (!updateOSC) {
                 return;
             }
             ultimaModbusWriter.add(getCurrentGraphFrameNum(), injectorModbusChannel);
             ultimaModbusWriter.add(getCurrentGraphUpdate(), true);
-            boolean ready;
-            do {
-                try {
-                    Thread.sleep(300);
-                } catch (InterruptedException e) {
-                    logger.error("Interrupted 1.", e);
-                }
-                try {
-                    if (!updateOSC) {
-                        return;
-                    }
-                    ready = (boolean) ultimaRegisterProvider.read(getCurrentGraphUpdate());
-                } catch (ClassCastException e) {
-                    logger.error("Cast Exception: ", e);
-                    return;
-                }
-            } while (ready);
+            waitForUpdate(ultimaRegisterProvider, 300);
             Integer[] data = ultimaRegisterProvider.readBytePacket(getCurrentGraph().getRef(), remainder);
             addModbusData(resultDataList, data);
+
         } catch (ModbusException e) {
+
             logger.error("Cannot obtain delay graphic", e);
             return;
-        }catch (ClassCastException e) {
+
+        } catch (ClassCastException e) {
+
             logger.error("Cast Exception: ", e);
             return;
+
         }
+
         if (!updateOSC) {
             return;
         }
+
         Platform.runLater(() -> addData(resultDataList, delayData));
+
     }
 
     private LedController singleSelected() {
-        if (activeControllers.size() != 1) { return null;}
-        LedController ledController = activeControllers.get(0);
-        if (ledController.getNumber() > 4) { return null;}
-        return ledController;
-    }
-    private void addModbusData(ArrayList<Integer> resultDataList, Integer[] data) {
-        resultDataList.addAll(Arrays.asList(data));
+        return (activeControllers.size() != 1) ? null : activeControllers.get(0);
     }
 
-    private double[] getFilteredResultData(ArrayList<Integer> resultDataList) {
-        double[] doubleData = new double[resultDataList.size()];
-        for (int i = 0; i < doubleData.length; i++) {
-            if (resultDataList.get(i) == null)
-                break;
+    @Override
+    protected void addDataToChart(double[] data, ObservableList<XYChart.Data<Double, Double>> chartData) {
 
-            doubleData[i] = resultDataList.get(i).doubleValue();
-        }
-
-        if (ultimaFirmwareVersion.getVersions() != WITHOUT_F)
-            return FilterInputChartData.medianFilter(doubleData, STEP_SIZE);
-        else
-            return doubleData;
-    }
-    private void addData(ArrayList<Integer> resultDataList, ObservableList<XYChart.Data<Double, Double>> chartData) {
-        double[] resultData = getFilteredResultData(resultDataList);
-        addDataToChart(resultData, chartData);
-    }
-
-    private void addDataToChart(double[] data, ObservableList<XYChart.Data<Double, Double>> chartData) {
         chartData.clear();
+
         double xValue = 0;
+
         List<XYChart.Data<Double, Double>> pointsList = new ArrayList<>();
+
         for (Double aData : data) {
             pointsList.add(new XYChart.Data<>(xValue, aData / 4095 * 3.3));
             xValue += PULSE_LENGTH_STEP;
         }
+
         chartData.addAll(pointsList);
         setDelay(pointsList);
+
     }
 
     private void setDelay(final List<XYChart.Data<Double, Double>> resultDataList) {
 
         List<XYChart.Data<Double, Double>> testPoints = new ArrayList<>();
+
         Iterator<XYChart.Data<Double, Double>> iterator = resultDataList.iterator();
+
         Double point = null;
+
         double spinner = sensitivitySpinner.getValue();
+
         while (iterator.hasNext()) {
+
             XYChart.Data<Double, Double> nextPoint = iterator.next();
             testPoints.add(nextPoint);
+
             if (testPoints.size() >= 3) {
+
                 double head = testPoints.get(testPoints.size() - 3).getYValue();
                 double middle = testPoints.get(testPoints.size() - 2).getYValue();
                 double last = testPoints.get(testPoints.size() - 1).getYValue();
                 if (spinner > head && spinner < middle && middle < last) {
+
                     point = calculatePoint(testPoints.get(testPoints.size() - 2), testPoints.get(testPoints.size() - 3));
                     break;
+
                 }
+
             }
+
         }
-        if (point == null) {
+
+        if (point == null)
             logger.debug("Point not found");
-        } else {
+        else {
             delayCalculator.addDelayValue(point);
             Platform.runLater(this::setDelayValues);
         }
+
     }
 
     private double calculatePoint(XYChart.Data<Double, Double> point1, XYChart.Data<Double, Double> point2) {
+
         double spinner = sensitivitySpinner.getValue();
         Double t1 = point1.getXValue();
         Double t2 = point2.getXValue();
         Double v1 = point1.getYValue();
         Double v2 = point2.getYValue();
-        return  (t1*spinner - t2*spinner + t2*v1 - t1*v2) / (v1 - v2);
+
+        return (t1 * spinner - t2 * spinner + t2 * v1 - t1 * v2) / (v1 - v2);
+
     }
+
     private void setDelayValues() {
+
         minimumDelayTextField.setText(String.format("%.0f", delayCalculator.getMinimumDelay()));
         maximumDelayTextField.setText(String.format("%.0f", delayCalculator.getMaximumDelay()));
         averageDelayTextField.setText(String.format("%.0f", delayCalculator.getAverageDelay()));
 
     }
+
 }

@@ -7,6 +7,7 @@ import javafx.scene.chart.XYChart;
 import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.*;
 
 public class ChartTaskThree extends ChartTask {
+
     @Override
     protected ModbusMapUltima getCurrentGraph() {
         return Current_graph3;
@@ -31,4 +32,5 @@ public class ChartTaskThree extends ChartTask {
     protected int getChartNumber() {
         return 3;
     }
+
 }

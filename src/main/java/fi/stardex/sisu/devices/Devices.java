@@ -6,58 +6,64 @@ import java.util.Iterator;
 import java.util.List;
 
 public class Devices {
+
     private final EnumSet<Device> connectedDevices = EnumSet.noneOf(Device.class);
     private final EnumSet<Device> pluggedInDevices = EnumSet.noneOf(Device.class);
 
     private final List<DeviceListener> listeners = new ArrayList<>();
 
     public boolean connect(Device device) {
-        if (isConnected(device)) {
+
+        if (isConnected(device))
             return false;
-        }
+
         pluggedInDevices.add(device);
+
         if (!isAtLeastOneConnected(Device.getPairedDevices(device))) {
+
             boolean result = connectedDevices.add(device);
-            if (result){
+
+            if (result)
                 notifyListeners(device, true);
-            }
+
             return result;
+
         }
+
         return false;
+
     }
 
-    public boolean isAtLeastOneConnected(List<Device> devices){
-        for (Device device: devices) {
-            if (isConnected(device)) {
-                return true;
-            }
-        }
-        return false;
+    public boolean isAtLeastOneConnected(List<Device> devices) {
+
+        return devices.stream().anyMatch(this::isConnected);
+
     }
 
     public boolean disconnect(Device device) {
+
         boolean result = connectedDevices.remove(device);
+
         pluggedInDevices.remove(device);
-        for (Device paired: Device.getPairedDevices(device)) {
-            if (isPluggedIn(paired)) {
-                connect(paired);
-            }
-        }
-        if (result) {
+
+        Device.getPairedDevices(device).stream().filter(this::isPluggedIn).forEach(this::connect);
+
+        if (result)
             notifyListeners(device, false);
-        }
+
         return result;
+
     }
 
-    private void notifyListeners(Device device, final boolean connect){
+    private void notifyListeners(Device device, final boolean connect) {
         listeners.forEach(deviceListener -> deviceListener.deviceChanged(device, connect));
     }
 
-    public boolean isConnected(Device device) {
+    private boolean isConnected(Device device) {
         return connectedDevices.contains(device);
     }
 
-    public boolean isPluggedIn(Device device) {
+    private boolean isPluggedIn(Device device) {
         return pluggedInDevices.contains(device);
     }
 

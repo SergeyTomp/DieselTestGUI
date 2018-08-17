@@ -2,7 +2,6 @@ package fi.stardex.sisu.ui.controllers.additional.tabs;
 
 import fi.stardex.sisu.combobox_values.Dimension;
 import fi.stardex.sisu.combobox_values.InjectorChannel;
-import fi.stardex.sisu.combobox_values.Languages;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.i18n.Locales;
 import javafx.collections.FXCollections;
@@ -15,13 +14,13 @@ import javafx.scene.control.RadioButton;
 import javax.annotation.PostConstruct;
 import java.util.prefs.Preferences;
 
+import static fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController.Languages.*;
+
 public class SettingsController {
 
     private I18N i18N;
 
     private Preferences prefs = Preferences.userNodeForPackage(this.getClass());
-
-
 
     // Pressure sensor
 
@@ -76,6 +75,10 @@ public class SettingsController {
 
     // Languages
 
+    public enum Languages {
+        RUSSIAN, ENGLISH, KOREAN
+    }
+
     @FXML private Label languagesLabel;
 
     @FXML private ComboBox<Languages> languagesConfigComboBox;
@@ -85,8 +88,6 @@ public class SettingsController {
     @FXML private Label flowOutputDimensionLabel;
 
     @FXML private ComboBox<Dimension> flowOutputDimensionsComboBox;
-
-
 
     public void setI18N(I18N i18N) {
         this.i18N = i18N;
@@ -125,7 +126,7 @@ public class SettingsController {
 
         injectorsConfigComboBox.setItems(FXCollections.observableArrayList(InjectorChannel.SINGLE_CHANNEL, InjectorChannel.MULTI_CHANNEL));
 
-        languagesConfigComboBox.setItems(FXCollections.observableArrayList(Languages.RUSSIAN, Languages.ENGLISH, Languages.KOREAN));
+        languagesConfigComboBox.setItems(FXCollections.observableArrayList(RUSSIAN, ENGLISH, KOREAN));
 
         flowOutputDimensionsComboBox.setItems(FXCollections.observableArrayList(Dimension.LIMIT, Dimension.PLUS_OR_MINUS));
 
@@ -180,7 +181,7 @@ public class SettingsController {
         injectorsConfigComboBox.getSelectionModel().select(InjectorChannel.valueOf(prefs.get("injectorsConfigSelected", InjectorChannel.SINGLE_CHANNEL.name())));
         injectorsConfigComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> prefs.put("injectorsConfigSelected", newValue.name()));
 
-        languagesConfigComboBox.getSelectionModel().select(Languages.valueOf(prefs.get("languageSelected", Languages.ENGLISH.name())));
+        languagesConfigComboBox.getSelectionModel().select(Languages.valueOf(prefs.get("languageSelected", ENGLISH.name())));
         languagesConfigComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             prefs.put("languageSelected", newValue.name());
             i18N.setLocale(Locales.getLocale(newValue.name()));

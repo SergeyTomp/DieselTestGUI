@@ -4,11 +4,13 @@ import java.util.Arrays;
 
 public class FilterInputChartData {
 
-    public static double[] medianFilter(double[] inputData, int stepSize) {
+    private static final int STEP_SIZE = 10;
 
-        double[] addedInputData = new double[inputData.length + stepSize];
+    public static double[] medianFilter(double[] inputData) {
+
+        double[] addedInputData = new double[inputData.length + STEP_SIZE];
         double[] outputData = new double[inputData.length];
-        double[] stepData = new double[stepSize];
+        double[] stepData = new double[STEP_SIZE];
         int step;
 
         System.arraycopy(inputData, 0, addedInputData, 0, inputData.length);
@@ -20,14 +22,14 @@ public class FilterInputChartData {
             addedInputData[i] = inputData[inputData.length - 1];
         }
 
-        for (int i = 0; i < addedInputData.length - stepSize; i++) {
+        for (int i = 0; i < addedInputData.length - STEP_SIZE; i++) {
             step = 0;
-            for (int j = i; j < i + stepSize; j++) {
+            for (int j = i; j < i + STEP_SIZE; j++) {
                 stepData[step] = addedInputData[j];
                 step++;
             }
             Arrays.sort(stepData);
-            outputData[i] = stepData[stepSize / 2];
+            outputData[i] = stepData[STEP_SIZE / 2];
         }
         return outputData;
     }

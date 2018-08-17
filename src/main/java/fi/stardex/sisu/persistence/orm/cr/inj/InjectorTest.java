@@ -85,6 +85,7 @@ public class InjectorTest {
     public InjectorTest(Injector injector, TestName testName, Integer motorSpeed, Integer settedPressure,
                         Integer adjustingTime, Integer measurementTime, Integer injectionRate,
                         Integer totalPulseTime, Double nominalFlow, Double flowRange) {
+
         this.injector = injector;
         this.testName = testName;
         this.motorSpeed = motorSpeed;
@@ -96,6 +97,7 @@ public class InjectorTest {
         this.nominalFlow = nominalFlow;
         this.flowRange = flowRange;
         this.isCustom = true;
+
     }
 
     public Integer getId() {
@@ -104,10 +106,6 @@ public class InjectorTest {
 
     public Injector getInjector() {
         return injector;
-    }
-
-    public Boolean getCustom() {
-        return isCustom;
     }
 
     public Integer getMotorSpeed() {
@@ -169,7 +167,6 @@ public class InjectorTest {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(injector, getTestName());
     }
 
@@ -177,4 +174,5 @@ public class InjectorTest {
     public String toString() {
         return testName.toString();
     }
+
 }

@@ -1,6 +1,5 @@
 package fi.stardex.sisu.persistence.orm;
 
-import com.sun.org.apache.bcel.internal.generic.NEW;
 import fi.stardex.sisu.persistence.CheckAndInitializeBD;
 import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
@@ -24,6 +23,8 @@ import java.util.List;
 @PropertySource("classpath:properties/app.properties")
 public class CSVSUpdater {
 
+    private Logger logger = LoggerFactory.getLogger(CheckAndInitializeBD.class);
+
     private ManufacturerRepository manufacturerRepository;
 
     private VoltAmpereProfileRepository voltAmpereProfileRepository;
@@ -31,8 +32,6 @@ public class CSVSUpdater {
     private InjectorsRepository injectorsRepository;
 
     private InjectorTestRepository injectorTestRepository;
-
-    private Logger logger = LoggerFactory.getLogger(CheckAndInitializeBD.class);
 
     private static final String NEW_LINE_SEPARATOR = "\n";
 
@@ -72,10 +71,12 @@ public class CSVSUpdater {
                        VoltAmpereProfileRepository voltAmpereProfileRepository,
                        InjectorsRepository injectorsRepository,
                        InjectorTestRepository injectorTestRepository) {
+
         this.manufacturerRepository = manufacturerRepository;
         this.voltAmpereProfileRepository = voltAmpereProfileRepository;
         this.injectorsRepository = injectorsRepository;
         this.injectorTestRepository = injectorTestRepository;
+
     }
 
     @PreDestroy

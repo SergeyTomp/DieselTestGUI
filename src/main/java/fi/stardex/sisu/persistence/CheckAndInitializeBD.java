@@ -64,8 +64,10 @@ public class CheckAndInitializeBD {
     private String customInjectorTests;
 
     public CheckAndInitializeBD(ManufacturerRepository manufacturerRepository, DataSource dataSource) {
+
         this.manufacturerRepository = manufacturerRepository;
         this.dataSource = dataSource;
+
     }
 
     @PostConstruct
@@ -145,7 +147,6 @@ public class CheckAndInitializeBD {
                 String line = reader.readLine();
                 if (!line.equals(version)) {
                     try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-//                        writer.write("");
                         writer.write(version);
                     }
                     isCurrent = false;
@@ -155,7 +156,6 @@ public class CheckAndInitializeBD {
         } else {
             file.createNewFile();
             try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-//                writer.write("");
                 writer.write(version);
             }
             isCurrent = false;

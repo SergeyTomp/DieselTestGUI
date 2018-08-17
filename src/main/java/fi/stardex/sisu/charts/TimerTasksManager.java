@@ -11,12 +11,14 @@ import java.util.*;
 @Service
 public class TimerTasksManager {
 
-    private static final Logger logger = LoggerFactory.getLogger(TimerTasksManager.class);
+    private final Logger logger = LoggerFactory.getLogger(TimerTasksManager.class);
 
     private List<ChartTask> listOfCharts;
 
     private static final int DELAY = 0;
+
     private static final int PERIOD = 100;
+
     private static final int DELAY_CHART_PERIOD = 3000;
 
     private volatile boolean running;
@@ -56,38 +58,52 @@ public class TimerTasksManager {
     }
 
     public void start() {
+
         if (running)
             return;
 
         listOfCharts = new ArrayList<>(Arrays.asList(getChartTaskOne(), getChartTaskTwo(), getChartTaskThree(), getChartTaskFour(), getDelayChartTask()));
 
-        listOfCharts.forEach(e -> {
-            e.setUpdateOSC(true);
+        listOfCharts.forEach(chartTask -> {
+
+            chartTask.setUpdateOSC(true);
+
             timer = new Timer();
-            if(e.getClass().isAssignableFrom(DelayChartTask.class)){
-                timer.schedule(e, DELAY, DELAY_CHART_PERIOD);
-            }
-            else{ timer.schedule(e, DELAY, PERIOD); }
+
+            if (chartTask.getClass().isAssignableFrom(DelayChartTask.class))
+                timer.schedule(chartTask, DELAY, DELAY_CHART_PERIOD);
+            else
+                timer.schedule(chartTask, DELAY, PERIOD);
+
             timersList.add(timer);
         });
 
         running = true;
         logger.debug("START timers");
+
     }
 
     public void stop() {
+
         if (running) {
-            timersList.forEach(e -> {
-                e.cancel();
-                e.purge();
+
+            timersList.forEach(timer -> {
+                timer.cancel();
+                timer.purge();
             });
+
             timersList.clear();
-            listOfCharts.forEach(e -> {
-                    e.setUpdateOSC(false);
-                    e.getData().clear();
+
+            listOfCharts.forEach(chartTask -> {
+                chartTask.setUpdateOSC(false);
+                chartTask.getData().clear();
             });
+
             running = false;
             logger.debug("STOP timers");
+
         }
+
     }
+
 }

@@ -1,7 +1,5 @@
 package fi.stardex.sisu.persistence.orm.cr.inj;
 
-import org.springframework.transaction.annotation.Transactional;
-
 import javax.persistence.*;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,4 +26,5 @@ public class InjectorType {
     public String toString() {
         return injectorType;
     }
+
 }

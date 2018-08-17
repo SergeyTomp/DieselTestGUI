@@ -12,6 +12,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 
 import javax.annotation.PostConstruct;
+import java.util.Arrays;
 
 public class FlowController {
 
@@ -50,7 +51,7 @@ public class FlowController {
 
     @FXML
     private ComboBox<String> backFlowComboBox;
-    
+
     @FXML
     private Label temperature1Delivery1;
 
@@ -147,6 +148,16 @@ public class FlowController {
     @FXML
     private BeakerController beakerBackFlow4Controller;
 
+    private static final int TEXT_FIELD_MAX_LENGTH = 7;
+
+    private double[] currentDeliveryFlowLevels;
+
+    private double[] currentBackFlowLevels;
+
+    private ObjectProperty<String> deliveryRangeLabelProperty = new SimpleObjectProperty<>();
+
+    private ObjectProperty<String> backFlowRangeLabelProperty = new SimpleObjectProperty<>();
+
     public Label getDeliveryRangeLabel() {
         return deliveryRangeLabel;
     }
@@ -154,10 +165,6 @@ public class FlowController {
     public Label getBackFlowRangeLabel() {
         return backFlowRangeLabel;
     }
-
-    private ObjectProperty<String> deliveryRangeLabelProperty = new SimpleObjectProperty<>();
-
-    private ObjectProperty<String> backFlowRangeLabelProperty = new SimpleObjectProperty<>();
 
     public ObjectProperty<String> deliveryRangeLabelPropertyProperty() {
         return deliveryRangeLabelProperty;
@@ -303,89 +310,28 @@ public class FlowController {
         return deliveryFlowComboBox;
     }
 
-    private static final int TEXT_FIELD_MAX_LENGTH = 7;
-
-    private double[] currentDeliveryFlowLevels;
-
-    private double[] currentBackFlowLevels;
-
     public double[] getCurrentDeliveryFlowLevels() {
         return currentDeliveryFlowLevels;
-    }
-
-    public void setCurrentDeliveryFlowLevels(double[] currentDeliveryFlowLevels) {
-        this.currentDeliveryFlowLevels = currentDeliveryFlowLevels;
     }
 
     public double[] getCurrentBackFlowLevels() {
         return currentBackFlowLevels;
     }
 
-    public void setCurrentBackFlowLevels(double[] currentBackFlowLevels) {
-        this.currentBackFlowLevels = currentBackFlowLevels;
+    public void setCurrentDeliveryFlowLevels(double[] currentDeliveryFlowLevels) {
+        this.currentDeliveryFlowLevels = currentDeliveryFlowLevels;
     }
 
-    public void changeFlow(TextField field, String value) {
-
-        if (field == delivery1TextField) {
-            if (!deliveryRangeLabel.getText().isEmpty())
-                beakerDelivery1Controller.changeFlow(value);
-            else
-                beakerDelivery1Controller.getTextField().setText(value);
-        }
-        else if (field == delivery2TextField) {
-            if (!deliveryRangeLabel.getText().isEmpty())
-                beakerDelivery2Controller.changeFlow(value);
-            else
-                beakerDelivery2Controller.getTextField().setText(value);
-        }
-        else if (field == delivery3TextField) {
-            if (!deliveryRangeLabel.getText().isEmpty())
-                beakerDelivery3Controller.changeFlow(value);
-            else
-                beakerDelivery3Controller.getTextField().setText(value);
-        }
-        else if (field == delivery4TextField) {
-            if (!deliveryRangeLabel.getText().isEmpty())
-                beakerDelivery4Controller.changeFlow(value);
-            else
-                beakerDelivery4Controller.getTextField().setText(value);
-        }
-        else if (field == backFlow1TextField) {
-            if (!backFlowRangeLabel.getText().isEmpty())
-                beakerBackFlow1Controller.changeFlow(value);
-            else
-                beakerBackFlow1Controller.getTextField().setText(value);
-        }
-        else if (field == backFlow2TextField) {
-            if (!backFlowRangeLabel.getText().isEmpty())
-                beakerBackFlow2Controller.changeFlow(value);
-            else
-                beakerBackFlow2Controller.getTextField().setText(value);
-        }
-        else if (field == backFlow3TextField) {
-            if (!backFlowRangeLabel.getText().isEmpty())
-                beakerBackFlow3Controller.changeFlow(value);
-            else
-                beakerBackFlow3Controller.getTextField().setText(value);
-        }
-        else if (field == backFlow4TextField) {
-            if (!backFlowRangeLabel.getText().isEmpty())
-                beakerBackFlow4Controller.changeFlow(value);
-            else
-                beakerBackFlow4Controller.getTextField().setText(value);
-        }
-
+    public void setCurrentBackFlowLevels(double[] currentBackFlowLevels) {
+        this.currentBackFlowLevels = currentBackFlowLevels;
     }
 
     @PostConstruct
     private void init() {
 
-        deliveryRangeLabelProperty.bind(deliveryRangeLabel.textProperty());
+        bindProperties();
 
-        backFlowRangeLabelProperty.bind(backFlowRangeLabel.textProperty());
-
-        setupDeliveryAndBackFlowComboBox();
+        Arrays.asList(deliveryFlowComboBox, backFlowComboBox).forEach(this::setupComboBox);
 
         blockTextInputToDeliveryBackFlowTextFields(delivery1TextField);
         blockTextInputToDeliveryBackFlowTextFields(delivery2TextField);
@@ -398,20 +344,27 @@ public class FlowController {
 
     }
 
-    private void setupDeliveryAndBackFlowComboBox() {
+    private void setupComboBox(ComboBox<String> comboBox) {
 
-        deliveryFlowComboBox.getItems().setAll(FlowUnits.getMapOfFlowUnits().keySet());
-        deliveryFlowComboBox.getSelectionModel().selectFirst();
+        comboBox.getItems().setAll(FlowUnits.getMapOfFlowUnits().keySet());
+        comboBox.getSelectionModel().selectFirst();
 
-        backFlowComboBox.getItems().setAll(FlowUnits.getMapOfFlowUnits().keySet());
-        backFlowComboBox.getSelectionModel().selectFirst();
+    }
+
+    private void bindProperties() {
+
+        deliveryRangeLabelProperty.bind(deliveryRangeLabel.textProperty());
+
+        backFlowRangeLabelProperty.bind(backFlowRangeLabel.textProperty());
 
     }
 
     private void blockTextInputToDeliveryBackFlowTextFields(TextField field) {
 
         field.addEventFilter(KeyEvent.KEY_TYPED, e -> {
+
             TextField txt_TextField = (TextField) e.getSource();
+
             if (txt_TextField != null && txt_TextField.getText() != null) {
                 if (txt_TextField.getText().length() >= TEXT_FIELD_MAX_LENGTH) {
                     e.consume();
@@ -428,6 +381,36 @@ public class FlowController {
             }
 
         });
+
+    }
+
+    public void changeFlow(TextField field, String value) {
+
+        if (field == delivery1TextField)
+            changeFlow(deliveryRangeLabel, beakerDelivery1Controller, value);
+        else if (field == delivery2TextField)
+            changeFlow(deliveryRangeLabel, beakerDelivery2Controller, value);
+        else if (field == delivery3TextField)
+            changeFlow(deliveryRangeLabel, beakerDelivery3Controller, value);
+        else if (field == delivery4TextField)
+            changeFlow(deliveryRangeLabel, beakerDelivery4Controller, value);
+        else if (field == backFlow1TextField)
+            changeFlow(backFlowRangeLabel, beakerBackFlow1Controller, value);
+        else if (field == backFlow2TextField)
+            changeFlow(backFlowRangeLabel, beakerBackFlow2Controller, value);
+        else if (field == backFlow3TextField)
+            changeFlow(backFlowRangeLabel, beakerBackFlow3Controller, value);
+        else if (field == backFlow4TextField)
+            changeFlow(backFlowRangeLabel, beakerBackFlow4Controller, value);
+
+    }
+
+    private void changeFlow(Label rangeLabel, BeakerController beakerController, String value) {
+
+        if (!rangeLabel.getText().isEmpty())
+            beakerController.changeFlow(value);
+        else
+            beakerController.getTextField().setText(value);
 
     }
 

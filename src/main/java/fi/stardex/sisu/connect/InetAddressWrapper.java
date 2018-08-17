@@ -14,4 +14,5 @@ public class InetAddressWrapper {
     public InetAddress byName(String ipAddressLine) throws UnknownHostException {
         return InetAddress.getByName(ipAddressLine);
     }
+
 }

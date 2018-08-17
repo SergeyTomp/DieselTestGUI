@@ -27,6 +27,38 @@ import java.util.List;
 
 public class BeakerController {
 
+    @FXML private AnchorPane beakerPane;
+
+    @FXML private Ellipse ellipseTopFuel;
+
+    @FXML private Ellipse ellipseBottomFuel;
+
+    @FXML private Arc arcTickTop;
+
+    @FXML private Arc arcTickBottom;
+
+    @FXML private Text textTop;
+
+    @FXML private Text textBottom;
+
+    @FXML private Rectangle rectangleBeaker;
+
+    @FXML private Rectangle rectangleFuel;
+
+    @FXML private Ellipse ellipseBottomBeaker;
+
+    @FXML private Ellipse ellipseTopBeaker;
+
+    @FXML private ImageView imageViewCenter;
+
+    @FXML private ImageView imageViewTop;
+
+    @FXML private ImageView imageViewBottom;
+
+    @FXML private Line lineLeft;
+
+    @FXML private Line lineRight;
+
     private static final Logger logger = LoggerFactory.getLogger(BeakerController.class);
 
     private static final int ELLIPSE_TOP_FUEL_DEVIATION = 8;
@@ -41,13 +73,7 @@ public class BeakerController {
 
     private static final String REGEX = "[0-9.]*[^.]";
 
-    private static List<BeakerController> beakerControllers = new ArrayList<>();
-
     private LedController ledBeakerController;
-
-    public static List<BeakerController> getBeakerControllers() {
-        return beakerControllers;
-    }
 
     private TextField textField;
 
@@ -66,39 +92,6 @@ public class BeakerController {
     private Label deliveryRangeLabel;
 
     private Label backFlowRangeLabel;
-
-    @FXML
-    private AnchorPane beakerPane;
-    @FXML
-    private Ellipse ellipseTopFuel;
-    @FXML
-    private Ellipse ellipseBottomFuel;
-    @FXML
-    private Arc arcTickTop;
-    @FXML
-    private Arc arcTickBottom;
-    @FXML
-    private Text textTop;
-    @FXML
-    private Text textBottom;
-    @FXML
-    private Rectangle rectangleBeaker;
-    @FXML
-    private Rectangle rectangleFuel;
-    @FXML
-    private Ellipse ellipseBottomBeaker;
-    @FXML
-    private Ellipse ellipseTopBeaker;
-    @FXML
-    private ImageView imageViewCenter;
-    @FXML
-    private ImageView imageViewTop;
-    @FXML
-    private ImageView imageViewBottom;
-    @FXML
-    private Line lineLeft;
-    @FXML
-    private Line lineRight;
 
     public TextField getTextField() {
         return textField;
@@ -142,8 +135,6 @@ public class BeakerController {
 
     @PostConstruct
     public void init() {
-
-        beakerControllers.add(this);
 
         setupRescaler();
 
@@ -378,6 +369,7 @@ public class BeakerController {
     }
 
     private void makeEmpty() {
+
         arcTickTop.setOpacity(0);
         arcTickBottom.setOpacity(0);
         ellipseBottomFuel.setOpacity(0);
@@ -386,13 +378,16 @@ public class BeakerController {
         textBottom.setText("");
         rectangleFuel.setHeight(0);
         rectangleFuel.setOpacity(0);
+
     }
 
     private void makeLevelEmpty() {
+
         ellipseBottomFuel.setOpacity(0);
         ellipseTopFuel.setOpacity(0);
         rectangleFuel.setHeight(0);
         rectangleFuel.setOpacity(0);
+
     }
 
     private void setLevel(double level) {
@@ -403,24 +398,33 @@ public class BeakerController {
         ellipseTopFuel.setOpacity(opacityByLevel(level));
 
         setHalfFuelLevel(level);
+
     }
 
     private void setHalfFuelLevel(double level) {
+
         rectangleFuel.setHeight(level);
         AnchorPane.setBottomAnchor(ellipseTopFuel, level - ELLIPSE_TOP_FUEL_DEVIATION);
+
     }
 
 
     private double opacityByLevel(double level) {
+
         return level == 0 ? 0 : 1;
+
     }
 
     private void setBiggerArc(Arc arc, double value) {
+
         AnchorPane.setBottomAnchor(arc, rectangleBeaker.getHeight() * value - ARC_DEVIATION);
+
     }
 
     private void setLowerArc(Arc arc, double value) {
+
         AnchorPane.setBottomAnchor(arc, rectangleBeaker.getHeight() * value - ARC_DEVIATION);
+
     }
 
 }

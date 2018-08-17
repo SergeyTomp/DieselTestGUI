@@ -7,6 +7,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public class ConnectProcessor {
+
     private static final int THREAD_POOL_COUNT = 3;
 
     private final ExecutorService executorService = Executors.newFixedThreadPool(THREAD_POOL_COUNT);
@@ -19,4 +20,5 @@ public class ConnectProcessor {
     public void shutDown() {
         executorService.shutdown();
     }
+
 }

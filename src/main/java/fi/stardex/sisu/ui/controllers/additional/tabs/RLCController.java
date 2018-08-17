@@ -22,11 +22,6 @@ import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * @author edik
- * @version 0.1
- * @since 12.08.16
- */
 public class RLCController {
     private static final Logger logger = LoggerFactory.getLogger(RLCController.class);
 

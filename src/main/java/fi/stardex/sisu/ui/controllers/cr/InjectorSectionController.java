@@ -6,7 +6,6 @@ import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.controllers.additional.LedController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.DelayController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
 import fi.stardex.sisu.util.spinners.SpinnerManager;
 import fi.stardex.sisu.util.spinners.SpinnerValueObtainer;
 import fi.stardex.sisu.util.tooltips.CustomTooltip;
@@ -27,10 +26,6 @@ import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.*;
 import static fi.stardex.sisu.util.SpinnerDefaults.*;
 
 public class InjectorSectionController {
-
-    private Logger logger = LoggerFactory.getLogger(InjectorSectionController.class);
-
-    private TimerTasksManager timerTasksManager;
 
     @FXML
     private Spinner<Integer> widthCurrentSignal;
@@ -71,9 +66,13 @@ public class InjectorSectionController {
     @FXML
     private LedController ledBeaker4Controller;
 
-    private SettingsController settingsController;
+    private Logger logger = LoggerFactory.getLogger(InjectorSectionController.class);
 
-    private  DelayController delayController;
+    private TimerTasksManager timerTasksManager;
+
+    private ComboBox<InjectorChannel> injectorsConfigComboBox;
+
+    private DelayController delayController;
 
     private ModbusRegisterProcessor ultimaModbusWriter;
 
@@ -131,8 +130,8 @@ public class InjectorSectionController {
         return powerSwitch;
     }
 
-    public void setSettingsController(SettingsController settingsController) {
-        this.settingsController = settingsController;
+    public void setInjectorsConfigComboBox(ComboBox<InjectorChannel> injectorsConfigComboBox) {
+        this.injectorsConfigComboBox = injectorsConfigComboBox;
     }
 
     public void setUltimaModbusWriter(ModbusRegisterProcessor ultimaModbusWriter) {
@@ -141,6 +140,10 @@ public class InjectorSectionController {
 
     public void setTimerTasksManager(TimerTasksManager timerTasksManager) {
         this.timerTasksManager = timerTasksManager;
+    }
+
+    public void setDelayController(DelayController delayController) {
+        this.delayController = delayController;
     }
 
     public synchronized List<LedController> getActiveControllers() {
@@ -161,6 +164,20 @@ public class InjectorSectionController {
     @PostConstruct
     private void init() {
 
+        setupLedControllers();
+
+        setupInjectorConfigComboBox();
+
+        setupSpinners();
+
+        ledParametersChangeListener = new LedParametersChangeListener();
+
+        new PowerButtonChangeListener();
+
+    }
+
+    private void setupLedControllers() {
+
         ledBeaker1Controller.setNumber(1);
         ledBeaker2Controller.setNumber(2);
         ledBeaker3Controller.setNumber(3);
@@ -173,46 +190,38 @@ public class InjectorSectionController {
         ledControllers.add(ledBeaker3Controller);
         ledControllers.add(ledBeaker4Controller);
 
-        setupInjectorConfigComboBox();
-
-        widthCurrentSignal.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(WIDTH_CURRENT_SIGNAL_SPINNER_MIN,
-                                                                                                WIDTH_CURRENT_SIGNAL_SPINNER_MAX,
-                                                                                                WIDTH_CURRENT_SIGNAL_SPINNER_INIT,
-                                                                                                WIDTH_CURRENT_SIGNAL_SPINNER_STEP));
-
-        freqCurrentSignal.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(FREQ_CURRENT_SIGNAL_MIN,
-                                                                                            FREQ_CURRENT_SIGNAL_MAX,
-                                                                                            FREQ_CURRENT_SIGNAL_INIT,
-                                                                                            FREQ_CURRENT_SIGNAL_STEP));
-
-        SpinnerManager.setupSpinner(freqCurrentSignal,
-                                    FREQ_CURRENT_SIGNAL_INIT,
-                                    FREQ_CURRENT_SIGNAL_FAKE,
-                                    new CustomTooltip(),
-                                    new SpinnerValueObtainer(FREQ_CURRENT_SIGNAL_INIT));
-
-        ledParametersChangeListener = new LedParametersChangeListener();
-
-        new PowerButtonChangeListener();
-
-
-
     }
 
     private void setupInjectorConfigComboBox() {
 
-        setToggleGroupToLeds(settingsController.getInjectorsConfigComboBox().getSelectionModel().getSelectedItem() == InjectorChannel.SINGLE_CHANNEL ? toggleGroup : null);
+        setToggleGroupToLeds(injectorsConfigComboBox.getSelectionModel().getSelectedItem() == InjectorChannel.SINGLE_CHANNEL ? toggleGroup : null);
 
-        settingsController.getInjectorsConfigComboBox().getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
+        injectorsConfigComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
                 setToggleGroupToLeds(newValue == InjectorChannel.SINGLE_CHANNEL ? toggleGroup : null));
+    }
+
+    private void setupSpinners() {
+
+        widthCurrentSignal.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(WIDTH_CURRENT_SIGNAL_SPINNER_MIN,
+                WIDTH_CURRENT_SIGNAL_SPINNER_MAX,
+                WIDTH_CURRENT_SIGNAL_SPINNER_INIT,
+                WIDTH_CURRENT_SIGNAL_SPINNER_STEP));
+
+        freqCurrentSignal.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(FREQ_CURRENT_SIGNAL_MIN,
+                FREQ_CURRENT_SIGNAL_MAX,
+                FREQ_CURRENT_SIGNAL_INIT,
+                FREQ_CURRENT_SIGNAL_STEP));
+
+        SpinnerManager.setupSpinner(freqCurrentSignal,
+                FREQ_CURRENT_SIGNAL_INIT,
+                FREQ_CURRENT_SIGNAL_FAKE,
+                new CustomTooltip(),
+                new SpinnerValueObtainer(FREQ_CURRENT_SIGNAL_INIT));
+
     }
 
     private void setToggleGroupToLeds(ToggleGroup toggleGroup) {
         ledControllers.forEach(s -> s.getLedBeaker().setToggleGroup(toggleGroup));
-    }
-
-    public void setDelayController(DelayController delayController) {
-        this.delayController = delayController;
     }
 
     private class LedParametersChangeListener implements ChangeListener<Object> {
@@ -225,40 +234,48 @@ public class InjectorSectionController {
 
         private List<ModbusMapUltima> slotPulsesList = getSlotPulsesList();
 
-        private static final int OFF_COMMAND_NUMBER = 255;
-
-        private static final int OFF_COMMAND_NUMBER_PULSE_TIME = 65535;
-
         LedParametersChangeListener() {
+
             injectorTypeProperty = piezoCoilToggleGroup.selectedToggleProperty();
-            injectorChannelProperty = settingsController.getInjectorsConfigComboBox().getSelectionModel().selectedItemProperty();
+            injectorChannelProperty = injectorsConfigComboBox.getSelectionModel().selectedItemProperty();
             freqCurrentSignal.valueProperty().addListener(this);
             injectorTypeProperty.addListener(this);
             ledControllers.forEach(s -> s.getLedBeaker().selectedProperty().addListener(this));
+
         }
 
         @Override
         public void changed(ObservableValue<?> observable, Object oldValue, Object newValue) {
+
             switchOffAll();
+
             if (newValue instanceof Double) {
-                if (((Double) newValue <= 50 && (Double) newValue >= 0.5) && (Double) newValue != FREQ_CURRENT_SIGNAL_FAKE) {
+                if (isValid((Double) newValue))
                     sendLedRegisters();
-                }
             } else if (newValue instanceof Toggle) {
                 if (newValue == piezoDelphiRadioButton) {
                     disableLedsExceptFirst(true);
-                    settingsController.getInjectorsConfigComboBox().getSelectionModel().select(InjectorChannel.SINGLE_CHANNEL);
+                    injectorsConfigComboBox.getSelectionModel().select(InjectorChannel.SINGLE_CHANNEL);
                     ledBeaker1Controller.getLedBeaker().setSelected(true);
                 } else {
                     disableLedsExceptFirst(false);
                     sendLedRegisters();
                 }
             } else if (newValue instanceof Boolean) {
-                if ((((Boolean) newValue) && (injectorChannelProperty.get() == InjectorChannel.SINGLE_CHANNEL || injectorTypeProperty.get() == piezoDelphiRadioButton))
-                        || (injectorChannelProperty.get() == InjectorChannel.MULTI_CHANNEL))
+                if (isValid((Boolean) newValue))
                     sendLedRegisters();
             } else
                 throw new RuntimeException("Wrong listener type!");
+
+        }
+
+        private boolean isValid(Double newValue) {
+            return (newValue <= 50 && newValue >= 0.5) && newValue != FREQ_CURRENT_SIGNAL_FAKE;
+        }
+
+        private boolean isValid(Boolean newValue) {
+            return (newValue && (injectorChannelProperty.get() == InjectorChannel.SINGLE_CHANNEL || injectorTypeProperty.get() == piezoDelphiRadioButton))
+                    || (injectorChannelProperty.get() == InjectorChannel.MULTI_CHANNEL);
         }
 
         private void sendLedRegisters() {
@@ -266,32 +283,45 @@ public class InjectorSectionController {
             writeInjectorTypeRegister();
 
             List<LedController> activeControllers = getActiveControllers();
+
             Iterator<LedController> activeControllersIterator = activeControllers.iterator();
+
             int activeLeds = activeControllers.size();
+
             delayController.showAttentionLabel(activeLeds > 1);
 
             double frequency = freqCurrentSignal.getValue();
+
             ultimaModbusWriter.add(GImpulsesPeriod, 1000 / frequency);
-            if (activeLeds == 0) {
+
+            if (activeLeds == 0)
                 return;
-            }
+
             int step = (int) Math.round(1000 / (frequency * activeLeds));
+
             int impulseTime = 0;
+
             while (activeControllersIterator.hasNext()) {
+
                 int selectedChannel = activeControllersIterator.next().getNumber();
                 int injectorChannel = injectorChannelProperty.get() == InjectorChannel.SINGLE_CHANNEL ? 1 : selectedChannel;
                 ultimaModbusWriter.add(slotNumbersList.get(selectedChannel - 1), injectorChannel);
                 ultimaModbusWriter.add(slotPulsesList.get(selectedChannel - 1), impulseTime);
                 impulseTime += step;
+
             }
+
         }
 
         private void switchOffAll() {
-            slotNumbersList.forEach((s) -> ultimaModbusWriter.add(s, OFF_COMMAND_NUMBER));
-            slotPulsesList.forEach((s) -> ultimaModbusWriter.add(s, OFF_COMMAND_NUMBER_PULSE_TIME));
+
+            slotNumbersList.forEach((s) -> ultimaModbusWriter.add(s, 255));
+            slotPulsesList.forEach((s) -> ultimaModbusWriter.add(s, 65535));
+
         }
 
         private void writeInjectorTypeRegister() {
+
             if (Objects.equals(coilRadioButton, injectorTypeProperty.get()))
                 ultimaModbusWriter.add(Injector_type, 0);
             else if (Objects.equals(piezoRadioButton, injectorTypeProperty.get()))
@@ -300,13 +330,17 @@ public class InjectorSectionController {
                 ultimaModbusWriter.add(Injector_type, 2);
             else
                 throw new AssertionError("Coil or piezo buttons have not been changeFlow.");
+
         }
 
         private void disableLedsExceptFirst(boolean disable) {
+
             ledControllers.get(1).setDisable(disable);
             ledControllers.get(2).setDisable(disable);
             ledControllers.get(3).setDisable(disable);
+
         }
+
     }
 
     private class PowerButtonChangeListener implements ChangeListener<Boolean> {
@@ -317,22 +351,29 @@ public class InjectorSectionController {
 
         @Override
         public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+
             if (newValue) {
+
                 ultimaModbusWriter.add(Injectors_Running_En, true);
                 ledParametersChangeListener.sendLedRegisters();
                 // FIXME: throws NPE if there is no connection
                 // при коннекте должен строиться хотя бы нулевой график
                 timerTasksManager.start();
                 disableInjectorSectionLedsAndToggleGroup(true);
+
             } else {
+
                 ultimaModbusWriter.add(Injectors_Running_En, false);
                 ledParametersChangeListener.switchOffAll();
                 timerTasksManager.stop();
                 disableInjectorSectionLedsAndToggleGroup(false);
+
             }
+
         }
 
         private void disableInjectorSectionLedsAndToggleGroup(boolean disabled) {
+
             coilRadioButton.setDisable(disabled);
             piezoRadioButton.setDisable(disabled);
             piezoDelphiRadioButton.setDisable(disabled);
@@ -340,6 +381,9 @@ public class InjectorSectionController {
             ledBeaker2Controller.getLedBeaker().setDisable(disabled);
             ledBeaker3Controller.getLedBeaker().setDisable(disabled);
             ledBeaker4Controller.getLedBeaker().setDisable(disabled);
+
         }
+
     }
+
 }

@@ -281,7 +281,6 @@ public class MainSectionController {
         initModelContextMenu();
         initTestContextMenu();
 
-
         manufacturerListView.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) -> {
             currentManufacturerObtainer.setCurrentManufacturer(newValue);
 
@@ -294,10 +293,7 @@ public class MainSectionController {
 
             switch (GUIType.getCurrentType()) {
                 case CR_Inj:
-                    List<Injector> modelsByManufacturers = injectorsRepository.findByManufacturerAndIsCustom(newValue, customRB.isSelected());
-                    ObservableList<Model> injectors = FXCollections.observableArrayList(modelsByManufacturers);
-                    filteredModelList = new FilteredList<>(injectors, model -> true);
-                    modelListView.setItems(filteredModelList);
+                    setFilteredItems(newValue);
                     break;
                 case CR_Pump:
                     //TODO
@@ -328,7 +324,7 @@ public class MainSectionController {
             if (selectedItem == null)
                 return;
 
-            modelListView.getItems().setAll(injectorsRepository.findByManufacturerAndIsCustom(selectedItem, customRB.isSelected()));
+            setFilteredItems(selectedItem);
 
         }));
 
@@ -436,6 +432,15 @@ public class MainSectionController {
             enabler.selectTest();
 
         });
+
+    }
+
+    private void setFilteredItems(Manufacturer manufacturer) {
+
+        List<Injector> modelsByManufacturers = injectorsRepository.findByManufacturerAndIsCustom(manufacturer, customRB.isSelected());
+        ObservableList<Model> injectors = FXCollections.observableArrayList(modelsByManufacturers);
+        filteredModelList = new FilteredList<>(injectors, model -> true);
+        modelListView.setItems(filteredModelList);
 
     }
 

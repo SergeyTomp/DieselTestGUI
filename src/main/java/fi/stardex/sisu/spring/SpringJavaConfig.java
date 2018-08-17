@@ -1,10 +1,7 @@
 package fi.stardex.sisu.spring;
 
 import fi.stardex.sisu.annotations.Module;
-import fi.stardex.sisu.charts.ChartTaskFour;
-import fi.stardex.sisu.charts.ChartTaskOne;
-import fi.stardex.sisu.charts.ChartTaskThree;
-import fi.stardex.sisu.charts.ChartTaskTwo;
+import fi.stardex.sisu.charts.*;
 import fi.stardex.sisu.connect.ConnectProcessor;
 import fi.stardex.sisu.connect.InetAddressWrapper;
 import fi.stardex.sisu.connect.ModbusConnect;
@@ -24,10 +21,7 @@ import fi.stardex.sisu.registers.stand.ModbusMapStand;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.Enabler;
-import fi.stardex.sisu.ui.controllers.additional.tabs.ConnectionController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.*;
 import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.cr.TestBenchSectionController;

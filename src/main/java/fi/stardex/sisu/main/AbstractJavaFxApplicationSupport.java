@@ -30,8 +30,8 @@ public abstract class AbstractJavaFxApplicationSupport extends Application {
         context.close();
     }
 
-    protected static void launchApp(Class<? extends AbstractJavaFxApplicationSupport> appClass, String[] args) {
+    protected static void launchApp(String[] args) {
         savedArgs = args;
-        LauncherImpl.launchApplication(appClass, args);
+        LauncherImpl.launchApplication(SisuApplication.class, args);
     }
 }

@@ -12,5 +12,4 @@ public class UltimaFirmwareVersion<T extends Versions> extends FirmwareVersion<T
 
     }
 
-
 }

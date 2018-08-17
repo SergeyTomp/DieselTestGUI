@@ -9,68 +9,48 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 
-
 public class AdditionalSectionController {
-    @FXML
-    private Tab tabDelay;
 
-    @FXML
-    private Tab tabVoltage;
+    @FXML private Tab tabDelay;
 
-    @FXML
-    private Tab tabRLC;
+    @FXML private Tab tabVoltage;
 
-    @FXML
-    private TabPane tabPane;
+    @FXML private Tab tabRLC;
 
-    @FXML
-    private StackPane connection;
+    @FXML private TabPane tabPane;
 
-    @FXML
-    private StackPane voltage;
+    @FXML private StackPane connection;
 
-    @FXML
-    private GridPane delay;
+    @FXML private StackPane voltage;
 
-    @FXML
-    private AnchorPane flow;
+    @FXML private GridPane delay;
 
-    @FXML
-    private GridPane coding;
+    @FXML private AnchorPane flow;
 
-    @FXML
-    private GridPane settings;
+    @FXML private GridPane coding;
 
-    @FXML
-    private GridPane rlc;
+    @FXML private GridPane settings;
 
-    @FXML
-    private ConnectionController connectionController;
+    @FXML private GridPane rlc;
 
-    @FXML
-    private VoltageController voltageController;
+    @FXML private ConnectionController connectionController;
 
-    @FXML
-    private DelayController delayController;
+    @FXML private VoltageController voltageController;
 
-    @FXML
-    private SettingsController settingsController;
+    @FXML private DelayController delayController;
 
-    @FXML
-    private FlowController flowController;
+    @FXML private SettingsController settingsController;
 
-    @FXML
-    private RLCController rlcController;
+    @FXML private FlowController flowController;
 
-    @FXML
-    private Spinner<Double> sensitivitySpinner;
+    @FXML private RLCController rlcController;
 
-
-
+    @FXML private Spinner<Double> sensitivitySpinner;
 
     public RLCController getRlCController() {
         return rlcController;
     }
+
     public FlowController getFlowController() {
         return flowController;
     }
@@ -98,4 +78,5 @@ public class AdditionalSectionController {
     public Tab getTabDelay() {
         return tabDelay;
     }
+
 }

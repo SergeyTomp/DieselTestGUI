@@ -4,11 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Created
- * by eduard
- * on 28.12.16.
- */
 public class MeasurementResult {
 
     private String parameterName = null;

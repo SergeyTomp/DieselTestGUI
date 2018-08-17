@@ -157,7 +157,7 @@ public class JavaFXSpringConfigure {
                                                                @Lazy ModbusRegisterProcessor ultimaModbusWriter,
                                                                TimerTasksManager timerTasksManager, DelayController delayController) {
         InjectorSectionController injectorSectionController = crSectionController().getInjectorSectionController();
-        injectorSectionController.setSettingsController(settingsController);
+        injectorSectionController.setInjectorsConfigComboBox(settingsController.getInjectorsConfigComboBox());
         injectorSectionController.setUltimaModbusWriter(ultimaModbusWriter);
         injectorSectionController.setTimerTasksManager(timerTasksManager);
         injectorSectionController.setDelayController(delayController);
@@ -325,7 +325,8 @@ public class JavaFXSpringConfigure {
 
     @Bean
     @Autowired
-    public VoltageController voltageController(AdditionalSectionController additionalSectionController, DataConverter dataConverter, InjectorSectionController injectorSectionController) {
+    public VoltageController voltageController(AdditionalSectionController additionalSectionController,
+                                               DataConverter dataConverter, InjectorSectionController injectorSectionController) {
         VoltageController voltageController = additionalSectionController.getVoltageController();
         voltageController.setVoltAmpereProfileDialog(voltAmpereProfileDialog());
         voltageController.setParentController(additionalSectionController);
@@ -457,18 +458,6 @@ public class JavaFXSpringConfigure {
         return newEditTestDialogController;
     }
 
-    private ViewHolder loadView(String url) {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(url), ResourceBundle.getBundle("properties.labels", i18N.getLocale(), utf8Control));
-        ViewHolder viewHolder = new ViewHolder();
-        try {
-            viewHolder.setView(fxmlLoader.load());
-        } catch (IOException e) {
-            logger.error("Exception while load view {}", url, e);
-        }
-        viewHolder.setController(fxmlLoader.getController());
-        return viewHolder;
-    }
-
     @Bean
     @Autowired
     public RLCController rlcController(InjectorSectionController injectorSectionController,
@@ -486,4 +475,18 @@ public class JavaFXSpringConfigure {
         return RLCController;
 
     }
+
+    private ViewHolder loadView(String url) {
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(url),
+                ResourceBundle.getBundle("properties.labels", i18N.getLocale(), utf8Control));
+        ViewHolder viewHolder = new ViewHolder();
+        try {
+            viewHolder.setView(fxmlLoader.load());
+        } catch (IOException e) {
+            logger.error("Exception while load view {}", url, e);
+        }
+        viewHolder.setController(fxmlLoader.getController());
+        return viewHolder;
+    }
+
 }

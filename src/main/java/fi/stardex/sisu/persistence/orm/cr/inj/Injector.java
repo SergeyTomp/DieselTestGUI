@@ -71,10 +71,6 @@ public class Injector implements Model {
         return injectorCode;
     }
 
-    public void setInjectorCode(String injectorCode) {
-        this.injectorCode = injectorCode;
-    }
-
     public Manufacturer getManufacturer() {
         return manufacturer;
     }
@@ -87,40 +83,20 @@ public class Injector implements Model {
         return codetype;
     }
 
-    public void setCodetype(String codetype) {
-        this.codetype = codetype;
-    }
-
     public String getCalibrationId() {
         return calibrationId;
-    }
-
-    public void setCalibrationId(String calibrationId) {
-        this.calibrationId = calibrationId;
     }
 
     public Integer getChecksumM() {
         return checksumM;
     }
 
-    public void setChecksumM(Integer checksumM) {
-        this.checksumM = checksumM;
-    }
-
     public Integer getkCoefficient() {
         return kCoefficient;
     }
 
-    public void setkCoefficient(Integer kCoefficient) {
-        this.kCoefficient = kCoefficient;
-    }
-
     public Boolean isCustom() {
         return isCustom;
-    }
-
-    public void setCustom(Boolean custom) {
-        isCustom = custom;
     }
 
     public VoltAmpereProfile getVoltAmpereProfile() {
@@ -131,16 +107,9 @@ public class Injector implements Model {
         this.voltAmpereProfile = voltAmpereProfile;
     }
 
-    public List<InjectorTest> getInjectorTests() {
-        return injectorTests;
-    }
-
-    public void setInjectorTests(List<InjectorTest> injectorTests) {
-        this.injectorTests = injectorTests;
-    }
-
     @Override
     public String toString() {
         return injectorCode;
     }
+
 }
