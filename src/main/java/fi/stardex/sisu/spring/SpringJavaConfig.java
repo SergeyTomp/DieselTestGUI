@@ -1,7 +1,10 @@
 package fi.stardex.sisu.spring;
 
 import fi.stardex.sisu.annotations.Module;
-import fi.stardex.sisu.charts.*;
+import fi.stardex.sisu.charts.ChartTaskFour;
+import fi.stardex.sisu.charts.ChartTaskOne;
+import fi.stardex.sisu.charts.ChartTaskThree;
+import fi.stardex.sisu.charts.ChartTaskTwo;
 import fi.stardex.sisu.connect.ConnectProcessor;
 import fi.stardex.sisu.connect.InetAddressWrapper;
 import fi.stardex.sisu.connect.ModbusConnect;
@@ -21,13 +24,15 @@ import fi.stardex.sisu.registers.stand.ModbusMapStand;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.Enabler;
-import fi.stardex.sisu.ui.controllers.additional.tabs.*;
+import fi.stardex.sisu.ui.controllers.additional.tabs.ConnectionController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
 import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.cr.TestBenchSectionController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
 import fi.stardex.sisu.ui.updaters.*;
-import fi.stardex.sisu.util.ApplicationConfigHandler;
 import fi.stardex.sisu.util.DelayCalculator;
 import fi.stardex.sisu.util.VisualUtils;
 import fi.stardex.sisu.util.converters.DataConverter;
@@ -62,6 +67,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.prefs.Preferences;
 
 import static fi.stardex.sisu.registers.stand.ModbusMapStand.*;
 import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.FirmwareVersion;
@@ -116,14 +122,14 @@ public class SpringJavaConfig {
     }
 
     @Bean
-    public ApplicationConfigHandler applicationConfigHandler() {
-        return new ApplicationConfigHandler();
+    @Autowired
+    public I18N i18N(Preferences rootPrefs) {
+        return new I18N(rootPrefs);
     }
 
     @Bean
-    @Autowired
-    public I18N i18N(ApplicationConfigHandler applicationConfigHandler) {
-        return new I18N(applicationConfigHandler);
+    public Preferences rootPrefs() {
+        return Preferences.userRoot();
     }
 
     @Bean

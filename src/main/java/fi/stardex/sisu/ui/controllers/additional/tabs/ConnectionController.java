@@ -1,6 +1,5 @@
 package fi.stardex.sisu.ui.controllers.additional.tabs;
 
-import fi.stardex.sisu.util.ApplicationConfigHandler;
 import fi.stardex.sisu.util.Pair;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -9,6 +8,7 @@ import javafx.scene.control.TextFormatter;
 
 import javax.annotation.PostConstruct;
 import java.util.function.UnaryOperator;
+import java.util.prefs.Preferences;
 
 public class ConnectionController {
 
@@ -26,6 +26,8 @@ public class ConnectionController {
 
     @FXML private Button acceptButton;
 
+    private Preferences prefs = Preferences.userNodeForPackage(this.getClass());
+
     private Pair<String, String> ultimaConnect = new Pair<>();
 
     private Pair<String, String> flowMeterConnect = new Pair<>();
@@ -34,18 +36,12 @@ public class ConnectionController {
 
     private final String ipRegex = makePartialIPRegex();
 
-    private ApplicationConfigHandler applicationConfigHandler;
-
     public TextField getStandIPField() {
         return standIPField;
     }
 
     public TextField getStandPortField() {
         return standPortField;
-    }
-
-    public void setApplicationConfigHandler(ApplicationConfigHandler applicationConfigHandler) {
-        this.applicationConfigHandler = applicationConfigHandler;
     }
 
     @PostConstruct
@@ -61,13 +57,7 @@ public class ConnectionController {
         flowMeterPortField.setTextFormatter(new TextFormatter<>(getFilter(portRegex)));
         standPortField.setTextFormatter(new TextFormatter<>(getFilter(portRegex)));
 
-        ultimaConnect.setKey(applicationConfigHandler.get("UltimaIP"));
-        flowMeterConnect.setKey(applicationConfigHandler.get("FlowIP"));
-        standConnect.setKey(applicationConfigHandler.get("StandIP"));
-
-        ultimaConnect.setValue(applicationConfigHandler.get("UltimaPort"));
-        flowMeterConnect.setValue(applicationConfigHandler.get("FlowPort"));
-        standConnect.setValue(applicationConfigHandler.get("StandPort"));
+        setPairValues();
 
         ultimaIPField.setText(ultimaConnect.getKey());
         flowMeterIPField.setText(flowMeterConnect.getKey());
@@ -78,22 +68,30 @@ public class ConnectionController {
         standPortField.setText(standConnect.getValue());
 
         acceptButton.setOnMouseClicked(event -> {
-            applicationConfigHandler.put("UltimaIP", ultimaIPField.getText());
-            applicationConfigHandler.put("FlowIP", flowMeterIPField.getText());
-            applicationConfigHandler.put("StandIP", standIPField.getText());
 
-            applicationConfigHandler.put("UltimaPort", ultimaPortField.getText());
-            applicationConfigHandler.put("FlowPort", flowMeterPortField.getText());
-            applicationConfigHandler.put("StandPort", standPortField.getText());
+            prefs.put("UltimaIP", ultimaIPField.getText());
+            prefs.put("FlowIP", flowMeterIPField.getText());
+            prefs.put("StandIP", standIPField.getText());
 
-            ultimaConnect.setKey(applicationConfigHandler.get("UltimaIP"));
-            flowMeterConnect.setKey(applicationConfigHandler.get("FlowIP"));
-            standConnect.setKey(applicationConfigHandler.get("StandIP"));
+            prefs.put("UltimaPort", ultimaPortField.getText());
+            prefs.put("FlowPort", flowMeterPortField.getText());
+            prefs.put("StandPort", standPortField.getText());
 
-            ultimaConnect.setValue(applicationConfigHandler.get("UltimaPort"));
-            flowMeterConnect.setValue(applicationConfigHandler.get("FlowPort"));
-            standConnect.setValue(applicationConfigHandler.get("StandPort"));
+            setPairValues();
+
         });
+    }
+
+    private void setPairValues() {
+
+        ultimaConnect.setKey(prefs.get("UltimaIP", "192.168.10.206"));
+        flowMeterConnect.setKey(prefs.get("FlowIP", "192.168.10.201"));
+        standConnect.setKey(prefs.get("StandIP", "192.168.10.202"));
+
+        ultimaConnect.setValue(prefs.get("UltimaPort", "502"));
+        flowMeterConnect.setValue(prefs.get("FlowPort", "502"));
+        standConnect.setValue(prefs.get("StandPort", "502"));
+
     }
 
     public Pair<String, String> getUltimaConnect() {

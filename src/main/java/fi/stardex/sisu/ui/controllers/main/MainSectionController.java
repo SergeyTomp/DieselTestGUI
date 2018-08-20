@@ -17,14 +17,12 @@ import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.dialogs.ManufacturerMenuDialogController;
 import fi.stardex.sisu.ui.controllers.dialogs.NewEditInjectorDialogController;
 import fi.stardex.sisu.ui.controllers.dialogs.NewEditTestDialogController;
-import fi.stardex.sisu.util.ApplicationConfigHandler;
 import fi.stardex.sisu.util.converters.DataConverter;
 import fi.stardex.sisu.util.enums.Tests;
 import fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer;
 import fi.stardex.sisu.util.obtainers.CurrentInjectorTestsObtainer;
 import fi.stardex.sisu.util.obtainers.CurrentManufacturerObtainer;
 import fi.stardex.sisu.util.view.ApplicationAppearanceChanger;
-import fi.stardex.sisu.util.view.GUIType;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -43,9 +41,9 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import javax.annotation.PostConstruct;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.prefs.Preferences;
 
 import static fi.stardex.sisu.util.enums.Tests.TestType.*;
 
@@ -71,14 +69,10 @@ public class MainSectionController {
 
     @FXML private RadioButton customRB;
 
-    @FXML private ComboBox<String> versionComboBox;
+    @FXML private ComboBox<GUIType> versionComboBox;
 
-    private List<String> versions = new LinkedList<>();
-
-    {
-        versions.add("CR Injectors");
-        versions.add("CR Pumps");
-        versions.add("UIS");
+    private enum GUIType {
+        CR_Inj, CR_Pump, UIS
     }
 
     @FXML private ListView<Manufacturer> manufacturerListView;
@@ -89,13 +83,13 @@ public class MainSectionController {
 
     @FXML private ListView<InjectorTest> testListView;
 
+    private Preferences prefs = Preferences.userNodeForPackage(this.getClass());
+
     private ModbusRegisterProcessor flowModbusWriter;
 
     private Enabler enabler;
 
     private CurrentManufacturerObtainer currentManufacturerObtainer;
-
-    private ApplicationConfigHandler applicationConfigHandler;
 
     private ApplicationAppearanceChanger applicationAppearanceChanger;
 
@@ -181,10 +175,6 @@ public class MainSectionController {
         this.currentManufacturerObtainer = currentManufacturerObtainer;
     }
 
-    public void setApplicationConfigHandler(ApplicationConfigHandler applicationConfigHandler) {
-        this.applicationConfigHandler = applicationConfigHandler;
-    }
-
     public void setApplicationAppearanceChanger(ApplicationAppearanceChanger applicationAppearanceChanger) {
         this.applicationAppearanceChanger = applicationAppearanceChanger;
     }
@@ -247,38 +237,12 @@ public class MainSectionController {
 
         setupResetButton();
 
-        versionComboBox.getItems().addAll(versions);
-
-        versionComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue == null)
-                return;
-
-            switch (newValue) {
-                case "UIS":
-                    applicationAppearanceChanger.changeToUIS();
-                    break;
-                case "CR Injectors":
-                    applicationAppearanceChanger.changeToCRInj();
-                    break;
-                case "CR Pumps":
-                    applicationAppearanceChanger.changeToCRPump();
-                    break;
-            }
-        });
-
-        switch (GUIType.getByString(applicationConfigHandler.get("GUI_Type"))) {
-            case UIS:
-                versionComboBox.getSelectionModel().select("UIS");
-                break;
-            case CR_Inj:
-                versionComboBox.getSelectionModel().select("CR Injectors");
-                break;
-            case CR_Pump:
-                versionComboBox.getSelectionModel().select("CR Pumps");
-        }
+        setupVersionComboBox();
 
         initManufacturerContextMenu();
+
         initModelContextMenu();
+
         initTestContextMenu();
 
         manufacturerListView.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) -> {
@@ -291,7 +255,7 @@ public class MainSectionController {
                 defaultRB.setDisable(false);
 
 
-            switch (GUIType.getCurrentType()) {
+            switch (versionComboBox.getSelectionModel().getSelectedItem()) {
                 case CR_Inj:
                     setFilteredItems(newValue);
                     break;
@@ -660,6 +624,36 @@ public class MainSectionController {
     private void setupResetButton() {
 
         resetButton.setOnAction(event -> flowModbusWriter.add(ModbusMapFlow.StartMeasurementCycle, true));
+
+    }
+
+    private void setupVersionComboBox() {
+
+        versionComboBox.getItems().addAll(GUIType.values());
+
+        versionComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == null)
+                return;
+
+            switch (newValue) {
+                case UIS:
+                    applicationAppearanceChanger.changeToUIS();
+                    break;
+                case CR_Inj:
+                    applicationAppearanceChanger.changeToCRInj();
+                    break;
+                case CR_Pump:
+                    applicationAppearanceChanger.changeToCRPump();
+                    break;
+            }
+
+            prefs.put("GUI_Type", newValue.name());
+
+        });
+
+        GUIType currentGUIType = GUIType.valueOf(prefs.get("GUI_Type", GUIType.CR_Inj.name()));
+
+        versionComboBox.getSelectionModel().select(currentGUIType);
 
     }
 }

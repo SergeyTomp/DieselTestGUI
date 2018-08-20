@@ -28,7 +28,6 @@ import fi.stardex.sisu.ui.controllers.dialogs.NewEditInjectorDialogController;
 import fi.stardex.sisu.ui.controllers.dialogs.NewEditTestDialogController;
 import fi.stardex.sisu.ui.controllers.dialogs.NewEditVOAPDialogController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
-import fi.stardex.sisu.util.ApplicationConfigHandler;
 import fi.stardex.sisu.util.DelayCalculator;
 import fi.stardex.sisu.util.converters.DataConverter;
 import fi.stardex.sisu.util.enums.BeakerType;
@@ -57,6 +56,7 @@ import org.springframework.context.annotation.Lazy;
 
 import java.io.IOException;
 import java.util.ResourceBundle;
+import java.util.prefs.Preferences;
 
 import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions;
 import static fi.stardex.sisu.version.StandFirmwareVersion.StandVersions;
@@ -70,7 +70,7 @@ public class JavaFXSpringConfigure {
 
     private final Logger logger = LoggerFactory.getLogger(JavaFXSpringConfigure.class);
 
-    public JavaFXSpringConfigure (I18N i18N) {
+    public JavaFXSpringConfigure(I18N i18N) {
         this.i18N = i18N;
         this.utf8Control = new UTF8Control();
     }
@@ -94,7 +94,6 @@ public class JavaFXSpringConfigure {
     @Autowired
     public MainSectionController mainSectionController(@Lazy Enabler enabler,
                                                        CurrentManufacturerObtainer currentManufacturerObtainer,
-                                                       ApplicationConfigHandler applicationConfigHandler,
                                                        ApplicationAppearanceChanger applicationAppearanceChanger,
                                                        VoltAmpereProfileController voltAmpereProfileController,
                                                        DataConverter dataConverter,
@@ -108,7 +107,6 @@ public class JavaFXSpringConfigure {
         MainSectionController mainSectionController = (MainSectionController) mainSection().getController();
         mainSectionController.setEnabler(enabler);
         mainSectionController.setCurrentManufacturerObtainer(currentManufacturerObtainer);
-        mainSectionController.setApplicationConfigHandler(applicationConfigHandler);
         mainSectionController.setApplicationAppearanceChanger(applicationAppearanceChanger);
         mainSectionController.setManufacturerMenuDialog(manufacturerMenuDialog());
         mainSectionController.setNewEditInjectorDialog(newEditInjectorDialog());
@@ -315,12 +313,8 @@ public class JavaFXSpringConfigure {
     }
 
     @Bean
-    @Autowired
-    public ConnectionController connectionController(AdditionalSectionController additionalSectionController,
-                                                     ApplicationConfigHandler applicationConfigHandler) {
-        ConnectionController connectionController = additionalSectionController.getConnectionController();
-        connectionController.setApplicationConfigHandler(applicationConfigHandler);
-        return connectionController;
+    public ConnectionController connectionController() {
+        return additionalSectionController().getConnectionController();
     }
 
     @Bean
@@ -347,9 +341,10 @@ public class JavaFXSpringConfigure {
 
     @Bean
     @Autowired
-    public SettingsController settingsController(AdditionalSectionController additionalSectionController) {
+    public SettingsController settingsController(AdditionalSectionController additionalSectionController, Preferences rootPrefs) {
         SettingsController settingsController = additionalSectionController.getSettingsController();
         settingsController.setI18N(i18N);
+        settingsController.setRootPrefs(rootPrefs);
         return settingsController;
     }
 
@@ -465,7 +460,7 @@ public class JavaFXSpringConfigure {
                                        ModbusRegisterProcessor ultimaModbusWriter,
                                        RegisterProvider ultimaRegisterProvider,
                                        CurrentInjectorObtainer currentInjectorObtainer,
-                                       AdditionalSectionController additionalSectionController){
+                                       AdditionalSectionController additionalSectionController) {
         RLCController RLCController = additionalSectionController.getRlCController();
         RLCController.setInjectorSectionController(injectorSectionController);
         RLCController.setSettingsController(settingsController);

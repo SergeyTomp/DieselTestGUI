@@ -1,33 +1,32 @@
 package fi.stardex.sisu.util.i18n;
 
-import fi.stardex.sisu.util.ApplicationConfigHandler;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringBinding;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
 
 import javax.annotation.PostConstruct;
 import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.prefs.Preferences;
 
 public class I18N {
 
-    private final ApplicationConfigHandler applicationConfigHandler;
     private final UTF8Control utf8Control;
 
     private ObjectProperty<Locale> locale;
 
-    public I18N(ApplicationConfigHandler applicationConfigHandler) {
-        this.applicationConfigHandler = applicationConfigHandler;
+    private Preferences rootPrefs;
+
+    public I18N(Preferences rootPrefs) {
+        this.rootPrefs = rootPrefs;
         this.utf8Control = new UTF8Control();
     }
 
     @PostConstruct
     private void init(){
-        locale = new SimpleObjectProperty<>(Locales.getLocale(applicationConfigHandler.get("Language")));
+        locale = new SimpleObjectProperty<>(Locales.getLocale(rootPrefs.get("Language", Locales.ENGLISH.name())));
     }
 
 
