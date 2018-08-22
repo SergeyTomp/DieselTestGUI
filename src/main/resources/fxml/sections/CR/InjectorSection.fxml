@@ -13,15 +13,15 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 
-<HBox alignment="CENTER" fillHeight="true" maxHeight="130.0" maxWidth="1.7976931348623157E308" minHeight="100.0" minWidth="500.0" pickOnBounds="true" prefHeight="130.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.cr.InjectorSectionController">
+<HBox alignment="CENTER" fillHeight="true" maxHeight="130.0" maxWidth="1.7976931348623157E308" minHeight="100.0" minWidth="500.0" pickOnBounds="true" prefHeight="130.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.cr.InjectorSectionController">
     <children>
         <GridPane alignment="CENTER" gridLinesVisible="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="130.0" minWidth="150.0">
             <children>
-                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="20.0" minWidth="40.0" text="%injSection.label.width" GridPane.columnIndex="0" GridPane.halignment="LEFT" GridPane.rowIndex="0">
+                <Label fx:id="labelWidth" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="20.0" minWidth="40.0" text="%injSection.label.width" GridPane.columnIndex="0" GridPane.halignment="LEFT" GridPane.rowIndex="0">
                <padding>
                   <Insets left="10.0" />
                </padding></Label>
-                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="20.0" minWidth="40.0" text="%injSection.label.freq" GridPane.columnIndex="0" GridPane.halignment="LEFT" GridPane.rowIndex="1">
+                <Label fx:id="labelFreq" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="20.0" minWidth="40.0" text="%injSection.label.freq" GridPane.columnIndex="0" GridPane.halignment="LEFT" GridPane.rowIndex="1">
                <padding>
                   <Insets left="10.0" />
                </padding></Label>

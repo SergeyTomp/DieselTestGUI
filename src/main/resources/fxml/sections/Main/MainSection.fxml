@@ -19,8 +19,9 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<GridPane maxHeight="1.7976931348623157E308" maxWidth="300.0" minHeight="-Infinity" minWidth="300.0" prefHeight="600.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.main.MainSectionController">
+<GridPane maxHeight="1.7976931348623157E308" maxWidth="300.0" minHeight="-Infinity" minWidth="300.0" prefHeight="600.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.main.MainSectionController">
     <columnConstraints>
         <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
     </columnConstraints>
@@ -56,11 +57,17 @@
                <children>
                   <HBox alignment="CENTER" prefHeight="50.0" spacing="20.0">
                      <children>
-                        <RadioButton fx:id="defaultRB" mnemonicParsing="false" selected="true" text="Default">
+                        <RadioButton fx:id="defaultRB" mnemonicParsing="false" selected="true" styleClass="label" stylesheets="@../../../css/Styling.css" text="%main.defaultRB.radiobutton">
                            <toggleGroup>
                               <ToggleGroup fx:id="baseType" />
-                           </toggleGroup></RadioButton>
-                        <RadioButton fx:id="customRB" mnemonicParsing="false" text="Custom" toggleGroup="$baseType" />
+                           </toggleGroup>
+                           <font>
+                              <Font size="11.0" />
+                           </font></RadioButton>
+                        <RadioButton fx:id="customRB" mnemonicParsing="false" styleClass="label" stylesheets="@../../../css/Styling.css" text="%main.customRB.radiobutton" toggleGroup="$baseType">
+                           <font>
+                              <Font size="11.0" />
+                           </font></RadioButton>
                      </children>
                   </HBox>
                   <TextField fx:id="searchModelTF" />
@@ -90,7 +97,7 @@
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
-                  <RadioButton fx:id="manualTestRadioButton" mnemonicParsing="false" selected="true" styleClass="label" stylesheets="@../../../css/Styling.css" text="Manual" GridPane.columnIndex="1">
+                  <RadioButton fx:id="manualTestRadioButton" mnemonicParsing="false" selected="true" styleClass="label" stylesheets="@../../../css/Styling.css" text="%main.manual.radiobutton" GridPane.columnIndex="1">
                      <GridPane.margin>
                         <Insets />
                      </GridPane.margin>
@@ -98,17 +105,17 @@
                           <ToggleGroup fx:id="testsToggleGroup" />
                       </toggleGroup>
                   </RadioButton>
-                  <RadioButton fx:id="codingTestRadioButton" disable="true" mnemonicParsing="false" styleClass="label" stylesheets="@../../../css/Styling.css" text="Coding" toggleGroup="$testsToggleGroup" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                  <RadioButton fx:id="codingTestRadioButton" disable="true" mnemonicParsing="false" styleClass="label" stylesheets="@../../../css/Styling.css" text="main.coding.radiobutton" toggleGroup="$testsToggleGroup" GridPane.columnIndex="2" GridPane.rowIndex="1">
                      <GridPane.margin>
                         <Insets />
                      </GridPane.margin>
                   </RadioButton>
-                  <RadioButton fx:id="autoTestRadioButton" disable="true" mnemonicParsing="false" styleClass="label" stylesheets="@../../../css/Styling.css" text="Auto" toggleGroup="$testsToggleGroup" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                  <RadioButton fx:id="autoTestRadioButton" disable="true" mnemonicParsing="false" styleClass="label" stylesheets="@../../../css/Styling.css" text="%main.auto.radiobutton" toggleGroup="$testsToggleGroup" GridPane.columnIndex="1" GridPane.rowIndex="1">
                      <GridPane.margin>
                         <Insets />
                      </GridPane.margin>
                   </RadioButton>
-                  <RadioButton fx:id="testPlanTestRadioButton" disable="true" mnemonicParsing="false" styleClass="label" stylesheets="@../../../css/Styling.css" text="TestPlan" toggleGroup="$testsToggleGroup" GridPane.columnIndex="2">
+                  <RadioButton fx:id="testPlanTestRadioButton" disable="true" mnemonicParsing="false" styleClass="label" stylesheets="@../../../css/Styling.css" text="%main.testPlan.radiobutton" toggleGroup="$testsToggleGroup" GridPane.columnIndex="2">
                      <GridPane.margin>
                         <Insets />
                      </GridPane.margin>
@@ -120,7 +127,10 @@
       </VBox>
       <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="100.0" GridPane.rowIndex="3">
          <children>
-            <CheckBox fx:id="enableTimingCheckBox" alignment="CENTER" mnemonicParsing="false" styleClass="label" stylesheets="@../../../css/Styling.css" text="Enable timing" />
+            <CheckBox fx:id="enableTimingCheckBox" alignment="CENTER" mnemonicParsing="false" styleClass="label" stylesheets="@../../../css/Styling.css" text="%main.enableTiming.checkbox">
+               <font>
+                  <Font size="11.0" />
+               </font></CheckBox>
             <GridPane>
               <columnConstraints>
                 <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0" percentWidth="40.0" prefWidth="100.0" />
@@ -141,15 +151,21 @@
                         <Insets right="20.0" />
                      </GridPane.margin>
                   </ProgressBar>
-                  <Label stylesheets="@../../../css/Styling.css" text="Adjusting time">
+                  <Label fx:id="labelAdjustTime" stylesheets="@../../../css/Styling.css" text="%main.adjusting.label">
                      <padding>
                         <Insets right="10.0" />
                      </padding>
+                     <font>
+                        <Font size="11.0" />
+                     </font>
                   </Label>
-                  <Label stylesheets="@../../../css/Styling.css" text="Measuring time" GridPane.rowIndex="1">
+                  <Label fx:id="labelMeasureTime" stylesheets="@../../../css/Styling.css" text="%main.measuring.label" GridPane.rowIndex="1">
                      <padding>
                         <Insets right="10.0" />
                      </padding>
+                     <font>
+                        <Font size="11.0" />
+                     </font>
                   </Label>
                </children>
             </GridPane>

@@ -4,9 +4,7 @@ import fi.stardex.sisu.combobox_values.Dimension;
 import fi.stardex.sisu.combobox_values.InjectorChannel;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.i18n.Locales;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -21,7 +19,7 @@ public class SettingsController {
 
     private I18N i18N;
 
-    private Preferences prefs = Preferences.userNodeForPackage(this.getClass());
+//    private Preferences prefs = Preferences.userNodeForPackage(this.getClass());
 
     private Preferences rootPrefs;
 
@@ -91,6 +89,11 @@ public class SettingsController {
 
     @FXML private ComboBox<Dimension> flowOutputDimensionsComboBox;
 
+//    private InjectorChannel SINGLE;
+//    private InjectorChannel MULTY;
+//    private StringProperty single = new SimpleStringProperty(SINGLE.getCHANNEL_QTY());
+//    private StringProperty multi = new SimpleStringProperty(MULTY.getCHANNEL_QTY());
+
     public void setI18N(I18N i18N) {
         this.i18N = i18N;
     }
@@ -141,6 +144,8 @@ public class SettingsController {
 
     @PostConstruct
     private void init() {
+//        StringProperty single = new SimpleStringProperty(SINGLE.getCHANNEL_QTY());
+//        StringProperty multi = new SimpleStringProperty(MULTY.getCHANNEL_QTY());
 
         bindingI18N();
         setupPressureSensor();
@@ -170,22 +175,28 @@ public class SettingsController {
         flowOutputDimensionLabel.textProperty().bind(i18N.createStringBinding("settings.FlowOutputDimension.ComboBox"));
         isDIMASLabel.textProperty().bind(i18N.createStringBinding("settings.isDIMAS.CheckBox"));
         flowVisibleLabel.textProperty().bind(i18N.createStringBinding("settings.flowVisible.CheckBox"));
-
+        sensor1500RadioButton.textProperty().bind(i18N.createStringBinding("settings.pressureSensor.1500.radiobutton"));
+        sensor1800RadioButton.textProperty().bind(i18N.createStringBinding("settings.pressureSensor.1800.radiobutton"));
+        sensor2000RadioButton.textProperty().bind(i18N.createStringBinding("settings.pressureSensor.2000.radiobutton"));
+        sensor2200RadioButton.textProperty().bind(i18N.createStringBinding("settings.pressureSensor.2200.radiobutton"));
+        sensor2400RadioButton.textProperty().bind(i18N.createStringBinding("settings.pressureSensor.2400.radiobutton"));
+//        single.bind(i18N.createStringBinding("main.channelQty.SINGLE_CHANNEL"));
+//        multi.bind(i18N.createStringBinding("main.channelQty.MULTY_CHANNEL"));
     }
 
     private void setupPressureSensor() {
 
-        sensor1500RadioButton.setSelected(prefs.getBoolean("sensor1500RadioButtonSelected", true));
-        sensor1800RadioButton.setSelected(prefs.getBoolean("sensor1800RadioButtonSelected", false));
-        sensor2000RadioButton.setSelected(prefs.getBoolean("sensor2000RadioButtonSelected", false));
-        sensor2200RadioButton.setSelected(prefs.getBoolean("sensor2200RadioButtonSelected", false));
-        sensor2400RadioButton.setSelected(prefs.getBoolean("sensor2400RadioButtonSelected", false));
+        sensor1500RadioButton.setSelected(rootPrefs.getBoolean("sensor1500RadioButtonSelected", true));
+        sensor1800RadioButton.setSelected(rootPrefs.getBoolean("sensor1800RadioButtonSelected", false));
+        sensor2000RadioButton.setSelected(rootPrefs.getBoolean("sensor2000RadioButtonSelected", false));
+        sensor2200RadioButton.setSelected(rootPrefs.getBoolean("sensor2200RadioButtonSelected", false));
+        sensor2400RadioButton.setSelected(rootPrefs.getBoolean("sensor2400RadioButtonSelected", false));
 
-        sensor1500RadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> prefs.putBoolean("sensor1500RadioButtonSelected", newValue));
-        sensor1800RadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> prefs.putBoolean("sensor1800RadioButtonSelected", newValue));
-        sensor2000RadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> prefs.putBoolean("sensor2000RadioButtonSelected", newValue));
-        sensor2200RadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> prefs.putBoolean("sensor2200RadioButtonSelected", newValue));
-        sensor2400RadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> prefs.putBoolean("sensor2400RadioButtonSelected", newValue));
+        sensor1500RadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> rootPrefs.putBoolean("sensor1500RadioButtonSelected", newValue));
+        sensor1800RadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> rootPrefs.putBoolean("sensor1800RadioButtonSelected", newValue));
+        sensor2000RadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> rootPrefs.putBoolean("sensor2000RadioButtonSelected", newValue));
+        sensor2200RadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> rootPrefs.putBoolean("sensor2200RadioButtonSelected", newValue));
+        sensor2400RadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> rootPrefs.putBoolean("sensor2400RadioButtonSelected", newValue));
 
         if(pressureSensorToggleGroup.selectedToggleProperty().getValue() == sensor1500RadioButton){
             pressMultiplierProperty.setValue(1500);
@@ -198,49 +209,51 @@ public class SettingsController {
         }else pressMultiplierProperty.setValue(2400);
 
 
-        pressureSensorToggleGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
-            @Override
-            public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
-                if (newValue == sensor1500RadioButton) {
-                    pressMultiplierProperty.setValue(1500);
-                } else if (newValue == sensor1800RadioButton) {
-                    pressMultiplierProperty.setValue(1800);
-                } else if (newValue == sensor2000RadioButton) {
-                    pressMultiplierProperty.setValue(2000);
-                } else if (newValue == sensor2200RadioButton) {
-                    pressMultiplierProperty.setValue(2200);
-                } else {
-                    pressMultiplierProperty.setValue(2400);
-                }
+        pressureSensorToggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == sensor1500RadioButton) {
+                pressMultiplierProperty.setValue(1500);
+            } else if (newValue == sensor1800RadioButton) {
+                pressMultiplierProperty.setValue(1800);
+            } else if (newValue == sensor2000RadioButton) {
+                pressMultiplierProperty.setValue(2000);
+            } else if (newValue == sensor2200RadioButton) {
+                pressMultiplierProperty.setValue(2200);
+            } else {
+                pressMultiplierProperty.setValue(2400);
             }
         });
     }
 
     private void setupCheckBoxPreference(CheckBox checkBox, String prefsKey, boolean prefsValue) {
 
-        checkBox.setSelected(prefs.getBoolean(prefsKey, prefsValue));
-        checkBox.selectedProperty().addListener((observable, oldValue, newValue) -> prefs.putBoolean(prefsKey, newValue));
+        checkBox.setSelected(rootPrefs.getBoolean(prefsKey, prefsValue));
+        checkBox.selectedProperty().addListener((observable, oldValue, newValue) -> rootPrefs.putBoolean(prefsKey, newValue));
 
     }
 
     private void setupComboBoxesPreferences() {
 
-        regulatorsConfigComboBox.getSelectionModel().select(prefs.get("regulatorsConfigSelected", "3"));
-        regulatorsConfigComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> prefs.put("regulatorsConfigSelected", newValue));
+        regulatorsConfigComboBox.getSelectionModel().select(rootPrefs.get("regulatorsConfigSelected", "3"));
+        regulatorsConfigComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> rootPrefs.put("regulatorsConfigSelected", newValue));
 
 
-        injectorsConfigComboBox.getSelectionModel().select(InjectorChannel.valueOf(prefs.get("injectorsConfigSelected", InjectorChannel.SINGLE_CHANNEL.name())));
-        injectorsConfigComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> prefs.put("injectorsConfigSelected", newValue.name()));
+        injectorsConfigComboBox.getSelectionModel().select(InjectorChannel.valueOf(rootPrefs.get("injectorsConfigSelected", InjectorChannel.SINGLE_CHANNEL.name())));
+        injectorsConfigComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> rootPrefs.put("injectorsConfigSelected", newValue.name()));
+//        injectorsConfigComboBox.getSelectionModel().select(rootPrefs.get("injectorsConfigSelected", InjectorChannel.SINGLE_CHANNEL.getCHANNEL_QTY()));
+//        injectorsConfigComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> rootPrefs.put("injectorsConfigSelected", newValue));
 
-        languagesConfigComboBox.getSelectionModel().select(Locales.valueOf(prefs.get("Language", Locales.ENGLISH.name())));
+
+
+                languagesConfigComboBox.getSelectionModel().select(Locales.valueOf(rootPrefs.get("Language", Locales.ENGLISH.name())));
         languagesConfigComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             rootPrefs.put("Language", newValue.name());
+//            prefs.put("Language", newValue.name());
             i18N.setLocale(Locales.getLocale(newValue.name()));
         });
 
-        flowOutputDimensionsComboBox.getSelectionModel().select(Dimension.valueOf(prefs.get("flowOutputDimensionSelected", Dimension.LIMIT.name())));
+        flowOutputDimensionsComboBox.getSelectionModel().select(Dimension.valueOf(rootPrefs.get("flowOutputDimensionSelected", Dimension.LIMIT.name())));
         flowOutputDimensionsComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
-                prefs.put("flowOutputDimensionSelected", newValue.name()));
+                rootPrefs.put("flowOutputDimensionSelected", newValue.name()));
 
 
     }

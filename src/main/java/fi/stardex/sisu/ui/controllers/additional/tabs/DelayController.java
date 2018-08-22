@@ -2,6 +2,7 @@ package fi.stardex.sisu.ui.controllers.additional.tabs;
 
 import fi.stardex.sisu.ui.controllers.additional.AdditionalSectionController;
 import fi.stardex.sisu.util.DelayCalculator;
+import fi.stardex.sisu.util.i18n.I18N;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -18,6 +19,10 @@ import javax.annotation.PostConstruct;
 import java.util.regex.Pattern;
 
 public class DelayController {
+
+
+
+    private I18N i18N;
 
     @FXML private LineChart<Double, Double> delayChart;
 
@@ -39,6 +44,16 @@ public class DelayController {
 
     @FXML private Label delayAttentionLabel;
 
+    @FXML private Label minDelay;
+
+    @FXML private Label maxDelay;
+
+    @FXML private Label avgDelay;
+
+    @FXML private Label addTime;
+
+    @FXML private Label sensitivity;
+
     @FXML private GridPane delayResults;
 
     public int getAddingTimeValue() {
@@ -59,6 +74,10 @@ public class DelayController {
 
     public TextField getAverageDelay() {
         return averageDelay;
+    }
+
+    public void setI18N(I18N i18N) {
+        this.i18N = i18N;
     }
 
     public ObservableList<XYChart.Data<Double, Double>> getDelayData() {
@@ -88,6 +107,8 @@ public class DelayController {
     @PostConstruct
     private void init() {
 
+        bindingI18N();
+
         setupDelayChart();
 
         setupAddingTime();
@@ -97,6 +118,8 @@ public class DelayController {
         sensitivitySpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0.1, 3.5, 1.7, 0.1));
 
         isTabDelayShowing.bind(additionalSectionController.getTabDelay().selectedProperty());
+
+
 
     }
 
@@ -166,5 +189,17 @@ public class DelayController {
             node.setDisable(notSingle);
         }
 
+    }
+
+    private void bindingI18N() {
+        minDelay.textProperty().bind(i18N.createStringBinding("h4.delay.label.MinDelay"));
+        maxDelay.textProperty().bind(i18N.createStringBinding("h4.delay.label.MaxDelay"));
+        avgDelay.textProperty().bind(i18N.createStringBinding("h4.delay.label.AverDelay"));
+        addTime.textProperty().bind(i18N.createStringBinding("h4.delay.label.AddingTime"));
+        sensitivity.textProperty().bind(i18N.createStringBinding("h4.delay.label.Sens"));
+        delayXAxis.labelProperty().bind(i18N.createStringBinding("h4.voltage.chars.time"));
+        delayYAxis.labelProperty().bind(i18N.createStringBinding("h4.voltage.label.volt"));
+        resetDelayButton.textProperty().bind(i18N.createStringBinding("h4.delay.button.reset"));
+        delayAttentionLabel.textProperty().bind(i18N.createStringBinding("h4.delay.label.attention"));
     }
 }

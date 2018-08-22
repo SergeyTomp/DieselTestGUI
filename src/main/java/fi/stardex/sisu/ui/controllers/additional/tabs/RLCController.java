@@ -9,6 +9,7 @@ import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.controllers.additional.LedController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
+import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -61,6 +62,7 @@ public class RLCController {
     private ModbusRegisterProcessor ultimaModbusWriter;
     private RegisterProvider ultimaRegisterProvider;
     private CurrentInjectorObtainer currentInjectorObtainer;
+    private I18N i18N;
 
     public void setInjectorSectionController(InjectorSectionController injectorSectionController) {
         this.injectorSectionController = injectorSectionController;
@@ -76,6 +78,10 @@ public class RLCController {
     }
     public void setCurrentInjectorObtainer(CurrentInjectorObtainer currentInjectorObtainer) {
         this.currentInjectorObtainer = currentInjectorObtainer;
+    }
+
+    public void setI18N(I18N i18N) {
+        this.i18N = i18N;
     }
 
     public Gauge getParameter1Gauge() {
@@ -99,6 +105,8 @@ public class RLCController {
 
     @PostConstruct
     private void init() {
+
+        bindingI18N();
         storeButton.setDisable(true);
         measureButton.setDisable(true);
         parameter1Gauge = createGauge();
@@ -119,6 +127,11 @@ public class RLCController {
             new Thread(()-> measure()).start();
         });
         storeButton.setOnAction(event -> store());
+    }
+
+    private void bindingI18N() {
+        storeButton.textProperty().bind(i18N.createStringBinding("rlc.store.button"));
+        measureButton.textProperty().bind(i18N.createStringBinding("rlc.measure.button"));
     }
 
     public void setupNull() {

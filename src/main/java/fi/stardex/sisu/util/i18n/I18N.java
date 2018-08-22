@@ -9,6 +9,7 @@ import javax.annotation.PostConstruct;
 import java.text.MessageFormat;
 import java.util.Locale;
 import java.util.ResourceBundle;
+import java.util.concurrent.Callable;
 import java.util.prefs.Preferences;
 
 public class I18N {
@@ -49,7 +50,12 @@ public class I18N {
     }
 
     public StringBinding createStringBinding(final String key) {
-        return Bindings.createStringBinding(() -> get(key), locale);
+        return Bindings.createStringBinding(new Callable<String>() {
+            @Override
+            public String call() throws Exception {
+                return I18N.this.get(key);
+            }
+        }, locale);
     }
 
 }

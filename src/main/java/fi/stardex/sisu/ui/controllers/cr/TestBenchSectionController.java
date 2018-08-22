@@ -3,6 +3,7 @@ package fi.stardex.sisu.ui.controllers.cr;
 import eu.hansolo.enzo.lcd.Lcd;
 import eu.hansolo.enzo.lcd.LcdBuilder;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
+import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.spinners.SpinnerManager;
 import fi.stardex.sisu.util.spinners.SpinnerValueObtainer;
 import fi.stardex.sisu.util.tooltips.CustomTooltip;
@@ -54,6 +55,16 @@ public class TestBenchSectionController {
     @FXML private Text pressText1;
 
     @FXML private Text tempText2;
+
+    @FXML private Label labelTemp1;
+
+    @FXML private Label labelTemp2;
+
+    @FXML private Label labelPressure1;
+
+    @FXML private Label labelRPM;
+
+    private I18N i18N;
 
     private static final String PUMP_BUTTON_ON = "pump-button-on";
 
@@ -145,6 +156,10 @@ public class TestBenchSectionController {
         this.pumpState = pumpState;
     }
 
+    public void setI18N(I18N i18N) {
+        this.i18N = i18N;
+    }
+
     public enum StatePump {
 
         ON("PUMP\n ON", true, PUMP_BUTTON_ON),
@@ -179,6 +194,8 @@ public class TestBenchSectionController {
     @PostConstruct
     private void init() {
 
+        bindingI18N();
+
         setupLCD();
 
         setupRotationDirectionToggleButton();
@@ -191,6 +208,13 @@ public class TestBenchSectionController {
 
         setupFanControlToggleButton();
 
+    }
+
+    private void bindingI18N() {
+        labelTemp1.textProperty().bind(i18N.createStringBinding("bench.label.temp1"));
+        labelTemp2.textProperty().bind(i18N.createStringBinding("bench.label.temp2"));
+        labelPressure1.textProperty().bind(i18N.createStringBinding("bench.label.pressure1"));
+        labelRPM.textProperty().bind(i18N.createStringBinding("bench.label.rpm"));
     }
 
     private void setupLCD() {

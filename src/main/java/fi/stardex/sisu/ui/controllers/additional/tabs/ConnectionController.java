@@ -1,8 +1,10 @@
 package fi.stardex.sisu.ui.controllers.additional.tabs;
 
 import fi.stardex.sisu.util.Pair;
+import fi.stardex.sisu.util.i18n.I18N;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 
@@ -26,6 +28,20 @@ public class ConnectionController {
 
     @FXML private Button acceptButton;
 
+    @FXML private Label ultimaLabel;
+
+    @FXML private Label flowMeterLabel;
+
+    @FXML private Label standLabel;
+
+    @FXML private Label ipAddressLabel;
+
+    @FXML private Label portLabel;
+
+    private I18N i18N;
+
+    private Preferences rootPrefs;
+
     private Preferences prefs = Preferences.userNodeForPackage(this.getClass());
 
     private Pair<String, String> ultimaConnect = new Pair<>();
@@ -43,6 +59,15 @@ public class ConnectionController {
     public TextField getStandPortField() {
         return standPortField;
     }
+
+    public void setI18N(I18N i18N) {
+        this.i18N = i18N;
+    }
+
+    public void setRootPrefs(Preferences rootPrefs) {
+        this.rootPrefs = rootPrefs;
+    }
+
 
     @PostConstruct
     private void init() {
@@ -69,28 +94,29 @@ public class ConnectionController {
 
         acceptButton.setOnMouseClicked(event -> {
 
-            prefs.put("UltimaIP", ultimaIPField.getText());
-            prefs.put("FlowIP", flowMeterIPField.getText());
-            prefs.put("StandIP", standIPField.getText());
+            rootPrefs.put("UltimaIP", ultimaIPField.getText());
+            rootPrefs.put("FlowIP", flowMeterIPField.getText());
+            rootPrefs.put("StandIP", standIPField.getText());
 
-            prefs.put("UltimaPort", ultimaPortField.getText());
-            prefs.put("FlowPort", flowMeterPortField.getText());
-            prefs.put("StandPort", standPortField.getText());
+            rootPrefs.put("UltimaPort", ultimaPortField.getText());
+            rootPrefs.put("FlowPort", flowMeterPortField.getText());
+            rootPrefs.put("StandPort", standPortField.getText());
 
             setPairValues();
 
         });
+        bindingI18N();
     }
 
     private void setPairValues() {
 
-        ultimaConnect.setKey(prefs.get("UltimaIP", "192.168.10.206"));
-        flowMeterConnect.setKey(prefs.get("FlowIP", "192.168.10.201"));
-        standConnect.setKey(prefs.get("StandIP", "192.168.10.202"));
+        ultimaConnect.setKey(rootPrefs.get("UltimaIP", "192.168.10.206"));
+        flowMeterConnect.setKey(rootPrefs.get("FlowIP", "192.168.10.201"));
+        standConnect.setKey(rootPrefs.get("StandIP", "192.168.10.202"));
 
-        ultimaConnect.setValue(prefs.get("UltimaPort", "502"));
-        flowMeterConnect.setValue(prefs.get("FlowPort", "502"));
-        standConnect.setValue(prefs.get("StandPort", "502"));
+        ultimaConnect.setValue(rootPrefs.get("UltimaPort", "502"));
+        flowMeterConnect.setValue(rootPrefs.get("FlowPort", "502"));
+        standConnect.setValue(rootPrefs.get("StandPort", "502"));
 
     }
 
@@ -124,6 +150,15 @@ public class ConnectionController {
                 return null;
             }
         };
+    }
+
+    private void bindingI18N() {
+        ultimaLabel.textProperty().bind(i18N.createStringBinding("link.ultima.label"));
+        flowMeterLabel.textProperty().bind(i18N.createStringBinding("link.flowmeter.label"));
+        standLabel.textProperty().bind(i18N.createStringBinding("link.stand.label"));
+        ipAddressLabel.textProperty().bind(i18N.createStringBinding("link.ipAddress.label"));
+        portLabel.textProperty().bind(i18N.createStringBinding("link.port.label"));
+        acceptButton.textProperty().bind(i18N.createStringBinding("link.accept.button"));
     }
 
 }

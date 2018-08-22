@@ -5,6 +5,7 @@ import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.util.converters.DataConverter;
+import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.spinners.SpinnerManager;
 import fi.stardex.sisu.util.spinners.SpinnerValueObtainer;
 import fi.stardex.sisu.util.spinners.WidthSpinnerValueObtainer;
@@ -42,6 +43,22 @@ public class VoltAmpereProfileController {
     @FXML private Button applyButton;
 
     @FXML private Button cancelButton;
+
+    @FXML private Label firstWlabel;
+
+    @FXML private Label batteryUlabel;
+
+    @FXML private Label boostIlabel;
+
+    @FXML private Label boostUlabel;
+
+    @FXML private Label firstIlabel;
+
+    @FXML private Label negativeUlabel;
+
+    @FXML private Label secondIlabel;
+
+    private I18N i18N;
 
     private Spinner<Integer> widthCurrentSignal;
 
@@ -147,6 +164,10 @@ public class VoltAmpereProfileController {
         this.injectorSectionController = injectorSectionController;
     }
 
+    public void setI18N(I18N i18N) {
+        this.i18N = i18N;
+    }
+
     // FIXME: при изменении значения в спиннере которое равно значению с прошивки красным перестают гореть оба значения, хотя значение спиннера еще не было подтверждено нажатием Apply
     @PostConstruct
     private void init() {
@@ -165,16 +186,25 @@ public class VoltAmpereProfileController {
 
         setupSpinnerStyleWhenValueChangedListener();
 
+        bindingI18N();
+
     }
 
     private void setupEnableBoostToggleButton() {
 
         enableBoostToggleButton.setSelected(true);
-        enableBoostToggleButton.setText(BOOST_DISABLED);
+        enableBoostToggleButton.textProperty().bind(i18N.createStringBinding("voapProfile.button.boostUdisable"));
+//        enableBoostToggleButton.setText(BOOST_DISABLED);
 
-        enableBoostToggleButton.selectedProperty().addListener((observable, oldValue, newValue) ->
-                enableBoostToggleButton.setText(newValue ? BOOST_DISABLED : BOOST_ENABLED));
-
+//        enableBoostToggleButton.selectedProperty().addListener((observable, oldValue, newValue) ->
+//                enableBoostToggleButton.setText(newValue ? BOOST_DISABLED : BOOST_ENABLED));
+        enableBoostToggleButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue){
+            enableBoostToggleButton.textProperty().bind(i18N.createStringBinding("voapProfile.button.boostUdisable"));
+        }
+        else {
+            enableBoostToggleButton.textProperty().bind(i18N.createStringBinding("voapProfile.button.boostUenable"));
+        }});
     }
 
     private void setupVAPSpinners() {
@@ -419,4 +449,15 @@ public class VoltAmpereProfileController {
 
     }
 
+    private void bindingI18N() {
+        firstWlabel.textProperty().bind(i18N.createStringBinding("voapProfile.label.firstW"));
+        batteryUlabel.textProperty().bind(i18N.createStringBinding("voapProfile.label.batteryU"));
+        boostIlabel.textProperty().bind(i18N.createStringBinding("voapProfile.label.boostI"));
+        boostUlabel.textProperty().bind(i18N.createStringBinding("voapProfile.label.boostU"));
+        firstIlabel.textProperty().bind(i18N.createStringBinding("voapProfile.label.firstI"));
+        negativeUlabel.textProperty().bind(i18N.createStringBinding("voapProfile.label.neagtiveU1"));
+        secondIlabel.textProperty().bind(i18N.createStringBinding("voapProfile.label.secondI"));
+        applyButton.textProperty().bind(i18N.createStringBinding("voapProfile.button.apply"));
+        cancelButton.textProperty().bind(i18N.createStringBinding("voapProfile.button.cancel"));
+    }
 }

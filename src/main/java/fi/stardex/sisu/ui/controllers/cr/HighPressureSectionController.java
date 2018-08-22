@@ -6,6 +6,7 @@ import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.util.VisualUtils;
 import fi.stardex.sisu.util.enums.RegActive;
+import fi.stardex.sisu.util.i18n.I18N;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
@@ -40,6 +41,15 @@ public class HighPressureSectionController {
     private Spinner<Double> dutyCycleReg1;
 
     @FXML
+    private Label labelPressReg1;
+
+    @FXML
+    private Label labelAmpReg1;
+
+    @FXML
+    private Label labelCycleReg1;
+
+    @FXML
     private Label labelAmpReg2;
 
     @FXML
@@ -50,6 +60,9 @@ public class HighPressureSectionController {
 
     @FXML
     private Spinner<Double> dutyCycleReg2;
+
+    @FXML
+    private Label labelReg1;
 
     @FXML
     private Label labelReg2;
@@ -90,6 +103,7 @@ public class HighPressureSectionController {
     private RegActive Reg3paramActive;
     private ModbusRegisterProcessor ultimaModbusWriter;
     private VisualUtils visualUtils;
+    private I18N i18N;
 
     public Spinner<Integer> getPressReg1() {
         return pressReg1;
@@ -175,6 +189,10 @@ public class HighPressureSectionController {
         this.visualUtils = visualUtils;
     }
 
+    public void setI18N(I18N i18N) {
+        this.i18N = i18N;
+    }
+
     public void setVisibleRegulator2(boolean visible) {
         visualUtils.setVisible(visible,
                 labelReg2, labelAmpReg2, labelCycleReg2, powerButton2, dutyCycleReg2, currentReg2);
@@ -187,6 +205,8 @@ public class HighPressureSectionController {
 
     @PostConstruct
     public void init() {
+
+        bindingI18N();
 
         /** установка активных параметров регулирования по умолчанию */
         Reg1paramActive = PRESSURE;
@@ -521,8 +541,8 @@ public class HighPressureSectionController {
         }
     }
 
-    /** метод запускается из MainSectionController при выборе теста */
-    public void pressureModeON(Integer targetPress){
+    /** метод запускается из MainSectionController при выборе режимов тест и авто */
+    public void regulator1pressModeON(Integer targetPress){
         if (Reg1paramActive != PRESSURE){
             Reg1paramActive = PRESSURE;
             ultimaModbusWriter.add(PressureReg1_PressMode, true);   //вкл.режим давления
@@ -530,5 +550,25 @@ public class HighPressureSectionController {
         }
         pressReg1.getValueFactory().setValue(targetPress);
         ultimaModbusWriter.add(PressureReg1_PressTask, targetPress);
+        powerButton1.setSelected(true);
+    }
+
+    /** метод запускается из MainSectionController при выборе ручного режима */
+    public void regulator1pressModeOFF(){
+        ultimaModbusWriter.add(PressureReg1_ON, false);
+        powerButton1.setSelected(false);
+    }
+
+    private void bindingI18N() {
+        labelPressReg1.textProperty().bind(i18N.createStringBinding("highPressure.label.bar"));
+        labelAmpReg1.textProperty().bind(i18N.createStringBinding("highPressure.label.amp"));
+        labelCycleReg1.textProperty().bind(i18N.createStringBinding("highPressure.label.cycle"));
+        labelAmpReg2.textProperty().bind(i18N.createStringBinding("highPressure.label.amp"));
+        labelCycleReg2.textProperty().bind(i18N.createStringBinding("highPressure.label.cycle"));
+        labelAmpReg3.textProperty().bind(i18N.createStringBinding("highPressure.label.amp"));
+        labelCycleReg3.textProperty().bind(i18N.createStringBinding("highPressure.label.cycle"));
+        labelReg1.textProperty().bind(i18N.createStringBinding("highPressure.label.reg1.name"));
+        labelReg2.textProperty().bind(i18N.createStringBinding("highPressure.label.reg2.name"));
+        labelReg3.textProperty().bind(i18N.createStringBinding("highPressure.label.reg3.name"));
     }
 }

@@ -11,14 +11,14 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<GridPane prefHeight="241.0" prefWidth="506.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController">
+<GridPane prefHeight="241.0" prefWidth="506.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController">
     <children>
         <Label fx:id="pressureSensorLabel" stylesheets="@../../../../css/Styling.css" text="%settings.pressureSensor.Label" GridPane.halignment="LEFT" GridPane.rowIndex="0">
             <GridPane.margin>
                 <Insets left="70.0" />
             </GridPane.margin>
         </Label>
-        <RadioButton fx:id="sensor1500RadioButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="108.0" styleClass="label" stylesheets="@../../../../css/Styling.css" text="1500 bar" GridPane.halignment="LEFT" GridPane.rowIndex="1">
+        <RadioButton fx:id="sensor1500RadioButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="108.0" styleClass="label" stylesheets="@../../../../css/Styling.css" text="%settings.pressureSensor.1500.radiobutton" GridPane.halignment="LEFT" GridPane.rowIndex="1">
             <toggleGroup>
                 <ToggleGroup fx:id="pressureSensorToggleGroup" />
             </toggleGroup>
@@ -29,7 +29,7 @@
                 <Insets left="70.0" />
             </GridPane.margin>
         </RadioButton>
-        <RadioButton fx:id="sensor1800RadioButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="108.0" styleClass="label" stylesheets="@../../../../css/Styling.css" text="1800 bar" toggleGroup="$pressureSensorToggleGroup" GridPane.halignment="LEFT" GridPane.rowIndex="2">
+        <RadioButton fx:id="sensor1800RadioButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="108.0" styleClass="label" stylesheets="@../../../../css/Styling.css" text="%settings.pressureSensor.1800.radiobutton" toggleGroup="$pressureSensorToggleGroup" GridPane.halignment="LEFT" GridPane.rowIndex="2">
             <tooltip>
                 <Tooltip text="Set pressure value" />
             </tooltip>
@@ -37,7 +37,7 @@
                 <Insets left="70.0" />
             </GridPane.margin>
         </RadioButton>
-        <RadioButton fx:id="sensor2000RadioButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="108.0" styleClass="label" stylesheets="@../../../../css/Styling.css" text="2000 bar" toggleGroup="$pressureSensorToggleGroup" GridPane.halignment="LEFT" GridPane.rowIndex="3">
+        <RadioButton fx:id="sensor2000RadioButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="108.0" styleClass="label" stylesheets="@../../../../css/Styling.css" text="%settings.pressureSensor.2000.radiobutton" toggleGroup="$pressureSensorToggleGroup" GridPane.halignment="LEFT" GridPane.rowIndex="3">
             <tooltip>
                 <Tooltip text="Set pressure value" />
             </tooltip>
@@ -45,7 +45,7 @@
                 <Insets left="70.0" />
             </GridPane.margin>
         </RadioButton>
-        <RadioButton fx:id="sensor2200RadioButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="108.0" styleClass="label" stylesheets="@../../../../css/Styling.css" text="2200 bar" toggleGroup="$pressureSensorToggleGroup" GridPane.halignment="LEFT" GridPane.rowIndex="4">
+        <RadioButton fx:id="sensor2200RadioButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="108.0" styleClass="label" stylesheets="@../../../../css/Styling.css" text="%settings.pressureSensor.2200.radiobutton" toggleGroup="$pressureSensorToggleGroup" GridPane.halignment="LEFT" GridPane.rowIndex="4">
             <tooltip>
                 <Tooltip text="Set pressure value" />
             </tooltip>
@@ -53,7 +53,7 @@
                 <Insets left="70.0" />
             </GridPane.margin>
         </RadioButton>
-        <RadioButton fx:id="sensor2400RadioButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="108.0" styleClass="label" stylesheets="@../../../../css/Styling.css" text="2400 bar" toggleGroup="$pressureSensorToggleGroup" GridPane.halignment="LEFT" GridPane.rowIndex="5">
+        <RadioButton fx:id="sensor2400RadioButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="108.0" styleClass="label" stylesheets="@../../../../css/Styling.css" text="%settings.pressureSensor.2400.radiobutton" toggleGroup="$pressureSensorToggleGroup" GridPane.halignment="LEFT" GridPane.rowIndex="5">
             <tooltip>
                 <Tooltip text="Set pressure value" />
             </tooltip>
@@ -76,9 +76,9 @@
                 <Insets left="70.0" />
             </GridPane.margin>
         </CheckBox>
-        <Label fx:id="regulatorsConfigLabel" prefHeight="16.0" prefWidth="156.0" stylesheets="@../../../../css/Styling.css" text="%settings.regulatorsConfig.ComboBox" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-        <Label fx:id="injectorsConfigLabel" prefHeight="16.0" prefWidth="156.0" stylesheets="@../../../../css/Styling.css" text="%settings.injectorsConfig.ComboBox" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-        <Label fx:id="languagesLabel" prefHeight="16.0" prefWidth="156.0" stylesheets="@../../../../css/Styling.css" text="%settings.languages.ComboBox" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+        <Label fx:id="regulatorsConfigLabel" prefHeight="16.0" stylesheets="@../../../../css/Styling.css" text="%settings.regulatorsConfig.ComboBox" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+        <Label fx:id="injectorsConfigLabel" prefHeight="16.0" stylesheets="@../../../../css/Styling.css" text="%settings.injectorsConfig.ComboBox" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+        <Label fx:id="languagesLabel" prefHeight="16.0" stylesheets="@../../../../css/Styling.css" text="%settings.languages.ComboBox" GridPane.columnIndex="1" GridPane.rowIndex="3" />
         <ComboBox fx:id="regulatorsConfigComboBox" prefWidth="150.0" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="1">
             <GridPane.margin>
                 <Insets left="15.0" />
@@ -94,19 +94,19 @@
                 <Insets left="15.0" />
             </GridPane.margin>
         </ComboBox>
-        <Label fx:id="flowOutputDimensionLabel" prefHeight="16.0" prefWidth="156.0" stylesheets="@../../../../css/Styling.css" text="%settings.FlowOutputDimension.ComboBox" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+        <Label fx:id="flowOutputDimensionLabel" prefHeight="16.0" stylesheets="@../../../../css/Styling.css" text="%settings.FlowOutputDimension.ComboBox" GridPane.columnIndex="1" GridPane.rowIndex="4" />
         <ComboBox fx:id="flowOutputDimensionsComboBox" prefWidth="150.0" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="4">
             <GridPane.margin>
                 <Insets left="15.0" />
             </GridPane.margin>
         </ComboBox>
-        <Label fx:id="isDIMASLabel" prefHeight="16.0" prefWidth="156.0" stylesheets="@../../../../css/Styling.css" text="%settings.isDIMAS.CheckBox" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+        <Label fx:id="isDIMASLabel" prefHeight="16.0" stylesheets="@../../../../css/Styling.css" text="%settings.isDIMAS.CheckBox" GridPane.columnIndex="1" GridPane.rowIndex="6" />
         <CheckBox fx:id="isDIMASCheckBox" mnemonicParsing="false" selected="true" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="6">
             <GridPane.margin>
                 <Insets left="15.0" />
             </GridPane.margin>
         </CheckBox>
-        <Label fx:id="flowVisibleLabel" prefHeight="16.0" prefWidth="156.0" stylesheets="@../../../../css/Styling.css" text="%settings.flowVisible.CheckBox" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+        <Label fx:id="flowVisibleLabel" prefHeight="16.0" stylesheets="@../../../../css/Styling.css" text="%settings.flowVisible.CheckBox" GridPane.columnIndex="1" GridPane.rowIndex="7" />
         <CheckBox fx:id="flowVisibleCheckBox" mnemonicParsing="false" GridPane.columnIndex="2" GridPane.halignment="LEFT" GridPane.rowIndex="7">
             <GridPane.margin>
                 <Insets left="15.0" />
@@ -115,7 +115,7 @@
     </children>
     <columnConstraints>
         <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="511.0" minWidth="300.0" prefWidth="320.0" />
-        <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="462.0" minWidth="180.0" prefWidth="199.0" />
+        <ColumnConstraints halignment="LEFT" hgrow="ALWAYS" maxWidth="462.0" minWidth="180.0" prefWidth="199.0" />
         <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="462.0" minWidth="180.0" prefWidth="192.0" />
         <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="462.0" minWidth="10.0" prefWidth="184.0" />
     </columnConstraints>

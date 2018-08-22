@@ -5,6 +5,7 @@ import fi.stardex.sisu.ui.controllers.additional.AdditionalSectionController;
 import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.util.converters.DataConverter;
+import fi.stardex.sisu.util.i18n.I18N;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
@@ -29,6 +30,22 @@ import static fi.stardex.sisu.util.SpinnerDefaults.*;
 
 public class VoltageController {
 
+    @FXML private Label labelVoltage;
+
+    @FXML private Label labelFirstWidth;
+
+    @FXML private Label labelCurrent1;
+
+    @FXML private Label labelCurrent2;
+
+    @FXML private Label labelWidth;
+
+    @FXML private Label labelBoostI;
+
+    @FXML private Label labelBatteryU;
+
+    @FXML private Label labelNegativeU;
+
     @FXML private Label boostI;
 
     @FXML private Label batteryU;
@@ -52,6 +69,8 @@ public class VoltageController {
     @FXML private Label secondCurrent;
 
     @FXML private Button pulseSettingsButton;
+
+    private I18N i18N;
 
     private static final String RED_COLOR_STYLE = "-fx-text-fill: red";
 
@@ -145,6 +164,10 @@ public class VoltageController {
         this.injectorSectionController = injectorSectionController;
     }
 
+    public void setI18N(I18N i18N) {
+        this.i18N = i18N;
+    }
+
     @PostConstruct
     private void init() {
 
@@ -157,6 +180,8 @@ public class VoltageController {
         configLineChartData();
 
         setupYAxisResizable();
+
+        bindingI18N();
 
     }
 
@@ -295,4 +320,17 @@ public class VoltageController {
         }
     }
 
+    private void bindingI18N() {
+        labelVoltage.textProperty().bind(i18N.createStringBinding("h4.voltage.label.voltage"));
+        labelFirstWidth.textProperty().bind(i18N.createStringBinding("h4.voltage.label.first"));
+        labelCurrent1.textProperty().bind(i18N.createStringBinding("h4.voltage.label.I1"));
+        labelCurrent2.textProperty().bind(i18N.createStringBinding("h4.voltage.label.I2"));
+        labelWidth.textProperty().bind(i18N.createStringBinding("h4.voltage.label.width"));
+        labelBoostI.textProperty().bind(i18N.createStringBinding("h4.voltage.label.currentBoost"));
+        labelBatteryU.textProperty().bind(i18N.createStringBinding("h4.voltage.label.voltageHold"));
+        labelNegativeU.textProperty().bind(i18N.createStringBinding("h4.voltage.label.firstNegativeVoltage"));
+        pulseSettingsButton.textProperty().bind(i18N.createStringBinding("h4.voltage.button"));
+        xAxis.labelProperty().bind(i18N.createStringBinding("h4.voltage.chars.time"));
+        yAxis.labelProperty().bind(i18N.createStringBinding("h4.voltage.chars.amp"));
+    }
 }

@@ -8,7 +8,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 
-<StackPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="210.0" prefWidth="881.0" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.additional.tabs.ConnectionController">
+<StackPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="210.0" prefWidth="881.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.additional.tabs.ConnectionController">
    <children>
       <GridPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="210.0" prefWidth="495.0" StackPane.alignment="TOP_LEFT">
          <columnConstraints>
@@ -24,18 +24,18 @@
             <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" percentHeight="20.0" prefHeight="10.0" vgrow="SOMETIMES" />
          </rowConstraints>
          <children>
-            <Label text="IP address" GridPane.columnIndex="1" />
-            <Label text="Port" GridPane.columnIndex="2" />
-            <Label text="Ultima" GridPane.rowIndex="1" />
-            <Label text="Flow meter" GridPane.rowIndex="2" />
-            <Label text="Stand" GridPane.rowIndex="3" />
+            <Label fx:id="ipAddressLabel" text="%link.ipAddress.label" GridPane.columnIndex="1" />
+            <Label fx:id="portLabel" text="%link.port.label" GridPane.columnIndex="2" />
+            <Label fx:id="ultimaLabel" text="%link.ultima.label" GridPane.rowIndex="1" />
+            <Label fx:id="flowMeterLabel" text="%link.flowmeter.label" GridPane.rowIndex="2" />
+            <Label fx:id="standLabel" text="%link.stand.label" GridPane.rowIndex="3" />
             <TextField fx:id="ultimaIPField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="38.0" prefWidth="210.0" promptText="192.168.*.*" GridPane.columnIndex="1" GridPane.rowIndex="1" />
             <TextField fx:id="flowMeterIPField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="38.0" prefWidth="210.0" promptText="192.168.*.*" GridPane.columnIndex="1" GridPane.rowIndex="2" />
             <TextField fx:id="standIPField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="38.0" prefWidth="210.0" promptText="192.168.*.*" GridPane.columnIndex="1" GridPane.rowIndex="3" />
             <TextField fx:id="ultimaPortField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="38.0" prefWidth="80.0" promptText="502" text="502" GridPane.columnIndex="2" GridPane.rowIndex="1" />
             <TextField fx:id="flowMeterPortField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="38.0" prefWidth="80.0" promptText="502" text="502" GridPane.columnIndex="2" GridPane.rowIndex="2" />
             <TextField fx:id="standPortField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="38.0" prefWidth="80.0" promptText="502" text="502" GridPane.columnIndex="2" GridPane.rowIndex="3" />
-            <Button fx:id="acceptButton" mnemonicParsing="false" text="Accept" GridPane.columnIndex="2" GridPane.rowIndex="4" />
+            <Button fx:id="acceptButton" mnemonicParsing="false" text="%link.accept.button" GridPane.columnIndex="2" GridPane.rowIndex="4" />
          </children>
       </GridPane>
    </children>

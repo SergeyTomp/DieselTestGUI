@@ -1,80 +1,63 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.GridPane?>
-
-<?import javafx.scene.control.TextField?>
 <?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.layout.ColumnConstraints?>
-<GridPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml"
-          fx:controller="fi.stardex.sisu.ui.controllers.additional.tabs.CodingController">
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<GridPane xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.additional.tabs.CodingController">
     <rowConstraints>
-        <RowConstraints percentHeight="20"/>
-        <RowConstraints percentHeight="20"/>
-        <RowConstraints percentHeight="20"/>
-        <RowConstraints percentHeight="20"/>
-        <RowConstraints percentHeight="20"/>
+        <RowConstraints percentHeight="20" />
+        <RowConstraints percentHeight="20" />
+        <RowConstraints percentHeight="20" />
+        <RowConstraints percentHeight="20" />
+        <RowConstraints percentHeight="20" />
     </rowConstraints>
     <columnConstraints>
-        <ColumnConstraints halignment="RIGHT" percentWidth="30"/>
-        <ColumnConstraints percentWidth="50"/>
-        <ColumnConstraints percentWidth="20"/>
+        <ColumnConstraints halignment="RIGHT" percentWidth="30" />
+        <ColumnConstraints percentWidth="50" />
+        <ColumnConstraints percentWidth="20" />
     </columnConstraints>
     <children>
-        <Label text="%h4.coding.label.injector1" GridPane.columnIndex="0"/>
-        <Label text="%h4.coding.label.injector2" GridPane.columnIndex="0"
-               GridPane.rowIndex="1"/>
-        <Label text="%h4.coding.label.injector3" GridPane.columnIndex="0"
-               GridPane.rowIndex="2"/>
-        <Label text="%h4.coding.label.injector4" GridPane.columnIndex="0"
-               GridPane.rowIndex="3"/>
-        <TextField fx:id="injectorCode1TextField" alignment="CENTER" editable="false"
-                   minHeight="-Infinity" minWidth="-Infinity"
-                   GridPane.columnIndex="1">
+        <Label fx:id="labelCode1TextField" text="%h4.coding.label.injector1" GridPane.columnIndex="0" />
+        <Label fx:id="labelCode2TextField" text="%h4.coding.label.injector2" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+        <Label fx:id="labelCode3TextField" text="%h4.coding.label.injector3" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+        <Label fx:id="labelCode4TextField" text="%h4.coding.label.injector4" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+        <TextField fx:id="injectorCode1TextField" alignment="CENTER" editable="false" minHeight="-Infinity" minWidth="-Infinity" GridPane.columnIndex="1">
             <tooltip>
-                <Tooltip text="%h4.field.tip.code1"/>
+                <Tooltip text="%h4.field.tip.code1" />
             </tooltip>
             <GridPane.margin>
-                <Insets left="20.0"/>
+                <Insets left="20.0" />
             </GridPane.margin>
         </TextField>
-        <TextField fx:id="injectorCode2TextField" alignment="CENTER" editable="false"
-                   minHeight="-Infinity" minWidth="-Infinity"
-                   GridPane.columnIndex="1"
-                   GridPane.rowIndex="1">
+        <TextField fx:id="injectorCode2TextField" alignment="CENTER" editable="false" minHeight="-Infinity" minWidth="-Infinity" GridPane.columnIndex="1" GridPane.rowIndex="1">
             <tooltip>
-                <Tooltip text="%h4.field.tip.code2"/>
+                <Tooltip text="%h4.field.tip.code2" />
             </tooltip>
             <GridPane.margin>
-                <Insets left="20.0"/>
+                <Insets left="20.0" />
             </GridPane.margin>
         </TextField>
-        <TextField fx:id="injectorCode3TextField" alignment="CENTER" editable="false"
-                   minHeight="-Infinity" minWidth="-Infinity"
-                   GridPane.columnIndex="1"
-                   GridPane.rowIndex="2">
+        <TextField fx:id="injectorCode3TextField" alignment="CENTER" editable="false" minHeight="-Infinity" minWidth="-Infinity" GridPane.columnIndex="1" GridPane.rowIndex="2">
             <tooltip>
-                <Tooltip text="%h4.field.tip.code3"/>
+                <Tooltip text="%h4.field.tip.code3" />
             </tooltip>
             <GridPane.margin>
-                <Insets left="20.0"/>
+                <Insets left="20.0" />
             </GridPane.margin>
         </TextField>
-        <TextField fx:id="injectorCode4TextField" alignment="CENTER" editable="false"
-                   minHeight="-Infinity" minWidth="-Infinity"
-                   GridPane.columnIndex="1"
-                   GridPane.rowIndex="3">
+        <TextField fx:id="injectorCode4TextField" alignment="CENTER" editable="false" minHeight="-Infinity" minWidth="-Infinity" GridPane.columnIndex="1" GridPane.rowIndex="3">
             <tooltip>
-                <Tooltip text="%h4.field.tip.code4"/>
+                <Tooltip text="%h4.field.tip.code4" />
             </tooltip>
             <GridPane.margin>
-                <Insets left="20.0"/>
+                <Insets left="20.0" />
             </GridPane.margin>
         </TextField>
-        <Label prefHeight="63.0" prefWidth="460.0"
-               text="%h4.coding.label.codingNote" wrapText="true"
-               GridPane.columnIndex="1" GridPane.rowIndex="4"/>
+        <Label fx:id="labelCodingNote" prefHeight="63.0" prefWidth="460.0" text="%h4.coding.label.codingNote" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="4" />
     </children>
 </GridPane>

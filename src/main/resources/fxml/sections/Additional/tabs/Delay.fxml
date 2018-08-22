@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
 
-<GridPane fx:id="delayGridPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.additional.tabs.DelayController">
+<GridPane fx:id="delayGridPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.additional.tabs.DelayController">
 
     <columnConstraints>
         <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="650.0" />
@@ -35,17 +35,17 @@
         </LineChart>
         <GridPane fx:id="delayResults" prefHeight="159.0" prefWidth="300.0" GridPane.columnIndex="1" StackPane.alignment="CENTER">
             <children>
-                <Label text="%h4.delay.label.MinDelay" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                <Label fx:id="minDelay" text="%h4.delay.label.MinDelay" GridPane.columnIndex="0" GridPane.rowIndex="1">
                     <GridPane.margin>
                         <Insets right="20.0" />
                     </GridPane.margin>
                 </Label>
-                <Label text="%h4.delay.label.MaxDelay" GridPane.columnIndex="0" GridPane.rowIndex="2">
+                <Label fx:id="maxDelay" text="%h4.delay.label.MaxDelay" GridPane.columnIndex="0" GridPane.rowIndex="2">
                     <GridPane.margin>
                         <Insets right="20.0" />
                     </GridPane.margin>
                 </Label>
-                <Label text="%h4.delay.label.AverDelay" GridPane.columnIndex="0" GridPane.rowIndex="3">
+                <Label fx:id="avgDelay" text="%h4.delay.label.AverDelay" GridPane.columnIndex="0" GridPane.rowIndex="3">
                     <GridPane.margin>
                         <Insets right="20.0" />
                     </GridPane.margin>
@@ -74,7 +74,7 @@
                         <Insets left="20.0" />
                     </GridPane.margin>
                 </TextField>
-                <Label text="%h4.delay.label.Sens" GridPane.rowIndex="4">
+                <Label fx:id="sensitivity" text="%h4.delay.label.Sens" GridPane.rowIndex="4">
                     <GridPane.margin>
                         <Insets right="20.0" />
                     </GridPane.margin>
@@ -84,8 +84,8 @@
                         <Insets left="20.0" />
                     </GridPane.margin>
                 </Spinner>
-                <Button fx:id="resetDelayButton" prefWidth="150.0" text="Reset Delay" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-                <Label text="%h4.delay.label.AddingTime">
+                <Button fx:id="resetDelayButton" prefWidth="150.0" text="%h4.delay.button.reset" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                <Label fx:id="addTime" text="%h4.delay.label.AddingTime">
                     <GridPane.margin>
                         <Insets right="20.0" />
                     </GridPane.margin>
@@ -113,7 +113,7 @@
                 <RowConstraints maxHeight="80.0" minHeight="30.0" prefHeight="30.0" valignment="CENTER" vgrow="ALWAYS" />
             </rowConstraints>
         </GridPane>
-      <Label fx:id="delayAttentionLabel" alignment="CENTER" prefHeight="55.0" prefWidth="661.0" text="Delay could be measured only for one activated injector!" textFill="#0d0d0d" underline="true" visible="false">
+      <Label fx:id="delayAttentionLabel" alignment="CENTER" prefHeight="55.0" prefWidth="661.0" text="h4.delay.label.attention" textFill="#0d0d0d" underline="true" visible="false" wrapText="true">
          <font>
             <Font size="22.0" />
          </font></Label>

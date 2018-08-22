@@ -20,6 +20,7 @@ import fi.stardex.sisu.ui.controllers.dialogs.NewEditInjectorDialogController;
 import fi.stardex.sisu.ui.controllers.dialogs.NewEditTestDialogController;
 import fi.stardex.sisu.util.converters.DataConverter;
 import fi.stardex.sisu.util.enums.Tests;
+import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer;
 import fi.stardex.sisu.util.obtainers.CurrentInjectorTestsObtainer;
 import fi.stardex.sisu.util.obtainers.CurrentManufacturerObtainer;
@@ -48,9 +49,17 @@ import java.util.prefs.Preferences;
 
 import static fi.stardex.sisu.util.enums.Tests.TestType.*;
 
-import static fi.stardex.sisu.util.enums.RegActive.*;
-
 public class MainSectionController {
+
+    @FXML private CheckBox enableTimingCheckBox;
+
+    @FXML private ProgressBar measuringTimeProgressBar;
+
+    @FXML private ProgressBar adjustingTimeProgressBar;
+
+    @FXML private Label labelAdjustTime;
+
+    @FXML private Label labelMeasureTime;
 
     @FXML private Button resetButton;
 
@@ -85,6 +94,8 @@ public class MainSectionController {
     @FXML private ListView<Model> modelListView;
 
     @FXML private ListView<InjectorTest> testListView;
+
+    private Preferences rootPrefs;
 
     private Preferences prefs = Preferences.userNodeForPackage(this.getClass());
 
@@ -135,6 +146,8 @@ public class MainSectionController {
     private FilteredList<Model> filteredModelList;
 
     private Tests tests;
+
+    private I18N i18N;
 
     public Tests getTests() {
         return tests;
@@ -240,8 +253,18 @@ public class MainSectionController {
         this.tests = tests;
     }
 
+    public void setI18N(I18N i18N) {
+        this.i18N = i18N;
+    }
+
+    public void setRootPrefs(Preferences rootPrefs) {
+        this.rootPrefs = rootPrefs;
+    }
+
     @PostConstruct
     private void init() {
+
+        bindingI18N();
 
         setupResetButton();
 
@@ -372,8 +395,10 @@ public class MainSectionController {
 
         testListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 
-            if (newValue == null)
+            if (newValue == null){
+                highPressureSectionController.regulator1pressModeOFF();
                 return;
+            }
 
             Integer freq = newValue.getInjectionRate();
 
@@ -391,7 +416,7 @@ public class MainSectionController {
 
             injectorSectionController.getWidthCurrentSignal().getValueFactory().setValue(width);
 
-            highPressureSectionController.pressureModeON(regParam1);
+            highPressureSectionController.regulator1pressModeON(regParam1);
                 });
 
         testsToggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
@@ -409,6 +434,18 @@ public class MainSectionController {
 
         });
 
+    }
+
+    private void bindingI18N() {
+        enableTimingCheckBox.textProperty().bind(i18N.createStringBinding("main.enableTiming.checkbox"));
+        labelAdjustTime.textProperty().bind(i18N.createStringBinding("main.adjusting.label"));
+        labelMeasureTime.textProperty().bind(i18N.createStringBinding("main.measuring.label"));
+        manualTestRadioButton.textProperty().bind(i18N.createStringBinding("main.manual.radiobutton"));
+        autoTestRadioButton.textProperty().bind(i18N.createStringBinding("main.auto.radiobutton"));
+        testPlanTestRadioButton.textProperty().bind(i18N.createStringBinding("main.testPlan.radiobutton"));
+        codingTestRadioButton.textProperty().bind(i18N.createStringBinding("main.coding.radiobutton"));
+        defaultRB.textProperty().bind(i18N.createStringBinding("main.defaultRB.radiobutton"));
+        customRB.textProperty().bind(i18N.createStringBinding("main.customRB.radiobutton"));
     }
 
     private void setFilteredItems(Manufacturer manufacturer) {
@@ -659,11 +696,11 @@ public class MainSectionController {
                     break;
             }
 
-            prefs.put("GUI_Type", newValue.name());
+            rootPrefs.put("GUI_Type", newValue.name());
 
         });
 
-        GUIType currentGUIType = GUIType.valueOf(prefs.get("GUI_Type", GUIType.CR_Inj.name()));
+        GUIType currentGUIType = GUIType.valueOf(rootPrefs.get("GUI_Type", GUIType.CR_Inj.name()));
 
         versionComboBox.getSelectionModel().select(currentGUIType);
 

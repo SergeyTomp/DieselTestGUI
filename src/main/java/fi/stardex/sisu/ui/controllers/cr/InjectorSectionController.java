@@ -6,6 +6,7 @@ import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.controllers.additional.LedController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.DelayController;
+import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.spinners.SpinnerManager;
 import fi.stardex.sisu.util.spinners.SpinnerValueObtainer;
 import fi.stardex.sisu.util.tooltips.CustomTooltip;
@@ -49,6 +50,12 @@ public class InjectorSectionController {
     private ToggleButton powerSwitch;
 
     @FXML
+    private Label labelWidth;
+
+    @FXML
+    private Label labelFreq;
+
+    @FXML
     private Label statusBoostULabelText;
 
     @FXML
@@ -65,6 +72,8 @@ public class InjectorSectionController {
 
     @FXML
     private LedController ledBeaker4Controller;
+
+    private I18N i18N;
 
     private Logger logger = LoggerFactory.getLogger(InjectorSectionController.class);
 
@@ -161,8 +170,14 @@ public class InjectorSectionController {
         return arrayNumbersOfActiveControllers;
     }
 
+    public void setI18N(I18N i18N) {
+        this.i18N = i18N;
+    }
+
     @PostConstruct
     private void init() {
+
+        bindingI18N();
 
         setupLedControllers();
 
@@ -174,6 +189,14 @@ public class InjectorSectionController {
 
         new PowerButtonChangeListener();
 
+    }
+
+    private void bindingI18N() {
+        piezoRadioButton.textProperty().bind(i18N.createStringBinding("injSection.radio.piezo"));
+        coilRadioButton.textProperty().bind(i18N.createStringBinding("injSection.radio.coil"));
+        piezoDelphiRadioButton.textProperty().bind(i18N.createStringBinding("injSection.radio.piezoDelphi"));
+        labelWidth.textProperty().bind(i18N.createStringBinding("injSection.label.width"));
+        labelFreq.textProperty().bind(i18N.createStringBinding("injSection.label.freq"));
     }
 
     private void setupLedControllers() {

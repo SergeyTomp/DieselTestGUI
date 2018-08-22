@@ -2,6 +2,7 @@ package fi.stardex.sisu.ui.controllers.additional.tabs;
 
 import fi.stardex.sisu.combobox_values.FlowUnits;
 import fi.stardex.sisu.ui.controllers.additional.BeakerController;
+import fi.stardex.sisu.util.i18n.I18N;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
@@ -16,137 +17,99 @@ import java.util.Arrays;
 
 public class FlowController {
 
-    @FXML
-    private Label deliveryRangeLabel;
+    @FXML public Label backFlowLabel;
 
-    @FXML
-    private Label backFlowRangeLabel;
+    @FXML public Label deliveryLabel;
 
-    @FXML
-    private TextField delivery1TextField;
+    @FXML private Label deliveryRangeLabel;
 
-    @FXML
-    private TextField delivery2TextField;
+    @FXML private Label backFlowRangeLabel;
 
-    @FXML
-    private TextField delivery3TextField;
+    @FXML private TextField delivery1TextField;
 
-    @FXML
-    private TextField delivery4TextField;
+    @FXML private TextField delivery2TextField;
 
-    @FXML
-    private TextField backFlow1TextField;
+    @FXML private TextField delivery3TextField;
 
-    @FXML
-    private TextField backFlow2TextField;
+    @FXML private TextField delivery4TextField;
 
-    @FXML
-    private TextField backFlow3TextField;
+    @FXML private TextField backFlow1TextField;
 
-    @FXML
-    private TextField backFlow4TextField;
+    @FXML private TextField backFlow2TextField;
 
-    @FXML
-    private ComboBox<String> deliveryFlowComboBox;
+    @FXML private TextField backFlow3TextField;
 
-    @FXML
-    private ComboBox<String> backFlowComboBox;
+    @FXML private TextField backFlow4TextField;
 
-    @FXML
-    private Label temperature1Delivery1;
+    @FXML private ComboBox<String> deliveryFlowComboBox;
 
-    @FXML
-    private Label temperature1Delivery2;
+    @FXML private ComboBox<String> backFlowComboBox;
 
-    @FXML
-    private Label temperature1Delivery3;
+    @FXML private Label temperature1Delivery1;
 
-    @FXML
-    private Label temperature1Delivery4;
+    @FXML private Label temperature1Delivery2;
 
-    @FXML
-    private Label temperature2Delivery1;
+    @FXML private Label temperature1Delivery3;
 
-    @FXML
-    private Label temperature2Delivery2;
+    @FXML private Label temperature1Delivery4;
 
-    @FXML
-    private Label temperature2Delivery3;
+    @FXML private Label temperature2Delivery1;
 
-    @FXML
-    private Label temperature2Delivery4;
+    @FXML private Label temperature2Delivery2;
 
-    @FXML
-    private Label temperature1BackFlow1;
+    @FXML private Label temperature2Delivery3;
 
-    @FXML
-    private Label temperature1BackFlow2;
+    @FXML private Label temperature2Delivery4;
 
-    @FXML
-    private Label temperature1BackFlow3;
+    @FXML private Label temperature1BackFlow1;
 
-    @FXML
-    private Label temperature1BackFlow4;
+    @FXML private Label temperature1BackFlow2;
 
-    @FXML
-    private Label temperature2BackFlow1;
+    @FXML private Label temperature1BackFlow3;
 
-    @FXML
-    private Label temperature2BackFlow2;
+    @FXML private Label temperature1BackFlow4;
 
-    @FXML
-    private Label temperature2BackFlow3;
+    @FXML private Label temperature2BackFlow1;
 
-    @FXML
-    private Label temperature2BackFlow4;
+    @FXML private Label temperature2BackFlow2;
 
-    @FXML
-    private AnchorPane beakerDelivery1;
+    @FXML private Label temperature2BackFlow3;
 
-    @FXML
-    private AnchorPane beakerDelivery2;
+    @FXML private Label temperature2BackFlow4;
 
-    @FXML
-    private AnchorPane beakerDelivery3;
+    @FXML private AnchorPane beakerDelivery1;
 
-    @FXML
-    private AnchorPane beakerDelivery4;
+    @FXML private AnchorPane beakerDelivery2;
 
-    @FXML
-    private AnchorPane beakerBackFlow1;
+    @FXML private AnchorPane beakerDelivery3;
 
-    @FXML
-    private AnchorPane beakerBackFlow2;
+    @FXML private AnchorPane beakerDelivery4;
 
-    @FXML
-    private AnchorPane beakerBackFlow3;
+    @FXML private AnchorPane beakerBackFlow1;
 
-    @FXML
-    private AnchorPane beakerBackFlow4;
+    @FXML private AnchorPane beakerBackFlow2;
 
-    @FXML
-    private BeakerController beakerDelivery1Controller;
+    @FXML private AnchorPane beakerBackFlow3;
 
-    @FXML
-    private BeakerController beakerDelivery2Controller;
+    @FXML private AnchorPane beakerBackFlow4;
 
-    @FXML
-    private BeakerController beakerDelivery3Controller;
+    @FXML private BeakerController beakerDelivery1Controller;
 
-    @FXML
-    private BeakerController beakerDelivery4Controller;
+    @FXML private BeakerController beakerDelivery2Controller;
 
-    @FXML
-    private BeakerController beakerBackFlow1Controller;
+    @FXML private BeakerController beakerDelivery3Controller;
 
-    @FXML
-    private BeakerController beakerBackFlow2Controller;
+    @FXML private BeakerController beakerDelivery4Controller;
 
-    @FXML
-    private BeakerController beakerBackFlow3Controller;
+    @FXML private BeakerController beakerBackFlow1Controller;
 
-    @FXML
-    private BeakerController beakerBackFlow4Controller;
+    @FXML private BeakerController beakerBackFlow2Controller;
+
+    @FXML private BeakerController beakerBackFlow3Controller;
+
+    @FXML private BeakerController beakerBackFlow4Controller;
+
+    private I18N i18N;
 
     private static final int TEXT_FIELD_MAX_LENGTH = 7;
 
@@ -326,8 +289,14 @@ public class FlowController {
         this.currentBackFlowLevels = currentBackFlowLevels;
     }
 
+    public void setI18N(I18N i18N) {
+        this.i18N = i18N;
+    }
+
     @PostConstruct
     private void init() {
+
+        bindingI18N();
 
         bindProperties();
 
@@ -342,6 +311,11 @@ public class FlowController {
         blockTextInputToDeliveryBackFlowTextFields(backFlow3TextField);
         blockTextInputToDeliveryBackFlowTextFields(backFlow4TextField);
 
+    }
+
+    private void bindingI18N() {
+        deliveryLabel.textProperty().bind(i18N.createStringBinding("h4.flow.label.delivery"));
+        backFlowLabel.textProperty().bind(i18N.createStringBinding("h4.flow.label.backflow"));
     }
 
     private void setupComboBox(ComboBox<String> comboBox) {

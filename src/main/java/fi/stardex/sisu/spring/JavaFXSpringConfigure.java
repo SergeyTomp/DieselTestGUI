@@ -105,7 +105,8 @@ public class JavaFXSpringConfigure {
                                                        CurrentInjectorTestsObtainer currentInjectorTestsObtainer,
                                                        @Lazy ModbusRegisterProcessor flowModbusWriter,
                                                        RLCController RLCController,Tests tests,
-                                                       HighPressureSectionController highPressureSectionController) {
+                                                       HighPressureSectionController highPressureSectionController,
+                                                       Preferences rootPrefs) {
         MainSectionController mainSectionController = (MainSectionController) mainSection().getController();
         mainSectionController.setEnabler(enabler);
         mainSectionController.setCurrentManufacturerObtainer(currentManufacturerObtainer);
@@ -124,6 +125,8 @@ public class JavaFXSpringConfigure {
         mainSectionController.setRLCController(RLCController);
         mainSectionController.setHighPressureSectionController(highPressureSectionController);
         mainSectionController.setTests(tests);
+        mainSectionController.setI18N(i18N);
+        mainSectionController.setRootPrefs(rootPrefs);
         return mainSectionController;
     }
 
@@ -143,6 +146,7 @@ public class JavaFXSpringConfigure {
                                                                  @Lazy ModbusRegisterProcessor standModbusWriter) {
         TestBenchSectionController testBenchController = crSectionController.getTestBenchSectionController();
         testBenchController.setStandModbusWriter(standModbusWriter);
+        testBenchController.setI18N(i18N);
         return testBenchController;
     }
 
@@ -154,6 +158,7 @@ public class JavaFXSpringConfigure {
         HighPressureSectionController highPressureSectionController = crSectionController.getHighPressureSectionController();
         highPressureSectionController.setUltimaModbusWriter(ultimaModbusWriter);
         highPressureSectionController.setVisualUtils(visualUtils);
+        highPressureSectionController.setI18N(i18N);
         return highPressureSectionController;
     }
 
@@ -167,6 +172,7 @@ public class JavaFXSpringConfigure {
         injectorSectionController.setUltimaModbusWriter(ultimaModbusWriter);
         injectorSectionController.setTimerTasksManager(timerTasksManager);
         injectorSectionController.setDelayController(delayController);
+        injectorSectionController.setI18N(i18N);
         return injectorSectionController;
     }
 
@@ -182,13 +188,25 @@ public class JavaFXSpringConfigure {
 
     @Bean
     public AdditionalSectionController additionalSectionController() {
-        return (AdditionalSectionController) additionalSection().getController();
+        AdditionalSectionController additionalSectionController = (AdditionalSectionController)additionalSection().getController();
+        additionalSectionController.setI18N(i18N);
+        return additionalSectionController;
+    }
+
+    @Bean
+    @Autowired
+    public CodingController codingController(AdditionalSectionController additionalSectionController){
+        CodingController codingController = additionalSectionController.getCodingController();
+        codingController.setI18N(i18N);
+        return codingController;
     }
 
     @Bean
     @Autowired
     public FlowController flowController(AdditionalSectionController additionalSectionController) {
-        return additionalSectionController.getFlowController();
+        FlowController flowController = additionalSectionController.getFlowController();
+        flowController.setI18N(i18N);
+        return flowController;
     }
 
     @Bean
@@ -321,8 +339,11 @@ public class JavaFXSpringConfigure {
     }
 
     @Bean
-    public ConnectionController connectionController() {
-        return additionalSectionController().getConnectionController();
+    public ConnectionController connectionController(Preferences rootPrefs) {
+        ConnectionController connectionController = additionalSectionController().getConnectionController();
+        connectionController.setI18N(i18N);
+        connectionController.setRootPrefs(rootPrefs);
+        return connectionController;
     }
 
     @Bean
@@ -334,6 +355,7 @@ public class JavaFXSpringConfigure {
         voltageController.setParentController(additionalSectionController);
         voltageController.setInjectorSectionController(injectorSectionController);
         voltageController.setFirmwareDataConverter(dataConverter);
+        voltageController.setI18N(i18N);
         return voltageController;
     }
 
@@ -344,6 +366,7 @@ public class JavaFXSpringConfigure {
         DelayController delayController = additionalSectionController.getDelayController();
         delayController.setDelayCalculator(delayCalculator);
         delayController.setAdditionalSectionController(additionalSectionController);
+        delayController.setI18N(i18N);
         return delayController;
     }
 
@@ -373,6 +396,7 @@ public class JavaFXSpringConfigure {
         voltAmpereProfileController.setWidthSpinner(injectorSectionController.getWidthCurrentSignal());
         voltAmpereProfileController.setVoltageController(voltageController);
         voltAmpereProfileController.setFirmwareDataConverter(dataConverter);
+        voltAmpereProfileController.setI18N(i18N);
         return voltAmpereProfileController;
     }
 
@@ -475,6 +499,7 @@ public class JavaFXSpringConfigure {
         RLCController.setUltimaModbusWriter(ultimaModbusWriter);
         RLCController.setUltimaRegisterProvider(ultimaRegisterProvider);
         RLCController.setCurrentInjectorObtainer(currentInjectorObtainer);
+        RLCController.setI18N(i18N);
         return RLCController;
 
     }

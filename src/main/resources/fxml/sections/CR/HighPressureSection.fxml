@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 
-<StackPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="130.0" minWidth="500.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController">
+<StackPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="130.0" minWidth="500.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController">
    <children>
       <GridPane fx:id="gridPaneHBox2" alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="130.0" minWidth="500.0">
             <children>
@@ -105,7 +105,7 @@
                   </GridPane>
                   <GridPane alignment="CENTER" minHeight="130.0" minWidth="130.0">
                       <children>
-                          <Label minWidth="30.0" text="%highPressure.label.bar" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                          <Label fx:id="labelPressReg1" minWidth="30.0" text="%highPressure.label.bar" GridPane.columnIndex="0" GridPane.rowIndex="1">
                      <GridPane.margin>
                         <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
                      </GridPane.margin>
@@ -113,7 +113,7 @@
                         <Insets left="10.0" />
                      </padding>
                   </Label>
-                          <Label minWidth="30.0" text="%highPressure.label.amp" GridPane.columnIndex="0" GridPane.rowIndex="2">
+                          <Label fx:id="labelAmpReg1" minWidth="30.0" text="%highPressure.label.amp" GridPane.columnIndex="0" GridPane.rowIndex="2">
                      <GridPane.margin>
                         <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
                      </GridPane.margin>
@@ -121,7 +121,7 @@
                         <Insets left="10.0" />
                      </padding>
                   </Label>
-                          <Label minWidth="30.0" text="%highPressure.label.cycle" GridPane.columnIndex="0" GridPane.rowIndex="3">
+                          <Label fx:id="labelCycleReg1" minWidth="30.0" text="%highPressure.label.cycle" GridPane.columnIndex="0" GridPane.rowIndex="3">
                      <GridPane.margin>
                         <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
                      </GridPane.margin>
@@ -144,7 +144,7 @@
                                   <Insets />
                               </GridPane.margin>
                   </Spinner>
-                        <Label minWidth="30.0" text="%highPressure.label.reg1.name" GridPane.columnIndex="1">
+                        <Label fx:id="labelReg1" minWidth="30.0" text="%highPressure.label.reg1.name" GridPane.columnIndex="1">
                             <padding>
                                 <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
                             </padding>

@@ -3,9 +3,9 @@
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 
-<TabPane fx:id="tabPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="210.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.141" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.additional.AdditionalSectionController">
+<TabPane fx:id="tabPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="210.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.additional.AdditionalSectionController">
     <tabs>
-        <Tab text="%additional.link">
+        <Tab fx:id="tabLink" text="%additional.link">
             <fx:include fx:id="connection" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" source="tabs/Connection.fxml" />
         </Tab>
         <Tab fx:id="tabVoltage" text="%additional.voltage">
@@ -14,17 +14,17 @@
         <Tab fx:id="tabDelay" text="%additional.delay">
             <fx:include fx:id="delay" source="tabs/Delay.fxml" />
         </Tab>
-        <Tab text="%additional.flow">
+        <Tab fx:id="tabFlow" text="%additional.flow">
             <fx:include fx:id="flow" source="tabs/Flow.fxml" />
         </Tab>
-        <Tab text="%additional.coding">
+        <Tab fx:id="tabCoding" text="%additional.coding">
             <fx:include fx:id="coding" source="tabs/coding.fxml" />
         </Tab>
-        <Tab text="%additional.settings">
+        <Tab fx:id="tabSettings" text="%additional.settings">
             <fx:include fx:id="settings" source="tabs/Settings.fxml" />
         </Tab>
-        <Tab fx:id="tabRLC" text="RLC">
-             <fx:include fx:id="rlc" source="tabs/RLC.fxml"/>
+        <Tab fx:id="tabRLC" text="%h4.tab.RLC">
+             <fx:include fx:id="rlc" source="tabs/RLC.fxml" />
         </Tab>
 
     </tabs>

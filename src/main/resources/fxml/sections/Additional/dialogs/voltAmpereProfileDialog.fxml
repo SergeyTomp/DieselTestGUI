@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<AnchorPane minHeight="0" minWidth="0" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController">
+<AnchorPane minHeight="0" minWidth="0" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController">
    <children>
       <GridPane layoutX="263.0" layoutY="199.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <columnConstraints>
@@ -28,43 +28,43 @@
          <children>
             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0">
                <children>
-                  <Label text="%voapProfile.label.firstW" />
+                  <Label fx:id="firstWlabel" text="%voapProfile.label.firstW" />
                   <Spinner fx:id="firstWSpinner" prefWidth="100.0" />
                </children>
             </HBox>
             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="1">
                <children>
-                  <Label text="%voapProfile.label.batteryU" />
+                  <Label fx:id="batteryUlabel" text="%voapProfile.label.batteryU" />
                   <Spinner fx:id="batteryUSpinner" prefWidth="100.0" />
                </children>
             </HBox>
             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.rowIndex="1">
                <children>
-                  <Label text="%voapProfile.label.boostI" />
+                  <Label fx:id="boostIlabel" text="%voapProfile.label.boostI" />
                   <Spinner fx:id="boostISpinner" prefWidth="100.0" />
                </children>
             </HBox>
             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                <children>
-                  <Label text="%voapProfile.label.boostU" />
+                  <Label fx:id="boostUlabel" text="%voapProfile.label.boostU" />
                   <Spinner fx:id="boostUSpinner" prefWidth="100.0" />
                </children>
             </HBox>
             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.rowIndex="2">
                <children>
-                  <Label text="%voapProfile.label.firstI" />
+                  <Label fx:id="firstIlabel" text="%voapProfile.label.firstI" />
                   <Spinner fx:id="firstISpinner" prefWidth="100.0" />
                </children>
             </HBox>
             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
                <children>
-                  <Label text="%voapProfile.label.neagtiveU1" />
+                  <Label fx:id="negativeUlabel" text="%voapProfile.label.neagtiveU1" />
                   <Spinner fx:id="negativeUSpinner" prefWidth="100.0" />
                </children>
             </HBox>
             <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.rowIndex="3">
                <children>
-                  <Label text="%voapProfile.label.secondI" />
+                  <Label fx:id="secondIlabel" text="%voapProfile.label.secondI" />
                   <Spinner fx:id="secondISpinner" prefWidth="100.0" />
                </children>
             </HBox>
