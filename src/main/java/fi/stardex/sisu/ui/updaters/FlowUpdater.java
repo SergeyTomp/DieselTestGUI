@@ -155,7 +155,7 @@ public abstract class FlowUpdater {
         ledBeaker2ToggleButton = injectorSectionController.getLedBeaker2Controller().getLedBeaker();
         ledBeaker3ToggleButton = injectorSectionController.getLedBeaker3Controller().getLedBeaker();
         ledBeaker4ToggleButton = injectorSectionController.getLedBeaker4Controller().getLedBeaker();
-        injectorSectionPowerSwitch = injectorSectionController.getPowerSwitch();
+        injectorSectionPowerSwitch = injectorSectionController.getInjectorSectionStartToggleButton();
 
         allFlowLabels.add(temperature1Delivery1Label);
         allFlowLabels.add(temperature1Delivery2Label);
@@ -423,7 +423,7 @@ public abstract class FlowUpdater {
     }
 
     protected boolean isNotMeasuring() {
-        return tests.getTest() != MANUAL && deliveryRangeLabel.getText().isEmpty() && backFlowRangeLabel.getText().isEmpty();
+        return tests.getTestType() != MANUAL && deliveryRangeLabel.getText().isEmpty() && backFlowRangeLabel.getText().isEmpty();
     }
 
 }

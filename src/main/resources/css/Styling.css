@@ -1163,14 +1163,13 @@ label
 .combo-box-base
 {
     -textFont-color: #ffff66;
-    -textFont-size: 10pt;
     -background-color: #4B4B4B;
     -border-color: #4d2600;
     -borderSelect-color: #cc6600;
     -borderHover-color: #b34700;
 
     -fx-text-fill:-textFont-color;
-    -fx-font-size: -textFont-size;
+    -fx-font-size: 10pt;
     -fx-background-color: black, -border-color, -background-color;
     -fx-border-color: -border-color;
     -fx-background-insets: 0 0 0 0, 0, 0, 0;
@@ -1191,6 +1190,11 @@ label
     -fx-background-insets: 0 0 0 0, 0, 0, 0;
     -fx-opacity: 0.7;
 
+}
+
+.combo-box-speed *.list-cell
+{
+    -fx-font-size: 8pt;
 }
 
 .combo-box .list-view

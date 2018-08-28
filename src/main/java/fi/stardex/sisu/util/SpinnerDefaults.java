@@ -46,9 +46,9 @@ public class SpinnerDefaults {
     public static final double BOOST_U_SPINNER_FAKE = 21.51;
     public static final int BOOST_U_SPINNER_MAX_PIEZO = 350;
 
-    public static final double FREQ_CURRENT_SIGNAL_MIN = 0.5;
-    public static final double FREQ_CURRENT_SIGNAL_MAX = 50;
-    public static final double FREQ_CURRENT_SIGNAL_INIT = 16.67;
-    public static final double FREQ_CURRENT_SIGNAL_STEP = 0.01;
-    public static final double FREQ_CURRENT_SIGNAL_FAKE = 16.671;
+    public static final double FREQ_CURRENT_SIGNAL_SPINNER_MIN = 0.5;
+    public static final double FREQ_CURRENT_SIGNAL_SPINNER_MAX = 50;
+    public static final double FREQ_CURRENT_SIGNAL_SPINNER_INIT = 16.67;
+    public static final double FREQ_CURRENT_SIGNAL_SPINNER_STEP = 0.01;
+    public static final double FREQ_CURRENT_SIGNAL_SPINNER_FAKE = 16.671;
 }

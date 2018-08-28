@@ -6,11 +6,9 @@ import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.ui.controllers.additional.LedController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.DelayController;
 import fi.stardex.sisu.util.DelayCalculator;
-import fi.stardex.sisu.util.filters.FilterInputChartData;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.ComboBox;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
 import net.wimpi.modbus.ModbusException;
@@ -20,13 +18,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-
-import static fi.stardex.sisu.version.UltimaFirmwareVersion.UltimaVersions.WITHOUT_F;
 
 @Component
 @Scope("prototype")
@@ -117,8 +111,8 @@ public class DelayChartTask extends ChartTask {
 
         int addingTime = delayController.getAddingTimeValue();
 
-        int n = (int) ((injectorSectionController.getWidthCurrentSignal().getValue() + addingTime) / PULSE_LENGTH_STEP) > DELAY_SAMPLE_SIZE - 1 ?
-                DELAY_SAMPLE_SIZE - 1 : (int) ((injectorSectionController.getWidthCurrentSignal().getValue() + addingTime) / PULSE_LENGTH_STEP);
+        int n = (int) ((injectorSectionController.getWidthCurrentSignalSpinner().getValue() + addingTime) / PULSE_LENGTH_STEP) > DELAY_SAMPLE_SIZE - 1 ?
+                DELAY_SAMPLE_SIZE - 1 : (int) ((injectorSectionController.getWidthCurrentSignalSpinner().getValue() + addingTime) / PULSE_LENGTH_STEP);
 
         int remainder = n % DELAY_SAMPLE_SIZE;
 

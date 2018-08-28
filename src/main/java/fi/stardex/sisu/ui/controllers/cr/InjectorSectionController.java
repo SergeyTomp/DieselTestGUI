@@ -32,27 +32,34 @@ import static fi.stardex.sisu.util.SpinnerDefaults.*;
 
 public class InjectorSectionController {
 
-    @FXML private Spinner<Integer> widthCurrentSignal;
+    @FXML private Spinner<Integer> widthCurrentSignalSpinner;
 
-    @FXML private Spinner<Double> freqCurrentSignal;
+    @FXML
+    private Spinner<Double> freqCurrentSignalSpinner;
 
-    @FXML private RadioButton piezoRadioButton;
+    @FXML
+    private RadioButton piezoRadioButton;
 
-    @FXML private ToggleGroup piezoCoilToggleGroup;
+    @FXML
+    private ToggleGroup piezoCoilToggleGroup;
 
-    @FXML private RadioButton coilRadioButton;
+    @FXML
+    private RadioButton coilRadioButton;
 
-    @FXML private RadioButton piezoDelphiRadioButton;
+    @FXML
+    private RadioButton piezoDelphiRadioButton;
 
-    @FXML private ToggleButton powerSwitch;
+    @FXML
+    private ToggleButton injectorSectionStartToggleButton;
 
-    @FXML private Label labelWidth;
+    @FXML
+    private Label labelWidth;
 
-    @FXML private Label labelFreq;
+    @FXML
+    private Label labelFreq;
 
-    @FXML private Label statusBoostULabelText;
-
-    @FXML private ProgressBar switcherProgressBar;
+    @FXML
+    private Label statusBoostULabelText;
 
     @FXML private StackPane stackPaneLed1;
 
@@ -94,12 +101,12 @@ public class InjectorSectionController {
 
     private LedParametersChangeListener ledParametersChangeListener;
 
-    public Spinner<Integer> getWidthCurrentSignal() {
-        return widthCurrentSignal;
+    public Spinner<Integer> getWidthCurrentSignalSpinner() {
+        return widthCurrentSignalSpinner;
     }
 
-    public Spinner<Double> getFreqCurrentSignal() {
-        return freqCurrentSignal;
+    public Spinner<Double> getFreqCurrentSignalSpinner() {
+        return freqCurrentSignalSpinner;
     }
 
     public ToggleGroup getPiezoCoilToggleGroup() {
@@ -134,8 +141,8 @@ public class InjectorSectionController {
         return ledBeaker4Controller;
     }
 
-    public ToggleButton getPowerSwitch() {
-        return powerSwitch;
+    public ToggleButton getInjectorSectionStartToggleButton() {
+        return injectorSectionStartToggleButton;
     }
 
     public void setInjectorsConfigComboBox(ComboBox<InjectorChannel> injectorsConfigComboBox) {
@@ -230,21 +237,21 @@ public class InjectorSectionController {
 
     private void setupSpinners() {
 
-        widthCurrentSignal.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(WIDTH_CURRENT_SIGNAL_SPINNER_MIN,
+        widthCurrentSignalSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(WIDTH_CURRENT_SIGNAL_SPINNER_MIN,
                 WIDTH_CURRENT_SIGNAL_SPINNER_MAX,
                 WIDTH_CURRENT_SIGNAL_SPINNER_INIT,
                 WIDTH_CURRENT_SIGNAL_SPINNER_STEP));
 
-        freqCurrentSignal.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(FREQ_CURRENT_SIGNAL_MIN,
-                FREQ_CURRENT_SIGNAL_MAX,
-                FREQ_CURRENT_SIGNAL_INIT,
-                FREQ_CURRENT_SIGNAL_STEP));
+        freqCurrentSignalSpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(FREQ_CURRENT_SIGNAL_SPINNER_MIN,
+                FREQ_CURRENT_SIGNAL_SPINNER_MAX,
+                FREQ_CURRENT_SIGNAL_SPINNER_INIT,
+                FREQ_CURRENT_SIGNAL_SPINNER_STEP));
 
-        SpinnerManager.setupSpinner(freqCurrentSignal,
-                FREQ_CURRENT_SIGNAL_INIT,
-                FREQ_CURRENT_SIGNAL_FAKE,
+        SpinnerManager.setupSpinner(freqCurrentSignalSpinner,
+                FREQ_CURRENT_SIGNAL_SPINNER_INIT,
+                FREQ_CURRENT_SIGNAL_SPINNER_FAKE,
                 new CustomTooltip(),
-                new SpinnerValueObtainer(FREQ_CURRENT_SIGNAL_INIT));
+                new SpinnerValueObtainer(FREQ_CURRENT_SIGNAL_SPINNER_INIT));
 
     }
 
@@ -266,7 +273,7 @@ public class InjectorSectionController {
 
             injectorTypeProperty = piezoCoilToggleGroup.selectedToggleProperty();
             injectorChannelProperty = injectorsConfigComboBox.getSelectionModel().selectedItemProperty();
-            freqCurrentSignal.valueProperty().addListener(this);
+            freqCurrentSignalSpinner.valueProperty().addListener(this);
             injectorTypeProperty.addListener(this);
             ledControllers.forEach(s -> s.getLedBeaker().selectedProperty().addListener(this));
 
@@ -298,7 +305,7 @@ public class InjectorSectionController {
         }
 
         private boolean isValid(Double newValue) {
-            return (newValue <= 50 && newValue >= 0.5) && newValue != FREQ_CURRENT_SIGNAL_FAKE;
+            return (newValue <= 50 && newValue >= 0.5) && newValue != FREQ_CURRENT_SIGNAL_SPINNER_FAKE;
         }
 
         private boolean isValid(Boolean newValue) {
@@ -318,7 +325,7 @@ public class InjectorSectionController {
 
             delayController.showAttentionLabel(activeLeds > 1);
 
-            double frequency = freqCurrentSignal.getValue();
+            double frequency = freqCurrentSignalSpinner.getValue();
 
             ultimaModbusWriter.add(GImpulsesPeriod, 1000 / frequency);
 
@@ -374,7 +381,7 @@ public class InjectorSectionController {
     private class PowerButtonChangeListener implements ChangeListener<Boolean> {
 
         PowerButtonChangeListener() {
-            powerSwitch.selectedProperty().addListener(this);
+            injectorSectionStartToggleButton.selectedProperty().addListener(this);
         }
 
         @Override

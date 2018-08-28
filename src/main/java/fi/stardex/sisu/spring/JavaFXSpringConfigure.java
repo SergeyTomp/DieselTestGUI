@@ -103,8 +103,7 @@ public class JavaFXSpringConfigure {
                                                        InjectorsRepository injectorsRepository,
                                                        InjectorTestRepository injectorTestRepository,
                                                        CurrentInjectorTestsObtainer currentInjectorTestsObtainer,
-                                                       @Lazy ModbusRegisterProcessor flowModbusWriter,
-                                                       RLCController RLCController,Tests tests,
+                                                       @Lazy ModbusRegisterProcessor flowModbusWriter, Tests tests,
                                                        HighPressureSectionController highPressureSectionController,
                                                        Preferences rootPrefs) {
         MainSectionController mainSectionController = (MainSectionController) mainSection().getController();
@@ -117,12 +116,12 @@ public class JavaFXSpringConfigure {
         mainSectionController.setVoltAmpereProfileController(voltAmpereProfileController);
         mainSectionController.setDataConverter(dataConverter);
         mainSectionController.setCurrentInjectorObtainer(currentInjectorObtainer);
-        mainSectionController.setInjectorSectionController(injectorSectionController);
+        mainSectionController.setWidthCurrentSignalSpinner(injectorSectionController.getWidthCurrentSignalSpinner());
+        mainSectionController.setFreqCurrentSignalSpinner(injectorSectionController.getFreqCurrentSignalSpinner());
         mainSectionController.setInjectorsRepository(injectorsRepository);
         mainSectionController.setInjectorTestRepository(injectorTestRepository);
         mainSectionController.setCurrentInjectorTestsObtainer(currentInjectorTestsObtainer);
         mainSectionController.setFlowModbusWriter(flowModbusWriter);
-        mainSectionController.setRLCController(RLCController);
         mainSectionController.setHighPressureSectionController(highPressureSectionController);
         mainSectionController.setTests(tests);
         mainSectionController.setI18N(i18N);
@@ -393,7 +392,7 @@ public class JavaFXSpringConfigure {
         VoltAmpereProfileController voltAmpereProfileController = (VoltAmpereProfileController) voltAmpereProfileDialog().getController();
         voltAmpereProfileController.setUltimaModbusWriter(ultimaModbusWriter);
         voltAmpereProfileController.setInjectorSectionController(injectorSectionController);
-        voltAmpereProfileController.setWidthSpinner(injectorSectionController.getWidthCurrentSignal());
+        voltAmpereProfileController.setWidthSpinner(injectorSectionController.getWidthCurrentSignalSpinner());
         voltAmpereProfileController.setVoltageController(voltageController);
         voltAmpereProfileController.setFirmwareDataConverter(dataConverter);
         voltAmpereProfileController.setI18N(i18N);

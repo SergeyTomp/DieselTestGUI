@@ -12,11 +12,11 @@ public class Tests {
 
     }
 
-    public TestType getTest() {
+    public TestType getTestType() {
         return test;
     }
 
-    public void setTest(TestType test) {
+    public void setTestType(TestType test) {
         this.test = test;
     }
 }

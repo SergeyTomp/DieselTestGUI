@@ -64,6 +64,26 @@ public class RLCController {
     private CurrentInjectorObtainer currentInjectorObtainer;
     private I18N i18N;
 
+    public Button getMeasureButton() {
+        return measureButton;
+    }
+
+    public Button getStoreButton() {
+        return storeButton;
+    }
+
+    public Tab getTabCoilOne() {
+        return tabCoilOne;
+    }
+
+    public Tab getTabCoilTwo() {
+        return tabCoilTwo;
+    }
+
+    public TabPane getMeasurementTabPane() {
+        return measurementTabPane;
+    }
+
     public void setInjectorSectionController(InjectorSectionController injectorSectionController) {
         this.injectorSectionController = injectorSectionController;
     }
@@ -124,7 +144,7 @@ public class RLCController {
 
         measureButton.setOnAction(event -> {
             measureButton.setDisable(true);
-            new Thread(()-> measure()).start();
+            new Thread(this::measure).start();
         });
         storeButton.setOnAction(event -> store());
     }
@@ -132,94 +152,6 @@ public class RLCController {
     private void bindingI18N() {
         storeButton.textProperty().bind(i18N.createStringBinding("rlc.store.button"));
         measureButton.textProperty().bind(i18N.createStringBinding("rlc.measure.button"));
-    }
-
-    public void setupNull() {
-        storeButton.setDisable(true);
-        measureButton.setDisable(true);
-
-        parameter1Gauge.setValue(0d);
-        parameter2Gauge.setValue(0d);
-
-        parameter1Gauge.setDecimals(1);
-        parameter1Gauge.setTitle("");
-        parameter1Gauge.setUnit("");
-        parameter1Gauge.setMaxValue(500d);
-
-        parameter2Gauge.setDecimals(1);
-        parameter2Gauge.setTitle("");
-        parameter2Gauge.setUnit("");
-        parameter2Gauge.setMaxValue(3d);
-    }
-
-    public void setupCoil() {
-        storeButton.setDisable(false);
-        measureButton.setDisable(false);
-
-        parameter1Gauge.setDecimals(0);
-        parameter1Gauge.setTitle("Inductance");
-        parameter1Gauge.setUnit("\u03BCH");
-        parameter1Gauge.setMaxValue(500d);
-
-        parameter2Gauge.setDecimals(2);
-        parameter2Gauge.setTitle("Resistance");
-        parameter2Gauge.setUnit("\u03A9");
-        parameter2Gauge.setMaxValue(3d);
-
-        tabCoilOne.setText("COIL");
-        measurementTabPane.getTabs().remove(tabCoilTwo);
-    }
-
-    public void setupPiezo(double capacitanceMaxValue) {
-        storeButton.setDisable(false);
-        measureButton.setDisable(false);
-
-        parameter1Gauge.setDecimals(1);
-        parameter1Gauge.setTitle("Capacitance");
-        parameter1Gauge.setUnit("\u03BCF");
-        parameter1Gauge.setMaxValue(capacitanceMaxValue);
-
-        parameter2Gauge.setDecimals(0);
-        parameter2Gauge.setTitle("Resistance");
-        parameter2Gauge.setUnit("k\u03A9");
-        parameter2Gauge.setMaxValue(300d);
-
-        measurementTabPane.getTabs().remove(tabCoilTwo);
-        tabCoilOne.setText("PIEZO");
-    }
-
-    public void setupPiezo(double capacitanceMaxValue, double resistanceMaxValue) {
-        storeButton.setDisable(false);
-        measureButton.setDisable(false);
-
-        parameter1Gauge.setDecimals(1);
-        parameter1Gauge.setTitle("Capacitance");
-        parameter1Gauge.setUnit("\u03BCF");
-        parameter1Gauge.setMaxValue(capacitanceMaxValue);
-
-        parameter2Gauge.setDecimals(0);
-        parameter2Gauge.setTitle("Resistance");
-        parameter2Gauge.setUnit("k\u03A9");
-        parameter2Gauge.setMaxValue(resistanceMaxValue);
-
-        measurementTabPane.getTabs().remove(tabCoilTwo);
-        tabCoilOne.setText("PIEZO");
-    }
-
-    public void setupDoubleCoil(){
-        setupCoil();
-        parameter3Gauge.setDecimals(0);
-        parameter3Gauge.setTitle("Inductance");
-        parameter3Gauge.setUnit("\u03BCH");
-        parameter3Gauge.setMaxValue(10000d);
-
-        parameter4Gauge.setDecimals(2);
-        parameter4Gauge.setTitle("Resistance");
-        parameter4Gauge.setUnit("\u03A9");
-        parameter4Gauge.setMaxValue(3d);
-
-        tabCoilOne.setText("COIL 1");
-        measurementTabPane.getTabs().add(tabCoilTwo);
     }
 
     private static Gauge createGauge() {

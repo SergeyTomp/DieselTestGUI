@@ -18,7 +18,7 @@
                       <ToggleButton fx:id="powerButton1" minHeight="65.0" minWidth="60.0" mnemonicParsing="false" prefHeight="65.0" prefWidth="60.0" styleClass="button-power" stylesheets="@../../../css/Styling.css" />
                </children>
             </StackPane>
-                <ToggleButton fx:id="powerSwitch" minHeight="90.0" minWidth="50.0" mnemonicParsing="false" prefWidth="50.0" styleClass="switcher" stylesheets="@../../../css/Styling.css" GridPane.columnIndex="7" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                <ToggleButton fx:id="highPressureStartToggleButton" minHeight="90.0" minWidth="50.0" mnemonicParsing="false" prefWidth="50.0" styleClass="switcher" stylesheets="@../../../css/Styling.css" GridPane.columnIndex="7" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                     <GridPane.margin>
                         <Insets bottom="2.0" left="2.0" right="10.0" top="2.0" />
                     </GridPane.margin>
@@ -45,12 +45,12 @@
                         <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
                      </GridPane.margin>
                   </Label>
-                          <Spinner fx:id="currentReg2" editable="true" maxHeight="30.0" maxWidth="90.0" minHeight="30.0" minWidth="90.0" prefHeight="30.0" prefWidth="90.0" styleClass="" stylesheets="@../../../css/Styling.css" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                          <Spinner fx:id="currentReg2Spinner" editable="true" maxHeight="30.0" maxWidth="90.0" minHeight="30.0" minWidth="90.0" prefHeight="30.0" prefWidth="90.0" styleClass="" stylesheets="@../../../css/Styling.css" GridPane.columnIndex="1" GridPane.rowIndex="1">
                               <GridPane.margin>
                                   <Insets left="2.0" />
                               </GridPane.margin>
                   </Spinner>
-                          <Spinner fx:id="dutyCycleReg2" editable="true" maxHeight="30.0" maxWidth="90.0" minHeight="30.0" minWidth="90.0" prefHeight="30.0" prefWidth="90.0" styleClass="" stylesheets="@../../../css/Styling.css" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                          <Spinner fx:id="dutyCycleReg2Spinner" editable="true" maxHeight="30.0" maxWidth="90.0" minHeight="30.0" minWidth="90.0" prefHeight="30.0" prefWidth="90.0" styleClass="" stylesheets="@../../../css/Styling.css" GridPane.columnIndex="1" GridPane.rowIndex="2">
                               <GridPane.margin>
                                   <Insets left="2.0" />
                               </GridPane.margin>
@@ -84,12 +84,12 @@
                         <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
                      </GridPane.margin>
                   </Label>
-                          <Spinner fx:id="currentReg3" editable="true" maxHeight="30.0" maxWidth="90.0" minHeight="30.0" minWidth="90.0" prefHeight="30.0" prefWidth="90.0" styleClass="" stylesheets="@../../../css/Styling.css" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                          <Spinner fx:id="currentReg3Spinner" editable="true" maxHeight="30.0" maxWidth="90.0" minHeight="30.0" minWidth="90.0" prefHeight="30.0" prefWidth="90.0" styleClass="" stylesheets="@../../../css/Styling.css" GridPane.columnIndex="1" GridPane.rowIndex="1">
                               <GridPane.margin>
                                   <Insets left="2.0" />
                               </GridPane.margin>
                   </Spinner>
-                          <Spinner fx:id="dutyCycleReg3" editable="true" maxHeight="30.0" maxWidth="90.0" minHeight="30.0" minWidth="90.0" prefHeight="30.0" prefWidth="90.0" styleClass="" stylesheets="@../../../css/Styling.css" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                          <Spinner fx:id="dutyCycleReg3Spinner" editable="true" maxHeight="30.0" maxWidth="90.0" minHeight="30.0" minWidth="90.0" prefHeight="30.0" prefWidth="90.0" styleClass="" stylesheets="@../../../css/Styling.css" GridPane.columnIndex="1" GridPane.rowIndex="2">
                               <GridPane.margin>
                                   <Insets left="2.0" />
                               </GridPane.margin>
@@ -140,17 +140,17 @@
                         <Insets left="10.0" />
                      </padding>
                   </Label>
-                          <Spinner fx:id="pressReg1" editable="true" maxHeight="30.0" maxWidth="90.0" minHeight="30.0" minWidth="90.0" prefHeight="30.0" prefWidth="90.0" stylesheets="@../../../css/Styling.css" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.vgrow="NEVER">
+                          <Spinner fx:id="pressReg1Spinner" editable="true" maxHeight="30.0" maxWidth="90.0" minHeight="30.0" minWidth="90.0" prefHeight="30.0" prefWidth="90.0" stylesheets="@../../../css/Styling.css" GridPane.columnIndex="1" GridPane.rowIndex="1" GridPane.vgrow="NEVER">
                               <GridPane.margin>
                                   <Insets />
                               </GridPane.margin>
                   </Spinner>
-                          <Spinner fx:id="currentReg1" editable="true" maxHeight="30.0" maxWidth="90.0" minHeight="30.0" minWidth="90.0" prefHeight="30.0" prefWidth="90.0" stylesheets="@../../../css/Styling.css" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.vgrow="NEVER">
+                          <Spinner fx:id="currentReg1Spinner" editable="true" maxHeight="30.0" maxWidth="90.0" minHeight="30.0" minWidth="90.0" prefHeight="30.0" prefWidth="90.0" stylesheets="@../../../css/Styling.css" GridPane.columnIndex="1" GridPane.rowIndex="2" GridPane.vgrow="NEVER">
                               <GridPane.margin>
                                   <Insets />
                               </GridPane.margin>
                   </Spinner>
-                          <Spinner fx:id="dutyCycleReg1" editable="true" maxHeight="30.0" maxWidth="90.0" minHeight="30.0" minWidth="90.0" prefHeight="30.0" prefWidth="90.0" styleClass="" stylesheets="@../../../css/Styling.css" GridPane.columnIndex="1" GridPane.rowIndex="3" GridPane.vgrow="NEVER">
+                          <Spinner fx:id="dutyCycleReg1Spinner" editable="true" maxHeight="30.0" maxWidth="90.0" minHeight="30.0" minWidth="90.0" prefHeight="30.0" prefWidth="90.0" styleClass="" stylesheets="@../../../css/Styling.css" GridPane.columnIndex="1" GridPane.rowIndex="3" GridPane.vgrow="NEVER">
                               <GridPane.margin>
                                   <Insets />
                               </GridPane.margin>

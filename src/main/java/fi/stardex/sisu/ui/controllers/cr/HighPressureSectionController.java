@@ -9,7 +9,6 @@ import fi.stardex.sisu.util.enums.RegActive;
 import fi.stardex.sisu.util.i18n.I18N;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
@@ -23,18 +22,17 @@ import static fi.stardex.sisu.util.enums.RegActive.*;
 
 public class HighPressureSectionController {
 
-
     @FXML
     private GridPane gridPaneHBox2;
 
     @FXML
-    private Spinner<Integer> pressReg1;
+    private Spinner<Integer> pressReg1Spinner;
 
     @FXML
-    private Spinner<Double> currentReg1;
+    private Spinner<Double> currentReg1Spinner;
 
     @FXML
-    private Spinner<Double> dutyCycleReg1;
+    private Spinner<Double> dutyCycleReg1Spinner;
 
     @FXML
     private Label labelPressReg1;
@@ -52,10 +50,10 @@ public class HighPressureSectionController {
     private Label labelCycleReg2;
 
     @FXML
-    private Spinner<Double> currentReg2;
+    private Spinner<Double> currentReg2Spinner;
 
     @FXML
-    private Spinner<Double> dutyCycleReg2;
+    private Spinner<Double> dutyCycleReg2Spinner;
 
     @FXML
     private Label labelReg1;
@@ -70,10 +68,10 @@ public class HighPressureSectionController {
     private Label labelCycleReg3;
 
     @FXML
-    private Spinner<Double> currentReg3;
+    private Spinner<Double> currentReg3Spinner;
 
     @FXML
-    private Spinner<Double> dutyCycleReg3;
+    private Spinner<Double> dutyCycleReg3Spinner;
 
     @FXML
     private Label labelReg3;
@@ -96,7 +94,7 @@ public class HighPressureSectionController {
     @FXML private StackPane stackPaneLCD;
 
     @FXML
-    private ToggleButton powerSwitch;
+    private ToggleButton highPressureStartToggleButton;
 
     private Lcd pressureLcd;
     private RegActive Reg1paramActive;
@@ -107,32 +105,32 @@ public class HighPressureSectionController {
     private I18N i18N;
     public static final String GREEN_STYLE_CLASS = "regulator-spinner-selected";
 
-    public Spinner<Integer> getPressReg1() {
-        return pressReg1;
+    public Spinner<Integer> getPressReg1Spinner() {
+        return pressReg1Spinner;
     }
 
-    public Spinner<Double> getCurrentReg1() {
-        return currentReg1;
+    public Spinner<Double> getCurrentReg1Spinner() {
+        return currentReg1Spinner;
     }
 
-    public Spinner<Double> getDutyCycleReg1() {
-        return dutyCycleReg1;
+    public Spinner<Double> getDutyCycleReg1Spinner() {
+        return dutyCycleReg1Spinner;
     }
 
-    public Spinner<Double> getCurrentReg2() {
-        return currentReg2;
+    public Spinner<Double> getCurrentReg2Spinner() {
+        return currentReg2Spinner;
     }
 
-    public Spinner<Double> getDutyCycleReg2() {
-        return dutyCycleReg2;
+    public Spinner<Double> getDutyCycleReg2Spinner() {
+        return dutyCycleReg2Spinner;
     }
 
-    public Spinner<Double> getCurrentReg3() {
-        return currentReg3;
+    public Spinner<Double> getCurrentReg3Spinner() {
+        return currentReg3Spinner;
     }
 
-    public Spinner<Double> getDutyCycleReg3() {
-        return dutyCycleReg3;
+    public Spinner<Double> getDutyCycleReg3Spinner() {
+        return dutyCycleReg3Spinner;
     }
 
     public void setUltimaModbusWriter(ModbusRegisterProcessor ultimaModbusWriter) {
@@ -179,8 +177,8 @@ public class HighPressureSectionController {
         return stackPaneLCD;
     }
 
-    public ToggleButton getPowerSwitch() {
-        return powerSwitch;
+    public ToggleButton getHighPressureStartToggleButton() {
+        return highPressureStartToggleButton;
     }
 
     public Lcd getPressureLcd() {
@@ -197,181 +195,180 @@ public class HighPressureSectionController {
 
     public void setVisibleRegulator2(boolean visible) {
         visualUtils.setVisible(visible,
-                labelReg2, labelAmpReg2, labelCycleReg2, powerButton2, dutyCycleReg2, currentReg2);
+                labelReg2, labelAmpReg2, labelCycleReg2, powerButton2, dutyCycleReg2Spinner, currentReg2Spinner);
     }
 
     public void setVisibleRegulator3(boolean visible) {
         visualUtils.setVisible(visible,
-                labelReg3, labelAmpReg3, labelCycleReg3, powerButton3, dutyCycleReg3, currentReg3);
+                labelReg3, labelAmpReg3, labelCycleReg3, powerButton3, dutyCycleReg3Spinner, currentReg3Spinner);
     }
 
     @PostConstruct
     public void init() {
 
         bindingI18N();
-//        pressReg1.getStyleClass().add("");
+
         /** установка активных параметров регулирования по умолчанию */
         Reg1paramActive = PRESSURE;
         Reg2paramActive = CURRENT;
         Reg3paramActive = CURRENT;
 
         /** активируем спиннеры регуляторов */
-        pressReg1.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 9999, 0, 10));
-        currentReg1.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0, 2.5, 0, 0.01));
-        dutyCycleReg1.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0, 100, 0, 0.01));
-        currentReg2.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0, 2.5, 0, 0.01));
-        dutyCycleReg2.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0, 100, 0, 0.01));
-        currentReg3.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0, 2.5, 0, 0.01));
-        dutyCycleReg3.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0, 100, 0, 0.01));
+        pressReg1Spinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 9999, 0, 10));
+        currentReg1Spinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0, 2.5, 0, 0.01));
+        dutyCycleReg1Spinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0, 100, 0, 0.01));
+        currentReg2Spinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0, 2.5, 0, 0.01));
+        dutyCycleReg2Spinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0, 100, 0, 0.01));
+        currentReg3Spinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0, 2.5, 0, 0.01));
+        dutyCycleReg3Spinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0, 100, 0, 0.01));
 
         /** слушаем активацию спиннеров регуляторов */
         // смена режима по клику на стрелках
-        pressReg1.setOnMouseClicked(event -> {
+        pressReg1Spinner.setOnMouseClicked(event -> {
             Reg1paramActive = PRESSURE;
-            if(powerSwitch.isSelected() && powerButton1.isSelected()){
+            if(highPressureStartToggleButton.isSelected() && powerButton1.isSelected()){
                 ultimaModbusWriter.add(PressureReg1_PressMode, true);   //вкл.режим давления
                 ultimaModbusWriter.add(PressureReg1_I_Mode, false);     //откл.режим тока
             }
         });
-        currentReg1.setOnMouseClicked((MouseEvent event) -> {
+        currentReg1Spinner.setOnMouseClicked((MouseEvent event) -> {
             Reg1paramActive = CURRENT;
-            if(powerSwitch.isSelected() && powerButton1.isSelected()) {
+            if(highPressureStartToggleButton.isSelected() && powerButton1.isSelected()) {
                 ultimaModbusWriter.add(PressureReg1_PressMode, false);  //откл.режим давления
                 ultimaModbusWriter.add(PressureReg1_I_Mode, true);      //вкл.режим тока
             }
         });
-        dutyCycleReg1.setOnMouseClicked((event -> {
+        dutyCycleReg1Spinner.setOnMouseClicked((event -> {
             Reg1paramActive = DUTY;
-            if(powerSwitch.isSelected() && powerButton1.isSelected()) {
+            if(highPressureStartToggleButton.isSelected() && powerButton1.isSelected()) {
                 ultimaModbusWriter.add(PressureReg1_PressMode, false);  //откл.режим давления
                 ultimaModbusWriter.add(PressureReg1_I_Mode, false);     //откл.режим тока, вкл.режим скважности
 
             }
         }));
-        currentReg2.setOnMouseClicked((event -> {
+        currentReg2Spinner.setOnMouseClicked((event -> {
             Reg2paramActive = CURRENT;
-            if(powerSwitch.isSelected() && powerButton2.isSelected()) {
+            if(highPressureStartToggleButton.isSelected() && powerButton2.isSelected()) {
                 ultimaModbusWriter.add(PressureReg2_I_Mode, true);
             }
         }));
-        dutyCycleReg2.setOnMouseClicked((event -> {
+        dutyCycleReg2Spinner.setOnMouseClicked((event -> {
             Reg2paramActive = DUTY;
-            if(powerSwitch.isSelected() && powerButton2.isSelected()) {
+            if(highPressureStartToggleButton.isSelected() && powerButton2.isSelected()) {
                 ultimaModbusWriter.add(PressureReg2_DutyMode, false);
             }
         }));
-        currentReg3.setOnMouseClicked((event -> {
+        currentReg3Spinner.setOnMouseClicked((event -> {
             Reg3paramActive = CURRENT;
-            if(powerSwitch.isSelected() && powerButton3.isSelected()) {
+            if(highPressureStartToggleButton.isSelected() && powerButton3.isSelected()) {
                 ultimaModbusWriter.add(PressureReg3_I_Mode, true);
             }
         }));
-        dutyCycleReg3.setOnMouseClicked((event -> {
+        dutyCycleReg3Spinner.setOnMouseClicked((event -> {
             Reg3paramActive = DUTY;
-            if(powerSwitch.isSelected() && powerButton3.isSelected()) {
+            if(highPressureStartToggleButton.isSelected() && powerButton3.isSelected()) {
                 ultimaModbusWriter.add(PressureReg3_DutyMode, false);
             }
         }));
 
         /** смена режима по клику в текстовом поле спиннера */
         // спиннеры регулятора 1
-        pressReg1.focusedProperty().addListener((observable, oldValue, newValue) -> {
+        pressReg1Spinner.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue){
                 Reg1paramActive = PRESSURE;
-//                pressReg1.getStyleClass().set(1, GREEN_STYLE_CLASS);
-                if(powerSwitch.isSelected() && powerButton1.isSelected()){
+                if(highPressureStartToggleButton.isSelected() && powerButton1.isSelected()){
                     ultimaModbusWriter.add(PressureReg1_PressMode, true);   //вкл.режим давления
                     ultimaModbusWriter.add(PressureReg1_I_Mode, false);     //откл.режим тока
                 }
             }});
-        currentReg1.focusedProperty().addListener((observable, oldValue, newValue) -> {
+        currentReg1Spinner.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue){Reg1paramActive = CURRENT;
-                if(powerSwitch.isSelected() && powerButton1.isSelected()) {
+                if(highPressureStartToggleButton.isSelected() && powerButton1.isSelected()) {
                     ultimaModbusWriter.add(PressureReg1_PressMode, false);  //откл.режим давления
                     ultimaModbusWriter.add(PressureReg1_I_Mode, true);      //вкл.режим тока
 
                 }
             }});
-        dutyCycleReg1.focusedProperty().addListener((observable, oldValue, newValue)-> {
+        dutyCycleReg1Spinner.focusedProperty().addListener((observable, oldValue, newValue)-> {
             if (newValue){ Reg1paramActive = DUTY;
-                if(powerSwitch.isSelected() && powerButton1.isSelected()) {
+                if(highPressureStartToggleButton.isSelected() && powerButton1.isSelected()) {
                     ultimaModbusWriter.add(PressureReg1_PressMode, false);  //откл.режим давления
                     ultimaModbusWriter.add(PressureReg1_I_Mode, false);     //откл.режим тока, вкл.режим скважности
                 }
             }});
 
         // спиннеры регулятора 2
-        currentReg2.focusedProperty().addListener((observable, oldValue, newValue) -> {
+        currentReg2Spinner.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue){ Reg2paramActive = CURRENT;
-                if(powerSwitch.isSelected() && powerButton2.isSelected()) {
+                if(highPressureStartToggleButton.isSelected() && powerButton2.isSelected()) {
                     ultimaModbusWriter.add(PressureReg2_I_Mode, true);
                 }
             }});
-        dutyCycleReg2.focusedProperty().addListener((observable, oldValue, newValue) -> {
+        dutyCycleReg2Spinner.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if(newValue){Reg2paramActive = DUTY;
-                if(powerSwitch.isSelected() && powerButton2.isSelected()) {
+                if(highPressureStartToggleButton.isSelected() && powerButton2.isSelected()) {
                     ultimaModbusWriter.add(PressureReg2_DutyMode, false);
                 }
             }});
 
         // спиннеры регулятора 3
-        currentReg3.focusedProperty().addListener((observable, oldValue, newValue) -> {
+        currentReg3Spinner.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if(newValue){Reg3paramActive = CURRENT;
-                if(powerSwitch.isSelected() && powerButton3.isSelected()) {
+                if(highPressureStartToggleButton.isSelected() && powerButton3.isSelected()) {
                     ultimaModbusWriter.add(PressureReg3_I_Mode, true);
                 }
             }});
-        dutyCycleReg3.focusedProperty().addListener((observable, oldValue, newValue) -> {
+        dutyCycleReg3Spinner.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if(newValue){Reg3paramActive = DUTY;
-                if(powerSwitch.isSelected() && powerButton3.isSelected()) {
+                if(highPressureStartToggleButton.isSelected() && powerButton3.isSelected()) {
                     ultimaModbusWriter.add(PressureReg3_DutyMode, false);
                 }
             }});
 
         /** отправляем уставки спиннеров */
         // регулятор 1
-        pressReg1.valueProperty().addListener((observable, oldValue, newValue) -> {
-            if(powerSwitch.isSelected() && powerButton1.isSelected() && Reg1paramActive == PRESSURE){
+        pressReg1Spinner.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if(highPressureStartToggleButton.isSelected() && powerButton1.isSelected() && Reg1paramActive == PRESSURE){
                 ultimaModbusWriter.add(PressureReg1_PressTask, newValue);
             }
         });
-        currentReg1.valueProperty().addListener((observable, oldValue, newValue) -> {
-            if(powerSwitch.isSelected() && powerButton1.isSelected() && Reg1paramActive == CURRENT) {
+        currentReg1Spinner.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if(highPressureStartToggleButton.isSelected() && powerButton1.isSelected() && Reg1paramActive == CURRENT) {
                 ultimaModbusWriter.add(PressureReg1_I_Task, newValue);
             }
         });
-        dutyCycleReg1.valueProperty().addListener((observable, oldValue, newValue) -> {
-            if(powerSwitch.isSelected() && powerButton1.isSelected() && Reg1paramActive == DUTY) {
+        dutyCycleReg1Spinner.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if(highPressureStartToggleButton.isSelected() && powerButton1.isSelected() && Reg1paramActive == DUTY) {
                 ultimaModbusWriter.add(PressureReg1_DutyTask, newValue);
             }
         });
 
         // регулятор 2
-        currentReg2.valueProperty().addListener((observable, oldValue, newValue) -> {
-            if(powerSwitch.isSelected() && powerButton2.isSelected() && Reg2paramActive == CURRENT) {
+        currentReg2Spinner.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if(highPressureStartToggleButton.isSelected() && powerButton2.isSelected() && Reg2paramActive == CURRENT) {
                 ultimaModbusWriter.add(PressureReg2_I_Task, newValue);
             }
         });
-        dutyCycleReg2.valueProperty().addListener((observable, oldValue, newValue) -> {
-            if(powerSwitch.isSelected() && powerButton2.isSelected() && Reg2paramActive == DUTY) {
+        dutyCycleReg2Spinner.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if(highPressureStartToggleButton.isSelected() && powerButton2.isSelected() && Reg2paramActive == DUTY) {
                 ultimaModbusWriter.add(PressureReg2_DutyTask, newValue);
             }
         });
 
         // регулятор 3
-        currentReg3.valueProperty().addListener((observable, oldValue, newValue) -> {
-            if(powerSwitch.isSelected() && powerButton3.isSelected() && Reg3paramActive == CURRENT) {
+        currentReg3Spinner.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if(highPressureStartToggleButton.isSelected() && powerButton3.isSelected() && Reg3paramActive == CURRENT) {
                 ultimaModbusWriter.add(PressureReg3_I_Task, newValue);
             }
         });
-        dutyCycleReg3.valueProperty().addListener((observable, oldValue, newValue) -> {
-            if(powerSwitch.isSelected() && powerButton3.isSelected() && Reg3paramActive == DUTY) {
+        dutyCycleReg3Spinner.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if(highPressureStartToggleButton.isSelected() && powerButton3.isSelected() && Reg3paramActive == DUTY) {
                 ultimaModbusWriter.add(PressureReg3_DutyTask, newValue);
             }
         });
 
         /** слушаем кнопку включения секции */
-        powerSwitch.selectedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
+        highPressureStartToggleButton.selectedProperty().addListener((ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) -> {
             if (newValue) {
                 if (powerButton1.isSelected()) {
                     regulator1_ON();
@@ -392,18 +389,18 @@ public class HighPressureSectionController {
 
         /** слушаем кнопки включения регуляторов давления */
         powerButton1.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue && powerSwitch.selectedProperty().getValue()) {
+            if (newValue && highPressureStartToggleButton.selectedProperty().getValue()) {
                 regulator1_ON();
             }else ultimaModbusWriter.add(PressureReg1_ON, false);
 
         });
         powerButton2.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue && powerSwitch.selectedProperty().getValue()) {
+            if (newValue && highPressureStartToggleButton.selectedProperty().getValue()) {
                 regulator2_ON();
             }else ultimaModbusWriter.add(PressureReg2_ON, false);
         });
         powerButton3.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue && powerSwitch.selectedProperty().getValue()) {
+            if (newValue && highPressureStartToggleButton.selectedProperty().getValue()) {
                 regulator3_ON();
             }else ultimaModbusWriter.add(PressureReg3_ON, false);
         });
@@ -456,15 +453,15 @@ public class HighPressureSectionController {
         ultimaModbusWriter.add(PressureReg1_ON, true);
         switch(Reg1paramActive){
             case PRESSURE:
-                double press1 = pressReg1.getValue();
+                double press1 = pressReg1Spinner.getValue();
                 ultimaModbusWriter.add(PressureReg1_PressTask, press1);
                 break;
             case CURRENT:
-                double current1 = currentReg1.getValue();
+                double current1 = currentReg1Spinner.getValue();
                 ultimaModbusWriter.add(PressureReg1_I_Task, current1);
                 break;
             case DUTY:
-                double duty1 = dutyCycleReg1.getValue();
+                double duty1 = dutyCycleReg1Spinner.getValue();
                 ultimaModbusWriter.add(PressureReg1_DutyTask, duty1);
                 break;
             default:ultimaModbusWriter.add(PressureReg1_ON, false);
@@ -475,11 +472,11 @@ public class HighPressureSectionController {
         ultimaModbusWriter.add(PressureReg2_ON, true);
         switch (Reg2paramActive){
             case CURRENT:
-                double current2 = currentReg2.getValue();
+                double current2 = currentReg2Spinner.getValue();
                 ultimaModbusWriter.add(PressureReg2_I_Task, current2);
                 break;
             case DUTY:
-                double duty2 = dutyCycleReg2.getValue();
+                double duty2 = dutyCycleReg2Spinner.getValue();
                 ultimaModbusWriter.add(PressureReg2_DutyTask, duty2);
                 break;
                 default:ultimaModbusWriter.add(PressureReg2_ON, false);
@@ -490,11 +487,11 @@ public class HighPressureSectionController {
         ultimaModbusWriter.add(PressureReg3_ON, true);
         switch (Reg3paramActive){
             case CURRENT:
-                double current3 = currentReg3.getValue();
+                double current3 = currentReg3Spinner.getValue();
                 ultimaModbusWriter.add(PressureReg3_I_Task, current3);
                 break;
             case DUTY:
-                double duty3 = dutyCycleReg3.getValue();
+                double duty3 = dutyCycleReg3Spinner.getValue();
                 ultimaModbusWriter.add(PressureReg3_DutyTask, duty3);
                 break;
                 default:ultimaModbusWriter.add(PressureReg3_ON, false);
@@ -556,7 +553,7 @@ public class HighPressureSectionController {
             ultimaModbusWriter.add(PressureReg1_PressMode, true);   //вкл.режим давления
             ultimaModbusWriter.add(PressureReg1_I_Mode, false);     //откл.режим тока
         }
-        pressReg1.getValueFactory().setValue(targetPress);
+        pressReg1Spinner.getValueFactory().setValue(targetPress);
         ultimaModbusWriter.add(PressureReg1_PressTask, targetPress);
         powerButton1.setSelected(true);
     }
@@ -566,8 +563,6 @@ public class HighPressureSectionController {
         ultimaModbusWriter.add(PressureReg1_ON, false);
         powerButton1.setSelected(false);
     }
-
-
 
     private void bindingI18N() {
         labelPressReg1.textProperty().bind(i18N.createStringBinding("highPressure.label.bar"));

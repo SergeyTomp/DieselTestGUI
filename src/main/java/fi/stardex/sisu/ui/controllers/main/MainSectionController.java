@@ -12,13 +12,12 @@ import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.RLCController;
 import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
-import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.dialogs.ManufacturerMenuDialogController;
 import fi.stardex.sisu.ui.controllers.dialogs.NewEditInjectorDialogController;
 import fi.stardex.sisu.ui.controllers.dialogs.NewEditTestDialogController;
 import fi.stardex.sisu.util.converters.DataConverter;
+import fi.stardex.sisu.util.enums.Measurement;
 import fi.stardex.sisu.util.enums.Tests;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer;
@@ -31,8 +30,6 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -44,73 +41,117 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.GridPane;
+import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.prefs.Preferences;
 
+import static fi.stardex.sisu.util.SpinnerDefaults.*;
 import static fi.stardex.sisu.util.enums.Tests.TestType.*;
 
 public class MainSectionController {
 
-    @FXML private VBox timingVbox;
+    private static Logger logger = LoggerFactory.getLogger(MainSectionController.class);
 
-    @FXML private CheckBox enableTimingCheckBox;
+    @FXML
+    private GridPane timingGridPane;
 
-    @FXML private ProgressBar measuringTimeProgressBar;
+    @FXML
+    private CheckBox enableTimingCheckBox;
 
-    @FXML private ProgressBar adjustingTimeProgressBar;
+    @FXML
+    private ToggleButton startToggleButton;
 
-    @FXML private Label labelAdjustTime;
+    @FXML
+    private ProgressBar adjustingTimeProgressBar;
 
-    @FXML private Label labelMeasureTime;
+    @FXML
+    private ProgressBar measuringTimeProgressBar;
 
-    @FXML private Button resetButton;
+    @FXML
+    private Text adjustingText;
 
-    @FXML private ToggleGroup testsToggleGroup;
+    @FXML
+    private Text measuringText;
 
-    @FXML private TextField injNumberTextField;
+    @FXML
+    private Label labelAdjustTime;
 
-    @FXML private RadioButton manualTestRadioButton;
+    @FXML
+    private Label labelMeasureTime;
 
-    @FXML private RadioButton testPlanTestRadioButton;
+    @FXML
+    private Button resetButton;
 
-    @FXML private RadioButton autoTestRadioButton;
+    @FXML
+    private ToggleGroup testsToggleGroup;
 
-    @FXML private RadioButton codingTestRadioButton;
+    @FXML
+    private RadioButton manualTestRadioButton;
 
-    @FXML private ToggleGroup baseType;
+    @FXML
+    private RadioButton testPlanTestRadioButton;
 
-    @FXML private RadioButton defaultRB;
+    @FXML
+    private RadioButton autoTestRadioButton;
 
-    @FXML private RadioButton customRB;
+    @FXML
+    private RadioButton codingTestRadioButton;
 
-    @FXML private ComboBox<GUIType> versionComboBox;
+    @FXML
+    private ToggleGroup baseType;
 
-    private enum GUIType {
+    @FXML
+    private RadioButton defaultRB;
+
+    @FXML
+    private RadioButton customRB;
+
+    @FXML
+    private ComboBox<GUIType> versionComboBox;
+
+    public enum GUIType {
         CR_Inj, CR_Pump, UIS
     }
 
-    @FXML private ListView<Manufacturer> manufacturerListView;
+    @FXML
+    private ListView<Manufacturer> manufacturerListView;
 
-    @FXML private TextField searchModelTF;
+    @FXML
+    private TextField searchModelTF;
 
-    @FXML private ListView<Model> modelListView;
+    @FXML
+    private ListView<Model> modelListView;
 
-    @FXML private ListView<InjectorTest> testListView;
+    @FXML
+    private ListView<InjectorTest> testListView;
 
-    @FXML private ToggleButton toggleButtonStart;
+    @FXML
+    private ComboBox<String> speedComboBox;
 
-    @FXML private ComboBox scaleCB;
+    private static final String NORMAL_SPEED = "X1";
+
+    private static final String DOUBLE_SPEED = "X2";
+
+    private static final String HALF_SPEED = "X0.5";
+
+    private TimeProgressBar adjustingTime;
+
+    private TimeProgressBar measuringTime;
+
+    private int currentAdjustingTime;
+
+    private int currentMeasuringTime;
 
     private Preferences rootPrefs;
-
-    private Preferences prefs = Preferences.userNodeForPackage(this.getClass());
 
     private ModbusRegisterProcessor flowModbusWriter;
 
@@ -132,7 +173,9 @@ public class MainSectionController {
 
     private CurrentInjectorObtainer currentInjectorObtainer;
 
-    private InjectorSectionController injectorSectionController;
+    private Spinner<Integer> widthCurrentSignalSpinner;
+
+    private Spinner<Double> freqCurrentSignalSpinner;
 
     private HighPressureSectionController highPressureSectionController;
 
@@ -154,32 +197,60 @@ public class MainSectionController {
 
     private Stage testDialogStage;
 
-    private RLCController RLCController;
-
     private FilteredList<Model> filteredModelList;
 
     private Tests tests;
 
     private I18N i18N;
 
-    private Timeline startButtonTimeline;
-
     private boolean startLight;
 
-    public Tests getTests() {
-        return tests;
+    public ComboBox<String> getSpeedComboBox() {
+        return speedComboBox;
     }
 
-    public ListView<Manufacturer> getManufacturerListView() {
-        return manufacturerListView;
+    public GridPane getTimingGridPane() {
+        return timingGridPane;
     }
 
     public ListView<Model> getModelListView() {
         return modelListView;
     }
 
-    public ToggleGroup getTestsToggleGroup() {
-        return testsToggleGroup;
+    public ComboBox<GUIType> getVersionComboBox() {
+        return versionComboBox;
+    }
+
+    public ModbusRegisterProcessor getFlowModbusWriter() {
+        return flowModbusWriter;
+    }
+
+    public TimeProgressBar getAdjustingTime() {
+        return adjustingTime;
+    }
+
+    public TimeProgressBar getMeasuringTime() {
+        return measuringTime;
+    }
+
+    public CheckBox getEnableTimingCheckBox() {
+        return enableTimingCheckBox;
+    }
+
+    public Tests getTests() {
+        return tests;
+    }
+
+    public ToggleButton getStartToggleButton() {
+        return startToggleButton;
+    }
+
+    public Button getResetButton() {
+        return resetButton;
+    }
+
+    public ListView<Manufacturer> getManufacturerListView() {
+        return manufacturerListView;
     }
 
     public RadioButton getManualTestRadioButton() {
@@ -238,8 +309,12 @@ public class MainSectionController {
         this.currentInjectorObtainer = currentInjectorObtainer;
     }
 
-    public void setInjectorSectionController(InjectorSectionController injectorSectionController) {
-        this.injectorSectionController = injectorSectionController;
+    public void setWidthCurrentSignalSpinner(Spinner<Integer> widthCurrentSignalSpinner) {
+        this.widthCurrentSignalSpinner = widthCurrentSignalSpinner;
+    }
+
+    public void setFreqCurrentSignalSpinner(Spinner<Double> freqCurrentSignalSpinner) {
+        this.freqCurrentSignalSpinner = freqCurrentSignalSpinner;
     }
 
     public void setInjectorsRepository(InjectorsRepository injectorsRepository) {
@@ -252,10 +327,6 @@ public class MainSectionController {
 
     public void setCurrentInjectorTestsObtainer(CurrentInjectorTestsObtainer currentInjectorTestsObtainer) {
         this.currentInjectorTestsObtainer = currentInjectorTestsObtainer;
-    }
-
-    public void setRLCController(RLCController RLCController) {
-        this.RLCController = RLCController;
     }
 
     public void setFlowModbusWriter(ModbusRegisterProcessor flowModbusWriter) {
@@ -281,6 +352,8 @@ public class MainSectionController {
     @PostConstruct
     private void init() {
 
+        initTimeProgressBars();
+
         bindingI18N();
 
         setupResetButton();
@@ -293,26 +366,9 @@ public class MainSectionController {
 
         initTestContextMenu();
 
-        scaleCB.setStyle("-fx-font-size: 5pt");
-        scaleCB.setItems(FXCollections.observableArrayList("0.5x", "x1", "x2"));
-        scaleCB.setValue(scaleCB.getItems().get(1));
+        initSpeedComboBox();
 
-        startButtonTimeline = new Timeline(new KeyFrame(Duration.millis(400), event -> initStartStopButtonBlinking()));
-        startButtonTimeline.setCycleCount(Animation.INDEFINITE);
-
-        toggleButtonStart.selectedProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                if(newValue){
-                    startButtonTimeline.play();
-                }
-                if(!newValue) {
-                    startButtonTimeline.stop();
-                    toggleButtonStart.getStyleClass().clear();
-                    toggleButtonStart.getStyleClass().add("startButton");
-                }
-            }
-        });
+        initStartToggleButtonBlinking();
 
         manufacturerListView.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) -> {
             currentManufacturerObtainer.setCurrentManufacturer(newValue);
@@ -366,7 +422,7 @@ public class MainSectionController {
 
             if (newValue == null) {
                 currentInjectorObtainer.setInjector(null);
-                enabler.selectInjector(false);
+                enabler.selectInjector(false).selectInjectorType(null);
                 return;
             }
 
@@ -375,8 +431,7 @@ public class MainSectionController {
             inj.setVoltAmpereProfile(currentVoltAmpereProfile);
             currentInjectorObtainer.setInjector(inj);
 
-            enabler.selectInjector(true);
-
+            enabler.selectInjector(true).selectInjectorType(currentVoltAmpereProfile.getInjectorType().getInjectorType());
 
             Double firstI = currentVoltAmpereProfile.getFirstI();
             Double secondI = currentVoltAmpereProfile.getSecondI();
@@ -394,83 +449,70 @@ public class MainSectionController {
             voltAmpereProfileController.getNegativeUSpinner().getValueFactory().setValue(currentVoltAmpereProfile.getNegativeU());
             voltAmpereProfileController.getEnableBoostToggleButton().setSelected(currentVoltAmpereProfile.getBoostDisable());
 
-            InjectorSectionController injectorSectionController = voltAmpereProfileController.getInjectorSectionController();
-
-            switch (currentVoltAmpereProfile.getInjectorType().getInjectorType()) {
-                case "coil":
-                    injectorSectionController.getCoilRadioButton().setSelected(true);
-                    RLCController.setupCoil();
-                    injectorSectionController.getCoilRadioButton().setDisable(false);
-                    injectorSectionController.getPiezoRadioButton().setSelected(false);
-                    injectorSectionController.getPiezoRadioButton().setDisable(true);
-                    injectorSectionController.getPiezoDelphiRadioButton().setSelected(false);
-                    injectorSectionController.getPiezoDelphiRadioButton().setDisable(true);
-                    break;
-                case "piezo":
-                    injectorSectionController.getPiezoRadioButton().setSelected(true);
-                    RLCController.setupPiezo(10d, 2000);
-                    injectorSectionController.getPiezoRadioButton().setDisable(false);
-                    injectorSectionController.getCoilRadioButton().setSelected(false);
-                    injectorSectionController.getCoilRadioButton().setDisable(true);
-                    injectorSectionController.getPiezoDelphiRadioButton().setSelected(false);
-                    injectorSectionController.getPiezoDelphiRadioButton().setDisable(true);
-                    break;
-                case "piezoDelphi":
-                    injectorSectionController.getPiezoDelphiRadioButton().setSelected(true);
-                    RLCController.setupPiezo(20d, 2000);
-                    injectorSectionController.getPiezoDelphiRadioButton().setDisable(false);
-                    injectorSectionController.getCoilRadioButton().setSelected(false);
-                    injectorSectionController.getCoilRadioButton().setDisable(true);
-                    injectorSectionController.getPiezoRadioButton().setDisable(true);
-                    injectorSectionController.getPiezoRadioButton().setSelected(false);
-                    break;
-                default:
-                    throw new IllegalArgumentException("Wrong injector type parameter!");
-            }
-
             voltAmpereProfileController.getApplyButton().fire();
+
         });
 
         testListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 
-            if (newValue == null){
+            if (newValue == null) {
                 highPressureSectionController.regulator1pressModeOFF();
+                setDefaultSpinnerValueFactories(true);
+                enabler.selectStaticLeakTest(false);
                 return;
             }
 
-            Integer freq = newValue.getInjectionRate();
+            currentAdjustingTime = newValue.getAdjustingTime();
 
-            Integer width = newValue.getTotalPulseTime();
+            currentMeasuringTime = newValue.getMeasurementTime();
 
-            Integer firstW = currentVoltAmpereProfile.getFirstW();
+            setProgress(speedComboBox.getSelectionModel().getSelectedItem());
 
-            firstW = (width - firstW >= 30) ? firstW : width - 30;
+            highPressureSectionController.regulator1pressModeON(newValue.getSettedPressure());
 
-            Integer regParam1 = newValue.getSettedPressure();
+            Measurement measurementType = newValue.getTestName().getMeasurement();
 
-            injectorSectionController.getFreqCurrentSignal().getValueFactory().setValue((freq != null) ? 1000d / freq : 0);
+            switch (measurementType) {
 
-            voltAmpereProfileController.getFirstWSpinner().getValueFactory().setValue(firstW);
+                case NO:
+                    setDefaultSpinnerValueFactories(false);
+                    enabler.selectStaticLeakTest(true);
+                    break;
+                default:
+                    setDefaultSpinnerValueFactories(true);
+                    enabler.selectStaticLeakTest(false);
+                    Integer freq = newValue.getInjectionRate();
+                    Integer width = newValue.getTotalPulseTime();
+                    Integer firstW = currentVoltAmpereProfile.getFirstW();
+                    firstW = (width - firstW >= 30) ? firstW : width - 30;
+                    setInjectorTypeValues(freq, firstW, width);
+                    break;
 
-            injectorSectionController.getWidthCurrentSignal().getValueFactory().setValue(width);
+            }
 
-            highPressureSectionController.regulator1pressModeON(regParam1);
-                });
+        });
 
         testsToggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
 
             if (newValue == manualTestRadioButton)
-                tests.setTest(MANUAL);
+                tests.setTestType(MANUAL);
             else if (newValue == testPlanTestRadioButton)
-                tests.setTest(TESTPLAN);
+                tests.setTestType(TESTPLAN);
             else if (newValue == autoTestRadioButton)
-                tests.setTest(AUTO);
+                tests.setTestType(AUTO);
             else if (newValue == codingTestRadioButton)
-                tests.setTest(CODING);
+                tests.setTestType(CODING);
 
-            enabler.selectTest();
+            enabler.selectTestType();
 
         });
+
+    }
+
+    private void initTimeProgressBars() {
+
+        adjustingTime = new TimeProgressBar(adjustingTimeProgressBar, adjustingText);
+        measuringTime = new TimeProgressBar(measuringTimeProgressBar, measuringText);
 
     }
 
@@ -593,6 +635,7 @@ public class MainSectionController {
     }
 
     private void initTestContextMenu() {
+
         ContextMenu testMenu = new ContextMenu();
         MenuItem newTest = new MenuItem("New");
         newTest.setOnAction(new TestMenuEventHandler("New test", NewEditTestDialogController::setNew));
@@ -608,6 +651,15 @@ public class MainSectionController {
             } else
                 testMenu.hide();
         });
+
+    }
+
+    private void initSpeedComboBox() {
+
+        speedComboBox.getItems().setAll(NORMAL_SPEED, DOUBLE_SPEED, HALF_SPEED);
+        speedComboBox.getSelectionModel().selectFirst();
+
+        speedComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> setProgress(newValue));
 
     }
 
@@ -693,20 +745,43 @@ public class MainSectionController {
         }
     }
 
-//    // TODO: do not delete!
-//    private void setupResetButton() {
-//
-//        startStopToggleButton.selectedProperty().addListener((observable, stopped, started) -> {
-//            if (started) {
-//                flowModbusWriter.add(ModbusMapFlow.StartMeasurementCycle, true);
-//                startStopToggleButton.setText("Stop");
-//            } else {
-//                flowModbusWriter.add(ModbusMapFlow.StopMeasurementCycle, true);
-//                startStopToggleButton.setText("Start");
-//            }
-//        });
-//
-//    }
+    public class TimeProgressBar {
+
+        private ProgressBar progressBar;
+
+        private Text text;
+
+        private int initialTime;
+
+        TimeProgressBar(ProgressBar progressBar, Text text) {
+            this.progressBar = progressBar;
+            this.text = text;
+        }
+
+        public void setProgress(int time) {
+            this.initialTime = time;
+            text.setText(String.valueOf(initialTime));
+            progressBar.setProgress(initialTime == 0 ? 0 : 1);
+        }
+
+        public void refreshProgress() {
+            setProgress(initialTime);
+        }
+
+        public int tick() {
+
+            int time = Integer.valueOf(text.getText());
+
+            if (time > 0) {
+                text.setText(String.valueOf(--time));
+                progressBar.setProgress((float) time / (float) initialTime);
+            }
+
+            return time;
+
+        }
+
+    }
 
     private void setupResetButton() {
 
@@ -744,14 +819,91 @@ public class MainSectionController {
 
     }
 
-    private void initStartStopButtonBlinking(){
-        toggleButtonStart.getStyleClass().clear();
+    private void setDefaultSpinnerValueFactories(boolean isDefault) {
+
+        if (isDefault) {
+
+            widthCurrentSignalSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(
+                    WIDTH_CURRENT_SIGNAL_SPINNER_MIN,
+                    WIDTH_CURRENT_SIGNAL_SPINNER_MAX,
+                    WIDTH_CURRENT_SIGNAL_SPINNER_INIT,
+                    WIDTH_CURRENT_SIGNAL_SPINNER_STEP));
+            freqCurrentSignalSpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(
+                    FREQ_CURRENT_SIGNAL_SPINNER_MIN,
+                    FREQ_CURRENT_SIGNAL_SPINNER_MAX,
+                    FREQ_CURRENT_SIGNAL_SPINNER_INIT,
+                    FREQ_CURRENT_SIGNAL_SPINNER_STEP));
+
+        } else {
+
+            widthCurrentSignalSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 0));
+            freqCurrentSignalSpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0d, 0d));
+
+        }
+
+    }
+
+    private void setInjectorTypeValues(Integer freq, Integer firstW, Integer width) {
+
+        freqCurrentSignalSpinner.getValueFactory().setValue((freq != null) ? 1000d / freq : 0);
+
+        voltAmpereProfileController.getFirstWSpinner().getValueFactory().setValue(firstW);
+
+        widthCurrentSignalSpinner.getValueFactory().setValue(width);
+
+    }
+
+    private void setProgress(String ratio) {
+
+        switch (ratio) {
+            case NORMAL_SPEED:
+                adjustingTime.setProgress(currentAdjustingTime);
+                measuringTime.setProgress(currentMeasuringTime);
+                break;
+            case DOUBLE_SPEED:
+                adjustingTime.setProgress(currentAdjustingTime / 2);
+                measuringTime.setProgress(currentMeasuringTime / 2);
+                break;
+            case HALF_SPEED:
+                adjustingTime.setProgress(currentAdjustingTime * 2);
+                measuringTime.setProgress(currentMeasuringTime * 2);
+                break;
+            default:
+                logger.error("Wrong speed argument!");
+                break;
+        }
+
+    }
+
+    private void initStartToggleButtonBlinking() {
+
+        Timeline startButtonTimeline = new Timeline(new KeyFrame(Duration.millis(400), event -> startBlinking()));
+        startButtonTimeline.setCycleCount(Animation.INDEFINITE);
+
+        startToggleButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue)
+                startButtonTimeline.play();
+            else {
+                startButtonTimeline.stop();
+                startToggleButton.getStyleClass().clear();
+                startToggleButton.getStyleClass().add("startButton");
+            }
+        });
+
+    }
+
+    private void startBlinking(){
+
+        startToggleButton.getStyleClass().clear();
+
         if (startLight) {
-            toggleButtonStart.getStyleClass().add("stopButtonDark");
+            startToggleButton.getStyleClass().add("stopButtonDark");
             startLight = false;
         } else {
-            toggleButtonStart.getStyleClass().add("stopButtonLight");
+            startToggleButton.getStyleClass().add("stopButtonLight");
             startLight = true;
         }
+
     }
+
 }

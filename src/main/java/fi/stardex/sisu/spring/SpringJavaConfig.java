@@ -10,6 +10,7 @@ import fi.stardex.sisu.connect.InetAddressWrapper;
 import fi.stardex.sisu.connect.ModbusConnect;
 import fi.stardex.sisu.devices.Device;
 import fi.stardex.sisu.devices.Devices;
+import fi.stardex.sisu.measurement.Measurements;
 import fi.stardex.sisu.persistence.CheckAndInitializeBD;
 import fi.stardex.sisu.persistence.orm.CSVSUpdater;
 import fi.stardex.sisu.persistence.orm.Manufacturer;
@@ -25,10 +26,7 @@ import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.ui.controllers.additional.AdditionalSectionController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.ConnectionController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.*;
 import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.cr.TestBenchSectionController;
@@ -535,8 +533,9 @@ public class SpringJavaConfig {
     @Bean
     @Lazy
     @Autowired
-    public Enabler enabler(MainSectionController mainSectionController) {
-        return new Enabler(mainSectionController);
+    public Enabler enabler(MainSectionController mainSectionController, InjectorSectionController injectorSectionController,
+                           RLCController rlcController) {
+        return new Enabler(mainSectionController, injectorSectionController, rlcController);
     }
 
     @Bean
@@ -575,6 +574,17 @@ public class SpringJavaConfig {
     @Autowired
     public FirmwareVersion<StandVersions> standFirmwareVersion(TestBenchSectionController testBenchSectionController) {
         return new StandFirmwareVersion<>(STAND, testBenchSectionController.getTestBenchStartToggleButton());
+    }
+
+    @Bean
+    @Autowired
+    public Measurements measurements(MainSectionController mainSectionController,
+                                     TestBenchSectionController testBenchSectionController,
+                                     HighPressureSectionController highPressureSectionController,
+                                     InjectorSectionController injectorSectionController, Tests tests,
+                                     Enabler enabler) {
+        return new Measurements(mainSectionController, testBenchSectionController, highPressureSectionController,
+                injectorSectionController, tests, enabler);
     }
 
     @Bean

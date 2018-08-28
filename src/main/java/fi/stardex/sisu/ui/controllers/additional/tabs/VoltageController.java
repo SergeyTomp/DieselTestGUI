@@ -219,7 +219,7 @@ public class VoltageController {
         batteryU.setText(Integer.toString(BATTERY_U_SPINNER_INIT));         // batteryUSpinner initial value
         negativeU.setText(Integer.toString(NEGATIVE_U_SPINNER_INIT));       // negativeUSpinner initial value
 
-        width.textProperty().addListener(new LabelListener(width, injectorSectionController.getWidthCurrentSignal()));
+        width.textProperty().addListener(new LabelListener(width, injectorSectionController.getWidthCurrentSignalSpinner()));
         voltage.textProperty().addListener(new LabelListener(voltage, voltAmpereProfileController.getBoostUSpinner()));
         firstWidth.textProperty().addListener(new LabelListener(firstWidth, voltAmpereProfileController.getFirstWSpinner()));
         firstCurrent.textProperty().addListener(new LabelListener(firstCurrent, voltAmpereProfileController.getFirstISpinner()));
