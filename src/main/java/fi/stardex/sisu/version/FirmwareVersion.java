@@ -5,7 +5,7 @@ import javafx.beans.property.SimpleObjectProperty;
 
 public abstract class FirmwareVersion<T extends Versions>  {
 
-    private ObjectProperty<T> versionProperty;
+    protected ObjectProperty<T> versionProperty;
 
     public FirmwareVersion(T version) {
         versionProperty = new SimpleObjectProperty<>(version);

@@ -8,7 +8,7 @@ public class UltimaFirmwareVersion<T extends Versions> extends FirmwareVersion<T
 
     public enum UltimaVersions implements Versions{
 
-        WITH_A, WITHOUT_A, WITHOUT_F
+        WITH_A, WITHOUT_A, WITHOUT_F, NO_VERSION
 
     }
 

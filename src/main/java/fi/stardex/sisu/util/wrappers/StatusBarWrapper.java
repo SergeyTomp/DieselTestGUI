@@ -134,7 +134,7 @@ public class StatusBarWrapper {
             case STAND:
                 sb.append(device.getLabel());
                 break;
-            default:
+            case UNKNOWN:
                 sb.append("Unknown Device");
                 break;
         }

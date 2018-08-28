@@ -52,6 +52,7 @@ import fi.stardex.sisu.version.FlowFirmwareVersion;
 import fi.stardex.sisu.version.StandFirmwareVersion;
 import fi.stardex.sisu.version.UltimaFirmwareVersion;
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ListView;
@@ -76,6 +77,7 @@ import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions;
 import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions.*;
 import static fi.stardex.sisu.version.StandFirmwareVersion.StandVersions;
 import static fi.stardex.sisu.version.StandFirmwareVersion.StandVersions.STAND;
+import static fi.stardex.sisu.version.StandFirmwareVersion.StandVersions.UNKNOWN;
 import static fi.stardex.sisu.version.UltimaFirmwareVersion.UltimaVersions;
 import static fi.stardex.sisu.version.UltimaFirmwareVersion.UltimaVersions.*;
 
@@ -139,7 +141,13 @@ public class SpringJavaConfig {
         return new RegisterProvider(ultimaModbusConnect) {
             @Override
             public void setupFirmwareVersionListener() {
-                ultimaModbusConnect.connectedPropertyProperty().addListener((observable, oldValue, newValue) -> {
+
+                BooleanProperty connectedProperty = ultimaModbusConnect.connectedProperty();
+
+                if (!connectedProperty.get())
+                    ultimaFirmwareVersion.setVersions(UltimaVersions.NO_VERSION);
+
+                connectedProperty.addListener((observable, oldValue, newValue) -> {
                     if (newValue) {
                         int firmwareVersionNumber = (int) read(FirmwareVersion);
                         switch (firmwareVersionNumber) {
@@ -152,10 +160,9 @@ public class SpringJavaConfig {
                             case 241:
                                 ultimaFirmwareVersion.setVersions(WITHOUT_F);
                                 break;
-                            default:
-                                logger.error("Wrong Ultima firmware version!");
-                                break;
                         }
+                    } else {
+                        ultimaFirmwareVersion.setVersions(UltimaVersions.NO_VERSION);
                     }
                 });
             }
@@ -169,7 +176,13 @@ public class SpringJavaConfig {
         return new RegisterProvider(flowModbusConnect) {
             @Override
             public void setupFirmwareVersionListener() {
-                flowModbusConnect.connectedPropertyProperty().addListener((observable, oldValue, newValue) -> {
+
+                BooleanProperty connectedProperty = flowModbusConnect.connectedProperty();
+
+                if (!connectedProperty.get())
+                    flowFirmwareVersion.setVersions(FlowVersions.NO_VERSION);
+
+                connectedProperty.addListener((observable, oldValue, newValue) -> {
                     TextField standIPField = connectionController.getStandIPField();
                     TextField standPortField = connectionController.getStandPortField();
                     if (newValue) {
@@ -192,12 +205,12 @@ public class SpringJavaConfig {
                                 break;
                         }
                     } else {
-                        logger.error("Invalid flow firmware version!!!");
-                        flowFirmwareVersion.setVersions(null);
+                        flowFirmwareVersion.setVersions(FlowVersions.NO_VERSION);
                         standIPField.setDisable(false);
                         standPortField.setDisable(false);
                     }
                 });
+
             }
         };
     }
@@ -208,7 +221,13 @@ public class SpringJavaConfig {
         return new RegisterProvider(standModbusConnect) {
             @Override
             public void setupFirmwareVersionListener() {
-                standModbusConnect.connectedPropertyProperty().addListener((observable, oldValue, newValue) -> {
+
+                BooleanProperty connectedProperty = standModbusConnect.connectedProperty();
+
+                if (!connectedProperty.get())
+                    standFirmwareVersion.setVersions(StandVersions.NO_VERSION);
+
+                connectedProperty.addListener((observable, oldValue, newValue) -> {
                     if (newValue) {
                         int firmwareVersionNumber = (int) read(ModbusMapStand.FirmwareVersion);
                         switch (firmwareVersionNumber) {
@@ -216,13 +235,16 @@ public class SpringJavaConfig {
                                 standFirmwareVersion.setVersions(STAND);
                                 break;
                             default:
-                                logger.error("Wrong Stand firmware version!");
-                                standFirmwareVersion.setVersions(null);
+                                standFirmwareVersion.setVersions(UNKNOWN);
                                 break;
                         }
+                    } else {
+                        standFirmwareVersion.setVersions(StandVersions.NO_VERSION);
                     }
                 });
+
             }
+
         };
     }
 
@@ -544,13 +566,15 @@ public class SpringJavaConfig {
     }
 
     @Bean
-    public FirmwareVersion<FlowVersions> flowFirmwareVersion() {
-        return new FlowFirmwareVersion<>(MASTER);
+    @Autowired
+    public FirmwareVersion<FlowVersions> flowFirmwareVersion(TestBenchSectionController testBenchSectionController) {
+        return new FlowFirmwareVersion<>(MASTER, testBenchSectionController.getTestBenchStartToggleButton());
     }
 
     @Bean
-    public FirmwareVersion<StandVersions> standFirmwareVersion() {
-        return new StandFirmwareVersion<>(STAND);
+    @Autowired
+    public FirmwareVersion<StandVersions> standFirmwareVersion(TestBenchSectionController testBenchSectionController) {
+        return new StandFirmwareVersion<>(STAND, testBenchSectionController.getTestBenchStartToggleButton());
     }
 
     @Bean

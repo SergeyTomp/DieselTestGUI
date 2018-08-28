@@ -55,7 +55,7 @@ public class ModbusConnect {
 
     private BooleanProperty connectedProperty = new SimpleBooleanProperty();
 
-    public BooleanProperty connectedPropertyProperty() {
+    public BooleanProperty connectedProperty() {
         return connectedProperty;
     }
 
