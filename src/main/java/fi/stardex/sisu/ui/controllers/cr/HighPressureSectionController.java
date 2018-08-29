@@ -9,18 +9,14 @@ import fi.stardex.sisu.util.enums.RegActive;
 import fi.stardex.sisu.util.i18n.I18N;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.event.EventHandler;
-import javafx.event.EventType;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 
 import javax.annotation.PostConstruct;
-import javax.persistence.criteria.CriteriaBuilder;
 
 import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.*;
 import static fi.stardex.sisu.util.enums.RegActive.*;
@@ -91,8 +87,13 @@ public class HighPressureSectionController {
     @FXML
     private ToggleButton powerButton3;
 
-    @FXML
-    private StackPane stackPaneLCD;
+    @FXML private StackPane stackPWB1;
+
+    @FXML private StackPane stackPWB2;
+
+    @FXML private StackPane stackPWB3;
+
+    @FXML private StackPane stackPaneLCD;
 
     @FXML
     private ToggleButton powerSwitch;
@@ -104,6 +105,7 @@ public class HighPressureSectionController {
     private ModbusRegisterProcessor ultimaModbusWriter;
     private VisualUtils visualUtils;
     private I18N i18N;
+    public static final String GREEN_STYLE_CLASS = "regulator-spinner-selected";
 
     public Spinner<Integer> getPressReg1() {
         return pressReg1;
@@ -207,7 +209,7 @@ public class HighPressureSectionController {
     public void init() {
 
         bindingI18N();
-
+//        pressReg1.getStyleClass().add("");
         /** установка активных параметров регулирования по умолчанию */
         Reg1paramActive = PRESSURE;
         Reg2paramActive = CURRENT;
@@ -276,6 +278,7 @@ public class HighPressureSectionController {
         pressReg1.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue){
                 Reg1paramActive = PRESSURE;
+//                pressReg1.getStyleClass().set(1, GREEN_STYLE_CLASS);
                 if(powerSwitch.isSelected() && powerButton1.isSelected()){
                     ultimaModbusWriter.add(PressureReg1_PressMode, true);   //вкл.режим давления
                     ultimaModbusWriter.add(PressureReg1_I_Mode, false);     //откл.режим тока
@@ -442,6 +445,11 @@ public class HighPressureSectionController {
         Tooltip lcdTooltip = new Tooltip("Real time pressure sensor readings.");
         lcdTooltip.getStyleClass().add("ttip");
         Tooltip.install(pressureLcd, lcdTooltip);
+
+        stackPWB1.widthProperty().addListener(new StackPanePowerButtonWidthListener(stackPWB1, powerButton1));
+        stackPWB2.widthProperty().addListener(new StackPanePowerButtonWidthListener(stackPWB2, powerButton2));
+        stackPWB3.widthProperty().addListener(new StackPanePowerButtonWidthListener(stackPWB3, powerButton3));
+        gridPaneHBox2.widthProperty().addListener(new GridPaneWidthListener(gridPaneHBox2, stackPaneLCD));
     }
 
     private void regulator1_ON(){
@@ -559,6 +567,8 @@ public class HighPressureSectionController {
         powerButton1.setSelected(false);
     }
 
+
+
     private void bindingI18N() {
         labelPressReg1.textProperty().bind(i18N.createStringBinding("highPressure.label.bar"));
         labelAmpReg1.textProperty().bind(i18N.createStringBinding("highPressure.label.amp"));
@@ -571,4 +581,58 @@ public class HighPressureSectionController {
         labelReg2.textProperty().bind(i18N.createStringBinding("highPressure.label.reg2.name"));
         labelReg3.textProperty().bind(i18N.createStringBinding("highPressure.label.reg3.name"));
     }
+
+    private class StackPanePowerButtonWidthListener implements ChangeListener<Number> {
+
+        private final StackPane stackPWB;
+        private final ToggleButton powerButton;
+
+        public StackPanePowerButtonWidthListener(StackPane stackPWB, ToggleButton powerButton) {
+            this.stackPWB = stackPWB;
+            this.powerButton = powerButton;
+        }
+
+        @Override
+        public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+            if(stackPWB.getWidth()> 105 ) {
+                if(stackPWB.getWidth()<155){
+                    powerButton.setPrefWidth(stackPWB.widthProperty().get() * 0.57);
+                    powerButton.setPrefHeight(stackPWB.widthProperty().get() * 0.57 + 5);
+                } else {
+                    powerButton.setPrefWidth(90.0);
+                    powerButton.setPrefHeight(99.0);
+                }
+            } else {
+                powerButton.setPrefWidth(60.0);
+                powerButton.setPrefHeight(65.0);
+            }
+        }
+    }
+
+    private class GridPaneWidthListener implements ChangeListener<Number> {
+
+        private final GridPane rootGridPane;
+        private final StackPane stackPaneLCD;
+
+        public GridPaneWidthListener(GridPane rootGridPane, StackPane stackPaneLCD) {
+            this.rootGridPane = rootGridPane;
+            this.stackPaneLCD = stackPaneLCD;
+        }
+
+        @Override
+        public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+            double tempWidth = rootGridPane.getWidth() / 7.416;
+            if (tempWidth < 192) {
+                if (stackPaneLCD.getWidth() > 150) {
+                    stackPaneLCD.setPrefWidth(tempWidth);
+
+                } else {
+                    stackPaneLCD.setPrefWidth(135);
+                }
+            } else {
+                stackPaneLCD.setPrefWidth(192);
+            }
+        }
+    }
+
 }

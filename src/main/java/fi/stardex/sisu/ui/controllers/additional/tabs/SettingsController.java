@@ -149,9 +149,7 @@ public class SettingsController {
 
         bindingI18N();
         setupPressureSensor();
-        setupCheckBoxPreference(autoResetCheckBox, "autoResetCheckBoxSelected", true);
         setupCheckBoxPreference(fastCodingCheckBox, "fastCodingCheckBoxSelected", false);
-        setupCheckBoxPreference(fastMeasurementCheckBox, "fastMeasurementCheckBoxSelected", false);
         setupCheckBoxPreference(isDIMASCheckBox, "isDIMASCheckBoxSelected", true);
         setupCheckBoxPreference(flowVisibleCheckBox, "checkBoxFlowVisibleSelected", true);
         regulatorsConfigComboBox.setItems(FXCollections.observableArrayList("3", "2", "1"));
@@ -166,15 +164,13 @@ public class SettingsController {
     private void bindingI18N() {
 
         pressureSensorLabel.textProperty().bind(i18N.createStringBinding("settings.pressureSensor.Label"));
-        autoResetCheckBox.textProperty().bind(i18N.createStringBinding("settings.autoReset.CheckBox"));
         fastCodingCheckBox.textProperty().bind(i18N.createStringBinding("settings.fastCoding.CheckBox"));
-        fastMeasurementCheckBox.textProperty().bind(i18N.createStringBinding("settings.fastMeasurement.CheckBox"));
         regulatorsConfigLabel.textProperty().bind(i18N.createStringBinding("settings.regulatorsConfig.ComboBox"));
         injectorsConfigLabel.textProperty().bind(i18N.createStringBinding("settings.injectorsConfig.ComboBox"));
         languagesLabel.textProperty().bind(i18N.createStringBinding("settings.languages.ComboBox"));
         flowOutputDimensionLabel.textProperty().bind(i18N.createStringBinding("settings.FlowOutputDimension.ComboBox"));
-        isDIMASLabel.textProperty().bind(i18N.createStringBinding("settings.isDIMAS.CheckBox"));
-        flowVisibleLabel.textProperty().bind(i18N.createStringBinding("settings.flowVisible.CheckBox"));
+        isDIMASCheckBox.textProperty().bind(i18N.createStringBinding("settings.isDIMAS.CheckBox"));
+        flowVisibleCheckBox.textProperty().bind(i18N.createStringBinding("settings.flowVisible.CheckBox"));
         sensor1500RadioButton.textProperty().bind(i18N.createStringBinding("settings.pressureSensor.1500.radiobutton"));
         sensor1800RadioButton.textProperty().bind(i18N.createStringBinding("settings.pressureSensor.1800.radiobutton"));
         sensor2000RadioButton.textProperty().bind(i18N.createStringBinding("settings.pressureSensor.2000.radiobutton"));

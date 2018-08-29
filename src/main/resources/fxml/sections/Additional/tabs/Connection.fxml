@@ -29,13 +29,13 @@
             <Label fx:id="ultimaLabel" text="%link.ultima.label" GridPane.rowIndex="1" />
             <Label fx:id="flowMeterLabel" text="%link.flowmeter.label" GridPane.rowIndex="2" />
             <Label fx:id="standLabel" text="%link.stand.label" GridPane.rowIndex="3" />
-            <TextField fx:id="ultimaIPField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="38.0" prefWidth="210.0" promptText="192.168.*.*" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <TextField fx:id="flowMeterIPField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="38.0" prefWidth="210.0" promptText="192.168.*.*" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-            <TextField fx:id="standIPField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="38.0" prefWidth="210.0" promptText="192.168.*.*" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-            <TextField fx:id="ultimaPortField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="38.0" prefWidth="80.0" promptText="502" text="502" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-            <TextField fx:id="flowMeterPortField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="38.0" prefWidth="80.0" promptText="502" text="502" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-            <TextField fx:id="standPortField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="38.0" prefWidth="80.0" promptText="502" text="502" GridPane.columnIndex="2" GridPane.rowIndex="3" />
-            <Button fx:id="acceptButton" mnemonicParsing="false" text="%link.accept.button" GridPane.columnIndex="2" GridPane.rowIndex="4" />
+            <TextField fx:id="ultimaIPField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="38.0" prefWidth="210.0" promptText="192.168.*.*" styleClass="modelTextField" stylesheets="@../../../../css/Styling.css" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <TextField fx:id="flowMeterIPField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="38.0" prefWidth="210.0" promptText="192.168.*.*" styleClass="modelTextField" stylesheets="@../../../../css/Styling.css" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <TextField fx:id="standIPField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="38.0" prefWidth="210.0" promptText="192.168.*.*" styleClass="modelTextField" stylesheets="@../../../../css/Styling.css" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            <TextField fx:id="ultimaPortField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="38.0" prefWidth="80.0" promptText="502" styleClass="modelTextField" stylesheets="@../../../../css/Styling.css" text="502" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+            <TextField fx:id="flowMeterPortField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="38.0" prefWidth="80.0" promptText="502" styleClass="modelTextField" stylesheets="@../../../../css/Styling.css" text="502" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+            <TextField fx:id="standPortField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="38.0" prefWidth="80.0" promptText="502" styleClass="modelTextField" stylesheets="@../../../../css/Styling.css" text="502" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+            <Button fx:id="acceptButton" mnemonicParsing="false" stylesheets="@../../../../css/Styling.css" text="%link.accept.button" GridPane.columnIndex="2" GridPane.rowIndex="4" />
          </children>
       </GridPane>
    </children>

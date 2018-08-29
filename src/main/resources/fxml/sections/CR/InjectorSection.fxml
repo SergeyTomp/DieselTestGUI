@@ -15,31 +15,46 @@
 
 <HBox alignment="CENTER" fillHeight="true" maxHeight="130.0" maxWidth="1.7976931348623157E308" minHeight="100.0" minWidth="500.0" pickOnBounds="true" prefHeight="130.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.cr.InjectorSectionController">
     <children>
-        <GridPane alignment="CENTER" gridLinesVisible="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="130.0" minWidth="150.0">
+        <GridPane alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="130.0" minWidth="150.0">
             <children>
                 <Label fx:id="labelWidth" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="20.0" minWidth="40.0" text="%injSection.label.width" GridPane.columnIndex="0" GridPane.halignment="LEFT" GridPane.rowIndex="0">
+               <GridPane.margin>
+                  <Insets left="2.0" />
+               </GridPane.margin>
                <padding>
                   <Insets left="10.0" />
                </padding></Label>
-                <Label fx:id="labelFreq" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="20.0" minWidth="40.0" text="%injSection.label.freq" GridPane.columnIndex="0" GridPane.halignment="LEFT" GridPane.rowIndex="1">
+                <Label fx:id="labelFreq" minWidth="30.0" text="%injSection.label.freq" GridPane.columnIndex="0" GridPane.halignment="LEFT" GridPane.rowIndex="1">
+               <GridPane.margin>
+                  <Insets left="2.0" />
+               </GridPane.margin>
                <padding>
                   <Insets left="10.0" />
                </padding></Label>
-                <Spinner fx:id="widthCurrentSignal" editable="true" maxHeight="30.0" maxWidth="90.0" minHeight="30.0" minWidth="90.0" prefHeight="30.0" prefWidth="90.0" stylesheets="@../../../css/Styling.css" GridPane.columnIndex="1" GridPane.halignment="LEFT" />
-                <Spinner fx:id="freqCurrentSignal" editable="true" maxHeight="30.0" maxWidth="90.0" minHeight="30.0" minWidth="90.0" prefHeight="30.0" prefWidth="90.0" stylesheets="@../../../css/Styling.css" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="1" />
+                <Spinner fx:id="widthCurrentSignal" editable="true" maxHeight="30.0" maxWidth="90.0" minHeight="30.0" minWidth="90.0" prefHeight="30.0" prefWidth="90.0" stylesheets="@../../../css/Styling.css" GridPane.columnIndex="1" GridPane.halignment="LEFT">
+               <GridPane.margin>
+                  <Insets left="20.0" />
+               </GridPane.margin></Spinner>
+                <Spinner fx:id="freqCurrentSignal" editable="true" maxHeight="30.0" maxWidth="90.0" minHeight="30.0" minWidth="90.0" prefHeight="30.0" prefWidth="90.0" stylesheets="@../../../css/Styling.css" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="1">
+               <GridPane.margin>
+                  <Insets left="20.0" />
+               </GridPane.margin></Spinner>
             </children>
             <columnConstraints>
-                <ColumnConstraints halignment="LEFT" maxWidth="1.7976931348623157E308" minWidth="50.0" />
-                <ColumnConstraints halignment="LEFT" maxWidth="1.7976931348623157E308" minWidth="100.0" />
+                <ColumnConstraints halignment="LEFT" maxWidth="1.7976931348623157E308" minWidth="60.0" />
+                <ColumnConstraints halignment="RIGHT" hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="100.0" />
             </columnConstraints>
             <rowConstraints>
                 <RowConstraints maxHeight="65.0" minHeight="50.0" percentHeight="50.0" prefHeight="65.0" vgrow="SOMETIMES" />
                 <RowConstraints maxHeight="65.0" minHeight="50.0" percentHeight="50.0" prefHeight="65.0" vgrow="SOMETIMES" />
             </rowConstraints>
+         <HBox.margin>
+            <Insets />
+         </HBox.margin>
         </GridPane>
         <GridPane alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="130.0" minWidth="50.0" HBox.hgrow="ALWAYS">
             <children>
-                <RadioButton fx:id="piezoRadioButton" minHeight="-Infinity" minWidth="50.0" mnemonicParsing="false" styleClass="label" stylesheets="@../../../css/Styling.css" text="%injSection.radio.piezo" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" GridPane.vgrow="ALWAYS">
+                <RadioButton fx:id="piezoRadioButton" minHeight="-Infinity" minWidth="50.0" mnemonicParsing="false" styleClass="radioButton" stylesheets="@../../../css/Styling.css" text="%injSection.radio.piezo" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" GridPane.vgrow="ALWAYS">
                     <GridPane.margin>
                         <Insets bottom="2.0" left="5.0" right="2.0" top="2.0" />
                     </GridPane.margin>
@@ -47,12 +62,12 @@
                         <ToggleGroup fx:id="piezoCoilToggleGroup" />
                     </toggleGroup>
                 </RadioButton>
-                <RadioButton fx:id="coilRadioButton" minHeight="-Infinity" minWidth="50.0" mnemonicParsing="false" selected="true" styleClass="label" stylesheets="@../../../css/Styling.css" text="%injSection.radio.coil" toggleGroup="$piezoCoilToggleGroup" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
+                <RadioButton fx:id="coilRadioButton" minHeight="-Infinity" minWidth="50.0" mnemonicParsing="false" selected="true" styleClass="radioButton" stylesheets="@../../../css/Styling.css" text="%injSection.radio.coil" toggleGroup="$piezoCoilToggleGroup" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
                     <GridPane.margin>
                         <Insets bottom="2.0" left="5.0" right="2.0" top="2.0" />
                     </GridPane.margin>
                 </RadioButton>
-                <RadioButton fx:id="piezoDelphiRadioButton" minHeight="-Infinity" minWidth="50.0" mnemonicParsing="false" styleClass="label" stylesheets="@../../../css/Styling.css" text="%injSection.radio.piezoDelphi" toggleGroup="$piezoCoilToggleGroup" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="ALWAYS">
+                <RadioButton fx:id="piezoDelphiRadioButton" minHeight="-Infinity" minWidth="50.0" mnemonicParsing="false" styleClass="radioButton" stylesheets="@../../../css/Styling.css" text="%injSection.radio.piezoDelphi" toggleGroup="$piezoCoilToggleGroup" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="ALWAYS">
                     <GridPane.margin>
                         <Insets bottom="2.0" left="5.0" right="2.0" top="2.0" />
                     </GridPane.margin>
@@ -60,7 +75,7 @@
             </children>
             <columnConstraints>
             <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="1.7976931348623157E308" />
-                <ColumnConstraints halignment="LEFT" hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="50.0" prefWidth="50.0" />
+                <ColumnConstraints halignment="LEFT" hgrow="ALWAYS" minWidth="50.0" prefWidth="100.0" />
             </columnConstraints>
             <rowConstraints>
                 <RowConstraints maxHeight="43.0" minHeight="33.0" percentHeight="33.0" prefHeight="43.0" valignment="CENTER" vgrow="SOMETIMES" />
@@ -68,24 +83,24 @@
                 <RowConstraints maxHeight="43.0" minHeight="33.0" percentHeight="33.0" prefHeight="43.0" valignment="CENTER" vgrow="SOMETIMES" />
             </rowConstraints>
         </GridPane>
-        <GridPane fx:id="gridLedBeaker" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="130.0" minWidth="300.0" prefHeight="130.0" prefWidth="300.0" HBox.hgrow="ALWAYS">
+        <GridPane fx:id="gridLedBeaker" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="130.0" minWidth="350.0" prefWidth="350.0" HBox.hgrow="ALWAYS">
             <children>
                 <ToggleButton fx:id="powerSwitch" minHeight="90.0" minWidth="50.0" mnemonicParsing="false" prefWidth="50.0" styleClass="switcher" stylesheets="@../../../css/Styling.css" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                     <GridPane.margin>
-                        <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                        <Insets bottom="2.0" left="2.0" right="10.0" top="2.0" />
                     </GridPane.margin>
                 </ToggleButton>
                 <Label fx:id="statusBoostULabelText" alignment="TOP_RIGHT" text="%injSection.label.adjustingBoostU" visible="false" GridPane.columnSpan="4" GridPane.halignment="RIGHT" GridPane.valignment="TOP" />
-                <StackPane prefWidth="112.0" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                <StackPane fx:id="stackPaneLed1" prefWidth="112.0" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                     <fx:include fx:id="ledBeaker1" source="../Additional/LedBeaker.fxml" />
                 </StackPane>
-                <StackPane prefWidth="112.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                <StackPane fx:id="stackPaneLed2" prefWidth="112.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                     <fx:include fx:id="ledBeaker2" source="../Additional/LedBeaker.fxml" />
                 </StackPane>
-                <StackPane prefWidth="112.0" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                <StackPane fx:id="stackPaneLed3" prefWidth="112.0" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                     <fx:include fx:id="ledBeaker3" source="../Additional/LedBeaker.fxml" />
                 </StackPane>
-                <StackPane prefWidth="112.0" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                <StackPane fx:id="stackPaneLed4" prefWidth="112.0" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                     <fx:include fx:id="ledBeaker4" source="../Additional/LedBeaker.fxml" />
                 </StackPane>
                 <ProgressBar fx:id="switcherProgressBar" prefHeight="22.0" prefWidth="423.0" progress="0.0" visible="false" GridPane.columnSpan="6" GridPane.rowIndex="2" GridPane.valignment="BOTTOM" />
@@ -95,7 +110,7 @@
                 <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="60.0" />
                 <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="60.0" />
                 <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="60.0" />
-                <ColumnConstraints fillWidth="false" halignment="RIGHT" hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="50.0" prefWidth="50.0" />
+                <ColumnConstraints fillWidth="false" halignment="RIGHT" hgrow="ALWAYS" maxWidth="67.0" minWidth="42.0" prefWidth="61.0" />
                 <ColumnConstraints />
             </columnConstraints>
             <rowConstraints>

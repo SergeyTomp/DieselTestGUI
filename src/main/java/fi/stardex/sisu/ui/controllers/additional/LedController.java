@@ -28,9 +28,13 @@ public class LedController implements Initializable {
     private static volatile int injectorMask;
 
     @FXML
-    public ToggleButton ledBeaker;
+    private ToggleButton ledBeaker;
     @FXML
-    public AnchorPane anchorPaneLed;
+    private AnchorPane anchorPaneLed;
+
+    public AnchorPane getAnchorPaneLed() {
+        return anchorPaneLed;
+    }
 
     private Timeline timeline = new Timeline();
 

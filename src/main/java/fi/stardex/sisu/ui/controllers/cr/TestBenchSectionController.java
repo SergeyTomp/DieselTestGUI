@@ -7,10 +7,14 @@ import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.spinners.SpinnerManager;
 import fi.stardex.sisu.util.spinners.SpinnerValueObtainer;
 import fi.stardex.sisu.util.tooltips.CustomTooltip;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import org.slf4j.Logger;
@@ -63,6 +67,8 @@ public class TestBenchSectionController {
     @FXML private Label labelPressure1;
 
     @FXML private Label labelRPM;
+
+    @FXML private HBox rootHbox;
 
     private I18N i18N;
 
@@ -208,6 +214,8 @@ public class TestBenchSectionController {
 
         setupFanControlToggleButton();
 
+        rootHbox.widthProperty().addListener(new HboxWidthListener(rootHbox, lcdStackPane));
+
     }
 
     private void bindingI18N() {
@@ -332,6 +340,32 @@ public class TestBenchSectionController {
 
         pumpStateChange();
 
+    }
+
+    private class HboxWidthListener implements ChangeListener<Number> {
+
+        private final HBox rootHbox;
+        private final StackPane stackPaneLCD;
+
+        public HboxWidthListener(HBox rootHbox, StackPane stackPaneLCD) {
+            this.rootHbox = rootHbox;
+            this.stackPaneLCD = stackPaneLCD;
+        }
+
+        @Override
+        public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+            double tempWidth = rootHbox.getWidth() / 7.416;
+            if (tempWidth < 192) {
+                if (stackPaneLCD.getWidth() > 150) {
+                    stackPaneLCD.setPrefWidth(tempWidth);
+
+                } else {
+                    stackPaneLCD.setPrefWidth(135);
+                }
+            } else {
+                stackPaneLCD.setPrefWidth(192);
+            }
+        }
     }
 
 }

@@ -25,7 +25,7 @@ public class SisuApplication extends AbstractJavaFxApplicationSupport {
 
         Parent mainSection = context.getBean("mainSection", ViewHolder.class).getView();
         rootLayoutController.getRootLayout().add(mainSection,0,0);
-        Scene scene = new Scene(rootLayoutViewHolder.getView(), 800, 600);
+        Scene scene = new Scene(rootLayoutViewHolder.getView());
         primaryStage.setScene(scene);
         primaryStage.setMaximized(true);
         primaryStage.show();

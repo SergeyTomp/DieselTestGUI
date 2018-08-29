@@ -10,6 +10,8 @@ import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.spinners.SpinnerManager;
 import fi.stardex.sisu.util.spinners.SpinnerValueObtainer;
 import fi.stardex.sisu.util.tooltips.CustomTooltip;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -17,6 +19,8 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,50 +32,45 @@ import static fi.stardex.sisu.util.SpinnerDefaults.*;
 
 public class InjectorSectionController {
 
-    @FXML
-    private Spinner<Integer> widthCurrentSignal;
+    @FXML private Spinner<Integer> widthCurrentSignal;
 
-    @FXML
-    private Spinner<Double> freqCurrentSignal;
+    @FXML private Spinner<Double> freqCurrentSignal;
 
-    @FXML
-    private RadioButton piezoRadioButton;
+    @FXML private RadioButton piezoRadioButton;
 
-    @FXML
-    private ToggleGroup piezoCoilToggleGroup;
+    @FXML private ToggleGroup piezoCoilToggleGroup;
 
-    @FXML
-    private RadioButton coilRadioButton;
+    @FXML private RadioButton coilRadioButton;
 
-    @FXML
-    private RadioButton piezoDelphiRadioButton;
+    @FXML private RadioButton piezoDelphiRadioButton;
 
-    @FXML
-    private ToggleButton powerSwitch;
+    @FXML private ToggleButton powerSwitch;
 
-    @FXML
-    private Label labelWidth;
+    @FXML private Label labelWidth;
 
-    @FXML
-    private Label labelFreq;
+    @FXML private Label labelFreq;
 
-    @FXML
-    private Label statusBoostULabelText;
+    @FXML private Label statusBoostULabelText;
 
-    @FXML
-    private ProgressBar switcherProgressBar;
+    @FXML private ProgressBar switcherProgressBar;
 
-    @FXML
-    private LedController ledBeaker1Controller;
+    @FXML private StackPane stackPaneLed1;
 
-    @FXML
-    private LedController ledBeaker2Controller;
+    @FXML private StackPane stackPaneLed2;
 
-    @FXML
-    private LedController ledBeaker3Controller;
+    @FXML private StackPane stackPaneLed3;
 
-    @FXML
-    private LedController ledBeaker4Controller;
+    @FXML private StackPane stackPaneLed4;
+
+    @FXML private LedController ledBeaker1Controller;
+
+    @FXML private LedController ledBeaker2Controller;
+
+    @FXML private LedController ledBeaker3Controller;
+
+    @FXML private LedController ledBeaker4Controller;
+
+    private static final double LED_GAP = 10;
 
     private I18N i18N;
 
@@ -188,6 +187,12 @@ public class InjectorSectionController {
         ledParametersChangeListener = new LedParametersChangeListener();
 
         new PowerButtonChangeListener();
+
+        stackPaneLed1.widthProperty().addListener(new StackPaneWidthListener(ledBeaker1Controller.getAnchorPaneLed(), stackPaneLed1.heightProperty()));
+        stackPaneLed2.widthProperty().addListener(new StackPaneWidthListener(ledBeaker2Controller.getAnchorPaneLed(), stackPaneLed2.heightProperty()));
+        stackPaneLed3.widthProperty().addListener(new StackPaneWidthListener(ledBeaker3Controller.getAnchorPaneLed(), stackPaneLed3.heightProperty()));
+        stackPaneLed4.widthProperty().addListener(new StackPaneWidthListener(ledBeaker4Controller.getAnchorPaneLed(), stackPaneLed4.heightProperty()));
+
 
     }
 
@@ -409,4 +414,33 @@ public class InjectorSectionController {
 
     }
 
+    private class StackPaneWidthListener implements ChangeListener<Number>{
+
+        final AnchorPane ledBeaker;
+        final ReadOnlyDoubleProperty heightProperty;
+
+        public StackPaneWidthListener(AnchorPane ledBeaker, ReadOnlyDoubleProperty heightProperty){
+            this.ledBeaker = ledBeaker;
+            this.heightProperty = heightProperty;
+        }
+
+        @Override
+        public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+            double height = heightProperty.getValue();
+            if (newValue.doubleValue() > 75) {
+                if(height > newValue.doubleValue()){
+                    ledBeaker.setPrefWidth(newValue.doubleValue() * 0.7 - LED_GAP);
+                    ledBeaker.setPrefHeight(newValue.doubleValue() * 0.7 - LED_GAP);
+                }
+                else {
+                    ledBeaker.setPrefWidth(height * 0.8 - LED_GAP);
+                    ledBeaker.setPrefHeight(height * 0.8 - LED_GAP);
+                }
+
+            } else {
+                ledBeaker.setPrefWidth(80);
+                ledBeaker.setPrefHeight(80);
+            }
+        }
+    }
 }

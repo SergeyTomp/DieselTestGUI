@@ -25,9 +25,14 @@ import fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer;
 import fi.stardex.sisu.util.obtainers.CurrentInjectorTestsObtainer;
 import fi.stardex.sisu.util.obtainers.CurrentManufacturerObtainer;
 import fi.stardex.sisu.util.view.ApplicationAppearanceChanger;
+import javafx.animation.Animation;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -39,8 +44,10 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.VBox;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
@@ -50,6 +57,8 @@ import java.util.prefs.Preferences;
 import static fi.stardex.sisu.util.enums.Tests.TestType.*;
 
 public class MainSectionController {
+
+    @FXML private VBox timingVbox;
 
     @FXML private CheckBox enableTimingCheckBox;
 
@@ -94,6 +103,10 @@ public class MainSectionController {
     @FXML private ListView<Model> modelListView;
 
     @FXML private ListView<InjectorTest> testListView;
+
+    @FXML private ToggleButton toggleButtonStart;
+
+    @FXML private ComboBox scaleCB;
 
     private Preferences rootPrefs;
 
@@ -148,6 +161,10 @@ public class MainSectionController {
     private Tests tests;
 
     private I18N i18N;
+
+    private Timeline startButtonTimeline;
+
+    private boolean startLight;
 
     public Tests getTests() {
         return tests;
@@ -275,6 +292,27 @@ public class MainSectionController {
         initModelContextMenu();
 
         initTestContextMenu();
+
+        scaleCB.setStyle("-fx-font-size: 5pt");
+        scaleCB.setItems(FXCollections.observableArrayList("0.5x", "x1", "x2"));
+        scaleCB.setValue(scaleCB.getItems().get(1));
+
+        startButtonTimeline = new Timeline(new KeyFrame(Duration.millis(400), event -> initStartStopButtonBlinking()));
+        startButtonTimeline.setCycleCount(Animation.INDEFINITE);
+
+        toggleButtonStart.selectedProperty().addListener(new ChangeListener<Boolean>() {
+            @Override
+            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+                if(newValue){
+                    startButtonTimeline.play();
+                }
+                if(!newValue) {
+                    startButtonTimeline.stop();
+                    toggleButtonStart.getStyleClass().clear();
+                    toggleButtonStart.getStyleClass().add("startButton");
+                }
+            }
+        });
 
         manufacturerListView.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) -> {
             currentManufacturerObtainer.setCurrentManufacturer(newValue);
@@ -704,5 +742,16 @@ public class MainSectionController {
 
         versionComboBox.getSelectionModel().select(currentGUIType);
 
+    }
+
+    private void initStartStopButtonBlinking(){
+        toggleButtonStart.getStyleClass().clear();
+        if (startLight) {
+            toggleButtonStart.getStyleClass().add("stopButtonDark");
+            startLight = false;
+        } else {
+            toggleButtonStart.getStyleClass().add("stopButtonLight");
+            startLight = true;
+        }
     }
 }
