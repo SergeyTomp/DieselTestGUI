@@ -31,6 +31,7 @@ import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.concurrent.Task;
@@ -42,6 +43,8 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -50,10 +53,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.prefs.Preferences;
 
+import static fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest.getChangedInjectorTest;
+import static fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest.getListOfNonIncludedTests;
 import static fi.stardex.sisu.util.SpinnerDefaults.*;
 import static fi.stardex.sisu.util.enums.Tests.TestType.*;
 
@@ -62,10 +70,26 @@ public class MainSectionController {
     private static Logger logger = LoggerFactory.getLogger(MainSectionController.class);
 
     @FXML
+    private VBox injectorTestsVBox;
+
+    @FXML
     private GridPane timingGridPane;
 
     @FXML
-    private CheckBox enableTimingCheckBox;
+    private HBox startHBox;
+
+    @FXML
+    private Button moveUpButton;
+
+    @FXML
+    private Button moveDownButton;
+
+    private enum Move {
+        UP, DOWN
+    }
+
+    @FXML
+    private Label timingSpeedLabel;
 
     @FXML
     private ToggleButton startToggleButton;
@@ -89,13 +113,13 @@ public class MainSectionController {
     private Label labelMeasureTime;
 
     @FXML
+    private Button storeButton;
+
+    @FXML
     private Button resetButton;
 
     @FXML
     private ToggleGroup testsToggleGroup;
-
-    @FXML
-    private RadioButton manualTestRadioButton;
 
     @FXML
     private RadioButton testPlanTestRadioButton;
@@ -107,13 +131,13 @@ public class MainSectionController {
     private RadioButton codingTestRadioButton;
 
     @FXML
-    private ToggleGroup baseType;
+    private ToggleGroup baseTypeToggleGroup;
 
     @FXML
-    private RadioButton defaultRB;
+    private RadioButton defaultRadioButton;
 
     @FXML
-    private RadioButton customRB;
+    private RadioButton customRadioButton;
 
     @FXML
     private ComboBox<GUIType> versionComboBox;
@@ -126,7 +150,7 @@ public class MainSectionController {
     private ListView<Manufacturer> manufacturerListView;
 
     @FXML
-    private TextField searchModelTF;
+    private TextField searchModelTextField;
 
     @FXML
     private ListView<Model> modelListView;
@@ -136,6 +160,10 @@ public class MainSectionController {
 
     @FXML
     private ComboBox<String> speedComboBox;
+
+    private MultipleSelectionModel<InjectorTest> testsSelectionModel;
+
+    private ObservableList<InjectorTest> testListViewItems;
 
     private static final String NORMAL_SPEED = "X1";
 
@@ -205,12 +233,32 @@ public class MainSectionController {
 
     private boolean startLight;
 
+    private boolean isFocusMoved;
+
+    private boolean isAnotherAutoOrNewTestList;
+
     public ComboBox<String> getSpeedComboBox() {
         return speedComboBox;
     }
 
+    public VBox getInjectorTestsVBox() {
+        return injectorTestsVBox;
+    }
+
+    public HBox getStartHBox() {
+        return startHBox;
+    }
+
     public GridPane getTimingGridPane() {
         return timingGridPane;
+    }
+
+    public Button getMoveUpButton() {
+        return moveUpButton;
+    }
+
+    public Button getMoveDownButton() {
+        return moveDownButton;
     }
 
     public ListView<Model> getModelListView() {
@@ -233,10 +281,6 @@ public class MainSectionController {
         return measuringTime;
     }
 
-    public CheckBox getEnableTimingCheckBox() {
-        return enableTimingCheckBox;
-    }
-
     public Tests getTests() {
         return tests;
     }
@@ -245,16 +289,16 @@ public class MainSectionController {
         return startToggleButton;
     }
 
+    public Button getStoreButton() {
+        return storeButton;
+    }
+
     public Button getResetButton() {
         return resetButton;
     }
 
     public ListView<Manufacturer> getManufacturerListView() {
         return manufacturerListView;
-    }
-
-    public RadioButton getManualTestRadioButton() {
-        return manualTestRadioButton;
     }
 
     public RadioButton getCodingTestRadioButton() {
@@ -352,185 +396,65 @@ public class MainSectionController {
     @PostConstruct
     private void init() {
 
-        initTimeProgressBars();
-
-        bindingI18N();
-
-        setupResetButton();
-
-        setupVersionComboBox();
-
-        initManufacturerContextMenu();
-
-        initModelContextMenu();
-
-        initTestContextMenu();
-
-        initSpeedComboBox();
-
-        initStartToggleButtonBlinking();
-
-        manufacturerListView.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) -> {
-            currentManufacturerObtainer.setCurrentManufacturer(newValue);
-
-
-            if (newValue.isCustom()) {
-                defaultRB.setDisable(true);
-                customRB.setSelected(true);
-            } else
-                defaultRB.setDisable(false);
-
-
-            switch (versionComboBox.getSelectionModel().getSelectedItem()) {
-                case CR_Inj:
-                    setFilteredItems(newValue);
-                    break;
-                case CR_Pump:
-                    //TODO
-                    break;
-                case UIS:
-                    //TODO
-                    break;
-            }
-        }));
-
-        searchModelTF.textProperty().addListener(((observable, oldValue, newValue) -> filteredModelList.setPredicate(data -> {
-
-            if (newValue == null || newValue.isEmpty()) {
-                return true;
-            } else {
-                return (
-                        data.toString().contains(newValue.toUpperCase())
-                                || data.toString().replace("-", "").contains(newValue.toUpperCase())
-                                || data.toString().replace("#", "").contains(newValue.toUpperCase())
-                                || data.toString().replaceFirst("-", "").contains(newValue.toUpperCase()));
-            }
-        })));
-
-        baseType.selectedToggleProperty().addListener(((observable, oldValue, newValue) -> {
-
-            Manufacturer selectedItem = manufacturerListView.getSelectionModel().getSelectedItem();
-
-            if (selectedItem == null)
-                return;
-
-            setFilteredItems(selectedItem);
-
-        }));
-
-        modelListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-
-            if (newValue == null) {
-                currentInjectorObtainer.setInjector(null);
-                enabler.selectInjector(false).selectInjectorType(null);
-                return;
-            }
-
-            Injector inj = (Injector) newValue;
-            currentVoltAmpereProfile = injectorsRepository.findByInjectorCode(inj.getInjectorCode()).getVoltAmpereProfile();
-            inj.setVoltAmpereProfile(currentVoltAmpereProfile);
-            currentInjectorObtainer.setInjector(inj);
-
-            enabler.selectInjector(true).selectInjectorType(currentVoltAmpereProfile.getInjectorType().getInjectorType());
-
-            Double firstI = currentVoltAmpereProfile.getFirstI();
-            Double secondI = currentVoltAmpereProfile.getSecondI();
-            Double boostI = currentVoltAmpereProfile.getBoostI();
-
-            firstI = (boostI - firstI >= 0.5) ? firstI : boostI - 0.5;
-            secondI = (firstI - secondI >= 0.5) ? secondI : firstI - 0.5;
-
-            voltAmpereProfileController.getBoostUSpinner().getValueFactory().setValue(currentVoltAmpereProfile.getBoostU());
-            voltAmpereProfileController.getFirstWSpinner().getValueFactory().setValue(currentVoltAmpereProfile.getFirstW());
-            voltAmpereProfileController.getFirstISpinner().getValueFactory().setValue((firstI * 100 % 10 != 0) ? dataConverter.round(firstI) : firstI);
-            voltAmpereProfileController.getSecondISpinner().getValueFactory().setValue((secondI * 100 % 10 != 0) ? dataConverter.round(secondI) : secondI);
-            voltAmpereProfileController.getBoostISpinner().getValueFactory().setValue((boostI * 100 % 10 != 0) ? dataConverter.round(boostI) : boostI);
-            voltAmpereProfileController.getBatteryUSpinner().getValueFactory().setValue(currentVoltAmpereProfile.getBatteryU());
-            voltAmpereProfileController.getNegativeUSpinner().getValueFactory().setValue(currentVoltAmpereProfile.getNegativeU());
-            voltAmpereProfileController.getEnableBoostToggleButton().setSelected(currentVoltAmpereProfile.getBoostDisable());
-
-            voltAmpereProfileController.getApplyButton().fire();
-
-        });
-
-        testListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-
-            if (newValue == null) {
-                highPressureSectionController.regulator1pressModeOFF();
-                setDefaultSpinnerValueFactories(true);
-                enabler.selectStaticLeakTest(false);
-                return;
-            }
-
-            currentAdjustingTime = newValue.getAdjustingTime();
-
-            currentMeasuringTime = newValue.getMeasurementTime();
-
-            setProgress(speedComboBox.getSelectionModel().getSelectedItem());
-
-            highPressureSectionController.regulator1pressModeON(newValue.getSettedPressure());
-
-            Measurement measurementType = newValue.getTestName().getMeasurement();
-
-            switch (measurementType) {
-
-                case NO:
-                    setDefaultSpinnerValueFactories(false);
-                    enabler.selectStaticLeakTest(true);
-                    break;
-                default:
-                    setDefaultSpinnerValueFactories(true);
-                    enabler.selectStaticLeakTest(false);
-                    Integer freq = newValue.getInjectionRate();
-                    Integer width = newValue.getTotalPulseTime();
-                    Integer firstW = currentVoltAmpereProfile.getFirstW();
-                    firstW = (width - firstW >= 30) ? firstW : width - 30;
-                    setInjectorTypeValues(freq, firstW, width);
-                    break;
-
-            }
-
-        });
-
-        testsToggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
-
-            if (newValue == manualTestRadioButton)
-                tests.setTestType(MANUAL);
-            else if (newValue == testPlanTestRadioButton)
-                tests.setTestType(TESTPLAN);
-            else if (newValue == autoTestRadioButton)
-                tests.setTestType(AUTO);
-            else if (newValue == codingTestRadioButton)
-                tests.setTestType(CODING);
-
-            enabler.selectTestType();
-
-        });
+        this
+                .initTestListViewUtilityObjects()
+                .setupTimeProgressBars()
+                .bindingI18N()
+                .setupResetButton()
+                .setupVersionComboBox()
+                .initManufacturerContextMenu()
+                .initModelContextMenu()
+                .initTestContextMenu()
+                .setupSpeedComboBox()
+                .initStartToggleButtonBlinking()
+                .setupManufacturerListViewListener()
+                .setupSearchModelTextFieldListener()
+                .setupBaseTypeToggleGroupListener()
+                .setupModelListViewListener()
+                .setupTestListViewListener()
+                .setupTestsToggleGroupListener()
+                .setupMoveButtonEventHandlers()
+                .setupTestListAutoChangeListener();
 
     }
 
-    private void initTimeProgressBars() {
+    private MainSectionController initTestListViewUtilityObjects() {
+
+        testsSelectionModel = testListView.getSelectionModel();
+
+        testListViewItems = testListView.getItems();
+
+        return this;
+
+    }
+
+    private MainSectionController setupTimeProgressBars() {
 
         adjustingTime = new TimeProgressBar(adjustingTimeProgressBar, adjustingText);
         measuringTime = new TimeProgressBar(measuringTimeProgressBar, measuringText);
 
+        return this;
+
     }
 
-    private void bindingI18N() {
-        enableTimingCheckBox.textProperty().bind(i18N.createStringBinding("main.enableTiming.checkbox"));
+    private MainSectionController bindingI18N() {
+
+        timingSpeedLabel.textProperty().bind(i18N.createStringBinding("main.timingSpeed.label"));
         labelAdjustTime.textProperty().bind(i18N.createStringBinding("main.adjusting.label"));
         labelMeasureTime.textProperty().bind(i18N.createStringBinding("main.measuring.label"));
-        manualTestRadioButton.textProperty().bind(i18N.createStringBinding("main.manual.radiobutton"));
         autoTestRadioButton.textProperty().bind(i18N.createStringBinding("main.auto.radiobutton"));
         testPlanTestRadioButton.textProperty().bind(i18N.createStringBinding("main.testPlan.radiobutton"));
         codingTestRadioButton.textProperty().bind(i18N.createStringBinding("main.coding.radiobutton"));
-        defaultRB.textProperty().bind(i18N.createStringBinding("main.defaultRB.radiobutton"));
-        customRB.textProperty().bind(i18N.createStringBinding("main.customRB.radiobutton"));
+        defaultRadioButton.textProperty().bind(i18N.createStringBinding("main.defaultRB.radiobutton"));
+        customRadioButton.textProperty().bind(i18N.createStringBinding("main.customRB.radiobutton"));
+
+        return this;
+
     }
 
     private void setFilteredItems(Manufacturer manufacturer) {
 
-        List<Injector> modelsByManufacturers = injectorsRepository.findByManufacturerAndIsCustom(manufacturer, customRB.isSelected());
+        List<Injector> modelsByManufacturers = injectorsRepository.findByManufacturerAndIsCustom(manufacturer, customRadioButton.isSelected());
         ObservableList<Model> injectors = FXCollections.observableArrayList(modelsByManufacturers);
         filteredModelList = new FilteredList<>(injectors, model -> true);
         modelListView.setItems(filteredModelList);
@@ -569,9 +493,12 @@ public class MainSectionController {
         property.bind(task.valueProperty());
 
         property.addListener((observable, oldValue, newValue) -> {
-            currentInjectorTestsObtainer.setInjectorTests(newValue);
-            testListView.getItems().setAll(currentInjectorTestsObtainer.getInjectorTests());
-            Platform.runLater(this::pointToFirstTest);
+
+            if (newValue != null) {
+                currentInjectorTestsObtainer.setInjectorTests(newValue);
+                testListViewItems.setAll(currentInjectorTestsObtainer.getInjectorTests());
+                Platform.runLater(this::pointToFirstTest);
+            }
 
         });
 
@@ -581,12 +508,12 @@ public class MainSectionController {
 
     private void pointToFirstTest() {
 
-        testListView.getSelectionModel().select(0);
+        testsSelectionModel.select(0);
         testListView.scrollTo(0);
 
     }
 
-    private void initManufacturerContextMenu() {
+    private MainSectionController initManufacturerContextMenu() {
         ContextMenu manufacturerMenu = new ContextMenu();
         MenuItem newManufacturer = new MenuItem("New");
         newManufacturer.setOnAction(new ManufacturerMenuEventHandler("New manufacturer", ManufacturerMenuDialogController::setNew));
@@ -604,9 +531,10 @@ public class MainSectionController {
             } else
                 manufacturerMenu.hide();
         });
+        return this;
     }
 
-    private void initModelContextMenu() {
+    private MainSectionController initModelContextMenu() {
         ContextMenu modelMenu = new ContextMenu();
         MenuItem newModel = new MenuItem("New");
         newModel.setOnAction(new ModelMenuEventHandler("New injector", NewEditInjectorDialogController::setNew));
@@ -621,7 +549,7 @@ public class MainSectionController {
         modelListView.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             if (event.getButton() == MouseButton.SECONDARY) {
                 modelMenu.getItems().clear();
-                if (defaultRB.isSelected()) {
+                if (defaultRadioButton.isSelected()) {
                     modelMenu.getItems().add(copyModel);
                 } else {
                     modelMenu.getItems().add(newModel);
@@ -632,9 +560,11 @@ public class MainSectionController {
             } else
                 modelMenu.hide();
         });
+
+        return this;
     }
 
-    private void initTestContextMenu() {
+    private MainSectionController initTestContextMenu() {
 
         ContextMenu testMenu = new ContextMenu();
         MenuItem newTest = new MenuItem("New");
@@ -652,14 +582,17 @@ public class MainSectionController {
                 testMenu.hide();
         });
 
+        return this;
     }
 
-    private void initSpeedComboBox() {
+    private MainSectionController setupSpeedComboBox() {
 
         speedComboBox.getItems().setAll(NORMAL_SPEED, DOUBLE_SPEED, HALF_SPEED);
         speedComboBox.getSelectionModel().selectFirst();
 
         speedComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> setProgress(newValue));
+
+        return this;
 
     }
 
@@ -680,7 +613,6 @@ public class MainSectionController {
                 manufacturerDialogStage.setScene(new Scene(manufacturerMenuDialog.getView(), 200, 130));
                 manufacturerDialogStage.setResizable(false);
                 manufacturerDialogStage.initModality(Modality.APPLICATION_MODAL);
-//                manufacturerDialogStage.initStyle(StageStyle.UNDECORATED);
                 ((ManufacturerMenuDialogController) manufacturerMenuDialog.getController()).setStage(manufacturerDialogStage);
             }
             manufacturerDialogStage.setTitle(title);
@@ -706,7 +638,6 @@ public class MainSectionController {
                 modelDialogStage.setScene(new Scene(newEditInjectorDialog.getView(), 600, 400));
                 modelDialogStage.setResizable(false);
                 modelDialogStage.initModality(Modality.APPLICATION_MODAL);
-//                manufacturerDialogStage.initStyle(StageStyle.UNDECORATED);
                 controller.setStage(modelDialogStage);
                 controller.setModelListView(modelListView);
 
@@ -734,7 +665,6 @@ public class MainSectionController {
                 testDialogStage.setScene(new Scene(newEditTestDialog.getView()));
                 testDialogStage.setResizable(false);
                 testDialogStage.initModality(Modality.APPLICATION_MODAL);
-//                manufacturerDialogStage.initStyle(StageStyle.UNDECORATED);
                 controller.setStage(testDialogStage);
                 controller.setTestListView(testListView);
 
@@ -758,7 +688,7 @@ public class MainSectionController {
             this.text = text;
         }
 
-        public void setProgress(int time) {
+        private void setProgress(int time) {
             this.initialTime = time;
             text.setText(String.valueOf(initialTime));
             progressBar.setProgress(initialTime == 0 ? 0 : 1);
@@ -783,13 +713,15 @@ public class MainSectionController {
 
     }
 
-    private void setupResetButton() {
+    private MainSectionController setupResetButton() {
 
         resetButton.setOnAction(event -> flowModbusWriter.add(ModbusMapFlow.StartMeasurementCycle, true));
 
+        return this;
+
     }
 
-    private void setupVersionComboBox() {
+    private MainSectionController setupVersionComboBox() {
 
         versionComboBox.getItems().addAll(GUIType.values());
 
@@ -816,6 +748,8 @@ public class MainSectionController {
         GUIType currentGUIType = GUIType.valueOf(rootPrefs.get("GUI_Type", GUIType.CR_Inj.name()));
 
         versionComboBox.getSelectionModel().select(currentGUIType);
+
+        return this;
 
     }
 
@@ -875,7 +809,7 @@ public class MainSectionController {
 
     }
 
-    private void initStartToggleButtonBlinking() {
+    private MainSectionController initStartToggleButtonBlinking() {
 
         Timeline startButtonTimeline = new Timeline(new KeyFrame(Duration.millis(400), event -> startBlinking()));
         startButtonTimeline.setCycleCount(Animation.INDEFINITE);
@@ -890,9 +824,11 @@ public class MainSectionController {
             }
         });
 
+        return this;
+
     }
 
-    private void startBlinking(){
+    private void startBlinking() {
 
         startToggleButton.getStyleClass().clear();
 
@@ -903,6 +839,293 @@ public class MainSectionController {
             startToggleButton.getStyleClass().add("stopButtonLight");
             startLight = true;
         }
+
+    }
+
+    private MainSectionController setupManufacturerListViewListener() {
+
+        manufacturerListView.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) -> {
+
+            currentManufacturerObtainer.setCurrentManufacturer(newValue);
+
+            if (newValue.isCustom()) {
+                defaultRadioButton.setDisable(true);
+                customRadioButton.setSelected(true);
+            } else
+                defaultRadioButton.setDisable(false);
+
+
+            switch (versionComboBox.getSelectionModel().getSelectedItem()) {
+                case CR_Inj:
+                    setFilteredItems(newValue);
+                    break;
+                case CR_Pump:
+                    //TODO
+                    break;
+                case UIS:
+                    //TODO
+                    break;
+            }
+
+        }));
+
+        return this;
+
+    }
+
+    private MainSectionController setupSearchModelTextFieldListener() {
+
+        searchModelTextField.textProperty().addListener(((observable, oldValue, newValue) -> filteredModelList.setPredicate(data -> {
+
+            if (newValue == null || newValue.isEmpty())
+                return true;
+            else {
+                return (data.toString().contains(newValue.toUpperCase())
+                        || data.toString().replace("-", "").contains(newValue.toUpperCase())
+                        || data.toString().replace("#", "").contains(newValue.toUpperCase())
+                        || data.toString().replaceFirst("-", "").contains(newValue.toUpperCase()));
+            }
+
+        })));
+
+        return this;
+
+    }
+
+    private MainSectionController setupBaseTypeToggleGroupListener() {
+
+        baseTypeToggleGroup.selectedToggleProperty().addListener(((observable, oldValue, newValue) -> {
+
+            Manufacturer selectedItem = manufacturerListView.getSelectionModel().getSelectedItem();
+
+            if (selectedItem == null)
+                return;
+
+            setFilteredItems(selectedItem);
+
+        }));
+
+        return this;
+
+    }
+
+    private MainSectionController setupModelListViewListener() {
+
+        modelListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+
+            returnToDefaultTestListAuto();
+
+            if (newValue == null) {
+                currentInjectorObtainer.setInjector(null);
+                currentInjectorTestsObtainer.setInjectorTests(null);
+                enabler.selectInjector(false).selectInjectorType(null);
+                return;
+            }
+
+            Injector inj = (Injector) newValue;
+            currentVoltAmpereProfile = injectorsRepository.findByInjectorCode(inj.getInjectorCode()).getVoltAmpereProfile();
+            inj.setVoltAmpereProfile(currentVoltAmpereProfile);
+            currentInjectorObtainer.setInjector(inj);
+
+            enabler.selectInjector(true).selectInjectorType(currentVoltAmpereProfile.getInjectorType().getInjectorType());
+
+            Double firstI = currentVoltAmpereProfile.getFirstI();
+            Double secondI = currentVoltAmpereProfile.getSecondI();
+            Double boostI = currentVoltAmpereProfile.getBoostI();
+
+            firstI = (boostI - firstI >= 0.5) ? firstI : boostI - 0.5;
+            secondI = (firstI - secondI >= 0.5) ? secondI : firstI - 0.5;
+
+            voltAmpereProfileController.getBoostUSpinner().getValueFactory().setValue(currentVoltAmpereProfile.getBoostU());
+            voltAmpereProfileController.getFirstWSpinner().getValueFactory().setValue(currentVoltAmpereProfile.getFirstW());
+            voltAmpereProfileController.getFirstISpinner().getValueFactory().setValue((firstI * 100 % 10 != 0) ? dataConverter.round(firstI) : firstI);
+            voltAmpereProfileController.getSecondISpinner().getValueFactory().setValue((secondI * 100 % 10 != 0) ? dataConverter.round(secondI) : secondI);
+            voltAmpereProfileController.getBoostISpinner().getValueFactory().setValue((boostI * 100 % 10 != 0) ? dataConverter.round(boostI) : boostI);
+            voltAmpereProfileController.getBatteryUSpinner().getValueFactory().setValue(currentVoltAmpereProfile.getBatteryU());
+            voltAmpereProfileController.getNegativeUSpinner().getValueFactory().setValue(currentVoltAmpereProfile.getNegativeU());
+            voltAmpereProfileController.getEnableBoostToggleButton().setSelected(currentVoltAmpereProfile.getBoostDisable());
+
+            voltAmpereProfileController.getApplyButton().fire();
+
+        });
+
+        return this;
+
+    }
+
+    private MainSectionController setupTestListViewListener() {
+
+        testsSelectionModel.selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+
+            if (isFocusMoved)
+                return;
+
+            if (newValue == null) {
+                highPressureSectionController.regulator1pressModeOFF();
+                setDefaultSpinnerValueFactories(true);
+                enabler.selectStaticLeakTest(false);
+                return;
+            }
+
+            if (autoTestRadioButton.isSelected()) {
+
+                enabler.showButtons(newValue.isIncluded(), false)
+                        .enableUpDownButtons(testsSelectionModel.getSelectedIndex(), testListViewItems.size() - getListOfNonIncludedTests().size())
+                        .enableMainSectionStartToggleButton(testsSelectionModel.getSelectedIndex() == 0 && newValue.isIncluded());
+
+            }
+
+
+            currentAdjustingTime = newValue.getAdjustingTime();
+
+            currentMeasuringTime = newValue.getMeasurementTime();
+
+            setProgress(speedComboBox.getSelectionModel().getSelectedItem());
+
+            highPressureSectionController.regulator1pressModeON(newValue.getSettedPressure());
+
+            Measurement measurementType = newValue.getTestName().getMeasurement();
+
+            switch (measurementType) {
+
+                case NO:
+                    setDefaultSpinnerValueFactories(false);
+                    enabler.selectStaticLeakTest(true);
+                    break;
+                default:
+                    setDefaultSpinnerValueFactories(true);
+                    enabler.selectStaticLeakTest(false);
+                    Integer freq = newValue.getInjectionRate();
+                    Integer width = newValue.getTotalPulseTime();
+                    Integer firstW = currentVoltAmpereProfile.getFirstW();
+                    firstW = (width - firstW >= 30) ? firstW : width - 30;
+                    setInjectorTypeValues(freq, firstW, width);
+                    break;
+
+            }
+
+        });
+
+        return this;
+
+    }
+
+    //FIXME: при сортировке несколько раз вызывается листенер списка
+    private MainSectionController setupTestsToggleGroupListener() {
+
+        testsToggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+
+            if (newValue == autoTestRadioButton)
+                tests.setTestType(AUTO);
+            else {
+                returnToDefaultTestListAuto();
+                testListViewItems.sort((Comparator.comparingInt(injectorTest -> injectorTest.getTestName().getId())));
+                tests.setTestType((newValue == testPlanTestRadioButton) ? TESTPLAN : CODING);
+                enabler.enableMainSectionStartToggleButton(true);
+            }
+
+            enabler.selectTestType();
+
+        });
+
+        return this;
+
+    }
+
+    private MainSectionController setupMoveButtonEventHandlers() {
+
+        moveUpButton.setOnAction(event -> moveTest(Move.UP));
+
+        moveDownButton.setOnAction(event -> moveTest(Move.DOWN));
+
+        return this;
+
+    }
+
+    private void moveTest(Move move) {
+
+        int selectedTestIndex = testsSelectionModel.getSelectedIndex();
+
+        if (selectedTestIndex == -1)
+            return;
+
+        isFocusMoved = true;
+
+        switch (move) {
+
+            case UP:
+                Collections.swap(testListViewItems, selectedTestIndex, selectedTestIndex - 1);
+                testsSelectionModel.select(selectedTestIndex - 1);
+                testListView.scrollTo(testsSelectionModel.getSelectedIndex());
+                enabler.enableUpDownButtons(testsSelectionModel.getSelectedIndex(), testListViewItems.size() - getListOfNonIncludedTests().size());
+                break;
+            case DOWN:
+                Collections.swap(testListViewItems, selectedTestIndex, selectedTestIndex + 1);
+                testsSelectionModel.select(selectedTestIndex + 1);
+                testListView.scrollTo(testsSelectionModel.getSelectedIndex());
+                enabler.enableUpDownButtons(testsSelectionModel.getSelectedIndex(), testListViewItems.size() - getListOfNonIncludedTests().size());
+                break;
+
+        }
+
+        enabler.enableMainSectionStartToggleButton(testsSelectionModel.getSelectedIndex() == 0);
+
+        isFocusMoved = false;
+
+    }
+
+    private void setupTestListAutoChangeListener() {
+
+        getListOfNonIncludedTests().addListener((ListChangeListener<? super InjectorTest>) change -> {
+
+            if (isAnotherAutoOrNewTestList)
+                return;
+
+            int index = testListViewItems.indexOf(getChangedInjectorTest());
+
+            while (change.next()) {
+
+                if (change.wasAdded()) {
+
+                    int lastIndex = testListViewItems.size() - 1;
+
+                    if (index == lastIndex)
+                        enabler.showButtons(false, false);
+
+                    for (int i = index; i < lastIndex; i++) {
+                        Collections.swap(testListViewItems, i, i + 1);
+                    }
+
+                } else if (change.wasRemoved()) {
+
+                    if (index == 0)
+                        enabler.showButtons(true, false);
+
+                    for (int i = index; i > 0; i--) {
+                        Collections.swap(testListViewItems, i, i - 1);
+                    }
+
+                }
+
+            }
+
+            enabler.enableUpDownButtons(testsSelectionModel.getSelectedIndex(), testListViewItems.size() - change.getList().size());
+
+        });
+
+    }
+
+    private void returnToDefaultTestListAuto() {
+
+        isAnotherAutoOrNewTestList = true;
+
+        ObservableList<InjectorTest> listOfNonIncludedTests = getListOfNonIncludedTests();
+        if (!listOfNonIncludedTests.isEmpty()) {
+            List<InjectorTest> temp = new ArrayList<>(listOfNonIncludedTests);
+            temp.forEach(injectorTest -> injectorTest.setIncluded(true));
+        }
+
+        isAnotherAutoOrNewTestList = false;
 
     }
 

@@ -16,7 +16,6 @@ import javafx.animation.Timeline;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.ToggleButton;
 import javafx.util.Duration;
@@ -28,8 +27,6 @@ public class Measurements implements ChangeListener<Boolean> {
     private Enabler enabler;
 
     private Tests tests;
-
-    private CheckBox enableTimingCheckBox;
 
     private Button resetButton;
 
@@ -74,7 +71,6 @@ public class Measurements implements ChangeListener<Boolean> {
 
         resetButton = mainSectionController.getResetButton();
         mainSectionStartToggleButton = mainSectionController.getStartToggleButton();
-        enableTimingCheckBox = mainSectionController.getEnableTimingCheckBox();
         adjustingTime = mainSectionController.getAdjustingTime();
         measuringTime = mainSectionController.getMeasuringTime();
         flowModbusWriter = mainSectionController.getFlowModbusWriter();
@@ -156,6 +152,7 @@ public class Measurements implements ChangeListener<Boolean> {
 
         injectorSectionStartToggleButton.setSelected(false);
         highPressureStartToggleButton.setSelected(false);
+        testBenchStartToggleButton.setSelected(false);
         mainSectionStartToggleButton.setSelected(false);
 
         flowModbusWriter.add(ModbusMapFlow.StopMeasurementCycle, true);
@@ -204,11 +201,8 @@ public class Measurements implements ChangeListener<Boolean> {
             resetButton.fire();
             pressurePreparationTimeline.stop();
 
-            if (enableTimingCheckBox.isSelected()) {
-
-                adjustingTimeline.play();
-
-            }
+            // TODO: Только для Auto/Coding
+            adjustingTimeline.play();
 
         }
 

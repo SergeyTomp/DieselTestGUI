@@ -1,6 +1,12 @@
 package fi.stardex.sisu.persistence.orm.cr.inj;
 
 import fi.stardex.sisu.persistence.orm.EntityUpdates;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import org.hibernate.annotations.NotFound;
 
 import javax.persistence.*;
@@ -14,7 +20,11 @@ import java.util.Objects;
                 @NamedAttributeNode("testName"),
                 @NamedAttributeNode("voltAmpereProfile")})})
 @Table(name = "injector_test")
-public class InjectorTest {
+public class InjectorTest implements ChangeListener<Boolean> {
+
+    private static final ObservableList<InjectorTest> listOfNonIncludedTests = FXCollections.observableArrayList();
+
+    private static InjectorTest changedInjectorTest;
 
     @Id
     @Column(name = "id")
@@ -64,6 +74,9 @@ public class InjectorTest {
     @NotFound
     private VoltAmpereProfile voltAmpereProfile;
 
+    @Transient
+    private BooleanProperty included = new SimpleBooleanProperty(true);
+
     @PostPersist
     private void onPostPersist() {
         EntityUpdates.getMapOfEntityUpdates().put(this.getClass().getSimpleName(), true);
@@ -79,13 +92,19 @@ public class InjectorTest {
         EntityUpdates.getMapOfEntityUpdates().put(this.getClass().getSimpleName(), true);
     }
 
+    //FIXME: при добавлении кастомного теста не работает его перемещение по списку при вкл/откл галки так как нужно
+    //снова с репозитория запрашивать обновленный список тестов
     public InjectorTest() {
+
+        included.addListener(this);
+
     }
 
     public InjectorTest(Injector injector, TestName testName, Integer motorSpeed, Integer settedPressure,
                         Integer adjustingTime, Integer measurementTime, Integer injectionRate,
                         Integer totalPulseTime, Double nominalFlow, Double flowRange) {
 
+        super();
         this.injector = injector;
         this.testName = testName;
         this.motorSpeed = motorSpeed;
@@ -98,6 +117,26 @@ public class InjectorTest {
         this.flowRange = flowRange;
         this.isCustom = true;
 
+    }
+
+    public static ObservableList<InjectorTest> getListOfNonIncludedTests() {
+        return listOfNonIncludedTests;
+    }
+
+    public static InjectorTest getChangedInjectorTest() {
+        return changedInjectorTest;
+    }
+
+    public BooleanProperty includedProperty() {
+        return included;
+    }
+
+    public void setIncluded(boolean included) {
+        this.included.set(included);
+    }
+
+    public boolean isIncluded() {
+        return included.get();
     }
 
     public Integer getId() {
@@ -175,4 +214,15 @@ public class InjectorTest {
         return testName.toString();
     }
 
+    @Override
+    public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+
+        changedInjectorTest = this;
+
+        if (newValue)
+            listOfNonIncludedTests.remove(this);
+        else
+            listOfNonIncludedTests.add(this);
+
+    }
 }

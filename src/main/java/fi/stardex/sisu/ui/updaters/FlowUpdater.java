@@ -19,7 +19,6 @@ import java.util.stream.Stream;
 import static fi.stardex.sisu.registers.flow.ModbusMapFlow.*;
 import static fi.stardex.sisu.ui.updaters.FlowUpdater.Flow.BACK_FLOW;
 import static fi.stardex.sisu.ui.updaters.FlowUpdater.Flow.DELIVERY;
-import static fi.stardex.sisu.util.enums.Tests.TestType.MANUAL;
 import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions;
 import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions.MASTER;
 
@@ -423,7 +422,7 @@ public abstract class FlowUpdater {
     }
 
     protected boolean isNotMeasuring() {
-        return tests.getTestType() != MANUAL && deliveryRangeLabel.getText().isEmpty() && backFlowRangeLabel.getText().isEmpty();
+        return deliveryRangeLabel.getText().isEmpty() && backFlowRangeLabel.getText().isEmpty();
     }
 
 }

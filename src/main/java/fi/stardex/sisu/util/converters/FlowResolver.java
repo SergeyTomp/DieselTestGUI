@@ -4,18 +4,18 @@ import fi.stardex.sisu.combobox_values.Dimension;
 import fi.stardex.sisu.combobox_values.FlowUnits;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
-import fi.stardex.sisu.ui.controllers.main.MainSectionController;
 import fi.stardex.sisu.util.enums.Measurement;
 import javafx.scene.control.Label;
+import javafx.scene.control.MultipleSelectionModel;
+import javafx.scene.control.SingleSelectionModel;
 
 import javax.annotation.PostConstruct;
 
 public class FlowResolver {
 
-    private MainSectionController mainSectionController;
+    private MultipleSelectionModel<InjectorTest> testsSelectionModel;
 
-    private SettingsController settingsController;
+    private SingleSelectionModel<Dimension> flowOutputDimensionsSelectionModel;
 
     private FlowController flowController;
 
@@ -23,30 +23,31 @@ public class FlowResolver {
 
     private static final double PERCENT = 0.01;
 
-    public FlowResolver(MainSectionController mainSectionController, SettingsController settingsController,
+    public FlowResolver(MultipleSelectionModel<InjectorTest> testsSelectionModel,
+                        SingleSelectionModel<Dimension> flowOutputDimensionsSelectionModel,
                         FlowController flowController, DataConverter dataConverter) {
-        this.mainSectionController = mainSectionController;
-        this.settingsController = settingsController;
+
+        this.testsSelectionModel = testsSelectionModel;
+        this.flowOutputDimensionsSelectionModel = flowOutputDimensionsSelectionModel;
         this.flowController = flowController;
         this.dataConverter = dataConverter;
+
     }
 
     @PostConstruct
     private void init() {
 
-        mainSectionController.getTestListView().getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
-                setFlowLabels(newValue, settingsController.getFlowOutputDimensionsComboBox().getSelectionModel().getSelectedItem()));
+        testsSelectionModel.selectedItemProperty().addListener((observable, oldValue, newValue) ->
+                setFlowLabels(newValue, flowOutputDimensionsSelectionModel.getSelectedItem()));
 
-        settingsController.getFlowOutputDimensionsComboBox().getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
-                setFlowLabels(mainSectionController.getTestListView().getSelectionModel().getSelectedItem(), newValue));
+        flowOutputDimensionsSelectionModel.selectedItemProperty().addListener((observable, oldValue, newValue) ->
+                setFlowLabels(testsSelectionModel.getSelectedItem(), newValue));
 
         flowController.getDeliveryFlowComboBox().getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
-                setFlowLabels(mainSectionController.getTestListView().getSelectionModel().getSelectedItem(),
-                        settingsController.getFlowOutputDimensionsComboBox().getSelectionModel().getSelectedItem()));
+                setFlowLabels(testsSelectionModel.getSelectedItem(), flowOutputDimensionsSelectionModel.getSelectedItem()));
 
         flowController.getBackFlowComboBox().getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
-                setFlowLabels(mainSectionController.getTestListView().getSelectionModel().getSelectedItem(),
-                        settingsController.getFlowOutputDimensionsComboBox().getSelectionModel().getSelectedItem()));
+                setFlowLabels(testsSelectionModel.getSelectedItem(), flowOutputDimensionsSelectionModel.getSelectedItem()));
 
     }
 

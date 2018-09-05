@@ -542,7 +542,8 @@ public class SpringJavaConfig {
     @Autowired
     public FlowResolver flowResolver(MainSectionController mainSectionController, SettingsController settingsController,
                                      FlowController flowController, DataConverter dataConverter) {
-        return new FlowResolver(mainSectionController, settingsController, flowController, dataConverter);
+        return new FlowResolver(mainSectionController.getTestListView().getSelectionModel(),
+                settingsController.getFlowOutputDimensionsComboBox().getSelectionModel(), flowController, dataConverter);
     }
 
     @Bean

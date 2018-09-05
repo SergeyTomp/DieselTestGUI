@@ -108,13 +108,8 @@ public class ModbusConnect {
 
         connectCallable = new ConnectCallable(devices, addressLine, port, statusBar, dieselDevice, schedularNotifier, inetAddressWrapper);
 
-        if (connectionStatus == null || connectionStatus.isDone()) {
-
-            logger.info("Make new Future, old is null or done!");
+        if (connectionStatus == null || connectionStatus.isDone())
             connectionStatus = connectProcessor.submit(connectCallable);
-
-        } else
-            logger.info("WARNING!WARNING!WARNING! Old future not null and not done, waiting!");
 
     }
 

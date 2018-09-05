@@ -4,11 +4,11 @@ import static fi.stardex.sisu.util.enums.Tests.TestType.*;
 
 public class Tests {
 
-    private TestType test = MANUAL;
+    private TestType test = AUTO;
 
     public enum TestType {
 
-        MANUAL, TESTPLAN, AUTO, CODING
+        AUTO, TESTPLAN, CODING
 
     }
 

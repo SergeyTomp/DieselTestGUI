@@ -12,19 +12,20 @@ import fi.stardex.sisu.util.enums.Tests;
 import fi.stardex.sisu.util.enums.Tests.TestType;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+
+import javax.annotation.PostConstruct;
+
+import static fi.stardex.sisu.util.enums.Tests.TestType.AUTO;
 
 public class Enabler {
 
     private MainSectionController mainSectionController;
 
-    private RadioButton manualTestRadioButton;
-
-    private RadioButton testPlanTestRadioButton;
-
-    private RadioButton autoTestRadioButton;
-
-    private RadioButton codingTestRadioButton;
+    private ToggleButton mainSectionStartToggleButton;
 
     private ListView<InjectorTest> testListView;
 
@@ -34,15 +35,19 @@ public class Enabler {
 
     private Tests tests;
 
-    private CheckBox enableTimingCheckBox;
-
     private ComboBox<GUIType> versionComboBox;
 
     private ComboBox<String> speedComboBox;
 
-    private ToggleButton startToggleButton;
+    private Button moveUpButton;
+
+    private Button moveDownButton;
+
+    private VBox injectorTestsVBox;
 
     private GridPane timingGridPane;
+
+    private HBox startHBox;
 
     private ToggleButton injectorSectionStartToggleButton;
 
@@ -58,7 +63,11 @@ public class Enabler {
 
     private RadioButton piezoDelphiRadioButton;
 
+    private Button storeRLCButton;
+
     private Button storeButton;
+
+    private Button resetButton;
 
     private Button measureButton;
 
@@ -76,19 +85,20 @@ public class Enabler {
                    RLCController rlcController) {
 
         this.mainSectionController = mainSectionController;
-        manualTestRadioButton = mainSectionController.getManualTestRadioButton();
-        testPlanTestRadioButton = mainSectionController.getTestPlanTestRadioButton();
-        autoTestRadioButton = mainSectionController.getAutoTestRadioButton();
-        codingTestRadioButton = mainSectionController.getCodingTestRadioButton();
+        mainSectionStartToggleButton = mainSectionController.getStartToggleButton();
         testListView = mainSectionController.getTestListView();
         manufacturerListView = mainSectionController.getManufacturerListView();
         modelListView = mainSectionController.getModelListView();
         tests = mainSectionController.getTests();
-        enableTimingCheckBox = mainSectionController.getEnableTimingCheckBox();
-        startToggleButton = mainSectionController.getStartToggleButton();
+        injectorTestsVBox = mainSectionController.getInjectorTestsVBox();
         timingGridPane = mainSectionController.getTimingGridPane();
+        startHBox = mainSectionController.getStartHBox();
         versionComboBox = mainSectionController.getVersionComboBox();
         speedComboBox = mainSectionController.getSpeedComboBox();
+        moveUpButton = mainSectionController.getMoveUpButton();
+        moveDownButton = mainSectionController.getMoveDownButton();
+        storeButton = mainSectionController.getStoreButton();
+        resetButton = mainSectionController.getResetButton();
 
         injectorSectionStartToggleButton = injectorSectionController.getInjectorSectionStartToggleButton();
         widthCurrentSignalSpinner = injectorSectionController.getWidthCurrentSignalSpinner();
@@ -98,7 +108,7 @@ public class Enabler {
         piezoDelphiRadioButton = injectorSectionController.getPiezoDelphiRadioButton();
         piezoCoilToggleGroup = injectorSectionController.getPiezoCoilToggleGroup();
 
-        storeButton = rlcController.getStoreButton();
+        storeRLCButton = rlcController.getStoreButton();
         measureButton = rlcController.getMeasureButton();
         parameter1Gauge = rlcController.getParameter1Gauge();
         parameter2Gauge = rlcController.getParameter2Gauge();
@@ -108,9 +118,22 @@ public class Enabler {
 
     }
 
+    @PostConstruct
+    private void init() {
+
+        initAutoTest();
+
+    }
+
+    private void initAutoTest() {
+
+        testListView.setCellFactory(CheckBoxListCell.forListView(InjectorTest::includedProperty));
+        showButtons(true, false);
+
+    }
+
     public Enabler startTest(boolean isStarted) {
 
-        enableTimingCheckBox.setDisable(isStarted);
         speedComboBox.setDisable(isStarted);
 
         versionComboBox.setDisable(isStarted);
@@ -120,8 +143,7 @@ public class Enabler {
         manufacturerListView.setDisable(isStarted);
         modelListView.setDisable(isStarted);
 
-        if (enableTimingCheckBox.isSelected())
-            testListView.setDisable(isStarted);
+        testListView.setDisable(isStarted);
 
         return this;
 
@@ -130,16 +152,10 @@ public class Enabler {
     public Enabler selectInjector(boolean selected) {
 
         if (selected) {
-            testPlanTestRadioButton.setDisable(false);
-            autoTestRadioButton.setDisable(false);
-            codingTestRadioButton.setDisable(false);
-            if (!manualTestRadioButton.isSelected())
-                mainSectionController.fillTestListView();
+            showInjectorTests(true);
+            mainSectionController.fillTestListView();
         } else {
-            testPlanTestRadioButton.setDisable(true);
-            autoTestRadioButton.setDisable(true);
-            codingTestRadioButton.setDisable(true);
-            manualTestRadioButton.setSelected(true);
+            showInjectorTests(false);
             testListView.getItems().clear();
         }
 
@@ -179,38 +195,73 @@ public class Enabler {
         TestType test = tests.getTestType();
 
         switch (test) {
-            case MANUAL:
+
+            case AUTO:
                 testListView.setDisable(false);
-                testListView.getItems().clear();
-                startToggleButton.setDisable(true);
-                mainSectionController.getCurrentInjectorTestsObtainer().setInjectorTests(null);
-                showTiming(false);
+                testListView.setCellFactory(CheckBoxListCell.forListView(InjectorTest::includedProperty));
+                mainSectionController.refreshTestListView();
+                showButtons(true, false);
+                showTiming(true);
                 break;
             case TESTPLAN:
                 testListView.setDisable(false);
-                startToggleButton.setDisable(false);
+                testListView.setCellFactory(null);
                 mainSectionController.refreshTestListView();
-                showTiming(true);
-                enableTimingCheckBox(false, false);
-                break;
-            case AUTO:
-                testListView.setDisable(true);
-                startToggleButton.setDisable(false);
-                mainSectionController.refreshTestListView();
-                showTiming(true);
-                enableTimingCheckBox(true, true);
+                showButtons(false, true);
+                showTiming(false);
                 break;
             case CODING:
                 testListView.setDisable(true);
-                startToggleButton.setDisable(false);
+                testListView.setCellFactory(null);
                 mainSectionController.refreshTestListView();
-                showTiming(true);
-                enableTimingCheckBox(true, true);
+                showButtons(false, true);
+                showTiming(false);
                 break;
-            default:
-                break;
+
         }
+
         return this;
+
+    }
+
+    public Enabler enableUpDownButtons(int selectedIndex, int includedTestsSize) {
+
+        if (selectedIndex == 0 && selectedIndex == includedTestsSize - 1) {
+            moveUpButton.setDisable(true);
+            moveDownButton.setDisable(true);
+        } else if (selectedIndex == 0) {
+            moveUpButton.setDisable(true);
+            moveDownButton.setDisable(false);
+        } else if ((selectedIndex > 0) && (selectedIndex <= includedTestsSize - 2)) {
+            moveUpButton.setDisable(false);
+            moveDownButton.setDisable(false);
+        } else {
+            moveUpButton.setDisable(false);
+            moveDownButton.setDisable(true);
+        }
+
+        return this;
+
+    }
+
+    public Enabler showButtons(boolean showUpDown, boolean showStoreReset) {
+
+        moveUpButton.setVisible(showUpDown);
+        moveDownButton.setVisible(showUpDown);
+
+        storeButton.setVisible(showStoreReset);
+        resetButton.setVisible(showStoreReset);
+
+        return this;
+
+    }
+
+    public Enabler enableMainSectionStartToggleButton(boolean isFirstIncludedTest) {
+
+        mainSectionStartToggleButton.setDisable(!isFirstIncludedTest);
+
+        return this;
+
     }
 
     public void selectStaticLeakTest(boolean isSelected) {
@@ -218,19 +269,6 @@ public class Enabler {
         widthCurrentSignalSpinner.setDisable(isSelected);
         freqCurrentSignalSpinner.setDisable(isSelected);
         injectorSectionStartToggleButton.setDisable(isSelected);
-
-    }
-
-    private void showTiming(boolean isVisible) {
-
-        timingGridPane.setVisible(isVisible);
-
-    }
-
-    private void enableTimingCheckBox(boolean select, boolean disable) {
-
-        enableTimingCheckBox.setSelected(select);
-        enableTimingCheckBox.setDisable(disable);
 
     }
 
@@ -255,9 +293,23 @@ public class Enabler {
 
     }
 
+    private void showInjectorTests(boolean show) {
+
+        timingGridPane.setVisible(show && tests.getTestType() == AUTO);
+        injectorTestsVBox.setVisible(show);
+        startHBox.setVisible(show);
+
+    }
+
+    private void showTiming(boolean show) {
+
+        timingGridPane.setVisible(show);
+
+    }
+
     private void setGaugesToNull() {
 
-        storeButton.setDisable(true);
+        storeRLCButton.setDisable(true);
         measureButton.setDisable(true);
 
         parameter1Gauge.setDecimals(1);
@@ -277,7 +329,7 @@ public class Enabler {
     private void setupGauges(int gauge1Decimals, int gauge2Decimals, String gauge1Title, String gauge1Unit, String gauge2Unit,
                              double gauge1MaxValue, double gauge2MaxValue, String tabCoilOneText) {
 
-        storeButton.setDisable(false);
+        storeRLCButton.setDisable(false);
         measureButton.setDisable(false);
 
         parameter1Gauge.setDecimals(gauge1Decimals);

@@ -2,7 +2,6 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
-<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
@@ -57,20 +56,20 @@
                <children>
                   <HBox alignment="CENTER" prefHeight="50.0" spacing="20.0" stylesheets="@../../../css/Styling.css">
                      <children>
-                        <RadioButton fx:id="defaultRB" mnemonicParsing="false" selected="true" styleClass="radioButton" stylesheets="@../../../css/Styling.css" text="%main.defaultRB.radiobutton">
+                        <RadioButton fx:id="defaultRadioButton" mnemonicParsing="false" selected="true" styleClass="radioButton" stylesheets="@../../../css/Styling.css" text="%main.defaultRB.radiobutton">
                            <toggleGroup>
-                              <ToggleGroup fx:id="baseType" />
+                              <ToggleGroup fx:id="baseTypeToggleGroup" />
                            </toggleGroup>
                            <font>
                               <Font size="11.0" />
                            </font></RadioButton>
-                        <RadioButton fx:id="customRB" mnemonicParsing="false" styleClass="radioButton" stylesheets="@../../../css/Styling.css" text="%main.customRB.radiobutton" toggleGroup="$baseType">
+                        <RadioButton fx:id="customRadioButton" mnemonicParsing="false" styleClass="radioButton" stylesheets="@../../../css/Styling.css" text="%main.customRB.radiobutton" toggleGroup="$baseTypeToggleGroup">
                            <font>
                               <Font size="11.0" />
                            </font></RadioButton>
                      </children>
                   </HBox>
-                  <TextField fx:id="searchModelTF" styleClass="searchTextField" stylesheets="@../../../css/Styling.css" />
+                  <TextField fx:id="searchModelTextField" styleClass="searchTextField" stylesheets="@../../../css/Styling.css" />
                   <ListView fx:id="modelListView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" stylesheets="@../../../css/Styling.css" />
                </children>
             </VBox>
@@ -82,11 +81,11 @@
             <Insets left="10.0" />
          </GridPane.margin>
       </HBox>
-      <VBox prefHeight="200.0" prefWidth="300.0" GridPane.rowIndex="2" GridPane.vgrow="NEVER">
+      <VBox fx:id="injectorTestsVBox" prefHeight="200.0" prefWidth="300.0" visible="false" GridPane.rowIndex="2">
          <children>
             <TextField fx:id="injNumberTextField" alignment="CENTER" editable="false" styleClass="modelTextField" stylesheets="@../../../css/Styling.css">
                <VBox.margin>
-                  <Insets left="30.0" right="30.0" top="20.0" />
+                  <Insets left="30.0" right="30.0" top="10.0" />
                </VBox.margin></TextField>
             <GridPane>
               <columnConstraints>
@@ -95,29 +94,24 @@
                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
               </columnConstraints>
               <rowConstraints>
-                <RowConstraints minHeight="-Infinity" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="-Infinity" prefHeight="30.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="-Infinity" prefHeight="35.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="-Infinity" prefHeight="35.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
-                  <RadioButton fx:id="manualTestRadioButton" mnemonicParsing="false" selected="true" styleClass="radioButton" stylesheets="@../../../css/Styling.css" text="%main.manual.radiobutton" GridPane.columnIndex="1">
+                  <RadioButton fx:id="codingTestRadioButton" mnemonicParsing="false" styleClass="radioButton" stylesheets="@../../../css/Styling.css" text="main.coding.radiobutton" GridPane.columnIndex="2" GridPane.rowIndex="1">
                      <GridPane.margin>
                         <Insets left="5.0" />
                      </GridPane.margin>
-                      <toggleGroup>
+                     <toggleGroup>
                           <ToggleGroup fx:id="testsToggleGroup" />
-                      </toggleGroup>
+                     </toggleGroup>
                   </RadioButton>
-                  <RadioButton fx:id="codingTestRadioButton" disable="true" mnemonicParsing="false" styleClass="radioButton" stylesheets="@../../../css/Styling.css" text="main.coding.radiobutton" toggleGroup="$testsToggleGroup" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                  <RadioButton fx:id="autoTestRadioButton" mnemonicParsing="false" selected="true" styleClass="radioButton" stylesheets="@../../../css/Styling.css" text="%main.auto.radiobutton" toggleGroup="$testsToggleGroup" GridPane.columnIndex="1">
                      <GridPane.margin>
                         <Insets left="5.0" />
                      </GridPane.margin>
                   </RadioButton>
-                  <RadioButton fx:id="autoTestRadioButton" disable="true" mnemonicParsing="false" styleClass="radioButton" stylesheets="@../../../css/Styling.css" text="%main.auto.radiobutton" toggleGroup="$testsToggleGroup" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                     <GridPane.margin>
-                        <Insets left="5.0" />
-                     </GridPane.margin>
-                  </RadioButton>
-                  <RadioButton fx:id="testPlanTestRadioButton" disable="true" mnemonicParsing="false" styleClass="radioButton" stylesheets="@../../../css/Styling.css" text="%main.testPlan.radiobutton" toggleGroup="$testsToggleGroup" GridPane.columnIndex="2">
+                  <RadioButton fx:id="testPlanTestRadioButton" mnemonicParsing="false" styleClass="radioButton" stylesheets="@../../../css/Styling.css" text="%main.testPlan.radiobutton" toggleGroup="$testsToggleGroup" GridPane.columnIndex="1" GridPane.rowIndex="1">
                      <GridPane.margin>
                         <Insets left="5.0" />
                      </GridPane.margin>
@@ -127,25 +121,34 @@
                   <Insets />
                </VBox.margin>
             </GridPane>
-            <ListView fx:id="testListView" maxHeight="200.0" minWidth="200.0" prefWidth="300.0" stylesheets="@../../../css/Styling.css" />
-            <GridPane>
-               <columnConstraints>
-                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" />
-                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" />
-                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" />
-               </columnConstraints>
-               <rowConstraints>
-                  <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
-               </rowConstraints>
+            <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS">
                <children>
-                  <Button fx:id="resetButton" mnemonicParsing="false" text="Reset" GridPane.columnIndex="1" />
-                  <Button mnemonicParsing="false" text="Store" />
-                  <Button layoutX="39.0" layoutY="10.0" mnemonicParsing="false" text="Print" GridPane.columnIndex="2" />
+                  <ListView fx:id="testListView" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minWidth="200.0" prefHeight="140.0" prefWidth="263.0" stylesheets="@../../../css/Styling.css" VBox.vgrow="ALWAYS">
+                     <VBox.margin>
+                        <Insets bottom="5.0" />
+                     </VBox.margin></ListView>
+                  <GridPane VBox.vgrow="ALWAYS">
+                    <columnConstraints>
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                      <RowConstraints />
+                    </rowConstraints>
+                     <children>
+                        <Button fx:id="moveUpButton" mnemonicParsing="false" prefHeight="26.0" prefWidth="70.0" styleClass="button-up" stylesheets="@../../../css/Styling.css" />
+                        <Button fx:id="moveDownButton" mnemonicParsing="false" prefHeight="26.0" prefWidth="70.0" styleClass="button-down" stylesheets="@../../../css/Styling.css" GridPane.columnIndex="1" />
+                        <Button mnemonicParsing="false" prefHeight="26.0" prefWidth="70.0" text="Print" GridPane.columnIndex="2" />
+                        <Button fx:id="storeButton" mnemonicParsing="false" prefHeight="26.0" prefWidth="70.0" text="Store" />
+                        <Button fx:id="resetButton" mnemonicParsing="false" prefHeight="26.0" prefWidth="70.0" text="Reset" GridPane.columnIndex="1" />
+                     </children>
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
+                  </GridPane>
                </children>
-               <padding>
-                  <Insets bottom="10.0" top="10.0" />
-               </padding>
-            </GridPane>
+            </VBox>
          </children>
          <padding>
             <Insets left="10.0" />
@@ -204,28 +207,24 @@
                   </GridPane>
                </children>
             </VBox>
-            <HBox alignment="CENTER_LEFT" prefHeight="100.0" prefWidth="200.0">
+            <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0">
                <children>
-                  <CheckBox fx:id="enableTimingCheckBox" alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" style="-fx-font-size: 11;" styleClass="checkBox" stylesheets="@../../../css/Styling.css" text="%main.enableTiming.checkbox">
-                     <font>
-                        <Font size="11.0" />
-                     </font>
+                  <Label fx:id="timingSpeedLabel" stylesheets="@../../../css/Styling.css" text="%main.timingSpeed.label">
                      <HBox.margin>
-                        <Insets left="20.0" top="10.0" />
-                     </HBox.margin>
-                  </CheckBox>
+                        <Insets left="10.0" />
+                     </HBox.margin></Label>
                   <ComboBox fx:id="speedComboBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="27.0" prefWidth="90.0" styleClass="combo-box-speed" stylesheets="@../../../css/Styling.css">
                      <HBox.margin>
-                        <Insets left="20.0" top="5.0" />
+                        <Insets left="20.0" right="20.0" top="5.0" />
                      </HBox.margin>
                   </ComboBox>
                </children>
             </HBox>
          </children>
       </GridPane>
-      <HBox alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0" GridPane.rowIndex="4">
+      <HBox fx:id="startHBox" alignment="CENTER" prefHeight="100.0" prefWidth="200.0" spacing="20.0" visible="false" GridPane.rowIndex="4">
          <children>
-            <ToggleButton fx:id="startToggleButton" disable="true" mnemonicParsing="false" prefHeight="55.0" prefWidth="173.0" styleClass="startButton" stylesheets="@../../../css/Styling.css" />
+            <ToggleButton fx:id="startToggleButton" mnemonicParsing="false" prefHeight="55.0" prefWidth="173.0" styleClass="startButton" stylesheets="@../../../css/Styling.css" />
          </children>
          <padding>
             <Insets left="10.0" />
