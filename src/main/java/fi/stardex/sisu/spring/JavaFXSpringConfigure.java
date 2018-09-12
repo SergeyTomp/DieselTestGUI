@@ -30,7 +30,6 @@ import fi.stardex.sisu.ui.controllers.dialogs.NewEditVOAPDialogController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
 import fi.stardex.sisu.util.DelayCalculator;
 import fi.stardex.sisu.util.VisualUtils;
-import fi.stardex.sisu.util.converters.DataConverter;
 import fi.stardex.sisu.util.enums.BeakerType;
 import fi.stardex.sisu.util.enums.Tests;
 import fi.stardex.sisu.util.i18n.I18N;
@@ -44,7 +43,6 @@ import fi.stardex.sisu.util.wrappers.StatusBarWrapper;
 import fi.stardex.sisu.version.FirmwareVersion;
 import fi.stardex.sisu.version.StardexVersion;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import org.slf4j.Logger;
@@ -97,7 +95,6 @@ public class JavaFXSpringConfigure {
                                                        CurrentManufacturerObtainer currentManufacturerObtainer,
                                                        ApplicationAppearanceChanger applicationAppearanceChanger,
                                                        VoltAmpereProfileController voltAmpereProfileController,
-                                                       DataConverter dataConverter,
                                                        CurrentInjectorObtainer currentInjectorObtainer,
                                                        InjectorSectionController injectorSectionController,
                                                        InjectorsRepository injectorsRepository,
@@ -114,7 +111,6 @@ public class JavaFXSpringConfigure {
         mainSectionController.setNewEditInjectorDialog(newEditInjectorDialog());
         mainSectionController.setNewEditTestDialog(newEditTestDialog());
         mainSectionController.setVoltAmpereProfileController(voltAmpereProfileController);
-        mainSectionController.setDataConverter(dataConverter);
         mainSectionController.setCurrentInjectorObtainer(currentInjectorObtainer);
         mainSectionController.setWidthCurrentSignalSpinner(injectorSectionController.getWidthCurrentSignalSpinner());
         mainSectionController.setFreqCurrentSignalSpinner(injectorSectionController.getFreqCurrentSignalSpinner());
@@ -163,11 +159,12 @@ public class JavaFXSpringConfigure {
 
     @Bean
     @Autowired
-    public InjectorSectionController injectorSectionController(SettingsController settingsController,
+    public InjectorSectionController injectorSectionController(SettingsController settingsController, @Lazy Enabler enabler,
                                                                @Lazy ModbusRegisterProcessor ultimaModbusWriter,
                                                                TimerTasksManager timerTasksManager, DelayController delayController) {
         InjectorSectionController injectorSectionController = crSectionController().getInjectorSectionController();
         injectorSectionController.setInjectorsConfigComboBox(settingsController.getInjectorsConfigComboBox());
+        injectorSectionController.setEnabler(enabler);
         injectorSectionController.setUltimaModbusWriter(ultimaModbusWriter);
         injectorSectionController.setTimerTasksManager(timerTasksManager);
         injectorSectionController.setDelayController(delayController);
@@ -210,15 +207,24 @@ public class JavaFXSpringConfigure {
 
     @Bean
     @Autowired
+    public ReportController reportController(AdditionalSectionController additionalSectionController) {
+        return additionalSectionController.getReportController();
+    }
+
+    @Bean
+    @Autowired
+    public FlowReportController flowReportController(ReportController reportController) {
+        return reportController.getFlowReportController();
+    }
+
+    @Bean
+    @Autowired
     public BeakerController beakerDelivery1Controller(FlowController flowController,
                                                       InjectorSectionController injectorSectionController,
-                                                      Rescaler deliveryRescaler,
-                                                      DataConverter dataConverter) {
+                                                      Rescaler deliveryRescaler) {
         BeakerController beakerDelivery1Controller = flowController.getBeakerDelivery1Controller();
         setupBeakerController(beakerDelivery1Controller, flowController, flowController.getDelivery1TextField(),
-                flowController.getDeliveryRangeLabel(), flowController.getBackFlowRangeLabel(),
-                injectorSectionController.getLedBeaker1Controller(),
-                deliveryRescaler, dataConverter, "Delivery1", BeakerType.DELIVERY);
+                injectorSectionController.getLedBeaker1Controller(), deliveryRescaler, "Delivery1", BeakerType.DELIVERY);
         return beakerDelivery1Controller;
     }
 
@@ -226,13 +232,10 @@ public class JavaFXSpringConfigure {
     @Autowired
     public BeakerController beakerDelivery2Controller(FlowController flowController,
                                                       InjectorSectionController injectorSectionController,
-                                                      Rescaler deliveryRescaler,
-                                                      DataConverter dataConverter) {
+                                                      Rescaler deliveryRescaler) {
         BeakerController beakerDelivery2Controller = flowController.getBeakerDelivery2Controller();
         setupBeakerController(beakerDelivery2Controller, flowController, flowController.getDelivery2TextField(),
-                flowController.getDeliveryRangeLabel(), flowController.getBackFlowRangeLabel(),
-                injectorSectionController.getLedBeaker2Controller(),
-                deliveryRescaler, dataConverter, "Delivery2", BeakerType.DELIVERY);
+                injectorSectionController.getLedBeaker2Controller(), deliveryRescaler, "Delivery2", BeakerType.DELIVERY);
         return beakerDelivery2Controller;
     }
 
@@ -240,13 +243,10 @@ public class JavaFXSpringConfigure {
     @Autowired
     public BeakerController beakerDelivery3Controller(FlowController flowController,
                                                       InjectorSectionController injectorSectionController,
-                                                      Rescaler deliveryRescaler,
-                                                      DataConverter dataConverter) {
+                                                      Rescaler deliveryRescaler) {
         BeakerController beakerDelivery3Controller = flowController.getBeakerDelivery3Controller();
         setupBeakerController(beakerDelivery3Controller, flowController, flowController.getDelivery3TextField(),
-                flowController.getDeliveryRangeLabel(), flowController.getBackFlowRangeLabel(),
-                injectorSectionController.getLedBeaker3Controller(),
-                deliveryRescaler, dataConverter, "Delivery3", BeakerType.DELIVERY);
+                injectorSectionController.getLedBeaker3Controller(), deliveryRescaler, "Delivery3", BeakerType.DELIVERY);
         return beakerDelivery3Controller;
     }
 
@@ -254,13 +254,10 @@ public class JavaFXSpringConfigure {
     @Autowired
     public BeakerController beakerDelivery4Controller(FlowController flowController,
                                                       InjectorSectionController injectorSectionController,
-                                                      Rescaler deliveryRescaler,
-                                                      DataConverter dataConverter) {
+                                                      Rescaler deliveryRescaler) {
         BeakerController beakerDelivery4Controller = flowController.getBeakerDelivery4Controller();
         setupBeakerController(beakerDelivery4Controller, flowController, flowController.getDelivery4TextField(),
-                flowController.getDeliveryRangeLabel(), flowController.getBackFlowRangeLabel(),
-                injectorSectionController.getLedBeaker4Controller(),
-                deliveryRescaler, dataConverter, "Delivery4", BeakerType.DELIVERY);
+                injectorSectionController.getLedBeaker4Controller(), deliveryRescaler, "Delivery4", BeakerType.DELIVERY);
         return beakerDelivery4Controller;
     }
 
@@ -268,13 +265,10 @@ public class JavaFXSpringConfigure {
     @Autowired
     public BeakerController beakerBackFlow1Controller(FlowController flowController,
                                                       InjectorSectionController injectorSectionController,
-                                                      Rescaler backFlowRescaler,
-                                                      DataConverter dataConverter) {
+                                                      Rescaler backFlowRescaler) {
         BeakerController beakerBackFlow1Controller = flowController.getBeakerBackFlow1Controller();
         setupBeakerController(beakerBackFlow1Controller, flowController, flowController.getBackFlow1TextField(),
-                flowController.getDeliveryRangeLabel(), flowController.getBackFlowRangeLabel(),
-                injectorSectionController.getLedBeaker1Controller(),
-                backFlowRescaler, dataConverter, "Backflow1", BeakerType.BACKFLOW);
+                injectorSectionController.getLedBeaker1Controller(), backFlowRescaler, "Backflow1", BeakerType.BACKFLOW);
         return beakerBackFlow1Controller;
     }
 
@@ -282,13 +276,10 @@ public class JavaFXSpringConfigure {
     @Autowired
     public BeakerController beakerBackFlow2Controller(FlowController flowController,
                                                       InjectorSectionController injectorSectionController,
-                                                      Rescaler backFlowRescaler,
-                                                      DataConverter dataConverter) {
+                                                      Rescaler backFlowRescaler) {
         BeakerController beakerBackFlow2Controller = flowController.getBeakerBackFlow2Controller();
         setupBeakerController(beakerBackFlow2Controller, flowController, flowController.getBackFlow2TextField(),
-                flowController.getDeliveryRangeLabel(), flowController.getBackFlowRangeLabel(),
-                injectorSectionController.getLedBeaker2Controller(),
-                backFlowRescaler, dataConverter, "Backflow2", BeakerType.BACKFLOW);
+                injectorSectionController.getLedBeaker2Controller(), backFlowRescaler, "Backflow2", BeakerType.BACKFLOW);
         return beakerBackFlow2Controller;
     }
 
@@ -296,13 +287,10 @@ public class JavaFXSpringConfigure {
     @Autowired
     public BeakerController beakerBackFlow3Controller(FlowController flowController,
                                                       InjectorSectionController injectorSectionController,
-                                                      Rescaler backFlowRescaler,
-                                                      DataConverter dataConverter) {
+                                                      Rescaler backFlowRescaler) {
         BeakerController beakerBackFlow3Controller = flowController.getBeakerBackFlow3Controller();
         setupBeakerController(beakerBackFlow3Controller, flowController, flowController.getBackFlow3TextField(),
-                flowController.getDeliveryRangeLabel(), flowController.getBackFlowRangeLabel(),
-                injectorSectionController.getLedBeaker3Controller(),
-                backFlowRescaler, dataConverter, "Backflow3", BeakerType.BACKFLOW);
+                injectorSectionController.getLedBeaker3Controller(), backFlowRescaler, "Backflow3", BeakerType.BACKFLOW);
         return beakerBackFlow3Controller;
     }
 
@@ -310,28 +298,22 @@ public class JavaFXSpringConfigure {
     @Autowired
     public BeakerController beakerBackFlow4Controller(FlowController flowController,
                                                       InjectorSectionController injectorSectionController,
-                                                      Rescaler backFlowRescaler,
-                                                      DataConverter dataConverter) {
+                                                      Rescaler backFlowRescaler) {
         BeakerController beakerBackFlow4Controller = flowController.getBeakerBackFlow4Controller();
         setupBeakerController(beakerBackFlow4Controller, flowController, flowController.getBackFlow4TextField(),
-                flowController.getDeliveryRangeLabel(), flowController.getBackFlowRangeLabel(),
-                injectorSectionController.getLedBeaker4Controller(),
-                backFlowRescaler, dataConverter, "Backflow4", BeakerType.BACKFLOW);
+                injectorSectionController.getLedBeaker4Controller(), backFlowRescaler, "Backflow4", BeakerType.BACKFLOW);
         return beakerBackFlow4Controller;
     }
 
-    private void setupBeakerController(BeakerController beakerController, FlowController flowController,
-                                       TextField textField, Label deliveryRangeLabel, Label backFlowRangeLabel,
-                                       LedController ledBeakerController,
-                                       Rescaler rescaler, DataConverter dataConverter, String name, BeakerType beakerType) {
+    private void setupBeakerController(BeakerController beakerController, FlowController flowController, TextField textField,
+                                       LedController ledBeakerController, Rescaler rescaler, String name, BeakerType beakerType) {
 
         beakerController.setFlowController(flowController);
         beakerController.setTextField(textField);
-        beakerController.setDeliveryRangeLabel(deliveryRangeLabel);
-        beakerController.setBackFlowRangeLabel(backFlowRangeLabel);
+        beakerController.setDeliveryRangeLabel(flowController.getDeliveryRangeLabel());
+        beakerController.setBackFlowRangeLabel(flowController.getBackFlowRangeLabel());
         beakerController.setLedController(ledBeakerController);
         beakerController.setRescaler(rescaler);
-        beakerController.setDataConverter(dataConverter);
         beakerController.setName(name);
         beakerController.setBeakerType(beakerType);
 
@@ -347,13 +329,11 @@ public class JavaFXSpringConfigure {
 
     @Bean
     @Autowired
-    public VoltageController voltageController(AdditionalSectionController additionalSectionController,
-                                               DataConverter dataConverter, InjectorSectionController injectorSectionController) {
+    public VoltageController voltageController(AdditionalSectionController additionalSectionController, InjectorSectionController injectorSectionController) {
         VoltageController voltageController = additionalSectionController.getVoltageController();
         voltageController.setVoltAmpereProfileDialog(voltAmpereProfileDialog());
         voltageController.setParentController(additionalSectionController);
         voltageController.setInjectorSectionController(injectorSectionController);
-        voltageController.setFirmwareDataConverter(dataConverter);
         voltageController.setI18N(i18N);
         return voltageController;
     }
@@ -387,14 +367,12 @@ public class JavaFXSpringConfigure {
     @Autowired
     public VoltAmpereProfileController voltAmpereProfileController(ModbusRegisterProcessor ultimaModbusWriter,
                                                                    InjectorSectionController injectorSectionController,
-                                                                   VoltageController voltageController,
-                                                                   DataConverter dataConverter) {
+                                                                   VoltageController voltageController) {
         VoltAmpereProfileController voltAmpereProfileController = (VoltAmpereProfileController) voltAmpereProfileDialog().getController();
         voltAmpereProfileController.setUltimaModbusWriter(ultimaModbusWriter);
         voltAmpereProfileController.setInjectorSectionController(injectorSectionController);
         voltAmpereProfileController.setWidthSpinner(injectorSectionController.getWidthCurrentSignalSpinner());
         voltAmpereProfileController.setVoltageController(voltageController);
-        voltAmpereProfileController.setFirmwareDataConverter(dataConverter);
         voltAmpereProfileController.setI18N(i18N);
         return voltAmpereProfileController;
     }

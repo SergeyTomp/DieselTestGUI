@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.StackPane?>
+<StackPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.additional.tabs.FlowReportController">
+   <children>
+          <TableView fx:id="flowTableView">
+              <columns>
+                  <TableColumn fx:id="flowTestNameColumn" prefWidth="100.0" text="Test name" />
+                  <TableColumn fx:id="flowTypeColumn" prefWidth="150.0" text="Delivery/Back flow" />
+                  <TableColumn fx:id="flowNominalColumn" minWidth="0.0" prefWidth="150.0" text="Nominal flow" />
+                  <TableColumn fx:id="flow1Column" prefWidth="50.0" text="1" />
+                  <TableColumn fx:id="flow2Column" prefWidth="50.0" text="2" />
+                  <TableColumn fx:id="flow3Column" prefWidth="50.0" text="3" />
+                  <TableColumn fx:id="flow4Column" prefWidth="50.0" text="4" />
+              </columns>
+          </TableView>
+   </children>
+</StackPane>

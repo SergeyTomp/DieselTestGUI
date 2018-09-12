@@ -144,6 +144,16 @@
 .regulator-spinner-selected *.text-field {
     -fx-border-color: -selected-spinner-border-color;
 }
+
+.table-view ,.table-column{
+    -background-color: #4B4B4B;
+    -border-color: #4d1717;
+    -text-fill: #bf8248;
+
+    -fx-background-color: -border-color, transparent, transparent, -background-color;
+    -fx-text-fill: -text-fill;
+}
+
 /**************
 label
 **************/

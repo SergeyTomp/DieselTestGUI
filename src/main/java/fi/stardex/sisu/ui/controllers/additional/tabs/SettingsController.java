@@ -4,9 +4,9 @@ import fi.stardex.sisu.combobox_values.Dimension;
 import fi.stardex.sisu.combobox_values.InjectorChannel;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.i18n.Locales;
-import javafx.beans.property.*;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -40,28 +40,15 @@ public class SettingsController {
 
     private ObjectProperty<Integer> pressMultiplierProperty = new SimpleObjectProperty<>();
 
-    // Auto Reset
-
-    @FXML private CheckBox autoResetCheckBox;
-
     // Fast Coding
 
     @FXML private CheckBox fastCodingCheckBox;
 
-    // Fast Measurement
-
-    @FXML
-    private CheckBox fastMeasurementCheckBox;
-
     // DIMAS
-
-    @FXML private Label isDIMASLabel;
 
     @FXML private CheckBox isDIMASCheckBox;
 
     // Flow Visible
-
-    @FXML private Label flowVisibleLabel;
 
     @FXML private CheckBox flowVisibleCheckBox;
 
@@ -134,10 +121,6 @@ public class SettingsController {
         return sensor2400RadioButton;
     }
 
-    public Integer getPressMultiplierProperty() {
-        return pressMultiplierProperty.get();
-    }
-
     public ObjectProperty<Integer> pressMultiplierPropertyProperty() {
         return pressMultiplierProperty;
     }
@@ -194,18 +177,20 @@ public class SettingsController {
         sensor2200RadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> rootPrefs.putBoolean("sensor2200RadioButtonSelected", newValue));
         sensor2400RadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> rootPrefs.putBoolean("sensor2400RadioButtonSelected", newValue));
 
-        if(pressureSensorToggleGroup.selectedToggleProperty().getValue() == sensor1500RadioButton){
+        ReadOnlyObjectProperty<Toggle> pressureSensorToggleGroupProperty = pressureSensorToggleGroup.selectedToggleProperty();
+
+        if(pressureSensorToggleGroupProperty.getValue() == sensor1500RadioButton){
             pressMultiplierProperty.setValue(1500);
-        }else if(pressureSensorToggleGroup.selectedToggleProperty().getValue() == sensor1800RadioButton){
+        }else if(pressureSensorToggleGroupProperty.getValue() == sensor1800RadioButton){
             pressMultiplierProperty.setValue(1800);
-        }else if(pressureSensorToggleGroup.selectedToggleProperty().getValue() == sensor2000RadioButton){
+        }else if(pressureSensorToggleGroupProperty.getValue() == sensor2000RadioButton){
             pressMultiplierProperty.setValue(2000);
-        }else if(pressureSensorToggleGroup.selectedToggleProperty().getValue() == sensor2200RadioButton){
+        }else if(pressureSensorToggleGroupProperty.getValue() == sensor2200RadioButton){
             pressMultiplierProperty.setValue(2200);
         }else pressMultiplierProperty.setValue(2400);
 
 
-        pressureSensorToggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+        pressureSensorToggleGroupProperty.addListener((observable, oldValue, newValue) -> {
             if (newValue == sensor1500RadioButton) {
                 pressMultiplierProperty.setValue(1500);
             } else if (newValue == sensor1800RadioButton) {

@@ -4,7 +4,6 @@ import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
-import fi.stardex.sisu.util.converters.DataConverter;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.spinners.SpinnerManager;
 import fi.stardex.sisu.util.spinners.SpinnerValueObtainer;
@@ -18,9 +17,9 @@ import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
 
-import static fi.stardex.sisu.util.SpinnerDefaults.*;
-
 import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.*;
+import static fi.stardex.sisu.util.SpinnerDefaults.*;
+import static fi.stardex.sisu.util.converters.DataConverter.convertDataToInt;
 
 public class VoltAmpereProfileController {
 
@@ -76,10 +75,6 @@ public class VoltAmpereProfileController {
 
     private int boostUSavedValue;
 
-    private static final String BOOST_DISABLED = "Boost_U disabled";
-
-    private static final String BOOST_ENABLED = "Boost_U enabled";
-
     private static final float ONE_AMPERE_MULTIPLY = 93.07f;
 
     private ModbusRegisterProcessor ultimaModbusWriter;
@@ -93,8 +88,6 @@ public class VoltAmpereProfileController {
     private WidthSpinnerValueObtainer widthCurrentSignalValueObtainer = new WidthSpinnerValueObtainer(WIDTH_CURRENT_SIGNAL_SPINNER_INIT);
 
     private InjectorSectionController injectorSectionController;
-
-    private DataConverter firmwareDataConverter;
 
     public Spinner<Integer> getFirstWSpinner() {
         return firstWSpinner;
@@ -156,10 +149,6 @@ public class VoltAmpereProfileController {
         this.voltageController = voltageController;
     }
 
-    public void setFirmwareDataConverter(DataConverter firmwareDataConverter) {
-        this.firmwareDataConverter = firmwareDataConverter;
-    }
-
     public void setInjectorSectionController(InjectorSectionController injectorSectionController) {
         this.injectorSectionController = injectorSectionController;
     }
@@ -194,10 +183,6 @@ public class VoltAmpereProfileController {
 
         enableBoostToggleButton.setSelected(true);
         enableBoostToggleButton.textProperty().bind(i18N.createStringBinding("voapProfile.button.boostUdisable"));
-//        enableBoostToggleButton.setText(BOOST_DISABLED);
-
-//        enableBoostToggleButton.selectedProperty().addListener((observable, oldValue, newValue) ->
-//                enableBoostToggleButton.setText(newValue ? BOOST_DISABLED : BOOST_ENABLED));
         enableBoostToggleButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue){
             enableBoostToggleButton.textProperty().bind(i18N.createStringBinding("voapProfile.button.boostUdisable"));
@@ -306,7 +291,7 @@ public class VoltAmpereProfileController {
                         BOOST_U_SPINNER_INIT,
                         BATTERY_U_SPINNER_STEP));
             } else {
-                if (firmwareDataConverter.convertDataToInt(voltageController.getVoltage().getText()) > BOOST_U_SPINNER_MAX)
+                if (convertDataToInt(voltageController.getVoltage().getText()) > BOOST_U_SPINNER_MAX)
                     ultimaModbusWriter.add(ModbusMapUltima.Boost_U, BOOST_U_SPINNER_INIT);
                 boostUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(BOOST_U_SPINNER_MIN,
                         BOOST_U_SPINNER_MAX,

@@ -24,6 +24,7 @@ import fi.stardex.sisu.registers.flow.ModbusMapFlow;
 import fi.stardex.sisu.registers.stand.ModbusMapStand;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
+import fi.stardex.sisu.store.FlowReport;
 import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.ui.controllers.additional.AdditionalSectionController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.*;
@@ -34,7 +35,6 @@ import fi.stardex.sisu.ui.controllers.main.MainSectionController;
 import fi.stardex.sisu.ui.updaters.*;
 import fi.stardex.sisu.util.DelayCalculator;
 import fi.stardex.sisu.util.VisualUtils;
-import fi.stardex.sisu.util.converters.DataConverter;
 import fi.stardex.sisu.util.converters.FlowResolver;
 import fi.stardex.sisu.util.enums.Tests;
 import fi.stardex.sisu.util.i18n.I18N;
@@ -55,8 +55,6 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.*;
@@ -83,8 +81,6 @@ import static fi.stardex.sisu.version.UltimaFirmwareVersion.UltimaVersions.*;
 @Import(JavaFXSpringConfigure.class)
 @EnableScheduling
 public class SpringJavaConfig {
-
-    private static final Logger logger = LoggerFactory.getLogger(SpringJavaConfig.class);
 
     @Bean
     public ConnectProcessor connectProcessor() {
@@ -261,6 +257,7 @@ public class SpringJavaConfig {
                 });
                 setLoopThread(loopThread);
                 loopThread.setName("Ultima register processor");
+                loopThread.setDaemon(true);
                 loopThread.start();
             }
         };
@@ -323,6 +320,7 @@ public class SpringJavaConfig {
                 });
                 setLoopThread(loopThread);
                 loopThread.setName("Flow register processor");
+                loopThread.setDaemon(true);
                 loopThread.start();
             }
         };
@@ -404,6 +402,7 @@ public class SpringJavaConfig {
                 });
                 setLoopThread(loopThread);
                 loopThread.setName("Stand register processor");
+                loopThread.setDaemon(true);
                 loopThread.start();
             }
         };
@@ -412,31 +411,28 @@ public class SpringJavaConfig {
     @Bean
     @Autowired
     public HighPressureSectionUpdater highPressureSectionUpdater(HighPressureSectionController highPressureSectionController,
-                                                                 AdditionalSectionController additionalSectionController,
-                                                                 DataConverter dataConverter) {
-        return new HighPressureSectionUpdater(highPressureSectionController, additionalSectionController, dataConverter);
+                                                                 AdditionalSectionController additionalSectionController) {
+        return new HighPressureSectionUpdater(highPressureSectionController, additionalSectionController);
     }
 
     @Bean
     @Autowired
-    public InjectorSectionUpdater injectorSectionUpdater(VoltageController voltageController, DataConverter dataConverter) {
-        return new InjectorSectionUpdater(voltageController, dataConverter);
+    public InjectorSectionUpdater injectorSectionUpdater(VoltageController voltageController) {
+        return new InjectorSectionUpdater(voltageController);
     }
 
     @Bean
     @Autowired
     public FlowMasterUpdater flowMasterUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
-                                               SettingsController settingsController, DataConverter dataConverter,
-                                               FirmwareVersion<FlowVersions> flowFirmwareVersion, Tests tests) {
-        return new FlowMasterUpdater(flowController, injectorSectionController, settingsController, dataConverter, flowFirmwareVersion, tests);
+                                               SettingsController settingsController, FirmwareVersion<FlowVersions> flowFirmwareVersion, Tests tests) {
+        return new FlowMasterUpdater(flowController, injectorSectionController, settingsController, flowFirmwareVersion, tests);
     }
 
     @Bean
     @Autowired
     public FlowStreamUpdater flowStreamUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
-                                               SettingsController settingsController, DataConverter dataConverter,
-                                               FirmwareVersion<FlowVersions> flowFirmwareVersion, Tests tests) {
-        return new FlowStreamUpdater(flowController, injectorSectionController, settingsController, dataConverter, flowFirmwareVersion, tests);
+                                               SettingsController settingsController, FirmwareVersion<FlowVersions> flowFirmwareVersion, Tests tests) {
+        return new FlowStreamUpdater(flowController, injectorSectionController, settingsController, flowFirmwareVersion, tests);
     }
 
     @Bean
@@ -477,11 +473,6 @@ public class SpringJavaConfig {
     @Bean
     public DelayCalculator delayCalculator() {
         return new DelayCalculator();
-    }
-
-    @Bean
-    public DataConverter dataConverter() {
-        return new DataConverter();
     }
 
     @Bean
@@ -534,16 +525,15 @@ public class SpringJavaConfig {
     @Lazy
     @Autowired
     public Enabler enabler(MainSectionController mainSectionController, InjectorSectionController injectorSectionController,
-                           RLCController rlcController) {
-        return new Enabler(mainSectionController, injectorSectionController, rlcController);
+                           RLCController rlcController, VoltageController voltageController) {
+        return new Enabler(mainSectionController, injectorSectionController, rlcController, voltageController);
     }
 
     @Bean
     @Autowired
-    public FlowResolver flowResolver(MainSectionController mainSectionController, SettingsController settingsController,
-                                     FlowController flowController, DataConverter dataConverter) {
+    public FlowResolver flowResolver(MainSectionController mainSectionController, SettingsController settingsController, FlowController flowController) {
         return new FlowResolver(mainSectionController.getTestListView().getSelectionModel(),
-                settingsController.getFlowOutputDimensionsComboBox().getSelectionModel(), flowController, dataConverter);
+                settingsController.getFlowOutputDimensionsComboBox().getSelectionModel(), flowController);
     }
 
     @Bean
@@ -582,10 +572,18 @@ public class SpringJavaConfig {
     public Measurements measurements(MainSectionController mainSectionController,
                                      TestBenchSectionController testBenchSectionController,
                                      HighPressureSectionController highPressureSectionController,
-                                     InjectorSectionController injectorSectionController, Tests tests,
-                                     Enabler enabler) {
+                                     InjectorSectionController injectorSectionController,
+                                     FlowReportController flowReportController,
+                                     Tests tests, Enabler enabler, FlowReport flowReport) {
         return new Measurements(mainSectionController, testBenchSectionController, highPressureSectionController,
-                injectorSectionController, tests, enabler);
+                injectorSectionController, flowReportController, tests, enabler, flowReport);
+    }
+
+    @Bean
+    @Autowired
+    public FlowReport flowReport(FlowReportController flowReportController, MainSectionController mainSectionController,
+                                 FlowController flowController, SettingsController settingsController) {
+        return new FlowReport(flowReportController, mainSectionController, flowController, settingsController);
     }
 
     @Bean

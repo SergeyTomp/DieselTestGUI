@@ -4,13 +4,13 @@ import fi.stardex.sisu.charts.TimerTasksManager;
 import fi.stardex.sisu.combobox_values.InjectorChannel;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
+import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.ui.controllers.additional.LedController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.DelayController;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.spinners.SpinnerManager;
 import fi.stardex.sisu.util.spinners.SpinnerValueObtainer;
 import fi.stardex.sisu.util.tooltips.CustomTooltip;
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.value.ChangeListener;
@@ -34,32 +34,23 @@ public class InjectorSectionController {
 
     @FXML private Spinner<Integer> widthCurrentSignalSpinner;
 
-    @FXML
-    private Spinner<Double> freqCurrentSignalSpinner;
+    @FXML private Spinner<Double> freqCurrentSignalSpinner;
 
-    @FXML
-    private RadioButton piezoRadioButton;
+    @FXML private RadioButton piezoRadioButton;
 
-    @FXML
-    private ToggleGroup piezoCoilToggleGroup;
+    @FXML private ToggleGroup piezoCoilToggleGroup;
 
-    @FXML
-    private RadioButton coilRadioButton;
+    @FXML private RadioButton coilRadioButton;
 
-    @FXML
-    private RadioButton piezoDelphiRadioButton;
+    @FXML private RadioButton piezoDelphiRadioButton;
 
-    @FXML
-    private ToggleButton injectorSectionStartToggleButton;
+    @FXML private ToggleButton injectorSectionStartToggleButton;
 
-    @FXML
-    private Label labelWidth;
+    @FXML private Label labelWidth;
 
-    @FXML
-    private Label labelFreq;
+    @FXML private Label labelFreq;
 
-    @FXML
-    private Label statusBoostULabelText;
+    @FXML private Label statusBoostULabelText;
 
     @FXML private StackPane stackPaneLed1;
 
@@ -81,11 +72,15 @@ public class InjectorSectionController {
 
     private I18N i18N;
 
+    private Enabler enabler;
+
     private Logger logger = LoggerFactory.getLogger(InjectorSectionController.class);
 
     private TimerTasksManager timerTasksManager;
 
     private ComboBox<InjectorChannel> injectorsConfigComboBox;
+
+    private SingleSelectionModel<InjectorChannel> injectorsConfigComboBoxSelectionModel;
 
     private DelayController delayController;
 
@@ -149,6 +144,10 @@ public class InjectorSectionController {
         this.injectorsConfigComboBox = injectorsConfigComboBox;
     }
 
+    public void setEnabler(Enabler enabler) {
+        this.enabler = enabler;
+    }
+
     public void setUltimaModbusWriter(ModbusRegisterProcessor ultimaModbusWriter) {
         this.ultimaModbusWriter = ultimaModbusWriter;
     }
@@ -182,6 +181,8 @@ public class InjectorSectionController {
 
     @PostConstruct
     private void init() {
+
+        injectorsConfigComboBoxSelectionModel = injectorsConfigComboBox.getSelectionModel();
 
         bindingI18N();
 
@@ -229,9 +230,9 @@ public class InjectorSectionController {
 
     private void setupInjectorConfigComboBox() {
 
-        setToggleGroupToLeds(injectorsConfigComboBox.getSelectionModel().getSelectedItem() == InjectorChannel.SINGLE_CHANNEL ? toggleGroup : null);
+        setToggleGroupToLeds(injectorsConfigComboBoxSelectionModel.getSelectedItem() == InjectorChannel.SINGLE_CHANNEL ? toggleGroup : null);
 
-        injectorsConfigComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
+        injectorsConfigComboBoxSelectionModel.selectedItemProperty().addListener((observable, oldValue, newValue) ->
                 setToggleGroupToLeds(newValue == InjectorChannel.SINGLE_CHANNEL ? toggleGroup : null));
     }
 
@@ -272,7 +273,7 @@ public class InjectorSectionController {
         LedParametersChangeListener() {
 
             injectorTypeProperty = piezoCoilToggleGroup.selectedToggleProperty();
-            injectorChannelProperty = injectorsConfigComboBox.getSelectionModel().selectedItemProperty();
+            injectorChannelProperty = injectorsConfigComboBoxSelectionModel.selectedItemProperty();
             freqCurrentSignalSpinner.valueProperty().addListener(this);
             injectorTypeProperty.addListener(this);
             ledControllers.forEach(s -> s.getLedBeaker().selectedProperty().addListener(this));
@@ -289,11 +290,11 @@ public class InjectorSectionController {
                     sendLedRegisters();
             } else if (newValue instanceof Toggle) {
                 if (newValue == piezoDelphiRadioButton) {
-                    disableLedsExceptFirst(true);
-                    injectorsConfigComboBox.getSelectionModel().select(InjectorChannel.SINGLE_CHANNEL);
+                    enabler.disableAllLedsExceptFirst(true);
+                    injectorsConfigComboBoxSelectionModel.select(InjectorChannel.SINGLE_CHANNEL);
                     ledBeaker1Controller.getLedBeaker().setSelected(true);
                 } else {
-                    disableLedsExceptFirst(false);
+                    enabler.disableAllLedsExceptFirst(false);
                     sendLedRegisters();
                 }
             } else if (newValue instanceof Boolean) {
@@ -368,14 +369,6 @@ public class InjectorSectionController {
 
         }
 
-        private void disableLedsExceptFirst(boolean disable) {
-
-            ledControllers.get(1).setDisable(disable);
-            ledControllers.get(2).setDisable(disable);
-            ledControllers.get(3).setDisable(disable);
-
-        }
-
     }
 
     private class PowerButtonChangeListener implements ChangeListener<Boolean> {
@@ -394,28 +387,16 @@ public class InjectorSectionController {
                 // FIXME: throws NPE if there is no connection
                 // при коннекте должен строиться хотя бы нулевой график
                 timerTasksManager.start();
-                disableInjectorSectionLedsAndToggleGroup(true);
+                enabler.disableVAP(true);
 
             } else {
 
                 ultimaModbusWriter.add(Injectors_Running_En, false);
                 ledParametersChangeListener.switchOffAll();
                 timerTasksManager.stop();
-                disableInjectorSectionLedsAndToggleGroup(false);
+                enabler.disableVAP(false);
 
             }
-
-        }
-
-        private void disableInjectorSectionLedsAndToggleGroup(boolean disabled) {
-
-            coilRadioButton.setDisable(disabled);
-            piezoRadioButton.setDisable(disabled);
-            piezoDelphiRadioButton.setDisable(disabled);
-            ledBeaker1Controller.getLedBeaker().setDisable(disabled);
-            ledBeaker2Controller.getLedBeaker().setDisable(disabled);
-            ledBeaker3Controller.getLedBeaker().setDisable(disabled);
-            ledBeaker4Controller.getLedBeaker().setDisable(disabled);
 
         }
 

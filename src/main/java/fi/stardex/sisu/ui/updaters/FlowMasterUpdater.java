@@ -5,23 +5,21 @@ import fi.stardex.sisu.devices.Device;
 import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
-import fi.stardex.sisu.util.converters.DataConverter;
 import fi.stardex.sisu.util.enums.Tests;
 import fi.stardex.sisu.version.FirmwareVersion;
 
 import javax.annotation.PostConstruct;
 
 import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions;
-import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions.*;
+import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions.MASTER;
 
 @Module(value = Device.MODBUS_FLOW)
 public class FlowMasterUpdater extends FlowUpdater implements Updater {
 
     public FlowMasterUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
-                             SettingsController settingsController, DataConverter dataConverter,
-                             FirmwareVersion<FlowVersions> flowFirmwareVersion, Tests tests) {
+                             SettingsController settingsController, FirmwareVersion<FlowVersions> flowFirmwareVersion, Tests tests) {
 
-        super(flowController, injectorSectionController, settingsController, dataConverter, flowFirmwareVersion, tests);
+        super(flowController, injectorSectionController, settingsController, flowFirmwareVersion, tests);
 
     }
 

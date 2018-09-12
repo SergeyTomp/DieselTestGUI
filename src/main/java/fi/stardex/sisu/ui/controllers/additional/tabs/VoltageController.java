@@ -4,7 +4,6 @@ import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.additional.AdditionalSectionController;
 import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
-import fi.stardex.sisu.util.converters.DataConverter;
 import fi.stardex.sisu.util.i18n.I18N;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -27,6 +26,8 @@ import javafx.stage.StageStyle;
 import javax.annotation.PostConstruct;
 
 import static fi.stardex.sisu.util.SpinnerDefaults.*;
+import static fi.stardex.sisu.util.converters.DataConverter.convertDataToDouble;
+import static fi.stardex.sisu.util.converters.DataConverter.convertDataToInt;
 
 public class VoltageController {
 
@@ -82,8 +83,6 @@ public class VoltageController {
 
     private ObjectProperty<Boolean> isTabVoltageShowing = new SimpleObjectProperty<>();
 
-    private DataConverter firmwareDataConverter;
-
     private VoltAmpereProfileController voltAmpereProfileController;
 
     private InjectorSectionController injectorSectionController;
@@ -95,6 +94,10 @@ public class VoltageController {
     private ObservableList<XYChart.Data<Double, Double>> data3;
 
     private ObservableList<XYChart.Data<Double, Double>> data4;
+
+    public Button getPulseSettingsButton() {
+        return pulseSettingsButton;
+    }
 
     public ObservableList<XYChart.Data<Double, Double>> getData1() {
         return data1;
@@ -154,10 +157,6 @@ public class VoltageController {
 
     public void setParentController(AdditionalSectionController additionalSectionController) {
         this.additionalSectionController = additionalSectionController;
-    }
-
-    public void setFirmwareDataConverter(DataConverter firmwareDataConverter) {
-        this.firmwareDataConverter = firmwareDataConverter;
     }
 
     public void setInjectorSectionController(InjectorSectionController injectorSectionController) {
@@ -299,12 +298,12 @@ public class VoltageController {
 
             Number spinnerValue = spinner.getValue();
             if (spinnerValue instanceof Double) {
-                if ((Double) spinnerValue != firmwareDataConverter.convertDataToDouble(newValue))
+                if ((Double) spinnerValue != convertDataToDouble(newValue))
                     setStyle(RED_COLOR_STYLE);
                 else
                     setStyle(null);
             } else if (spinnerValue instanceof Integer) {
-                if ((Integer) spinnerValue != firmwareDataConverter.convertDataToInt(newValue))
+                if ((Integer) spinnerValue != convertDataToInt(newValue))
                     setStyle(RED_COLOR_STYLE);
                 else
                     setStyle(null);

@@ -26,6 +26,8 @@ public class AdditionalSectionController {
 
     @FXML private Tab tabFlow;
 
+    @FXML private Tab tabReport;
+
     @FXML private Tab tabCoding;
 
     @FXML private TabPane tabPane;
@@ -54,6 +56,8 @@ public class AdditionalSectionController {
 
     @FXML private FlowController flowController;
 
+    @FXML private ReportController reportController;
+
     @FXML private RLCController rlcController;
 
     @FXML private Spinner<Double> sensitivitySpinner;
@@ -68,6 +72,10 @@ public class AdditionalSectionController {
 
     public FlowController getFlowController() {
         return flowController;
+    }
+
+    public ReportController getReportController() {
+        return reportController;
     }
 
     public ConnectionController getConnectionController() {
@@ -114,6 +122,7 @@ public class AdditionalSectionController {
         tabLink.textProperty().bind(i18N.createStringBinding("additional.link"));
         tabSettings.textProperty().bind(i18N.createStringBinding("additional.settings"));
         tabFlow.textProperty().bind(i18N.createStringBinding("additional.flow"));
+        tabReport.textProperty().bind(i18N.createStringBinding("additional.report"));
         tabCoding.textProperty().bind(i18N.createStringBinding("additional.coding"));
     }
 }

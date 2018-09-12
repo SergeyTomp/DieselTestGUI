@@ -1,9 +1,12 @@
 package fi.stardex.sisu.measurement;
 
 import eu.hansolo.enzo.lcd.Lcd;
+import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.registers.flow.ModbusMapFlow;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
+import fi.stardex.sisu.store.FlowReport;
 import fi.stardex.sisu.ui.Enabler;
+import fi.stardex.sisu.ui.controllers.additional.tabs.FlowReportController;
 import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.cr.TestBenchSectionController;
@@ -15,16 +18,25 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.scene.control.Button;
-import javafx.scene.control.Spinner;
-import javafx.scene.control.ToggleButton;
+import javafx.collections.ObservableList;
+import javafx.scene.control.*;
 import javafx.util.Duration;
 
 import javax.annotation.PostConstruct;
 
 public class Measurements implements ChangeListener<Boolean> {
 
+    private ObservableList<FlowReport.FlowTestResult> flowTableViewItems;
+
+    private ListView<InjectorTest> testListView;
+
+    private ObservableList<InjectorTest> testListViewItems;
+
+    private MultipleSelectionModel<InjectorTest> testsSelectionModel;
+
     private Enabler enabler;
+
+    private FlowReport flowReport;
 
     private Tests tests;
 
@@ -60,15 +72,24 @@ public class Measurements implements ChangeListener<Boolean> {
 
     private ModbusRegisterProcessor flowModbusWriter;
 
+    private int includedAutoTestsLength;
+
     public Measurements(MainSectionController mainSectionController,
                         TestBenchSectionController testBenchSectionController,
                         HighPressureSectionController highPressureSectionController,
-                        InjectorSectionController injectorSectionController, Tests tests, Enabler enabler) {
+                        InjectorSectionController injectorSectionController,
+                        FlowReportController flowReportController,
+                        Tests tests, Enabler enabler, FlowReport flowReport) {
 
         this.tests = tests;
 
         this.enabler = enabler;
 
+        this.flowReport = flowReport;
+
+        testListView = mainSectionController.getTestListView();
+        testListViewItems = mainSectionController.getTestListViewItems();
+        testsSelectionModel = mainSectionController.getTestsSelectionModel();
         resetButton = mainSectionController.getResetButton();
         mainSectionStartToggleButton = mainSectionController.getStartToggleButton();
         adjustingTime = mainSectionController.getAdjustingTime();
@@ -84,6 +105,8 @@ public class Measurements implements ChangeListener<Boolean> {
         currentRPMLcd = testBenchSectionController.getCurrentRPMLcd();
 
         injectorSectionStartToggleButton = injectorSectionController.getInjectorSectionStartToggleButton();
+
+        flowTableViewItems = flowReportController.getFlowTableView().getItems();
 
     }
 
@@ -126,10 +149,12 @@ public class Measurements implements ChangeListener<Boolean> {
 
         switch (testType) {
 
-            case TESTPLAN:
+            case AUTO:
+                includedAutoTestsLength = (int) testListViewItems.stream().filter(InjectorTest::isIncluded).count();
+                flowTableViewItems.clear();
                 start();
                 break;
-            case AUTO:
+            case TESTPLAN:
                 break;
             case CODING:
                 break;
@@ -142,10 +167,7 @@ public class Measurements implements ChangeListener<Boolean> {
 
         enabler.startTest(false);
 
-        motorPreparationTimeline.stop();
-        pressurePreparationTimeline.stop();
-        adjustingTimeline.stop();
-        measurementTimeline.stop();
+        stopTimers();
 
         adjustingTime.refreshProgress();
         measuringTime.refreshProgress();
@@ -156,6 +178,29 @@ public class Measurements implements ChangeListener<Boolean> {
         mainSectionStartToggleButton.setSelected(false);
 
         flowModbusWriter.add(ModbusMapFlow.StopMeasurementCycle, true);
+
+    }
+
+    private void runNextTest() {
+
+        int selectedTestIndex = testsSelectionModel.getSelectedIndex();
+
+        if (selectedTestIndex < includedAutoTestsLength - 1) {
+            testsSelectionModel.select(++selectedTestIndex);
+            testListView.scrollTo(selectedTestIndex);
+            injectorSectionStartToggleButton.setSelected(false);
+            start();
+        } else
+            stopMeasurements();
+
+    }
+
+    private void stopTimers() {
+
+        motorPreparationTimeline.stop();
+        pressurePreparationTimeline.stop();
+        adjustingTimeline.stop();
+        measurementTimeline.stop();
 
     }
 
@@ -228,8 +273,11 @@ public class Measurements implements ChangeListener<Boolean> {
 
     private void tickMeasurementTime() {
 
-        if (measuringTime.tick() == 0)
-            stopMeasurements();
+        if (measuringTime.tick() == 0) {
+            measurementTimeline.stop();
+            flowReport.save();
+            runNextTest();
+        }
 
     }
 

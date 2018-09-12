@@ -7,7 +7,6 @@ import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
-import fi.stardex.sisu.util.converters.DataConverter;
 import fi.stardex.sisu.util.filters.FilterInputChartData;
 import fi.stardex.sisu.version.FirmwareVersion;
 import javafx.application.Platform;
@@ -25,8 +24,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.TimerTask;
 
+import static fi.stardex.sisu.util.converters.DataConverter.convertDataToInt;
 import static fi.stardex.sisu.version.UltimaFirmwareVersion.UltimaVersions;
-import static fi.stardex.sisu.version.UltimaFirmwareVersion.UltimaVersions.*;
+import static fi.stardex.sisu.version.UltimaFirmwareVersion.UltimaVersions.WITHOUT_F;
 
 @Component
 public abstract class ChartTask extends TimerTask {
@@ -49,9 +49,6 @@ public abstract class ChartTask extends TimerTask {
 
     @Autowired
     protected VoltageController voltageController;
-
-    @Autowired
-    private DataConverter dataConverter;
 
     @Autowired
     protected InjectorSectionController injectorSectionController;
@@ -182,7 +179,7 @@ public abstract class ChartTask extends TimerTask {
 
         int n;
 
-        firmwareWidth = dataConverter.convertDataToInt(ModbusMapUltima.WidthBoardOne.getLastValue().toString());
+        firmwareWidth = convertDataToInt(ModbusMapUltima.WidthBoardOne.getLastValue().toString());
 
         Toggle selectedToggle = injectorSectionController.getPiezoCoilToggleGroup().getSelectedToggle();
 

@@ -2,7 +2,6 @@ package fi.stardex.sisu.ui.controllers.additional;
 
 import fi.stardex.sisu.combobox_values.FlowUnits;
 import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
-import fi.stardex.sisu.util.converters.DataConverter;
 import fi.stardex.sisu.util.enums.BeakerType;
 import fi.stardex.sisu.util.rescalers.Rescaler;
 import javafx.application.Platform;
@@ -22,8 +21,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.List;
+
+import static fi.stardex.sisu.util.converters.DataConverter.*;
 
 public class BeakerController {
 
@@ -79,8 +78,6 @@ public class BeakerController {
 
     private Rescaler rescaler;
 
-    private DataConverter dataConverter;
-
     private String name;
 
     private float currentMaxLevel;
@@ -107,10 +104,6 @@ public class BeakerController {
 
     public void setRescaler(Rescaler rescaler) {
         this.rescaler = rescaler;
-    }
-
-    public void setDataConverter(DataConverter dataConverter) {
-        this.dataConverter = dataConverter;
     }
 
     public void setName(String name) {
@@ -185,9 +178,9 @@ public class BeakerController {
                     return;
                 }
 
-                float currentVal = dataConverter.round(dataConverter.convertDataToFloat(newValue));
+                float currentVal = round(convertDataToFloat(newValue));
 
-                rescaler.getObservableMapOfLevels().put(name, currentVal);
+                rescaler.getMapOfLevels().put(name, currentVal);
 
             } else if (newValue != null) {
 
@@ -230,18 +223,18 @@ public class BeakerController {
                 if (deliveryRangeLabel.getText().isEmpty())
                     break;
                 flowUnitCoeff = FlowUnits.getMapOfFlowUnits().get(flowController.getDeliveryFlowComboBox().getSelectionModel().getSelectedItem());
-                currentVal = dataConverter.round(dataConverter.convertDataToDouble(value) * flowUnitCoeff);
-                double lowDeliveryFlowLevelValue = dataConverter.round(flowController.getCurrentDeliveryFlowLevels()[0] * flowUnitCoeff);
-                double highDeliveryFlowLevelValue = dataConverter.round(flowController.getCurrentDeliveryFlowLevels()[1] * flowUnitCoeff);
+                currentVal = round(convertDataToDouble(value) * flowUnitCoeff);
+                double lowDeliveryFlowLevelValue = round(flowController.getCurrentDeliveryFlowLevels()[0] * flowUnitCoeff);
+                double highDeliveryFlowLevelValue = round(flowController.getCurrentDeliveryFlowLevels()[1] * flowUnitCoeff);
                 setBeakerLevel(currentVal, lowDeliveryFlowLevelValue, highDeliveryFlowLevelValue);
                 break;
             case BACKFLOW:
                 if (backFlowRangeLabel.getText().isEmpty())
                     break;
                 flowUnitCoeff = FlowUnits.getMapOfFlowUnits().get(flowController.getBackFlowComboBox().getSelectionModel().getSelectedItem());
-                currentVal = dataConverter.round(dataConverter.convertDataToDouble(value) * flowUnitCoeff);
-                double lowBackFlowLevelValue = dataConverter.round(flowController.getCurrentBackFlowLevels()[0] * flowUnitCoeff);
-                double highBackFlowLevelValue = dataConverter.round(flowController.getCurrentBackFlowLevels()[1] * flowUnitCoeff);
+                currentVal = round(convertDataToDouble(value) * flowUnitCoeff);
+                double lowBackFlowLevelValue = round(flowController.getCurrentBackFlowLevels()[0] * flowUnitCoeff);
+                double highBackFlowLevelValue = round(flowController.getCurrentBackFlowLevels()[1] * flowUnitCoeff);
                 setBeakerLevel(currentVal, lowBackFlowLevelValue, highBackFlowLevelValue);
         }
 

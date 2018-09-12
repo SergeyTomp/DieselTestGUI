@@ -11,6 +11,8 @@ import javafx.scene.control.SingleSelectionModel;
 
 import javax.annotation.PostConstruct;
 
+import static fi.stardex.sisu.util.converters.DataConverter.round;
+
 public class FlowResolver {
 
     private MultipleSelectionModel<InjectorTest> testsSelectionModel;
@@ -19,18 +21,15 @@ public class FlowResolver {
 
     private FlowController flowController;
 
-    private DataConverter dataConverter;
-
     private static final double PERCENT = 0.01;
 
     public FlowResolver(MultipleSelectionModel<InjectorTest> testsSelectionModel,
                         SingleSelectionModel<Dimension> flowOutputDimensionsSelectionModel,
-                        FlowController flowController, DataConverter dataConverter) {
+                        FlowController flowController) {
 
         this.testsSelectionModel = testsSelectionModel;
         this.flowOutputDimensionsSelectionModel = flowOutputDimensionsSelectionModel;
         this.flowController = flowController;
-        this.dataConverter = dataConverter;
 
     }
 
@@ -65,7 +64,7 @@ public class FlowResolver {
         Measurement measurement = injectorTest.getTestName().getMeasurement();
 
         switch (measurement) {
-            case DIRECT:
+            case DELIVERY:
                 flowLabel = flowController.getDeliveryRangeLabel();
                 flowUnit = flowController.getDeliveryFlowComboBox().getSelectionModel().getSelectedItem();
                 flowController.getBackFlowRangeLabel().setText("");
@@ -90,8 +89,9 @@ public class FlowResolver {
                 flowLabel.setText(String.format("%.1f - %.1f", results[0], results[1]));
                 break;
             case PLUS_OR_MINUS:
+                char plusOrMinus = '\u00B1';
                 double[] resultsPlusOrMinus = calculatePLUSMINUS(currentNominalFlow, currentFlowRange, flowUnit);
-                flowLabel.setText(String.format("%.1f \u00B1 %.1f", resultsPlusOrMinus[0], resultsPlusOrMinus[1]));
+                flowLabel.setText(String.format("%.1f " + plusOrMinus + " %.1f", resultsPlusOrMinus[0], resultsPlusOrMinus[1]));
         }
 
     }
@@ -111,11 +111,11 @@ public class FlowResolver {
 
         float flowUnitsConvertValue = FlowUnits.getMapOfFlowUnits().get(flowUnit);
 
-        result[0] = dataConverter.round((nominalFlow - nominalFlow * (flowRange * PERCENT)) * flowUnitsConvertValue);
-        result[1] = dataConverter.round((nominalFlow + nominalFlow * (flowRange * PERCENT)) * flowUnitsConvertValue);
+        result[0] = round((nominalFlow - nominalFlow * (flowRange * PERCENT)) * flowUnitsConvertValue);
+        result[1] = round((nominalFlow + nominalFlow * (flowRange * PERCENT)) * flowUnitsConvertValue);
 
         switch (measurement) {
-            case DIRECT:
+            case DELIVERY:
                 flowController.setCurrentDeliveryFlowLevels(result);
                 break;
             case BACK_FLOW:
@@ -134,9 +134,9 @@ public class FlowResolver {
 
         float flowUnitsConvertValue = FlowUnits.getMapOfFlowUnits().get(flowUnit);
 
-        result[0] = dataConverter.round(nominalFlow * flowUnitsConvertValue);
+        result[0] = round(nominalFlow * flowUnitsConvertValue);
 
-        result[1] = dataConverter.round((nominalFlow * (flowRange * PERCENT)) * flowUnitsConvertValue);
+        result[1] = round((nominalFlow * (flowRange * PERCENT)) * flowUnitsConvertValue);
 
         return result;
 

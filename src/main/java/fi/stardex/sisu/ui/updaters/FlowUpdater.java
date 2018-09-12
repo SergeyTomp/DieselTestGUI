@@ -5,7 +5,6 @@ import fi.stardex.sisu.combobox_values.InjectorChannel;
 import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
-import fi.stardex.sisu.util.converters.DataConverter;
 import fi.stardex.sisu.util.enums.Tests;
 import fi.stardex.sisu.version.FirmwareVersion;
 import fi.stardex.sisu.version.Versions;
@@ -19,14 +18,14 @@ import java.util.stream.Stream;
 import static fi.stardex.sisu.registers.flow.ModbusMapFlow.*;
 import static fi.stardex.sisu.ui.updaters.FlowUpdater.Flow.BACK_FLOW;
 import static fi.stardex.sisu.ui.updaters.FlowUpdater.Flow.DELIVERY;
+import static fi.stardex.sisu.util.converters.DataConverter.convertDataToFloat;
+import static fi.stardex.sisu.util.converters.DataConverter.round;
 import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions;
 import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions.MASTER;
 
 public abstract class FlowUpdater {
 
     protected FlowController flowController;
-
-    protected DataConverter dataConverter;
 
     private FirmwareVersion<FlowVersions> flowFirmwareVersion;
 
@@ -113,12 +112,10 @@ public abstract class FlowUpdater {
     protected Tests tests;
 
     public FlowUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
-                       SettingsController settingsController, DataConverter dataConverter,
-                       FirmwareVersion<FlowVersions> flowFirmwareVersion, Tests tests) {
+                       SettingsController settingsController, FirmwareVersion<FlowVersions> flowFirmwareVersion, Tests tests) {
 
         this.flowController = flowController;
         this.flowFirmwareVersion = flowFirmwareVersion;
-        this.dataConverter = dataConverter;
         this.tests = tests;
         deliveryRangeLabel = flowController.getDeliveryRangeLabel();
         backFlowRangeLabel = flowController.getBackFlowRangeLabel();
@@ -273,8 +270,8 @@ public abstract class FlowUpdater {
 
     private void showOnChosenFlowUnit(String value, String selectedItem, Flow flow) {
 
-        float convertedValueFloat = dataConverter.
-                round(dataConverter.convertDataToFloat(value) * FlowUnits.getMapOfFlowUnits().get(selectedItem));
+        float convertedValueFloat =
+                round(convertDataToFloat(value) * FlowUnits.getMapOfFlowUnits().get(selectedItem));
 
         TextField field1 = (flow == DELIVERY) ? delivery1TextField : backFlow1TextField;
         TextField field2 = (flow == DELIVERY) ? delivery2TextField : backFlow2TextField;
@@ -290,10 +287,10 @@ public abstract class FlowUpdater {
 
         float flowUnitsConvertValue = FlowUnits.getMapOfFlowUnits().get(selectedItem);
 
-        listOfConvertedValues.add(dataConverter.round(dataConverter.convertDataToFloat(listOfValues.get(0)) * flowUnitsConvertValue));
-        listOfConvertedValues.add(dataConverter.round(dataConverter.convertDataToFloat(listOfValues.get(1)) * flowUnitsConvertValue));
-        listOfConvertedValues.add(dataConverter.round(dataConverter.convertDataToFloat(listOfValues.get(2)) * flowUnitsConvertValue));
-        listOfConvertedValues.add(dataConverter.round(dataConverter.convertDataToFloat(listOfValues.get(3)) * flowUnitsConvertValue));
+        listOfConvertedValues.add(round(convertDataToFloat(listOfValues.get(0)) * flowUnitsConvertValue));
+        listOfConvertedValues.add(round(convertDataToFloat(listOfValues.get(1)) * flowUnitsConvertValue));
+        listOfConvertedValues.add(round(convertDataToFloat(listOfValues.get(2)) * flowUnitsConvertValue));
+        listOfConvertedValues.add(round(convertDataToFloat(listOfValues.get(3)) * flowUnitsConvertValue));
 
         TextField field1 = (flow == DELIVERY) ? delivery1TextField : backFlow1TextField;
         TextField field2 = (flow == DELIVERY) ? delivery2TextField : backFlow2TextField;
@@ -389,27 +386,27 @@ public abstract class FlowUpdater {
             showOnChosenFlowUnit(value, backFlowComboBox.getSelectionModel().getSelectedItem(), BACK_FLOW);
 
         if ((value = Channel1Temperature1.getLastValue().toString()) != null) {
-            convertedValue.append(dataConverter.round(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
+            convertedValue.append(round(convertDataToFloat(value))).append(DEGREES_CELSIUS);
             setTempLabels(temperature1Delivery1Label, temperature1Delivery2Label,
                     temperature1Delivery3Label, temperature1Delivery4Label, convertedValue.toString());
             convertedValue.setLength(0);
         }
         if ((value = Channel1Temperature2.getLastValue().toString()) != null) {
-            convertedValue.append(dataConverter.round(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
+            convertedValue.append(round(convertDataToFloat(value))).append(DEGREES_CELSIUS);
             setTempLabels(temperature2Delivery1Label, temperature2Delivery2Label,
                     temperature2Delivery3Label, temperature2Delivery4Label, convertedValue.toString());
             convertedValue.setLength(0);
         }
         if ((value = (version == MASTER) ? Channel2Temperature1.getLastValue().toString()
                 : Channel5Temperature1.getLastValue().toString()) != null) {
-            convertedValue.append(dataConverter.round(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
+            convertedValue.append(round(convertDataToFloat(value))).append(DEGREES_CELSIUS);
             setTempLabels(temperature1BackFlow1Label, temperature1BackFlow2Label,
                     temperature1BackFlow3Label, temperature1BackFlow4Label, convertedValue.toString());
             convertedValue.setLength(0);
         }
         if ((value = (version == MASTER) ? Channel2Temperature2.getLastValue().toString()
                 : Channel5Temperature2.getLastValue().toString()) != null) {
-            convertedValue.append(dataConverter.round(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
+            convertedValue.append(round(convertDataToFloat(value))).append(DEGREES_CELSIUS);
             setTempLabels(temperature2BackFlow1Label, temperature2BackFlow2Label,
                     temperature2BackFlow3Label, temperature2BackFlow4Label, convertedValue.toString());
             convertedValue.setLength(0);

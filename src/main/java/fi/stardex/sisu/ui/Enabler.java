@@ -5,6 +5,7 @@ import fi.stardex.sisu.persistence.orm.Manufacturer;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.persistence.orm.interfaces.Model;
 import fi.stardex.sisu.ui.controllers.additional.tabs.RLCController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController.GUIType;
@@ -32,6 +33,8 @@ public class Enabler {
     private ListView<Manufacturer> manufacturerListView;
 
     private ListView<Model> modelListView;
+
+    private ToggleGroup testsToggleGroup;
 
     private Tests tests;
 
@@ -63,6 +66,14 @@ public class Enabler {
 
     private RadioButton piezoDelphiRadioButton;
 
+    private ToggleButton ledBeaker1;
+
+    private ToggleButton ledBeaker2;
+
+    private ToggleButton ledBeaker3;
+
+    private ToggleButton ledBeaker4;
+
     private Button storeRLCButton;
 
     private Button storeButton;
@@ -81,8 +92,10 @@ public class Enabler {
 
     private TabPane measurementTabPane;
 
+    private Button pulseSettingsButton;
+
     public Enabler(MainSectionController mainSectionController, InjectorSectionController injectorSectionController,
-                   RLCController rlcController) {
+                   RLCController rlcController, VoltageController voltageController) {
 
         this.mainSectionController = mainSectionController;
         mainSectionStartToggleButton = mainSectionController.getStartToggleButton();
@@ -99,6 +112,7 @@ public class Enabler {
         moveDownButton = mainSectionController.getMoveDownButton();
         storeButton = mainSectionController.getStoreButton();
         resetButton = mainSectionController.getResetButton();
+        testsToggleGroup = mainSectionController.getTestsToggleGroup();
 
         injectorSectionStartToggleButton = injectorSectionController.getInjectorSectionStartToggleButton();
         widthCurrentSignalSpinner = injectorSectionController.getWidthCurrentSignalSpinner();
@@ -107,6 +121,10 @@ public class Enabler {
         piezoRadioButton = injectorSectionController.getPiezoRadioButton();
         piezoDelphiRadioButton = injectorSectionController.getPiezoDelphiRadioButton();
         piezoCoilToggleGroup = injectorSectionController.getPiezoCoilToggleGroup();
+        ledBeaker1 = injectorSectionController.getLedBeaker1Controller().getLedBeaker();
+        ledBeaker2 = injectorSectionController.getLedBeaker2Controller().getLedBeaker();
+        ledBeaker3 = injectorSectionController.getLedBeaker3Controller().getLedBeaker();
+        ledBeaker4 = injectorSectionController.getLedBeaker4Controller().getLedBeaker();
 
         storeRLCButton = rlcController.getStoreButton();
         measureButton = rlcController.getMeasureButton();
@@ -115,6 +133,8 @@ public class Enabler {
         tabCoilOne = rlcController.getTabCoilOne();
         tabCoilTwo = rlcController.getTabCoilTwo();
         measurementTabPane = rlcController.getMeasurementTabPane();
+
+        pulseSettingsButton = voltageController.getPulseSettingsButton();
 
     }
 
@@ -134,11 +154,17 @@ public class Enabler {
 
     public Enabler startTest(boolean isStarted) {
 
+        enableMainSectionStartToggleButton(isStarted);
+
         speedComboBox.setDisable(isStarted);
 
         versionComboBox.setDisable(isStarted);
 
-        disableAllRadioButtons(isStarted);
+        disableAllCoilPiezoRadioButtons(isStarted);
+
+        disableAllTestsRadioButtons(isStarted);
+
+        hideUpDownButtons(isStarted);
 
         manufacturerListView.setDisable(isStarted);
         modelListView.setDisable(isStarted);
@@ -166,22 +192,22 @@ public class Enabler {
     public Enabler selectInjectorType(String injectorType) {
 
         if (injectorType == null) {
-            disableAllRadioButtons(false);
+            disableAllCoilPiezoRadioButtons(false);
             setGaugesToNull();
             return this;
         }
 
         switch (injectorType) {
             case "coil":
-                enableRadioButton(coilRadioButton);
+                enableCoilPiezoRadioButton(coilRadioButton);
                 setupGauges(0, 2, "Inductance", "\u03BCH", "\u03A9", 500d, 3d, "COIL");
                 break;
             case "piezo":
-                enableRadioButton(piezoRadioButton);
+                enableCoilPiezoRadioButton(piezoRadioButton);
                 setupGauges(1, 0, "Capacitance", "\u03BCF", "k\u03A9", 10d, 2000d, "PIEZO");
                 break;
             case "piezoDelphi":
-                enableRadioButton(piezoDelphiRadioButton);
+                enableCoilPiezoRadioButton(piezoDelphiRadioButton);
                 setupGauges(1, 0, "Capacitance", "\u03BCF", "k\u03A9", 20d, 2000d, "PIEZO");
                 break;
         }
@@ -224,6 +250,23 @@ public class Enabler {
 
     }
 
+    public Enabler disableVAP(boolean isStarted) {
+
+        if (isStarted)
+            disableAllCoilPiezoRadioButtons(true);
+        else
+            enableCoilPiezoRadioButton((RadioButton) piezoCoilToggleGroup.getSelectedToggle());
+
+        disableAllLeds(isStarted);
+
+        pulseSettingsButton.setDisable(isStarted);
+
+        disableWidthFreqSpinners(isStarted);
+
+        return this;
+
+    }
+
     public Enabler enableUpDownButtons(int selectedIndex, int includedTestsSize) {
 
         if (selectedIndex == 0 && selectedIndex == includedTestsSize - 1) {
@@ -256,9 +299,16 @@ public class Enabler {
 
     }
 
-    public Enabler enableMainSectionStartToggleButton(boolean isFirstIncludedTest) {
+    private void hideUpDownButtons(boolean hide) {
 
-        mainSectionStartToggleButton.setDisable(!isFirstIncludedTest);
+        moveUpButton.setVisible(!hide);
+        moveDownButton.setVisible(!hide);
+
+    }
+
+    public Enabler enableMainSectionStartToggleButton(boolean enable) {
+
+        mainSectionStartToggleButton.setDisable(!enable);
 
         return this;
 
@@ -266,19 +316,50 @@ public class Enabler {
 
     public void selectStaticLeakTest(boolean isSelected) {
 
-        widthCurrentSignalSpinner.setDisable(isSelected);
-        freqCurrentSignalSpinner.setDisable(isSelected);
+        disableWidthFreqSpinners(isSelected);
         injectorSectionStartToggleButton.setDisable(isSelected);
 
     }
 
-    private void disableAllRadioButtons(boolean disable) {
+    private void disableWidthFreqSpinners(boolean disable) {
+
+        widthCurrentSignalSpinner.setDisable(disable);
+        freqCurrentSignalSpinner.setDisable(disable);
+
+    }
+
+    private void disableAllCoilPiezoRadioButtons(boolean disable) {
 
         piezoCoilToggleGroup.getToggles().forEach(radioButton -> ((Node) radioButton).setDisable(disable));
 
     }
 
-    private void enableRadioButton(RadioButton activeRadioButton) {
+    private void disableAllTestsRadioButtons(boolean disable) {
+
+        testsToggleGroup.getToggles().forEach(toggle -> ((Node) toggle).setDisable(disable));
+
+    }
+
+    public Enabler disableAllLedsExceptFirst(boolean disable) {
+
+        ledBeaker2.setDisable(disable);
+        ledBeaker3.setDisable(disable);
+        ledBeaker4.setDisable(disable);
+
+        return this;
+
+    }
+
+    private void disableAllLeds(boolean disable) {
+
+        ledBeaker1.setDisable(disable);
+        ledBeaker2.setDisable(disable);
+        ledBeaker3.setDisable(disable);
+        ledBeaker4.setDisable(disable);
+
+    }
+
+    private void enableCoilPiezoRadioButton(RadioButton activeRadioButton) {
 
         activeRadioButton.setSelected(true);
 

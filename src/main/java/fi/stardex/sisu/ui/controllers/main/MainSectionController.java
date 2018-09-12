@@ -16,7 +16,6 @@ import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.ui.controllers.dialogs.ManufacturerMenuDialogController;
 import fi.stardex.sisu.ui.controllers.dialogs.NewEditInjectorDialogController;
 import fi.stardex.sisu.ui.controllers.dialogs.NewEditTestDialogController;
-import fi.stardex.sisu.util.converters.DataConverter;
 import fi.stardex.sisu.util.enums.Measurement;
 import fi.stardex.sisu.util.enums.Tests;
 import fi.stardex.sisu.util.i18n.I18N;
@@ -63,11 +62,15 @@ import java.util.prefs.Preferences;
 import static fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest.getChangedInjectorTest;
 import static fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest.getListOfNonIncludedTests;
 import static fi.stardex.sisu.util.SpinnerDefaults.*;
+import static fi.stardex.sisu.util.converters.DataConverter.round;
 import static fi.stardex.sisu.util.enums.Tests.TestType.*;
 
 public class MainSectionController {
 
     private static Logger logger = LoggerFactory.getLogger(MainSectionController.class);
+
+    @FXML
+    private TextField injectorNumberTextField;
 
     @FXML
     private VBox injectorTestsVBox;
@@ -163,7 +166,11 @@ public class MainSectionController {
 
     private MultipleSelectionModel<InjectorTest> testsSelectionModel;
 
+    private SingleSelectionModel<String> speedComboBoxSelectionModel;
+
     private ObservableList<InjectorTest> testListViewItems;
+
+    private ObservableList<String> startToggleButtonStyleClass;
 
     private static final String NORMAL_SPEED = "X1";
 
@@ -196,8 +203,6 @@ public class MainSectionController {
     private ViewHolder newEditTestDialog;
 
     private VoltAmpereProfileController voltAmpereProfileController;
-
-    private DataConverter dataConverter;
 
     private CurrentInjectorObtainer currentInjectorObtainer;
 
@@ -236,6 +241,18 @@ public class MainSectionController {
     private boolean isFocusMoved;
 
     private boolean isAnotherAutoOrNewTestList;
+
+    public ToggleGroup getTestsToggleGroup() {
+        return testsToggleGroup;
+    }
+
+    public ObservableList<InjectorTest> getTestListViewItems() {
+        return testListViewItems;
+    }
+
+    public MultipleSelectionModel<InjectorTest> getTestsSelectionModel() {
+        return testsSelectionModel;
+    }
 
     public ComboBox<String> getSpeedComboBox() {
         return speedComboBox;
@@ -345,10 +362,6 @@ public class MainSectionController {
         this.voltAmpereProfileController = voltAmpereProfileController;
     }
 
-    public void setDataConverter(DataConverter dataConverter) {
-        this.dataConverter = dataConverter;
-    }
-
     public void setCurrentInjectorObtainer(CurrentInjectorObtainer currentInjectorObtainer) {
         this.currentInjectorObtainer = currentInjectorObtainer;
     }
@@ -397,7 +410,7 @@ public class MainSectionController {
     private void init() {
 
         this
-                .initTestListViewUtilityObjects()
+                .makeReferenceToInternalObjects()
                 .setupTimeProgressBars()
                 .bindingI18N()
                 .setupResetButton()
@@ -418,11 +431,15 @@ public class MainSectionController {
 
     }
 
-    private MainSectionController initTestListViewUtilityObjects() {
+    private MainSectionController makeReferenceToInternalObjects() {
 
         testsSelectionModel = testListView.getSelectionModel();
 
         testListViewItems = testListView.getItems();
+
+        startToggleButtonStyleClass = startToggleButton.getStyleClass();
+
+        speedComboBoxSelectionModel = speedComboBox.getSelectionModel();
 
         return this;
 
@@ -588,9 +605,9 @@ public class MainSectionController {
     private MainSectionController setupSpeedComboBox() {
 
         speedComboBox.getItems().setAll(NORMAL_SPEED, DOUBLE_SPEED, HALF_SPEED);
-        speedComboBox.getSelectionModel().selectFirst();
+        speedComboBoxSelectionModel.selectFirst();
 
-        speedComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> setProgress(newValue));
+        speedComboBoxSelectionModel.selectedItemProperty().addListener((observable, oldValue, newValue) -> setProgress(newValue));
 
         return this;
 
@@ -819,8 +836,8 @@ public class MainSectionController {
                 startButtonTimeline.play();
             else {
                 startButtonTimeline.stop();
-                startToggleButton.getStyleClass().clear();
-                startToggleButton.getStyleClass().add("startButton");
+                startToggleButtonStyleClass.clear();
+                startToggleButtonStyleClass.add("startButton");
             }
         });
 
@@ -830,13 +847,13 @@ public class MainSectionController {
 
     private void startBlinking() {
 
-        startToggleButton.getStyleClass().clear();
+        startToggleButtonStyleClass.clear();
 
         if (startLight) {
-            startToggleButton.getStyleClass().add("stopButtonDark");
+            startToggleButtonStyleClass.add("stopButtonDark");
             startLight = false;
         } else {
-            startToggleButton.getStyleClass().add("stopButtonLight");
+            startToggleButtonStyleClass.add("stopButtonLight");
             startLight = true;
         }
 
@@ -915,6 +932,8 @@ public class MainSectionController {
 
             returnToDefaultTestListAuto();
 
+            injectorNumberTextField.setText((newValue != null) ? ((Injector) newValue).getInjectorCode() : null);
+
             if (newValue == null) {
                 currentInjectorObtainer.setInjector(null);
                 currentInjectorTestsObtainer.setInjectorTests(null);
@@ -938,9 +957,9 @@ public class MainSectionController {
 
             voltAmpereProfileController.getBoostUSpinner().getValueFactory().setValue(currentVoltAmpereProfile.getBoostU());
             voltAmpereProfileController.getFirstWSpinner().getValueFactory().setValue(currentVoltAmpereProfile.getFirstW());
-            voltAmpereProfileController.getFirstISpinner().getValueFactory().setValue((firstI * 100 % 10 != 0) ? dataConverter.round(firstI) : firstI);
-            voltAmpereProfileController.getSecondISpinner().getValueFactory().setValue((secondI * 100 % 10 != 0) ? dataConverter.round(secondI) : secondI);
-            voltAmpereProfileController.getBoostISpinner().getValueFactory().setValue((boostI * 100 % 10 != 0) ? dataConverter.round(boostI) : boostI);
+            voltAmpereProfileController.getFirstISpinner().getValueFactory().setValue((firstI * 100 % 10 != 0) ? round(firstI) : firstI);
+            voltAmpereProfileController.getSecondISpinner().getValueFactory().setValue((secondI * 100 % 10 != 0) ? round(secondI) : secondI);
+            voltAmpereProfileController.getBoostISpinner().getValueFactory().setValue((boostI * 100 % 10 != 0) ? round(boostI) : boostI);
             voltAmpereProfileController.getBatteryUSpinner().getValueFactory().setValue(currentVoltAmpereProfile.getBatteryU());
             voltAmpereProfileController.getNegativeUSpinner().getValueFactory().setValue(currentVoltAmpereProfile.getNegativeU());
             voltAmpereProfileController.getEnableBoostToggleButton().setSelected(currentVoltAmpereProfile.getBoostDisable());
@@ -969,9 +988,9 @@ public class MainSectionController {
 
             if (autoTestRadioButton.isSelected()) {
 
-                enabler.showButtons(newValue.isIncluded(), false)
+                enabler.showButtons(newValue.isIncluded() && !startToggleButton.isSelected(), false)
                         .enableUpDownButtons(testsSelectionModel.getSelectedIndex(), testListViewItems.size() - getListOfNonIncludedTests().size())
-                        .enableMainSectionStartToggleButton(testsSelectionModel.getSelectedIndex() == 0 && newValue.isIncluded());
+                        .enableMainSectionStartToggleButton((startToggleButton.isSelected()) || ((testsSelectionModel.getSelectedIndex() == 0) && newValue.isIncluded()));
 
             }
 
@@ -980,7 +999,7 @@ public class MainSectionController {
 
             currentMeasuringTime = newValue.getMeasurementTime();
 
-            setProgress(speedComboBox.getSelectionModel().getSelectedItem());
+            setProgress(speedComboBoxSelectionModel.getSelectedItem());
 
             highPressureSectionController.regulator1pressModeON(newValue.getSettedPressure());
 

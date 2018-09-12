@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Tab?>
-<?import javafx.scene.control.TabPane?>
-
+<?import javafx.scene.control.*?>
 <TabPane fx:id="tabPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="210.0" stylesheets="@../../../css/Styling.css" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.additional.AdditionalSectionController">
     <tabs>
         <Tab fx:id="tabLink" text="%additional.link">
@@ -16,6 +14,9 @@
         </Tab>
         <Tab fx:id="tabFlow" text="%additional.flow">
             <fx:include fx:id="flow" source="tabs/Flow.fxml" />
+        </Tab>
+        <Tab fx:id="tabReport" text="%additional.report">
+            <fx:include fx:id="report" source="tabs/Report.fxml" />
         </Tab>
         <Tab fx:id="tabCoding" text="%additional.coding">
             <fx:include fx:id="coding" source="tabs/coding.fxml" />

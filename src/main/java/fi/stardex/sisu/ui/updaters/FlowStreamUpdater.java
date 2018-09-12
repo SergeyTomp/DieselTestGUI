@@ -7,13 +7,14 @@ import fi.stardex.sisu.devices.Device;
 import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
-import fi.stardex.sisu.util.converters.DataConverter;
 import fi.stardex.sisu.util.enums.Tests;
 import fi.stardex.sisu.version.FirmwareVersion;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 
 import static fi.stardex.sisu.registers.flow.ModbusMapFlow.*;
+import static fi.stardex.sisu.util.converters.DataConverter.convertDataToFloat;
+import static fi.stardex.sisu.util.converters.DataConverter.round;
 import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions;
 import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions.STREAM;
 
@@ -21,10 +22,9 @@ import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions.STREAM;
 public class FlowStreamUpdater extends FlowUpdater implements Updater {
 
     public FlowStreamUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
-                             SettingsController settingsController, DataConverter dataConverter,
-                             FirmwareVersion<FlowVersions> flowFirmwareVersion, Tests tests) {
+                             SettingsController settingsController, FirmwareVersion<FlowVersions> flowFirmwareVersion, Tests tests) {
 
-        super(flowController, injectorSectionController, settingsController, dataConverter, flowFirmwareVersion, tests);
+        super(flowController, injectorSectionController, settingsController, flowFirmwareVersion, tests);
 
     }
 
@@ -80,113 +80,97 @@ public class FlowStreamUpdater extends FlowUpdater implements Updater {
                 show(value, backFlowComboBox.getSelectionModel().getSelectedItem(), Flow.BACK_FLOW_4);
 
             if ((value = Channel1Temperature1.getLastValue().toString()) != null) {
-                convertedValue.append(dataConverter.
-                        round(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
+                convertedValue.append(round(convertDataToFloat(value))).append(DEGREES_CELSIUS);
                 temperature1Delivery1Label.setText(ledBeaker1ToggleButton.isSelected() ? convertedValue.toString() : null);
                 convertedValue.setLength(0);
             }
 
             if ((value = Channel1Temperature2.getLastValue().toString()) != null) {
-                convertedValue.append(dataConverter.
-                        round(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
+                convertedValue.append(round(convertDataToFloat(value))).append(DEGREES_CELSIUS);
                 temperature2Delivery1Label.setText(ledBeaker1ToggleButton.isSelected() ? convertedValue.toString() : null);
                 convertedValue.setLength(0);
             }
 
             if ((value = Channel2Temperature1.getLastValue().toString()) != null) {
-                convertedValue.append(dataConverter.
-                        round(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
+                convertedValue.append(round(convertDataToFloat(value))).append(DEGREES_CELSIUS);
                 temperature1Delivery2Label.setText(ledBeaker2ToggleButton.isSelected() ? convertedValue.toString() : null);
                 convertedValue.setLength(0);
             }
 
             if ((value = Channel2Temperature2.getLastValue().toString()) != null) {
-                convertedValue.append(dataConverter.
-                        round(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
+                convertedValue.append(round(convertDataToFloat(value))).append(DEGREES_CELSIUS);
                 temperature2Delivery2Label.setText(ledBeaker2ToggleButton.isSelected() ? convertedValue.toString() : null);
                 convertedValue.setLength(0);
             }
 
             if ((value = Channel3Temperature1.getLastValue().toString()) != null) {
-                convertedValue.append(dataConverter.
-                        round(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
+                convertedValue.append(round(convertDataToFloat(value))).append(DEGREES_CELSIUS);
                 temperature1Delivery3Label.setText(ledBeaker3ToggleButton.isSelected() ? convertedValue.toString() : null);
                 convertedValue.setLength(0);
             }
 
             if ((value = Channel3Temperature2.getLastValue().toString()) != null) {
-                convertedValue.append(dataConverter.
-                        round(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
+                convertedValue.append(round(convertDataToFloat(value))).append(DEGREES_CELSIUS);
                 temperature2Delivery3Label.setText(ledBeaker3ToggleButton.isSelected() ? convertedValue.toString() : null);
                 convertedValue.setLength(0);
             }
 
             if ((value = Channel4Temperature1.getLastValue().toString()) != null) {
-                convertedValue.append(dataConverter.
-                        round(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
+                convertedValue.append(round(convertDataToFloat(value))).append(DEGREES_CELSIUS);
                 temperature1Delivery4Label.setText(ledBeaker4ToggleButton.isSelected() ? convertedValue.toString() : null);
                 convertedValue.setLength(0);
             }
 
             if ((value = Channel4Temperature2.getLastValue().toString()) != null) {
-                convertedValue.append(dataConverter.
-                        round(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
+                convertedValue.append(round(convertDataToFloat(value))).append(DEGREES_CELSIUS);
                 temperature2Delivery4Label.setText(ledBeaker4ToggleButton.isSelected() ? convertedValue.toString() : null);
                 convertedValue.setLength(0);
             }
 
             if ((value = Channel5Temperature1.getLastValue().toString()) != null) {
-                convertedValue.append(dataConverter.
-                        round(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
+                convertedValue.append(round(convertDataToFloat(value))).append(DEGREES_CELSIUS);
                 temperature1BackFlow1Label.setText(ledBeaker1ToggleButton.isSelected() ? convertedValue.toString() : null);
                 convertedValue.setLength(0);
             }
 
             if ((value = Channel5Temperature2.getLastValue().toString()) != null) {
-                convertedValue.append(dataConverter.
-                        round(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
+                convertedValue.append(round(convertDataToFloat(value))).append(DEGREES_CELSIUS);
                 temperature2BackFlow1Label.setText(ledBeaker1ToggleButton.isSelected() ? convertedValue.toString() : null);
                 convertedValue.setLength(0);
             }
 
             if ((value = Channel6Temperature1.getLastValue().toString()) != null) {
-                convertedValue.append(dataConverter.
-                        round(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
+                convertedValue.append(round(convertDataToFloat(value))).append(DEGREES_CELSIUS);
                 temperature1BackFlow2Label.setText(ledBeaker2ToggleButton.isSelected() ? convertedValue.toString() : null);
                 convertedValue.setLength(0);
             }
 
             if ((value = Channel6Temperature2.getLastValue().toString()) != null) {
-                convertedValue.append(dataConverter.
-                        round(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
+                convertedValue.append(round(convertDataToFloat(value))).append(DEGREES_CELSIUS);
                 temperature2BackFlow2Label.setText(ledBeaker2ToggleButton.isSelected() ? convertedValue.toString() : null);
                 convertedValue.setLength(0);
             }
 
             if ((value = Channel7Temperature1.getLastValue().toString()) != null) {
-                convertedValue.append(dataConverter.
-                        round(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
+                convertedValue.append(round(convertDataToFloat(value))).append(DEGREES_CELSIUS);
                 temperature1BackFlow3Label.setText(ledBeaker3ToggleButton.isSelected() ? convertedValue.toString() : null);
                 convertedValue.setLength(0);
             }
 
             if ((value = Channel7Temperature2.getLastValue().toString()) != null) {
-                convertedValue.append(dataConverter.
-                        round(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
+                convertedValue.append(round(convertDataToFloat(value))).append(DEGREES_CELSIUS);
                 temperature2BackFlow3Label.setText(ledBeaker3ToggleButton.isSelected() ? convertedValue.toString() : null);
                 convertedValue.setLength(0);
             }
 
             if ((value = Channel8Temperature1.getLastValue().toString()) != null) {
-                convertedValue.append(dataConverter.
-                        round(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
+                convertedValue.append(round(convertDataToFloat(value))).append(DEGREES_CELSIUS);
                 temperature1BackFlow4Label.setText(ledBeaker4ToggleButton.isSelected() ? convertedValue.toString() : null);
                 convertedValue.setLength(0);
             }
 
             if ((value = Channel8Temperature2.getLastValue().toString()) != null) {
-                convertedValue.append(dataConverter.
-                        round(dataConverter.convertDataToFloat(value))).append(DEGREES_CELSIUS);
+                convertedValue.append(round(convertDataToFloat(value))).append(DEGREES_CELSIUS);
                 temperature2BackFlow4Label.setText(ledBeaker4ToggleButton.isSelected() ? convertedValue.toString() : null);
                 convertedValue.setLength(0);
             }
@@ -197,8 +181,7 @@ public class FlowStreamUpdater extends FlowUpdater implements Updater {
 
     private void show(String value, String selectedItem, Flow flow) {
 
-        float convertedValueFloat = dataConverter.
-                round(dataConverter.convertDataToFloat(value) * FlowUnits.getMapOfFlowUnits().get(selectedItem));
+        float convertedValueFloat = round(convertDataToFloat(value) * FlowUnits.getMapOfFlowUnits().get(selectedItem));
 
         TextField field = null;
         ToggleButton led = null;
