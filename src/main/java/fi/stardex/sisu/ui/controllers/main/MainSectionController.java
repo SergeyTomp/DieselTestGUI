@@ -1,5 +1,6 @@
 package fi.stardex.sisu.ui.controllers.main;
 
+import fi.stardex.sisu.measurement.Measurements;
 import fi.stardex.sisu.persistence.orm.Manufacturer;
 import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
@@ -9,6 +10,7 @@ import fi.stardex.sisu.persistence.repos.cr.InjectorTestRepository;
 import fi.stardex.sisu.persistence.repos.cr.InjectorsRepository;
 import fi.stardex.sisu.registers.flow.ModbusMapFlow;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
+import fi.stardex.sisu.store.FlowReport;
 import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
@@ -187,6 +189,10 @@ public class MainSectionController {
     private int currentMeasuringTime;
 
     private Preferences rootPrefs;
+
+    private Measurements measurements;
+
+    private FlowReport flowReport;
 
     private ModbusRegisterProcessor flowModbusWriter;
 
@@ -382,6 +388,14 @@ public class MainSectionController {
         this.injectorTestRepository = injectorTestRepository;
     }
 
+    public void setMeasurements(Measurements measurements) {
+        this.measurements = measurements;
+    }
+
+    public void setFlowReport(FlowReport flowReport) {
+        this.flowReport = flowReport;
+    }
+
     public void setCurrentInjectorTestsObtainer(CurrentInjectorTestsObtainer currentInjectorTestsObtainer) {
         this.currentInjectorTestsObtainer = currentInjectorTestsObtainer;
     }
@@ -413,6 +427,7 @@ public class MainSectionController {
                 .makeReferenceToInternalObjects()
                 .setupTimeProgressBars()
                 .bindingI18N()
+                .setupStoreButton()
                 .setupResetButton()
                 .setupVersionComboBox()
                 .initManufacturerContextMenu()
@@ -464,6 +479,17 @@ public class MainSectionController {
         codingTestRadioButton.textProperty().bind(i18N.createStringBinding("main.coding.radiobutton"));
         defaultRadioButton.textProperty().bind(i18N.createStringBinding("main.defaultRB.radiobutton"));
         customRadioButton.textProperty().bind(i18N.createStringBinding("main.customRB.radiobutton"));
+
+        return this;
+
+    }
+
+    private MainSectionController setupStoreButton() {
+
+        storeButton.setOnAction((event) -> {
+            if (startToggleButton.isSelected())
+                flowReport.save();
+        });
 
         return this;
 
@@ -992,8 +1018,12 @@ public class MainSectionController {
                         .enableUpDownButtons(testsSelectionModel.getSelectedIndex(), testListViewItems.size() - getListOfNonIncludedTests().size())
                         .enableMainSectionStartToggleButton((startToggleButton.isSelected()) || ((testsSelectionModel.getSelectedIndex() == 0) && newValue.isIncluded()));
 
-            }
+            } else if (testPlanTestRadioButton.isSelected() && startToggleButton.isSelected()) {
 
+                measurements.switchOffSections();
+                measurements.start();
+
+            }
 
             currentAdjustingTime = newValue.getAdjustingTime();
 

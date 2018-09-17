@@ -24,6 +24,8 @@ import javafx.util.Duration;
 
 import javax.annotation.PostConstruct;
 
+import static fi.stardex.sisu.util.enums.Tests.TestType.TESTPLAN;
+
 public class Measurements implements ChangeListener<Boolean> {
 
     private ObservableList<FlowReport.FlowTestResult> flowTableViewItems;
@@ -141,11 +143,11 @@ public class Measurements implements ChangeListener<Boolean> {
 
     private void startMeasurements() {
 
-        enabler.startTest(true);
-
         resetButton.fire();
 
         TestType testType = tests.getTestType();
+
+        enabler.startTest(true, testType);
 
         switch (testType) {
 
@@ -155,6 +157,7 @@ public class Measurements implements ChangeListener<Boolean> {
                 start();
                 break;
             case TESTPLAN:
+                start();
                 break;
             case CODING:
                 break;
@@ -165,17 +168,22 @@ public class Measurements implements ChangeListener<Boolean> {
 
     private void stopMeasurements() {
 
-        enabler.startTest(false);
+        enabler.startTest(false, tests.getTestType());
 
         stopTimers();
 
         adjustingTime.refreshProgress();
         measuringTime.refreshProgress();
 
+        switchOffSections();
+
+    }
+
+    public void switchOffSections() {
+
         injectorSectionStartToggleButton.setSelected(false);
         highPressureStartToggleButton.setSelected(false);
         testBenchStartToggleButton.setSelected(false);
-        mainSectionStartToggleButton.setSelected(false);
 
         flowModbusWriter.add(ModbusMapFlow.StopMeasurementCycle, true);
 
@@ -204,7 +212,7 @@ public class Measurements implements ChangeListener<Boolean> {
 
     }
 
-    private void start() {
+    public void start() {
 
         if (testBenchStartToggleButton.isDisabled())
             startPressure();
@@ -246,8 +254,8 @@ public class Measurements implements ChangeListener<Boolean> {
             resetButton.fire();
             pressurePreparationTimeline.stop();
 
-            // TODO: Только для Auto/Coding
-            adjustingTimeline.play();
+            if (tests.getTestType() != TESTPLAN)
+                adjustingTimeline.play();
 
         }
 

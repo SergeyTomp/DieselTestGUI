@@ -18,6 +18,9 @@ import javafx.scene.control.MultipleSelectionModel;
 import javafx.scene.control.SingleSelectionModel;
 import javafx.scene.control.TextField;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import static fi.stardex.sisu.util.converters.DataConverter.convertDataToDouble;
 
 public class FlowReport {
@@ -52,17 +55,21 @@ public class FlowReport {
 
     private TextField backFlow4TextField;
 
+    private static final Map<String, FlowTestResult> mapOfAddedTests = new HashMap<>();
+
     public FlowReport(FlowReportController flowReportController, MainSectionController mainSectionController,
                       FlowController flowController, SettingsController settingsController) {
 
         flowTableViewItems = flowReportController.getFlowTableView().getItems();
 
         testsSelectionModel = mainSectionController.getTestsSelectionModel();
-
         deliveryFlowComboBoxSelectionModel = flowController.getDeliveryFlowComboBox().getSelectionModel();
         backFlowComboBoxSelectionModel = flowController.getBackFlowComboBox().getSelectionModel();
+        flowOutputDimensionsSelectionModel = settingsController.getFlowOutputDimensionsComboBox().getSelectionModel();
+
         deliveryRangeLabel = flowController.getDeliveryRangeLabel();
         backFlowRangeLabel = flowController.getBackFlowRangeLabel();
+
         delivery1TextField = flowController.getDelivery1TextField();
         delivery2TextField = flowController.getDelivery2TextField();
         delivery3TextField = flowController.getDelivery3TextField();
@@ -72,8 +79,6 @@ public class FlowReport {
         backFlow3TextField = flowController.getBackFlow3TextField();
         backFlow4TextField = flowController.getBackFlow4TextField();
 
-        flowOutputDimensionsSelectionModel = settingsController.getFlowOutputDimensionsComboBox().getSelectionModel();
-
     }
 
     public void save() {
@@ -81,6 +86,45 @@ public class FlowReport {
         TestName testName = testsSelectionModel.getSelectedItem().getTestName();
 
         Measurement measurement = testName.getMeasurement();
+
+        if (alreadyContainsTest(testName))
+            setNewFlowTestResult(testName, measurement);
+        else
+            addNewFlowTestResult(testName, measurement);
+
+
+    }
+
+    public void delete(int rowIndex) {
+
+        FlowTestResult removedFlowTestResult = flowTableViewItems.remove(rowIndex);
+
+        mapOfAddedTests.remove(removedFlowTestResult.getTestName());
+
+    }
+
+    private void setNewFlowTestResult(TestName testName, Measurement measurement) {
+
+        switch (measurement) {
+
+            case DELIVERY:
+                flowTableViewItems.set(flowTableViewItems.indexOf(mapOfAddedTests.get(testName.toString())), new FlowTestResult(testName.toString(), measurement.name(),
+                        getNominalFlow(deliveryRangeLabel.getText(), deliveryFlowComboBoxSelectionModel.getSelectedItem()),
+                        getFlow(delivery1TextField.getText()), getFlow(delivery2TextField.getText()),
+                        getFlow(delivery3TextField.getText()), getFlow(delivery4TextField.getText()), flowOutputDimensionsSelectionModel.getSelectedItem()));
+                break;
+            case BACK_FLOW:
+                flowTableViewItems.set(flowTableViewItems.indexOf(mapOfAddedTests.get(testName.toString())), new FlowTestResult(testName.toString(), measurement.name(),
+                        getNominalFlow(backFlowRangeLabel.getText(), backFlowComboBoxSelectionModel.getSelectedItem()),
+                        getFlow(backFlow1TextField.getText()), getFlow(backFlow2TextField.getText()),
+                        getFlow(backFlow3TextField.getText()), getFlow(backFlow4TextField.getText()), flowOutputDimensionsSelectionModel.getSelectedItem()));
+                break;
+
+        }
+
+    }
+
+    private void addNewFlowTestResult(TestName testName, Measurement measurement) {
 
         switch (measurement) {
 
@@ -101,9 +145,18 @@ public class FlowReport {
 
     }
 
+    private boolean alreadyContainsTest(TestName testName) {
+
+        return mapOfAddedTests.containsKey(testName.toString());
+
+    }
+
     private double getFlow(String flow) {
 
-        return (flow != null) ? convertDataToDouble(flow) : 0d;
+        if (flow != null)
+            return !flow.isEmpty() ? convertDataToDouble(flow) : 0d;
+        else
+            return 0d;
 
     }
 
@@ -149,6 +202,8 @@ public class FlowReport {
             this.flow4 = new SimpleDoubleProperty(flow4);
 
             extractFromNominalFlow(nominalFlow, dimension);
+
+            mapOfAddedTests.put(testName, this);
 
         }
 

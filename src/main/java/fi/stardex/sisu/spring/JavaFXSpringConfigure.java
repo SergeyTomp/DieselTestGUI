@@ -2,6 +2,7 @@ package fi.stardex.sisu.spring;
 
 import fi.stardex.sisu.charts.TimerTasksManager;
 import fi.stardex.sisu.devices.Devices;
+import fi.stardex.sisu.measurement.Measurements;
 import fi.stardex.sisu.persistence.orm.Manufacturer;
 import fi.stardex.sisu.persistence.repos.InjectorTypeRepository;
 import fi.stardex.sisu.persistence.repos.ManufacturerRepository;
@@ -11,6 +12,7 @@ import fi.stardex.sisu.persistence.repos.cr.TestNamesRepository;
 import fi.stardex.sisu.persistence.repos.cr.VoltAmpereProfileRepository;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
+import fi.stardex.sisu.store.FlowReport;
 import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.RootLayoutController;
@@ -102,7 +104,8 @@ public class JavaFXSpringConfigure {
                                                        CurrentInjectorTestsObtainer currentInjectorTestsObtainer,
                                                        @Lazy ModbusRegisterProcessor flowModbusWriter, Tests tests,
                                                        HighPressureSectionController highPressureSectionController,
-                                                       Preferences rootPrefs) {
+                                                       Preferences rootPrefs, @Lazy Measurements measurements,
+                                                       @Lazy FlowReport flowReport) {
         MainSectionController mainSectionController = (MainSectionController) mainSection().getController();
         mainSectionController.setEnabler(enabler);
         mainSectionController.setCurrentManufacturerObtainer(currentManufacturerObtainer);
@@ -122,6 +125,8 @@ public class JavaFXSpringConfigure {
         mainSectionController.setTests(tests);
         mainSectionController.setI18N(i18N);
         mainSectionController.setRootPrefs(rootPrefs);
+        mainSectionController.setMeasurements(measurements);
+        mainSectionController.setFlowReport(flowReport);
         return mainSectionController;
     }
 
@@ -213,8 +218,10 @@ public class JavaFXSpringConfigure {
 
     @Bean
     @Autowired
-    public FlowReportController flowReportController(ReportController reportController) {
-        return reportController.getFlowReportController();
+    public FlowReportController flowReportController(ReportController reportController, @Lazy FlowReport flowReport) {
+        FlowReportController flowReportController = reportController.getFlowReportController();
+        flowReportController.setFlowReport(flowReport);
+        return flowReportController;
     }
 
     @Bean

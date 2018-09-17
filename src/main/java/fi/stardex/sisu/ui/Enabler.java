@@ -152,11 +152,22 @@ public class Enabler {
 
     }
 
-    public Enabler startTest(boolean isStarted) {
+    public Enabler startTest(boolean isStarted, TestType testType) {
 
-        enableMainSectionStartToggleButton(isStarted);
+        if (isStarted)
+            enableMainSectionStartToggleButton(true);
 
-        speedComboBox.setDisable(isStarted);
+        switch (testType) {
+            case AUTO:
+                speedComboBox.setDisable(isStarted);
+                hideUpDownButtons(isStarted);
+                testListView.setDisable(isStarted);
+                break;
+            case TESTPLAN:
+                break;
+            case CODING:
+                break;
+        }
 
         versionComboBox.setDisable(isStarted);
 
@@ -164,12 +175,9 @@ public class Enabler {
 
         disableAllTestsRadioButtons(isStarted);
 
-        hideUpDownButtons(isStarted);
-
         manufacturerListView.setDisable(isStarted);
-        modelListView.setDisable(isStarted);
 
-        testListView.setDisable(isStarted);
+        modelListView.setDisable(isStarted);
 
         return this;
 

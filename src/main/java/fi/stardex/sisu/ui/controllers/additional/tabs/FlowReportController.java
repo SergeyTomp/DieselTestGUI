@@ -1,7 +1,10 @@
 package fi.stardex.sisu.ui.controllers.additional.tabs;
 
+import fi.stardex.sisu.store.FlowReport;
 import fi.stardex.sisu.store.FlowReport.FlowTestResult;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.TableCell;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -35,6 +38,21 @@ public class FlowReportController {
     @FXML
     private TableColumn<FlowTestResult, Double> flow4Column;
 
+    @FXML
+    private TableColumn<FlowTestResult, Boolean> deleteColumn;
+
+    private static final String CELL_COLOR_DEFAULT = "-fx-text-fill: #bf8248;";
+
+    private static final String CELL_COLOR_ORANGE = "-fx-text-fill: orange;";
+
+    private static final String CELL_COLOR_RED = "-fx-text-fill: red;";
+
+    private FlowReport flowReport;
+
+    public void setFlowReport(FlowReport flowReport) {
+        this.flowReport = flowReport;
+    }
+
     public TableView<FlowTestResult> getFlowTableView() {
         return flowTableView;
     }
@@ -55,11 +73,14 @@ public class FlowReportController {
         flow2Column.setCellValueFactory(new PropertyValueFactory<>("flow2"));
         flow3Column.setCellValueFactory(new PropertyValueFactory<>("flow3"));
         flow4Column.setCellValueFactory(new PropertyValueFactory<>("flow4"));
+        deleteColumn.setCellValueFactory(param -> new SimpleBooleanProperty());
 
         setCellFactory(flow1Column);
         setCellFactory(flow2Column);
         setCellFactory(flow3Column);
         setCellFactory(flow4Column);
+
+        deleteColumn.setCellFactory(tableColumn -> new ButtonCell());
 
     }
 
@@ -112,14 +133,37 @@ public class FlowReportController {
         Range range = new Range();
 
         if (cellValue == 0d)
-            return "-fx-text-fill: #bf8248;"; // default color
+            return CELL_COLOR_DEFAULT;
         else if (range.inAcceptableRange())
-            return "-fx-text-fill: orange;"; // orange color
+            return CELL_COLOR_ORANGE;
         else if (range.beyondAcceptableRange())
-            return "-fx-text-fill: red;"; // red color
+            return CELL_COLOR_RED;
+        else
+            throw new RuntimeException("Invalid cell value");
 
+    }
 
-        return null;
+    private class ButtonCell extends TableCell<FlowTestResult, Boolean> {
+
+        private final Button deleteButton = new Button("Delete");
+
+        ButtonCell() {
+
+            deleteButton.setOnAction(event -> flowReport.delete(getTableRow().getIndex()));
+
+        }
+
+        @Override
+        protected void updateItem(Boolean item, boolean empty) {
+
+            super.updateItem(item, empty);
+
+            if (item == null || empty)
+                setGraphic(null);
+            else
+                setGraphic(deleteButton);
+
+        }
 
     }
 
