@@ -3,6 +3,9 @@ package fi.stardex.sisu.ui.controllers.dialogs;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorType;
 import fi.stardex.sisu.persistence.orm.cr.inj.VoltAmpereProfile;
 import fi.stardex.sisu.persistence.repos.cr.VoltAmpereProfileRepository;
+import fi.stardex.sisu.util.spinners.SpinnerManager;
+import fi.stardex.sisu.util.spinners.SpinnerValueObtainer;
+import fi.stardex.sisu.util.tooltips.CustomTooltip;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
@@ -106,6 +109,13 @@ public class NewEditVOAPDialogController {
                                                                                         BOOST_U_SPINNER_INIT,
                                                                                         BOOST_U_SPINNER_STEP));
 
+        SpinnerManager.setupSpinner(firstWSpinner, FIRST_W_SPINNER_INIT, FIRST_W_SPINNER_MIN, FIRST_W_SPINNER_MAX, new CustomTooltip(), new SpinnerValueObtainer(FIRST_W_SPINNER_INIT));
+        SpinnerManager.setupSpinner(boostISpinner, BOOST_I_SPINNER_INIT, BOOST_I_SPINNER_FAKE, new CustomTooltip(), new SpinnerValueObtainer(BOOST_I_SPINNER_INIT));
+        SpinnerManager.setupSpinner(firstISpinner, FIRST_I_SPINNER_INIT, FIRST_I_SPINNER_FAKE, new CustomTooltip(), new SpinnerValueObtainer(FIRST_I_SPINNER_INIT));
+        SpinnerManager.setupSpinner(secondISpinner, FIRST_I_SPINNER_INIT, SECOND_I_SPINNER_FAKE, new CustomTooltip(), new SpinnerValueObtainer(FIRST_I_SPINNER_INIT));
+        SpinnerManager.setupSpinner(batteryUSpinner, BATTERY_U_SPINNER_INIT, BATTERY_U_SPINNER_MIN, BATTERY_U_SPINNER_MAX, new CustomTooltip(), new SpinnerValueObtainer(BATTERY_U_SPINNER_INIT));
+        SpinnerManager.setupSpinner(negativeUSpinner, NEGATIVE_U_SPINNER_INIT, NEGATIVE_U_SPINNER_MIN, NEGATIVE_U_SPINNER_MAX, new CustomTooltip(), new SpinnerValueObtainer(NEGATIVE_U_SPINNER_INIT));
+        SpinnerManager.setupSpinner(boostUSpinner, BOOST_U_SPINNER_INIT, BOOST_U_SPINNER_MIN, BOOST_U_SPINNER_MAX, new CustomTooltip(), new SpinnerValueObtainer(BOOST_U_SPINNER_INIT));
     }
 
     private void checkAndSaveVOAP() {

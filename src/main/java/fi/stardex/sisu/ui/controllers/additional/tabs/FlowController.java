@@ -2,6 +2,7 @@ package fi.stardex.sisu.ui.controllers.additional.tabs;
 
 import fi.stardex.sisu.combobox_values.FlowUnits;
 import fi.stardex.sisu.ui.controllers.additional.BeakerController;
+import fi.stardex.sisu.util.InputController;
 import fi.stardex.sisu.util.i18n.I18N;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -9,7 +10,6 @@ import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 
 import javax.annotation.PostConstruct;
@@ -302,14 +302,14 @@ public class FlowController {
 
         Arrays.asList(deliveryFlowComboBox, backFlowComboBox).forEach(this::setupComboBox);
 
-        blockTextInputToDeliveryBackFlowTextFields(delivery1TextField);
-        blockTextInputToDeliveryBackFlowTextFields(delivery2TextField);
-        blockTextInputToDeliveryBackFlowTextFields(delivery3TextField);
-        blockTextInputToDeliveryBackFlowTextFields(delivery4TextField);
-        blockTextInputToDeliveryBackFlowTextFields(backFlow1TextField);
-        blockTextInputToDeliveryBackFlowTextFields(backFlow2TextField);
-        blockTextInputToDeliveryBackFlowTextFields(backFlow3TextField);
-        blockTextInputToDeliveryBackFlowTextFields(backFlow4TextField);
+        InputController.blockTextInputToNumberFields(delivery1TextField, TEXT_FIELD_MAX_LENGTH);
+        InputController.blockTextInputToNumberFields(delivery2TextField, TEXT_FIELD_MAX_LENGTH);
+        InputController.blockTextInputToNumberFields(delivery3TextField, TEXT_FIELD_MAX_LENGTH);
+        InputController.blockTextInputToNumberFields(delivery4TextField, TEXT_FIELD_MAX_LENGTH);
+        InputController.blockTextInputToNumberFields(backFlow1TextField, TEXT_FIELD_MAX_LENGTH);
+        InputController.blockTextInputToNumberFields(backFlow2TextField, TEXT_FIELD_MAX_LENGTH);
+        InputController.blockTextInputToNumberFields(backFlow3TextField, TEXT_FIELD_MAX_LENGTH);
+        InputController.blockTextInputToNumberFields(backFlow4TextField, TEXT_FIELD_MAX_LENGTH);
 
     }
 
@@ -330,31 +330,6 @@ public class FlowController {
         deliveryRangeLabelProperty.bind(deliveryRangeLabel.textProperty());
 
         backFlowRangeLabelProperty.bind(backFlowRangeLabel.textProperty());
-
-    }
-
-    private void blockTextInputToDeliveryBackFlowTextFields(TextField field) {
-
-        field.addEventFilter(KeyEvent.KEY_TYPED, e -> {
-
-            TextField txt_TextField = (TextField) e.getSource();
-
-            if (txt_TextField != null && txt_TextField.getText() != null) {
-                if (txt_TextField.getText().length() >= TEXT_FIELD_MAX_LENGTH) {
-                    e.consume();
-                }
-                if (e.getCharacter().matches("[0-9.]")) {
-                    if (txt_TextField.getText().contains(".") && e.getCharacter().matches("[.]")) {
-                        e.consume();
-                    } else if (txt_TextField.getText().length() == 0 && e.getCharacter().matches("[.]")) {
-                        e.consume();
-                    }
-                } else {
-                    e.consume();
-                }
-            }
-
-        });
 
     }
 

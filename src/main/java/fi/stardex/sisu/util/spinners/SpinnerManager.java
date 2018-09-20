@@ -1,8 +1,8 @@
 package fi.stardex.sisu.util.spinners;
 
+import fi.stardex.sisu.util.InputController;
 import fi.stardex.sisu.util.tooltips.CustomTooltip;
 import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.geometry.Point2D;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
@@ -26,21 +26,8 @@ public class SpinnerManager {
 
     public static void setupSpinner(Spinner<Double> spinner, double initValue, double fake_value, CustomTooltip tooltip, SpinnerValueObtainer obtainer) {
 
-        spinner.getEditor().addEventFilter(KeyEvent.KEY_TYPED, e -> {
-            TextField txt_TextField = (TextField) e.getSource();
-            if (txt_TextField.getText().length() >= MAX_LENGTH) {
-                e.consume();
-            }
-            if (e.getCharacter().matches("[0-9.]")) {
-                if (txt_TextField.getText().contains(".") && e.getCharacter().matches("[.]")) {
-                    e.consume();
-                } else if (txt_TextField.getText().length() == 0 && e.getCharacter().matches("[.]")) {
-                    e.consume();
-                }
-            } else {
-                e.consume();
-            }
-        });
+
+        InputController.blockTextInputToSpinners(spinner, MAX_LENGTH);
 
         StringConverter<Double> converter = spinner.getValueFactory().getConverter();
 
@@ -104,15 +91,7 @@ public class SpinnerManager {
 
     public static void setupSpinner(Spinner<Integer> spinner, int initValue, int minValue, int maxValue, CustomTooltip tooltip, SpinnerValueObtainer obtainer) {
 
-        spinner.getEditor().addEventFilter(KeyEvent.KEY_TYPED, e -> {
-            TextField txt_TextField = (TextField) e.getSource();
-            if (txt_TextField.getText().length() >= MAX_LENGTH) {
-                e.consume();
-            }
-            if (!e.getCharacter().matches("[0-9]")) {
-                e.consume();
-            }
-        });
+        InputController.blockTextInputToSpinners(spinner, MAX_LENGTH);
 
         StringConverter<Integer> converter = spinner.getValueFactory().getConverter();
 

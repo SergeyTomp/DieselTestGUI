@@ -16,6 +16,7 @@ public class SisuApplication extends AbstractJavaFxApplicationSupport {
     @Override
     public void start(Stage primaryStage) {
 
+
         primaryStage.setTitle("SISU");
 
         ViewHolder rootLayoutViewHolder = context.getBean("rootLayout", ViewHolder.class);

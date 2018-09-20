@@ -2,7 +2,11 @@ package fi.stardex.sisu.ui.controllers.additional.tabs;
 
 import fi.stardex.sisu.ui.controllers.additional.AdditionalSectionController;
 import fi.stardex.sisu.util.DelayCalculator;
+import fi.stardex.sisu.util.InputController;
 import fi.stardex.sisu.util.i18n.I18N;
+import fi.stardex.sisu.util.spinners.SpinnerManager;
+import fi.stardex.sisu.util.spinners.SpinnerValueObtainer;
+import fi.stardex.sisu.util.tooltips.CustomTooltip;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -17,6 +21,8 @@ import javafx.scene.layout.GridPane;
 
 import javax.annotation.PostConstruct;
 import java.util.regex.Pattern;
+
+import static fi.stardex.sisu.util.SpinnerDefaults.*;
 
 public class DelayController {
 
@@ -115,11 +121,18 @@ public class DelayController {
 
         resetDelayButton.setOnAction(event -> clearDelayResults());
 
-        sensitivitySpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0.1, 3.5, 1.7, 0.1));
+        sensitivitySpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(SENSITIVITY_SPINNER_MIN,
+                                                                                            SENSITIVITY_SPINNER_MAX,
+                                                                                            SENSITIVITY_SPINNER_INIT,
+                                                                                            SENSITIVITY_SPINNER_STEP));
+
+        SpinnerManager.setupSpinner(sensitivitySpinner,
+                                    SENSITIVITY_SPINNER_INIT,
+                                    SENSITIVITY_SPINNER_FAKE,
+                                    new CustomTooltip(),
+                                    new SpinnerValueObtainer(SENSITIVITY_SPINNER_INIT));
 
         isTabDelayShowing.bind(additionalSectionController.getTabDelay().selectedProperty());
-
-
 
     }
 

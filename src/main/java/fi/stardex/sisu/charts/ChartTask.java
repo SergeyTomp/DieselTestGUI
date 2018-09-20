@@ -153,6 +153,7 @@ public abstract class ChartTask extends TimerTask {
         double[] resultData = getFilteredResultData(resultDataList);
         addDataToChart(resultData, chartData);
 
+
     }
 
     @Override
@@ -249,6 +250,7 @@ public abstract class ChartTask extends TimerTask {
         }
 
         Platform.runLater(() -> addData(resultDataList, getData()));
+
 
     }
 

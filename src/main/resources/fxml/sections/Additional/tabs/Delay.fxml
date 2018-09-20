@@ -79,7 +79,7 @@
                         <Insets right="20.0" />
                     </GridPane.margin>
                 </Label>
-                <Spinner fx:id="sensitivitySpinner" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                <Spinner fx:id="sensitivitySpinner" editable="true" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
                     <GridPane.margin>
                         <Insets left="20.0" />
                     </GridPane.margin>
