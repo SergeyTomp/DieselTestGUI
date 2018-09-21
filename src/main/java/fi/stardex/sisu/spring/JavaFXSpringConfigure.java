@@ -33,7 +33,6 @@ import fi.stardex.sisu.ui.controllers.main.MainSectionController;
 import fi.stardex.sisu.util.DelayCalculator;
 import fi.stardex.sisu.util.VisualUtils;
 import fi.stardex.sisu.util.enums.BeakerType;
-import fi.stardex.sisu.util.enums.Tests;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.i18n.UTF8Control;
 import fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer;
@@ -102,7 +101,7 @@ public class JavaFXSpringConfigure {
                                                        InjectorsRepository injectorsRepository,
                                                        InjectorTestRepository injectorTestRepository,
                                                        CurrentInjectorTestsObtainer currentInjectorTestsObtainer,
-                                                       @Lazy ModbusRegisterProcessor flowModbusWriter, Tests tests,
+                                                       @Lazy ModbusRegisterProcessor flowModbusWriter,
                                                        HighPressureSectionController highPressureSectionController,
                                                        Preferences rootPrefs, @Lazy Measurements measurements,
                                                        @Lazy FlowReport flowReport) {
@@ -122,7 +121,6 @@ public class JavaFXSpringConfigure {
         mainSectionController.setCurrentInjectorTestsObtainer(currentInjectorTestsObtainer);
         mainSectionController.setFlowModbusWriter(flowModbusWriter);
         mainSectionController.setHighPressureSectionController(highPressureSectionController);
-        mainSectionController.setTests(tests);
         mainSectionController.setI18N(i18N);
         mainSectionController.setRootPrefs(rootPrefs);
         mainSectionController.setMeasurements(measurements);

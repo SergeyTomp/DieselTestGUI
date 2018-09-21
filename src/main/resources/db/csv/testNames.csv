@@ -1,34 +1,34 @@
-id,test_name,measurement
-1,Back flow pressure levelling,VISUAL
-2,Static Leak,NO
-3,Air Cleaning,VISUAL
-4,Back Flow,BACK_FLOW
-5,Back Flow 2,BACK_FLOW
-6,Maximum Load,DELIVERY
-7,Emission Point,DELIVERY
-8,Emission Point 2,DELIVERY
-9,Emission Point 3,DELIVERY
-10,Part Load,DELIVERY
-11,Pre-injection,DELIVERY
-12,Pre-injection 2,DELIVERY
-13,Idle,DELIVERY
-14,Test Point 01,DELIVERY
-15,Test Point 02,DELIVERY
-16,Test Point 03,DELIVERY
-17,Test Point 04,DELIVERY
-18,Test Point 05,DELIVERY
-19,Test Point 06,DELIVERY
-20,Test Point 07,DELIVERY
-21,Test Point 08,DELIVERY
-22,Test Point 09,DELIVERY
-23,Test Point 10,DELIVERY
-24,Test Point 11,DELIVERY
-25,Test Point 12,DELIVERY
-26,Test Point 13,DELIVERY
-27,Test Point 14,DELIVERY
-28,Test Point 15,DELIVERY
-29,Emission Point 4,DELIVERY
-30,ISA Detection,DELIVERY
-31,Static Leak 2,NO
-32,Maximum Load 2,DELIVERY
-33,Pre-injection 3,DELIVERY
+id,test_name,measurement,display_order
+1,Back flow pressure levelling,VISUAL,1
+2,Static Leak,NO,2
+3,Air Cleaning,VISUAL,4
+4,Back Flow,BACK_FLOW,6
+5,Back Flow 2,BACK_FLOW,7
+6,Maximum Load,DELIVERY,8
+7,Emission Point,DELIVERY,10
+8,Emission Point 2,DELIVERY,11
+9,Emission Point 3,DELIVERY,12
+10,Part Load,DELIVERY,14
+11,Pre-injection,DELIVERY,15
+12,Pre-injection 2,DELIVERY,16
+13,Idle,DELIVERY,18
+14,Test Point 01,DELIVERY,19
+15,Test Point 02,DELIVERY,20
+16,Test Point 03,DELIVERY,21
+17,Test Point 04,DELIVERY,22
+18,Test Point 05,DELIVERY,23
+19,Test Point 06,DELIVERY,24
+20,Test Point 07,DELIVERY,25
+21,Test Point 08,DELIVERY,26
+22,Test Point 09,DELIVERY,27
+23,Test Point 10,DELIVERY,28
+24,Test Point 11,DELIVERY,29
+25,Test Point 12,DELIVERY,30
+26,Test Point 13,DELIVERY,31
+27,Test Point 14,DELIVERY,32
+28,Test Point 15,DELIVERY,33
+29,Emission Point 4,DELIVERY,13
+30,ISA Detection,DELIVERY,5
+31,Static Leak 2,NO,3
+32,Maximum Load 2,DELIVERY,9
+33,Pre-injection 3,DELIVERY,17

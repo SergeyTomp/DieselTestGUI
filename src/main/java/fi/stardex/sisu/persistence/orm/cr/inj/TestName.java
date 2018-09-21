@@ -1,7 +1,7 @@
 package fi.stardex.sisu.persistence.orm.cr.inj;
 
 import fi.stardex.sisu.util.enums.Measurement;
-import org.springframework.lang.*;
+import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
 import java.util.LinkedList;
@@ -25,6 +25,9 @@ public class TestName {
     @Enumerated(EnumType.STRING)
     private Measurement measurement;
 
+    @Column(name = "display_order", unique = true, nullable = false)
+    private Integer displayOrder;
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "testName", cascade = CascadeType.ALL)
     private List<InjectorTest> injectorTests = new LinkedList<>();
 
@@ -34,6 +37,10 @@ public class TestName {
 
     public Integer getId() {
         return id;
+    }
+
+    public Integer getDisplayOrder() {
+        return displayOrder;
     }
 
     @Override

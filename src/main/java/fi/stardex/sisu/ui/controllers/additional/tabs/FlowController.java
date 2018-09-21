@@ -1,6 +1,5 @@
 package fi.stardex.sisu.ui.controllers.additional.tabs;
 
-import fi.stardex.sisu.combobox_values.FlowUnits;
 import fi.stardex.sisu.ui.controllers.additional.BeakerController;
 import fi.stardex.sisu.util.InputController;
 import fi.stardex.sisu.util.i18n.I18N;
@@ -13,13 +12,18 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 
 import javax.annotation.PostConstruct;
-import java.util.Arrays;
+
+import static fi.stardex.sisu.util.FlowUnitObtainer.*;
 
 public class FlowController {
 
-    @FXML public Label backFlowLabel;
+    @FXML private Label backFlowLabel;
 
-    @FXML public Label deliveryLabel;
+    @FXML private Label deliveryLabel;
+
+    @FXML private Label ml_Min_DeliveryLabel;
+
+    @FXML private Label ml_Min_BackFlowLabel;
 
     @FXML private Label deliveryRangeLabel;
 
@@ -127,6 +131,14 @@ public class FlowController {
 
     public Label getBackFlowRangeLabel() {
         return backFlowRangeLabel;
+    }
+
+    public Label getMl_Min_DeliveryLabel() {
+        return ml_Min_DeliveryLabel;
+    }
+
+    public Label getMl_Min_BackFlowLabel() {
+        return ml_Min_BackFlowLabel;
     }
 
     public ObjectProperty<String> deliveryRangeLabelPropertyProperty() {
@@ -300,7 +312,8 @@ public class FlowController {
 
         bindProperties();
 
-        Arrays.asList(deliveryFlowComboBox, backFlowComboBox).forEach(this::setupComboBox);
+        setupDeliveryFlowComboBox();
+        setupBackFlowComboBox();
 
         InputController.blockTextInputToNumberFields(delivery1TextField, TEXT_FIELD_MAX_LENGTH);
         InputController.blockTextInputToNumberFields(delivery2TextField, TEXT_FIELD_MAX_LENGTH);
@@ -313,16 +326,25 @@ public class FlowController {
 
     }
 
+    private void setupDeliveryFlowComboBox() {
+
+        deliveryFlowComboBox.getItems().setAll(MILLILITRE_PER_MINUTE, LITRE_PER_HOUR, MILLILITRE_PER_100RPM, MILLILITRE_PER_200RPM, MILLILITRE_PER_1000RPM);
+        createDeliveryFlowUnitBinding(deliveryFlowComboBox);
+        deliveryFlowComboBox.getSelectionModel().selectFirst();
+
+    }
+
+    private void setupBackFlowComboBox() {
+
+        backFlowComboBox.getItems().setAll(MILLILITRE_PER_MINUTE, LITRE_PER_HOUR, MILLILITRE_PER_100RPM, MILLILITRE_PER_200RPM, MILLILITRE_PER_1000RPM);
+        createBackFlowUnitBinding(backFlowComboBox);
+        backFlowComboBox.getSelectionModel().selectFirst();
+
+    }
+
     private void bindingI18N() {
         deliveryLabel.textProperty().bind(i18N.createStringBinding("h4.flow.label.delivery"));
         backFlowLabel.textProperty().bind(i18N.createStringBinding("h4.flow.label.backflow"));
-    }
-
-    private void setupComboBox(ComboBox<String> comboBox) {
-
-        comboBox.getItems().setAll(FlowUnits.getMapOfFlowUnits().keySet());
-        comboBox.getSelectionModel().selectFirst();
-
     }
 
     private void bindProperties() {

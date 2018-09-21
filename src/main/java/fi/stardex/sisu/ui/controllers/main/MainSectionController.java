@@ -19,7 +19,6 @@ import fi.stardex.sisu.ui.controllers.dialogs.ManufacturerMenuDialogController;
 import fi.stardex.sisu.ui.controllers.dialogs.NewEditInjectorDialogController;
 import fi.stardex.sisu.ui.controllers.dialogs.NewEditTestDialogController;
 import fi.stardex.sisu.util.enums.Measurement;
-import fi.stardex.sisu.util.enums.Tests;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer;
 import fi.stardex.sisu.util.obtainers.CurrentInjectorTestsObtainer;
@@ -41,6 +40,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
@@ -60,11 +60,15 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.prefs.Preferences;
+import java.util.stream.Collectors;
 
 import static fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest.getChangedInjectorTest;
 import static fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest.getListOfNonIncludedTests;
 import static fi.stardex.sisu.util.SpinnerDefaults.*;
 import static fi.stardex.sisu.util.converters.DataConverter.round;
+import static fi.stardex.sisu.util.enums.Measurement.DELIVERY;
+import static fi.stardex.sisu.util.enums.Measurement.VISUAL;
+import static fi.stardex.sisu.util.enums.Tests.*;
 import static fi.stardex.sisu.util.enums.Tests.TestType.*;
 
 public class MainSectionController {
@@ -238,8 +242,6 @@ public class MainSectionController {
 
     private FilteredList<Model> filteredModelList;
 
-    private Tests tests;
-
     private I18N i18N;
 
     private boolean startLight;
@@ -302,10 +304,6 @@ public class MainSectionController {
 
     public TimeProgressBar getMeasuringTime() {
         return measuringTime;
-    }
-
-    public Tests getTests() {
-        return tests;
     }
 
     public ToggleButton getStartToggleButton() {
@@ -408,10 +406,6 @@ public class MainSectionController {
         this.highPressureSectionController = highPressureSectionController;
     }
 
-    public void setTests(Tests tests) {
-        this.tests = tests;
-    }
-
     public void setI18N(I18N i18N) {
         this.i18N = i18N;
     }
@@ -504,25 +498,7 @@ public class MainSectionController {
 
     }
 
-    public void fillTestListView() {
-
-        setupTaskExecution();
-
-    }
-
-    public void refreshTestListView() {
-
-        if (currentInjectorObtainer.getInjector() == null)
-            return;
-
-        if (currentInjectorTestsObtainer.getInjectorTests() == null)
-            setupTaskExecution();
-        else
-            pointToFirstTest();
-
-    }
-
-    private void setupTaskExecution() {
+    private void fetchTestsFromRepository() {
 
         ObjectProperty<List<InjectorTest>> property = new SimpleObjectProperty<>();
 
@@ -538,9 +514,14 @@ public class MainSectionController {
         property.addListener((observable, oldValue, newValue) -> {
 
             if (newValue != null) {
+
                 currentInjectorTestsObtainer.setInjectorTests(newValue);
-                testListViewItems.setAll(currentInjectorTestsObtainer.getInjectorTests());
-                Platform.runLater(this::pointToFirstTest);
+
+                if (!checkInjectorForCoding(currentInjectorObtainer.getInjector()) && codingTestRadioButton.isSelected())
+                    Platform.runLater(() -> autoTestRadioButton.setSelected(true));
+                else
+                    setTests();
+
             }
 
         });
@@ -553,6 +534,38 @@ public class MainSectionController {
 
         testsSelectionModel.select(0);
         testListView.scrollTo(0);
+
+    }
+
+    private void setTests() {
+
+        TestType test = getTestType();
+
+        switch (test) {
+
+            case AUTO:
+                testListView.setCellFactory(CheckBoxListCell.forListView(InjectorTest::includedProperty));
+                testListViewItems.setAll(currentInjectorTestsObtainer.getInjectorTests());
+                testListViewItems.sort((Comparator.comparingInt(injectorTest -> injectorTest.getTestName().getId())));
+                Platform.runLater(this::pointToFirstTest);
+                break;
+            case TESTPLAN:
+                testListView.setCellFactory(null);
+                testListViewItems.setAll(currentInjectorTestsObtainer.getInjectorTests());
+                testListViewItems.sort((Comparator.comparingInt(injectorTest -> injectorTest.getTestName().getId())));
+                Platform.runLater(this::pointToFirstTest);
+                break;
+            case CODING:
+                testListView.setCellFactory(null);
+                testListViewItems.setAll(currentInjectorTestsObtainer.getInjectorTests()
+                        .stream()
+                        .filter(injectorTest -> injectorTest.getTestName().getMeasurement() == DELIVERY || injectorTest.getTestName().getMeasurement() == VISUAL)
+                        .sorted(Comparator.comparingInt(injectorTest -> injectorTest.getTestName().getDisplayOrder()))
+                        .collect(Collectors.toList()));
+                Platform.runLater(this::pointToFirstTest);
+                break;
+
+        }
 
     }
 
@@ -963,16 +976,19 @@ public class MainSectionController {
             if (newValue == null) {
                 currentInjectorObtainer.setInjector(null);
                 currentInjectorTestsObtainer.setInjectorTests(null);
-                enabler.selectInjector(false).selectInjectorType(null);
+                enabler.showInjectorTests(false).selectInjectorType(null).enableCoding(false);
+                testListViewItems.clear();
                 return;
             }
 
-            Injector inj = (Injector) newValue;
-            currentVoltAmpereProfile = injectorsRepository.findByInjectorCode(inj.getInjectorCode()).getVoltAmpereProfile();
-            inj.setVoltAmpereProfile(currentVoltAmpereProfile);
-            currentInjectorObtainer.setInjector(inj);
+            Injector injector = (Injector) newValue;
+            currentVoltAmpereProfile = injectorsRepository.findByInjectorCode(injector.getInjectorCode()).getVoltAmpereProfile();
+            injector.setVoltAmpereProfile(currentVoltAmpereProfile);
+            currentInjectorObtainer.setInjector(injector);
 
-            enabler.selectInjector(true).selectInjectorType(currentVoltAmpereProfile.getInjectorType().getInjectorType());
+            fetchTestsFromRepository();
+
+            enabler.showInjectorTests(true).selectInjectorType(currentVoltAmpereProfile.getInjectorType().getInjectorType()).enableCoding(checkInjectorForCoding(injector));
 
             Double firstI = currentVoltAmpereProfile.getFirstI();
             Double secondI = currentVoltAmpereProfile.getSecondI();
@@ -1064,12 +1080,13 @@ public class MainSectionController {
 
         testsToggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
 
-            if (newValue == autoTestRadioButton)
-                tests.setTestType(AUTO);
-            else {
+            if (newValue == autoTestRadioButton) {
+                setTestType(AUTO);
+                setTests();
+            } else {
+                setTestType(newValue == testPlanTestRadioButton ? TESTPLAN : CODING);
                 returnToDefaultTestListAuto();
-                testListViewItems.sort((Comparator.comparingInt(injectorTest -> injectorTest.getTestName().getId())));
-                tests.setTestType((newValue == testPlanTestRadioButton) ? TESTPLAN : CODING);
+                setTests();
                 enabler.enableMainSectionStartToggleButton(true);
             }
 
@@ -1175,6 +1192,18 @@ public class MainSectionController {
         }
 
         isAnotherAutoOrNewTestList = false;
+
+    }
+
+    private boolean checkInjectorForCoding(Injector injector) {
+
+        String manufacturerName = currentManufacturerObtainer.getCurrentManufacturer().getManufacturerName();
+        int codetype = injector.getCodetype();
+
+        if (manufacturerName.equals("Bosch") || manufacturerName.equals("Denso") || manufacturerName.equals("Delphi"))
+            return codetype != 0;
+        else
+            return false;
 
     }
 

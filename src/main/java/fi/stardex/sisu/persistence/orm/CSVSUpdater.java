@@ -169,17 +169,15 @@ public class CSVSUpdater {
             if (!customInjectorsList.isEmpty()) {
                 customInjectorsList.forEach(injector -> {
                     try {
-                        String codetypeValue = (injector.getCodetype() == null) ? "" : injector.getCodetype();
+                        String codetypeValue = injector.getCodetype().toString();
                         String calibrationIdValue = (injector.getCalibrationId() == null) ? "" : injector.getCalibrationId();
-                        String checksumMValue = (injector.getChecksumM() == null) ? "" : injector.getChecksumM().toString();
-                        String kCoefficientValue = (injector.getkCoefficient() == null) ? "" : injector.getkCoefficient().toString();
+                        String coefficient = injector.getCoefficient().toString();
                         writer.append(injector.getInjectorCode()).append(COMMA_DELIMITER)
                                 .append(injector.getManufacturer().toString()).append(COMMA_DELIMITER)
                                 .append(injector.getVoltAmpereProfile().toString()).append(COMMA_DELIMITER)
                                 .append(codetypeValue).append(COMMA_DELIMITER)
                                 .append(calibrationIdValue).append(COMMA_DELIMITER)
-                                .append(checksumMValue).append(COMMA_DELIMITER)
-                                .append(kCoefficientValue).append(COMMA_DELIMITER)
+                                .append(coefficient).append(COMMA_DELIMITER)
                                 .append(injector.isCustom().toString()).append(NEW_LINE_SEPARATOR);
                     } catch (IOException ex) {
                         logger.error("IO Exception occured!", ex);

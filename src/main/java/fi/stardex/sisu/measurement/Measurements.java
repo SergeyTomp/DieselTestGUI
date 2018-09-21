@@ -11,7 +11,6 @@ import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.cr.TestBenchSectionController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
-import fi.stardex.sisu.util.enums.Tests;
 import fi.stardex.sisu.util.enums.Tests.TestType;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -25,6 +24,7 @@ import javafx.util.Duration;
 import javax.annotation.PostConstruct;
 
 import static fi.stardex.sisu.util.enums.Tests.TestType.TESTPLAN;
+import static fi.stardex.sisu.util.enums.Tests.getTestType;
 
 public class Measurements implements ChangeListener<Boolean> {
 
@@ -39,8 +39,6 @@ public class Measurements implements ChangeListener<Boolean> {
     private Enabler enabler;
 
     private FlowReport flowReport;
-
-    private Tests tests;
 
     private Button resetButton;
 
@@ -81,9 +79,7 @@ public class Measurements implements ChangeListener<Boolean> {
                         HighPressureSectionController highPressureSectionController,
                         InjectorSectionController injectorSectionController,
                         FlowReportController flowReportController,
-                        Tests tests, Enabler enabler, FlowReport flowReport) {
-
-        this.tests = tests;
+                        Enabler enabler, FlowReport flowReport) {
 
         this.enabler = enabler;
 
@@ -145,9 +141,9 @@ public class Measurements implements ChangeListener<Boolean> {
 
         resetButton.fire();
 
-        TestType testType = tests.getTestType();
+        TestType testType = getTestType();
 
-        enabler.startTest(true, testType);
+        enabler.startTest(true);
 
         switch (testType) {
 
@@ -168,7 +164,7 @@ public class Measurements implements ChangeListener<Boolean> {
 
     private void stopMeasurements() {
 
-        enabler.startTest(false, tests.getTestType());
+        enabler.startTest(false);
 
         stopTimers();
 
@@ -254,7 +250,7 @@ public class Measurements implements ChangeListener<Boolean> {
             resetButton.fire();
             pressurePreparationTimeline.stop();
 
-            if (tests.getTestType() != TESTPLAN)
+            if (getTestType() != TESTPLAN)
                 adjustingTimeline.play();
 
         }

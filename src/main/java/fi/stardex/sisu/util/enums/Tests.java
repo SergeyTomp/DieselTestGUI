@@ -4,7 +4,7 @@ import static fi.stardex.sisu.util.enums.Tests.TestType.*;
 
 public class Tests {
 
-    private TestType test = AUTO;
+    private static TestType test = AUTO;
 
     public enum TestType {
 
@@ -12,11 +12,11 @@ public class Tests {
 
     }
 
-    public TestType getTestType() {
+    public static TestType getTestType() {
         return test;
     }
 
-    public void setTestType(TestType test) {
-        this.test = test;
+    public static void setTestType(TestType newTest) {
+        test = newTest;
     }
 }

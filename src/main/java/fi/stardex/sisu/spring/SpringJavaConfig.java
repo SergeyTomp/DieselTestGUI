@@ -36,7 +36,6 @@ import fi.stardex.sisu.ui.updaters.*;
 import fi.stardex.sisu.util.DelayCalculator;
 import fi.stardex.sisu.util.VisualUtils;
 import fi.stardex.sisu.util.converters.FlowResolver;
-import fi.stardex.sisu.util.enums.Tests;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer;
 import fi.stardex.sisu.util.obtainers.CurrentInjectorTestsObtainer;
@@ -424,15 +423,15 @@ public class SpringJavaConfig {
     @Bean
     @Autowired
     public FlowMasterUpdater flowMasterUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
-                                               SettingsController settingsController, FirmwareVersion<FlowVersions> flowFirmwareVersion, Tests tests) {
-        return new FlowMasterUpdater(flowController, injectorSectionController, settingsController, flowFirmwareVersion, tests);
+                                               SettingsController settingsController, FirmwareVersion<FlowVersions> flowFirmwareVersion) {
+        return new FlowMasterUpdater(flowController, injectorSectionController, settingsController, flowFirmwareVersion);
     }
 
     @Bean
     @Autowired
     public FlowStreamUpdater flowStreamUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
-                                               SettingsController settingsController, FirmwareVersion<FlowVersions> flowFirmwareVersion, Tests tests) {
-        return new FlowStreamUpdater(flowController, injectorSectionController, settingsController, flowFirmwareVersion, tests);
+                                               SettingsController settingsController, FirmwareVersion<FlowVersions> flowFirmwareVersion) {
+        return new FlowStreamUpdater(flowController, injectorSectionController, settingsController, flowFirmwareVersion);
     }
 
     @Bean
@@ -525,8 +524,8 @@ public class SpringJavaConfig {
     @Lazy
     @Autowired
     public Enabler enabler(MainSectionController mainSectionController, InjectorSectionController injectorSectionController,
-                           RLCController rlcController, VoltageController voltageController) {
-        return new Enabler(mainSectionController, injectorSectionController, rlcController, voltageController);
+                           RLCController rlcController, VoltageController voltageController, FlowController flowController) {
+        return new Enabler(mainSectionController, injectorSectionController, rlcController, voltageController, flowController);
     }
 
     @Bean
@@ -574,9 +573,9 @@ public class SpringJavaConfig {
                                      HighPressureSectionController highPressureSectionController,
                                      InjectorSectionController injectorSectionController,
                                      FlowReportController flowReportController,
-                                     Tests tests, Enabler enabler, FlowReport flowReport) {
+                                     Enabler enabler, FlowReport flowReport) {
         return new Measurements(mainSectionController, testBenchSectionController, highPressureSectionController,
-                injectorSectionController, flowReportController, tests, enabler, flowReport);
+                injectorSectionController, flowReportController, enabler, flowReport);
     }
 
     @Bean
@@ -584,11 +583,6 @@ public class SpringJavaConfig {
     public FlowReport flowReport(FlowReportController flowReportController, MainSectionController mainSectionController,
                                  FlowController flowController, SettingsController settingsController) {
         return new FlowReport(flowReportController, mainSectionController, flowController, settingsController);
-    }
-
-    @Bean
-    public Tests tests() {
-        return new Tests();
     }
 
     private List<Updater> addUpdaters(List<Updater> updatersList, Device targetDevice) {

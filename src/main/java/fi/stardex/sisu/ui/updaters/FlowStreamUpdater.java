@@ -1,20 +1,19 @@
 package fi.stardex.sisu.ui.updaters;
 
 import fi.stardex.sisu.annotations.Module;
-import fi.stardex.sisu.combobox_values.FlowUnits;
 import fi.stardex.sisu.combobox_values.InjectorChannel;
 import fi.stardex.sisu.devices.Device;
 import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
-import fi.stardex.sisu.util.enums.Tests;
 import fi.stardex.sisu.version.FirmwareVersion;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 
 import static fi.stardex.sisu.registers.flow.ModbusMapFlow.*;
-import static fi.stardex.sisu.util.converters.DataConverter.convertDataToFloat;
-import static fi.stardex.sisu.util.converters.DataConverter.round;
+import static fi.stardex.sisu.util.FlowUnitObtainer.getBackFlowCoefficient;
+import static fi.stardex.sisu.util.FlowUnitObtainer.getDeliveryCoefficient;
+import static fi.stardex.sisu.util.converters.DataConverter.*;
 import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions;
 import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions.STREAM;
 
@@ -22,9 +21,9 @@ import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions.STREAM;
 public class FlowStreamUpdater extends FlowUpdater implements Updater {
 
     public FlowStreamUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
-                             SettingsController settingsController, FirmwareVersion<FlowVersions> flowFirmwareVersion, Tests tests) {
+                             SettingsController settingsController, FirmwareVersion<FlowVersions> flowFirmwareVersion) {
 
-        super(flowController, injectorSectionController, settingsController, flowFirmwareVersion, tests);
+        super(flowController, injectorSectionController, settingsController, flowFirmwareVersion);
 
     }
 
@@ -54,30 +53,32 @@ public class FlowStreamUpdater extends FlowUpdater implements Updater {
         else {
 
             String value;
+            double deliveryCoefficient = getDeliveryCoefficient();
+            double backFlowCoefficient = getBackFlowCoefficient();
 
             if ((value = Channel1Level.getLastValue().toString()) != null)
-                show(value, deliveryFlowComboBox.getSelectionModel().getSelectedItem(), Flow.DELIVERY_1);
+                show(value, deliveryCoefficient, Flow.DELIVERY_1);
 
             if ((value = Channel2Level.getLastValue().toString()) != null)
-                show(value, deliveryFlowComboBox.getSelectionModel().getSelectedItem(), Flow.DELIVERY_2);
+                show(value, deliveryCoefficient, Flow.DELIVERY_2);
 
             if ((value = Channel3Level.getLastValue().toString()) != null)
-                show(value, deliveryFlowComboBox.getSelectionModel().getSelectedItem(), Flow.DELIVERY_3);
+                show(value, deliveryCoefficient, Flow.DELIVERY_3);
 
             if ((value = Channel4Level.getLastValue().toString()) != null)
-                show(value, deliveryFlowComboBox.getSelectionModel().getSelectedItem(), Flow.DELIVERY_4);
+                show(value, deliveryCoefficient, Flow.DELIVERY_4);
 
             if ((value = Channel5Level.getLastValue().toString()) != null)
-                show(value, backFlowComboBox.getSelectionModel().getSelectedItem(), Flow.BACK_FLOW_1);
+                show(value, backFlowCoefficient, Flow.BACK_FLOW_1);
 
             if ((value = Channel6Level.getLastValue().toString()) != null)
-                show(value, backFlowComboBox.getSelectionModel().getSelectedItem(), Flow.BACK_FLOW_2);
+                show(value, backFlowCoefficient, Flow.BACK_FLOW_2);
 
             if ((value = Channel7Level.getLastValue().toString()) != null)
-                show(value, backFlowComboBox.getSelectionModel().getSelectedItem(), Flow.BACK_FLOW_3);
+                show(value, backFlowCoefficient, Flow.BACK_FLOW_3);
 
             if ((value = Channel8Level.getLastValue().toString()) != null)
-                show(value, backFlowComboBox.getSelectionModel().getSelectedItem(), Flow.BACK_FLOW_4);
+                show(value, backFlowCoefficient, Flow.BACK_FLOW_4);
 
             if ((value = Channel1Temperature1.getLastValue().toString()) != null) {
                 convertedValue.append(round(convertDataToFloat(value))).append(DEGREES_CELSIUS);
@@ -179,9 +180,9 @@ public class FlowStreamUpdater extends FlowUpdater implements Updater {
 
     }
 
-    private void show(String value, String selectedItem, Flow flow) {
+    private void show(String value, double coefficient, Flow flow) {
 
-        float convertedValueFloat = round(convertDataToFloat(value) * FlowUnits.getMapOfFlowUnits().get(selectedItem));
+        double convertedValue = round(convertDataToDouble(value) * coefficient);
 
         TextField field = null;
         ToggleButton led = null;
@@ -222,7 +223,7 @@ public class FlowStreamUpdater extends FlowUpdater implements Updater {
         }
 
         if (led.isSelected())
-            flowController.changeFlow(field, String.valueOf(convertedValueFloat));
+            flowController.changeFlow(field, String.valueOf(convertedValue));
         else
             field.setText(null);
 

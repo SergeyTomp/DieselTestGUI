@@ -24,17 +24,14 @@ public class Injector implements Model {
     @JoinColumn(name = "volt_ampere_profile")
     private VoltAmpereProfile voltAmpereProfile;
 
-    @Column(length = 15)
-    private String codetype;
+    @Column(name = "code_type", nullable = false)
+    private Integer codetype;
 
     @Column(name = "calibration_id", length = 4)
     private String calibrationId;
 
-    @Column(name = "checksum_m", length = 4)
-    private Integer checksumM;
-
-    @Column(name = "k_coefficient")
-    private Integer kCoefficient;
+    @Column(name = "coefficient")
+    private Integer coefficient;
 
     @Column(name = "is_custom")
     private Boolean isCustom;
@@ -79,7 +76,7 @@ public class Injector implements Model {
         this.manufacturer = manufacturer;
     }
 
-    public String getCodetype() {
+    public Integer getCodetype() {
         return codetype;
     }
 
@@ -87,12 +84,8 @@ public class Injector implements Model {
         return calibrationId;
     }
 
-    public Integer getChecksumM() {
-        return checksumM;
-    }
-
-    public Integer getkCoefficient() {
-        return kCoefficient;
+    public Integer getCoefficient() {
+        return coefficient;
     }
 
     public Boolean isCustom() {

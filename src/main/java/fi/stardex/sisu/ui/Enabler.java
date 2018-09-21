@@ -4,12 +4,12 @@ import eu.hansolo.medusa.Gauge;
 import fi.stardex.sisu.persistence.orm.Manufacturer;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.persistence.orm.interfaces.Model;
+import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.RLCController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController.GUIType;
-import fi.stardex.sisu.util.enums.Tests;
 import fi.stardex.sisu.util.enums.Tests.TestType;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -21,10 +21,9 @@ import javafx.scene.layout.VBox;
 import javax.annotation.PostConstruct;
 
 import static fi.stardex.sisu.util.enums.Tests.TestType.AUTO;
+import static fi.stardex.sisu.util.enums.Tests.getTestType;
 
 public class Enabler {
-
-    private MainSectionController mainSectionController;
 
     private ToggleButton mainSectionStartToggleButton;
 
@@ -36,7 +35,7 @@ public class Enabler {
 
     private ToggleGroup testsToggleGroup;
 
-    private Tests tests;
+    private RadioButton codingTestRadioButton;
 
     private ComboBox<GUIType> versionComboBox;
 
@@ -94,15 +93,23 @@ public class Enabler {
 
     private Button pulseSettingsButton;
 
-    public Enabler(MainSectionController mainSectionController, InjectorSectionController injectorSectionController,
-                   RLCController rlcController, VoltageController voltageController) {
+    private Label ml_Min_DeliveryLabel;
 
-        this.mainSectionController = mainSectionController;
+    private Label ml_Min_BackFlowLabel;
+
+    private ComboBox<String> deliveryFlowComboBox;
+
+    private ComboBox<String> backFlowComboBox;
+
+    private boolean codingAvailable;
+
+    public Enabler(MainSectionController mainSectionController, InjectorSectionController injectorSectionController,
+                   RLCController rlcController, VoltageController voltageController, FlowController flowController) {
+
         mainSectionStartToggleButton = mainSectionController.getStartToggleButton();
         testListView = mainSectionController.getTestListView();
         manufacturerListView = mainSectionController.getManufacturerListView();
         modelListView = mainSectionController.getModelListView();
-        tests = mainSectionController.getTests();
         injectorTestsVBox = mainSectionController.getInjectorTestsVBox();
         timingGridPane = mainSectionController.getTimingGridPane();
         startHBox = mainSectionController.getStartHBox();
@@ -113,6 +120,7 @@ public class Enabler {
         storeButton = mainSectionController.getStoreButton();
         resetButton = mainSectionController.getResetButton();
         testsToggleGroup = mainSectionController.getTestsToggleGroup();
+        codingTestRadioButton = mainSectionController.getCodingTestRadioButton();
 
         injectorSectionStartToggleButton = injectorSectionController.getInjectorSectionStartToggleButton();
         widthCurrentSignalSpinner = injectorSectionController.getWidthCurrentSignalSpinner();
@@ -136,6 +144,11 @@ public class Enabler {
 
         pulseSettingsButton = voltageController.getPulseSettingsButton();
 
+        ml_Min_DeliveryLabel = flowController.getMl_Min_DeliveryLabel();
+        ml_Min_BackFlowLabel = flowController.getMl_Min_BackFlowLabel();
+        deliveryFlowComboBox = flowController.getDeliveryFlowComboBox();
+        backFlowComboBox = flowController.getBackFlowComboBox();
+
     }
 
     @PostConstruct
@@ -152,10 +165,12 @@ public class Enabler {
 
     }
 
-    public Enabler startTest(boolean isStarted, TestType testType) {
+    public Enabler startTest(boolean isStarted) {
 
         if (isStarted)
             enableMainSectionStartToggleButton(true);
+
+        TestType testType = getTestType();
 
         switch (testType) {
             case AUTO:
@@ -178,20 +193,6 @@ public class Enabler {
         manufacturerListView.setDisable(isStarted);
 
         modelListView.setDisable(isStarted);
-
-        return this;
-
-    }
-
-    public Enabler selectInjector(boolean selected) {
-
-        if (selected) {
-            showInjectorTests(true);
-            mainSectionController.fillTestListView();
-        } else {
-            showInjectorTests(false);
-            testListView.getItems().clear();
-        }
 
         return this;
 
@@ -224,32 +225,39 @@ public class Enabler {
 
     }
 
+    public Enabler enableCoding(boolean isCodingInjector) {
+
+        codingAvailable = isCodingInjector;
+
+        codingTestRadioButton.setDisable(!isCodingInjector);
+
+        return this;
+
+    }
+
     public Enabler selectTestType() {
 
-        TestType test = tests.getTestType();
+        TestType test = getTestType();
 
         switch (test) {
 
             case AUTO:
                 testListView.setDisable(false);
-                testListView.setCellFactory(CheckBoxListCell.forListView(InjectorTest::includedProperty));
-                mainSectionController.refreshTestListView();
                 showButtons(true, false);
                 showTiming(true);
+                showDefaultFlowUnit(false);
                 break;
             case TESTPLAN:
                 testListView.setDisable(false);
-                testListView.setCellFactory(null);
-                mainSectionController.refreshTestListView();
                 showButtons(false, true);
                 showTiming(false);
+                showDefaultFlowUnit(false);
                 break;
             case CODING:
                 testListView.setDisable(true);
-                testListView.setCellFactory(null);
-                mainSectionController.refreshTestListView();
                 showButtons(false, true);
                 showTiming(false);
+                showDefaultFlowUnit(true);
                 break;
 
         }
@@ -344,7 +352,10 @@ public class Enabler {
 
     private void disableAllTestsRadioButtons(boolean disable) {
 
-        testsToggleGroup.getToggles().forEach(toggle -> ((Node) toggle).setDisable(disable));
+        if (!codingAvailable)
+            testsToggleGroup.getToggles().stream().filter(toggle -> toggle != codingTestRadioButton).forEach(toggle -> ((Node) toggle).setDisable(disable));
+        else
+            testsToggleGroup.getToggles().forEach(toggle -> ((Node) toggle).setDisable(disable));
 
     }
 
@@ -382,17 +393,31 @@ public class Enabler {
 
     }
 
-    private void showInjectorTests(boolean show) {
+    public Enabler showInjectorTests(boolean show) {
 
-        timingGridPane.setVisible(show && tests.getTestType() == AUTO);
+        timingGridPane.setVisible(show && getTestType() == AUTO);
         injectorTestsVBox.setVisible(show);
         startHBox.setVisible(show);
+
+        return this;
 
     }
 
     private void showTiming(boolean show) {
 
         timingGridPane.setVisible(show);
+
+    }
+
+    private void showDefaultFlowUnit(boolean isCoding) {
+
+        deliveryFlowComboBox.getSelectionModel().selectFirst();
+        deliveryFlowComboBox.setVisible(!isCoding);
+        ml_Min_DeliveryLabel.setVisible(isCoding);
+
+        backFlowComboBox.getSelectionModel().selectFirst();
+        backFlowComboBox.setVisible(!isCoding);
+        ml_Min_BackFlowLabel.setVisible(isCoding);
 
     }
 

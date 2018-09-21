@@ -1,11 +1,9 @@
 package fi.stardex.sisu.ui.updaters;
 
-import fi.stardex.sisu.combobox_values.FlowUnits;
 import fi.stardex.sisu.combobox_values.InjectorChannel;
 import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
-import fi.stardex.sisu.util.enums.Tests;
 import fi.stardex.sisu.version.FirmwareVersion;
 import fi.stardex.sisu.version.Versions;
 import javafx.scene.control.*;
@@ -18,8 +16,9 @@ import java.util.stream.Stream;
 import static fi.stardex.sisu.registers.flow.ModbusMapFlow.*;
 import static fi.stardex.sisu.ui.updaters.FlowUpdater.Flow.BACK_FLOW;
 import static fi.stardex.sisu.ui.updaters.FlowUpdater.Flow.DELIVERY;
-import static fi.stardex.sisu.util.converters.DataConverter.convertDataToFloat;
-import static fi.stardex.sisu.util.converters.DataConverter.round;
+import static fi.stardex.sisu.util.FlowUnitObtainer.getBackFlowCoefficient;
+import static fi.stardex.sisu.util.FlowUnitObtainer.getDeliveryCoefficient;
+import static fi.stardex.sisu.util.converters.DataConverter.*;
 import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions;
 import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions.MASTER;
 
@@ -33,7 +32,7 @@ public abstract class FlowUpdater {
 
     protected StringBuilder convertedValue = new StringBuilder();
 
-    private List<Float> listOfConvertedValues = new ArrayList<>();
+    private List<Double> listOfConvertedValues = new ArrayList<>();
 
     protected Label deliveryRangeLabel;
 
@@ -109,14 +108,12 @@ public abstract class FlowUpdater {
 
     protected ToggleButton injectorSectionPowerSwitch;
 
-    protected Tests tests;
-
     public FlowUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
-                       SettingsController settingsController, FirmwareVersion<FlowVersions> flowFirmwareVersion, Tests tests) {
+                       SettingsController settingsController, FirmwareVersion<FlowVersions> flowFirmwareVersion) {
 
         this.flowController = flowController;
         this.flowFirmwareVersion = flowFirmwareVersion;
-        this.tests = tests;
+
         deliveryRangeLabel = flowController.getDeliveryRangeLabel();
         backFlowRangeLabel = flowController.getBackFlowRangeLabel();
         temperature1Delivery1Label = flowController.getTemperature1Delivery1();
@@ -213,11 +210,11 @@ public abstract class FlowUpdater {
 
         // FIXME: баг при выключенном instant flow: выбираю тип измерения - показывается поток
         deliveryFlowComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
-                refreshValues(newValue, DELIVERY));
+                refreshValues(DELIVERY));
 
         // FIXME: баг при выключенном instant flow: выбираю тип измерения - показывается поток
         backFlowComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
-                refreshValues(newValue, BACK_FLOW));
+                refreshValues(BACK_FLOW));
 
     }
 
@@ -233,7 +230,7 @@ public abstract class FlowUpdater {
         });
     }
 
-    private void refreshValues(String selectedItem, Flow flow) {
+    private void refreshValues(Flow flow) {
 
         FlowVersions version = flowFirmwareVersion.getVersions();
 
@@ -241,10 +238,10 @@ public abstract class FlowUpdater {
             case MASTER:
                 switch (flow) {
                     case DELIVERY:
-                        showOnChosenFlowUnit(Channel1Level.getLastValue().toString(), selectedItem, flow);
+                        showOnChosenFlowUnit(Channel1Level.getLastValue().toString(), getDeliveryCoefficient(), flow);
                         break;
                     case BACK_FLOW:
-                        showOnChosenFlowUnit(Channel2Level.getLastValue().toString(), selectedItem, flow);
+                        showOnChosenFlowUnit(Channel2Level.getLastValue().toString(), getBackFlowCoefficient(), flow);
                         break;
                 }
                 break;
@@ -254,13 +251,13 @@ public abstract class FlowUpdater {
                         showOnChosenFlowUnit(Arrays.asList(Channel1Level.getLastValue().toString(),
                                 Channel2Level.getLastValue().toString(),
                                 Channel3Level.getLastValue().toString(),
-                                Channel4Level.getLastValue().toString()), selectedItem, flow);
+                                Channel4Level.getLastValue().toString()), getDeliveryCoefficient(), flow);
                         break;
                     case BACK_FLOW:
                         showOnChosenFlowUnit(Arrays.asList(Channel5Level.getLastValue().toString(),
                                 Channel6Level.getLastValue().toString(),
                                 Channel7Level.getLastValue().toString(),
-                                Channel8Level.getLastValue().toString()), selectedItem, flow);
+                                Channel8Level.getLastValue().toString()), getBackFlowCoefficient(), flow);
                         break;
                 }
                 break;
@@ -268,29 +265,26 @@ public abstract class FlowUpdater {
 
     }
 
-    private void showOnChosenFlowUnit(String value, String selectedItem, Flow flow) {
+    private void showOnChosenFlowUnit(String value, double coefficient, Flow flow) {
 
-        float convertedValueFloat =
-                round(convertDataToFloat(value) * FlowUnits.getMapOfFlowUnits().get(selectedItem));
+        double convertedValue = round(convertDataToDouble(value) * coefficient);
 
         TextField field1 = (flow == DELIVERY) ? delivery1TextField : backFlow1TextField;
         TextField field2 = (flow == DELIVERY) ? delivery2TextField : backFlow2TextField;
         TextField field3 = (flow == DELIVERY) ? delivery3TextField : backFlow3TextField;
         TextField field4 = (flow == DELIVERY) ? delivery4TextField : backFlow4TextField;
 
-        setDeliveryBackFlowFields(field1, field2, field3, field4, String.valueOf(convertedValueFloat));
+        setDeliveryBackFlowFields(field1, field2, field3, field4, String.valueOf(convertedValue));
 
     }
 
     // TODO: реализовать 3 последние опции Combo box
-    private void showOnChosenFlowUnit(List<String> listOfValues, String selectedItem, Flow flow) {
+    private void showOnChosenFlowUnit(List<String> listOfValues, double coefficient, Flow flow) {
 
-        float flowUnitsConvertValue = FlowUnits.getMapOfFlowUnits().get(selectedItem);
-
-        listOfConvertedValues.add(round(convertDataToFloat(listOfValues.get(0)) * flowUnitsConvertValue));
-        listOfConvertedValues.add(round(convertDataToFloat(listOfValues.get(1)) * flowUnitsConvertValue));
-        listOfConvertedValues.add(round(convertDataToFloat(listOfValues.get(2)) * flowUnitsConvertValue));
-        listOfConvertedValues.add(round(convertDataToFloat(listOfValues.get(3)) * flowUnitsConvertValue));
+        listOfConvertedValues.add(round(convertDataToDouble(listOfValues.get(0)) * coefficient));
+        listOfConvertedValues.add(round(convertDataToDouble(listOfValues.get(1)) * coefficient));
+        listOfConvertedValues.add(round(convertDataToDouble(listOfValues.get(2)) * coefficient));
+        listOfConvertedValues.add(round(convertDataToDouble(listOfValues.get(3)) * coefficient));
 
         TextField field1 = (flow == DELIVERY) ? delivery1TextField : backFlow1TextField;
         TextField field2 = (flow == DELIVERY) ? delivery2TextField : backFlow2TextField;
@@ -379,11 +373,11 @@ public abstract class FlowUpdater {
         String value;
 
         if ((value = Channel1Level.getLastValue().toString()) != null)
-            showOnChosenFlowUnit(value, deliveryFlowComboBox.getSelectionModel().getSelectedItem(), DELIVERY);
+            showOnChosenFlowUnit(value, getDeliveryCoefficient(), DELIVERY);
 
         if ((value = (version == MASTER) ? Channel2Level.getLastValue().toString()
                 : Channel5Level.getLastValue().toString()) != null)
-            showOnChosenFlowUnit(value, backFlowComboBox.getSelectionModel().getSelectedItem(), BACK_FLOW);
+            showOnChosenFlowUnit(value, getBackFlowCoefficient(), BACK_FLOW);
 
         if ((value = Channel1Temperature1.getLastValue().toString()) != null) {
             convertedValue.append(round(convertDataToFloat(value))).append(DEGREES_CELSIUS);
