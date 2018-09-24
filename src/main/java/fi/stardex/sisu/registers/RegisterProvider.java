@@ -89,7 +89,7 @@ public abstract class RegisterProvider {
 
         } catch (ClassCastException e) {
 
-            logger.error("Cast Exception: ", e);
+            logger.error("Cast Exception: ");
             return register.getLastValue();
 
         }

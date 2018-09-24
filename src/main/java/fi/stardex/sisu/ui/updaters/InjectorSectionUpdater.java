@@ -6,6 +6,7 @@ import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
 
 import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.*;
 import static fi.stardex.sisu.util.converters.DataConverter.convertDataToFloat;
+import static fi.stardex.sisu.util.converters.DataConverter.convertDataToInt;
 import static fi.stardex.sisu.util.converters.DataConverter.round;
 
 @Module(value = Device.ULTIMA)
@@ -33,7 +34,7 @@ public class InjectorSectionUpdater implements Updater {
         if ((value = WidthBoardOne.getLastValue().toString()) != null)
             voltageController.getWidth().setText(value);
         if ((value = Boost_U.getLastValue().toString()) != null)
-            voltageController.getVoltage().setText(value);
+            voltageController.getVoltage().setText(Integer.toString(convertDataToInt(value)));
         if ((value = FirstWBoardOne.getLastValue().toString()) != null)
             voltageController.getFirstWidth().setText(value);
         if ((value = FirstIBoardOne.getLastValue().toString()) != null) {
@@ -48,11 +49,11 @@ public class InjectorSectionUpdater implements Updater {
             convertedValue = round(convertDataToFloat(value) / ONE_AMPERE_MULTIPLY);
             voltageController.getBoostI().setText(Float.toString(convertedValue));
         }
-        if ((value = Battery_U.getLastValue().toString()) != null)
-            voltageController.getBatteryU().setText(value);
+        if ((value = Battery_U.getLastValue().toString()) != null){
+            voltageController.getBatteryU().setText(Integer.toString(convertDataToInt(value)));
+        }
         if ((value = Negative_U.getLastValue().toString()) != null)
-            voltageController.getNegativeU().setText(value);
-
+            voltageController.getNegativeU().setText(Integer.toString(convertDataToInt(value)));
     }
 
 }

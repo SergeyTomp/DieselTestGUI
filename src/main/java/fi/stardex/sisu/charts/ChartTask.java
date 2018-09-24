@@ -244,12 +244,16 @@ public abstract class ChartTask extends TimerTask {
 
         } catch (ClassCastException e) {
 
-            logger.error("Cast Exception: ", e);
+            logger.error("Cast Exception: ");
             return;
 
         }
 
-        Platform.runLater(() -> addData(resultDataList, getData()));
+        Platform.runLater(() -> {
+            if(injectorSectionController.getInjectorSectionStartToggleButton().isSelected()){
+                ChartTask.this.addData(resultDataList, ChartTask.this.getData());
+            }
+        });
 
 
     }

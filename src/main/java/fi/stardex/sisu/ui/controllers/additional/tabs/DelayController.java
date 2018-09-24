@@ -125,13 +125,7 @@ public class DelayController {
                                                                                             SENSITIVITY_SPINNER_MAX,
                                                                                             SENSITIVITY_SPINNER_INIT,
                                                                                             SENSITIVITY_SPINNER_STEP));
-
-        SpinnerManager.setupSpinner(sensitivitySpinner,
-                                    SENSITIVITY_SPINNER_INIT,
-                                    SENSITIVITY_SPINNER_FAKE,
-                                    new CustomTooltip(),
-                                    new SpinnerValueObtainer(SENSITIVITY_SPINNER_INIT));
-
+        
         isTabDelayShowing.bind(additionalSectionController.getTabDelay().selectedProperty());
 
     }
@@ -174,7 +168,7 @@ public class DelayController {
                 return;
             }
 
-            addingTime.setText(newValue.isEmpty() ? "0" : oldValue);
+            addingTime.setText(newValue.isEmpty() ? "0" : newValue);
 
         });
 
