@@ -10,7 +10,7 @@
                 <children>
                     <GridPane prefHeight="55.0" prefWidth="350.0" VBox.vgrow="NEVER">
                         <children>
-                            <ComboBox fx:id="deliveryFlowComboBox" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="110.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
+                            <ComboBox fx:id="deliveryFlowComboBox" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="110.0" styleClass="combo-box-base" stylesheets="@../../../../css/Styling.css" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
                                 <GridPane.margin>
                                     <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
                                 </GridPane.margin>
@@ -63,22 +63,22 @@
                                     <Insets bottom="25.0" left="10.0" right="10.0" top="20.0" />
                                 </GridPane.margin>
                             </StackPane>
-                            <TextField fx:id="delivery1TextField" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="70.0" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                            <TextField fx:id="delivery1TextField" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="70.0" styleClass="modelTextField" stylesheets="@../../../../css/Styling.css" GridPane.columnIndex="0" GridPane.rowIndex="1">
                                 <tooltip>
                                     <Tooltip text="%h4.field.tip.beaker1" />
                                 </tooltip>
                             </TextField>
-                            <TextField fx:id="delivery2TextField" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="70.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                            <TextField fx:id="delivery2TextField" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="70.0" styleClass="modelTextField" stylesheets="@../../../../css/Styling.css" GridPane.columnIndex="1" GridPane.rowIndex="1">
                                 <tooltip>
                                     <Tooltip text="%h4.field.tip.beaker2" />
                                 </tooltip>
                             </TextField>
-                            <TextField fx:id="delivery3TextField" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="70.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                            <TextField fx:id="delivery3TextField" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="70.0" styleClass="modelTextField" stylesheets="@../../../../css/Styling.css" GridPane.columnIndex="2" GridPane.rowIndex="1">
                                 <tooltip>
                                     <Tooltip text="%h4.field.tip.beaker3" />
                                 </tooltip>
                             </TextField>
-                            <TextField fx:id="delivery4TextField" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="70.0" GridPane.columnIndex="3" GridPane.rowIndex="1">
+                            <TextField fx:id="delivery4TextField" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="70.0" styleClass="modelTextField" stylesheets="@../../../../css/Styling.css" GridPane.columnIndex="3" GridPane.rowIndex="1">
                                 <tooltip>
                                     <Tooltip text="%h4.field.tip.beaker4" />
                                 </tooltip>
@@ -115,7 +115,7 @@
                 <children>
                     <GridPane prefHeight="55.0" prefWidth="350.0" VBox.vgrow="NEVER">
                         <children>
-                            <ComboBox fx:id="backFlowComboBox" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="110.0" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
+                            <ComboBox fx:id="backFlowComboBox" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="110.0" styleClass="combo-box-base" stylesheets="@../../../../css/Styling.css" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
                                 <GridPane.margin>
                                     <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
                                 </GridPane.margin>
@@ -170,22 +170,22 @@
                                 </GridPane.margin>
                             </StackPane>
 
-                            <TextField fx:id="backFlow1TextField" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="70.0" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                            <TextField fx:id="backFlow1TextField" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="70.0" styleClass="modelTextField" stylesheets="@../../../../css/Styling.css" GridPane.columnIndex="0" GridPane.rowIndex="1">
                                 <tooltip>
                                     <Tooltip text="%h4.field.tip.beaker5" />
                                 </tooltip>
                             </TextField>
-                            <TextField fx:id="backFlow2TextField" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="70.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                            <TextField fx:id="backFlow2TextField" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="70.0" styleClass="modelTextField" stylesheets="@../../../../css/Styling.css" GridPane.columnIndex="1" GridPane.rowIndex="1">
                                 <tooltip>
                                     <Tooltip text="%h4.field.tip.beaker6" />
                                 </tooltip>
                             </TextField>
-                            <TextField fx:id="backFlow3TextField" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="70.0" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                            <TextField fx:id="backFlow3TextField" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="70.0" styleClass="modelTextField" stylesheets="@../../../../css/Styling.css" GridPane.columnIndex="2" GridPane.rowIndex="1">
                                 <tooltip>
                                     <Tooltip text="%h4.field.tip.beaker7" />
                                 </tooltip>
                             </TextField>
-                            <TextField fx:id="backFlow4TextField" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="70.0" GridPane.columnIndex="3" GridPane.rowIndex="1">
+                            <TextField fx:id="backFlow4TextField" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="70.0" styleClass="modelTextField" stylesheets="@../../../../css/Styling.css" GridPane.columnIndex="3" GridPane.rowIndex="1">
                                 <tooltip>
                                     <Tooltip text="%h4.field.tip.beaker8" />
                                 </tooltip>
@@ -219,7 +219,7 @@
             </VBox>
         </children>
       <padding>
-         <Insets left="12.0" right="12.0" />
+         <Insets left="70.0" right="70.0" />
       </padding>
     </HBox>
 

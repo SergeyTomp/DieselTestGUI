@@ -11,18 +11,18 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 
-<StackPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="210.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController">
+<StackPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController">
     <children>
-        <GridPane gridLinesVisible="true" StackPane.alignment="CENTER">
+        <GridPane StackPane.alignment="CENTER">
             <columnConstraints>
-                <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="350.0" />
-                <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="150.0" />
+                <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" />
+                <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="300.0" minWidth="300.0" prefWidth="300.0" />
             </columnConstraints>
             <rowConstraints>
                 <RowConstraints maxHeight="1.7976931348623157E308" minHeight="210.0" prefHeight="210.0" vgrow="ALWAYS" />
             </rowConstraints>
             <children>
-                <LineChart id="LineChart" fx:id="lineChart" axisSortingPolicy="NONE" createSymbols="false" minHeight="-Infinity" minWidth="-Infinity" prefHeight="210.0" prefWidth="350.0" titleSide="LEFT">
+                <LineChart id="LineChart" fx:id="lineChart" axisSortingPolicy="NONE" createSymbols="false" stylesheets="@../../../../css/Styling.css" titleSide="LEFT">
                     <xAxis>
                         <NumberAxis label="%h4.voltage.chars.time" minWidth="-Infinity" prefHeight="50.0" prefWidth="250.0" fx:id="xAxis" />
                     </xAxis>
@@ -31,7 +31,7 @@
                         <NumberAxis side="LEFT" />
                     </yAxis>
                 </LineChart>
-                <GridPane minHeight="-Infinity" minWidth="-Infinity" prefHeight="210.0" prefWidth="150.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                <GridPane prefHeight="210.0" prefWidth="150.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                     <columnConstraints>
                         <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" minWidth="10.0" />
                     </columnConstraints>
@@ -90,11 +90,19 @@
                         <Label fx:id="boostI" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                         <Label fx:id="batteryU" GridPane.columnIndex="1" GridPane.rowIndex="6" />
                         <Label fx:id="negativeU" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                        <Label fx:id="labelWidthUOM" text="%h4.voltage.label.us" GridPane.columnIndex="2" />
+                        <Label fx:id="labelVoltageUOM" text="%h4.voltage.label.volt" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                        <Label fx:id="labelFirstWidthUOM" text="%h4.voltage.label.ampere" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                        <Label fx:id="labelCurrent1UOM" text="%h4.voltage.label.ampere" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+                        <Label fx:id="labelCurrent2UOM" text="%h4.voltage.label.volt" GridPane.columnIndex="2" GridPane.rowIndex="4" />
+                        <Label fx:id="labelBoostIUOM" text="%h4.voltage.label.ampere" GridPane.columnIndex="2" GridPane.rowIndex="5" />
+                        <Label fx:id="labelBatteryUUOM" text="%h4.voltage.label.volt" GridPane.columnIndex="2" GridPane.rowIndex="6" />
+                        <Label fx:id="labelNegativeUUOM" text="%h4.voltage.label.volt" GridPane.columnIndex="2" GridPane.rowIndex="7" />
                             </children>
                             <columnConstraints>
                                 <ColumnConstraints halignment="RIGHT" hgrow="ALWAYS" maxWidth="100.0" minWidth="100.0" prefWidth="100.0" />
-                                <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="145.0" minWidth="10.0" prefWidth="100.0" />
-                                <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="50.0" minWidth="10.0" prefWidth="30" />
+                                <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="70.0" minWidth="10.0" prefWidth="70.0" />
+                                <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="60.0" minWidth="10.0" prefWidth="60.0" />
                             </columnConstraints>
                             <rowConstraints>
                         <RowConstraints minHeight="-Infinity" prefHeight="20.0" vgrow="SOMETIMES" />

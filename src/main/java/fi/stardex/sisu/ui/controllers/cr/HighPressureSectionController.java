@@ -227,6 +227,15 @@ public class HighPressureSectionController {
         currentReg3Spinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(CURRENT_REG_3_SPINNER_MIN, CURRENT_REG_3_SPINNER_MAX, CURRENT_REG_3_SPINNER_INIT, CURRENT_REG_3_SPINNER_STEP));
         dutyCycleReg3Spinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(DUTY_CYCLE_REG_3_SPINNER_MIN, DUTY_CYCLE_REG_3_SPINNER_MAX, DUTY_CYCLE_REG_3_SPINNER_INIT, DUTY_CYCLE_REG_3_SPINNER_STEP));
 
+        pressReg1Spinner.getStyleClass().add(1, GREEN_STYLE_CLASS);
+        currentReg1Spinner.getStyleClass().add(1, "");
+        dutyCycleReg1Spinner.getStyleClass().add(1, "");
+        currentReg2Spinner.getStyleClass().add(1, GREEN_STYLE_CLASS);
+        dutyCycleReg2Spinner.getStyleClass().add(1, "");
+        currentReg3Spinner.getStyleClass().add(1, GREEN_STYLE_CLASS);
+        dutyCycleReg3Spinner.getStyleClass().add(1, "");
+
+
         SpinnerManager.setupSpinner(pressReg1Spinner, PRESS_REG_1_SPINNER_INIT, PRESS_REG_1_SPINNER_MIN, PRESS_REG_1_SPINNER_MAX, new CustomTooltip(), new SpinnerValueObtainer(PRESS_REG_1_SPINNER_INIT));
         SpinnerManager.setupSpinner(currentReg1Spinner, CURRENT_REG_1_SPINNER_INIT, CURRENT_REG_1_SPINNER_FAKE, new CustomTooltip(), new SpinnerValueObtainer(CURRENT_REG_1_SPINNER_INIT));
         SpinnerManager.setupSpinner(dutyCycleReg1Spinner, DUTY_CYCLE_REG_1_SPINNER_INIT, DUTY_CYCLE_REG_1_SPINNER_FAKE, new CustomTooltip(), new SpinnerValueObtainer(DUTY_CYCLE_REG_1_SPINNER_INIT));
@@ -747,6 +756,23 @@ public class HighPressureSectionController {
 
             if (newValue){
                 Reg1paramActive = activeParam;
+                switch (Reg1paramActive){
+                    case PRESSURE:
+                        pressReg1Spinner.getStyleClass().set(1, GREEN_STYLE_CLASS);
+                        currentReg1Spinner.getStyleClass().set(1, "");
+                        dutyCycleReg1Spinner.getStyleClass().set(1, "");
+                        break;
+                    case CURRENT:
+                        pressReg1Spinner.getStyleClass().set(1, "");
+                        currentReg1Spinner.getStyleClass().set(1, GREEN_STYLE_CLASS);
+                        dutyCycleReg1Spinner.getStyleClass().set(1, "");
+                        break;
+                    case DUTY:
+                        pressReg1Spinner.getStyleClass().set(1, "");
+                        currentReg1Spinner.getStyleClass().set(1, "");
+                        dutyCycleReg1Spinner.getStyleClass().set(1, GREEN_STYLE_CLASS);
+                        break;
+                }
                 if(highPressureStartToggleButton.isSelected() && powerButton.isSelected()){
                     ultimaModbusWriter.add(mapParam_1, mapParam_1_ON);
                     ultimaModbusWriter.add(mapParam_2, mapParam_2_ON);
@@ -777,9 +803,29 @@ public class HighPressureSectionController {
             if (newValue) {
                 if (powerButton == powerButton2){
                     Reg2paramActive = activeParam;
+                    switch (Reg2paramActive){
+                        case CURRENT:
+                            currentReg2Spinner.getStyleClass().set(1, GREEN_STYLE_CLASS);
+                            dutyCycleReg2Spinner.getStyleClass().set(1, "");
+                            break;
+                        case DUTY:
+                            currentReg2Spinner.getStyleClass().set(1, "");
+                            dutyCycleReg2Spinner.getStyleClass().set(1, GREEN_STYLE_CLASS);
+                            break;
+                    }
                 }
                 else if(powerButton == powerButton3){
                     Reg3paramActive = activeParam;
+                    switch (Reg3paramActive){
+                        case CURRENT:
+                            currentReg3Spinner.getStyleClass().set(1, GREEN_STYLE_CLASS);
+                            dutyCycleReg3Spinner.getStyleClass().set(1, "");
+                            break;
+                        case DUTY:
+                            currentReg3Spinner.getStyleClass().set(1, "");
+                            dutyCycleReg3Spinner.getStyleClass().set(1, GREEN_STYLE_CLASS);
+                            break;
+                    }
                 }
                 if(highPressureStartToggleButton.isSelected() && powerButton.isSelected()){
                     ultimaModbusWriter.add(mapParam, mapParam_ON);

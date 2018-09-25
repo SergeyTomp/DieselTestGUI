@@ -381,7 +381,7 @@ public class InjectorSectionController {
         public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
 
             if (newValue) {
-
+                getActiveControllers().forEach(l -> {if(l.isSelected()){l.ledBlinkStart();}});
                 ultimaModbusWriter.add(Injectors_Running_En, true);
                 ledParametersChangeListener.sendLedRegisters();
                 // FIXME: throws NPE if there is no connection
@@ -390,7 +390,7 @@ public class InjectorSectionController {
                 enabler.disableVAP(true);
 
             } else {
-
+                getActiveControllers().forEach(l -> {if(l.isSelected()){l.ledBlinkStop();}});
                 ultimaModbusWriter.add(Injectors_Running_En, false);
                 ledParametersChangeListener.switchOffAll();
                 timerTasksManager.stop();

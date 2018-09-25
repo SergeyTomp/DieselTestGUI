@@ -50,7 +50,7 @@
                         <Insets right="20.0" />
                     </GridPane.margin>
                 </Label>
-                <TextField fx:id="minimumDelay" editable="false" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                <TextField fx:id="minimumDelay" editable="false" prefWidth="200.0" styleClass="modelTextField" stylesheets="@../../../../css/Styling.css" GridPane.columnIndex="1" GridPane.rowIndex="1">
                     <tooltip>
                         <Tooltip text="Minimum delay value" />
                     </tooltip>
@@ -58,7 +58,7 @@
                         <Insets left="20.0" />
                     </GridPane.margin>
                 </TextField>
-                <TextField fx:id="maximumDelay" editable="false" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                <TextField fx:id="maximumDelay" editable="false" prefWidth="200.0" styleClass="modelTextField" stylesheets="@../../../../css/Styling.css" GridPane.columnIndex="1" GridPane.rowIndex="2">
                     <tooltip>
                         <Tooltip text="Maximum delay value" />
                     </tooltip>
@@ -66,7 +66,7 @@
                         <Insets left="20.0" />
                     </GridPane.margin>
                 </TextField>
-                <TextField fx:id="averageDelay" editable="true" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                <TextField fx:id="averageDelay" editable="true" prefWidth="200.0" styleClass="modelTextField" stylesheets="@../../../../css/Styling.css" GridPane.columnIndex="1" GridPane.rowIndex="3">
                     <tooltip>
                         <Tooltip text="Average delay value" />
                     </tooltip>
@@ -79,7 +79,7 @@
                         <Insets right="20.0" />
                     </GridPane.margin>
                 </Label>
-                <Spinner fx:id="sensitivitySpinner" editable="true" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                <Spinner fx:id="sensitivitySpinner" editable="true" prefWidth="150.0" styleClass="modelTextField" stylesheets="@../../../../css/Styling.css" GridPane.columnIndex="1" GridPane.rowIndex="4">
                     <GridPane.margin>
                         <Insets left="20.0" />
                     </GridPane.margin>
@@ -90,7 +90,7 @@
                         <Insets right="20.0" />
                     </GridPane.margin>
                 </Label>
-                <TextField fx:id="addingTime" prefWidth="200.0" GridPane.columnIndex="1">
+                <TextField fx:id="addingTime" prefWidth="200.0" styleClass="modelTextField" stylesheets="@../../../../css/Styling.css" GridPane.columnIndex="1">
                     <tooltip>
                         <Tooltip text="Minimum delay value" />
                     </tooltip>
@@ -101,7 +101,7 @@
             </children>
             <columnConstraints>
                 <ColumnConstraints halignment="RIGHT" hgrow="ALWAYS" maxWidth="150.0" minWidth="10.0" prefWidth="100.0" />
-                <ColumnConstraints fillWidth="false" halignment="LEFT" hgrow="ALWAYS" maxWidth="150.0" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints fillWidth="false" halignment="RIGHT" hgrow="ALWAYS" maxWidth="-Infinity" minWidth="10.0" prefWidth="120.0" />
             </columnConstraints>
             <rowConstraints>
                 <RowConstraints maxHeight="50.0" minHeight="50.0" prefHeight="50.0" valignment="CENTER" vgrow="ALWAYS" />

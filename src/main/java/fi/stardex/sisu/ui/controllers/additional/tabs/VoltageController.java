@@ -33,19 +33,35 @@ public class VoltageController {
 
     @FXML private Label labelVoltage;
 
+    @FXML private Label labelVoltageUOM;
+
     @FXML private Label labelFirstWidth;
+
+    @FXML private Label labelFirstWidthUOM;
 
     @FXML private Label labelCurrent1;
 
+    @FXML private Label labelCurrent1UOM;
+
     @FXML private Label labelCurrent2;
+
+    @FXML private Label labelCurrent2UOM;
 
     @FXML private Label labelWidth;
 
+    @FXML private Label labelWidthUOM;
+
     @FXML private Label labelBoostI;
+
+    @FXML private Label labelBoostIUOM;
 
     @FXML private Label labelBatteryU;
 
+    @FXML private Label labelBatteryUUOM;
+
     @FXML private Label labelNegativeU;
+
+    @FXML private Label labelNegativeUUOM;
 
     @FXML private Label boostI;
 
@@ -331,5 +347,13 @@ public class VoltageController {
         pulseSettingsButton.textProperty().bind(i18N.createStringBinding("h4.voltage.button"));
         xAxis.labelProperty().bind(i18N.createStringBinding("h4.voltage.chars.time"));
         yAxis.labelProperty().bind(i18N.createStringBinding("h4.voltage.chars.amp"));
+        labelVoltageUOM.textProperty().bind(i18N.createStringBinding("h4.voltage.label.volt"));
+        labelFirstWidthUOM.textProperty().bind(i18N.createStringBinding("h4.voltage.label.us"));
+        labelCurrent1UOM.textProperty().bind(i18N.createStringBinding("h4.voltage.label.ampere"));
+        labelCurrent2UOM.textProperty().bind(i18N.createStringBinding("h4.voltage.label.ampere"));
+        labelWidthUOM.textProperty().bind(i18N.createStringBinding("h4.voltage.label.us"));
+        labelBoostIUOM.textProperty().bind(i18N.createStringBinding("h4.voltage.label.ampere"));
+        labelBatteryUUOM.textProperty().bind(i18N.createStringBinding("h4.voltage.label.volt"));
+        labelNegativeUUOM.textProperty().bind(i18N.createStringBinding("h4.voltage.label.volt"));
     }
 }

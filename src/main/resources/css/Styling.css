@@ -182,25 +182,23 @@ label
     -fx-opacity: 0.8;
 }
 
+.led:hover{
+    -fx-opacity: 1;
+}
+
 .led:disabled{
     -fx-background-image: url("../img/LED-disable.png");
     -fx-background-size: stretch;
     -fx-opacity: 1;
 }
 
+.led:focused{
+    -fx-opacity: 1;
+}
+
 .led .ledBlink-on{
     -fx-background-image: url("../img/LED-on.png");
     -fx-background-size: stretch;
-    -fx-opacity: 1;
-}
-
-.led:hover{
-
-    -fx-opacity: 1;
-}
-
-.led:focused{
-
     -fx-opacity: 1;
 }
 
@@ -380,7 +378,7 @@ label
 .pump-button-off{
 
     -fx-background-image: url("../img/pump_button-off.png");
-    -fx-opacity: 1;
+    -fx-opacity: 0.8;
 }
 
 .cooler{
@@ -558,7 +556,7 @@ label
     -fx-background-color: transparent;
     -fx-background-repeat: stretch, stretch;
     -fx-background-size: stretch;
-    -fx-opacity: 1;
+    -fx-opacity: 0.8;
 }
 .button-power:armed{
 
@@ -1183,13 +1181,13 @@ label
     -fx-background-color: black, -border-color, -background-color;
     -fx-border-color: -border-color;
     -fx-background-insets: 0 0 0 0, 0, 0, 0;
-    -fx-opacity: 0.7;
+    -fx-opacity: 1;
 }
 
 .combo-box *.list-cell
 {
     -textFont-color: #ffff66;
-    -background-color: #1f1f2e;
+    -background-color: #4B4B4B;
     -border-color: #4d2600;
     -borderSelect-color: #cc6600;
     -borderHover-color: #b34700;
@@ -1198,7 +1196,7 @@ label
     -fx-background-color: black, -border-color, -background-color;
     -fx-border-color: -border-color;
     -fx-background-insets: 0 0 0 0, 0, 0, 0;
-    -fx-opacity: 0.7;
+    -fx-opacity: 1;
 
 }
 
@@ -1268,7 +1266,7 @@ label
 }
 
 .combo-box *.arrow-button {
-    -background-color: #1f1f2e;
+    -background-color: #4B4B4B;
     -border-color: #4d2600;
     -borderSelect-color: #cc6600;
     -borderHover-color: #b34700;
@@ -1328,3 +1326,76 @@ label
     -fx-background-repeat: stretch, stretch;
     -fx-background-size: 12pt;
 }
+
+/***************
+*lineChart
+****************/
+
+.chart {
+
+    -background-color: #3b3b3b;
+    -border-color: #4d2600;
+    -textFont-color: #ffff66;
+    -fx-font-size: 12pt;
+    -fx-font-family: "Arial";
+    -fx-text-fill: -textFont-color;
+    -fx-background-color: transparent;
+    -fx-border-color: -border-color;
+
+}
+
+.chart-plot-background {
+    -background-color: #1f1f2e;
+    -fx-background-color: -background-color;
+    -fx-opacity: 0.4;
+}
+
+.chart-content {
+    -fx-background-color: -background-color;
+}
+
+.chart-title {
+    -textFont-color: #ffff66;
+    -fx-text-fill: -textFont-color;
+    -fx-font-size: 1.1em;
+}
+
+.axis {
+    -textFont-color: #ffff66;
+    -fx-font-size: 1.1em;
+    -fx-tick-label-fill: -textFont-color;
+    -fx-font-family: "Arial";
+    -fx-tick-length: 15;
+    -fx-minor-tick-length: 8;
+    -fx-opacity: 0.8;
+
+}
+
+.axis-label {
+    -fx-text-fill: #ffff66;
+}
+
+.axis-tick-mark {
+    -fx-stroke: #637040;
+    -fx-stroke-width: 1;
+}
+.axis-minor-tick-mark {
+    -fx-stroke: #859656;
+}
+.chart-legend {
+    -fx-background-color:  transparent;
+}
+
+.chart-legend-item-symbol {
+    -fx-background-radius: 0;
+}
+
+.chart-legend-item{
+    -textFont-color: #ffff66;
+    -fx-text-fill: -textFont-color;
+}
+
+.chart-vertical-grid-lines {
+    -fx-stroke: #666666;
+}
+
