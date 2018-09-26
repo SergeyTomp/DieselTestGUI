@@ -20,9 +20,6 @@ import fi.stardex.sisu.ui.controllers.dialogs.NewEditInjectorDialogController;
 import fi.stardex.sisu.ui.controllers.dialogs.NewEditTestDialogController;
 import fi.stardex.sisu.util.enums.Measurement;
 import fi.stardex.sisu.util.i18n.I18N;
-import fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer;
-import fi.stardex.sisu.util.obtainers.CurrentInjectorTestsObtainer;
-import fi.stardex.sisu.util.obtainers.CurrentManufacturerObtainer;
 import fi.stardex.sisu.util.view.ApplicationAppearanceChanger;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -70,6 +67,12 @@ import static fi.stardex.sisu.util.enums.Measurement.DELIVERY;
 import static fi.stardex.sisu.util.enums.Measurement.VISUAL;
 import static fi.stardex.sisu.util.enums.Tests.*;
 import static fi.stardex.sisu.util.enums.Tests.TestType.*;
+import static fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer.getInjector;
+import static fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer.setInjector;
+import static fi.stardex.sisu.util.obtainers.CurrentInjectorTestsObtainer.getInjectorTests;
+import static fi.stardex.sisu.util.obtainers.CurrentInjectorTestsObtainer.setInjectorTests;
+import static fi.stardex.sisu.util.obtainers.CurrentManufacturerObtainer.getManufacturer;
+import static fi.stardex.sisu.util.obtainers.CurrentManufacturerObtainer.setManufacturer;
 
 public class MainSectionController {
 
@@ -202,8 +205,6 @@ public class MainSectionController {
 
     private Enabler enabler;
 
-    private CurrentManufacturerObtainer currentManufacturerObtainer;
-
     private ApplicationAppearanceChanger applicationAppearanceChanger;
 
     private ViewHolder manufacturerMenuDialog;
@@ -213,8 +214,6 @@ public class MainSectionController {
     private ViewHolder newEditTestDialog;
 
     private VoltAmpereProfileController voltAmpereProfileController;
-
-    private CurrentInjectorObtainer currentInjectorObtainer;
 
     private Spinner<Integer> widthCurrentSignalSpinner;
 
@@ -226,13 +225,7 @@ public class MainSectionController {
 
     private InjectorTestRepository injectorTestRepository;
 
-    private CurrentInjectorTestsObtainer currentInjectorTestsObtainer;
-
     private VoltAmpereProfile currentVoltAmpereProfile;
-
-    public CurrentInjectorTestsObtainer getCurrentInjectorTestsObtainer() {
-        return currentInjectorTestsObtainer;
-    }
 
     private Stage manufacturerDialogStage;
 
@@ -342,10 +335,6 @@ public class MainSectionController {
         this.enabler = enabler;
     }
 
-    public void setCurrentManufacturerObtainer(CurrentManufacturerObtainer currentManufacturerObtainer) {
-        this.currentManufacturerObtainer = currentManufacturerObtainer;
-    }
-
     public void setApplicationAppearanceChanger(ApplicationAppearanceChanger applicationAppearanceChanger) {
         this.applicationAppearanceChanger = applicationAppearanceChanger;
     }
@@ -364,10 +353,6 @@ public class MainSectionController {
 
     public void setVoltAmpereProfileController(VoltAmpereProfileController voltAmpereProfileController) {
         this.voltAmpereProfileController = voltAmpereProfileController;
-    }
-
-    public void setCurrentInjectorObtainer(CurrentInjectorObtainer currentInjectorObtainer) {
-        this.currentInjectorObtainer = currentInjectorObtainer;
     }
 
     public void setWidthCurrentSignalSpinner(Spinner<Integer> widthCurrentSignalSpinner) {
@@ -392,10 +377,6 @@ public class MainSectionController {
 
     public void setFlowReport(FlowReport flowReport) {
         this.flowReport = flowReport;
-    }
-
-    public void setCurrentInjectorTestsObtainer(CurrentInjectorTestsObtainer currentInjectorTestsObtainer) {
-        this.currentInjectorTestsObtainer = currentInjectorTestsObtainer;
     }
 
     public void setFlowModbusWriter(ModbusRegisterProcessor flowModbusWriter) {
@@ -505,7 +486,7 @@ public class MainSectionController {
         Task<List<InjectorTest>> task = new Task<List<InjectorTest>>() {
             @Override
             protected List<InjectorTest> call() {
-                return injectorTestRepository.findAllByInjector(currentInjectorObtainer.getInjector());
+                return injectorTestRepository.findAllByInjector(getInjector());
             }
         };
 
@@ -515,9 +496,9 @@ public class MainSectionController {
 
             if (newValue != null) {
 
-                currentInjectorTestsObtainer.setInjectorTests(newValue);
+                setInjectorTests(newValue);
 
-                if (!checkInjectorForCoding(currentInjectorObtainer.getInjector()) && codingTestRadioButton.isSelected())
+                if (!checkInjectorForCoding(getInjector()) && codingTestRadioButton.isSelected())
                     Platform.runLater(() -> autoTestRadioButton.setSelected(true));
                 else
                     setTests();
@@ -545,19 +526,19 @@ public class MainSectionController {
 
             case AUTO:
                 testListView.setCellFactory(CheckBoxListCell.forListView(InjectorTest::includedProperty));
-                testListViewItems.setAll(currentInjectorTestsObtainer.getInjectorTests());
+                testListViewItems.setAll(getInjectorTests());
                 testListViewItems.sort((Comparator.comparingInt(injectorTest -> injectorTest.getTestName().getId())));
                 Platform.runLater(this::pointToFirstTest);
                 break;
             case TESTPLAN:
                 testListView.setCellFactory(null);
-                testListViewItems.setAll(currentInjectorTestsObtainer.getInjectorTests());
+                testListViewItems.setAll(getInjectorTests());
                 testListViewItems.sort((Comparator.comparingInt(injectorTest -> injectorTest.getTestName().getId())));
                 Platform.runLater(this::pointToFirstTest);
                 break;
             case CODING:
                 testListView.setCellFactory(null);
-                testListViewItems.setAll(currentInjectorTestsObtainer.getInjectorTests()
+                testListViewItems.setAll(getInjectorTests()
                         .stream()
                         .filter(injectorTest -> injectorTest.getTestName().getMeasurement() == DELIVERY || injectorTest.getTestName().getMeasurement() == VISUAL)
                         .sorted(Comparator.comparingInt(injectorTest -> injectorTest.getTestName().getDisplayOrder()))
@@ -580,8 +561,8 @@ public class MainSectionController {
             if (event.getButton() == MouseButton.SECONDARY) {
                 manufacturerMenu.getItems().clear();
                 manufacturerMenu.getItems().add(newManufacturer);
-                if (currentManufacturerObtainer.getCurrentManufacturer() != null &&
-                        currentManufacturerObtainer.getCurrentManufacturer().isCustom())
+                if (getManufacturer() != null &&
+                        getManufacturer().isCustom())
                     manufacturerMenu.getItems().addAll(deleteManufacturer);
                 manufacturerMenu.show(manufacturerListView, event.getScreenX(), event.getScreenY());
             } else
@@ -902,7 +883,7 @@ public class MainSectionController {
 
         manufacturerListView.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) -> {
 
-            currentManufacturerObtainer.setCurrentManufacturer(newValue);
+            setManufacturer(newValue);
 
             if (newValue.isCustom()) {
                 defaultRadioButton.setDisable(true);
@@ -974,8 +955,8 @@ public class MainSectionController {
             injectorNumberTextField.setText((newValue != null) ? ((Injector) newValue).getInjectorCode() : null);
 
             if (newValue == null) {
-                currentInjectorObtainer.setInjector(null);
-                currentInjectorTestsObtainer.setInjectorTests(null);
+                setInjector(null);
+                setInjectorTests(null);
                 enabler.showInjectorTests(false).selectInjectorType(null).enableCoding(false);
                 testListViewItems.clear();
                 return;
@@ -984,7 +965,7 @@ public class MainSectionController {
             Injector injector = (Injector) newValue;
             currentVoltAmpereProfile = injectorsRepository.findByInjectorCode(injector.getInjectorCode()).getVoltAmpereProfile();
             injector.setVoltAmpereProfile(currentVoltAmpereProfile);
-            currentInjectorObtainer.setInjector(injector);
+            setInjector(injector);
 
             fetchTestsFromRepository();
 
@@ -1197,7 +1178,7 @@ public class MainSectionController {
 
     private boolean checkInjectorForCoding(Injector injector) {
 
-        String manufacturerName = currentManufacturerObtainer.getCurrentManufacturer().getManufacturerName();
+        String manufacturerName = getManufacturer().getManufacturerName();
         int codetype = injector.getCodetype();
 
         if (manufacturerName.equals("Bosch") || manufacturerName.equals("Denso") || manufacturerName.equals("Delphi"))

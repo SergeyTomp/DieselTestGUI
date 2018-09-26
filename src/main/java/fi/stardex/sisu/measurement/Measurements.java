@@ -195,7 +195,7 @@ public class Measurements implements ChangeListener<Boolean> {
             injectorSectionStartToggleButton.setSelected(false);
             start();
         } else
-            stopMeasurements();
+            mainSectionStartToggleButton.setSelected(false);
 
     }
 

@@ -200,7 +200,6 @@ public class CSVSUpdater {
                 customInjectorTestsList.forEach(injectorTest -> {
                     try {
                         String adjustingTimeValue = (injectorTest.getAdjustingTime() == null) ? "" : injectorTest.getAdjustingTime().toString();
-                        String codefieldValue = (injectorTest.getCodefield() == null) ? "" : injectorTest.getCodefield();
                         String voltAmpereProfileValue = (injectorTest.getVoltAmpereProfile() == null) ? "" : injectorTest.getVoltAmpereProfile().toString();
                         writer.append(injectorTest.getId().toString()).append(COMMA_DELIMITER)
                                 .append(injectorTest.getInjector().toString()).append(COMMA_DELIMITER)
@@ -209,7 +208,6 @@ public class CSVSUpdater {
                                 .append(injectorTest.getSettedPressure().toString()).append(COMMA_DELIMITER)
                                 .append(adjustingTimeValue).append(COMMA_DELIMITER)
                                 .append(injectorTest.getMeasurementTime().toString()).append(COMMA_DELIMITER)
-                                .append(codefieldValue).append(COMMA_DELIMITER)
                                 .append(injectorTest.getInjectionRate().toString()).append(COMMA_DELIMITER)
                                 .append(injectorTest.getTotalPulseTime().toString()).append(COMMA_DELIMITER)
                                 .append(injectorTest.getNominalFlow().toString()).append(COMMA_DELIMITER)

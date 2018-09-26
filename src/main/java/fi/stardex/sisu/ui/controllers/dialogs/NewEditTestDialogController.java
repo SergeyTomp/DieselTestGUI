@@ -4,7 +4,6 @@ import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.persistence.orm.cr.inj.TestName;
 import fi.stardex.sisu.persistence.repos.cr.InjectorTestRepository;
 import fi.stardex.sisu.persistence.repos.cr.TestNamesRepository;
-import fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
@@ -15,6 +14,8 @@ import javafx.stage.Stage;
 import javax.annotation.PostConstruct;
 import java.util.LinkedList;
 import java.util.List;
+
+import static fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer.getInjector;
 
 public class NewEditTestDialogController {
 
@@ -43,8 +44,6 @@ public class NewEditTestDialogController {
 
     private List<TestName> testNames = new LinkedList<>();
 
-    private CurrentInjectorObtainer currentInjectorObtainer;
-
     private InjectorTestRepository injectorTestRepository;
 
     private TestNamesRepository testNamesRepository;
@@ -54,10 +53,6 @@ public class NewEditTestDialogController {
     private ListView<InjectorTest> testListView;
 
     private State currentState;
-
-    public void setCurrentInjectorObtainer(CurrentInjectorObtainer currentInjectorObtainer) {
-        this.currentInjectorObtainer = currentInjectorObtainer;
-    }
 
     public void setInjectorTestRepository(InjectorTestRepository injectorTestRepository) {
         this.injectorTestRepository = injectorTestRepository;
@@ -95,7 +90,7 @@ public class NewEditTestDialogController {
 
     //TODO freq and flowrange
     private void createAndSave() {
-        InjectorTest injectorTest = new InjectorTest(currentInjectorObtainer.getInjector(), testComboBox.getSelectionModel().getSelectedItem(),
+        InjectorTest injectorTest = new InjectorTest(getInjector(), testComboBox.getSelectionModel().getSelectedItem(),
                 Integer.valueOf(rpmTF.getText()), Integer.valueOf(barTF.getText()), Integer.valueOf(adjTimeTF.getText()), Integer.valueOf(measureTimeTF.getText()),
                 Integer.valueOf(freqTF.getText()), Integer.valueOf(widthTF.getText()), Double.valueOf(nominalTF.getText()), Double.valueOf(flowRangeTF.getText()));
 
@@ -130,7 +125,7 @@ public class NewEditTestDialogController {
             testComboBox.setDisable(false);
             testComboBox.getItems().setAll(testNames);
 
-            List<InjectorTest> injectorTests = injectorTestRepository.findAllByInjector(currentInjectorObtainer.getInjector());
+            List<InjectorTest> injectorTests = injectorTestRepository.findAllByInjector(getInjector());
 
             if (injectorTests != null)
                 injectorTests.forEach(injectorTest -> testComboBox.getItems().remove(injectorTest.getTestName()));

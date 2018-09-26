@@ -3,13 +3,15 @@ package fi.stardex.sisu.util.obtainers;
 import fi.stardex.sisu.persistence.orm.Manufacturer;
 
 public class CurrentManufacturerObtainer {
-    private Manufacturer currentManufacturer;
 
-    public Manufacturer getCurrentManufacturer() {
-        return currentManufacturer;
+    private static Manufacturer manufacturer;
+
+    public static Manufacturer getManufacturer() {
+        return manufacturer;
     }
 
-    public void setCurrentManufacturer(Manufacturer currentManufacturer) {
-        this.currentManufacturer = currentManufacturer;
+    public static void setManufacturer(Manufacturer newManufacturer) {
+        manufacturer = newManufacturer;
     }
+
 }

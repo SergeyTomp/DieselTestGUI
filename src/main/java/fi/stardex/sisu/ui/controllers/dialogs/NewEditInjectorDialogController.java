@@ -10,8 +10,6 @@ import fi.stardex.sisu.persistence.repos.cr.InjectorTestRepository;
 import fi.stardex.sisu.persistence.repos.cr.InjectorsRepository;
 import fi.stardex.sisu.persistence.repos.cr.VoltAmpereProfileRepository;
 import fi.stardex.sisu.ui.ViewHolder;
-import fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer;
-import fi.stardex.sisu.util.obtainers.CurrentManufacturerObtainer;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -27,6 +25,9 @@ import javax.annotation.PostConstruct;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
+
+import static fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer.getInjector;
+import static fi.stardex.sisu.util.obtainers.CurrentManufacturerObtainer.getManufacturer;
 
 public class NewEditInjectorDialogController {
 
@@ -92,10 +93,6 @@ public class NewEditInjectorDialogController {
 
     private ViewHolder newEditVOAPDialog;
 
-    private CurrentManufacturerObtainer currentManufacturerObtainer;
-
-    private CurrentInjectorObtainer currentInjectorObtainer;
-
     public void setInjectorTypeRepository(InjectorTypeRepository injectorTypeRepository) {
         this.injectorTypeRepository = injectorTypeRepository;
     }
@@ -110,14 +107,6 @@ public class NewEditInjectorDialogController {
 
     public void setNewEditVOAPDialog(ViewHolder newEditVOAPDialog) {
         this.newEditVOAPDialog = newEditVOAPDialog;
-    }
-
-    public void setCurrentManufacturerObtainer(CurrentManufacturerObtainer currentManufacturerObtainer) {
-        this.currentManufacturerObtainer = currentManufacturerObtainer;
-    }
-
-    public void setCurrentInjectorObtainer(CurrentInjectorObtainer currentInjectorObtainer) {
-        this.currentInjectorObtainer = currentInjectorObtainer;
     }
 
     private Stage newVOAPStage;
@@ -156,9 +145,7 @@ public class NewEditInjectorDialogController {
             selectFirst();
         });
 
-        voapListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            changeLabels(newValue);
-        });
+        voapListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> changeLabels(newValue));
 
         ContextMenu voapListMenu = new ContextMenu();
         MenuItem newVOAP = new MenuItem("New");
@@ -194,7 +181,7 @@ public class NewEditInjectorDialogController {
         }
 
         noUniqueLabel.setVisible(false);
-        Injector newInj = new Injector(injectorCodeTF.getText(), currentManufacturerObtainer.getCurrentManufacturer(),
+        Injector newInj = new Injector(injectorCodeTF.getText(), getManufacturer(),
                 voapListView.getSelectionModel().getSelectedItem(), true);
 
         injectorsRepository.save(newInj);
@@ -205,7 +192,7 @@ public class NewEditInjectorDialogController {
     }
 
     private void updateInjector() {
-        Injector injectorForUpdate = currentInjectorObtainer.getInjector();
+        Injector injectorForUpdate = getInjector();
         injectorForUpdate.setVoltAmpereProfile(voapListView.getSelectionModel().getSelectedItem());
         List<InjectorTest> injectorTests = injectorTestRepository.findAllByInjector(injectorForUpdate);
         injectorTests.clear();
@@ -218,10 +205,10 @@ public class NewEditInjectorDialogController {
     }
 
     private void deleteInjector() {
-        Injector injector = currentInjectorObtainer.getInjector();
+        Injector injector = getInjector();
         injectorsRepository.delete(injector);
         modelListView.getItems().remove(injector);
-//        currentManufacturerObtainer.getCurrentManufacturer().getInjectors().remove(injector);
+//        getManufacturer().getInjectors().remove(injector);
 
         stage.close();
     }
@@ -268,7 +255,7 @@ public class NewEditInjectorDialogController {
 
     public void setEdit() {
         currentState = State.EDIT;
-        Injector injector = currentInjectorObtainer.getInjector();
+        Injector injector = getInjector();
 
         injectorCodeTF.setDisable(true);
         injTypeCB.setDisable(true);
@@ -293,7 +280,7 @@ public class NewEditInjectorDialogController {
 
     public void setDelete() {
         currentState = State.DELETE;
-        Injector injector = currentInjectorObtainer.getInjector();
+        Injector injector = getInjector();
 
         injectorCodeTF.setDisable(true);
         injTypeCB.setDisable(true);

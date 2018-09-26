@@ -51,9 +51,6 @@ public class InjectorTest implements ChangeListener<Boolean> {
     @Column(name = "measurement_time")
     private Integer measurementTime;
 
-    @Column(name = "codefield", length = 45)
-    private String codefield;
-
     @Column(name = "injection_rate")
     private Integer injectionRate;
 
@@ -161,10 +158,6 @@ public class InjectorTest implements ChangeListener<Boolean> {
 
     public Integer getMeasurementTime() {
         return measurementTime;
-    }
-
-    public String getCodefield() {
-        return codefield;
     }
 
     public Integer getInjectionRate() {

@@ -35,9 +35,6 @@ import fi.stardex.sisu.util.VisualUtils;
 import fi.stardex.sisu.util.enums.BeakerType;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.i18n.UTF8Control;
-import fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer;
-import fi.stardex.sisu.util.obtainers.CurrentInjectorTestsObtainer;
-import fi.stardex.sisu.util.obtainers.CurrentManufacturerObtainer;
 import fi.stardex.sisu.util.rescalers.Rescaler;
 import fi.stardex.sisu.util.view.ApplicationAppearanceChanger;
 import fi.stardex.sisu.util.wrappers.StatusBarWrapper;
@@ -93,32 +90,26 @@ public class JavaFXSpringConfigure {
     @Bean
     @Autowired
     public MainSectionController mainSectionController(@Lazy Enabler enabler,
-                                                       CurrentManufacturerObtainer currentManufacturerObtainer,
                                                        ApplicationAppearanceChanger applicationAppearanceChanger,
                                                        VoltAmpereProfileController voltAmpereProfileController,
-                                                       CurrentInjectorObtainer currentInjectorObtainer,
                                                        InjectorSectionController injectorSectionController,
                                                        InjectorsRepository injectorsRepository,
                                                        InjectorTestRepository injectorTestRepository,
-                                                       CurrentInjectorTestsObtainer currentInjectorTestsObtainer,
                                                        @Lazy ModbusRegisterProcessor flowModbusWriter,
                                                        HighPressureSectionController highPressureSectionController,
                                                        Preferences rootPrefs, @Lazy Measurements measurements,
                                                        @Lazy FlowReport flowReport) {
         MainSectionController mainSectionController = (MainSectionController) mainSection().getController();
         mainSectionController.setEnabler(enabler);
-        mainSectionController.setCurrentManufacturerObtainer(currentManufacturerObtainer);
         mainSectionController.setApplicationAppearanceChanger(applicationAppearanceChanger);
         mainSectionController.setManufacturerMenuDialog(manufacturerMenuDialog());
         mainSectionController.setNewEditInjectorDialog(newEditInjectorDialog());
         mainSectionController.setNewEditTestDialog(newEditTestDialog());
         mainSectionController.setVoltAmpereProfileController(voltAmpereProfileController);
-        mainSectionController.setCurrentInjectorObtainer(currentInjectorObtainer);
         mainSectionController.setWidthCurrentSignalSpinner(injectorSectionController.getWidthCurrentSignalSpinner());
         mainSectionController.setFreqCurrentSignalSpinner(injectorSectionController.getFreqCurrentSignalSpinner());
         mainSectionController.setInjectorsRepository(injectorsRepository);
         mainSectionController.setInjectorTestRepository(injectorTestRepository);
-        mainSectionController.setCurrentInjectorTestsObtainer(currentInjectorTestsObtainer);
         mainSectionController.setFlowModbusWriter(flowModbusWriter);
         mainSectionController.setHighPressureSectionController(highPressureSectionController);
         mainSectionController.setI18N(i18N);
@@ -436,17 +427,13 @@ public class JavaFXSpringConfigure {
     public NewEditInjectorDialogController newEditInjectorDialogController(InjectorTypeRepository injectorTypeRepository,
                                                                            InjectorTestRepository injectorTestRepository,
                                                                            VoltAmpereProfileRepository voltAmpereProfileRepository,
-                                                                           InjectorsRepository injectorsRepository,
-                                                                           CurrentManufacturerObtainer currentManufacturerObtainer,
-                                                                           CurrentInjectorObtainer currentInjectorObtainer) {
+                                                                           InjectorsRepository injectorsRepository) {
         NewEditInjectorDialogController newEditInjectorDialogController = (NewEditInjectorDialogController) newEditInjectorDialog().getController();
         newEditInjectorDialogController.setInjectorTypeRepository(injectorTypeRepository);
         newEditInjectorDialogController.setInjectorTestRepository(injectorTestRepository);
         newEditInjectorDialogController.setVoltAmpereProfileRepository(voltAmpereProfileRepository);
         newEditInjectorDialogController.setInjectorsRepository(injectorsRepository);
         newEditInjectorDialogController.setNewEditVOAPDialog(newEditVOAPDialog());
-        newEditInjectorDialogController.setCurrentManufacturerObtainer(currentManufacturerObtainer);
-        newEditInjectorDialogController.setCurrentInjectorObtainer(currentInjectorObtainer);
         return newEditInjectorDialogController;
     }
 
@@ -457,11 +444,9 @@ public class JavaFXSpringConfigure {
 
     @Bean
     @Autowired
-    public NewEditTestDialogController newEditTestDialogController(CurrentInjectorObtainer currentInjectorObtainer,
-                                                                   InjectorTestRepository injectorTestRepository,
+    public NewEditTestDialogController newEditTestDialogController(InjectorTestRepository injectorTestRepository,
                                                                    TestNamesRepository testNamesRepositor) {
         NewEditTestDialogController newEditTestDialogController = (NewEditTestDialogController) newEditTestDialog().getController();
-        newEditTestDialogController.setCurrentInjectorObtainer(currentInjectorObtainer);
         newEditTestDialogController.setInjectorTestRepository(injectorTestRepository);
         newEditTestDialogController.setTestNamesRepository(testNamesRepositor);
         return newEditTestDialogController;
@@ -473,14 +458,12 @@ public class JavaFXSpringConfigure {
                                        SettingsController settingsController,
                                        ModbusRegisterProcessor ultimaModbusWriter,
                                        RegisterProvider ultimaRegisterProvider,
-                                       CurrentInjectorObtainer currentInjectorObtainer,
                                        AdditionalSectionController additionalSectionController) {
         RLCController RLCController = additionalSectionController.getRlCController();
         RLCController.setInjectorSectionController(injectorSectionController);
         RLCController.setSettingsController(settingsController);
         RLCController.setUltimaModbusWriter(ultimaModbusWriter);
         RLCController.setUltimaRegisterProvider(ultimaRegisterProvider);
-        RLCController.setCurrentInjectorObtainer(currentInjectorObtainer);
         RLCController.setI18N(i18N);
         return RLCController;
 

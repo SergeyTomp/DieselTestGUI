@@ -169,6 +169,8 @@ public class Enabler {
 
         if (isStarted)
             enableMainSectionStartToggleButton(true);
+        else
+            enableMainSectionStartToggleButton(testListView.getSelectionModel().getSelectedIndex() == 0);
 
         TestType testType = getTestType();
 

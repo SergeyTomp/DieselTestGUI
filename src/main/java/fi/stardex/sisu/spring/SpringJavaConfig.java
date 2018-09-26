@@ -37,9 +37,6 @@ import fi.stardex.sisu.util.DelayCalculator;
 import fi.stardex.sisu.util.VisualUtils;
 import fi.stardex.sisu.util.converters.FlowResolver;
 import fi.stardex.sisu.util.i18n.I18N;
-import fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer;
-import fi.stardex.sisu.util.obtainers.CurrentInjectorTestsObtainer;
-import fi.stardex.sisu.util.obtainers.CurrentManufacturerObtainer;
 import fi.stardex.sisu.util.rescalers.BackFlowRescaler;
 import fi.stardex.sisu.util.rescalers.DeliveryRescaler;
 import fi.stardex.sisu.util.rescalers.Rescaler;
@@ -482,21 +479,6 @@ public class SpringJavaConfig {
     @Bean
     public Rescaler backFlowRescaler() {
         return new BackFlowRescaler();
-    }
-
-    @Bean
-    public CurrentManufacturerObtainer currentManufacturerObtainer() {
-        return new CurrentManufacturerObtainer();
-    }
-
-    @Bean
-    public CurrentInjectorObtainer currentInjectorObtainer() {
-        return new CurrentInjectorObtainer();
-    }
-
-    @Bean
-    public CurrentInjectorTestsObtainer currentInjectorTestObtainer() {
-        return new CurrentInjectorTestsObtainer();
     }
 
     @Bean

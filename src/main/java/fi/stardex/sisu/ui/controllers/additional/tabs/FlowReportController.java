@@ -1,5 +1,6 @@
 package fi.stardex.sisu.ui.controllers.additional.tabs;
 
+import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.store.FlowReport;
 import fi.stardex.sisu.store.FlowReport.FlowTestResult;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -12,13 +13,15 @@ import javafx.scene.control.cell.PropertyValueFactory;
 
 import javax.annotation.PostConstruct;
 
+import static fi.stardex.sisu.util.converters.DataConverter.convertDataToDouble;
+
 public class FlowReportController {
 
     @FXML
     private TableView<FlowTestResult> flowTableView;
 
     @FXML
-    private TableColumn<FlowTestResult, String> flowTestNameColumn;
+    private TableColumn<FlowTestResult, InjectorTest> flowTestNameColumn;
 
     @FXML
     private TableColumn<FlowTestResult, String> flowTypeColumn;
@@ -27,16 +30,16 @@ public class FlowReportController {
     private TableColumn<FlowTestResult, String> flowNominalColumn;
 
     @FXML
-    private TableColumn<FlowTestResult, Double> flow1Column;
+    private TableColumn<FlowTestResult, String> flow1Column;
 
     @FXML
-    private TableColumn<FlowTestResult, Double> flow2Column;
+    private TableColumn<FlowTestResult, String> flow2Column;
 
     @FXML
-    private TableColumn<FlowTestResult, Double> flow3Column;
+    private TableColumn<FlowTestResult, String> flow3Column;
 
     @FXML
-    private TableColumn<FlowTestResult, Double> flow4Column;
+    private TableColumn<FlowTestResult, String> flow4Column;
 
     @FXML
     private TableColumn<FlowTestResult, Boolean> deleteColumn;
@@ -66,7 +69,7 @@ public class FlowReportController {
 
     private void setupTableColumns() {
 
-        flowTestNameColumn.setCellValueFactory(new PropertyValueFactory<>("testName"));
+        flowTestNameColumn.setCellValueFactory(new PropertyValueFactory<>("injectorTest"));
         flowTypeColumn.setCellValueFactory(new PropertyValueFactory<>("flowType"));
         flowNominalColumn.setCellValueFactory(new PropertyValueFactory<>("nominalFlow"));
         flow1Column.setCellValueFactory(new PropertyValueFactory<>("flow1"));
@@ -84,12 +87,12 @@ public class FlowReportController {
 
     }
 
-    private void setCellFactory(TableColumn<FlowTestResult, Double> column) {
+    private void setCellFactory(TableColumn<FlowTestResult, String> column) {
 
-        column.setCellFactory(param -> new TableCell<FlowTestResult, Double>() {
+        column.setCellFactory(param -> new TableCell<FlowTestResult, String>() {
 
             @Override
-            protected void updateItem(Double item, boolean empty) {
+            protected void updateItem(String item, boolean empty) {
 
                 super.updateItem(item, empty);
 
@@ -97,7 +100,7 @@ public class FlowReportController {
                     setText(null);
                     setStyle(null);
                 } else {
-                    setText(item.toString());
+                    setText(item);
 
                     FlowTestResult flowTestResult = flowTableView.getItems().get(getTableRow().getIndex());
 
@@ -106,7 +109,10 @@ public class FlowReportController {
                     double acceptableFlowRangeLeft = flowTestResult.getAcceptableFlowRangeLeft();
                     double acceptableFlowRangeRight = flowTestResult.getAcceptableFlowRangeRight();
 
-                    setStyle(getColorForCell(item, flowRangeLeft, flowRangeRight, acceptableFlowRangeLeft, acceptableFlowRangeRight));
+                    if (item.equals("-"))
+                        setStyle(CELL_COLOR_DEFAULT);
+                    else
+                        setStyle(getColorForCell(convertDataToDouble(item), flowRangeLeft, flowRangeRight, acceptableFlowRangeLeft, acceptableFlowRangeRight));
 
                 }
 
@@ -132,12 +138,10 @@ public class FlowReportController {
 
         Range range = new Range();
 
-        if (cellValue == 0d)
-            return CELL_COLOR_DEFAULT;
+        if (cellValue == 0d || range.beyondAcceptableRange())
+            return CELL_COLOR_RED;
         else if (range.inAcceptableRange())
             return CELL_COLOR_ORANGE;
-        else if (range.beyondAcceptableRange())
-            return CELL_COLOR_RED;
         else
             throw new RuntimeException("Invalid cell value");
 

@@ -5,13 +5,15 @@ import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import java.util.List;
 
 public class CurrentInjectorTestsObtainer {
-    private List<InjectorTest> injectorTests;
 
-    public List<InjectorTest> getInjectorTests() {
+    private static List<InjectorTest> injectorTests;
+
+    public static List<InjectorTest> getInjectorTests() {
         return injectorTests;
     }
 
-    public void setInjectorTests(List<InjectorTest> injectorTests) {
-        this.injectorTests = injectorTests;
+    public static void setInjectorTests(List<InjectorTest> newInjectorTests) {
+        injectorTests = newInjectorTests;
     }
+
 }
