@@ -192,9 +192,9 @@ label
     -fx-opacity: 1;
 }
 
-.led:focused{
-    -fx-opacity: 1;
-}
+/*.led:focused{*/
+    /*-fx-opacity: 1;*/
+/*}*/
 
 .led .ledBlink-on{
     -fx-background-image: url("../img/LED-on.png");
@@ -217,7 +217,7 @@ label
 .ledBlink-off{
     -fx-background-image: url("../img/LED-off.png");
     -fx-background-size: stretch;
-    -fx-opacity: 1;
+    /*-fx-opacity: 1;*/
 }
 
 .ledBlink-disable{
@@ -353,10 +353,10 @@ label
     -fx-opacity: 1;
 }
 
-.pump-button:focused{
+/*.pump-button:focused{*/
 
-    -fx-opacity: 1;
-}
+    /*-fx-opacity: 1;*/
+/*}*/
 
 .pump-button:armed{
 
@@ -394,10 +394,10 @@ label
     -fx-opacity: 1;
 }
 
-.cooler:focused{
+/*.cooler:focused{*/
 
-    -fx-opacity: 1;
-}
+    /*-fx-opacity: 1;*/
+/*}*/
 
 .cooler:armed{
 

@@ -3,6 +3,8 @@ package fi.stardex.sisu.ui.controllers.additional;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.ToggleButton;
@@ -38,13 +40,16 @@ public class LedController implements Initializable {
 
     private Timeline timeline = new Timeline();
 
-    private KeyFrame keyFrame = new KeyFrame(Duration.millis(500), event -> {
-        if (blink) {
-            ledBeaker.getStyleClass().set(2, LED_BLINK_OFF);
-            blink = false;
-        } else {
-            ledBeaker.getStyleClass().set(2, LED_BLINK_ON);
-            blink = true;
+    private KeyFrame keyFrame = new KeyFrame(Duration.millis(500), new EventHandler<ActionEvent>() {
+        @Override
+        public void handle(ActionEvent event) {
+            if (blink) {
+                ledBeaker.getStyleClass().set(2, LED_BLINK_OFF);
+                blink = false;
+            } else {
+                ledBeaker.getStyleClass().set(2, LED_BLINK_ON);
+                blink = true;
+            }
         }
     });
 

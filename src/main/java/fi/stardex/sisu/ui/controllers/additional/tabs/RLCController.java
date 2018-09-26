@@ -7,7 +7,6 @@ import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
-import fi.stardex.sisu.ui.controllers.additional.LedController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer;
@@ -120,7 +119,7 @@ public class RLCController {
         return parameter4Gauge;
     }
 
-    private List<LedController> activeControllers;
+    private List<ToggleButton> activeControllers;
     private ComboBox<InjectorChannel> injectorChannelComboBox;
 
     @PostConstruct
@@ -176,7 +175,7 @@ public class RLCController {
     private void measure() {
         logger.warn("Measure Button Pressed");
         activeControllers = injectorSectionController.getActiveControllers();
-        LedController ledController = singleSelected();
+        ToggleButton ledController = singleSelected();
         Double parameter1;
         Double parameter2;
         if (ledController != null) {
@@ -186,7 +185,7 @@ public class RLCController {
             });
             try {
                 int injectorModbusChannel = injectorChannelComboBox.getSelectionModel().getSelectedItem() == InjectorChannel.SINGLE_CHANNEL ?
-                        1 : ledController.getNumber();
+                        1 : getNumber(ledController);
                 ultimaModbusWriter.add(ModbusMapUltima.RLC_measure_channel_num, injectorModbusChannel);
                 ultimaModbusWriter.add(ModbusMapUltima.RLC_measure_request, true);
                 boolean ready;
@@ -248,11 +247,11 @@ public class RLCController {
 
     private void setMeasurementResultValue(MeasurementResult measurementResult, String value) {
         activeControllers = injectorSectionController.getActiveControllers();
-        LedController ledController = singleSelected();
+        ToggleButton ledController = singleSelected();
         if (null == ledController) {
             return;
         }
-        measurementResult.setParameterValue(ledController.getNumber(), value);
+        measurementResult.setParameterValue(getNumber(ledController), value);
     }
 
     private void setCoilData(Double parameter1, Double parameter2) {
@@ -269,10 +268,14 @@ public class RLCController {
         logger.warn("Measure Button Ready (Enabled)");
     }
 
-    private LedController singleSelected() {
+    private ToggleButton singleSelected() {
         if (activeControllers.size() != 1) { return null;}
-        LedController ledController = activeControllers.get(0);
-        if (ledController.getNumber() > 4) { return null;}
+        ToggleButton ledController = activeControllers.get(0);
+        if (getNumber(ledController) > 4) { return null;}
         return ledController;
+    }
+
+    private int getNumber(ToggleButton ledBeakerController) {
+        return Integer.parseInt(ledBeakerController.getText());
     }
 }

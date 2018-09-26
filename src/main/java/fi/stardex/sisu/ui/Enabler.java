@@ -129,10 +129,10 @@ public class Enabler {
         piezoRadioButton = injectorSectionController.getPiezoRadioButton();
         piezoDelphiRadioButton = injectorSectionController.getPiezoDelphiRadioButton();
         piezoCoilToggleGroup = injectorSectionController.getPiezoCoilToggleGroup();
-        ledBeaker1 = injectorSectionController.getLedBeaker1Controller().getLedBeaker();
-        ledBeaker2 = injectorSectionController.getLedBeaker2Controller().getLedBeaker();
-        ledBeaker3 = injectorSectionController.getLedBeaker3Controller().getLedBeaker();
-        ledBeaker4 = injectorSectionController.getLedBeaker4Controller().getLedBeaker();
+        ledBeaker1 = injectorSectionController.getLed1ToggleButton();
+        ledBeaker2 = injectorSectionController.getLed2ToggleButton();
+        ledBeaker3 = injectorSectionController.getLed3ToggleButton();
+        ledBeaker4 = injectorSectionController.getLed4ToggleButton();
 
         storeRLCButton = rlcController.getStoreButton();
         measureButton = rlcController.getMeasureButton();

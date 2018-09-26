@@ -172,10 +172,10 @@ public abstract class ChartTask extends TimerTask {
 
         } else {
 
-            List<Integer> activeLedControllerNumbers = injectorSectionController.getArrayNumbersOfActiveControllers();
-            if (!activeLedControllerNumbers.contains(getChartNumber()))
-                return;
-
+//            List<Integer> activeLedControllerNumbers = injectorSectionController.fillArrayNumbersOfActiveControllers();
+//            if (!activeLedControllerNumbers.contains(getChartNumber()))
+//                return;
+            if(!injectorSectionController.getArrayNumbersOfActiveControllers().contains(getChartNumber())) return;
         }
 
         int n;

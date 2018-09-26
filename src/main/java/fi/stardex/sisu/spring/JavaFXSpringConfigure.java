@@ -18,7 +18,6 @@ import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.RootLayoutController;
 import fi.stardex.sisu.ui.controllers.additional.AdditionalSectionController;
 import fi.stardex.sisu.ui.controllers.additional.BeakerController;
-import fi.stardex.sisu.ui.controllers.additional.LedController;
 import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.*;
 import fi.stardex.sisu.ui.controllers.cr.CRSectionController;
@@ -43,6 +42,7 @@ import fi.stardex.sisu.version.StardexVersion;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -220,7 +220,7 @@ public class JavaFXSpringConfigure {
                                                       Rescaler deliveryRescaler) {
         BeakerController beakerDelivery1Controller = flowController.getBeakerDelivery1Controller();
         setupBeakerController(beakerDelivery1Controller, flowController, flowController.getDelivery1TextField(),
-                injectorSectionController.getLedBeaker1Controller(), deliveryRescaler, "Delivery1", BeakerType.DELIVERY);
+                injectorSectionController.getLed1ToggleButton(), deliveryRescaler, "Delivery1", BeakerType.DELIVERY);
         return beakerDelivery1Controller;
     }
 
@@ -231,7 +231,7 @@ public class JavaFXSpringConfigure {
                                                       Rescaler deliveryRescaler) {
         BeakerController beakerDelivery2Controller = flowController.getBeakerDelivery2Controller();
         setupBeakerController(beakerDelivery2Controller, flowController, flowController.getDelivery2TextField(),
-                injectorSectionController.getLedBeaker2Controller(), deliveryRescaler, "Delivery2", BeakerType.DELIVERY);
+                injectorSectionController.getLed2ToggleButton(), deliveryRescaler, "Delivery2", BeakerType.DELIVERY);
         return beakerDelivery2Controller;
     }
 
@@ -242,7 +242,7 @@ public class JavaFXSpringConfigure {
                                                       Rescaler deliveryRescaler) {
         BeakerController beakerDelivery3Controller = flowController.getBeakerDelivery3Controller();
         setupBeakerController(beakerDelivery3Controller, flowController, flowController.getDelivery3TextField(),
-                injectorSectionController.getLedBeaker3Controller(), deliveryRescaler, "Delivery3", BeakerType.DELIVERY);
+                injectorSectionController.getLed3ToggleButton(), deliveryRescaler, "Delivery3", BeakerType.DELIVERY);
         return beakerDelivery3Controller;
     }
 
@@ -253,7 +253,7 @@ public class JavaFXSpringConfigure {
                                                       Rescaler deliveryRescaler) {
         BeakerController beakerDelivery4Controller = flowController.getBeakerDelivery4Controller();
         setupBeakerController(beakerDelivery4Controller, flowController, flowController.getDelivery4TextField(),
-                injectorSectionController.getLedBeaker4Controller(), deliveryRescaler, "Delivery4", BeakerType.DELIVERY);
+                injectorSectionController.getLed4ToggleButton(), deliveryRescaler, "Delivery4", BeakerType.DELIVERY);
         return beakerDelivery4Controller;
     }
 
@@ -264,7 +264,7 @@ public class JavaFXSpringConfigure {
                                                       Rescaler backFlowRescaler) {
         BeakerController beakerBackFlow1Controller = flowController.getBeakerBackFlow1Controller();
         setupBeakerController(beakerBackFlow1Controller, flowController, flowController.getBackFlow1TextField(),
-                injectorSectionController.getLedBeaker1Controller(), backFlowRescaler, "Backflow1", BeakerType.BACKFLOW);
+                injectorSectionController.getLed1ToggleButton(), backFlowRescaler, "Backflow1", BeakerType.BACKFLOW);
         return beakerBackFlow1Controller;
     }
 
@@ -275,7 +275,7 @@ public class JavaFXSpringConfigure {
                                                       Rescaler backFlowRescaler) {
         BeakerController beakerBackFlow2Controller = flowController.getBeakerBackFlow2Controller();
         setupBeakerController(beakerBackFlow2Controller, flowController, flowController.getBackFlow2TextField(),
-                injectorSectionController.getLedBeaker2Controller(), backFlowRescaler, "Backflow2", BeakerType.BACKFLOW);
+                injectorSectionController.getLed2ToggleButton(), backFlowRescaler, "Backflow2", BeakerType.BACKFLOW);
         return beakerBackFlow2Controller;
     }
 
@@ -286,7 +286,7 @@ public class JavaFXSpringConfigure {
                                                       Rescaler backFlowRescaler) {
         BeakerController beakerBackFlow3Controller = flowController.getBeakerBackFlow3Controller();
         setupBeakerController(beakerBackFlow3Controller, flowController, flowController.getBackFlow3TextField(),
-                injectorSectionController.getLedBeaker3Controller(), backFlowRescaler, "Backflow3", BeakerType.BACKFLOW);
+                injectorSectionController.getLed3ToggleButton(), backFlowRescaler, "Backflow3", BeakerType.BACKFLOW);
         return beakerBackFlow3Controller;
     }
 
@@ -297,12 +297,12 @@ public class JavaFXSpringConfigure {
                                                       Rescaler backFlowRescaler) {
         BeakerController beakerBackFlow4Controller = flowController.getBeakerBackFlow4Controller();
         setupBeakerController(beakerBackFlow4Controller, flowController, flowController.getBackFlow4TextField(),
-                injectorSectionController.getLedBeaker4Controller(), backFlowRescaler, "Backflow4", BeakerType.BACKFLOW);
+                injectorSectionController.getLed4ToggleButton(), backFlowRescaler, "Backflow4", BeakerType.BACKFLOW);
         return beakerBackFlow4Controller;
     }
 
     private void setupBeakerController(BeakerController beakerController, FlowController flowController, TextField textField,
-                                       LedController ledBeakerController, Rescaler rescaler, String name, BeakerType beakerType) {
+                                       ToggleButton ledBeakerController, Rescaler rescaler, String name, BeakerType beakerType) {
 
         beakerController.setFlowController(flowController);
         beakerController.setTextField(textField);

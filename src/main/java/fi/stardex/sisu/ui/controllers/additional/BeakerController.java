@@ -8,6 +8,7 @@ import javafx.collections.MapChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.StackPane;
@@ -73,7 +74,7 @@ public class BeakerController {
 
     private static final String REGEX = "[0-9.]*[^.]";
 
-    private LedController ledBeakerController;
+    private ToggleButton ledBeakerController;
 
     private TextField textField;
 
@@ -99,7 +100,7 @@ public class BeakerController {
         this.textField = textField;
     }
 
-    public void setLedController(LedController ledBeakerController) {
+    public void setLedController(ToggleButton ledBeakerController) {
         this.ledBeakerController = ledBeakerController;
     }
 
@@ -156,12 +157,12 @@ public class BeakerController {
     private void setupListeners() {
 
         flowController.deliveryRangeLabelPropertyProperty().addListener((observable, oldValue, newValue) ->
-                showBeakerLevels(newValue, backFlowRangeLabel.getText(), ledBeakerController.getLedBeaker().isSelected()));
+                showBeakerLevels(newValue, backFlowRangeLabel.getText(), ledBeakerController.isSelected()));
 
         flowController.backFlowRangeLabelPropertyProperty().addListener((observable, oldValue, newValue) ->
-                showBeakerLevels(deliveryRangeLabel.getText(), newValue, ledBeakerController.getLedBeaker().isSelected()));
+                showBeakerLevels(deliveryRangeLabel.getText(), newValue, ledBeakerController.isSelected()));
 
-        ledBeakerController.getLedBeaker().selectedProperty().addListener((observable, oldValue, newValue) ->
+        ledBeakerController.selectedProperty().addListener((observable, oldValue, newValue) ->
                 showBeakerLevels(deliveryRangeLabel.getText(), backFlowRangeLabel.getText(), newValue));
 
         textField.textProperty().addListener((observable, oldValue, newValue) -> {

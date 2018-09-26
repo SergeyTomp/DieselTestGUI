@@ -3,14 +3,15 @@ package fi.stardex.sisu.charts;
 import fi.stardex.sisu.combobox_values.InjectorChannel;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
-import fi.stardex.sisu.ui.controllers.additional.LedController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.DelayController;
+import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.util.DelayCalculator;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 import net.wimpi.modbus.ModbusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,7 +39,7 @@ public class DelayChartTask extends ChartTask {
 
     private TextField averageDelayTextField;
 
-    private List<LedController> activeControllers;
+    private List<ToggleButton> activeControllers;
 
     private boolean updateOSC;
 
@@ -99,7 +100,7 @@ public class DelayChartTask extends ChartTask {
 
         activeControllers = injectorSectionController.getActiveControllers();
 
-        LedController ledController = singleSelected();
+        ToggleButton ledController = singleSelected();
 
         if (ledController == null) {
 
@@ -118,7 +119,9 @@ public class DelayChartTask extends ChartTask {
 
         int injectorModbusChannel = settingsController
                 .getInjectorsConfigComboBox().getSelectionModel().getSelectedItem()
-                == InjectorChannel.SINGLE_CHANNEL ? 1 : ledController.getNumber();
+                == InjectorChannel.SINGLE_CHANNEL ? 1 : getNumber(ledController);
+
+
 
         ArrayList<Integer> resultDataList = new ArrayList<>();
 
@@ -155,7 +158,7 @@ public class DelayChartTask extends ChartTask {
 
     }
 
-    private LedController singleSelected() {
+    private ToggleButton singleSelected() {
         return (activeControllers.size() != 1) ? null : activeControllers.get(0);
     }
 
@@ -236,6 +239,10 @@ public class DelayChartTask extends ChartTask {
         maximumDelayTextField.setText(String.format("%.0f", delayCalculator.getMaximumDelay()));
         averageDelayTextField.setText(String.format("%.0f", delayCalculator.getAverageDelay()));
 
+    }
+
+    private int getNumber(ToggleButton ledBeakerController) {
+        return Integer.parseInt(ledBeakerController.getText());
     }
 
 }

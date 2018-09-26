@@ -144,10 +144,10 @@ public abstract class FlowUpdater {
         backFlowComboBox = flowController.getBackFlowComboBox();
         checkBoxFlowVisible = settingsController.getFlowVisibleCheckBox();
         comboInjectorConfig = settingsController.getInjectorsConfigComboBox();
-        ledBeaker1ToggleButton = injectorSectionController.getLedBeaker1Controller().getLedBeaker();
-        ledBeaker2ToggleButton = injectorSectionController.getLedBeaker2Controller().getLedBeaker();
-        ledBeaker3ToggleButton = injectorSectionController.getLedBeaker3Controller().getLedBeaker();
-        ledBeaker4ToggleButton = injectorSectionController.getLedBeaker4Controller().getLedBeaker();
+        ledBeaker1ToggleButton = injectorSectionController.getLed1ToggleButton();
+        ledBeaker2ToggleButton = injectorSectionController.getLed2ToggleButton();
+        ledBeaker3ToggleButton = injectorSectionController.getLed3ToggleButton();
+        ledBeaker4ToggleButton = injectorSectionController.getLed4ToggleButton();
         injectorSectionPowerSwitch = injectorSectionController.getInjectorSectionStartToggleButton();
 
         allFlowLabels.add(temperature1Delivery1Label);
