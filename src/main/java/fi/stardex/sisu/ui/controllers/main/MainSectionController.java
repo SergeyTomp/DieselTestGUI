@@ -263,6 +263,10 @@ public class MainSectionController {
         return injectorTestsVBox;
     }
 
+    public ToggleGroup getBaseTypeToggleGroup() {
+        return baseTypeToggleGroup;
+    }
+
     public HBox getStartHBox() {
         return startHBox;
     }
@@ -511,7 +515,7 @@ public class MainSectionController {
 
     }
 
-    private void pointToFirstTest() {
+    public void pointToFirstTest() {
 
         testsSelectionModel.select(0);
         testListView.scrollTo(0);

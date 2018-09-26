@@ -4,7 +4,6 @@ import fi.stardex.sisu.combobox_values.InjectorChannel;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.ui.controllers.additional.tabs.DelayController;
-import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.util.DelayCalculator;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
@@ -39,7 +38,7 @@ public class DelayChartTask extends ChartTask {
 
     private TextField averageDelayTextField;
 
-    private List<ToggleButton> activeControllers;
+    private List<ToggleButton> activeLedToggleButtonsList;
 
     private boolean updateOSC;
 
@@ -98,7 +97,7 @@ public class DelayChartTask extends ChartTask {
 
         updateOSC = delayController.isTabDelayShowingProperty().get();
 
-        activeControllers = injectorSectionController.getActiveControllers();
+        activeLedToggleButtonsList = injectorSectionController.getActiveLedToggleButtonsList();
 
         ToggleButton ledController = singleSelected();
 
@@ -159,7 +158,7 @@ public class DelayChartTask extends ChartTask {
     }
 
     private ToggleButton singleSelected() {
-        return (activeControllers.size() != 1) ? null : activeControllers.get(0);
+        return (activeLedToggleButtonsList.size() != 1) ? null : activeLedToggleButtonsList.get(0);
     }
 
     @Override

@@ -29,6 +29,22 @@ public class CodingController {
 
     private I18N i18N;
 
+    public TextField getInjectorCode1TextField() {
+        return injectorCode1TextField;
+    }
+
+    public TextField getInjectorCode2TextField() {
+        return injectorCode2TextField;
+    }
+
+    public TextField getInjectorCode3TextField() {
+        return injectorCode3TextField;
+    }
+
+    public TextField getInjectorCode4TextField() {
+        return injectorCode4TextField;
+    }
+
     public void setI18N(I18N i18N) {
         this.i18N = i18N;
     }

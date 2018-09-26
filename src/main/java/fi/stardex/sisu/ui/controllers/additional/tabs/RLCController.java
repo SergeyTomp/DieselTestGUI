@@ -3,7 +3,6 @@ package fi.stardex.sisu.ui.controllers.additional.tabs;
 import eu.hansolo.medusa.Gauge;
 import eu.hansolo.medusa.GaugeBuilder;
 import fi.stardex.sisu.combobox_values.InjectorChannel;
-import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
@@ -19,7 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
 import java.util.List;
 
 public class RLCController {
@@ -119,7 +117,7 @@ public class RLCController {
         return parameter4Gauge;
     }
 
-    private List<ToggleButton> activeControllers;
+    private List<ToggleButton> activeLedToggleButtonsList;
     private ComboBox<InjectorChannel> injectorChannelComboBox;
 
     @PostConstruct
@@ -174,7 +172,7 @@ public class RLCController {
 
     private void measure() {
         logger.warn("Measure Button Pressed");
-        activeControllers = injectorSectionController.getActiveControllers();
+        activeLedToggleButtonsList = injectorSectionController.getActiveLedToggleButtonsList();
         ToggleButton ledController = singleSelected();
         Double parameter1;
         Double parameter2;
@@ -246,7 +244,7 @@ public class RLCController {
     }
 
     private void setMeasurementResultValue(MeasurementResult measurementResult, String value) {
-        activeControllers = injectorSectionController.getActiveControllers();
+        activeLedToggleButtonsList = injectorSectionController.getActiveLedToggleButtonsList();
         ToggleButton ledController = singleSelected();
         if (null == ledController) {
             return;
@@ -269,8 +267,8 @@ public class RLCController {
     }
 
     private ToggleButton singleSelected() {
-        if (activeControllers.size() != 1) { return null;}
-        ToggleButton ledController = activeControllers.get(0);
+        if (activeLedToggleButtonsList.size() != 1) { return null;}
+        ToggleButton ledController = activeLedToggleButtonsList.get(0);
         if (getNumber(ledController) > 4) { return null;}
         return ledController;
     }

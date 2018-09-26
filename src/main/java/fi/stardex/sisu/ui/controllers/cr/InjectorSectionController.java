@@ -103,9 +103,9 @@ public class InjectorSectionController {
 
     private ObservableList<ToggleButton> ledToggleButtons;
 
-    private List<ToggleButton> activeControllers = new ArrayList<>();
+    private List<ToggleButton> activeLedToggleButtonsList = new ArrayList<>();
 
-    private List<Integer> arrayNumbersOfActiveControllers = new ArrayList<>();
+    private List<Integer> arrayNumbersOfActiveLedToggleButtons = new ArrayList<>();
 
     private ToggleGroup toggleGroup = new ToggleGroup();
 
@@ -159,9 +159,9 @@ public class InjectorSectionController {
         return injectorSectionStartToggleButton;
     }
 
-    public List<Integer> getArrayNumbersOfActiveControllers()
+    public List<Integer> getArrayNumbersOfActiveLedToggleButtons()
     {
-        return arrayNumbersOfActiveControllers;
+        return arrayNumbersOfActiveLedToggleButtons;
     }
 
     public void setInjectorsConfigComboBox(ComboBox<InjectorChannel> injectorsConfigComboBox) {
@@ -184,18 +184,18 @@ public class InjectorSectionController {
         this.delayController = delayController;
     }
 
-    public synchronized List<ToggleButton> getActiveControllers() {
-        activeControllers.clear();
+    public synchronized List<ToggleButton> getActiveLedToggleButtonsList() {
+        activeLedToggleButtonsList.clear();
         for (ToggleButton s : ledToggleButtons) {
-            if (s.isSelected()) activeControllers.add(s);
+            if (s.isSelected()) activeLedToggleButtonsList.add(s);
         }
-        activeControllers.sort(Comparator.comparingInt(InjectorSectionController.this::getNumber));
-        return activeControllers;
+        activeLedToggleButtonsList.sort(Comparator.comparingInt(InjectorSectionController.this::getNumber));
+        return activeLedToggleButtonsList;
     }
 
-    public void fillArrayNumbersOfActiveControllers() {
-        arrayNumbersOfActiveControllers.clear();
-        getActiveControllers().forEach(e -> arrayNumbersOfActiveControllers.add(getNumber(e)));
+    public void fillArrayNumbersOfActiveLedToggleButtons() {
+        arrayNumbersOfActiveLedToggleButtons.clear();
+        getActiveLedToggleButtonsList().forEach(e -> arrayNumbersOfActiveLedToggleButtons.add(getNumber(e)));
     }
 
     public void setI18N(I18N i18N) {
@@ -370,7 +370,7 @@ public class InjectorSectionController {
 
             writeInjectorTypeRegister();
 
-            List<ToggleButton> activeControllers = getActiveControllers();
+            List<ToggleButton> activeControllers = getActiveLedToggleButtonsList();
 
             Iterator<ToggleButton> activeControllersIterator = activeControllers.iterator();
 
@@ -433,8 +433,8 @@ public class InjectorSectionController {
         public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
 
             if (newValue) {
-                fillArrayNumbersOfActiveControllers();
-                getActiveControllers().forEach(l -> {if(l.isSelected()){ledBlinkStart(l);}});
+                fillArrayNumbersOfActiveLedToggleButtons();
+                getActiveLedToggleButtonsList().forEach(l -> {if(l.isSelected()){ledBlinkStart(l);}});
                 ultimaModbusWriter.add(Injectors_Running_En, true);
                 ledParametersChangeListener.sendLedRegisters();
                 // FIXME: throws NPE if there is no connection
@@ -443,7 +443,7 @@ public class InjectorSectionController {
                 enabler.disableVAP(true);
 
             } else {
-                getActiveControllers().forEach(l -> {if(l.isSelected()){ledBlinkStop(l);}});
+                getActiveLedToggleButtonsList().forEach(l -> {if(l.isSelected()){ledBlinkStop(l);}});
                 ultimaModbusWriter.add(Injectors_Running_En, false);
                 ledParametersChangeListener.switchOffAll();
                 timerTasksManager.stop();

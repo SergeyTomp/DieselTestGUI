@@ -4,6 +4,7 @@ import fi.stardex.sisu.charts.TimerTasksManager;
 import fi.stardex.sisu.devices.Devices;
 import fi.stardex.sisu.measurement.Measurements;
 import fi.stardex.sisu.persistence.orm.Manufacturer;
+import fi.stardex.sisu.persistence.repos.ISADetectionRepository;
 import fi.stardex.sisu.persistence.repos.InjectorTypeRepository;
 import fi.stardex.sisu.persistence.repos.ManufacturerRepository;
 import fi.stardex.sisu.persistence.repos.cr.InjectorTestRepository;
@@ -15,6 +16,7 @@ import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.store.FlowReport;
 import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.ui.ViewHolder;
+import fi.stardex.sisu.ui.controllers.ISADetectionController;
 import fi.stardex.sisu.ui.controllers.RootLayoutController;
 import fi.stardex.sisu.ui.controllers.additional.AdditionalSectionController;
 import fi.stardex.sisu.ui.controllers.additional.BeakerController;
@@ -174,6 +176,38 @@ public class JavaFXSpringConfigure {
     @Bean
     public ViewHolder additionalSection() {
         return loadView("/fxml/sections/Additional/AdditionalSection.fxml");
+    }
+
+    @Bean
+    public ViewHolder isaDetection() {
+        return loadView("/fxml/ISADetection.fxml");
+    }
+
+    @Bean
+    @Autowired
+    public ISADetectionController isaDetectionController(@Lazy ViewHolder rootLayout, InjectorSectionController injectorSectionController,
+                                                         @Lazy Measurements measurements, MainSectionController mainSectionController,
+                                                         ISADetectionRepository isaDetectionRepository,
+                                                         VoltAmpereProfileController voltAmpereProfileController,
+                                                         HighPressureSectionController highPressureSectionController,
+                                                         FlowController flowController) {
+        ISADetectionController isaDetectionController = (ISADetectionController) isaDetection().getController();
+        isaDetectionController.setISAParent(isaDetection().getView());
+        isaDetectionController.setRootParent(rootLayout.getView());
+        isaDetectionController.setInjectorSectionController(injectorSectionController);
+        isaDetectionController.setMeasurements(measurements);
+        isaDetectionController.setMainSectionStartToggleButton(mainSectionController.getStartToggleButton());
+        isaDetectionController.setResetButton(mainSectionController.getResetButton());
+        isaDetectionController.setISADetectionRepository(isaDetectionRepository);
+        isaDetectionController.setBoostUSpinner(voltAmpereProfileController.getBoostUSpinner());
+        isaDetectionController.setVoltAmpereProfileApplyButton(voltAmpereProfileController.getApplyButton());
+        isaDetectionController.setPressReg1Spinner(highPressureSectionController.getPressReg1Spinner());
+        isaDetectionController.setPressureLcd(highPressureSectionController.getPressureLcd());
+        isaDetectionController.setDelivery1TextField(flowController.getDelivery1TextField());
+        isaDetectionController.setDelivery2TextField(flowController.getDelivery2TextField());
+        isaDetectionController.setDelivery3TextField(flowController.getDelivery3TextField());
+        isaDetectionController.setDelivery4TextField(flowController.getDelivery4TextField());
+        return isaDetectionController;
     }
 
     @Bean

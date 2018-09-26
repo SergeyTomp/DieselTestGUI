@@ -161,7 +161,7 @@ public abstract class ChartTask extends TimerTask {
 
         updateOSC = voltageController.isTabVoltageShowingProperty().get();
 
-        if (injectorSectionController.getActiveControllers().size() == 0)
+        if (injectorSectionController.getActiveLedToggleButtonsList().size() == 0)
             return;
 
         if (settingsController.getInjectorsConfigComboBox().getSelectionModel().getSelectedItem() == InjectorChannel.SINGLE_CHANNEL) {
@@ -172,10 +172,10 @@ public abstract class ChartTask extends TimerTask {
 
         } else {
 
-//            List<Integer> activeLedControllerNumbers = injectorSectionController.fillArrayNumbersOfActiveControllers();
+//            List<Integer> activeLedControllerNumbers = injectorSectionController.fillArrayNumbersOfActiveLedToggleButtons();
 //            if (!activeLedControllerNumbers.contains(getChartNumber()))
 //                return;
-            if(!injectorSectionController.getArrayNumbersOfActiveControllers().contains(getChartNumber())) return;
+            if(!injectorSectionController.getArrayNumbersOfActiveLedToggleButtons().contains(getChartNumber())) return;
         }
 
         int n;

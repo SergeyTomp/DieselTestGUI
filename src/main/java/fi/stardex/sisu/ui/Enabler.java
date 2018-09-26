@@ -21,6 +21,7 @@ import javafx.scene.layout.VBox;
 import javax.annotation.PostConstruct;
 
 import static fi.stardex.sisu.util.enums.Tests.TestType.AUTO;
+import static fi.stardex.sisu.util.enums.Tests.TestType.CODING;
 import static fi.stardex.sisu.util.enums.Tests.getTestType;
 
 public class Enabler {
@@ -36,6 +37,8 @@ public class Enabler {
     private ToggleGroup testsToggleGroup;
 
     private RadioButton codingTestRadioButton;
+
+    private ToggleGroup baseTypeToggleGroup;
 
     private ComboBox<GUIType> versionComboBox;
 
@@ -121,6 +124,7 @@ public class Enabler {
         resetButton = mainSectionController.getResetButton();
         testsToggleGroup = mainSectionController.getTestsToggleGroup();
         codingTestRadioButton = mainSectionController.getCodingTestRadioButton();
+        baseTypeToggleGroup = mainSectionController.getBaseTypeToggleGroup();
 
         injectorSectionStartToggleButton = injectorSectionController.getInjectorSectionStartToggleButton();
         widthCurrentSignalSpinner = injectorSectionController.getWidthCurrentSignalSpinner();
@@ -196,6 +200,8 @@ public class Enabler {
 
         modelListView.setDisable(isStarted);
 
+        disableBaseTypeRadioButtons(isStarted);
+
         return this;
 
     }
@@ -258,7 +264,7 @@ public class Enabler {
             case CODING:
                 testListView.setDisable(true);
                 showButtons(false, true);
-                showTiming(false);
+                showTiming(true);
                 showDefaultFlowUnit(true);
                 break;
 
@@ -361,6 +367,12 @@ public class Enabler {
 
     }
 
+    private void disableBaseTypeRadioButtons(boolean disable) {
+
+        baseTypeToggleGroup.getToggles().forEach(radioButton -> ((Node) radioButton).setDisable(disable));
+
+    }
+
     public Enabler disableAllLedsExceptFirst(boolean disable) {
 
         ledBeaker2.setDisable(disable);
@@ -397,7 +409,7 @@ public class Enabler {
 
     public Enabler showInjectorTests(boolean show) {
 
-        timingGridPane.setVisible(show && getTestType() == AUTO);
+        showTiming(show && (getTestType() == AUTO || getTestType() == CODING));
         injectorTestsVBox.setVisible(show);
         startHBox.setVisible(show);
 

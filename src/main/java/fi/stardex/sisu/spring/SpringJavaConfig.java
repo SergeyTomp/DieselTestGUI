@@ -26,6 +26,7 @@ import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.store.FlowReport;
 import fi.stardex.sisu.ui.Enabler;
+import fi.stardex.sisu.ui.controllers.ISADetectionController;
 import fi.stardex.sisu.ui.controllers.additional.AdditionalSectionController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.*;
 import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
@@ -554,10 +555,10 @@ public class SpringJavaConfig {
                                      TestBenchSectionController testBenchSectionController,
                                      HighPressureSectionController highPressureSectionController,
                                      InjectorSectionController injectorSectionController,
-                                     FlowReportController flowReportController,
-                                     Enabler enabler, FlowReport flowReport) {
+                                     Enabler enabler, FlowReport flowReport, CodingController codingController,
+                                     ISADetectionController isaDetectionController) {
         return new Measurements(mainSectionController, testBenchSectionController, highPressureSectionController,
-                injectorSectionController, flowReportController, enabler, flowReport);
+                injectorSectionController, enabler, flowReport, codingController, isaDetectionController);
     }
 
     @Bean

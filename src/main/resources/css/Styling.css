@@ -164,6 +164,10 @@ label
     -fx-text-fill:-textFont-color;
 }
 
+.label-error{
+    -fx-text-fill:red;
+}
+
 /***************
 *led
 ****************/
@@ -339,6 +343,13 @@ label
 
 .switcher:disabled{
     -fx-background-image: url("../img/switcher_disabled.png");
+}
+
+.progress-indicator:indeterminate > .spinner {
+    -fx-progress-color: #2e2eb8;
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+    -fx-background-radius: 0;
 }
 
 .pump-button{
