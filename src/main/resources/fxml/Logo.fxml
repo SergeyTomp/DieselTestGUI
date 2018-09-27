@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.effect.InnerShadow?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<BorderPane fx:id="rootBorderPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="500.0" prefWidth="600.0" style="-fx-background-color: rgba(255, 255, 255, 0.5); -fx-effect: dropshadow(gaussian, yellow, 50, 0, 0, 0); -fx-background-insets: 100; -fx-background-radius: 20;" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.LogoController">
+   <center>
+      <VBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="300.0" prefWidth="400.0" spacing="30.0" BorderPane.alignment="CENTER">
+         <BorderPane.margin>
+            <Insets />
+         </BorderPane.margin>
+         <children>
+            <ImageView fitHeight="150.0" fitWidth="200.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../img/logo.png" />
+               </image>
+            </ImageView>
+            <Label alignment="CENTER" maxHeight="-Infinity" prefHeight="80.0" prefWidth="400.0" text="ULTIMATE EDITION" textAlignment="CENTER" textFill="#0d05f5">
+               <font>
+                  <Font name="Garuda Bold Oblique" size="28.0" />
+               </font>
+            </Label>
+            <ProgressBar fx:id="progressBar" focusTraversable="false" maxHeight="-Infinity" prefHeight="90.0" prefWidth="200.0" progress="0.33" style="-fx-background-color: #2e2eb8;">
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <effect>
+                  <InnerShadow />
+               </effect>
+            </ProgressBar>
+            <HBox alignment="CENTER_RIGHT" prefHeight="40.0" prefWidth="200.0" spacing="20.0">
+               <children>
+                  <Label text="Version" textFill="#0d05f5">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Label>
+                  <Label fx:id="versionLabel" textFill="#0d05f5">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Label>
+               </children>
+               <VBox.margin>
+                  <Insets />
+               </VBox.margin>
+               <padding>
+                  <Insets bottom="10.0" right="40.0" />
+               </padding>
+            </HBox>
+         </children>
+         <padding>
+            <Insets top="30.0" />
+         </padding>
+      </VBox>
+   </center>
+</BorderPane>

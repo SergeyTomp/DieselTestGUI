@@ -13,9 +13,9 @@ import javafx.stage.Stage;
 import javax.swing.*;
 
 public class SisuApplication extends AbstractJavaFxApplicationSupport {
+
     @Override
     public void start(Stage primaryStage) {
-
 
         primaryStage.setTitle("SISU");
 
@@ -30,7 +30,6 @@ public class SisuApplication extends AbstractJavaFxApplicationSupport {
         primaryStage.setScene(scene);
         primaryStage.setMaximized(true);
         primaryStage.show();
-
     }
 
     public static void main(String[] args) {
