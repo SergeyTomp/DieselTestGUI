@@ -21,7 +21,7 @@ public class Injector implements Model {
     private Manufacturer manufacturer;
 
     @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    @JoinColumn(name = "volt_ampere_profile")
+    @JoinColumn(name = "volt_ampere_profile", nullable = false)
     private VoltAmpereProfile voltAmpereProfile;
 
     @Column(name = "code_type", nullable = false)
@@ -57,11 +57,12 @@ public class Injector implements Model {
     public Injector() {
     }
 
-    public Injector(String injectorCode, Manufacturer manufacturer, VoltAmpereProfile voltAmpereProfile, Boolean isCustom) {
+    public Injector(String injectorCode, Manufacturer manufacturer, VoltAmpereProfile voltAmpereProfile, Boolean isCustom, Integer codetype) {
         this.injectorCode = injectorCode;
         this.manufacturer = manufacturer;
         this.voltAmpereProfile = voltAmpereProfile;
         this.isCustom = isCustom;
+        this.codetype = codetype;
     }
 
     public String getInjectorCode() {

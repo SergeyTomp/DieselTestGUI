@@ -7,10 +7,7 @@ import fi.stardex.sisu.persistence.orm.Manufacturer;
 import fi.stardex.sisu.persistence.repos.ISADetectionRepository;
 import fi.stardex.sisu.persistence.repos.InjectorTypeRepository;
 import fi.stardex.sisu.persistence.repos.ManufacturerRepository;
-import fi.stardex.sisu.persistence.repos.cr.InjectorTestRepository;
-import fi.stardex.sisu.persistence.repos.cr.InjectorsRepository;
-import fi.stardex.sisu.persistence.repos.cr.TestNamesRepository;
-import fi.stardex.sisu.persistence.repos.cr.VoltAmpereProfileRepository;
+import fi.stardex.sisu.persistence.repos.cr.*;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.store.FlowReport;
@@ -100,7 +97,8 @@ public class JavaFXSpringConfigure {
                                                        @Lazy ModbusRegisterProcessor flowModbusWriter,
                                                        HighPressureSectionController highPressureSectionController,
                                                        Preferences rootPrefs, @Lazy Measurements measurements,
-                                                       @Lazy FlowReport flowReport) {
+                                                       @Lazy FlowReport flowReport,
+                                                       InfoController infoController) {
         MainSectionController mainSectionController = (MainSectionController) mainSection().getController();
         mainSectionController.setEnabler(enabler);
         mainSectionController.setApplicationAppearanceChanger(applicationAppearanceChanger);
@@ -118,6 +116,7 @@ public class JavaFXSpringConfigure {
         mainSectionController.setRootPrefs(rootPrefs);
         mainSectionController.setMeasurements(measurements);
         mainSectionController.setFlowReport(flowReport);
+        mainSectionController.setInfoController(infoController);
         return mainSectionController;
     }
 
@@ -208,6 +207,35 @@ public class JavaFXSpringConfigure {
         isaDetectionController.setDelivery3TextField(flowController.getDelivery3TextField());
         isaDetectionController.setDelivery4TextField(flowController.getDelivery4TextField());
         return isaDetectionController;
+    }
+
+    @Bean
+    public ViewHolder infoDefault(){
+        return loadView("/fxml/sections/Additional/tabs/DefaultOEM.fxml");
+    }
+
+    @Bean ViewHolder infoBosch(){
+        return loadView("/fxml/sections/Additional/tabs/Bosch.fxml");
+    }
+
+    @Bean ViewHolder infoSiemens(){
+        return loadView("/fxml/sections/Additional/tabs/Siemens.fxml");
+    }
+
+    @Bean ViewHolder infoDenso(){
+        return loadView("/fxml/sections/Additional/tabs/Denso.fxml");
+    }
+
+    @Bean ViewHolder infoCaterpillar(){
+        return loadView("/fxml/sections/Additional/tabs/Caterpillar.fxml");
+    }
+
+    @Bean ViewHolder infoAZPI(){
+        return loadView("/fxml/sections/Additional/tabs/AZPI.fxml");
+    }
+
+    @Bean ViewHolder infoDelphi(){
+        return loadView("/fxml/sections/Additional/tabs/Delphi.fxml");
     }
 
     @Bean
@@ -405,6 +433,87 @@ public class JavaFXSpringConfigure {
         voltAmpereProfileController.setVoltageController(voltageController);
         voltAmpereProfileController.setI18N(i18N);
         return voltAmpereProfileController;
+    }
+
+    @Bean
+    @Autowired
+    public BoschController boschController(ViewHolder infoBosch,
+                                           BoschRepository boschRepository){
+        BoschController boschController = (BoschController) infoBosch.getController();
+        boschController.setBoschRepository(boschRepository);
+        return boschController;
+    }
+
+    @Bean
+    @Autowired
+    public SiemensController siemensController(ViewHolder infoSiemens,
+                                               SiemensReferenceRepository siemensReferenceRepository){
+        SiemensController siemensController = (SiemensController)infoSiemens.getController();
+        siemensController.setSiemensReferenceRepository(siemensReferenceRepository);
+        return siemensController;
+    }
+
+    @Bean
+    @Autowired
+    public DensoController densoController(ViewHolder infoDenso,
+                                           DensoRepository densoRepository){
+        DensoController densoController = (DensoController)infoDenso.getController();
+        densoController.setDensoRepository(densoRepository);
+        return densoController;
+    }
+
+    @Bean
+    @Autowired
+    public DelphiController delphiController(ViewHolder infoDelphi,
+                                             DelphiRepository delphiRepository){
+        DelphiController delphiController = (DelphiController)infoDelphi.getController();
+        delphiController.setDelphiRepository(delphiRepository);
+        return delphiController;
+    }
+
+    @Bean
+    @Autowired
+    public CaterpillarController caterpillarController(ViewHolder infoCaterpillar,
+                                                       CaterpillarRepository caterpillarRepository){
+        CaterpillarController caterpillarController = (CaterpillarController)infoCaterpillar.getController();
+        caterpillarController.setCaterpillarRepository(caterpillarRepository);
+        return caterpillarController;
+    }
+
+    @Bean
+    @Autowired
+    public AZPIController azpiController(ViewHolder infoAZPI,
+                                         AZPIRepository azpiRepository){
+        AZPIController azpiController = (AZPIController) infoAZPI.getController();
+        azpiController.setAZPIRepository(azpiRepository);
+        return azpiController;
+    }
+
+    @Bean
+    @Autowired
+    public InfoController infoController(ViewHolder infoDefault,
+                                         ViewHolder infoBosch,
+                                         ViewHolder infoSiemens,
+                                         ViewHolder infoDenso,
+                                         ViewHolder infoCaterpillar,
+                                         ViewHolder infoAZPI,
+                                         ViewHolder infoDelphi,
+                                         AdditionalSectionController additionalSectionController){
+        InfoController infoController = additionalSectionController.getInfoController();
+        infoController.setInfoDefault(infoDefault.getView());
+        infoController.setInfoBosch(infoBosch.getView());
+        infoController.setInfoSiemens(infoSiemens.getView());
+        infoController.setInfoDenso(infoDenso.getView());
+        infoController.setInfoCaterpillar(infoCaterpillar.getView());
+        infoController.setInfoAZPI(infoAZPI.getView());
+        infoController.setInfoDelphi(infoDelphi.getView());
+        infoController.setBoschController((BoschController) infoBosch.getController());
+        infoController.setSiemensController((SiemensController)infoSiemens.getController());
+        infoController.setDelphiController((DelphiController)infoDelphi.getController());
+        infoController.setDensoController((DensoController)infoDenso.getController());
+        infoController.setCaterpillarController((CaterpillarController)infoCaterpillar.getController());
+        infoController.setAzpiController((AZPIController)infoAZPI.getController());
+        return infoController;
     }
 
     @Bean

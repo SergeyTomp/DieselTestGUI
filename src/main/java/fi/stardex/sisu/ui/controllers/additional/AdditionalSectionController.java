@@ -30,6 +30,8 @@ public class AdditionalSectionController {
 
     @FXML private Tab tabCoding;
 
+    @FXML private Tab tabInfo;
+
     @FXML private TabPane tabPane;
 
     @FXML private StackPane connection;
@@ -45,6 +47,8 @@ public class AdditionalSectionController {
     @FXML private GridPane settings;
 
     @FXML private GridPane rlc;
+
+    @FXML private GridPane info;
 
     @FXML private ConnectionController connectionController;
 
@@ -63,6 +67,8 @@ public class AdditionalSectionController {
     @FXML private Spinner<Double> sensitivitySpinner;
 
     @FXML private CodingController codingController;
+
+    @FXML private InfoController infoController;
 
     private I18N i18N;
 
@@ -98,6 +104,10 @@ public class AdditionalSectionController {
         return codingController;
     }
 
+    public InfoController getInfoController() {
+        return infoController;
+    }
+
     public void setI18N(I18N i18N) {
         this.i18N = i18N;
     }
@@ -108,6 +118,10 @@ public class AdditionalSectionController {
 
     public Tab getTabDelay() {
         return tabDelay;
+    }
+
+    public Tab getTabInfo() {
+        return tabInfo;
     }
 
     @PostConstruct

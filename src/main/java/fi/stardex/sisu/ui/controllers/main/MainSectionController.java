@@ -14,6 +14,7 @@ import fi.stardex.sisu.store.FlowReport;
 import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.InfoController;
 import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.ui.controllers.dialogs.ManufacturerMenuDialogController;
 import fi.stardex.sisu.ui.controllers.dialogs.NewEditInjectorDialogController;
@@ -221,6 +222,8 @@ public class MainSectionController {
 
     private HighPressureSectionController highPressureSectionController;
 
+    private InfoController infoController;
+
     private InjectorsRepository injectorsRepository;
 
     private InjectorTestRepository injectorTestRepository;
@@ -389,6 +392,10 @@ public class MainSectionController {
 
     public void setHighPressureSectionController(HighPressureSectionController highPressureSectionController) {
         this.highPressureSectionController = highPressureSectionController;
+    }
+
+    public void setInfoController(InfoController infoController) {
+        this.infoController = infoController;
     }
 
     public void setI18N(I18N i18N) {
@@ -888,6 +895,7 @@ public class MainSectionController {
         manufacturerListView.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) -> {
 
             setManufacturer(newValue);
+            infoController.changeToDefault();
 
             if (newValue.isCustom()) {
                 defaultRadioButton.setDisable(true);
@@ -990,6 +998,30 @@ public class MainSectionController {
             voltAmpereProfileController.getBatteryUSpinner().getValueFactory().setValue(currentVoltAmpereProfile.getBatteryU());
             voltAmpereProfileController.getNegativeUSpinner().getValueFactory().setValue(currentVoltAmpereProfile.getNegativeU());
             voltAmpereProfileController.getEnableBoostToggleButton().setSelected(currentVoltAmpereProfile.getBoostDisable());
+
+            String manufacturerName = injector.getManufacturer().getManufacturerName();
+            switch (manufacturerName){
+                case "Bosch":
+                    infoController.changeToBosch();
+                    break;
+                case "Denso":
+                    infoController.changgeToDenso();
+                    break;
+                case "Delphi":
+                    infoController.changeToDelphi();
+                    break;
+                case "Caterpillar":
+                    infoController.changeToCaterpillar();
+                    break;
+                case "Siemens":
+                    infoController.changeToSiemens();
+                    break;
+                case "AZPI":
+                    infoController.changeToAZPI();
+                    break;
+                default:infoController.changeToDefault();
+                break;
+            }
 
             voltAmpereProfileController.getApplyButton().fire();
 

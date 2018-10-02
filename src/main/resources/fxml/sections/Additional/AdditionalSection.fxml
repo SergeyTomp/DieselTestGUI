@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<TabPane fx:id="tabPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="210.0" stylesheets="@../../../css/Styling.css" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.additional.AdditionalSectionController">
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+
+<TabPane fx:id="tabPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="210.0" prefWidth="930.0" stylesheets="@../../../css/Styling.css" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.additional.AdditionalSectionController">
     <tabs>
         <Tab fx:id="tabLink" text="%additional.link">
             <fx:include fx:id="connection" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" source="tabs/Connection.fxml" />
@@ -26,6 +28,9 @@
         </Tab>
         <Tab fx:id="tabRLC" text="%h4.tab.RLC">
              <fx:include fx:id="rlc" source="tabs/RLC.fxml" />
+        </Tab>
+        <Tab fx:id="tabInfo" text="Info">
+            <fx:include fx:id="info" source="tabs/Info.fxml" />
         </Tab>
 
     </tabs>

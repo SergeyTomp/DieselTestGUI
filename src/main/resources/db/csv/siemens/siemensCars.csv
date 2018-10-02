@@ -1,0 +1,156 @@
+id,engine,car
+1,DV4TD,Citroën C1
+2,DV4TD,Citroën C2
+3,DV4TD,Citroën C3
+4,DV4TD,Citroën Berlingo
+5,DV4TD,Citroën Partner
+6,DV4TD,Ford Fiesta
+7,DV4TD,Ford Fusion
+8,DV4TD,Peugeot 107
+9,DV4TD,Peugeot 307
+10,DV4TD,Peugeot 1007
+11,DV4TD,Mazda 2
+12,DV4TD,Toyota Aygo
+13,DV4TD,Citroën Xsara
+14,DV4TD,Peugeot 206
+15,DW10TD,Citroën C5
+16,DW10TD,Citroën Berlingo
+17,DW10TD,Citroën Xsara
+18,DW10TD,Peugeot 206
+19,DW10TD,Peugeot 307
+20,DW10TD,Peugeot 406 (Facelift)
+21,DW10TD,Peugeot 407
+22,DW10TD,Peugeot Partner
+23,DW10TD,Suzuki Vitara
+24,DW10BTED,Citroën C4 / C4 Picasso
+25,DW10BTED,Citroën C4 Grand Picasso
+26,DW10BTED,Citroën C5
+27,DW10BTED,Citroën C8
+28,DW10BTED,Citroën Jumpy / Dispatch
+29,DW10BTED,Fiat Ulysse / Scudo
+30,DW10BTED,Ford Focus / C-Max
+31,DW10BTED,Ford Galaxy
+32,DW10BTED,Peugeot 3008
+33,DW10BTED,Peugeot 307 / 308
+34,DW10BTED,Peugeot 407
+35,DW10BTED,Peugeot 607
+36,DW10BTED,Ford Kuga
+37,DW10BTED,Ford Mondeo
+38,DW10BTED,Ford S-Max
+39,DW10BTED,Peugeot 207
+40,DW10BTED,Volvo S40
+41,DW10BTED,Volvo V50
+42,DW10BTED,Volvo V70
+43,DW10BTED,Volvo S80
+44,DW10BTED,Peugeot 807
+45,DW10BTED,Peugeot Expert
+46,DW10BTED,Volvo C30
+47,DW10BTED,Volvo C70
+48,DV6C TED4,Ford C-Max
+49,DV6C TED4,Ford Grand C-Max
+50,DV6C TED4,Ford Focus
+51,DV6C TED4,Ford Mondeo
+52,DV6C TED4,Ford Galaxy
+53,DV6C TED4,Ford S-Max
+54,DV6C TED4,Citroën Berlingo
+55,DV6C TED4,Citroën C3 Picasso
+56,DV6C TED4,Citroën C3
+57,DV6C TED4,Citroën C4 Picasso
+58,DV6C TED4,Citroën C4 Grand Picasso
+59,DV6C TED4,Citroën C4
+60,DV6C TED4,Citroën C4 Air Cross
+61,DV6C TED4,Citroën C5
+62,DV6C TED4,Citroën DS3
+63,DV6C TED4,Citroën DS4
+64,DV6C TED4,Citroën DS5
+65,DV6C TED4,Peugeot 207
+66,DV6C TED4,Peugeot 208
+67,DV6C TED4,Peugeot 308
+68,DV6C TED4,Peugeot 308 CC
+69,DV6C TED4,Peugeot 508
+70,DV6C TED4,Peugeot 2008
+71,DV6C TED4,Peugeot 3008
+72,DV6C TED4,Peugeot 4008
+73,DV6C TED4,Peugeot 5008
+74,DV6C TED4,Peugeot Partner
+75,DV6C TED4,Volvo C30
+76,DV6C TED4,Volvo V40
+77,DV6C TED4,Volvo S40
+78,DV6C TED4,Volvo S60
+79,DV6C TED4,Volvo V50
+80,DV6C TED4,Volvo V60
+81,DV6C TED4,Volvo V70
+82,DV6C TED4,Volvo S80
+83,K9K Euro 4,Nissan Qashqai
+84,K9K Euro 4,Nissan Note
+85,K9K Euro 4,Nissan Tiida
+86,K9K Euro 4,Renault Clio
+87,K9K Euro 4,Renault Megane
+88,K9K Euro 4,Renault Modus
+89,K9K Euro 4,Renault Scenic
+90,K9K Euro 4,Renault Kangoo
+91,K9K Euro 4,Renault Grand Kangoo
+92,K9K Euro 5,Dacia Duster
+93,K9K Euro 5,Nissan Juke
+94,K9K Euro 5,Nissan Qashquai / Qashquai +2
+95,K9K Euro 5,Nissan Cube
+96,K9K Euro 5,Nissan NV200
+97,K9K Euro 5,Renault Fluence
+98,K9K Euro 5,Renault Latitude
+99,K9K Euro 5,Renault Megane III
+100,K9K Euro 5,Renault Megane CC
+101,K9K Euro 5,Renault Scenic III
+102,K9K Euro 5,Renault Grand Scenic III
+103,K9K Euro 5,Renault Laguna
+104,K9K Gen6,Dacia Lodgy
+105,K9K Gen6,Renault Megane
+106,K9K Gen6,Mercedes A 180 CDI
+107,K9K Gen6,Mercedes B 180 CDI
+108,K9K Gen6,Mercedes Citan 108 CDI
+109,K9K Gen6,Mercedes Citan 109 CDI
+110,K9K Gen6,Mercedes Citan 111 CDI
+111,Lynx,Ford Focus
+112,Lynx,Ford C-Max
+113,Lynx,Ford Turneo Connect
+114,Lynx,Ford Galaxy
+115,Lynx,Ford Mondeo
+116,Lynx,Ford S-Max
+117,Lynx,Ford Transit
+118,VW Common Rail,Audi A1 / A1 Sportback
+119,VW Common Rail,Audi A3 / A3 Sportback
+120,VW Common Rail,Seat Altea / Altea XL
+121,VW Common Rail,Seat Ibiza / Ibiza Sportcoupe
+122,VW Common Rail,Seat Leon
+123,VW Common Rail,Seat Toledo
+124,VW Common Rail,Skoda Fabia
+125,VW Common Rail,Skoda Octavia
+126,VW Common Rail,Skoda Roomster / Roomster Praktik
+127,VW Common Rail,Skoda Superb
+128,VW Common Rail,Skoda Yeti
+129,VW Common Rail,Volkswagen Beetle
+130,VW Common Rail,Volkswagen Polo
+131,VW Common Rail,Volkswagen Golf / Golf Plus
+132,VW Common Rail,Volkswagen Jetta
+133,VW Common Rail,Volkswagen Passat / Passat Variant
+134,VW Common Rail,Volkswagen Passat Touran
+135,Puma,Ford Ranger
+136,Puma,Mazda BT-50
+137,Puma,Ford Turneo Custom Bus
+138,Puma,Ford Transit
+139,Puma,Citroën Jumper
+140,Puma,Peugeot Boxer
+141,Puma,Land Rover Defender
+142,LionV8,Land Rover Freelander
+143,LionV8,Range Rover Sport
+144,LionV6 Upgrade,Land Rover Discovery
+145,LionV6 Upgrade,Land Rover Freelander
+146,LionV6 Upgrade,Range Rover Sport
+147,LionV6 Upgrade,Jaguar X Type
+148,LionV6,Citroën C5
+149,LionV6,Citroën C6
+150,LionV6,Jaguar S-Type
+151,LionV6,Jaguar XF
+152,LionV6,Peugeot 407
+153,LionV6,Peugeot 607
+154,LionV6,Landrover Discovery
+155,LionV6,Range Rover Sport

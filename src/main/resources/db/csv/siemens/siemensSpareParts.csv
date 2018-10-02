@@ -1,0 +1,96 @@
+id,engine,category,order_number,description
+1,DV4TD,CR Pump,5WS40008-Z,CR Pump DV4
+2,DV4TD,Injector,A2C59511612,Injector DV4 (Kyocera)
+3,DV4TD,Injector,5WS40149-Z,Injector EU4 DV4 => replaced by A2C59511612
+4,DV4TD,Injector,5WS40148-Z,Injector EURO 3 DV4
+5,DV4TD,Misc,X11-800-002-004Z,"Copper Ring (2,5mm 6-Nose)"
+6,DV4TD,Misc,X11-800-001-001Z,"Leckage Clip DW10TD, DV4"
+7,DV4TD,Repair Part,A2C59506225,Pressure Control Valve (PCV)
+8,DW10TD,CR Pump,5WS40018-Z,CR Pump DW10TD
+9,DW10TD,Injector,5WS40000-Z,Injector DW10TD
+10,DW10TD,Misc,X11-800-002-001Z,Copper Ring (2.5mm)
+11,DW10TD,Misc,X11-800-001-001Z,"Leckage Clip DW10TD, DV4"
+12,DW10TD,Pipe,5WS40004-Z,Pipe CYL 1+3 DW10TD (ONLY FOR P+P RAIL)
+13,DW10TD,Pipe,5WS40005-Z,Pipe CYL 2+4 DW10TD (ONLY FOR P+P RAIL)
+14,DW10TD,Pipe,5WS40003-Z,Pipe Pump DW10TD (ONLY FOR P+P RAIL)
+15,DW10TD,Repair Part,A2C59506225,Pressure Control Valve (PCV)
+16,DW10TD,Repair Part,X39-800-300-006Z,Volume Control Valve (VCV) Screwed
+17,DW10TD,Repair Part,X39-800-300-005Z,Pressure Control Valve (PCV) => replaced by A2C59506225
+18,DW10BTED,CR Pump,A2C59511600,CR Pump DW10B (VOLVO NEW)
+19,DW10BTED,CR Pump,5WS40163-Z,CR Pump DW10B (VOLVO)
+20,DW10BTED,CR Pump,5WS40019-Z,CR Pump DW10B => replaced by 5WS40809-Z
+21,DW10BTED,Injector,5WS40156-4Z,Injector DW10B CLASS 4
+22,DW10BTED,Injector,A2C59511601,Injector DW10B CLASS 6
+23,DW10BTED,Injector,5WS40156-Z,Injector DW10B CLASS 5
+24,DW10BTED,Injector,A2C59511603,Injector DW10B MFMA
+25,DW10BTED,Injector,A2C59511602,Injector DW10U MFMA
+26,DW10BTED,Injector,A2C59513552,Injector DW10B MFMA CL7
+27,DW10BTED,Misc,X11-800-002-002Z,Copper Ring (1.5mm)
+28,DW10BTED,Misc,X11-800-001-003Z,Leckage Clip DW10B
+29,DW10BTED,Pipe,5WS40043-Z,Pipe CYL 2+4 DW10B
+30,DW10BTED,Pipe,5WS40042-Z,Pipe CYL 1+3 DW10B
+31,DW10BTED,Pipe,5WS40040-Z,Pipe Pump DW10B
+32,DW10BTED,Repair Part,A2C59506225,Pressure Control Valve (PCV)
+33,DW10BTED,Repair Part,X39-800-300-018Z,Volume Control Valve (VCV) flanged
+34,DW10BTED,Repair Part,X39-800-300-005Z,Pressure Control Valve (PCV) => replaced by A2C59506225
+35,DV6C TED4,CR Pump,A2C59513830,CR Pump DV6 (StartStop)
+36,DV6C TED4,CR Pump,A2C59513555,CR Pump DV6 => replaced by A2C59513830
+37,DV6C TED4,CR Pump,A2C59513829,CR Pump DV6 (Ford)
+38,DV6C TED4,Injector,A2C59513556,CR Injector DV6C
+39,DV6C TED4,Misc,A2C59514037,O-ring gasket (return line)
+40,DV6C TED4,Misc,A2C59514036,Copper Ring DV6C and Puma
+41,K9K Euro 4,CR Pump,A2C59511605,CR Pump K9K EU4
+42,K9K Euro 4,Injector,A2C59511606,Injector K9K EU4
+43,K9K Euro 4,Misc,X11-800-001-002Z,Leckage Clip
+44,K9K Euro 4,Rail,A2C59511607,Rail With Sensor K9K EU4
+45,K9K Euro 4,Repair Part,A2C59506225,Pressure Control Valve (PCV)
+46,K9K Euro 4,Repair Part,A2C53259841Z,Volume Control Valve (VCV) K9K
+47,K9K Euro 4,Repair Part,X39-800-300-005Z,Pressure Control Valve (PCV) => replaced by A2C59506225
+48,K9K Euro 5,CR Pump,A2C59513595,CR Pump K9K EU5
+49,K9K Euro 5,Injector,A2C59513484,Injector K9K EU5
+50,K9K Euro 5,Rail,A2C59513750,Rail K9K EU5 (with sensor)
+51,Lynx,CR Pump,A2C59511609,CR Pump LYNX
+52,Lynx,Injector,A2C59511611,Injector LYNX_V227
+53,Lynx,Injector,A2C59511610,Injector LYNX
+54,Lynx,Misc,X11-800-002-003Z,Copper Ring (2.0mm)
+55,Lynx,Misc,X11-800-001-003Z,Leckage Clip DW10B
+56,Lynx,Repair Part,A2C59506225,Pressure Control Valve (PCV)
+57,Lynx,Repair Part,X39-800-300-005Z,Pressure Control Valve (PCV) => replaced by A2C59506225
+58,Lynx,Repair Part,X39-800-300-006Z,Volume Control Valve (VCV) Screwed
+59,VW Common Rail,CR Pump,A2C59517047,CR VW Start Stop pump
+60,VW Common Rail,CR Pump,A2C59517049,CR VW ITP less pump
+61,VW Common Rail,Injector,A2C59513554,Injektor VW CR
+62,VW Common Rail,Misc,X11-800-001-002Z,Leckage Clip
+63,VW Common Rail,Misc,A2C59516873,Copper Ring IAM (VW)
+64,Puma,CR Pump,A2C59517045,CR Pump Puma Oldham
+65,Puma,CR Pump,A2C59517043,CR Pump Puma
+66,Puma,Injector,A2C59517051,Injector Puma
+67,Puma,Misc,A2C59514036,Copper Ring DV6C and Puma
+68,LionV8,CR Pump,A2C59513481,CR Pump LionV8
+69,LionV8,Injector,A2C59513597,"Injector LionV8 (174, red clip)"
+70,LionV8,Injector,A2C59513596,Injector LionV8 (white clip)
+71,LionV8,Misc,X11-800-001-002Z,Leckage Clip
+72,LionV8,Misc,X11-800-002-002Z,Copper Ring (1.5mm)
+73,LionV8,Misc,A2C59511320,Injector Clamp Lion
+74,LionV8,Rail,A2C59513699,Rail LH LionV8
+75,LionV8,Rail,A2C59513512,Rail RH With Sensor LionV8
+76,LionV6 Upgrade,CR Pump,A2C59513482,CR Pump LionV6 upgrade
+77,LionV6 Upgrade,Injector,A2C59513553,Injector LION V6 UPGRADE
+78,LionV6 Upgrade,Misc,X11-800-001-002Z,Leckage Clip
+79,LionV6 Upgrade,Misc,X11-800-002-002Z,Copper Ring (1.5mm)
+80,LionV6 Upgrade,Misc,A2C59511320,Injector Clamp Lion
+81,LionV6 Upgrade,Rail,A2C59513703,Rail LH (with sensor) LionV6 Upgrade
+82,LionV6 Upgrade,Rail,A2C59513702,Rail RH LionV6 Upgrade
+83,LionV6,CR Pump,A2C59511314,CR Pump LION V6/DT17
+84,LionV6,Injector,A2C59511316,Injector LION V6/DT17 EURO 4
+85,LionV6,Injector,A2C59511315,Injector LION V6 JAGUAR EURO 3
+86,LionV6,Injector,A2C59511364,Injector LION V6 LAND ROVER
+87,LionV6,Misc,A2C59511320,Injector Clamp Lion
+88,LionV6,Misc,X11-800-002-002Z,Copper Ring (1.5mm)
+89,LionV6,Misc,X11-800-001-002Z,Leckage Clip
+90,LionV6,Rail,A2C59511319,Rail RIGHT LION V6/DT17
+91,LionV6,Rail,A2C59511317,Diverter Rail LION V6/DT17
+92,LionV6,Rail,A2C59511318,Rail LEFT LION V6/DT17
+93,LionV6,Repair Part,A2C59506225,Pressure Control Valve (PCV)
+94,LionV6,Repair Part,A2C20000719Z,Volume Control Valve (VCV) LionV6
+95,LionV6,Repair Part,X39-800-300-005Z,Pressure Control Valve (PCV) => replaced by A2C59506225

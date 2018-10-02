@@ -182,7 +182,7 @@ public class NewEditInjectorDialogController {
 
         noUniqueLabel.setVisible(false);
         Injector newInj = new Injector(injectorCodeTF.getText(), getManufacturer(),
-                voapListView.getSelectionModel().getSelectedItem(), true);
+                voapListView.getSelectionModel().getSelectedItem(), true, 0);
 
         injectorsRepository.save(newInj);
         modelListView.getItems().add(newInj);
