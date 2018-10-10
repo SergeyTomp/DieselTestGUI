@@ -1,4 +1,4 @@
-package fi.stardex.sisu.coding;
+package fi.stardex.sisu.coding.bosch;
 
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.ui.controllers.ISADetectionController;

@@ -1,8 +1,11 @@
 package fi.stardex.sisu.measurement;
 
 import eu.hansolo.enzo.lcd.Lcd;
-import fi.stardex.sisu.coding.BoschCoding;
+import fi.stardex.sisu.coding.bosch.BoschCoding;
+import fi.stardex.sisu.coding.other.CodingDataStorage;
+import fi.stardex.sisu.coding.other.DensoCoding;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
+import fi.stardex.sisu.persistence.orm.cr.inj.TestName;
 import fi.stardex.sisu.registers.flow.ModbusMapFlow;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.store.FlowReport;
@@ -13,8 +16,8 @@ import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.cr.TestBenchSectionController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
+import fi.stardex.sisu.util.enums.Measurement;
 import fi.stardex.sisu.util.enums.Tests.TestType;
-import fi.stardex.sisu.util.obtainers.CurrentManufacturerObtainer;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -25,10 +28,16 @@ import javafx.scene.control.*;
 import javafx.util.Duration;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
+import static fi.stardex.sisu.store.FlowReport.getMapOfFlowTestResults;
 import static fi.stardex.sisu.util.enums.Tests.TestType.*;
 import static fi.stardex.sisu.util.enums.Tests.getTestType;
+import static fi.stardex.sisu.util.obtainers.CurrentManufacturerObtainer.getManufacturer;
 
 public class Measurements implements ChangeListener<Boolean> {
 
@@ -50,7 +59,11 @@ public class Measurements implements ChangeListener<Boolean> {
 
     private ToggleButton highPressureStartToggleButton;
 
+    private InjectorSectionController injectorSectionController;
+
     private ToggleButton injectorSectionStartToggleButton;
+
+    private Spinner<Integer> widthCurrentSignalSpinner;
 
     private Spinner<Integer> targetRPMSpinner;
 
@@ -90,6 +103,8 @@ public class Measurements implements ChangeListener<Boolean> {
 
     private boolean codingComplete;
 
+    private Iterator<Integer> densoDelphiCodingPointsIterator;
+
     public void setCodingComplete(boolean codingComplete) {
         this.codingComplete = codingComplete;
     }
@@ -105,7 +120,7 @@ public class Measurements implements ChangeListener<Boolean> {
 
         this.flowReport = flowReport;
 
-        this.mainSectionController= mainSectionController;
+        this.mainSectionController = mainSectionController;
         testListView = mainSectionController.getTestListView();
         testListViewItems = mainSectionController.getTestListViewItems();
         testsSelectionModel = mainSectionController.getTestsSelectionModel();
@@ -123,7 +138,9 @@ public class Measurements implements ChangeListener<Boolean> {
         targetRPMSpinner = testBenchSectionController.getTargetRPMSpinner();
         currentRPMLcd = testBenchSectionController.getCurrentRPMLcd();
 
+        this.injectorSectionController = injectorSectionController;
         injectorSectionStartToggleButton = injectorSectionController.getInjectorSectionStartToggleButton();
+        widthCurrentSignalSpinner = injectorSectionController.getWidthCurrentSignalSpinner();
 
         injectorCode1TextField = codingController.getInjectorCode1TextField();
         injectorCode2TextField = codingController.getInjectorCode2TextField();
@@ -175,6 +192,15 @@ public class Measurements implements ChangeListener<Boolean> {
 
         if (getTestType() == AUTO)
             includedAutoTestsLength = (int) testListViewItems.stream().filter(InjectorTest::isIncluded).count();
+        else if (isDensoDelphiCoding())
+            CodingDataStorage.initialize(
+                    injectorSectionController.getActiveLedToggleButtonsList()
+                            .stream()
+                            .mapToInt(toggleButton -> Integer.parseInt(toggleButton.getText()))
+                            .boxed()
+                            .collect(Collectors.toList()),
+                    testListViewItems.stream().filter(injectorTest -> injectorTest.getTestName().getMeasurement() != Measurement.VISUAL).collect(Collectors.toList())
+            );
 
         start();
 
@@ -194,6 +220,10 @@ public class Measurements implements ChangeListener<Boolean> {
             if (codingComplete)
                 performCoding();
 
+            CodingDataStorage.clean();
+
+            densoDelphiCodingPointsIterator = null;
+
             mainSectionController.pointToFirstTest();
 
             codingComplete = false;
@@ -206,20 +236,25 @@ public class Measurements implements ChangeListener<Boolean> {
 
     private void performCoding() {
 
-        String manufacturer = CurrentManufacturerObtainer.getManufacturer().toString();
+        switch (getManufacturer().toString()) {
 
-        List<String> codeResult;
-
-        switch (manufacturer) {
             case "Bosch":
-                codeResult = BoschCoding.calculate();
-
-                injectorCode1TextField.setText(codeResult.get(0));
-                injectorCode2TextField.setText(codeResult.get(1));
-                injectorCode3TextField.setText(codeResult.get(2));
-                injectorCode4TextField.setText(codeResult.get(3));
+                setCodingResults(BoschCoding.calculate());
                 break;
+            case "Denso":
+                setCodingResults(DensoCoding.calculate());
+                break;
+
         }
+
+    }
+
+    private void setCodingResults(List<String> codeResult) {
+
+        injectorCode1TextField.setText(codeResult.get(0));
+        injectorCode2TextField.setText(codeResult.get(1));
+        injectorCode3TextField.setText(codeResult.get(2));
+        injectorCode4TextField.setText(codeResult.get(3));
 
     }
 
@@ -246,6 +281,10 @@ public class Measurements implements ChangeListener<Boolean> {
 
         int selectedTestIndex = testsSelectionModel.getSelectedIndex();
 
+        InjectorTest injectorTest = testsSelectionModel.getSelectedItem();
+
+        TestName testName = injectorTest.getTestName();
+
         TestType testType = getTestType();
 
         switch (testType) {
@@ -259,18 +298,70 @@ public class Measurements implements ChangeListener<Boolean> {
                 break;
             case CODING:
                 if (selectedTestIndex < testListViewItems.size() - 1) {
-                    selectNextTest(selectedTestIndex);
-                    if (testsSelectionModel.getSelectedItem().getTestName().toString().equals("ISA Detection"))
-                        startISADetection();
-                    else
-                        start();
+                    if (isDensoDelphiCoding()) {
+                        if (testName.getMeasurement() == Measurement.VISUAL) {
+                            selectNextTest(selectedTestIndex);
+                            runNextTest();
+                        } else {
+                            if (densoDelphiCodingPointsIterator == null) {
+                                densoDelphiCodingPointsIterator = getDensoDelphiCodingPointsIterator(injectorTest);
+                                if (!densoDelphiCodingPointsIterator.hasNext()) {
+                                    densoDelphiCodingPointsIterator = null;
+                                    selectNextTest(selectedTestIndex);
+                                    start();
+                                } else
+                                    runDensoDelphiTest();
+                            } else {
+                                if (!densoDelphiCodingPointsIterator.hasNext()) {
+                                    densoDelphiCodingPointsIterator = null;
+                                    selectNextTest(selectedTestIndex);
+                                    runNextTest();
+                                } else
+                                    runDensoDelphiTest();
+                            }
+                        }
+                    } else {
+                        selectNextTest(selectedTestIndex);
+                        if (testName.toString().equals("ISA Detection"))
+                            startISADetection();
+                        else
+                            start();
+                    }
                 } else {
-                    codingComplete = true;
-                    mainSectionStartToggleButton.setSelected(false);
+                    if (isDensoDelphiCoding()) {
+                        if (densoDelphiCodingPointsIterator == null) {
+                            densoDelphiCodingPointsIterator = getDensoDelphiCodingPointsIterator(injectorTest);
+                            if (!densoDelphiCodingPointsIterator.hasNext())
+                                finishCoding();
+                            else
+                                runDensoDelphiTest();
+                        } else {
+                            if (!densoDelphiCodingPointsIterator.hasNext())
+                                finishCoding();
+                            else
+                                runDensoDelphiTest();
+                        }
+                    } else
+                        finishCoding();
                 }
                 break;
 
         }
+
+    }
+
+    private void finishCoding() {
+
+        densoDelphiCodingPointsIterator = null;
+        codingComplete = true;
+        mainSectionStartToggleButton.setSelected(false);
+
+    }
+
+    private void runDensoDelphiTest() {
+
+        widthCurrentSignalSpinner.getValueFactory().setValue(densoDelphiCodingPointsIterator.next());
+        start();
 
     }
 
@@ -363,6 +454,12 @@ public class Measurements implements ChangeListener<Boolean> {
         if (measuringTime.tick() == 0) {
             measurementTimeline.stop();
             flowReport.save();
+            if (isDensoDelphiCoding()) {
+                InjectorTest injectorTest = testsSelectionModel.getSelectedItem();
+                Optional.ofNullable(getMapOfFlowTestResults().get(injectorTest)).ifPresent(flowTestResult -> CodingDataStorage.store(widthCurrentSignalSpinner.getValue(), flowTestResult));
+                adjustingTime.refreshProgress();
+                measuringTime.refreshProgress();
+            }
             runNextTest();
         }
 
@@ -371,6 +468,31 @@ public class Measurements implements ChangeListener<Boolean> {
     private void startISADetection() {
 
         isaDetectionController.work();
+
+    }
+
+    private boolean isDensoDelphiCoding() {
+
+        return getTestType() == CODING && !getManufacturer().getManufacturerName().equals("Bosch");
+
+    }
+
+    private Iterator<Integer> getDensoDelphiCodingPointsIterator(InjectorTest injectorTest) {
+
+        Integer totalPulseTime = injectorTest.getTotalPulseTime();
+
+        int count = 3;
+
+        int range = 60;
+
+        ArrayList<Integer> codingPointsList = new ArrayList<>();
+
+        codingPointsList.add(totalPulseTime - range);
+
+        for (int i = 1; i < count; i++)
+            codingPointsList.add(codingPointsList.get(i - 1) + (range * 2) / (count - 1));
+
+        return codingPointsList.iterator();
 
     }
 

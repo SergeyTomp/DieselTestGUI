@@ -90,6 +90,9 @@ public class FlowReport {
 
         InjectorTest injectorTest = testsSelectionModel.getSelectedItem();
 
+        if (injectorTest.getTestName().getMeasurement() == Measurement.VISUAL)
+            return;
+
         Measurement measurement = injectorTest.getTestName().getMeasurement();
 
         if (alreadyContainsTest(injectorTest))
@@ -292,6 +295,27 @@ public class FlowReport {
 
         public double getAcceptableFlowRangeRight() {
             return acceptableFlowRangeRight;
+        }
+
+        @Override
+        public String toString() {
+            return "FlowTestResult{" +
+                    "injectorTest=" + injectorTest +
+                    ", flowType=" + flowType +
+                    ", nominalFlow=" + nominalFlow +
+                    ", flow1=" + flow1 +
+                    ", flow2=" + flow2 +
+                    ", flow3=" + flow3 +
+                    ", flow4=" + flow4 +
+                    ", flow1_double=" + flow1_double +
+                    ", flow2_double=" + flow2_double +
+                    ", flow3_double=" + flow3_double +
+                    ", flow4_double=" + flow4_double +
+                    ", flowRangeLeft=" + flowRangeLeft +
+                    ", flowRangeRight=" + flowRangeRight +
+                    ", acceptableFlowRangeLeft=" + acceptableFlowRangeLeft +
+                    ", acceptableFlowRangeRight=" + acceptableFlowRangeRight +
+                    '}';
         }
 
         private void setupDoubleFlowValues(Measurement measurement) {

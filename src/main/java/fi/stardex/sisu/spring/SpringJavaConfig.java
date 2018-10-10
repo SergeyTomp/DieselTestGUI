@@ -507,8 +507,10 @@ public class SpringJavaConfig {
     @Lazy
     @Autowired
     public Enabler enabler(MainSectionController mainSectionController, InjectorSectionController injectorSectionController,
-                           RLCController rlcController, VoltageController voltageController, FlowController flowController) {
-        return new Enabler(mainSectionController, injectorSectionController, rlcController, voltageController, flowController);
+                           RLCController rlcController, VoltageController voltageController, FlowController flowController,
+                           FlowReportController flowReportController, FlowReport flowReport) {
+        return new Enabler(mainSectionController, injectorSectionController, rlcController,
+                voltageController, flowController, flowReportController, flowReport);
     }
 
     @Bean

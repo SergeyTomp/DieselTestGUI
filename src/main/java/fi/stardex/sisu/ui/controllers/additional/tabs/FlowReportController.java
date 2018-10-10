@@ -15,6 +15,9 @@ import static fi.stardex.sisu.util.converters.DataConverter.convertDataToDouble;
 public class FlowReportController {
 
     @FXML
+    private Label flowReportAttentionLabel;
+
+    @FXML
     private TableView<FlowTestResult> flowTableView;
 
     @FXML
@@ -55,6 +58,10 @@ public class FlowReportController {
 
     public TableView<FlowTestResult> getFlowTableView() {
         return flowTableView;
+    }
+
+    public Label getFlowReportAttentionLabel() {
+        return flowReportAttentionLabel;
     }
 
     @PostConstruct

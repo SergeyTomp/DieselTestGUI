@@ -222,6 +222,8 @@ public class MainSectionController {
 
     private Spinner<Double> freqCurrentSignalSpinner;
 
+    private Spinner<Integer> targetRPMSpinner;
+
     private HighPressureSectionController highPressureSectionController;
 
     private InfoController infoController;
@@ -368,6 +370,10 @@ public class MainSectionController {
         this.widthCurrentSignalSpinner = widthCurrentSignalSpinner;
     }
 
+    public void setTargetRPMSpinner(Spinner<Integer> targetRPMSpinner) {
+        this.targetRPMSpinner = targetRPMSpinner;
+    }
+
     public void setFreqCurrentSignalSpinner(Spinner<Double> freqCurrentSignalSpinner) {
         this.freqCurrentSignalSpinner = freqCurrentSignalSpinner;
     }
@@ -511,7 +517,7 @@ public class MainSectionController {
 
                 setInjectorTests(newValue);
 
-                if (!checkInjectorForCoding(getInjector()) && codingTestRadioButton.isSelected())
+                if (!checkInjectorForCoding(getInjector().getCodetype()) && codingTestRadioButton.isSelected())
                     Platform.runLater(() -> autoTestRadioButton.setSelected(true));
                 else
                     setTests();
@@ -832,13 +838,15 @@ public class MainSectionController {
 
     }
 
-    private void setInjectorTypeValues(Integer freq, Integer firstW, Integer width) {
+    private void setInjectorTypeValues(Integer freq, Integer firstW, Integer width, Integer motorSpeed) {
 
         freqCurrentSignalSpinner.getValueFactory().setValue((freq != null) ? 1000d / freq : 0);
 
         voltAmpereProfileController.getFirstWSpinner().getValueFactory().setValue(firstW);
 
         widthCurrentSignalSpinner.getValueFactory().setValue(width);
+
+        targetRPMSpinner.getValueFactory().setValue(motorSpeed);
 
     }
 
@@ -988,7 +996,7 @@ public class MainSectionController {
 
             fetchTestsFromRepository();
 
-            enabler.showInjectorTests(true).selectInjectorType(currentVoltAmpereProfile.getInjectorType().getInjectorType()).enableCoding(checkInjectorForCoding(injector));
+            enabler.showInjectorTests(true).selectInjectorType(currentVoltAmpereProfile.getInjectorType().getInjectorType()).enableCoding(checkInjectorForCoding(injector.getCodetype()));
 
             Double firstI = currentVoltAmpereProfile.getFirstI();
             Double secondI = currentVoltAmpereProfile.getSecondI();
@@ -1065,9 +1073,13 @@ public class MainSectionController {
 
             }
 
-            currentAdjustingTime = newValue.getAdjustingTime();
+//            currentAdjustingTime = newValue.getAdjustingTime();
+//
+//            currentMeasuringTime = newValue.getMeasurementTime();
 
-            currentMeasuringTime = newValue.getMeasurementTime();
+            currentAdjustingTime = 3;
+
+            currentMeasuringTime = 3;
 
             setProgress(speedComboBoxSelectionModel.getSelectedItem());
 
@@ -1088,7 +1100,8 @@ public class MainSectionController {
                     Integer width = newValue.getTotalPulseTime();
                     Integer firstW = currentVoltAmpereProfile.getFirstW();
                     firstW = (width - firstW >= 30) ? firstW : width - 30;
-                    setInjectorTypeValues(freq, firstW, width);
+                    Integer motorSpeed = newValue.getMotorSpeed();
+                    setInjectorTypeValues(freq, firstW, width, motorSpeed);
                     break;
 
             }
@@ -1219,10 +1232,9 @@ public class MainSectionController {
 
     }
 
-    private boolean checkInjectorForCoding(Injector injector) {
+    private boolean checkInjectorForCoding(int codetype) {
 
         String manufacturerName = getManufacturer().getManufacturerName();
-        int codetype = injector.getCodetype();
 
         if (manufacturerName.equals("Bosch") || manufacturerName.equals("Denso") || manufacturerName.equals("Delphi"))
             return codetype != 0;

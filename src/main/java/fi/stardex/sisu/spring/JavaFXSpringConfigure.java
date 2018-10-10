@@ -29,7 +29,6 @@ import fi.stardex.sisu.ui.controllers.dialogs.NewEditTestDialogController;
 import fi.stardex.sisu.ui.controllers.dialogs.NewEditVOAPDialogController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
 import fi.stardex.sisu.util.DelayCalculator;
-import fi.stardex.sisu.util.VisualUtils;
 import fi.stardex.sisu.util.enums.BeakerType;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.i18n.UTF8Control;
@@ -98,6 +97,7 @@ public class JavaFXSpringConfigure {
                                                        HighPressureSectionController highPressureSectionController,
                                                        Preferences rootPrefs, @Lazy Measurements measurements,
                                                        @Lazy FlowReport flowReport,
+                                                       TestBenchSectionController testBenchSectionController,
                                                        InfoController infoController) {
         MainSectionController mainSectionController = (MainSectionController) mainSection().getController();
         mainSectionController.setEnabler(enabler);
@@ -117,6 +117,7 @@ public class JavaFXSpringConfigure {
         mainSectionController.setMeasurements(measurements);
         mainSectionController.setFlowReport(flowReport);
         mainSectionController.setInfoController(infoController);
+        mainSectionController.setTargetRPMSpinner(testBenchSectionController.getTargetRPMSpinner());
         return mainSectionController;
     }
 

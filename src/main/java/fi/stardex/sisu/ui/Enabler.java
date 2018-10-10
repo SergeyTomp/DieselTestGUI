@@ -4,7 +4,9 @@ import eu.hansolo.medusa.Gauge;
 import fi.stardex.sisu.persistence.orm.Manufacturer;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.persistence.orm.interfaces.Model;
+import fi.stardex.sisu.store.FlowReport;
 import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.FlowReportController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.RLCController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
@@ -104,10 +106,17 @@ public class Enabler {
 
     private ComboBox<String> backFlowComboBox;
 
+    private TableView<FlowReport.FlowTestResult> flowTableView;
+
+    private Label flowReportAttentionLabel;
+
+    private FlowReport flowReport;
+
     private boolean codingAvailable;
 
     public Enabler(MainSectionController mainSectionController, InjectorSectionController injectorSectionController,
-                   RLCController rlcController, VoltageController voltageController, FlowController flowController) {
+                   RLCController rlcController, VoltageController voltageController, FlowController flowController,
+                   FlowReportController flowReportController, FlowReport flowReport) {
 
         mainSectionStartToggleButton = mainSectionController.getStartToggleButton();
         testListView = mainSectionController.getTestListView();
@@ -152,6 +161,11 @@ public class Enabler {
         ml_Min_BackFlowLabel = flowController.getMl_Min_BackFlowLabel();
         deliveryFlowComboBox = flowController.getDeliveryFlowComboBox();
         backFlowComboBox = flowController.getBackFlowComboBox();
+
+        flowTableView = flowReportController.getFlowTableView();
+        flowReportAttentionLabel = flowReportController.getFlowReportAttentionLabel();
+
+        this.flowReport = flowReport;
 
     }
 
@@ -254,23 +268,36 @@ public class Enabler {
                 showButtons(true, false);
                 showTiming(true);
                 showDefaultFlowUnit(false);
+                showFlowReport(true);
                 break;
             case TESTPLAN:
                 testListView.setDisable(false);
                 showButtons(false, true);
                 showTiming(false);
                 showDefaultFlowUnit(false);
+                showFlowReport(false);
                 break;
             case CODING:
                 testListView.setDisable(true);
                 showButtons(false, true);
                 showTiming(true);
                 showDefaultFlowUnit(true);
+                showFlowReport(false);
                 break;
 
         }
 
         return this;
+
+    }
+
+    private void showFlowReport(boolean isTestAuto) {
+
+        flowReportAttentionLabel.setVisible(!isTestAuto);
+
+        flowTableView.setVisible(isTestAuto);
+
+        flowReport.clear();
 
     }
 

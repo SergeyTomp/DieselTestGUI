@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.StackPane?>
-<StackPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.additional.tabs.FlowReportController">
+<?import javafx.scene.text.Font?>
+
+<StackPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.additional.tabs.FlowReportController">
     <children>
         <TableView fx:id="flowTableView">
             <columns>
@@ -16,5 +20,10 @@
                 <TableColumn fx:id="deleteColumn" prefWidth="100.0" />
             </columns>
         </TableView>
+      <Label fx:id="flowReportAttentionLabel" text="Reports available only for AUTO test types" visible="false">
+         <font>
+            <Font size="22.0" />
+         </font>
+      </Label>
     </children>
 </StackPane>
