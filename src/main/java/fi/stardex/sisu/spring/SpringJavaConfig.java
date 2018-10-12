@@ -435,8 +435,8 @@ public class SpringJavaConfig {
     @Bean
     @Autowired
     public TestBenchSectionUpdater testBenchSectionUpdater(TestBenchSectionController testBenchSectionController,
-                                                           VisualUtils visualUtils, FirmwareVersion<FlowVersions> flowFirmwareVersion) {
-        return new TestBenchSectionUpdater(testBenchSectionController, visualUtils, flowFirmwareVersion);
+                                                           FirmwareVersion<FlowVersions> flowFirmwareVersion) {
+        return new TestBenchSectionUpdater(testBenchSectionController, flowFirmwareVersion);
     }
 
     @Bean
@@ -525,11 +525,6 @@ public class SpringJavaConfig {
                                    InjectorsRepository injectorsRepository,
                                    InjectorTestRepository injectorTestRepository) {
         return new CSVSUpdater(manufacturerRepository, voltAmpereProfileRepository, injectorsRepository, injectorTestRepository);
-    }
-
-    @Bean
-    public VisualUtils visualUtils() {
-        return new VisualUtils();
     }
 
     @Bean

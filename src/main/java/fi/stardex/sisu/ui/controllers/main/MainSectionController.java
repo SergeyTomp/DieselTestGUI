@@ -28,6 +28,8 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -638,7 +640,12 @@ public class MainSectionController {
         speedComboBox.getItems().setAll(NORMAL_SPEED, DOUBLE_SPEED, HALF_SPEED);
         speedComboBoxSelectionModel.selectFirst();
 
-        speedComboBoxSelectionModel.selectedItemProperty().addListener((observable, oldValue, newValue) -> setProgress(newValue));
+        speedComboBoxSelectionModel.selectedItemProperty().addListener(new ChangeListener<String>() {
+            @Override
+            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+                MainSectionController.this.setProgress(newValue);
+            }
+        });
 
         return this;
 

@@ -51,15 +51,13 @@ public class TestBenchSectionUpdater implements Updater {
 
     private TestBenchSectionController testBenchSectionController;
 
-    private VisualUtils visualUtils;
 
     private FirmwareVersion<FlowVersions> flowFirmwareVersion;
 
-    public TestBenchSectionUpdater(TestBenchSectionController testBenchSectionController, VisualUtils visualUtils,
+    public TestBenchSectionUpdater(TestBenchSectionController testBenchSectionController,
                                    FirmwareVersion<FlowVersions> flowFirmwareVersion) {
 
         this.testBenchSectionController = testBenchSectionController;
-        this.visualUtils = visualUtils;
         this.flowFirmwareVersion = flowFirmwareVersion;
 
         pumpControlToggleButton = testBenchSectionController.getPumpControlToggleButton();
@@ -128,7 +126,7 @@ public class TestBenchSectionUpdater implements Updater {
         Double registerLastValue = (Double) register.getLastValue();
 
         if (registerLastValue != null)
-            visualUtils.setPressureProgress(progressBar, text, registerLastValue);
+            VisualUtils.setPressureProgress(progressBar, text, registerLastValue);
 
     }
 

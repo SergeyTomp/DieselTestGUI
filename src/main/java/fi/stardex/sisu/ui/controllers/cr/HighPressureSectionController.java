@@ -199,12 +199,12 @@ public class HighPressureSectionController {
     }
 
     public void setVisibleRegulator2(boolean visible) {
-        visualUtils.setVisible(visible,
+        VisualUtils.setVisible(visible,
                 labelReg2, labelAmpReg2, labelCycleReg2, powerButton2, dutyCycleReg2Spinner, currentReg2Spinner);
     }
 
     public void setVisibleRegulator3(boolean visible) {
-        visualUtils.setVisible(visible,
+        VisualUtils.setVisible(visible,
                 labelReg3, labelAmpReg3, labelCycleReg3, powerButton3, dutyCycleReg3Spinner, currentReg3Spinner);
     }
 

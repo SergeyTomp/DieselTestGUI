@@ -143,11 +143,9 @@ public class JavaFXSpringConfigure {
     @Bean
     @Autowired
     public HighPressureSectionController highPressureSectionController(CRSectionController crSectionController,
-                                                                       @Lazy ModbusRegisterProcessor ultimaModbusWriter,
-                                                                       VisualUtils visualUtils) {
+                                                                       @Lazy ModbusRegisterProcessor ultimaModbusWriter) {
         HighPressureSectionController highPressureSectionController = crSectionController.getHighPressureSectionController();
         highPressureSectionController.setUltimaModbusWriter(ultimaModbusWriter);
-        highPressureSectionController.setVisualUtils(visualUtils);
         highPressureSectionController.setI18N(i18N);
         return highPressureSectionController;
     }
@@ -409,10 +407,13 @@ public class JavaFXSpringConfigure {
 
     @Bean
     @Autowired
-    public SettingsController settingsController(AdditionalSectionController additionalSectionController, Preferences rootPrefs) {
+    public SettingsController settingsController(AdditionalSectionController additionalSectionController,
+                                                 Preferences rootPrefs,
+                                                 HighPressureSectionController highPressureSectionController) {
         SettingsController settingsController = additionalSectionController.getSettingsController();
         settingsController.setI18N(i18N);
         settingsController.setRootPrefs(rootPrefs);
+        settingsController.setHighPressureSectionController(highPressureSectionController);
         return settingsController;
     }
 

@@ -2,11 +2,14 @@ package fi.stardex.sisu.ui.controllers.additional.tabs;
 
 import fi.stardex.sisu.combobox_values.Dimension;
 import fi.stardex.sisu.combobox_values.InjectorChannel;
+import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.i18n.Locales;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
@@ -76,6 +79,8 @@ public class SettingsController {
 
     @FXML private ComboBox<Dimension> flowOutputDimensionsComboBox;
 
+    private HighPressureSectionController highPressureSectionController;
+
 //    private InjectorChannel SINGLE;
 //    private InjectorChannel MULTY;
 //    private StringProperty single = new SimpleStringProperty(SINGLE.getCHANNEL_QTY());
@@ -87,6 +92,10 @@ public class SettingsController {
 
     public void setRootPrefs(Preferences rootPrefs) {
         this.rootPrefs = rootPrefs;
+    }
+
+    public void setHighPressureSectionController(HighPressureSectionController highPressureSectionController) {
+        this.highPressureSectionController = highPressureSectionController;
     }
 
     public ComboBox<InjectorChannel> getInjectorsConfigComboBox() {
@@ -137,11 +146,11 @@ public class SettingsController {
         setupCheckBoxPreference(flowVisibleCheckBox, "checkBoxFlowVisibleSelected", true);
         regulatorsConfigComboBox.setItems(FXCollections.observableArrayList("3", "2", "1"));
         injectorsConfigComboBox.setItems(FXCollections.observableArrayList(InjectorChannel.SINGLE_CHANNEL, InjectorChannel.MULTI_CHANNEL));
-
         languagesConfigComboBox.setItems(FXCollections.observableArrayList(Locales.RUSSIAN, Locales.ENGLISH, Locales.KOREAN));
-
         flowOutputDimensionsComboBox.setItems(FXCollections.observableArrayList(Dimension.LIMIT, Dimension.PLUS_OR_MINUS));
         setupComboBoxesPreferences();
+        configRegulatorsInvolved(Integer.parseInt(regulatorsConfigComboBox.valueProperty().getValue()));
+        regulatorsConfigComboBox.valueProperty().addListener(new RegulatorsConfigListener());
     }
 
     private void bindingI18N() {
@@ -225,17 +234,59 @@ public class SettingsController {
 
 
 
-                languagesConfigComboBox.getSelectionModel().select(Locales.valueOf(rootPrefs.get("Language", Locales.ENGLISH.name())));
+        languagesConfigComboBox.getSelectionModel().select(Locales.valueOf(rootPrefs.get("Language", Locales.ENGLISH.name())));
         languagesConfigComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            rootPrefs.put("Language", newValue.name());
+        rootPrefs.put("Language", newValue.name());
 //            prefs.put("Language", newValue.name());
-            i18N.setLocale(Locales.getLocale(newValue.name()));
+        i18N.setLocale(Locales.getLocale(newValue.name()));
         });
 
         flowOutputDimensionsComboBox.getSelectionModel().select(Dimension.valueOf(rootPrefs.get("flowOutputDimensionSelected", Dimension.LIMIT.name())));
         flowOutputDimensionsComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
                 rootPrefs.put("flowOutputDimensionSelected", newValue.name()));
 
+
+    }
+
+    private class RegulatorsConfigListener implements ChangeListener<String>{
+        @Override
+        public void changed(ObservableValue<? extends String> observable, String  oldValue, String  newValue) {
+            switch (Integer.parseInt(newValue)){
+                case 1:
+                    configRegulatorsInvolved(1);
+                    break;
+                case 2:
+                    configRegulatorsInvolved(2);
+                    break;
+                case 3:
+                    configRegulatorsInvolved(3);
+                    break;
+                default:
+                    configRegulatorsInvolved(3);
+                    break;
+            }
+        }
+    }
+
+    private void configRegulatorsInvolved(int number) {
+        switch (number){
+            case 1:
+                highPressureSectionController.setVisibleRegulator2(false);
+                highPressureSectionController.setVisibleRegulator3(false);
+                break;
+            case 2:
+                highPressureSectionController.setVisibleRegulator2(true);
+                highPressureSectionController.setVisibleRegulator3(false);
+                break;
+            case 3:
+                highPressureSectionController.setVisibleRegulator2(true);
+                highPressureSectionController.setVisibleRegulator3(true);
+                break;
+            default:
+                highPressureSectionController.setVisibleRegulator2(true);
+                highPressureSectionController.setVisibleRegulator3(true);
+                break;
+        }
 
     }
 

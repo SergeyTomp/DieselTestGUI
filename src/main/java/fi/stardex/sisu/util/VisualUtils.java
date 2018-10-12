@@ -10,15 +10,15 @@ import javafx.scene.text.Text;
 
 public class VisualUtils {
 
-    public void showTooltipIncorrectInput(Button button) {
+    public static void showTooltipIncorrectInput(Button button) {
         showTooltipWithRedMessage(button, "Please fill in the fields correctly");
     }
 
-    public void showTooltipWithRedMessage(Button button, String message) {
+    public static void showTooltipWithRedMessage(Button button, String message) {
         showTooltipWithMessage(button, message, "red");
     }
 
-    public void showTooltipWithMessage(Button button, String message, String color){
+    public static void showTooltipWithMessage(Button button, String message, String color){
         Tooltip messageTooltip = new Tooltip();
         messageTooltip.setText(message);
         messageTooltip.setStyle("-fx-text-fill: " + color + "; -fx-font-size: 11pt;");
@@ -29,14 +29,14 @@ public class VisualUtils {
                 + button.getScene().getY() + button.getScene().getWindow().getY());
     }
 
-    private void progressBarStyle(ProgressBar progressBar, String style){
+    private static void progressBarStyle(ProgressBar progressBar, String style){
         progressBar.getStyleClass().clear();
         progressBar.getStyleClass().add("progress-bar");
         progressBar.getStyleClass().add(style);
 
     }
 
-    public void setPressureProgress(ProgressBar progressBar, Text text, double pressureValue){
+    public static void setPressureProgress(ProgressBar progressBar, Text text, double pressureValue){
         setProgress(3, 5, progressBar, text, pressureValue);
     }
 
@@ -44,7 +44,7 @@ public class VisualUtils {
         setProgress(40, 50, progressBar, text, pressureValue);
     }
 
-    private void setProgress(int left, int right, ProgressBar progressBar, Text text, double pressureValue){
+    private static void setProgress(int left, int right, ProgressBar progressBar, Text text, double pressureValue){
         if (pressureValue <= left) {
             progressBarStyle(progressBar, "green-progress-bar");
         }
@@ -59,7 +59,7 @@ public class VisualUtils {
     }
 
 
-    public  void setVisible(boolean visible, Node... nodes){
+    public static void setVisible(boolean visible, Node... nodes){
         for (Node node: nodes) {
             if (node instanceof Toggle && !visible) {
                 ((Toggle)node).setSelected(false);
