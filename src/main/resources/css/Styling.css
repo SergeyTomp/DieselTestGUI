@@ -805,6 +805,9 @@ label
 
 }
 
+.list-view:disabled{
+    -fx-opacity: 0.6;
+}
 
 .list-view:hover
 {
@@ -963,7 +966,7 @@ label
     -textFont-color: #ddff99;
     -fx-font-family: "Arial";
     -fx-text-fill:-textFont-color;
-    -fx-opacity: 0.3;
+    -fx-opacity: 0.6;
 }
 /***************
 *modelTextField

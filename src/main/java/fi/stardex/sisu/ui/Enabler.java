@@ -13,6 +13,7 @@ import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController.GUIType;
 import fi.stardex.sisu.util.enums.Tests.TestType;
+import javafx.collections.ObservableMap;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxListCell;
@@ -112,6 +113,8 @@ public class Enabler {
 
     private FlowReport flowReport;
 
+    private VBox injectorsVBox;
+
     private boolean codingAvailable;
 
     public Enabler(MainSectionController mainSectionController, InjectorSectionController injectorSectionController,
@@ -166,6 +169,8 @@ public class Enabler {
         flowReportAttentionLabel = flowReportController.getFlowReportAttentionLabel();
 
         this.flowReport = flowReport;
+
+        injectorsVBox = mainSectionController.getInjectorsVBox();
 
     }
 
@@ -502,4 +507,9 @@ public class Enabler {
 
     }
 
+    public void setEnabled(boolean enabled, Node... nodes){
+        for (Node node: nodes) {
+            node.setDisable(!enabled);
+        }
+    }
 }

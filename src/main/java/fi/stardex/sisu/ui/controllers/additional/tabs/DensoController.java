@@ -7,11 +7,12 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
 import org.slf4j.Logger;
@@ -22,6 +23,8 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+
+import static fi.stardex.sisu.util.VisualUtils.copyToClipBoard;
 
 public class DensoController {
 
@@ -35,6 +38,11 @@ public class DensoController {
     private TableColumn<InfoTableLine, String> dataColumn;
     private Stage addInfoImageStage;
     private ImageView addInfoImageView;
+    private MenuItem item;
+    private ContextMenu menu;
+    private String selectedText;
+    private ObservableList<TablePosition> selectedCells;
+    private KeyCodeCombination copyKeyCodeCombination;
     private String SERIAL_NUMBER = "Serial Number :";
     private String APPLICATION = "Application :";
     private String OEM = "OEM :";
@@ -66,6 +74,20 @@ public class DensoController {
         parameterColumn.setCellValueFactory(c-> c.getValue().parameter);
         dataColumn.setCellValueFactory(c-> c.getValue().data);
         infoTableView.setPlaceholder(new Label(NO_INFORMATION));
+        selectedCells = infoTableView.getSelectionModel().getSelectedCells();
+        item = new MenuItem("Copy");
+        menu = new ContextMenu();
+        menu.getItems().add(item);
+        infoTableView.setContextMenu(menu);
+        copyKeyCodeCombination = new KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_ANY);
+
+        item.setOnAction(event -> copyToClipBoard(infoTableView));
+        infoTableView.setOnKeyPressed(event -> {
+            if (copyKeyCodeCombination.match(event) && event.getSource() instanceof TableView) {
+                copyToClipBoard(infoTableView);
+
+            }
+        });
     }
 
     void switchTo(){

@@ -11,11 +11,11 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
+import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.util.Callback;
@@ -25,6 +25,8 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.PostConstruct;
 import java.util.Iterator;
 import java.util.List;
+
+import static fi.stardex.sisu.util.VisualUtils.copyToClipBoard;
 
 public class SiemensController {
     @FXML
@@ -48,6 +50,16 @@ public class SiemensController {
     private ObservableList<InfoTableLine> infoSource;
     private ObservableList<SparesTableLine> sparesSource;
     private StringBuilder sb;
+    private ContextMenu contextMenu;
+    private MenuItem menuItem;
+    private ObservableList<TablePosition> positionList;
+    private MenuItem infoContextMenuItem;
+    private MenuItem sparesContextMenuItem;
+    private ContextMenu infoContextMenu;
+    private ContextMenu sparesContextMenu;
+    private String selectedText;
+    private ObservableList<TablePosition> selectedCells;
+    private KeyCodeCombination copyKeyCodeCombination;
     private String orderNumber;
     private Engines engine;
     private String ENGINE = "Engine";
@@ -74,6 +86,8 @@ public class SiemensController {
         infoSource = FXCollections.observableArrayList();
         sparesSource = FXCollections.observableArrayList();
         sb = new StringBuilder();
+        copyKeyCodeCombination = new KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_ANY);
+
         dataColumn.setCellFactory(new Callback<TableColumn<InfoTableLine, String>, TableCell<InfoTableLine, String>>() {
 
             @Override public TableCell<InfoTableLine, String> call(TableColumn<InfoTableLine, String> param) {
@@ -114,6 +128,37 @@ public class SiemensController {
         categoryColumn.setCellValueFactory(c -> c.getValue().category);
         orderNumberColumn.setCellValueFactory(c->c.getValue().orderNumber);
         descriptionColumn.setCellValueFactory(c->c.getValue().description);
+
+        infoContextMenuItem = new MenuItem("Copy");
+        sparesContextMenuItem = new MenuItem("Copy");
+
+        infoContextMenu = new ContextMenu();
+        sparesContextMenu = new ContextMenu();
+
+        infoContextMenu.getItems().add(infoContextMenuItem);
+        sparesContextMenu.getItems().add(sparesContextMenuItem);
+
+        infoTableView.setContextMenu(infoContextMenu);
+        sparesTableView.setContextMenu(sparesContextMenu);
+
+        infoContextMenu.setOnAction(event -> {
+            copyToClipBoard(infoTableView);
+        });
+
+        sparesContextMenu.setOnAction(event -> {
+            copyToClipBoard(sparesTableView);
+        });
+
+        infoTableView.setOnKeyPressed(event -> {
+            if (copyKeyCodeCombination.match(event) && event.getSource() instanceof TableView) {
+                copyToClipBoard(infoTableView);
+            }
+        });
+        sparesTableView.setOnKeyPressed(event -> {
+            if (copyKeyCodeCombination.match(event) && event.getSource() instanceof TableView) {
+                copyToClipBoard(sparesTableView);
+            }
+        });
     }
 
     void switchTo(){

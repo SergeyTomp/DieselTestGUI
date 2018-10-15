@@ -176,6 +176,9 @@ public class MainSectionController {
     @FXML
     private ComboBox<String> speedComboBox;
 
+    @FXML
+    private VBox injectorsVBox;
+
     private MultipleSelectionModel<InjectorTest> testsSelectionModel;
 
     private SingleSelectionModel<String> speedComboBoxSelectionModel;
@@ -342,6 +345,10 @@ public class MainSectionController {
         return testListView;
     }
 
+    public VBox getInjectorsVBox() {
+        return injectorsVBox;
+    }
+
     public void setEnabler(Enabler enabler) {
         this.enabler = enabler;
     }
@@ -438,6 +445,7 @@ public class MainSectionController {
                 .setupMoveButtonEventHandlers()
                 .setupTestListAutoChangeListener();
 
+        enabler.setEnabled(false,injectorsVBox);
     }
 
     private MainSectionController makeReferenceToInternalObjects() {
@@ -911,6 +919,7 @@ public class MainSectionController {
 
             setManufacturer(newValue);
             infoController.changeToDefault();
+            enabler.setEnabled(true, injectorsVBox);
 
             if (newValue.isCustom()) {
                 defaultRadioButton.setDisable(true);
@@ -1242,5 +1251,4 @@ public class MainSectionController {
             return false;
 
     }
-
 }
