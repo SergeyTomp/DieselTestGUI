@@ -12,14 +12,14 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
@@ -50,8 +50,13 @@ public class BoschController {
     private TableColumn<InfoTableLine, String> parameterColumn;
     @FXML
     private TableColumn<InfoTableLine, String> dataColumn;
+    private ObservableList<TablePosition> selectedCells;
+    private MenuItem item;
+    private ContextMenu menu;
+    private String selectedText;
     private Stage addInfoImageStage;
     private ImageView addInfoImageView;
+    private KeyCodeCombination copyKeyCodeCombination;
     private BoschRepository boschRepository;
     private ObservableList<InfoTableLine> infoSource;
     private String SERIAL_NUMBER = "Serial Number :";
@@ -76,11 +81,40 @@ public class BoschController {
         infoSource = FXCollections.observableArrayList();
         sb = new StringBuilder();
         infoTableView.getSelectionModel().setCellSelectionEnabled(true);
+        infoTableView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
         addInfoImageView = new ImageView();
         infoButton.setVisible(false);
         infoButton.setOnAction(this::addInfoButtonEvent);
         parameterColumn.setCellValueFactory(c-> c.getValue().parameter);
         dataColumn.setCellValueFactory(c-> c.getValue().data);
+        selectedCells = infoTableView.getSelectionModel().getSelectedCells();
+        item = new MenuItem("Copy");
+        menu = new ContextMenu();
+        menu.getItems().add(item);
+        infoTableView.setContextMenu(menu);
+        item.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                copyToClipBoard();
+            }
+        });
+        copyKeyCodeCombination = new KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_ANY);
+        infoTableView.setOnKeyPressed(new EventHandler<KeyEvent>() {
+            @Override
+            public void handle(KeyEvent event) {
+                if (copyKeyCodeCombination.match(event) && event.getSource() instanceof TableView) {
+                    copyToClipBoard();
+
+                }
+            }
+        });
+    }
+
+    private void copyToClipBoard(){
+        selectedText = infoTableView.getSelectionModel().getSelectedItem().data.getValue();
+        final ClipboardContent content = new ClipboardContent();
+        content.putString(selectedText);
+        Clipboard.getSystemClipboard().setContent(content);
     }
 
     void switchTo(){
@@ -201,4 +235,6 @@ public class BoschController {
             addInfoImageStage.show();
         }
     }
+
+
 }
