@@ -10,9 +10,9 @@
     <children>
         <TableView fx:id="flowTableView">
             <columns>
-                <TableColumn fx:id="flowTestNameColumn" prefWidth="100.0" text="Test name" />
-                <TableColumn fx:id="flowTypeColumn" prefWidth="150.0" text="Delivery/Back flow" />
-                <TableColumn fx:id="flowNominalColumn" minWidth="0.0" prefWidth="150.0" text="Nominal flow" />
+                <TableColumn fx:id="flowTestNameColumn" prefWidth="150.0" text="%h4.report.table.label.testName" />
+                <TableColumn fx:id="flowTypeColumn" prefWidth="150.0" text="%h4.report.table.label.delRec" />
+                <TableColumn fx:id="flowNominalColumn" minWidth="0.0" prefWidth="200.0" text="%h4.report.table.label.nominal" />
                 <TableColumn fx:id="flow1Column" prefWidth="50.0" text="1" />
                 <TableColumn fx:id="flow2Column" prefWidth="50.0" text="2" />
                 <TableColumn fx:id="flow3Column" prefWidth="50.0" text="3" />

@@ -1,6 +1,7 @@
 package fi.stardex.sisu.coding.delphi.c2i;
 
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
+import fi.stardex.sisu.store.FlowReport;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -8,7 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 
 import static fi.stardex.sisu.coding.delphi.c2i.DelphiC2ICodingDataHandler.calculateCoefficient;
-import static fi.stardex.sisu.store.FlowReport.FlowTestResult;
+
 
 
 public class DelphiC2ICodingDataStorage {
@@ -65,7 +66,7 @@ public class DelphiC2ICodingDataStorage {
 
     }
 
-    public static void store(FlowTestResult flowTestResult) {
+    public static void store(FlowReport.FlowTestResult flowTestResult) {
 
         InjectorTest injectorTest = flowTestResult.getInjectorTest();
 

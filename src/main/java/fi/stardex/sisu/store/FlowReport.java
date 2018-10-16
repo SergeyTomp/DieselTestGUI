@@ -175,7 +175,7 @@ public class FlowReport {
     }
 
     // Не удалять геттеры так как они нужны для работы метода setupTableColumns() в классе FlowReportController
-    public static class FlowTestResult {
+    public class FlowTestResult {
 
         private final ObjectProperty<InjectorTest> injectorTest;
 

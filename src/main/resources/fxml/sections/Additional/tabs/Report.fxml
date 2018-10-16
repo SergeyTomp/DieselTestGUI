@@ -2,10 +2,17 @@
 
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
-<TabPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.additional.tabs.ReportController">
+
+<TabPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.additional.tabs.ReportController">
     <tabs>
         <Tab fx:id="tabFlowReport" text="%additional.report.flow">
             <fx:include fx:id="flowReport" source="FlowReport.fxml" />
+        </Tab>
+        <Tab fx:id="tabRLCReport" text="%additional.report.RLC">
+            <fx:include fx:id="rlcReport" source="RLCReport.fxml" />
+        </Tab>
+        <Tab fx:id="tabDelayReport" text="%additional.report.delay">
+            <fx:include fx:id="delayReport" source="DelayReport.fxml" />
         </Tab>
     </tabs>
 </TabPane>

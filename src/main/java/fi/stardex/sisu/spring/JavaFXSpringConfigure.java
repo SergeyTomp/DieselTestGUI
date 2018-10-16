@@ -98,7 +98,9 @@ public class JavaFXSpringConfigure {
                                                        Preferences rootPrefs, @Lazy Measurements measurements,
                                                        @Lazy FlowReport flowReport,
                                                        TestBenchSectionController testBenchSectionController,
-                                                       InfoController infoController) {
+                                                       InfoController infoController,
+                                                       RLC_ReportController rlcReportController,
+                                                       DelayController delayController) {
         MainSectionController mainSectionController = (MainSectionController) mainSection().getController();
         mainSectionController.setEnabler(enabler);
         mainSectionController.setApplicationAppearanceChanger(applicationAppearanceChanger);
@@ -117,7 +119,9 @@ public class JavaFXSpringConfigure {
         mainSectionController.setMeasurements(measurements);
         mainSectionController.setFlowReport(flowReport);
         mainSectionController.setInfoController(infoController);
+        mainSectionController.setRlc_reportController(rlcReportController);
         mainSectionController.setTargetRPMSpinner(testBenchSectionController.getTargetRPMSpinner());
+        mainSectionController.setDelayController(delayController);
         return mainSectionController;
     }
 
@@ -262,16 +266,38 @@ public class JavaFXSpringConfigure {
 
     @Bean
     @Autowired
-    public ReportController reportController(AdditionalSectionController additionalSectionController) {
-        return additionalSectionController.getReportController();
+    public ReportController reportController(AdditionalSectionController additionalSectionController,
+                                             I18N i18N) {
+        ReportController reportController = additionalSectionController.getReportController();
+        reportController.setI18N(i18N);
+        return reportController;
     }
 
     @Bean
     @Autowired
-    public FlowReportController flowReportController(ReportController reportController, @Lazy FlowReport flowReport) {
+    public FlowReportController flowReportController(ReportController reportController, @Lazy FlowReport flowReport, I18N i18N) {
         FlowReportController flowReportController = reportController.getFlowReportController();
         flowReportController.setFlowReport(flowReport);
+        flowReportController.setI18N(i18N);
         return flowReportController;
+    }
+
+    @Bean
+    @Autowired
+    public RLC_ReportController rlcReportController(ReportController reportController,
+                                                    I18N i18N){
+        RLC_ReportController rlcReportController = reportController.getRLCreportController();
+        rlcReportController.setI18N(i18N);
+        return rlcReportController;
+    }
+
+    @Bean
+    @Autowired
+    public DelayReportController delayReportController(ReportController reportController,
+                                                       I18N i18N){
+        DelayReportController delayReportController = reportController.getDelayReportController();
+        delayReportController.setI18N(i18N);
+        return delayReportController;
     }
 
     @Bean
@@ -398,12 +424,14 @@ public class JavaFXSpringConfigure {
     @Bean
     @Autowired
     public DelayController delayController(AdditionalSectionController additionalSectionController,
-                                           DelayCalculator delayCalculator) {
+                                           DelayCalculator delayCalculator,
+                                           DelayReportController delayReportController) {
         DelayController delayController = additionalSectionController.getDelayController();
         delayController.setDelayCalculator(delayCalculator);
         delayController.setAdditionalSectionController(additionalSectionController);
         delayController.setI18N(i18N);
-        return delayController;
+        delayController.setDelayReportController(delayReportController);
+         return delayController;
     }
 
     @Bean
@@ -603,13 +631,16 @@ public class JavaFXSpringConfigure {
                                        SettingsController settingsController,
                                        ModbusRegisterProcessor ultimaModbusWriter,
                                        RegisterProvider ultimaRegisterProvider,
-                                       AdditionalSectionController additionalSectionController) {
+                                       AdditionalSectionController additionalSectionController,
+                                       RLC_ReportController rlc_reportController) {
         RLCController RLCController = additionalSectionController.getRlCController();
         RLCController.setInjectorSectionController(injectorSectionController);
         RLCController.setSettingsController(settingsController);
         RLCController.setUltimaModbusWriter(ultimaModbusWriter);
         RLCController.setUltimaRegisterProvider(ultimaRegisterProvider);
         RLCController.setI18N(i18N);
+        RLCController.setRLC_reportController(rlc_reportController);
+
         return RLCController;
 
     }

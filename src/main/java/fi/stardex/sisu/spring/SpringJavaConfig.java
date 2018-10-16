@@ -35,7 +35,6 @@ import fi.stardex.sisu.ui.controllers.cr.TestBenchSectionController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
 import fi.stardex.sisu.ui.updaters.*;
 import fi.stardex.sisu.util.DelayCalculator;
-import fi.stardex.sisu.util.VisualUtils;
 import fi.stardex.sisu.util.converters.FlowResolver;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.rescalers.BackFlowRescaler;

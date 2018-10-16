@@ -14,7 +14,10 @@ import fi.stardex.sisu.store.FlowReport;
 import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.DelayController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.DelayReportController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.InfoController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.RLC_ReportController;
 import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.ui.controllers.dialogs.ManufacturerMenuDialogController;
 import fi.stardex.sisu.ui.controllers.dialogs.NewEditInjectorDialogController;
@@ -221,6 +224,8 @@ public class MainSectionController {
 
     private VoltAmpereProfileController voltAmpereProfileController;
 
+    private RLC_ReportController rlc_reportController;
+
     private Spinner<Integer> widthCurrentSignalSpinner;
 
     private Spinner<Double> freqCurrentSignalSpinner;
@@ -230,6 +235,8 @@ public class MainSectionController {
     private HighPressureSectionController highPressureSectionController;
 
     private InfoController infoController;
+
+    private DelayController delayController;
 
     private InjectorsRepository injectorsRepository;
 
@@ -373,6 +380,10 @@ public class MainSectionController {
         this.voltAmpereProfileController = voltAmpereProfileController;
     }
 
+    public void setRlc_reportController(RLC_ReportController rlc_reportController) {
+        this.rlc_reportController = rlc_reportController;
+    }
+
     public void setWidthCurrentSignalSpinner(Spinner<Integer> widthCurrentSignalSpinner) {
         this.widthCurrentSignalSpinner = widthCurrentSignalSpinner;
     }
@@ -411,6 +422,10 @@ public class MainSectionController {
 
     public void setInfoController(InfoController infoController) {
         this.infoController = infoController;
+    }
+
+    public void setDelayController(DelayController delayController) {
+        this.delayController = delayController;
     }
 
     public void setI18N(I18N i18N) {
@@ -919,6 +934,8 @@ public class MainSectionController {
 
             setManufacturer(newValue);
             infoController.changeToDefault();
+            rlc_reportController.clearTable();
+            delayController.getDelayReportController().clearTable();
             enabler.setEnabled(true, injectorsVBox);
 
             if (newValue.isCustom()) {
@@ -987,6 +1004,8 @@ public class MainSectionController {
         modelListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 
             returnToDefaultTestListAuto();
+            rlc_reportController.clearTable();
+            delayController.getDelayReportController().clearTable();
 
             injectorNumberTextField.setText((newValue != null) ? ((Injector) newValue).getInjectorCode() : null);
 
@@ -1101,6 +1120,7 @@ public class MainSectionController {
                 case NO:
                     setDefaultSpinnerValueFactories(false);
                     enabler.selectStaticLeakTest(true);
+                    delayController.getSaveDelayButton().setDisable(true);
                     break;
                 default:
                     setDefaultSpinnerValueFactories(true);
@@ -1111,8 +1131,10 @@ public class MainSectionController {
                     firstW = (width - firstW >= 30) ? firstW : width - 30;
                     Integer motorSpeed = newValue.getMotorSpeed();
                     setInjectorTypeValues(freq, firstW, width, motorSpeed);
+                    delayController.setInjectorTestName(newValue.getTestName().toString());
+                    delayController.clearDelayResults();
+                    delayController.getSaveDelayButton().setDisable(false);
                     break;
-
             }
 
         });

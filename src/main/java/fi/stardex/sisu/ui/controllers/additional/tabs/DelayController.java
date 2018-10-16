@@ -1,12 +1,9 @@
 package fi.stardex.sisu.ui.controllers.additional.tabs;
 
 import fi.stardex.sisu.ui.controllers.additional.AdditionalSectionController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.DelayReportController.DelayReportTableLine;
 import fi.stardex.sisu.util.DelayCalculator;
-import fi.stardex.sisu.util.InputController;
 import fi.stardex.sisu.util.i18n.I18N;
-import fi.stardex.sisu.util.spinners.SpinnerManager;
-import fi.stardex.sisu.util.spinners.SpinnerValueObtainer;
-import fi.stardex.sisu.util.tooltips.CustomTooltip;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -20,13 +17,13 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 
 import javax.annotation.PostConstruct;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import static fi.stardex.sisu.util.SpinnerDefaults.*;
 
 public class DelayController {
-
-
 
     private I18N i18N;
 
@@ -46,6 +43,8 @@ public class DelayController {
 
     @FXML private Button resetDelayButton;
 
+    @FXML private Button saveDelayButton;
+
     @FXML private TextField addingTime;
 
     @FXML private Label delayAttentionLabel;
@@ -61,6 +60,24 @@ public class DelayController {
     @FXML private Label sensitivity;
 
     @FXML private GridPane delayResults;
+
+    private String injectorTestName;
+
+    private int channelNumber;
+
+    private Map<String, DelayReportTableLine> mapOfTableLines;
+
+    public ObservableList<XYChart.Data<Double, Double>> getDelayData() {
+        return delayData;
+    }
+
+    private ObservableList<XYChart.Data<Double, Double>> delayData;
+
+    private DelayCalculator delayCalculator;
+
+    private AdditionalSectionController additionalSectionController;
+
+    private DelayReportController delayReportController;
 
     public int getAddingTimeValue() {
         return Integer.parseInt(addingTime.getText());
@@ -82,19 +99,13 @@ public class DelayController {
         return averageDelay;
     }
 
+    public Button getSaveDelayButton() {
+        return saveDelayButton;
+    }
+
     public void setI18N(I18N i18N) {
         this.i18N = i18N;
     }
-
-    public ObservableList<XYChart.Data<Double, Double>> getDelayData() {
-        return delayData;
-    }
-
-    private ObservableList<XYChart.Data<Double, Double>> delayData;
-
-    private DelayCalculator delayCalculator;
-
-    private AdditionalSectionController additionalSectionController;
 
     private ObjectProperty<Boolean> isTabDelayShowing = new SimpleObjectProperty<>();
 
@@ -110,6 +121,22 @@ public class DelayController {
         this.delayCalculator = delayCalculator;
     }
 
+    public void setDelayReportController(DelayReportController delayReportController) {
+        this.delayReportController = delayReportController;
+    }
+
+    public void setInjectorTestName(String injectorTestName) {
+        this.injectorTestName = injectorTestName;
+    }
+
+    public void setChannelNumber(int channelNumber) {
+        this.channelNumber = channelNumber;
+    }
+
+    public DelayReportController getDelayReportController() {
+        return delayReportController;
+    }
+
     @PostConstruct
     private void init() {
 
@@ -120,6 +147,8 @@ public class DelayController {
         setupAddingTime();
 
         resetDelayButton.setOnAction(event -> clearDelayResults());
+        saveDelayButton.setOnAction(event-> storeAverageDelay());
+        saveDelayButton.setDisable(true);
 
         sensitivitySpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(SENSITIVITY_SPINNER_MIN,
                                                                                             SENSITIVITY_SPINNER_MAX,
@@ -127,7 +156,6 @@ public class DelayController {
                                                                                             SENSITIVITY_SPINNER_STEP));
         
         isTabDelayShowing.bind(additionalSectionController.getTabDelay().selectedProperty());
-
     }
 
     private void setupDelayChart() {
@@ -169,12 +197,10 @@ public class DelayController {
             }
 
             addingTime.setText(newValue.isEmpty() ? "0" : newValue);
-
         });
-
     }
 
-    private void clearDelayResults() {
+    public void clearDelayResults() {
 
         delayCalculator.clearDelayValuesList();
         minimumDelay.setText("");
@@ -183,19 +209,28 @@ public class DelayController {
 
     }
 
+    private void storeAverageDelay(){
+        if(mapOfTableLines == null){
+            mapOfTableLines = new HashMap<>();
+        }
+        if(mapOfTableLines.get(injectorTestName) == null){
+            mapOfTableLines.put(injectorTestName, new DelayReportTableLine(injectorTestName));
+        }
+        mapOfTableLines.get(injectorTestName).setParameterValue(channelNumber, averageDelay.getText());
+        delayReportController.showResults(mapOfTableLines.values());
+    }
+
     public void showAttentionLabel(boolean notSingle) {
 
         delayAttentionLabel.setVisible(notSingle);
 
         for (Node node : delayChart.getChildrenUnmodifiable()) {
-            node.setDisable(notSingle);
             node.setVisible(!notSingle);
         }
 
         for(Node node : delayResults.getChildrenUnmodifiable()){
-            node.setDisable(notSingle);
+            node.setVisible(!notSingle);
         }
-
     }
 
     private void bindingI18N() {
@@ -207,6 +242,7 @@ public class DelayController {
         delayXAxis.labelProperty().bind(i18N.createStringBinding("h4.voltage.chars.time"));
         delayYAxis.labelProperty().bind(i18N.createStringBinding("h4.voltage.label.volt"));
         resetDelayButton.textProperty().bind(i18N.createStringBinding("h4.delay.button.reset"));
+        saveDelayButton.textProperty().bind(i18N.createStringBinding("h4.delay.button.save"));
         delayAttentionLabel.textProperty().bind(i18N.createStringBinding("h4.delay.label.attention"));
     }
 }

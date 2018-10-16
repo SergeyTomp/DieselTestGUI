@@ -18,7 +18,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+
+import static fi.stardex.sisu.ui.controllers.additional.tabs.RLC_ReportController.RLCreportTableLine;
 
 public class RLCController {
     private static final Logger logger = LoggerFactory.getLogger(RLCController.class);
@@ -48,11 +52,21 @@ public class RLCController {
     @FXML
     private Button storeButton;
 
+    private Map<String, RLCreportTableLine> mapOfTableLines;
+
+    private RLC_ReportController rlc_reportController;
+
     private Gauge parameter1Gauge;
     private Gauge parameter2Gauge;
     private Gauge parameter3Gauge;
     private Gauge parameter4Gauge;
     private RadioButton coilRadioButton;
+
+    private String titleGauge1;
+    private String titleGauge2;
+    private String unitsGauge1;
+    private String unitsGauge2;
+    private int ledNumber;
 
     private InjectorSectionController injectorSectionController;
     private SettingsController settingsController;
@@ -97,6 +111,10 @@ public class RLCController {
         this.currentInjectorObtainer = currentInjectorObtainer;
     }
 
+    public void setRLC_reportController(RLC_ReportController rlc_reportController) {
+        this.rlc_reportController = rlc_reportController;
+    }
+
     public void setI18N(I18N i18N) {
         this.i18N = i18N;
     }
@@ -137,16 +155,17 @@ public class RLCController {
         measurementTabPane.getTabs().remove(tabCoilTwo);
         injectorChannelComboBox = settingsController.getInjectorsConfigComboBox();
         coilRadioButton = injectorSectionController.getCoilRadioButton();
-        attentionLabel.setVisible(false);                                           //for this GUI this label is not used
-
+        attentionLabel.setVisible(false);                                    //for this GUI this label is not used
+        mapOfTableLines = new HashMap<>();
         measureButton.setOnAction(event -> {
             measureButton.setDisable(true);
             new Thread(this::measure).start();
         });
-        storeButton.setOnAction(event -> store());
+        storeButton.setOnAction(event -> RLCController.this.store());
     }
 
     private void bindingI18N() {
+
         storeButton.textProperty().bind(i18N.createStringBinding("rlc.store.button"));
         measureButton.textProperty().bind(i18N.createStringBinding("rlc.measure.button"));
     }
@@ -177,6 +196,15 @@ public class RLCController {
         Double parameter1;
         Double parameter2;
         if (ledController != null) {
+
+            titleGauge1 = parameter1Gauge.getTitle();
+            titleGauge2 = parameter2Gauge.getTitle();
+            unitsGauge1 = parameter1Gauge.getUnit();
+            unitsGauge2 = parameter2Gauge.getUnit();
+            System.err.println(unitsGauge1);
+            System.err.println(unitsGauge2);
+
+            ledNumber = getNumber(ledController);
             Platform.runLater(() -> {
                 progressIndicator.setVisible(true);
                 progressIndicatorDoubleCoil.setVisible(true);
@@ -203,13 +231,27 @@ public class RLCController {
                 } while (ready);
                 progressIndicator.setVisible(false);
                 if (coilRadioButton.isSelected()) {
+                    if(mapOfTableLines.isEmpty()){
+                        createMapOfResults();
+                    }
+
                     parameter1 = (Double) ultimaRegisterProvider.read(ModbusMapUltima.Inductance_result);
                     parameter2 = (Double) ultimaRegisterProvider.read(ModbusMapUltima.Resistance_result);
-                    Platform.runLater(() -> setCoilData(parameter1, parameter2));
+                    Platform.runLater(() -> {
+                        RLCController.this.setCoilData(parameter1, parameter2);
+                        putResultsToMap(ledNumber, (int)Math.round(parameter1), (double)Math.round(parameter2 * 100)/100);
+
+                    });
                 } else {
+                    if(mapOfTableLines.isEmpty()){
+                        createMapOfResults();
+                    }
                     parameter1 = (Double) ultimaRegisterProvider.read(ModbusMapUltima.Capacitance_result_piezo);
                     parameter2 = (Double) ultimaRegisterProvider.read(ModbusMapUltima.Resistance_result_piezo);
-                    Platform.runLater(() -> setPiezoData(parameter1, parameter2 > 2000? 2000 : parameter2));
+                    Platform.runLater(() -> {
+                        RLCController.this.setPiezoData(parameter1, parameter2 > 2000 ? 2000 : parameter2);
+                        putResultsToMap(ledNumber, (int)Math.round(parameter1), (double)Math.round(parameter2 * 100)/100);
+                    });
                 }
                 logger.warn("Parameter 1: {}    Parameter 2: {}", parameter1, parameter2);
             } catch (RuntimeException e) {
@@ -219,37 +261,19 @@ public class RLCController {
             Platform.runLater(() -> measureButton.setDisable(false));
         }
     }
-    //FIXME: next step
-    private void store(){
-//        Injector injector = currentInjectorObtainer.getInjector();
-//        if (null == injector) {
-//            return;
-//        }
-//        if (null != measurementResultsStorage.getMeasurementResults(injector)) {
-//            List<MeasurementResult> measurementResults = measurementResultsStorage.getMeasurementResults(injector);
-//            setMeasurementResultValue(measurementResults.get(0), String.format("%.2f", parameter1Gauge.getValue()));
-//            setMeasurementResultValue(measurementResults.get(1), String.format("%.2f", parameter2Gauge.getValue()));
-//        } else {
-//            List<MeasurementResult> measurementResults = new ArrayList<>();
-//            MeasurementResult measurementResult1 = new MeasurementResult(parameter1Gauge.getTitle(), parameter1Gauge.getUnit());
-//            MeasurementResult measurementResult2 = new MeasurementResult(parameter2Gauge.getTitle(), parameter2Gauge.getUnit());
-//            setMeasurementResultValue(measurementResult1, String.format("%.2f", parameter1Gauge.getValue()));
-//            setMeasurementResultValue(measurementResult2, String.format("%.2f", parameter2Gauge.getValue()));
-//            measurementResults.add(measurementResult1);
-//            measurementResults.add(measurementResult2);
-//
-//            measurementResultsStorage.putMeasurementResults(injector, measurementResults);
-//        }
-//        measurementTableReportWrapper.setMeasureResults();
+
+    private void createMapOfResults(){
+        mapOfTableLines.put(titleGauge1, new RLCreportTableLine(titleGauge1, unitsGauge1));
+        mapOfTableLines.put(titleGauge2, new RLCreportTableLine(titleGauge2, unitsGauge2));
     }
 
-    private void setMeasurementResultValue(MeasurementResult measurementResult, String value) {
-        activeLedToggleButtonsList = injectorSectionController.getActiveLedToggleButtonsList();
-        ToggleButton ledController = singleSelected();
-        if (null == ledController) {
-            return;
-        }
-        measurementResult.setParameterValue(getNumber(ledController), value);
+    private void putResultsToMap(int ledNumber, Integer parameter1, Double parameter2){
+        mapOfTableLines.get(titleGauge1).setParameterValue(ledNumber, parameter1.toString());
+        mapOfTableLines.get(titleGauge2).setParameterValue(ledNumber, parameter2.toString());
+    }
+
+    private void store(){
+        rlc_reportController.showResults(mapOfTableLines.values());
     }
 
     private void setCoilData(Double parameter1, Double parameter2) {
@@ -276,4 +300,5 @@ public class RLCController {
     private int getNumber(ToggleButton ledBeakerController) {
         return Integer.parseInt(ledBeakerController.getText());
     }
+
 }

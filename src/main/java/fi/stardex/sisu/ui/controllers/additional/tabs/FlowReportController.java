@@ -3,10 +3,12 @@ package fi.stardex.sisu.ui.controllers.additional.tabs;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.store.FlowReport;
 import fi.stardex.sisu.store.FlowReport.FlowTestResult;
+import fi.stardex.sisu.util.i18n.I18N;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.util.Callback;
 
 import javax.annotation.PostConstruct;
 
@@ -44,6 +46,8 @@ public class FlowReportController {
     @FXML
     private TableColumn<FlowTestResult, Boolean> deleteColumn;
 
+    private I18N i18N;
+
     private static final String CELL_COLOR_DEFAULT = "-fx-text-fill: #bf8248;";
 
     private static final String CELL_COLOR_ORANGE = "-fx-text-fill: orange;";
@@ -54,6 +58,10 @@ public class FlowReportController {
 
     public void setFlowReport(FlowReport flowReport) {
         this.flowReport = flowReport;
+    }
+
+    public void setI18N(I18N i18N) {
+        this.i18N = i18N;
     }
 
     public TableView<FlowTestResult> getFlowTableView() {
@@ -68,7 +76,7 @@ public class FlowReportController {
     private void init() {
 
         setupTableColumns();
-
+        bindingI18N();
     }
 
     private void setupTableColumns() {
@@ -93,35 +101,40 @@ public class FlowReportController {
 
     private void setCellFactory(TableColumn<FlowTestResult, String> column) {
 
-        column.setCellFactory(param -> new TableCell<FlowTestResult, String>() {
-
+        column.setCellFactory(new Callback<TableColumn<FlowTestResult, String>, TableCell<FlowTestResult, String>>() {
             @Override
-            protected void updateItem(String item, boolean empty) {
+            public TableCell<FlowTestResult, String> call(TableColumn<FlowTestResult, String> param) {
+                return new TableCell<FlowTestResult, String>() {
 
-                super.updateItem(item, empty);
+                    @Override
+                    protected void updateItem(String item, boolean empty) {
 
-                if (item == null || empty) {
-                    setText(null);
-                    setStyle(null);
-                } else {
-                    setText(item);
+                        super.updateItem(item, empty);
 
-                    FlowTestResult flowTestResult = flowTableView.getItems().get(getTableRow().getIndex());
+                        if (item == null || empty) {
+                            setText(null);
+                            setStyle(null);
+                        } else {
+                            setText(item);
 
-                    double flowRangeLeft = flowTestResult.getFlowRangeLeft();
-                    double flowRangeRight = flowTestResult.getFlowRangeRight();
-                    double acceptableFlowRangeLeft = flowTestResult.getAcceptableFlowRangeLeft();
-                    double acceptableFlowRangeRight = flowTestResult.getAcceptableFlowRangeRight();
+                            FlowTestResult flowTestResult = flowTableView.getItems().get(getTableRow().getIndex());
 
-                    if (item.equals("-"))
-                        setStyle(CELL_COLOR_DEFAULT);
-                    else
-                        setStyle(getColorForCell(convertDataToDouble(item), flowRangeLeft, flowRangeRight, acceptableFlowRangeLeft, acceptableFlowRangeRight));
+                            double flowRangeLeft = flowTestResult.getFlowRangeLeft();
+                            double flowRangeRight = flowTestResult.getFlowRangeRight();
+                            double acceptableFlowRangeLeft = flowTestResult.getAcceptableFlowRangeLeft();
+                            double acceptableFlowRangeRight = flowTestResult.getAcceptableFlowRangeRight();
 
-                }
+                            if (item.equals("-"))
+                                setStyle(CELL_COLOR_DEFAULT);
+                            else
+                                setStyle(getColorForCell(convertDataToDouble(item), flowRangeLeft, flowRangeRight, acceptableFlowRangeLeft, acceptableFlowRangeRight));
 
+                        }
+
+                    }
+
+                };
             }
-
         });
 
     }
@@ -174,5 +187,9 @@ public class FlowReportController {
         }
 
     }
-
+    private void bindingI18N() {
+        flowTestNameColumn.textProperty().bind(i18N.createStringBinding("h4.report.table.label.testName"));
+        flowTypeColumn.textProperty().bind(i18N.createStringBinding("h4.report.table.label.delRec"));
+        flowNominalColumn.textProperty().bind(i18N.createStringBinding("h4.report.table.label.nominal"));
+    }
 }

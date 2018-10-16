@@ -1,6 +1,7 @@
 package fi.stardex.sisu.coding.bosch;
 
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
+import fi.stardex.sisu.store.FlowReport;
 import fi.stardex.sisu.ui.controllers.ISADetectionController;
 import fi.stardex.sisu.ui.controllers.ISADetectionController.ISAResult;
 import org.slf4j.Logger;
@@ -9,7 +10,7 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static fi.stardex.sisu.store.FlowReport.FlowTestResult;
+//import static fi.stardex.sisu.store.FlowReport.FlowTestResult;
 import static fi.stardex.sisu.store.FlowReport.getMapOfFlowTestResults;
 import static fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer.getInjector;
 
@@ -34,9 +35,9 @@ public class BoschCoding {
 
         Map<InjectorTest, List<Double>> temp = new HashMap<>();
 
-        for (Map.Entry<InjectorTest, FlowTestResult> entry : getMapOfFlowTestResults().entrySet()) {
+        for (Map.Entry<InjectorTest, FlowReport.FlowTestResult> entry : getMapOfFlowTestResults().entrySet()) {
 
-            FlowTestResult flowTestResult = entry.getValue();
+            FlowReport.FlowTestResult flowTestResult = entry.getValue();
 
             temp.put(entry.getKey(), Arrays.asList(
                     flowTestResult.getFlow1_double(),

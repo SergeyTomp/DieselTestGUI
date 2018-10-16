@@ -102,12 +102,11 @@ public class DelayChartTask extends ChartTask {
         ToggleButton ledController = singleSelected();
 
         if (ledController == null) {
-
             delayController.showAttentionLabel(true);
             return;
-
         } else
             delayController.showAttentionLabel(false);
+            delayController.setChannelNumber(getNumber(ledController));
 
         int addingTime = delayController.getAddingTimeValue();
 
@@ -217,7 +216,6 @@ public class DelayChartTask extends ChartTask {
             delayCalculator.addDelayValue(point);
             Platform.runLater(this::setDelayValues);
         }
-
     }
 
     private double calculatePoint(XYChart.Data<Double, Double> point1, XYChart.Data<Double, Double> point2) {
@@ -237,11 +235,9 @@ public class DelayChartTask extends ChartTask {
         minimumDelayTextField.setText(String.format("%.0f", delayCalculator.getMinimumDelay()));
         maximumDelayTextField.setText(String.format("%.0f", delayCalculator.getMaximumDelay()));
         averageDelayTextField.setText(String.format("%.0f", delayCalculator.getAverageDelay()));
-
     }
 
     private int getNumber(ToggleButton ledBeakerController) {
         return Integer.parseInt(ledBeakerController.getText());
     }
-
 }
