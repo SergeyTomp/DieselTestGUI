@@ -1,4 +1,4 @@
-package fi.stardex.sisu.coding.other;
+package fi.stardex.sisu.coding.denso;
 
 import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
 import fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer;
@@ -28,7 +28,7 @@ public class DensoCoding {
 
         for (int i = 1; i < 5; i++) {
 
-            List<Integer> deltasList = CodingDataHandler.getDeltasForBeaker(i);
+            List<Integer> deltasList = DensoCodingDataHandler.getDeltasForBeaker(i);
 
             logger.error("9. deltasList: {}", deltasList);
 

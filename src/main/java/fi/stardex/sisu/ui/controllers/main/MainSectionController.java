@@ -482,7 +482,7 @@ public class MainSectionController {
 
         storeButton.setOnAction((event) -> {
             if (startToggleButton.isSelected())
-                flowReport.save();
+                flowReport.save(testsSelectionModel.getSelectedItem());
         });
 
         return this;

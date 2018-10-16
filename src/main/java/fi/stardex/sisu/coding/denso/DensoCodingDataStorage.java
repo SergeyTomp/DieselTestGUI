@@ -1,12 +1,14 @@
-package fi.stardex.sisu.coding.other;
+package fi.stardex.sisu.coding.denso;
 
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.store.FlowReport;
-import javafx.collections.ObservableList;
 
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 
-public class CodingDataStorage {
+public class DensoCodingDataStorage {
 
     private static Map<InjectorTest, Map<Integer, Double>> led1DataStorage;
 
@@ -16,19 +18,19 @@ public class CodingDataStorage {
 
     private static Map<InjectorTest, Map<Integer, Double>> led4DataStorage;
 
-    public static Map<InjectorTest, Map<Integer, Double>> getLed1DataStorage() {
+    static Map<InjectorTest, Map<Integer, Double>> getLed1DataStorage() {
         return led1DataStorage;
     }
 
-    public static Map<InjectorTest, Map<Integer, Double>> getLed2DataStorage() {
+    static Map<InjectorTest, Map<Integer, Double>> getLed2DataStorage() {
         return led2DataStorage;
     }
 
-    public static Map<InjectorTest, Map<Integer, Double>> getLed3DataStorage() {
+    static Map<InjectorTest, Map<Integer, Double>> getLed3DataStorage() {
         return led3DataStorage;
     }
 
-    public static Map<InjectorTest, Map<Integer, Double>> getLed4DataStorage() {
+    static Map<InjectorTest, Map<Integer, Double>> getLed4DataStorage() {
         return led4DataStorage;
     }
 
@@ -64,10 +66,10 @@ public class CodingDataStorage {
 
         InjectorTest injectorTest = flowTestResult.getInjectorTest();
 
-        Optional.ofNullable(led1DataStorage).ifPresent(led1DataStorage -> led1DataStorage.get(injectorTest).put(width, flowTestResult.getFlow1_double()));
-        Optional.ofNullable(led2DataStorage).ifPresent(led2DataStorage -> led2DataStorage.get(injectorTest).put(width, flowTestResult.getFlow2_double()));
-        Optional.ofNullable(led3DataStorage).ifPresent(led3DataStorage -> led3DataStorage.get(injectorTest).put(width, flowTestResult.getFlow3_double()));
-        Optional.ofNullable(led4DataStorage).ifPresent(led4DataStorage -> led4DataStorage.get(injectorTest).put(width, flowTestResult.getFlow4_double()));
+        Optional.ofNullable(led1DataStorage).ifPresent(data -> data.get(injectorTest).put(width, flowTestResult.getFlow1_double()));
+        Optional.ofNullable(led2DataStorage).ifPresent(data -> data.get(injectorTest).put(width, flowTestResult.getFlow2_double()));
+        Optional.ofNullable(led3DataStorage).ifPresent(data -> data.get(injectorTest).put(width, flowTestResult.getFlow3_double()));
+        Optional.ofNullable(led4DataStorage).ifPresent(data -> data.get(injectorTest).put(width, flowTestResult.getFlow4_double()));
 
     }
 
