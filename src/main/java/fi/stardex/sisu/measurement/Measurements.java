@@ -2,6 +2,8 @@ package fi.stardex.sisu.measurement;
 
 import eu.hansolo.enzo.lcd.Lcd;
 import fi.stardex.sisu.coding.bosch.BoschCoding;
+import fi.stardex.sisu.coding.delphi.c3i.DelphiC3ICoding;
+import fi.stardex.sisu.coding.delphi.c3i.DelphiC3ICodingDataStorage;
 import fi.stardex.sisu.coding.denso.DensoCodingDataStorage;
 import fi.stardex.sisu.coding.delphi.c2i.DelphiC2ICoding;
 import fi.stardex.sisu.coding.delphi.c2i.DelphiC2ICodingDataStorage;
@@ -106,7 +108,7 @@ public class Measurements implements ChangeListener<Boolean> {
 
     private boolean codingComplete;
 
-    private Iterator<Integer> densoDelphiCodingPointsIterator;
+    private Iterator<Integer> densoCodingPointsIterator;
 
     public void setCodingComplete(boolean codingComplete) {
         this.codingComplete = codingComplete;
@@ -216,6 +218,8 @@ public class Measurements implements ChangeListener<Boolean> {
                                     .filter(injectorTest -> injectorTest.getTestName().isTestPoint())
                                     .map(injectorTest -> injectorTest.getTestName().toString())
                                     .collect(Collectors.toList()));
+                else if (isDelphiC3ICoding())
+                    DelphiC3ICodingDataStorage.initialize(activeLedToggleButtonsList);
                 break;
         }
 
@@ -241,7 +245,9 @@ public class Measurements implements ChangeListener<Boolean> {
 
             DelphiC2ICodingDataStorage.clean();
 
-            densoDelphiCodingPointsIterator = null;
+            DelphiC3ICodingDataStorage.clean();
+
+            densoCodingPointsIterator = null;
 
             mainSectionController.pointToFirstTest();
 
@@ -266,6 +272,8 @@ public class Measurements implements ChangeListener<Boolean> {
             case "Delphi":
                 if (isDelphiC2ICoding())
                     setCodingResults(DelphiC2ICoding.calculate());
+                else if (isDelphiC3ICoding())
+                    setCodingResults(DelphiC3ICoding.calculate());
                 break;
 
         }
@@ -326,24 +334,24 @@ public class Measurements implements ChangeListener<Boolean> {
                             selectNextTest(selectedTestIndex);
                             runNextTest();
                         } else {
-                            if (densoDelphiCodingPointsIterator == null) {
-                                densoDelphiCodingPointsIterator = getDensoDelphiCodingPointsIterator(injectorTest);
-                                if (!densoDelphiCodingPointsIterator.hasNext()) {
-                                    densoDelphiCodingPointsIterator = null;
+                            if (densoCodingPointsIterator == null) {
+                                densoCodingPointsIterator = getDensoCodingPointsIterator(injectorTest);
+                                if (!densoCodingPointsIterator.hasNext()) {
+                                    densoCodingPointsIterator = null;
                                     selectNextTest(selectedTestIndex);
                                     start();
                                 } else
                                     runDensoTest();
                             } else {
-                                if (!densoDelphiCodingPointsIterator.hasNext()) {
-                                    densoDelphiCodingPointsIterator = null;
+                                if (!densoCodingPointsIterator.hasNext()) {
+                                    densoCodingPointsIterator = null;
                                     selectNextTest(selectedTestIndex);
                                     runNextTest();
                                 } else
                                     runDensoTest();
                             }
                         }
-                    } else if (isDelphiC2ICoding()) {
+                    } else if (isDelphiC2ICoding() || isDelphiC3ICoding()) {
                         selectNextTest(selectedTestIndex);
                         start();
                     } else {
@@ -355,14 +363,14 @@ public class Measurements implements ChangeListener<Boolean> {
                     }
                 } else {
                     if (isDensoCoding()) {
-                        if (densoDelphiCodingPointsIterator == null) {
-                            densoDelphiCodingPointsIterator = getDensoDelphiCodingPointsIterator(injectorTest);
-                            if (!densoDelphiCodingPointsIterator.hasNext())
+                        if (densoCodingPointsIterator == null) {
+                            densoCodingPointsIterator = getDensoCodingPointsIterator(injectorTest);
+                            if (!densoCodingPointsIterator.hasNext())
                                 finishCoding();
                             else
                                 runDensoTest();
                         } else {
-                            if (!densoDelphiCodingPointsIterator.hasNext())
+                            if (!densoCodingPointsIterator.hasNext())
                                 finishCoding();
                             else
                                 runDensoTest();
@@ -378,7 +386,7 @@ public class Measurements implements ChangeListener<Boolean> {
 
     private void finishCoding() {
 
-        densoDelphiCodingPointsIterator = null;
+        densoCodingPointsIterator = null;
         codingComplete = true;
         mainSectionStartToggleButton.setSelected(false);
 
@@ -388,7 +396,7 @@ public class Measurements implements ChangeListener<Boolean> {
 
         adjustingTime.refreshProgress();
         measuringTime.refreshProgress();
-        widthCurrentSignalSpinner.getValueFactory().setValue(densoDelphiCodingPointsIterator.next());
+        widthCurrentSignalSpinner.getValueFactory().setValue(densoCodingPointsIterator.next());
         start();
 
     }
@@ -496,9 +504,12 @@ public class Measurements implements ChangeListener<Boolean> {
                     if (isDensoCoding() && testName.getMeasurement() != Measurement.VISUAL) {
                         flowReport.save(injectorTest);
                         DensoCodingDataStorage.store(widthCurrentSignalSpinner.getValue(), getMapOfFlowTestResults().get(injectorTest));
-                    } else if (isDelphiC2ICoding() && testName.isTestPoint()) {
+                    } else if (testName.isTestPoint()) {
                         flowReport.save(injectorTest);
-                        DelphiC2ICodingDataStorage.store(getMapOfFlowTestResults().get(injectorTest));
+                        if (isDelphiC2ICoding())
+                            DelphiC2ICodingDataStorage.store(getMapOfFlowTestResults().get(injectorTest));
+                        else if (isDelphiC3ICoding())
+                            DelphiC3ICodingDataStorage.store(getMapOfFlowTestResults().get(injectorTest));
                     }
                     break;
 
@@ -528,7 +539,13 @@ public class Measurements implements ChangeListener<Boolean> {
 
     }
 
-    private Iterator<Integer> getDensoDelphiCodingPointsIterator(InjectorTest injectorTest) {
+    private boolean isDelphiC3ICoding() {
+
+        return getManufacturer().getManufacturerName().equals("Delphi") && getInjector().getCodetype() == 2;
+
+    }
+
+    private Iterator<Integer> getDensoCodingPointsIterator(InjectorTest injectorTest) {
 
         Integer totalPulseTime = injectorTest.getTotalPulseTime();
 

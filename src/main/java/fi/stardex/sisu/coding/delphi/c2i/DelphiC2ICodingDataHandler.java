@@ -1,13 +1,12 @@
 package fi.stardex.sisu.coding.delphi.c2i;
 
-import fi.stardex.sisu.coding.delphi.DelphiCoefficient;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 
 class DelphiC2ICodingDataHandler {
 
     static int calculateCoefficient(InjectorTest injectorTest, double flow) {
 
-        int range = (int) Math.pow(2, DelphiCoefficient.getDelphiC2ICoefficient(injectorTest.getTestName().toString()) - 1);
+        int range = (int) Math.pow(2, DelphiC2ICoefficient.getDelphiC2ICoefficient(injectorTest.getTestName().toString()) - 1);
 
         double nominalFlow = injectorTest.getNominalFlow();
 

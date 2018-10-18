@@ -1,5 +1,6 @@
 package fi.stardex.sisu.util.converters;
 
+// TODO: можно попробовать использовать округление как в этой статье : https://www.baeldung.com/java-round-decimal-number
 public class DataConverter {
 
     public static int convertDataToInt(String value) {

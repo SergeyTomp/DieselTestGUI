@@ -1101,13 +1101,9 @@ public class MainSectionController {
 
             }
 
-//            currentAdjustingTime = newValue.getAdjustingTime();
-//
-//            currentMeasuringTime = newValue.getMeasurementTime();
+            currentAdjustingTime = newValue.getAdjustingTime();
 
-            currentAdjustingTime = 3;
-
-            currentMeasuringTime = 3;
+            currentMeasuringTime = newValue.getMeasurementTime();
 
             setProgress(speedComboBoxSelectionModel.getSelectedItem());
 

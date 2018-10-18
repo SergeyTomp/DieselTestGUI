@@ -10,8 +10,6 @@ import java.util.Optional;
 
 import static fi.stardex.sisu.coding.delphi.c2i.DelphiC2ICodingDataHandler.calculateCoefficient;
 
-
-
 public class DelphiC2ICodingDataStorage {
 
     private static Map<String, Integer> led1DataStorage;

@@ -1,13 +1,13 @@
-package fi.stardex.sisu.coding.delphi;
+package fi.stardex.sisu.coding.delphi.c2i;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DelphiCoefficient {
+class DelphiC2ICoefficient {
 
-    private static Logger logger = LoggerFactory.getLogger(DelphiCoefficient.class);
+    private static Logger logger = LoggerFactory.getLogger(DelphiC2ICoefficient.class);
 
-    public static int getDelphiC2ICoefficient(String testName) {
+    static int getDelphiC2ICoefficient(String testName) {
 
         switch (testName) {
 
@@ -27,12 +27,6 @@ public class DelphiCoefficient {
                 return 0;
 
         }
-
-    }
-
-    public static int getDelphiC3ICoefficient(String testName) {
-
-        return 0;
 
     }
 

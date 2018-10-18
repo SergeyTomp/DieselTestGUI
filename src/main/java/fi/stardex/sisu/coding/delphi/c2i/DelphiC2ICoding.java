@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-import static fi.stardex.sisu.coding.delphi.DelphiCoefficient.getDelphiC2ICoefficient;
+import static fi.stardex.sisu.coding.delphi.c2i.DelphiC2ICoefficient.getDelphiC2ICoefficient;
 import static fi.stardex.sisu.coding.delphi.c2i.DelphiC2ICodingDataStorage.*;
 import static fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer.getInjector;
 
