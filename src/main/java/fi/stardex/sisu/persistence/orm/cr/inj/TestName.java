@@ -25,6 +25,9 @@ public class TestName {
     @Enumerated(EnumType.STRING)
     private Measurement measurement;
 
+    @Column(name = "test_point", nullable = false)
+    private boolean testPoint;
+
     @Column(name = "display_order", unique = true, nullable = false)
     private Integer displayOrder;
 
@@ -41,6 +44,10 @@ public class TestName {
 
     public Integer getDisplayOrder() {
         return displayOrder;
+    }
+
+    public boolean isTestPoint() {
+        return testPoint;
     }
 
     @Override

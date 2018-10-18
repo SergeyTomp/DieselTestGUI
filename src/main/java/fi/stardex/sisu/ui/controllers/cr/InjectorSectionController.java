@@ -114,7 +114,6 @@ public class InjectorSectionController {
     private List<Timeline> timeLinesList;
     private List<KeyFrame> keyFramesList;
 
-
     public Spinner<Integer> getWidthCurrentSignalSpinner() {
         return widthCurrentSignalSpinner;
     }
@@ -434,7 +433,7 @@ public class InjectorSectionController {
 
             if (newValue) {
                 fillArrayNumbersOfActiveLedToggleButtons();
-                getActiveLedToggleButtonsList().forEach(l -> {if(l.isSelected()){ledBlinkStart(l);}});
+                ledToggleButtons.forEach(l -> {if(l.isSelected()){ledBlinkStart(l);}});
                 ultimaModbusWriter.add(Injectors_Running_En, true);
                 ledParametersChangeListener.sendLedRegisters();
                 // FIXME: throws NPE if there is no connection
@@ -443,7 +442,11 @@ public class InjectorSectionController {
                 enabler.disableVAP(true);
 
             } else {
-                getActiveLedToggleButtonsList().forEach(l -> {if(l.isSelected()){ledBlinkStop(l);}});
+                ledToggleButtons.forEach(l -> {
+                    if(l.isSelected()){
+                        ledBlinkStop(l);
+                    }
+                });
                 ultimaModbusWriter.add(Injectors_Running_En, false);
                 ledParametersChangeListener.switchOffAll();
                 timerTasksManager.stop();

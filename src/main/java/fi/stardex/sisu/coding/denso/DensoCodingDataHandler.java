@@ -1,4 +1,4 @@
-package fi.stardex.sisu.coding.other;
+package fi.stardex.sisu.coding.denso;
 
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import org.slf4j.Logger;
@@ -6,7 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 
-public class CodingDataHandler {
+class DensoCodingDataHandler {
 
     private static Logger logger = LoggerFactory.getLogger(DensoCoding.class);
 
@@ -14,22 +14,22 @@ public class CodingDataHandler {
 
     private static final Random RANDOM = new Random();
 
-    public static List<Integer> getDeltasForBeaker(int beakerNumber) {
+    static List<Integer> getDeltasForBeaker(int beakerNumber) {
 
         DELTAS.clear();
 
         switch (beakerNumber) {
             case 1:
-                Optional.ofNullable(CodingDataStorage.getLed1DataStorage()).ifPresent(data -> data.entrySet().forEach(entry -> DELTAS.add(getCodingPoint(entry))));
+                Optional.ofNullable(DensoCodingDataStorage.getLed1DataStorage()).ifPresent(data -> data.entrySet().forEach(entry -> DELTAS.add(getCodingPoint(entry))));
                 break;
             case 2:
-                Optional.ofNullable(CodingDataStorage.getLed2DataStorage()).ifPresent(data -> data.entrySet().forEach(entry -> DELTAS.add(getCodingPoint(entry))));
+                Optional.ofNullable(DensoCodingDataStorage.getLed2DataStorage()).ifPresent(data -> data.entrySet().forEach(entry -> DELTAS.add(getCodingPoint(entry))));
                 break;
             case 3:
-                Optional.ofNullable(CodingDataStorage.getLed3DataStorage()).ifPresent(data -> data.entrySet().forEach(entry -> DELTAS.add(getCodingPoint(entry))));
+                Optional.ofNullable(DensoCodingDataStorage.getLed3DataStorage()).ifPresent(data -> data.entrySet().forEach(entry -> DELTAS.add(getCodingPoint(entry))));
                 break;
             case 4:
-                Optional.ofNullable(CodingDataStorage.getLed4DataStorage()).ifPresent(data -> data.entrySet().forEach(entry -> DELTAS.add(getCodingPoint(entry))));
+                Optional.ofNullable(DensoCodingDataStorage.getLed4DataStorage()).ifPresent(data -> data.entrySet().forEach(entry -> DELTAS.add(getCodingPoint(entry))));
                 break;
         }
 
@@ -37,7 +37,7 @@ public class CodingDataHandler {
 
     }
 
-    public static int getCodingPoint(Map.Entry<InjectorTest, Map<Integer, Double>> entry) {
+    private static int getCodingPoint(Map.Entry<InjectorTest, Map<Integer, Double>> entry) {
 
         Integer width1 = null, width2 = null;
 

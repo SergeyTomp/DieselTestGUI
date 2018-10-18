@@ -560,9 +560,8 @@ public class SpringJavaConfig {
 
     @Bean
     @Autowired
-    public FlowReport flowReport(FlowReportController flowReportController, MainSectionController mainSectionController,
-                                 FlowController flowController, SettingsController settingsController) {
-        return new FlowReport(flowReportController, mainSectionController, flowController, settingsController);
+    public FlowReport flowReport(FlowReportController flowReportController, FlowController flowController, SettingsController settingsController) {
+        return new FlowReport(flowReportController, flowController, settingsController);
     }
 
     private List<Updater> addUpdaters(List<Updater> updatersList, Device targetDevice) {

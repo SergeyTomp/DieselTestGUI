@@ -5,7 +5,6 @@ import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.FlowReportController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
-import fi.stardex.sisu.ui.controllers.main.MainSectionController;
 import fi.stardex.sisu.util.enums.Measurement;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -13,7 +12,6 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Label;
-import javafx.scene.control.MultipleSelectionModel;
 import javafx.scene.control.SingleSelectionModel;
 import javafx.scene.control.TextField;
 
@@ -27,8 +25,6 @@ import static fi.stardex.sisu.util.converters.DataConverter.convertDataToDouble;
 public class FlowReport {
 
     private ObservableList<FlowTestResult> flowTableViewItems;
-
-    private MultipleSelectionModel<InjectorTest> testsSelectionModel;
 
     private SingleSelectionModel<String> deliveryFlowComboBoxSelectionModel;
 
@@ -62,12 +58,9 @@ public class FlowReport {
         return mapOfFlowTestResults;
     }
 
-    public FlowReport(FlowReportController flowReportController, MainSectionController mainSectionController,
-                      FlowController flowController, SettingsController settingsController) {
+    public FlowReport(FlowReportController flowReportController, FlowController flowController, SettingsController settingsController) {
 
         flowTableViewItems = flowReportController.getFlowTableView().getItems();
-
-        testsSelectionModel = mainSectionController.getTestsSelectionModel();
         deliveryFlowComboBoxSelectionModel = flowController.getDeliveryFlowComboBox().getSelectionModel();
         backFlowComboBoxSelectionModel = flowController.getBackFlowComboBox().getSelectionModel();
         flowOutputDimensionsSelectionModel = settingsController.getFlowOutputDimensionsComboBox().getSelectionModel();
@@ -86,12 +79,7 @@ public class FlowReport {
 
     }
 
-    public void save() {
-
-        InjectorTest injectorTest = testsSelectionModel.getSelectedItem();
-
-        if (injectorTest.getTestName().getMeasurement() == Measurement.VISUAL)
-            return;
+    public void save(InjectorTest injectorTest) {
 
         Measurement measurement = injectorTest.getTestName().getMeasurement();
 
