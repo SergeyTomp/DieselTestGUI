@@ -7,6 +7,7 @@ import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
+import fi.stardex.sisu.ui.data.RLC_ResultsStorage;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer;
 import javafx.application.Platform;
@@ -18,9 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import static fi.stardex.sisu.ui.controllers.additional.tabs.RLC_ReportController.RLCreportTableLine;
 
@@ -74,6 +73,7 @@ public class RLCController {
     private RegisterProvider ultimaRegisterProvider;
     private CurrentInjectorObtainer currentInjectorObtainer;
     private I18N i18N;
+    private RLC_ResultsStorage rlcResultsStorage;
 
     public Button getMeasureButton() {
         return measureButton;
@@ -113,6 +113,10 @@ public class RLCController {
 
     public void setRLC_reportController(RLC_ReportController rlc_reportController) {
         this.rlc_reportController = rlc_reportController;
+    }
+
+    public void setRlcResultsStorage(RLC_ResultsStorage rlcResultsStorage) {
+        this.rlcResultsStorage = rlcResultsStorage;
     }
 
     public void setI18N(I18N i18N) {
@@ -270,7 +274,16 @@ public class RLCController {
     private void putResultsToMap(int ledNumber, Integer parameter1, Double parameter2){
         mapOfTableLines.get(titleGauge1).setParameterValue(ledNumber, parameter1.toString());
         mapOfTableLines.get(titleGauge2).setParameterValue(ledNumber, parameter2.toString());
+
+//        putRlcResultsToStorage();
+
+        rlcResultsStorage.storeResults(CurrentInjectorObtainer.getInjector(), new ArrayList<>(mapOfTableLines.values()));
     }
+
+//    private void putRlcResultsToStorage(){
+//
+//      rlcResultsStorage.storeResults(CurrentInjectorObtainer.getInjector(), new ArrayList<>(mapOfTableLines.values()));
+//    }
 
     private void store(){
         rlc_reportController.showResults(mapOfTableLines.values());

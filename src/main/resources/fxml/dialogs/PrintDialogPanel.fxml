@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.Font?>
+
+<StackPane maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="480.0" minWidth="45.0" prefHeight="480.0" prefWidth="550.0" styleClass="root-layout" stylesheets="@../../css/Styling.css" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.dialogs.PrintDialogPanelController">
+   <children>
+      <GridPane minWidth="-Infinity" prefHeight="481.0" prefWidth="450.0">
+        <columnConstraints>
+          <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints maxHeight="550.0" minHeight="10.0" prefHeight="437.0" valignment="TOP" vgrow="SOMETIMES" />
+          <RowConstraints maxHeight="193.0" minHeight="10.0" prefHeight="43.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <TabPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" stylesheets="@../../css/Styling.css" tabClosingPolicy="UNAVAILABLE" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+              <tabs>
+                <Tab fx:id="customerTab" text="%dialog.customer.tab">
+                     <content>
+                        <Pane prefHeight="262.0" prefWidth="450.0" styleClass="tab" stylesheets="@../../css/Styling.css">
+                           <children>
+                              <TextField fx:id="customerName" layoutX="200.0" layoutY="43.0" prefHeight="25.0" prefWidth="315.0" styleClass="searchTextField" stylesheets="@../../css/Styling.css" />
+                              <Label fx:id="customerLabel" layoutX="30.0" layoutY="46.0" prefHeight="20.0" prefWidth="160.0" text="%dialog.customer.customer">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="dateLabel" layoutX="30.0" layoutY="87.0" prefHeight="20.0" prefWidth="160.0" text="%dialog.customer.date">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Label>
+                              <TextField fx:id="serial1" layoutX="200.0" layoutY="128.0" prefHeight="25.0" prefWidth="315.0" styleClass="searchTextField" stylesheets="@../../css/Styling.css" />
+                              <Label fx:id="serial1Label" layoutX="30.0" layoutY="131.0" prefHeight="20.0" prefWidth="160.0" text="%dialog.customer.serial1">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Label>
+                              <TextField fx:id="serial2" layoutX="200.0" layoutY="172.0" prefHeight="25.0" prefWidth="315.0" styleClass="searchTextField" stylesheets="@../../css/Styling.css" />
+                              <Label fx:id="serial2Label" layoutX="30.0" layoutY="175.0" prefHeight="20.0" prefWidth="160.0" text="%dialog.customer.serial2">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Label>
+                              <TextField fx:id="serial3" layoutX="200.0" layoutY="216.0" prefHeight="25.0" prefWidth="315.0" styleClass="searchTextField" stylesheets="@../../css/Styling.css" />
+                              <Label fx:id="serial3Label" layoutX="30.0" layoutY="219.0" prefHeight="20.0" prefWidth="160.0" text="%dialog.customer.serial3">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="serial4Label" layoutX="30.0" layoutY="262.0" prefHeight="20.0" prefWidth="160.0" text="%dialog.customer.serial4">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Label>
+                              <TextField fx:id="serial4" layoutX="200.0" layoutY="259.0" prefHeight="25.0" prefWidth="315.0" styleClass="searchTextField" stylesheets="@../../css/Styling.css" />
+                              <Label fx:id="serial5Label" layoutX="30.0" layoutY="303.0" prefHeight="20.0" prefWidth="160.0" text="%dialog.customer.serial5">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Label>
+                              <TextField fx:id="serial5" layoutX="200.0" layoutY="300.0" prefHeight="25.0" prefWidth="315.0" styleClass="searchTextField" stylesheets="@../../css/Styling.css" />
+                              <TextField fx:id="serial6" layoutX="200.0" layoutY="340.0" prefHeight="25.0" prefWidth="315.0" styleClass="searchTextField" stylesheets="@../../css/Styling.css" />
+                              <Label fx:id="serial6Label" layoutX="30.0" layoutY="343.0" prefHeight="20.0" prefWidth="160.0" text="%dialog.customer.serial6">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Label>
+                              <StackPane fx:id="paneDataPicker" layoutX="200.0" layoutY="82.0" prefHeight="30.0" prefWidth="315.0" styleClass="date-picker" stylesheets="@../../css/Styling.css" />
+                           </children>
+                        </Pane>
+                     </content>
+                  </Tab>
+                <Tab fx:id="companyTab" text="%dialog.company.tab">
+                     <content>
+                        <Pane prefHeight="394.0" prefWidth="400.0" styleClass="tab" stylesheets="@../../css/Styling.css">
+                           <children>
+                              <Label fx:id="companyDetailLabel" layoutX="143.0" layoutY="14.0" text="%dialog.company.details">
+                                 <font>
+                                    <Font size="16.0" />
+                                 </font>
+                              </Label>
+                              <Button fx:id="selectLogoButton" layoutX="345.0" layoutY="55.0" mnemonicParsing="false" onAction="#onClickSelectFile" prefHeight="29.0" prefWidth="170.0" text="%dialog.company.selectfile" />
+                              <Label fx:id="phone2Label" layoutX="30.0" layoutY="292.0" prefHeight="20.0" prefWidth="160.0" text="%dialog.company.phone2">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Label>
+                              <TextField fx:id="urlField" layoutX="200.0" layoutY="371.0" prefHeight="25.0" prefWidth="315.0" styleClass="searchTextField" stylesheets="@../../css/Styling.css" />
+                              <Label fx:id="emailLabel" layoutX="30.0" layoutY="331.0" prefHeight="20.0" prefWidth="160.0" text="%dialog.company.email">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="urlLabel" layoutX="30.0" layoutY="373.0" prefHeight="20.0" prefWidth="160.0" text="%dialog.company.url">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="phone1Label" layoutX="30.0" layoutY="250.0" prefHeight="20.0" prefWidth="160.0" text="%dialog.company.phone1">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="addressLabel" layoutX="30.0" layoutY="207.0" prefHeight="20.0" prefWidth="160.0" text="%dialog.company.address">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="companyNameLabel" layoutX="30.0" layoutY="166.0" prefHeight="20.0" prefWidth="160.0" text="%dialog.company.name">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Label>
+                              <Label fx:id="logoLabel" layoutX="30.0" layoutY="80.0" prefHeight="20.0" prefWidth="160.0" text="%dialog.company.logo">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Label>
+                              <TextField fx:id="email" layoutX="200.0" layoutY="329.0" prefHeight="25.0" prefWidth="315.0" styleClass="searchTextField" stylesheets="@../../css/Styling.css" />
+                              <TextField fx:id="phone2" layoutX="200.0" layoutY="290.0" prefHeight="25.0" prefWidth="315.0" styleClass="searchTextField" stylesheets="@../../css/Styling.css" />
+                              <TextField fx:id="phone1" layoutX="200.0" layoutY="248.0" prefHeight="25.0" prefWidth="315.0" styleClass="searchTextField" stylesheets="@../../css/Styling.css" />
+                              <TextField fx:id="address" layoutX="200.0" layoutY="205.0" prefHeight="25.0" prefWidth="315.0" styleClass="searchTextField" stylesheets="@../../css/Styling.css" />
+                              <TextField fx:id="name" layoutX="200.0" layoutY="164.0" prefHeight="25.0" prefWidth="315.0" styleClass="searchTextField" stylesheets="@../../css/Styling.css" />
+                              <ImageView fx:id="imageView" fitHeight="102.0" fitWidth="172.0" layoutX="124.0" layoutY="44.0" pickOnBounds="true" preserveRatio="true" />
+                              <Button fx:id="clearLogoButton" layoutX="345.0" layoutY="112.0" mnemonicParsing="false" onAction="#onClickClear" prefHeight="29.0" prefWidth="170.0" text="%dialog.company.clear" />
+                           </children>
+                        </Pane>
+                     </content>
+                </Tab>
+              </tabs>
+            </TabPane>
+            <GridPane maxWidth="1.7976931348623157E308" prefHeight="14.0" prefWidth="450.0" styleClass="tab" stylesheets="@../../css/Styling.css" GridPane.rowIndex="1">
+              <columnConstraints>
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="84.0" prefWidth="129.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="120.0" prefWidth="162.0" />
+                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="79.0" prefWidth="103.0" />
+                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="137.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <Button fx:id="closeButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onClose" prefHeight="30.0" prefWidth="100.0" stylesheets="@../../css/Styling.css" text="%dialog.customer.close">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="pdfAndPrintButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onPDFAndPrint" prefHeight="30.0" prefWidth="140.0" stylesheets="@../../css/Styling.css" text="%dialog.customer.pdf.and.print" GridPane.columnIndex="1">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="printButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onPrint" prefHeight="30.0" prefWidth="80.0" stylesheets="@../../css/Styling.css" text="%dialog.customer.print" GridPane.columnIndex="2">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="pdfButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#saveToPdf" prefHeight="30.0" prefWidth="154.0" stylesheets="@../../css/Styling.css" text="%dialog.customer.save.and.close" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Button>
+               </children>
+            </GridPane>
+         </children>
+      </GridPane>
+   </children>
+</StackPane>

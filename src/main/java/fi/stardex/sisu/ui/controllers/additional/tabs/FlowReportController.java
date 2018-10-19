@@ -177,13 +177,7 @@ public class FlowReportController {
 
     }
 
-    private void bindingI18N() {
 
-        flowTestNameColumn.textProperty().bind(i18N.createStringBinding("h4.report.table.label.testName"));
-        flowTypeColumn.textProperty().bind(i18N.createStringBinding("h4.report.table.label.delRec"));
-        flowNominalColumn.textProperty().bind(i18N.createStringBinding("h4.report.table.label.nominal"));
-
-    }
 
     private class ButtonCell extends TableCell<FlowTestResult, Boolean> {
 
@@ -216,5 +210,10 @@ public class FlowReportController {
         }
 
     }
+    private void bindingI18N() {
 
+        flowTestNameColumn.textProperty().bind(i18N.createStringBinding("h4.report.table.label.testName"));
+        flowTypeColumn.textProperty().bind(i18N.createStringBinding("h4.report.table.label.delRec"));
+        flowNominalColumn.textProperty().bind(i18N.createStringBinding("h4.report.table.label.nominal"));
+    }
 }

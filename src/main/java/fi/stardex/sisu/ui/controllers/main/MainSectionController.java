@@ -15,12 +15,14 @@ import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.DelayController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.DelayReportController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.InfoController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.RLC_ReportController;
 import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.ui.controllers.dialogs.ManufacturerMenuDialogController;
 import fi.stardex.sisu.ui.controllers.dialogs.NewEditInjectorDialogController;
 import fi.stardex.sisu.ui.controllers.dialogs.NewEditTestDialogController;
+import fi.stardex.sisu.ui.controllers.dialogs.PrintDialogPanelController;
 import fi.stardex.sisu.util.enums.Measurement;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.view.ApplicationAppearanceChanger;
@@ -30,6 +32,8 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -38,6 +42,7 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.geometry.Point2D;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxListCell;
@@ -49,6 +54,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -132,6 +138,9 @@ public class MainSectionController {
 
     @FXML
     private Button resetButton;
+
+    @FXML
+    private Button printButton;
 
     @FXML
     private ToggleGroup testsToggleGroup;
@@ -219,6 +228,8 @@ public class MainSectionController {
 
     private ViewHolder newEditTestDialog;
 
+    private ViewHolder printDialogPanel;
+
     private VoltAmpereProfileController voltAmpereProfileController;
 
     private RLC_ReportController rlc_reportController;
@@ -258,6 +269,8 @@ public class MainSectionController {
     private boolean isFocusMoved;
 
     private boolean isAnotherAutoOrNewTestList;
+
+    private Stage printStage;
 
     public ToggleGroup getTestsToggleGroup() {
         return testsToggleGroup;
@@ -375,6 +388,10 @@ public class MainSectionController {
         this.newEditTestDialog = newEditTestDialog;
     }
 
+    public void setPrintDialogPanel(ViewHolder printDialogPanel) {
+        this.printDialogPanel = printDialogPanel;
+    }
+
     public void setVoltAmpereProfileController(VoltAmpereProfileController voltAmpereProfileController) {
         this.voltAmpereProfileController = voltAmpereProfileController;
     }
@@ -463,6 +480,7 @@ public class MainSectionController {
                 .setupMoveButtonEventHandlers()
                 .setupTestListAutoChangeListener();
 
+        printButton.setOnAction(new PrintButtonEventHandler());
     }
 
     private MainSectionController makeReferenceToInternalObjects() {
@@ -934,6 +952,7 @@ public class MainSectionController {
             infoController.changeToDefault();
             rlc_reportController.clearTable();
             delayController.getDelayReportController().clearTable();
+            flowReport.clear();
 
             if (newValue.isCustom()) {
                 defaultRadioButton.setDisable(true);
@@ -1003,6 +1022,7 @@ public class MainSectionController {
             returnToDefaultTestListAuto();
             rlc_reportController.clearTable();
             delayController.getDelayReportController().clearTable();
+            flowReport.clear();
 
             injectorNumberTextField.setText((newValue != null) ? ((Injector) newValue).getInjectorCode() : null);
 
@@ -1132,6 +1152,7 @@ public class MainSectionController {
                     Integer motorSpeed = newValue.getMotorSpeed();
                     setInjectorTypeValues(freq, firstW, width, motorSpeed);
                     delayController.setInjectorTestName(newValue.getTestName().toString());
+                    delayController.setInjectorTest(newValue);
                     delayController.clearDelayResults();
                     delayController.getSaveDelayButton().setDisable(false);
                     break;
@@ -1272,5 +1293,23 @@ public class MainSectionController {
         else
             return false;
 
+    }
+
+    private class PrintButtonEventHandler implements EventHandler<ActionEvent>{
+        @Override
+        public void handle(ActionEvent event) {
+
+            if (printStage == null) {
+                printStage = new Stage();
+                printStage.setTitle("PDF export");
+                printStage.setScene(new Scene(printDialogPanel.getView()));
+                printStage.setResizable(false);
+                printStage.initModality(Modality.APPLICATION_MODAL);
+                printStage.show();
+                ((PrintDialogPanelController) printDialogPanel.getController()).setStage(printStage);
+            }
+            printStage.show();
+
+        }
     }
 }

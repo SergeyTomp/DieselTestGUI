@@ -1,9 +1,16 @@
 package fi.stardex.sisu.ui.controllers.additional.tabs;
 
+import fi.stardex.sisu.persistence.orm.Test;
+import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
+import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.ui.controllers.additional.AdditionalSectionController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.DelayReportController.DelayReportTableLine;
+import fi.stardex.sisu.ui.data.DelayResultsStorage;
+import fi.stardex.sisu.ui.data.Result;
 import fi.stardex.sisu.util.DelayCalculator;
 import fi.stardex.sisu.util.i18n.I18N;
+import fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer;
+import fi.stardex.sisu.util.obtainers.CurrentInjectorTestsObtainer;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -63,6 +70,8 @@ public class DelayController {
 
     private String injectorTestName;
 
+    private InjectorTest injectorTest;
+
     private int channelNumber;
 
     private Map<String, DelayReportTableLine> mapOfTableLines;
@@ -78,6 +87,8 @@ public class DelayController {
     private AdditionalSectionController additionalSectionController;
 
     private DelayReportController delayReportController;
+
+    private DelayResultsStorage delayResultsStorage;
 
     public int getAddingTimeValue() {
         return Integer.parseInt(addingTime.getText());
@@ -125,8 +136,16 @@ public class DelayController {
         this.delayReportController = delayReportController;
     }
 
+    public void setDelayResultsStorage(DelayResultsStorage delayResultsStorage) {
+        this.delayResultsStorage = delayResultsStorage;
+    }
+
     public void setInjectorTestName(String injectorTestName) {
         this.injectorTestName = injectorTestName;
+    }
+
+    public void setInjectorTest(InjectorTest injectorTest) {
+        this.injectorTest = injectorTest;
     }
 
     public void setChannelNumber(int channelNumber) {
@@ -218,7 +237,19 @@ public class DelayController {
         }
         mapOfTableLines.get(injectorTestName).setParameterValue(channelNumber, averageDelay.getText());
         delayReportController.showResults(mapOfTableLines.values());
+
+        delayResultsStorage.storeResults(CurrentInjectorObtainer.getInjector(), injectorTest, mapOfTableLines.get(injectorTestName));
+//        putDelayResultsToStorage();
     }
+
+//    private void putDelayResultsToStorage(){
+//        Injector injector = CurrentInjectorObtainer.getInjector();
+//        Map<Injector, Map<Test, Result>> delayResultsMap = delayResultsStorage.getDelayResultsMap();
+//        delayResultsMap.computeIfAbsent(injector, k -> new HashMap<>());
+//        delayResultsMap.get(injector).put(injectorTest, mapOfTableLines.get(injectorTestName));
+//        delayResultsStorage.storeResults(CurrentInjectorObtainer.getInjector(), injectorTest, mapOfTableLines.get(injectorTestName));
+
+//    }
 
     public void showAttentionLabel(boolean notSingle) {
 

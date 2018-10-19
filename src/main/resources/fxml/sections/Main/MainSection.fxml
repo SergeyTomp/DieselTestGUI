@@ -139,7 +139,7 @@
                      <children>
                         <Button fx:id="moveUpButton" mnemonicParsing="false" prefHeight="26.0" prefWidth="70.0" styleClass="button-up" stylesheets="@../../../css/Styling.css" />
                         <Button fx:id="moveDownButton" mnemonicParsing="false" prefHeight="26.0" prefWidth="70.0" styleClass="button-down" stylesheets="@../../../css/Styling.css" GridPane.columnIndex="1" />
-                        <Button mnemonicParsing="false" prefHeight="26.0" prefWidth="70.0" text="Print" GridPane.columnIndex="2" />
+                        <Button fx:id="printButton" mnemonicParsing="false" prefHeight="26.0" prefWidth="70.0" text="Print" GridPane.columnIndex="2" />
                         <Button fx:id="storeButton" mnemonicParsing="false" prefHeight="26.0" prefWidth="70.0" text="Store" />
                         <Button fx:id="resetButton" mnemonicParsing="false" prefHeight="26.0" prefWidth="70.0" text="Reset" GridPane.columnIndex="1" />
                      </children>

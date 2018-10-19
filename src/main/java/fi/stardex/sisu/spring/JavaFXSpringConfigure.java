@@ -3,6 +3,7 @@ package fi.stardex.sisu.spring;
 import fi.stardex.sisu.charts.TimerTasksManager;
 import fi.stardex.sisu.devices.Devices;
 import fi.stardex.sisu.measurement.Measurements;
+import fi.stardex.sisu.pdf.PDFService;
 import fi.stardex.sisu.persistence.orm.Manufacturer;
 import fi.stardex.sisu.persistence.repos.ISADetectionRepository;
 import fi.stardex.sisu.persistence.repos.InjectorTypeRepository;
@@ -23,11 +24,10 @@ import fi.stardex.sisu.ui.controllers.cr.CRSectionController;
 import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.cr.TestBenchSectionController;
-import fi.stardex.sisu.ui.controllers.dialogs.ManufacturerMenuDialogController;
-import fi.stardex.sisu.ui.controllers.dialogs.NewEditInjectorDialogController;
-import fi.stardex.sisu.ui.controllers.dialogs.NewEditTestDialogController;
-import fi.stardex.sisu.ui.controllers.dialogs.NewEditVOAPDialogController;
+import fi.stardex.sisu.ui.controllers.dialogs.*;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
+import fi.stardex.sisu.ui.data.DelayResultsStorage;
+import fi.stardex.sisu.ui.data.RLC_ResultsStorage;
 import fi.stardex.sisu.util.DelayCalculator;
 import fi.stardex.sisu.util.enums.BeakerType;
 import fi.stardex.sisu.util.i18n.I18N;
@@ -123,6 +123,7 @@ public class JavaFXSpringConfigure {
         mainSectionController.setRlc_reportController(rlcReportController);
         mainSectionController.setTargetRPMSpinner(testBenchSectionController.getTargetRPMSpinner());
         mainSectionController.setDelayController(delayController);
+        mainSectionController.setPrintDialogPanel(printDialogPanel());
         return mainSectionController;
     }
 
@@ -429,12 +430,14 @@ public class JavaFXSpringConfigure {
     @Autowired
     public DelayController delayController(AdditionalSectionController additionalSectionController,
                                            DelayCalculator delayCalculator,
-                                           DelayReportController delayReportController) {
+                                           DelayReportController delayReportController,
+                                           DelayResultsStorage delayResultsStorage) {
         DelayController delayController = additionalSectionController.getDelayController();
         delayController.setDelayCalculator(delayCalculator);
         delayController.setAdditionalSectionController(additionalSectionController);
         delayController.setI18N(i18N);
         delayController.setDelayReportController(delayReportController);
+        delayController.setDelayResultsStorage(delayResultsStorage);
          return delayController;
     }
 
@@ -586,12 +589,29 @@ public class JavaFXSpringConfigure {
         return loadView("/fxml/dialogs/NewEditVOAPDialog.fxml");
     }
 
+
+
     @Bean
     @Autowired
     public NewEditVOAPDialogController newEditVOAPDialogController(VoltAmpereProfileRepository voltAmpereProfileRepository) {
         NewEditVOAPDialogController newEditVOAPDialogController = (NewEditVOAPDialogController) newEditVOAPDialog().getController();
         newEditVOAPDialogController.setVoltAmpereProfileRepository(voltAmpereProfileRepository);
         return newEditVOAPDialogController;
+    }
+
+    @Bean
+    public ViewHolder printDialogPanel(){ return loadView("/fxml/dialogs/PrintDialogPanel.fxml"); }
+
+    @Bean
+    @Autowired
+    public PrintDialogPanelController newPrintDialogPanelController(MainSectionController mainSectionController,
+                                                                    PDFService pdfService,
+                                                                    I18N i18N){
+        PrintDialogPanelController printDialogPanelController = (PrintDialogPanelController) printDialogPanel().getController();
+        printDialogPanelController.setMainSectionController(mainSectionController);
+        printDialogPanelController.setPdfService(pdfService);
+        printDialogPanelController.setI18N(i18N);
+        return printDialogPanelController;
     }
 
     @Bean
@@ -636,7 +656,8 @@ public class JavaFXSpringConfigure {
                                        ModbusRegisterProcessor ultimaModbusWriter,
                                        RegisterProvider ultimaRegisterProvider,
                                        AdditionalSectionController additionalSectionController,
-                                       RLC_ReportController rlc_reportController) {
+                                       RLC_ReportController rlc_reportController,
+                                       RLC_ResultsStorage rlcResultsStorage) {
         RLCController RLCController = additionalSectionController.getRlCController();
         RLCController.setInjectorSectionController(injectorSectionController);
         RLCController.setSettingsController(settingsController);
@@ -644,7 +665,7 @@ public class JavaFXSpringConfigure {
         RLCController.setUltimaRegisterProvider(ultimaRegisterProvider);
         RLCController.setI18N(i18N);
         RLCController.setRLC_reportController(rlc_reportController);
-
+        RLCController.setRlcResultsStorage(rlcResultsStorage);
         return RLCController;
 
     }

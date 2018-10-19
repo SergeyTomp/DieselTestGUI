@@ -11,6 +11,8 @@ import fi.stardex.sisu.connect.ModbusConnect;
 import fi.stardex.sisu.devices.Device;
 import fi.stardex.sisu.devices.Devices;
 import fi.stardex.sisu.measurement.Measurements;
+import fi.stardex.sisu.pdf.PDFService;
+import fi.stardex.sisu.pdf.ReportUtils;
 import fi.stardex.sisu.persistence.CheckAndInitializeBD;
 import fi.stardex.sisu.persistence.orm.CSVSUpdater;
 import fi.stardex.sisu.persistence.orm.Manufacturer;
@@ -18,6 +20,11 @@ import fi.stardex.sisu.persistence.repos.ManufacturerRepository;
 import fi.stardex.sisu.persistence.repos.cr.InjectorTestRepository;
 import fi.stardex.sisu.persistence.repos.cr.InjectorsRepository;
 import fi.stardex.sisu.persistence.repos.cr.VoltAmpereProfileRepository;
+import fi.stardex.sisu.pumps.scv.*;
+import fi.stardex.sisu.pumps.tests.Test1;
+import fi.stardex.sisu.pumps.tests.Test2;
+import fi.stardex.sisu.pumps.tests.Test3;
+import fi.stardex.sisu.pumps.tests.Test4;
 import fi.stardex.sisu.registers.ModbusMap;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.flow.ModbusMapFlow;
@@ -33,8 +40,10 @@ import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.cr.TestBenchSectionController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
+import fi.stardex.sisu.ui.data.*;
 import fi.stardex.sisu.ui.updaters.*;
 import fi.stardex.sisu.util.DelayCalculator;
+import fi.stardex.sisu.util.DesktopFiles;
 import fi.stardex.sisu.util.converters.FlowResolver;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.rescalers.BackFlowRescaler;
@@ -559,8 +568,13 @@ public class SpringJavaConfig {
 
     @Bean
     @Autowired
-    public FlowReport flowReport(FlowReportController flowReportController, FlowController flowController, SettingsController settingsController) {
-        return new FlowReport(flowReportController, flowController, settingsController);
+    public FlowReport flowReport(FlowReportController flowReportController,
+                                 FlowController flowController,
+                                 SettingsController settingsController,
+                                 SavedInjectorBeakerData savedInjectorBeakerData) {
+        FlowReport flowReport = new FlowReport(flowReportController, flowController, settingsController);
+        flowReport.setSavedInjectorBeakerData(savedInjectorBeakerData);
+        return flowReport;
     }
 
     private List<Updater> addUpdaters(List<Updater> updatersList, Device targetDevice) {
@@ -573,6 +587,136 @@ public class SpringJavaConfig {
             }
         });
         return updaters;
+    }
+
+    @Bean
+    public RLC_ResultsStorage rlcResultsStorage(){
+        return new RLC_ResultsStorage();
+    }
+
+    @Bean
+    public DelayResultsStorage delayResultsStorage(){
+        return new DelayResultsStorage();
+    }
+
+    @Bean
+    public SavedInjectorBeakerData savedInjectorBeakerData(){
+        return new SavedInjectorBeakerData();
+    }
+
+    @Bean
+    public SavedPumpBeakerData savedPumpBeakerData(){
+        return new SavedPumpBeakerData();
+    }
+
+    @Bean
+    public CodingResultsStorage codingResultsStorage(){
+        return new CodingResultsStorage();
+    }
+
+    @Bean
+    public ReportUtils reportUtils(AdditionalSectionController additionalSectionController){
+        ReportUtils reportUtils = new ReportUtils();
+        reportUtils.setAdditionalSectionController(additionalSectionController);
+        return reportUtils;
+    }
+
+    @Bean
+    public DesktopFiles desktopFiles(){
+        return new DesktopFiles();
+    }
+
+    @Bean
+    @Autowired
+    public PDFService pdfService(AdditionalSectionController additionalSectionController,
+                                 I18N i18N,
+                                 SavedInjectorBeakerData savedInjectorBeakerData,
+                                 SavedPumpBeakerData savedPumpBeakerData,
+                                 RLC_ResultsStorage rlcResultsStorage,
+                                 DelayResultsStorage delayResultsStorage,
+                                 CodingResultsStorage codingResultsStorage,
+                                 ReportUtils reportUtils,
+                                 DesktopFiles desktopFiles){
+        PDFService pdfService = new PDFService();
+        pdfService.setAdditionalSectionController(additionalSectionController);
+        pdfService.setI18N(i18N);
+        pdfService.setSavedDataForBeakers(savedInjectorBeakerData);
+        pdfService.setSavedDataForBeakersPump(savedPumpBeakerData);
+        pdfService.setRlcResultsStorage(rlcResultsStorage);
+        pdfService.setDelayResultsStorage(delayResultsStorage);
+        pdfService.setCodingResultsStorage(codingResultsStorage);
+        pdfService.setReportUtils(reportUtils);
+        pdfService.setDesktopFiles(desktopFiles);
+        return pdfService;
+    }
+
+    @Bean
+    @Autowired
+    public Close close(HighPressureSectionController highPressureSectionController){
+        Close close = new Close();
+        close.setHighPressureSectionController(highPressureSectionController);
+        return close;
+    }
+
+    @Bean
+    @Autowired
+    public Close2 close2 (HighPressureSectionController highPressureSectionController){
+        Close2 close2 = new Close2();
+        close2.setHighPressureSectionController(highPressureSectionController);
+        return close2;
+    }
+
+    @Bean
+    @Autowired
+    public Closed closed(HighPressureSectionController highPressureSectionController){
+        Closed closed = new Closed();
+        closed.setHighPressureSectionController(highPressureSectionController);
+        return closed;
+    }
+
+    @Bean
+    @Autowired
+    public Open open(HighPressureSectionController highPressureSectionController){
+        Open open = new Open();
+        open.setHighPressureSectionController(highPressureSectionController);
+        return open;
+    }
+
+    @Bean
+    public NA na(){
+        return  new NA();
+    }
+
+    @Bean
+    @Autowired
+    public Test1 test1(SavedPumpBeakerData savedPumpBeakerData){
+        Test1 test1 = new Test1();
+        test1.setSavedDataForBeakersPump(savedPumpBeakerData);
+        return test1;
+    }
+
+    @Bean
+    @Autowired
+    public Test2 test2(SavedPumpBeakerData savedPumpBeakerData){
+        Test2 test2 = new Test2();
+        test2.setSavedDataForBeakersPump(savedPumpBeakerData);
+        return test2;
+    }
+
+    @Bean
+    @Autowired
+    public Test3 test3(SavedPumpBeakerData savedPumpBeakerData){
+        Test3 test3 = new Test3();
+        test3.setSavedDataForBeakersPump(savedPumpBeakerData);
+        return test3;
+    }
+
+    @Bean
+    @Autowired
+    public Test4 test4(SavedPumpBeakerData savedPumpBeakerData){
+        Test4 test4 = new Test4();
+        test4.setSavedDataForBeakersPump(savedPumpBeakerData);
+        return test4;
     }
 
 }

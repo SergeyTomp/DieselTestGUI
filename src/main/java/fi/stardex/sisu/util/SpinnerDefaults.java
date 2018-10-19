@@ -60,7 +60,7 @@ public class SpinnerDefaults {
     public static final double SENSITIVITY_SPINNER_FAKE = 1.72;
 
     public static final int PRESS_REG_1_SPINNER_MIN = 0;
-    public static final int PRESS_REG_1_SPINNER_MAX = 9999;
+    public static final int PRESS_REG_1_SPINNER_MAX = 2400;
     public static final int PRESS_REG_1_SPINNER_INIT = 0;
     public static final int PRESS_REG_1_SPINNER_STEP = 10;
 

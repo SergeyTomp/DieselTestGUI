@@ -1,6 +1,7 @@
 package fi.stardex.sisu.ui.controllers.additional.tabs;
 
 import fi.stardex.sisu.ui.Enabler;
+import fi.stardex.sisu.ui.data.Result;
 import fi.stardex.sisu.util.i18n.I18N;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -37,6 +38,8 @@ public class RLC_ReportController {
         this.i18N = i18N;
     }
 
+
+
     @PostConstruct
     private void init(){
         RLCresultSource = FXCollections.observableArrayList();
@@ -63,7 +66,7 @@ public class RLC_ReportController {
         rlcTableView.refresh();
     }
 
-    public static class RLCreportTableLine {
+    public static class RLCreportTableLine implements Result {
         StringProperty parameter;
         StringProperty units;
         StringProperty channel_1;
@@ -92,6 +95,26 @@ public class RLC_ReportController {
             channel_2 = new SimpleStringProperty(parameterValues.get(1));
             channel_3 = new SimpleStringProperty(parameterValues.get(2));
             channel_4 = new SimpleStringProperty(parameterValues.get(3));
+        }
+
+        @Override
+        public String getMainColumn() {
+            return parameter.getValue();
+        }
+
+        @Override
+        public String getSubColumn1() {
+            return units.getValue();
+        }
+
+        @Override
+        public String getSubColumn2() {
+            return null;
+        }
+
+        @Override
+        public List<String> getValueColumns() {
+            return parameterValues;
         }
     }
     private void bindingI18N() {

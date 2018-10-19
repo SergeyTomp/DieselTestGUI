@@ -1,6 +1,7 @@
 package fi.stardex.sisu.persistence.orm.cr.inj;
 
 import fi.stardex.sisu.persistence.orm.EntityUpdates;
+import fi.stardex.sisu.persistence.orm.Test;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
@@ -20,7 +21,7 @@ import java.util.Objects;
                 @NamedAttributeNode("testName"),
                 @NamedAttributeNode("voltAmpereProfile")})})
 @Table(name = "injector_test")
-public class InjectorTest implements ChangeListener<Boolean> {
+public class InjectorTest implements Test, ChangeListener<Boolean> {
 
     private static final ObservableList<InjectorTest> listOfNonIncludedTests = FXCollections.observableArrayList();
 

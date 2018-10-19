@@ -110,6 +110,10 @@ public class SettingsController {
         return flowOutputDimensionsComboBox;
     }
 
+    public ComboBox<Locales> getLanguagesConfigComboBox() {
+        return languagesConfigComboBox;
+    }
+
     public RadioButton getSensor1500RadioButton() {
         return sensor1500RadioButton;
     }

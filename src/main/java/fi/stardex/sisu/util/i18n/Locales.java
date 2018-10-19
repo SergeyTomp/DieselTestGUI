@@ -27,4 +27,9 @@ public enum Locales {
         logger.warn("Cannot find language '{}'. English locale will be used.", lang);
         return ENGLISH.locale;
     }
+
+    @Override
+    public String toString() {
+        return locale.getCountry();
+    }
 }
