@@ -341,11 +341,11 @@ public class InjectorSectionController {
                     sendLedRegisters();
             } else if (newValue instanceof Toggle) {
                 if (newValue == piezoDelphiRadioButton) {
-                    enabler.disableAllLedsExceptFirst(true);
+                    enabler.disableNode(true, led2ToggleButton, led3ToggleButton, led4ToggleButton);
                     injectorsConfigComboBoxSelectionModel.select(InjectorChannel.SINGLE_CHANNEL);
                     led1ToggleButton.setSelected(true);
                 } else {
-                    enabler.disableAllLedsExceptFirst(false);
+                    enabler.disableNode(false, led2ToggleButton, led3ToggleButton, led4ToggleButton);
                     sendLedRegisters();
                 }
             } else if (newValue instanceof Boolean) {

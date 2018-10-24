@@ -13,7 +13,7 @@ import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController.GUIType;
 import fi.stardex.sisu.util.enums.Tests.TestType;
-import javafx.collections.ObservableMap;
+import fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxListCell;
@@ -39,9 +39,9 @@ public class Enabler {
 
     private ToggleGroup testsToggleGroup;
 
-    private RadioButton codingTestRadioButton;
-
     private ToggleGroup baseTypeToggleGroup;
+
+    private VBox injectorsVBox;
 
     private ComboBox<GUIType> versionComboBox;
 
@@ -113,10 +113,6 @@ public class Enabler {
 
     private FlowReport flowReport;
 
-    private VBox injectorsVBox;
-
-    private boolean codingAvailable;
-
     public Enabler(MainSectionController mainSectionController, InjectorSectionController injectorSectionController,
                    RLCController rlcController, VoltageController voltageController, FlowController flowController,
                    FlowReportController flowReportController, FlowReport flowReport) {
@@ -135,8 +131,8 @@ public class Enabler {
         storeButton = mainSectionController.getStoreButton();
         resetButton = mainSectionController.getResetButton();
         testsToggleGroup = mainSectionController.getTestsToggleGroup();
-        codingTestRadioButton = mainSectionController.getCodingTestRadioButton();
         baseTypeToggleGroup = mainSectionController.getBaseTypeToggleGroup();
+        injectorsVBox = mainSectionController.getInjectorsVBox();
 
         injectorSectionStartToggleButton = injectorSectionController.getInjectorSectionStartToggleButton();
         widthCurrentSignalSpinner = injectorSectionController.getWidthCurrentSignalSpinner();
@@ -170,8 +166,6 @@ public class Enabler {
 
         this.flowReport = flowReport;
 
-        injectorsVBox = mainSectionController.getInjectorsVBox();
-
     }
 
     @PostConstruct
@@ -190,36 +184,23 @@ public class Enabler {
 
     public Enabler startTest(boolean isStarted) {
 
-        if (isStarted)
-            enableMainSectionStartToggleButton(true);
-        else
-            enableMainSectionStartToggleButton(testListView.getSelectionModel().getSelectedIndex() == 0);
-
         TestType testType = getTestType();
 
         switch (testType) {
             case AUTO:
-                speedComboBox.setDisable(isStarted);
-                hideUpDownButtons(isStarted);
-                testListView.setDisable(isStarted);
-                break;
-            case TESTPLAN:
-                break;
-            case CODING:
+                disableNode(!isStarted && testListView.getSelectionModel().getSelectedIndex() != 0, mainSectionStartToggleButton);
+                disableNode(isStarted, speedComboBox, testListView);
+                showNode(!isStarted, moveUpButton, moveDownButton);
                 break;
         }
 
-        versionComboBox.setDisable(isStarted);
+        disableNode(isStarted || injectorSectionStartToggleButton.isSelected(), versionComboBox);
 
-        disableAllCoilPiezoRadioButtons(isStarted);
+        disableRadioButtons(testsToggleGroup, isStarted);
 
-        disableAllTestsRadioButtons(isStarted);
+        disableRadioButtons(baseTypeToggleGroup, isStarted);
 
-        manufacturerListView.setDisable(isStarted);
-
-        modelListView.setDisable(isStarted);
-
-        disableBaseTypeRadioButtons(isStarted);
+        disableNode(isStarted, manufacturerListView, modelListView);
 
         return this;
 
@@ -228,22 +209,22 @@ public class Enabler {
     public Enabler selectInjectorType(String injectorType) {
 
         if (injectorType == null) {
-            disableAllCoilPiezoRadioButtons(false);
+            disableRadioButtons(piezoCoilToggleGroup, false);
             setGaugesToNull();
             return this;
         }
 
         switch (injectorType) {
             case "coil":
-                enableCoilPiezoRadioButton(coilRadioButton);
+                selectInjectorTypeRadioButton(coilRadioButton);
                 setupGauges(0, 2, "Inductance", "\u03BCH", "\u03A9", 500d, 3d, "COIL");
                 break;
             case "piezo":
-                enableCoilPiezoRadioButton(piezoRadioButton);
+                selectInjectorTypeRadioButton(piezoRadioButton);
                 setupGauges(1, 0, "Capacitance", "\u03BCF", "k\u03A9", 10d, 2000d, "PIEZO");
                 break;
             case "piezoDelphi":
-                enableCoilPiezoRadioButton(piezoDelphiRadioButton);
+                selectInjectorTypeRadioButton(piezoDelphiRadioButton);
                 setupGauges(1, 0, "Capacitance", "\u03BCF", "k\u03A9", 20d, 2000d, "PIEZO");
                 break;
         }
@@ -252,13 +233,11 @@ public class Enabler {
 
     }
 
-    public Enabler enableCoding(boolean isCodingInjector) {
+    private void selectInjectorTypeRadioButton(RadioButton target) {
 
-        codingAvailable = isCodingInjector;
+        target.setSelected(true);
 
-        codingTestRadioButton.setDisable(!isCodingInjector);
-
-        return this;
+        disableRadioButtons(piezoCoilToggleGroup, true);
 
     }
 
@@ -269,23 +248,23 @@ public class Enabler {
         switch (test) {
 
             case AUTO:
-                testListView.setDisable(false);
+                disableNode(false, testListView);
                 showButtons(true, false);
-                showTiming(true);
+                showNode(true, timingGridPane);
                 showDefaultFlowUnit(false);
                 showFlowReport(true);
                 break;
             case TESTPLAN:
-                testListView.setDisable(false);
+                disableNode(false, testListView);
                 showButtons(false, true);
-                showTiming(false);
+                showNode(false, timingGridPane);
                 showDefaultFlowUnit(false);
                 showFlowReport(false);
                 break;
             case CODING:
-                testListView.setDisable(true);
+                disableNode(true, testListView);
                 showButtons(false, true);
-                showTiming(true);
+                showNode(true, timingGridPane);
                 showDefaultFlowUnit(true);
                 showFlowReport(false);
                 break;
@@ -298,9 +277,9 @@ public class Enabler {
 
     private void showFlowReport(boolean isTestAuto) {
 
-        flowReportAttentionLabel.setVisible(!isTestAuto);
+        showNode(!isTestAuto, flowReportAttentionLabel);
 
-        flowTableView.setVisible(isTestAuto);
+        showNode(isTestAuto, flowTableView);
 
         flowReport.clear();
 
@@ -308,16 +287,17 @@ public class Enabler {
 
     public Enabler disableVAP(boolean isStarted) {
 
-        if (isStarted)
-            disableAllCoilPiezoRadioButtons(true);
-        else
-            enableCoilPiezoRadioButton((RadioButton) piezoCoilToggleGroup.getSelectedToggle());
+        if (CurrentInjectorObtainer.getInjector() == null) {
 
-        disableAllLeds(isStarted);
+            disableRadioButtons(piezoCoilToggleGroup, isStarted);
 
-        pulseSettingsButton.setDisable(isStarted);
+            disableNode(isStarted, injectorsVBox);
 
-        disableWidthFreqSpinners(isStarted);
+        }
+
+        disableNode(isStarted || mainSectionStartToggleButton.isSelected(), versionComboBox);
+
+        disableNode(isStarted, ledBeaker1, ledBeaker2, ledBeaker3, ledBeaker4, pulseSettingsButton, widthCurrentSignalSpinner, freqCurrentSignalSpinner);
 
         return this;
 
@@ -325,18 +305,16 @@ public class Enabler {
 
     public Enabler enableUpDownButtons(int selectedIndex, int includedTestsSize) {
 
-        if (selectedIndex == 0 && selectedIndex == includedTestsSize - 1) {
-            moveUpButton.setDisable(true);
-            moveDownButton.setDisable(true);
-        } else if (selectedIndex == 0) {
-            moveUpButton.setDisable(true);
-            moveDownButton.setDisable(false);
-        } else if ((selectedIndex > 0) && (selectedIndex <= includedTestsSize - 2)) {
-            moveUpButton.setDisable(false);
-            moveDownButton.setDisable(false);
-        } else {
-            moveUpButton.setDisable(false);
-            moveDownButton.setDisable(true);
+        if (selectedIndex == 0 && selectedIndex == includedTestsSize - 1)
+            disableNode(true, moveUpButton, moveDownButton);
+        else if (selectedIndex == 0) {
+            disableNode(true, moveUpButton);
+            disableNode(false, moveDownButton);
+        } else if ((selectedIndex > 0) && (selectedIndex <= includedTestsSize - 2))
+            disableNode(false, moveUpButton, moveDownButton);
+        else {
+            disableNode(false, moveUpButton);
+            disableNode(true, moveDownButton);
         }
 
         return this;
@@ -345,132 +323,44 @@ public class Enabler {
 
     public Enabler showButtons(boolean showUpDown, boolean showStoreReset) {
 
-        moveUpButton.setVisible(showUpDown);
-        moveDownButton.setVisible(showUpDown);
+        showNode(showUpDown, moveUpButton, moveDownButton);
 
-        storeButton.setVisible(showStoreReset);
-        resetButton.setVisible(showStoreReset);
+        showNode(showStoreReset, storeButton, resetButton);
 
         return this;
 
     }
 
-    private void hideUpDownButtons(boolean hide) {
+    private void disableRadioButtons(ToggleGroup targetToggleGroup, boolean disable) {
 
-        moveUpButton.setVisible(!hide);
-        moveDownButton.setVisible(!hide);
-
-    }
-
-    public Enabler enableMainSectionStartToggleButton(boolean enable) {
-
-        mainSectionStartToggleButton.setDisable(!enable);
-
-        return this;
-
-    }
-
-    public void selectStaticLeakTest(boolean isSelected) {
-
-        disableWidthFreqSpinners(isSelected);
-        injectorSectionStartToggleButton.setDisable(isSelected);
-
-    }
-
-    private void disableWidthFreqSpinners(boolean disable) {
-
-        widthCurrentSignalSpinner.setDisable(disable);
-        freqCurrentSignalSpinner.setDisable(disable);
-
-    }
-
-    private void disableAllCoilPiezoRadioButtons(boolean disable) {
-
-        piezoCoilToggleGroup.getToggles().forEach(radioButton -> ((Node) radioButton).setDisable(disable));
-
-    }
-
-    private void disableAllTestsRadioButtons(boolean disable) {
-
-        if (!codingAvailable)
-            testsToggleGroup.getToggles().stream().filter(toggle -> toggle != codingTestRadioButton).forEach(toggle -> ((Node) toggle).setDisable(disable));
-        else
-            testsToggleGroup.getToggles().forEach(toggle -> ((Node) toggle).setDisable(disable));
-
-    }
-
-    private void disableBaseTypeRadioButtons(boolean disable) {
-
-        baseTypeToggleGroup.getToggles().forEach(radioButton -> ((Node) radioButton).setDisable(disable));
-
-    }
-
-    public Enabler disableAllLedsExceptFirst(boolean disable) {
-
-        ledBeaker2.setDisable(disable);
-        ledBeaker3.setDisable(disable);
-        ledBeaker4.setDisable(disable);
-
-        return this;
-
-    }
-
-    private void disableAllLeds(boolean disable) {
-
-        ledBeaker1.setDisable(disable);
-        ledBeaker2.setDisable(disable);
-        ledBeaker3.setDisable(disable);
-        ledBeaker4.setDisable(disable);
-
-    }
-
-    private void enableCoilPiezoRadioButton(RadioButton activeRadioButton) {
-
-        activeRadioButton.setSelected(true);
-
-        piezoCoilToggleGroup.getToggles().forEach(radioButton -> {
-
-            if (radioButton == activeRadioButton)
-                ((Node) radioButton).setDisable(false);
-            else
-                ((Node) radioButton).setDisable(true);
-
-        });
+        targetToggleGroup.getToggles().stream().filter(radioButton -> !radioButton.isSelected()).forEach(radioButton -> ((Node) radioButton).setDisable(disable));
 
     }
 
     public Enabler showInjectorTests(boolean show) {
 
-        showTiming(show && (getTestType() == AUTO || getTestType() == CODING));
-        injectorTestsVBox.setVisible(show);
-        startHBox.setVisible(show);
+        showNode(show && (getTestType() == AUTO || getTestType() == CODING), timingGridPane);
+        showNode(show, injectorTestsVBox, startHBox);
 
         return this;
-
-    }
-
-    private void showTiming(boolean show) {
-
-        timingGridPane.setVisible(show);
 
     }
 
     private void showDefaultFlowUnit(boolean isCoding) {
 
         deliveryFlowComboBox.getSelectionModel().selectFirst();
-        deliveryFlowComboBox.setVisible(!isCoding);
-        ml_Min_DeliveryLabel.setVisible(isCoding);
+        showNode(!isCoding, deliveryFlowComboBox);
+        showNode(isCoding, ml_Min_DeliveryLabel);
 
         backFlowComboBox.getSelectionModel().selectFirst();
-        backFlowComboBox.setVisible(!isCoding);
-        ml_Min_BackFlowLabel.setVisible(isCoding);
+        showNode(!isCoding, backFlowComboBox);
+        showNode(isCoding, ml_Min_BackFlowLabel);
 
     }
 
     private void setGaugesToNull() {
 
-        storeRLCButton.setDisable(true);
-        measureButton.setDisable(true);
+        disableNode(true, storeRLCButton, measureButton);
 
         parameter1Gauge.setDecimals(1);
         parameter1Gauge.setTitle("");
@@ -489,8 +379,7 @@ public class Enabler {
     private void setupGauges(int gauge1Decimals, int gauge2Decimals, String gauge1Title, String gauge1Unit, String gauge2Unit,
                              double gauge1MaxValue, double gauge2MaxValue, String tabCoilOneText) {
 
-        storeRLCButton.setDisable(false);
-        measureButton.setDisable(false);
+        disableNode(false, storeRLCButton, measureButton);
 
         parameter1Gauge.setDecimals(gauge1Decimals);
         parameter1Gauge.setTitle(gauge1Title);
@@ -507,9 +396,18 @@ public class Enabler {
 
     }
 
-    public void setEnabled(boolean enabled, Node... nodes){
-        for (Node node: nodes) {
-            node.setDisable(!enabled);
-        }
+    public void disableNode(boolean disable, Node ... nodes) {
+
+        for (Node node : nodes)
+            node.setDisable(disable);
+
     }
+
+    public void showNode(boolean show, Node ... nodes) {
+
+        for (Node node : nodes)
+            node.setVisible(show);
+
+    }
+
 }

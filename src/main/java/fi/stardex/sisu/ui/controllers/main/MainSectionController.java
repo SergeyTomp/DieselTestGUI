@@ -15,7 +15,6 @@ import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.DelayController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.DelayReportController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.InfoController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.RLC_ReportController;
 import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
@@ -31,8 +30,6 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -230,6 +227,8 @@ public class MainSectionController {
 
     private Spinner<Double> freqCurrentSignalSpinner;
 
+    private ToggleButton injectorSectionStartToggleButton;
+
     private Spinner<Integer> targetRPMSpinner;
 
     private HighPressureSectionController highPressureSectionController;
@@ -396,6 +395,10 @@ public class MainSectionController {
         this.freqCurrentSignalSpinner = freqCurrentSignalSpinner;
     }
 
+    public void setInjectorSectionStartToggleButton(ToggleButton injectorSectionStartToggleButton) {
+        this.injectorSectionStartToggleButton = injectorSectionStartToggleButton;
+    }
+
     public void setInjectorsRepository(InjectorsRepository injectorsRepository) {
         this.injectorsRepository = injectorsRepository;
     }
@@ -460,7 +463,6 @@ public class MainSectionController {
                 .setupMoveButtonEventHandlers()
                 .setupTestListAutoChangeListener();
 
-        enabler.setEnabled(false,injectorsVBox);
     }
 
     private MainSectionController makeReferenceToInternalObjects() {
@@ -669,12 +671,7 @@ public class MainSectionController {
         speedComboBox.getItems().setAll(NORMAL_SPEED, DOUBLE_SPEED, HALF_SPEED);
         speedComboBoxSelectionModel.selectFirst();
 
-        speedComboBoxSelectionModel.selectedItemProperty().addListener(new ChangeListener<String>() {
-            @Override
-            public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
-                MainSectionController.this.setProgress(newValue);
-            }
-        });
+        speedComboBoxSelectionModel.selectedItemProperty().addListener((observable, oldValue, newValue) -> setProgress(newValue));
 
         return this;
 
@@ -932,11 +929,11 @@ public class MainSectionController {
 
         manufacturerListView.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) -> {
 
+            enabler.disableNode(newValue == null, injectorsVBox);
             setManufacturer(newValue);
             infoController.changeToDefault();
             rlc_reportController.clearTable();
             delayController.getDelayReportController().clearTable();
-            enabler.setEnabled(true, injectorsVBox);
 
             if (newValue.isCustom()) {
                 defaultRadioButton.setDisable(true);
@@ -1012,7 +1009,7 @@ public class MainSectionController {
             if (newValue == null) {
                 setInjector(null);
                 setInjectorTests(null);
-                enabler.showInjectorTests(false).selectInjectorType(null).enableCoding(false);
+                enabler.showInjectorTests(false).selectInjectorType(null).disableNode(true, codingTestRadioButton);
                 testListViewItems.clear();
                 return;
             }
@@ -1024,7 +1021,10 @@ public class MainSectionController {
 
             fetchTestsFromRepository();
 
-            enabler.showInjectorTests(true).selectInjectorType(currentVoltAmpereProfile.getInjectorType().getInjectorType()).enableCoding(checkInjectorForCoding(injector.getCodetype()));
+            enabler
+                    .showInjectorTests(true)
+                    .selectInjectorType(currentVoltAmpereProfile.getInjectorType().getInjectorType())
+                    .disableNode(!checkInjectorForCoding(injector.getCodetype()), codingTestRadioButton);
 
             Double firstI = currentVoltAmpereProfile.getFirstI();
             Double secondI = currentVoltAmpereProfile.getSecondI();
@@ -1084,7 +1084,7 @@ public class MainSectionController {
             if (newValue == null) {
                 highPressureSectionController.regulator1pressModeOFF();
                 setDefaultSpinnerValueFactories(true);
-                enabler.selectStaticLeakTest(false);
+                enabler.disableNode(false, widthCurrentSignalSpinner, freqCurrentSignalSpinner, injectorSectionStartToggleButton);
                 return;
             }
 
@@ -1092,7 +1092,7 @@ public class MainSectionController {
 
                 enabler.showButtons(newValue.isIncluded() && !startToggleButton.isSelected(), false)
                         .enableUpDownButtons(testsSelectionModel.getSelectedIndex(), testListViewItems.size() - getListOfNonIncludedTests().size())
-                        .enableMainSectionStartToggleButton((startToggleButton.isSelected()) || ((testsSelectionModel.getSelectedIndex() == 0) && newValue.isIncluded()));
+                        .disableNode((!startToggleButton.isSelected()) && ((testsSelectionModel.getSelectedIndex() != 0) || !newValue.isIncluded()), startToggleButton);
 
             } else if (testPlanTestRadioButton.isSelected() && startToggleButton.isSelected()) {
 
@@ -1101,9 +1101,13 @@ public class MainSectionController {
 
             }
 
-            currentAdjustingTime = newValue.getAdjustingTime();
+//            currentAdjustingTime = newValue.getAdjustingTime();
+//
+//            currentMeasuringTime = newValue.getMeasurementTime();
 
-            currentMeasuringTime = newValue.getMeasurementTime();
+            currentAdjustingTime = 1;
+
+            currentMeasuringTime = 1;
 
             setProgress(speedComboBoxSelectionModel.getSelectedItem());
 
@@ -1115,12 +1119,12 @@ public class MainSectionController {
 
                 case NO:
                     setDefaultSpinnerValueFactories(false);
-                    enabler.selectStaticLeakTest(true);
+                    enabler.disableNode(true, widthCurrentSignalSpinner, freqCurrentSignalSpinner, injectorSectionStartToggleButton);
                     delayController.getSaveDelayButton().setDisable(true);
                     break;
                 default:
                     setDefaultSpinnerValueFactories(true);
-                    enabler.selectStaticLeakTest(false);
+                    enabler.disableNode(false, widthCurrentSignalSpinner, freqCurrentSignalSpinner, injectorSectionStartToggleButton);
                     Integer freq = newValue.getInjectionRate();
                     Integer width = newValue.getTotalPulseTime();
                     Integer firstW = currentVoltAmpereProfile.getFirstW();
@@ -1151,7 +1155,7 @@ public class MainSectionController {
                 setTestType(newValue == testPlanTestRadioButton ? TESTPLAN : CODING);
                 returnToDefaultTestListAuto();
                 setTests();
-                enabler.enableMainSectionStartToggleButton(true);
+                enabler.disableNode(false, startToggleButton);
             }
 
             enabler.selectTestType();
@@ -1198,7 +1202,7 @@ public class MainSectionController {
 
         }
 
-        enabler.enableMainSectionStartToggleButton(testsSelectionModel.getSelectedIndex() == 0);
+        enabler.disableNode(testsSelectionModel.getSelectedIndex() != 0, startToggleButton);
 
         isFocusMoved = false;
 

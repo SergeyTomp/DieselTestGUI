@@ -3,6 +3,7 @@ package fi.stardex.sisu.ui.controllers.additional.tabs;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.store.FlowReport;
 import fi.stardex.sisu.store.FlowReport.FlowTestResult;
+import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.util.i18n.I18N;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.fxml.FXML;
@@ -48,6 +49,10 @@ public class FlowReportController {
 
     private I18N i18N;
 
+    private Enabler enabler;
+
+    private ToggleButton mainSectionStartToggleButton;
+
     private static final String CELL_COLOR_DEFAULT = "-fx-text-fill: #bf8248;";
 
     private static final String CELL_COLOR_ORANGE = "-fx-text-fill: orange;";
@@ -62,6 +67,14 @@ public class FlowReportController {
 
     public void setI18N(I18N i18N) {
         this.i18N = i18N;
+    }
+
+    public void setEnabler(Enabler enabler) {
+        this.enabler = enabler;
+    }
+
+    public void setMainSectionStartToggleButton(ToggleButton mainSectionStartToggleButton) {
+        this.mainSectionStartToggleButton = mainSectionStartToggleButton;
     }
 
     public TableView<FlowTestResult> getFlowTableView() {
@@ -164,11 +177,27 @@ public class FlowReportController {
 
     }
 
+    private void bindingI18N() {
+
+        flowTestNameColumn.textProperty().bind(i18N.createStringBinding("h4.report.table.label.testName"));
+        flowTypeColumn.textProperty().bind(i18N.createStringBinding("h4.report.table.label.delRec"));
+        flowNominalColumn.textProperty().bind(i18N.createStringBinding("h4.report.table.label.nominal"));
+
+    }
+
     private class ButtonCell extends TableCell<FlowTestResult, Boolean> {
 
-        private final Button deleteButton = new Button("Delete");
+        private final Button deleteButton;
 
         ButtonCell() {
+
+            deleteButton = new Button("Delete");
+
+            deleteButton.setStyle("-textFont-color: #1f1f2e");
+
+            enabler.showNode(false, deleteButton);
+
+            deleteButton.visibleProperty().bind(mainSectionStartToggleButton.selectedProperty().not());
 
             deleteButton.setOnAction(event -> flowReport.delete(getTableRow().getIndex()));
 
@@ -187,9 +216,5 @@ public class FlowReportController {
         }
 
     }
-    private void bindingI18N() {
-        flowTestNameColumn.textProperty().bind(i18N.createStringBinding("h4.report.table.label.testName"));
-        flowTypeColumn.textProperty().bind(i18N.createStringBinding("h4.report.table.label.delRec"));
-        flowNominalColumn.textProperty().bind(i18N.createStringBinding("h4.report.table.label.nominal"));
-    }
+
 }

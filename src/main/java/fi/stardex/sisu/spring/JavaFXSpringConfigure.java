@@ -110,6 +110,7 @@ public class JavaFXSpringConfigure {
         mainSectionController.setVoltAmpereProfileController(voltAmpereProfileController);
         mainSectionController.setWidthCurrentSignalSpinner(injectorSectionController.getWidthCurrentSignalSpinner());
         mainSectionController.setFreqCurrentSignalSpinner(injectorSectionController.getFreqCurrentSignalSpinner());
+        mainSectionController.setInjectorSectionStartToggleButton(injectorSectionController.getInjectorSectionStartToggleButton());
         mainSectionController.setInjectorsRepository(injectorsRepository);
         mainSectionController.setInjectorTestRepository(injectorTestRepository);
         mainSectionController.setFlowModbusWriter(flowModbusWriter);
@@ -275,10 +276,13 @@ public class JavaFXSpringConfigure {
 
     @Bean
     @Autowired
-    public FlowReportController flowReportController(ReportController reportController, @Lazy FlowReport flowReport, I18N i18N) {
+    public FlowReportController flowReportController(ReportController reportController, @Lazy FlowReport flowReport,
+                                                     I18N i18N, @Lazy Enabler enabler, MainSectionController mainSectionController) {
         FlowReportController flowReportController = reportController.getFlowReportController();
         flowReportController.setFlowReport(flowReport);
         flowReportController.setI18N(i18N);
+        flowReportController.setEnabler(enabler);
+        flowReportController.setMainSectionStartToggleButton(mainSectionController.getStartToggleButton());
         return flowReportController;
     }
 

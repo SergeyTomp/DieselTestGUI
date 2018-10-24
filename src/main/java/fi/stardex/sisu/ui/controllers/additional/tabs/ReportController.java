@@ -8,7 +8,8 @@ import javax.annotation.PostConstruct;
 
 public class ReportController {
 
-    @FXML private Tab tabFlowReport;
+    @FXML
+    private Tab tabFlowReport;
 
     @FXML
     private Tab tabRLCReport;
