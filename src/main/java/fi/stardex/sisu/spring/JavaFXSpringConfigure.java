@@ -26,8 +26,6 @@ import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.cr.TestBenchSectionController;
 import fi.stardex.sisu.ui.controllers.dialogs.*;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
-import fi.stardex.sisu.ui.data.DelayResultsStorage;
-import fi.stardex.sisu.ui.data.RLC_ResultsStorage;
 import fi.stardex.sisu.util.DelayCalculator;
 import fi.stardex.sisu.util.enums.BeakerType;
 import fi.stardex.sisu.util.i18n.I18N;
@@ -100,7 +98,8 @@ public class JavaFXSpringConfigure {
                                                        TestBenchSectionController testBenchSectionController,
                                                        InfoController infoController,
                                                        RLC_ReportController rlcReportController,
-                                                       DelayController delayController) {
+                                                       DelayController delayController,
+                                                       RLCController rlcController) {
         MainSectionController mainSectionController = (MainSectionController) mainSection().getController();
         mainSectionController.setEnabler(enabler);
         mainSectionController.setApplicationAppearanceChanger(applicationAppearanceChanger);
@@ -124,6 +123,7 @@ public class JavaFXSpringConfigure {
         mainSectionController.setTargetRPMSpinner(testBenchSectionController.getTargetRPMSpinner());
         mainSectionController.setDelayController(delayController);
         mainSectionController.setPrintDialogPanel(printDialogPanel());
+        mainSectionController.setRlcController(rlcController);
         return mainSectionController;
     }
 
@@ -430,14 +430,12 @@ public class JavaFXSpringConfigure {
     @Autowired
     public DelayController delayController(AdditionalSectionController additionalSectionController,
                                            DelayCalculator delayCalculator,
-                                           DelayReportController delayReportController,
-                                           DelayResultsStorage delayResultsStorage) {
+                                           DelayReportController delayReportController) {
         DelayController delayController = additionalSectionController.getDelayController();
         delayController.setDelayCalculator(delayCalculator);
         delayController.setAdditionalSectionController(additionalSectionController);
         delayController.setI18N(i18N);
         delayController.setDelayReportController(delayReportController);
-        delayController.setDelayResultsStorage(delayResultsStorage);
          return delayController;
     }
 
@@ -656,8 +654,7 @@ public class JavaFXSpringConfigure {
                                        ModbusRegisterProcessor ultimaModbusWriter,
                                        RegisterProvider ultimaRegisterProvider,
                                        AdditionalSectionController additionalSectionController,
-                                       RLC_ReportController rlc_reportController,
-                                       RLC_ResultsStorage rlcResultsStorage) {
+                                       RLC_ReportController rlc_reportController) {
         RLCController RLCController = additionalSectionController.getRlCController();
         RLCController.setInjectorSectionController(injectorSectionController);
         RLCController.setSettingsController(settingsController);
@@ -665,7 +662,6 @@ public class JavaFXSpringConfigure {
         RLCController.setUltimaRegisterProvider(ultimaRegisterProvider);
         RLCController.setI18N(i18N);
         RLCController.setRLC_reportController(rlc_reportController);
-        RLCController.setRlcResultsStorage(rlcResultsStorage);
         return RLCController;
 
     }

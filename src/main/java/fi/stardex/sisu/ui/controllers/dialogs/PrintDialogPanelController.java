@@ -5,7 +5,6 @@ import fi.stardex.sisu.company.ResourceURLChecker;
 import fi.stardex.sisu.pdf.Customer;
 import fi.stardex.sisu.pdf.ExceptionalConsumer;
 import fi.stardex.sisu.pdf.PDFService;
-import fi.stardex.sisu.pumps.CurrentPumpObtainer;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
 import fi.stardex.sisu.util.EmptyObjectDefaultChecker;
 import fi.stardex.sisu.util.i18n.I18N;
@@ -180,27 +179,23 @@ public class PrintDialogPanelController{
     @FXML
     public void saveToPdf() {
         pdfOrPrint(customer -> pdfService.makePDFForInjector(customer, CurrentInjectorObtainer.getInjector()),
-                customer -> pdfService.makePDFForInjectorCoding(customer, CurrentInjectorObtainer.getInjector()),
-                customer -> pdfService.makePDFForPumps(customer, CurrentPumpObtainer.getPump()));
+                customer -> pdfService.makePDFForInjectorCoding(customer, CurrentInjectorObtainer.getInjector()));
     }
 
     @FXML
     public void onPrint() {
         pdfOrPrint(customer -> pdfService.printInjector(customer, CurrentInjectorObtainer.getInjector()),
-                customer -> pdfService.printInjectorCoding(customer, CurrentInjectorObtainer.getInjector()),
-                customer -> pdfService.printPumps(customer, CurrentPumpObtainer.getPump()));
+                customer -> pdfService.printInjectorCoding(customer, CurrentInjectorObtainer.getInjector()));
     }
 
     @FXML
     public void onPDFAndPrint() {
         pdfOrPrint(customer -> pdfService.printAndPDFInjector(customer, CurrentInjectorObtainer.getInjector()),
-                customer -> pdfService.printAndPDFInjectorCoding(customer, CurrentInjectorObtainer.getInjector()),
-                customer -> pdfService.printAndPDFPumps(customer, CurrentPumpObtainer.getPump()));
+                customer -> pdfService.printAndPDFInjectorCoding(customer, CurrentInjectorObtainer.getInjector()));
     }
 
     private void pdfOrPrint(ExceptionalConsumer<Customer, IOException> processInjector,
-                            ExceptionalConsumer<Customer, IOException> processInjectorCoding,
-                            ExceptionalConsumer<Customer, IOException> processPump){
+                            ExceptionalConsumer<Customer, IOException> processInjectorCoding){
         Customer customer = prepareDocument();
         try {
             if (CurrentInjectorObtainer.getInjector() != null) {
@@ -210,9 +205,7 @@ public class PrintDialogPanelController{
                     processInjector.accept(customer);
                 }
             }
-            if (CurrentPumpObtainer.getPump() != null) {
-                processPump.accept(customer);
-            }
+
         } catch (IOException e) {
             logger.error("Error while printing.", e);
         } finally {

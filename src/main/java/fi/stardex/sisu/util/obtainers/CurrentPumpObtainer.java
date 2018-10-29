@@ -1,6 +1,6 @@
-package fi.stardex.sisu.pumps;
+package fi.stardex.sisu.util.obtainers;
 
-import fi.stardex.sisu.persistence.orm.Pump;
+import fi.stardex.sisu.persistence.orm.cr.pump.*;
 
 public class CurrentPumpObtainer {
 

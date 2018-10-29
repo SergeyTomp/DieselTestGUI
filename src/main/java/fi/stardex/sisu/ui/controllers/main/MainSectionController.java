@@ -14,10 +14,7 @@ import fi.stardex.sisu.store.FlowReport;
 import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.DelayController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.DelayReportController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.InfoController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.RLC_ReportController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.*;
 import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.ui.controllers.dialogs.ManufacturerMenuDialogController;
 import fi.stardex.sisu.ui.controllers.dialogs.NewEditInjectorDialogController;
@@ -244,6 +241,8 @@ public class MainSectionController {
 
     private HighPressureSectionController highPressureSectionController;
 
+    private RLCController rlcController;
+
     private InfoController infoController;
 
     private DelayController delayController;
@@ -446,6 +445,10 @@ public class MainSectionController {
 
     public void setDelayController(DelayController delayController) {
         this.delayController = delayController;
+    }
+
+    public void setRlcController(RLCController rlcController) {
+        this.rlcController = rlcController;
     }
 
     public void setI18N(I18N i18N) {
@@ -950,9 +953,12 @@ public class MainSectionController {
             enabler.disableNode(newValue == null, injectorsVBox);
             setManufacturer(newValue);
             infoController.changeToDefault();
-            rlc_reportController.clearTable();
-            delayController.getDelayReportController().clearTable();
+
+            delayController.clearReportResults();
+            rlcController.clearReportResults();
             flowReport.clear();
+            measurements.clearCodingResults();
+
 
             if (newValue.isCustom()) {
                 defaultRadioButton.setDisable(true);
@@ -1020,9 +1026,11 @@ public class MainSectionController {
         modelListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 
             returnToDefaultTestListAuto();
-            rlc_reportController.clearTable();
-            delayController.getDelayReportController().clearTable();
+
+            delayController.clearReportResults();
+            rlcController.clearReportResults();
             flowReport.clear();
+            measurements.clearCodingResults();
 
             injectorNumberTextField.setText((newValue != null) ? ((Injector) newValue).getInjectorCode() : null);
 

@@ -8,6 +8,8 @@ import fi.stardex.sisu.coding.denso.DensoCodingDataStorage;
 import fi.stardex.sisu.coding.delphi.c2i.DelphiC2ICoding;
 import fi.stardex.sisu.coding.delphi.c2i.DelphiC2ICodingDataStorage;
 import fi.stardex.sisu.coding.denso.DensoCoding;
+import fi.stardex.sisu.coding.denso.DensoCodingDataStorage;
+import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.persistence.orm.cr.inj.TestName;
 import fi.stardex.sisu.registers.flow.ModbusMapFlow;
@@ -20,8 +22,10 @@ import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.cr.TestBenchSectionController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
+import fi.stardex.sisu.pdf.Result;
 import fi.stardex.sisu.util.enums.Measurement;
 import fi.stardex.sisu.util.enums.Tests.TestType;
+import fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -33,6 +37,7 @@ import javafx.util.Duration;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -94,6 +99,8 @@ public class Measurements implements ChangeListener<Boolean> {
 
     private MainSectionController mainSectionController;
 
+    private List<Result> resultList;
+
     private TextField injectorCode1TextField;
 
     private TextField injectorCode2TextField;
@@ -112,6 +119,10 @@ public class Measurements implements ChangeListener<Boolean> {
 
     public void setCodingComplete(boolean codingComplete) {
         this.codingComplete = codingComplete;
+    }
+
+    public List<Result> getResultList() {
+        return resultList;
     }
 
     public Measurements(MainSectionController mainSectionController,
@@ -282,19 +293,33 @@ public class Measurements implements ChangeListener<Boolean> {
 
     private void setCodingResults(List<String> codeResult) {
 
-        injectorCode1TextField.setText(codeResult.get(0));
-        injectorCode2TextField.setText(codeResult.get(1));
-        injectorCode3TextField.setText(codeResult.get(2));
-        injectorCode4TextField.setText(codeResult.get(3));
+        String code1 = codeResult.get(0);
+        String code2 = codeResult.get(1);
+        String code3 = codeResult.get(2);
+        String code4 = codeResult.get(3);
+        Injector injector = CurrentInjectorObtainer.getInjector();
+        injectorCode1TextField.setText(code1);
+        injectorCode2TextField.setText(code2);
+        injectorCode3TextField.setText(code3);
+        injectorCode4TextField.setText(code4);
+
+        if(resultList == null){
+            resultList = new ArrayList<>();
+        }
+        resultList.clear();
+        resultList.add(new CodingResult(injector.getInjectorCode(), code1, code2, code3, code3));
 
     }
 
-    private void clearCodingResults() {
+    public void clearCodingResults() {
 
         injectorCode1TextField.setText("");
         injectorCode2TextField.setText("");
         injectorCode3TextField.setText("");
         injectorCode4TextField.setText("");
+        if(resultList != null){
+            resultList.clear();
+        }
 
     }
 
@@ -562,6 +587,46 @@ public class Measurements implements ChangeListener<Boolean> {
 
         return codingPointsList.iterator();
 
+    }
+
+    private static class CodingResult implements Result {
+
+        private String injectorNumber;
+        private String generatedCode1;
+        private String generatedCode2;
+        private String generatedCode3;
+        private String generatedCode4;
+        List<String> codesList = new ArrayList<>();
+
+        public CodingResult(String injectorNumber, String code1, String code2, String code3, String code4) {
+            this.injectorNumber = injectorNumber;
+            this.generatedCode1 = code1;
+            this.generatedCode2 = code2;
+            this.generatedCode3 = code3;
+            this.generatedCode4 = code4;
+            this.codesList.addAll(Arrays.asList(generatedCode1, generatedCode2, generatedCode3, generatedCode4));
+        }
+
+
+        @Override
+        public String getMainColumn() {
+            return injectorNumber;
+        }
+
+        @Override
+        public String getSubColumn1() {
+            return null;
+        }
+
+        @Override
+        public String getSubColumn2() {
+            return null;
+        }
+
+        @Override
+        public List<String> getValueColumns() {
+            return codesList;
+        }
     }
 
 }

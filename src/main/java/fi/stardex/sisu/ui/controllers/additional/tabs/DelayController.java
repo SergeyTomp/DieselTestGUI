@@ -1,16 +1,11 @@
 package fi.stardex.sisu.ui.controllers.additional.tabs;
 
-import fi.stardex.sisu.persistence.orm.Test;
-import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.ui.controllers.additional.AdditionalSectionController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.DelayReportController.DelayReportTableLine;
-import fi.stardex.sisu.ui.data.DelayResultsStorage;
-import fi.stardex.sisu.ui.data.Result;
+import fi.stardex.sisu.pdf.Result;
 import fi.stardex.sisu.util.DelayCalculator;
 import fi.stardex.sisu.util.i18n.I18N;
-import fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer;
-import fi.stardex.sisu.util.obtainers.CurrentInjectorTestsObtainer;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
@@ -24,7 +19,9 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
@@ -76,6 +73,8 @@ public class DelayController {
 
     private Map<String, DelayReportTableLine> mapOfTableLines;
 
+    private List<Result> resultsList;
+
     public ObservableList<XYChart.Data<Double, Double>> getDelayData() {
         return delayData;
     }
@@ -88,7 +87,6 @@ public class DelayController {
 
     private DelayReportController delayReportController;
 
-    private DelayResultsStorage delayResultsStorage;
 
     public int getAddingTimeValue() {
         return Integer.parseInt(addingTime.getText());
@@ -114,6 +112,10 @@ public class DelayController {
         return saveDelayButton;
     }
 
+    public List<Result> getResultsList() {
+        return resultsList;
+    }
+
     public void setI18N(I18N i18N) {
         this.i18N = i18N;
     }
@@ -136,9 +138,6 @@ public class DelayController {
         this.delayReportController = delayReportController;
     }
 
-    public void setDelayResultsStorage(DelayResultsStorage delayResultsStorage) {
-        this.delayResultsStorage = delayResultsStorage;
-    }
 
     public void setInjectorTestName(String injectorTestName) {
         this.injectorTestName = injectorTestName;
@@ -228,28 +227,29 @@ public class DelayController {
 
     }
 
+    public void clearReportResults(){
+        if (resultsList != null){
+            resultsList.clear();
+        }
+        delayReportController.clearTable();
+    }
+
     private void storeAverageDelay(){
         if(mapOfTableLines == null){
             mapOfTableLines = new HashMap<>();
+            resultsList = new ArrayList<>();
         }
         if(mapOfTableLines.get(injectorTestName) == null){
             mapOfTableLines.put(injectorTestName, new DelayReportTableLine(injectorTestName));
+
         }
         mapOfTableLines.get(injectorTestName).setParameterValue(channelNumber, averageDelay.getText());
         delayReportController.showResults(mapOfTableLines.values());
 
-        delayResultsStorage.storeResults(CurrentInjectorObtainer.getInjector(), injectorTest, mapOfTableLines.get(injectorTestName));
-//        putDelayResultsToStorage();
+        resultsList.clear();
+        resultsList.addAll(mapOfTableLines.values());
     }
 
-//    private void putDelayResultsToStorage(){
-//        Injector injector = CurrentInjectorObtainer.getInjector();
-//        Map<Injector, Map<Test, Result>> delayResultsMap = delayResultsStorage.getDelayResultsMap();
-//        delayResultsMap.computeIfAbsent(injector, k -> new HashMap<>());
-//        delayResultsMap.get(injector).put(injectorTest, mapOfTableLines.get(injectorTestName));
-//        delayResultsStorage.storeResults(CurrentInjectorObtainer.getInjector(), injectorTest, mapOfTableLines.get(injectorTestName));
-
-//    }
 
     public void showAttentionLabel(boolean notSingle) {
 

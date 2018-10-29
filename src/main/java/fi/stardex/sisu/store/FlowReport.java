@@ -1,18 +1,12 @@
 package fi.stardex.sisu.store;
 
 import fi.stardex.sisu.combobox_values.Dimension;
-import fi.stardex.sisu.persistence.orm.Test;
-import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
-import fi.stardex.sisu.persistence.orm.interfaces.Model;
 import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.FlowReportController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
-import fi.stardex.sisu.ui.data.Result;
-import fi.stardex.sisu.ui.data.SavedInjectorBeakerData;
+import fi.stardex.sisu.pdf.Result;
 import fi.stardex.sisu.util.enums.Measurement;
-import fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer;
-import fi.stardex.sisu.util.obtainers.CurrentInjectorTestsObtainer;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -59,18 +53,17 @@ public class FlowReport {
     private TextField backFlow4TextField;
 
     private static final Map<InjectorTest, FlowTestResult> mapOfFlowTestResults = new HashMap<>();
+    private List<FlowTestResult> resultList;
 
-    private SavedInjectorBeakerData savedInjectorBeakerData;
-
-    public void setSavedInjectorBeakerData(SavedInjectorBeakerData savedInjectorBeakerData) {
-        this.savedInjectorBeakerData = savedInjectorBeakerData;
+    public List<FlowTestResult> getResultList() {
+        return resultList;
     }
 
     public static Map<InjectorTest, FlowTestResult> getMapOfFlowTestResults() {
         return mapOfFlowTestResults;
     }
 
-      public FlowReport(FlowReportController flowReportController, FlowController flowController, SettingsController settingsController) {
+    public FlowReport(FlowReportController flowReportController, FlowController flowController, SettingsController settingsController) {
 
         flowTableViewItems = flowReportController.getFlowTableView().getItems();
         deliveryFlowComboBoxSelectionModel = flowController.getDeliveryFlowComboBox().getSelectionModel();
@@ -112,9 +105,10 @@ public class FlowReport {
     public void clear() {
 
         flowTableViewItems.clear();
-
         mapOfFlowTestResults.clear();
-
+        if(resultList != null){
+            resultList.clear();
+        }
     }
 
     private void setNewFlowTestResult(InjectorTest injectorTest, Measurement measurement) {
@@ -126,7 +120,6 @@ public class FlowReport {
                         getNominalFlow(deliveryRangeLabel.getText(), deliveryFlowComboBoxSelectionModel.getSelectedItem()),
                         getFlow(delivery1TextField.getText()), getFlow(delivery2TextField.getText()),
                         getFlow(delivery3TextField.getText()), getFlow(delivery4TextField.getText()), flowOutputDimensionsSelectionModel.getSelectedItem(), measurement));
-
                 break;
             case BACK_FLOW:
                 flowTableViewItems.set(flowTableViewItems.indexOf(mapOfFlowTestResults.get(injectorTest)), new FlowTestResult(injectorTest, measurement.name(),
@@ -136,6 +129,8 @@ public class FlowReport {
                 break;
 
         }
+
+
 
     }
 
@@ -234,19 +229,13 @@ public class FlowReport {
 
             mapOfFlowTestResults.put(injectorTest, this);
 
-//            putFlowResultsToStorage(injectorTest);
-
-            savedInjectorBeakerData.storeResults(CurrentInjectorObtainer.getInjector(), injectorTest, new ArrayList<>(Arrays.asList(flow1_double, flow2_double, flow3_double, flow4_double)));
-
+            if(resultList == null){
+                resultList = new ArrayList<>();
+            }
+            resultList.clear();
+            resultList.addAll(mapOfFlowTestResults.values());
         }
 
-//        private void putFlowResultsToStorage(InjectorTest injectorTest){
-//
-//            Injector injector = CurrentInjectorObtainer.getInjector();
-//            Map<Model, Map<Test, ArrayList<Double>>> savedDataForBeakers = savedInjectorBeakerData.getSavedDataForBeakers();
-//            savedDataForBeakers.computeIfAbsent(injector, k -> new HashMap<>());
-//            savedDataForBeakers.get(injector).put(injectorTest, new ArrayList<>(Arrays.asList(flow1_double, flow2_double, flow3_double, flow4_double)));
-//        }
 
         public InjectorTest getInjectorTest() {
             return injectorTest.get();

@@ -1,4 +1,4 @@
-package fi.stardex.sisu.ui.data;
+package fi.stardex.sisu.pdf;
 
 import java.util.List;
 

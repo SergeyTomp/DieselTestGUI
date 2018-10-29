@@ -1,7 +1,6 @@
 package fi.stardex.sisu.ui.controllers.additional.tabs;
 
-import fi.stardex.sisu.ui.Enabler;
-import fi.stardex.sisu.ui.data.Result;
+import fi.stardex.sisu.pdf.Result;
 import fi.stardex.sisu.util.i18n.I18N;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;

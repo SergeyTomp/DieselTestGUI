@@ -1,6 +1,6 @@
 package fi.stardex.sisu.ui.controllers.additional.tabs;
 
-import fi.stardex.sisu.ui.data.Result;
+import fi.stardex.sisu.pdf.Result;
 import fi.stardex.sisu.util.i18n.I18N;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -11,10 +11,7 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 public class DelayReportController {
 
@@ -68,8 +65,6 @@ public class DelayReportController {
         delayTableView.refresh();
     }
 
-
-
     public static class DelayReportTableLine implements Result {
 
         StringProperty test;
@@ -78,12 +73,11 @@ public class DelayReportController {
         StringProperty channel_2;
         StringProperty channel_3;
         StringProperty channel_4;
-
         private List<String> parameterValues;
 
         public DelayReportTableLine(String test){
             this.test = new SimpleStringProperty(test);
-            this.units = new SimpleStringProperty("\u03BCs");
+            this.units = new SimpleStringProperty("mkS");
             parameterValues = new ArrayList<>(Arrays.asList("-", "-", "-", "-"));
             setParameterValues();
         }
@@ -122,7 +116,9 @@ public class DelayReportController {
         public List<String> getValueColumns() {
             return parameterValues;
         }
+
     }
+
     private void bindingI18N() {
         parameterColumn.textProperty().bind(i18N.createStringBinding("h4.report.table.label.testName"));
         unitsColumn.textProperty().bind(i18N.createStringBinding("h4.report.measure.label.units"));

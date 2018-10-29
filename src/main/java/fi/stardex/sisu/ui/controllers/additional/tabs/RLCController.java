@@ -7,7 +7,7 @@ import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
-import fi.stardex.sisu.ui.data.RLC_ResultsStorage;
+import fi.stardex.sisu.pdf.Result;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer;
 import javafx.application.Platform;
@@ -19,7 +19,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static fi.stardex.sisu.ui.controllers.additional.tabs.RLC_ReportController.RLCreportTableLine;
 
@@ -52,6 +55,7 @@ public class RLCController {
     private Button storeButton;
 
     private Map<String, RLCreportTableLine> mapOfTableLines;
+    private List<Result> resultsList;
 
     private RLC_ReportController rlc_reportController;
 
@@ -73,7 +77,6 @@ public class RLCController {
     private RegisterProvider ultimaRegisterProvider;
     private CurrentInjectorObtainer currentInjectorObtainer;
     private I18N i18N;
-    private RLC_ResultsStorage rlcResultsStorage;
 
     public Button getMeasureButton() {
         return measureButton;
@@ -115,8 +118,8 @@ public class RLCController {
         this.rlc_reportController = rlc_reportController;
     }
 
-    public void setRlcResultsStorage(RLC_ResultsStorage rlcResultsStorage) {
-        this.rlcResultsStorage = rlcResultsStorage;
+    public List<Result> getResultsList() {
+        return resultsList;
     }
 
     public void setI18N(I18N i18N) {
@@ -205,8 +208,6 @@ public class RLCController {
             titleGauge2 = parameter2Gauge.getTitle();
             unitsGauge1 = parameter1Gauge.getUnit();
             unitsGauge2 = parameter2Gauge.getUnit();
-            System.err.println(unitsGauge1);
-            System.err.println(unitsGauge2);
 
             ledNumber = getNumber(ledController);
             Platform.runLater(() -> {
@@ -267,23 +268,31 @@ public class RLCController {
     }
 
     private void createMapOfResults(){
-        mapOfTableLines.put(titleGauge1, new RLCreportTableLine(titleGauge1, unitsGauge1));
-        mapOfTableLines.put(titleGauge2, new RLCreportTableLine(titleGauge2, unitsGauge2));
+        String gauge1Units = unitsGauge1.equals("\u03BCH") ? "mkH" : "mkF";
+        String gauge2Units = unitsGauge2.equals("\u03A9") ? "Om" : "kOm";
+
+        mapOfTableLines.put(titleGauge1, new RLCreportTableLine(titleGauge1, gauge1Units));
+        mapOfTableLines.put(titleGauge2, new RLCreportTableLine(titleGauge2, gauge2Units));
+
+        resultsList = new ArrayList<>();
     }
 
     private void putResultsToMap(int ledNumber, Integer parameter1, Double parameter2){
         mapOfTableLines.get(titleGauge1).setParameterValue(ledNumber, parameter1.toString());
         mapOfTableLines.get(titleGauge2).setParameterValue(ledNumber, parameter2.toString());
 
-//        putRlcResultsToStorage();
-
-        rlcResultsStorage.storeResults(CurrentInjectorObtainer.getInjector(), new ArrayList<>(mapOfTableLines.values()));
+        resultsList.clear();
+        resultsList.addAll(mapOfTableLines.values());
     }
 
-//    private void putRlcResultsToStorage(){
-//
-//      rlcResultsStorage.storeResults(CurrentInjectorObtainer.getInjector(), new ArrayList<>(mapOfTableLines.values()));
-//    }
+    public void clearReportResults(){
+        if(resultsList != null){
+            resultsList.clear();
+        }
+        rlc_reportController.clearTable();
+    }
+
+
 
     private void store(){
         rlc_reportController.showResults(mapOfTableLines.values());
