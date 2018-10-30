@@ -50,8 +50,6 @@ public class AdditionalSectionController {
 
     @FXML private GridPane info;
 
-    @FXML private ConnectionController connectionController;
-
     @FXML private VoltageController voltageController;
 
     @FXML private DelayController delayController;
@@ -82,10 +80,6 @@ public class AdditionalSectionController {
 
     public ReportController getReportController() {
         return reportController;
-    }
-
-    public ConnectionController getConnectionController() {
-        return connectionController;
     }
 
     public VoltageController getVoltageController() {
@@ -133,7 +127,6 @@ public class AdditionalSectionController {
         tabDelay.textProperty().bind(i18N.createStringBinding("additional.delay"));
         tabVoltage.textProperty().bind(i18N.createStringBinding("additional.voltage"));
         tabRLC.textProperty().bind(i18N.createStringBinding("h4.tab.RLC"));
-        tabLink.textProperty().bind(i18N.createStringBinding("additional.link"));
         tabSettings.textProperty().bind(i18N.createStringBinding("additional.settings"));
         tabFlow.textProperty().bind(i18N.createStringBinding("additional.flow"));
         tabReport.textProperty().bind(i18N.createStringBinding("additional.report"));

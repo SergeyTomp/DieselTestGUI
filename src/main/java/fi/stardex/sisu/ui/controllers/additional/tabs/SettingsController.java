@@ -3,6 +3,7 @@ package fi.stardex.sisu.ui.controllers.additional.tabs;
 import fi.stardex.sisu.combobox_values.Dimension;
 import fi.stardex.sisu.combobox_values.InjectorChannel;
 import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
+import fi.stardex.sisu.util.Pair;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.i18n.Locales;
 import javafx.beans.property.ObjectProperty;
@@ -15,6 +16,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 
 import javax.annotation.PostConstruct;
+import java.util.function.UnaryOperator;
 import java.util.prefs.Preferences;
 
 import static fi.stardex.sisu.util.SpinnerDefaults.*;
@@ -33,15 +35,7 @@ public class SettingsController {
 
     @FXML private Label pressureSensorLabel;
 
-    @FXML private RadioButton sensor1500RadioButton;
-
-    @FXML private RadioButton sensor1800RadioButton;
-
-    @FXML private RadioButton sensor2000RadioButton;
-
-    @FXML private RadioButton sensor2200RadioButton;
-
-    @FXML private RadioButton sensor2400RadioButton;
+    @FXML private ComboBox<Integer> pressureSensorComboBox;
 
     private ObjectProperty<Integer> pressMultiplierProperty = new SimpleObjectProperty<>();
 
@@ -81,12 +75,54 @@ public class SettingsController {
 
     @FXML private ComboBox<Dimension> flowOutputDimensionsComboBox;
 
+    // Connect
+
+    @FXML private TextField ultimaIPField;
+
+    @FXML private TextField flowMeterIPField;
+
+    @FXML private TextField standIPField;
+
+    @FXML private TextField ultimaPortField;
+
+    @FXML private TextField flowMeterPortField;
+
+    @FXML private TextField standPortField;
+
+    @FXML private Button acceptButton;
+
+    @FXML private Label ultimaLabel;
+
+    @FXML private Label flowMeterLabel;
+
+    @FXML private Label standLabel;
+
+    @FXML private Label ipAddressLabel;
+
+    @FXML private Label portLabel;
+
     private HighPressureSectionController highPressureSectionController;
 
 //    private InjectorChannel SINGLE;
 //    private InjectorChannel MULTY;
 //    private StringProperty single = new SimpleStringProperty(SINGLE.getCHANNEL_QTY());
 //    private StringProperty multi = new SimpleStringProperty(MULTY.getCHANNEL_QTY());
+
+    private Pair<String, String> ultimaConnect = new Pair<>();
+
+    private Pair<String, String> flowMeterConnect = new Pair<>();
+
+    private Pair<String, String> standConnect = new Pair<>();
+
+    private final String ipRegex = makePartialIPRegex();
+
+    public TextField getStandIPField() {
+        return standIPField;
+    }
+
+    public TextField getStandPortField() {
+        return standPortField;
+    }
 
     public void setI18N(I18N i18N) {
         this.i18N = i18N;
@@ -116,29 +152,26 @@ public class SettingsController {
         return languagesConfigComboBox;
     }
 
-    public RadioButton getSensor1500RadioButton() {
-        return sensor1500RadioButton;
+    public Pair<String, String> getUltimaConnect() {
+        return ultimaConnect;
     }
 
-    public RadioButton getSensor1800RadioButton() {
-        return sensor1800RadioButton;
+    public Pair<String, String> getFlowMeterConnect() {
+        return flowMeterConnect;
     }
 
-    public RadioButton getSensor2000RadioButton() {
-        return sensor2000RadioButton;
+    public Pair<String, String> getStandConnect() {
+        return standConnect;
     }
 
-    public RadioButton getSensor2200RadioButton() {
-        return sensor2200RadioButton;
-    }
-
-    public RadioButton getSensor2400RadioButton() {
-        return sensor2400RadioButton;
+    public ComboBox getPressureSensorComboBox() {
+        return pressureSensorComboBox;
     }
 
     public ObjectProperty<Integer> pressMultiplierPropertyProperty() {
         return pressMultiplierProperty;
     }
+
 
     @PostConstruct
     private void init() {
@@ -146,23 +179,8 @@ public class SettingsController {
 //        StringProperty multi = new SimpleStringProperty(MULTY.getCHANNEL_QTY());
 
         bindingI18N();
-        sensor1500RadioButton.setUserData(1500);
-        sensor1800RadioButton.setUserData(1800);
-        sensor2000RadioButton.setUserData(2000);
-        sensor2200RadioButton.setUserData(2200);
-        sensor2200RadioButton.setUserData(2400);
-        setupPressureSensor();
-        setupCheckBoxPreference(fastCodingCheckBox, "fastCodingCheckBoxSelected", false);
-        setupCheckBoxPreference(isDIMASCheckBox, "isDIMASCheckBoxSelected", true);
-        setupCheckBoxPreference(flowVisibleCheckBox, "checkBoxFlowVisibleSelected", true);
-        regulatorsConfigComboBox.setItems(FXCollections.observableArrayList("3", "2", "1"));
-        injectorsConfigComboBox.setItems(FXCollections.observableArrayList(InjectorChannel.SINGLE_CHANNEL, InjectorChannel.MULTI_CHANNEL));
-        languagesConfigComboBox.setItems(FXCollections.observableArrayList(Locales.RUSSIAN, Locales.ENGLISH, Locales.KOREAN));
-        flowOutputDimensionsComboBox.setItems(FXCollections.observableArrayList(Dimension.LIMIT, Dimension.PLUS_OR_MINUS));
-        setupComboBoxesPreferences();
-        configRegulatorsInvolved(Integer.parseInt(regulatorsConfigComboBox.valueProperty().getValue()));
-        regulatorsConfigComboBox.valueProperty().addListener(new RegulatorsConfigListener());
-
+        setupSettingsControls();
+        setupConnectionControls();
     }
 
     private void bindingI18N() {
@@ -175,41 +193,83 @@ public class SettingsController {
         flowOutputDimensionLabel.textProperty().bind(i18N.createStringBinding("settings.FlowOutputDimension.ComboBox"));
         isDIMASCheckBox.textProperty().bind(i18N.createStringBinding("settings.isDIMAS.CheckBox"));
         flowVisibleCheckBox.textProperty().bind(i18N.createStringBinding("settings.flowVisible.CheckBox"));
-        sensor1500RadioButton.textProperty().bind(i18N.createStringBinding("settings.pressureSensor.1500.radiobutton"));
-        sensor1800RadioButton.textProperty().bind(i18N.createStringBinding("settings.pressureSensor.1800.radiobutton"));
-        sensor2000RadioButton.textProperty().bind(i18N.createStringBinding("settings.pressureSensor.2000.radiobutton"));
-        sensor2200RadioButton.textProperty().bind(i18N.createStringBinding("settings.pressureSensor.2200.radiobutton"));
-        sensor2400RadioButton.textProperty().bind(i18N.createStringBinding("settings.pressureSensor.2400.radiobutton"));
+        ultimaLabel.textProperty().bind(i18N.createStringBinding("link.ultima.label"));
+        flowMeterLabel.textProperty().bind(i18N.createStringBinding("link.flowmeter.label"));
+        standLabel.textProperty().bind(i18N.createStringBinding("link.stand.label"));
+        ipAddressLabel.textProperty().bind(i18N.createStringBinding("link.ipAddress.label"));
+        portLabel.textProperty().bind(i18N.createStringBinding("link.port.label"));
+        acceptButton.textProperty().bind(i18N.createStringBinding("link.accept.button"));
 //        single.bind(i18N.createStringBinding("main.channelQty.SINGLE_CHANNEL"));
 //        multi.bind(i18N.createStringBinding("main.channelQty.MULTY_CHANNEL"));
     }
 
+    private void setupConnectionControls(){
+        ultimaIPField.setTextFormatter(new TextFormatter<>(getFilter(ipRegex)));
+        flowMeterIPField.setTextFormatter(new TextFormatter<>(getFilter(ipRegex)));
+        standIPField.setTextFormatter(new TextFormatter<>(getFilter(ipRegex)));
+
+        String portRegex = "^(6553[0-5]|655[0-2]\\d|65[0-4]\\d\\d|6[0-4]\\d{3}|[1-5]\\d{4}|[1-9]\\d{0,3}|0)$";
+
+        ultimaPortField.setTextFormatter(new TextFormatter<>(getFilter(portRegex)));
+        flowMeterPortField.setTextFormatter(new TextFormatter<>(getFilter(portRegex)));
+        standPortField.setTextFormatter(new TextFormatter<>(getFilter(portRegex)));
+
+        setPairValues();
+
+        ultimaIPField.setText(ultimaConnect.getKey());
+        flowMeterIPField.setText(flowMeterConnect.getKey());
+        standIPField.setText(standConnect.getKey());
+
+        ultimaPortField.setText(ultimaConnect.getValue());
+        flowMeterPortField.setText(flowMeterConnect.getValue());
+        standPortField.setText(standConnect.getValue());
+
+        acceptButton.setOnMouseClicked(event -> {
+
+            rootPrefs.put("UltimaIP", ultimaIPField.getText());
+            rootPrefs.put("FlowIP", flowMeterIPField.getText());
+            rootPrefs.put("StandIP", standIPField.getText());
+
+            rootPrefs.put("UltimaPort", ultimaPortField.getText());
+            rootPrefs.put("FlowPort", flowMeterPortField.getText());
+            rootPrefs.put("StandPort", standPortField.getText());
+
+            setPairValues();
+
+        });
+    }
+
+    private void setupSettingsControls(){
+        pressureSensorComboBox.setItems(FXCollections.observableArrayList(1500, 1800, 2000, 2200, 2400));
+        setupPressureSensor();
+        setupCheckBoxPreference(fastCodingCheckBox, "fastCodingCheckBoxSelected", false);
+        setupCheckBoxPreference(isDIMASCheckBox, "isDIMASCheckBoxSelected", true);
+        setupCheckBoxPreference(flowVisibleCheckBox, "checkBoxFlowVisibleSelected", true);
+        regulatorsConfigComboBox.setItems(FXCollections.observableArrayList("3", "2", "1"));
+
+        injectorsConfigComboBox.setItems(FXCollections.observableArrayList(InjectorChannel.SINGLE_CHANNEL, InjectorChannel.MULTI_CHANNEL));
+        languagesConfigComboBox.setItems(FXCollections.observableArrayList(Locales.RUSSIAN, Locales.ENGLISH, Locales.KOREAN));
+        flowOutputDimensionsComboBox.setItems(FXCollections.observableArrayList(Dimension.LIMIT, Dimension.PLUS_OR_MINUS));
+        setupComboBoxesPreferences();
+        configRegulatorsInvolved(Integer.parseInt(regulatorsConfigComboBox.valueProperty().getValue()));
+        regulatorsConfigComboBox.valueProperty().addListener(new RegulatorsConfigListener());
+    }
+
     private void setupPressureSensor() {
 
-        sensor1500RadioButton.setSelected(rootPrefs.getBoolean("sensor1500RadioButtonSelected", true));
-        sensor1800RadioButton.setSelected(rootPrefs.getBoolean("sensor1800RadioButtonSelected", false));
-        sensor2000RadioButton.setSelected(rootPrefs.getBoolean("sensor2000RadioButtonSelected", false));
-        sensor2200RadioButton.setSelected(rootPrefs.getBoolean("sensor2200RadioButtonSelected", false));
-        sensor2400RadioButton.setSelected(rootPrefs.getBoolean("sensor2400RadioButtonSelected", false));
+        pressureSensorComboBox.getSelectionModel().select(new Integer(rootPrefs.getInt("pressureSensorSelected", 1500)));
+        pressureSensorComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> rootPrefs.putInt("pressureSensorSelected", newValue));
 
-        sensor1500RadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> rootPrefs.putBoolean("sensor1500RadioButtonSelected", newValue));
-        sensor1800RadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> rootPrefs.putBoolean("sensor1800RadioButtonSelected", newValue));
-        sensor2000RadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> rootPrefs.putBoolean("sensor2000RadioButtonSelected", newValue));
-        sensor2200RadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> rootPrefs.putBoolean("sensor2200RadioButtonSelected", newValue));
-        sensor2400RadioButton.selectedProperty().addListener((observable, oldValue, newValue) -> rootPrefs.putBoolean("sensor2400RadioButtonSelected", newValue));
-
-        ReadOnlyObjectProperty<Toggle> pressureSensorToggleGroupProperty = pressureSensorToggleGroup.selectedToggleProperty();
-
-        Integer maxPressure = (Integer) pressureSensorToggleGroupProperty.getValue().getUserData();
+        Integer maxPressure = pressureSensorComboBox.getSelectionModel().selectedItemProperty().getValue();
         pressMultiplierProperty.setValue(maxPressure);
         highPressureSectionController.getPressReg1Spinner().setValueFactory(
                 new SpinnerValueFactory.IntegerSpinnerValueFactory(PRESS_REG_1_SPINNER_MIN, maxPressure, PRESS_REG_1_SPINNER_INIT, PRESS_REG_1_SPINNER_STEP));
 
-        pressureSensorToggleGroupProperty.addListener((observable, oldValue, newValue) -> {
-            pressMultiplierProperty.setValue((Integer)(newValue.getUserData()));
+        pressureSensorComboBox.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) -> {
+            pressMultiplierProperty.setValue(newValue);
             highPressureSectionController.getPressReg1Spinner().setValueFactory(
-                    new SpinnerValueFactory.IntegerSpinnerValueFactory(PRESS_REG_1_SPINNER_MIN, (Integer)newValue.getUserData(), PRESS_REG_1_SPINNER_INIT, PRESS_REG_1_SPINNER_STEP));
-        });
+                    new SpinnerValueFactory.IntegerSpinnerValueFactory(PRESS_REG_1_SPINNER_MIN, newValue, PRESS_REG_1_SPINNER_INIT, PRESS_REG_1_SPINNER_STEP));
+        }));
     }
 
     private void setupCheckBoxPreference(CheckBox checkBox, String prefsKey, boolean prefsValue) {
@@ -224,26 +284,18 @@ public class SettingsController {
         regulatorsConfigComboBox.getSelectionModel().select(rootPrefs.get("regulatorsConfigSelected", "3"));
         regulatorsConfigComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> rootPrefs.put("regulatorsConfigSelected", newValue));
 
-
         injectorsConfigComboBox.getSelectionModel().select(InjectorChannel.valueOf(rootPrefs.get("injectorsConfigSelected", InjectorChannel.SINGLE_CHANNEL.name())));
         injectorsConfigComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> rootPrefs.put("injectorsConfigSelected", newValue.name()));
-//        injectorsConfigComboBox.getSelectionModel().select(rootPrefs.get("injectorsConfigSelected", InjectorChannel.SINGLE_CHANNEL.getCHANNEL_QTY()));
-//        injectorsConfigComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> rootPrefs.put("injectorsConfigSelected", newValue));
-
-
 
         languagesConfigComboBox.getSelectionModel().select(Locales.valueOf(rootPrefs.get("Language", Locales.ENGLISH.name())));
         languagesConfigComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
         rootPrefs.put("Language", newValue.name());
-//            prefs.put("Language", newValue.name());
         i18N.setLocale(Locales.getLocale(newValue.name()));
         });
 
         flowOutputDimensionsComboBox.getSelectionModel().select(Dimension.valueOf(rootPrefs.get("flowOutputDimensionSelected", Dimension.LIMIT.name())));
         flowOutputDimensionsComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
                 rootPrefs.put("flowOutputDimensionSelected", newValue.name()));
-
-
     }
 
     private class RegulatorsConfigListener implements ChangeListener<String>{
@@ -286,6 +338,41 @@ public class SettingsController {
                 break;
         }
 
+    }
+
+    private void setPairValues() {
+
+        ultimaConnect.setKey(rootPrefs.get("UltimaIP", "192.168.10.206"));
+        flowMeterConnect.setKey(rootPrefs.get("FlowIP", "192.168.10.201"));
+        standConnect.setKey(rootPrefs.get("StandIP", "192.168.10.202"));
+
+        ultimaConnect.setValue(rootPrefs.get("UltimaPort", "502"));
+        flowMeterConnect.setValue(rootPrefs.get("FlowPort", "502"));
+        standConnect.setValue(rootPrefs.get("StandPort", "502"));
+
+    }
+    
+    private String makePartialIPRegex() {
+
+        String partialBlock = "(([01]?[0-9]{0,2})|(2[0-4][0-9])|(25[0-5]))" ;
+        String subsequentPartialBlock = "(\\."+partialBlock+")" ;
+        String ipAddress = partialBlock+"?"+subsequentPartialBlock+"{0,3}";
+        return "^"+ipAddress ;
+
+    }
+
+    private UnaryOperator<TextFormatter.Change> getFilter(String regex) {
+        return new UnaryOperator<TextFormatter.Change>() {
+            @Override
+            public TextFormatter.Change apply(TextFormatter.Change c) {
+                String text = c.getControlNewText();
+                if (text.matches(regex)) {
+                    return c;
+                } else {
+                    return null;
+                }
+            }
+        };
     }
 
 }

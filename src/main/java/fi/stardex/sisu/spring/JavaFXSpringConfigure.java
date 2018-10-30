@@ -406,14 +406,6 @@ public class JavaFXSpringConfigure {
     }
 
     @Bean
-    public ConnectionController connectionController(Preferences rootPrefs) {
-        ConnectionController connectionController = additionalSectionController().getConnectionController();
-        connectionController.setI18N(i18N);
-        connectionController.setRootPrefs(rootPrefs);
-        return connectionController;
-    }
-
-    @Bean
     @Autowired
     public VoltageController voltageController(AdditionalSectionController additionalSectionController, InjectorSectionController injectorSectionController) {
         VoltageController voltageController = additionalSectionController.getVoltageController();

@@ -92,23 +92,23 @@ public class SpringJavaConfig {
 
     @Bean
     @Autowired
-    public ModbusConnect ultimaModbusConnect(ConnectionController connectionController, ConnectProcessor connectProcessor, Devices devices, StatusBarWrapper statusBar,
+    public ModbusConnect ultimaModbusConnect(SettingsController settingsController, ConnectProcessor connectProcessor, Devices devices, StatusBarWrapper statusBar,
                                              InetAddressWrapper inetAddressWrapper) {
-        return new ModbusConnect(connectionController.getUltimaConnect(), connectProcessor, devices, statusBar, Device.ULTIMA, inetAddressWrapper);
+        return new ModbusConnect(settingsController.getUltimaConnect(), connectProcessor, devices, statusBar, Device.ULTIMA, inetAddressWrapper);
     }
 
     @Bean
     @Autowired
-    public ModbusConnect flowModbusConnect(ConnectionController connectionController, ConnectProcessor connectProcessor, Devices devices, StatusBarWrapper statusBar,
+    public ModbusConnect flowModbusConnect(SettingsController settingsController, ConnectProcessor connectProcessor, Devices devices, StatusBarWrapper statusBar,
                                            InetAddressWrapper inetAddressWrapper) {
-        return new ModbusConnect(connectionController.getFlowMeterConnect(), connectProcessor, devices, statusBar, Device.MODBUS_FLOW, inetAddressWrapper);
+        return new ModbusConnect(settingsController.getFlowMeterConnect(), connectProcessor, devices, statusBar, Device.MODBUS_FLOW, inetAddressWrapper);
     }
 
     @Bean
     @Autowired
-    public ModbusConnect standModbusConnect(ConnectionController connectionController, ConnectProcessor connectProcessor, Devices devices, StatusBarWrapper statusBar,
+    public ModbusConnect standModbusConnect(SettingsController settingsController, ConnectProcessor connectProcessor, Devices devices, StatusBarWrapper statusBar,
                                             InetAddressWrapper inetAddressWrapper) {
-        return new ModbusConnect(connectionController.getStandConnect(), connectProcessor, devices, statusBar, Device.MODBUS_STAND, inetAddressWrapper);
+        return new ModbusConnect(settingsController.getStandConnect(), connectProcessor, devices, statusBar, Device.MODBUS_STAND, inetAddressWrapper);
     }
 
     @Bean
@@ -163,7 +163,7 @@ public class SpringJavaConfig {
 
     @Bean
     @Autowired
-    public RegisterProvider flowRegisterProvider(ModbusConnect flowModbusConnect, ConnectionController connectionController,
+    public RegisterProvider flowRegisterProvider(ModbusConnect flowModbusConnect, SettingsController settingsController,
                                                  FirmwareVersion<FlowVersions> flowFirmwareVersion) {
         return new RegisterProvider(flowModbusConnect) {
             @Override
@@ -175,8 +175,8 @@ public class SpringJavaConfig {
                     flowFirmwareVersion.setVersions(FlowVersions.NO_VERSION);
 
                 connectedProperty.addListener((observable, oldValue, newValue) -> {
-                    TextField standIPField = connectionController.getStandIPField();
-                    TextField standPortField = connectionController.getStandPortField();
+                    TextField standIPField = settingsController.getStandIPField();
+                    TextField standPortField = settingsController.getStandPortField();
                     if (newValue) {
                         int firmwareVersionNumber = (int) read(ModbusMapFlow.FirmwareVersion);
                         switch (firmwareVersionNumber) {
