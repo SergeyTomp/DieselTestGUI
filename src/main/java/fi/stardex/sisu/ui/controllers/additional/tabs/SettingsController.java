@@ -17,6 +17,8 @@ import javafx.scene.control.*;
 import javax.annotation.PostConstruct;
 import java.util.prefs.Preferences;
 
+import static fi.stardex.sisu.util.SpinnerDefaults.*;
+
 public class SettingsController {
 
 
@@ -144,6 +146,11 @@ public class SettingsController {
 //        StringProperty multi = new SimpleStringProperty(MULTY.getCHANNEL_QTY());
 
         bindingI18N();
+        sensor1500RadioButton.setUserData(1500);
+        sensor1800RadioButton.setUserData(1800);
+        sensor2000RadioButton.setUserData(2000);
+        sensor2200RadioButton.setUserData(2200);
+        sensor2200RadioButton.setUserData(2400);
         setupPressureSensor();
         setupCheckBoxPreference(fastCodingCheckBox, "fastCodingCheckBoxSelected", false);
         setupCheckBoxPreference(isDIMASCheckBox, "isDIMASCheckBoxSelected", true);
@@ -155,6 +162,7 @@ public class SettingsController {
         setupComboBoxesPreferences();
         configRegulatorsInvolved(Integer.parseInt(regulatorsConfigComboBox.valueProperty().getValue()));
         regulatorsConfigComboBox.valueProperty().addListener(new RegulatorsConfigListener());
+
     }
 
     private void bindingI18N() {
@@ -192,29 +200,15 @@ public class SettingsController {
 
         ReadOnlyObjectProperty<Toggle> pressureSensorToggleGroupProperty = pressureSensorToggleGroup.selectedToggleProperty();
 
-        if(pressureSensorToggleGroupProperty.getValue() == sensor1500RadioButton){
-            pressMultiplierProperty.setValue(1500);
-        }else if(pressureSensorToggleGroupProperty.getValue() == sensor1800RadioButton){
-            pressMultiplierProperty.setValue(1800);
-        }else if(pressureSensorToggleGroupProperty.getValue() == sensor2000RadioButton){
-            pressMultiplierProperty.setValue(2000);
-        }else if(pressureSensorToggleGroupProperty.getValue() == sensor2200RadioButton){
-            pressMultiplierProperty.setValue(2200);
-        }else pressMultiplierProperty.setValue(2400);
-
+        Integer maxPressure = (Integer) pressureSensorToggleGroupProperty.getValue().getUserData();
+        pressMultiplierProperty.setValue(maxPressure);
+        highPressureSectionController.getPressReg1Spinner().setValueFactory(
+                new SpinnerValueFactory.IntegerSpinnerValueFactory(PRESS_REG_1_SPINNER_MIN, maxPressure, PRESS_REG_1_SPINNER_INIT, PRESS_REG_1_SPINNER_STEP));
 
         pressureSensorToggleGroupProperty.addListener((observable, oldValue, newValue) -> {
-            if (newValue == sensor1500RadioButton) {
-                pressMultiplierProperty.setValue(1500);
-            } else if (newValue == sensor1800RadioButton) {
-                pressMultiplierProperty.setValue(1800);
-            } else if (newValue == sensor2000RadioButton) {
-                pressMultiplierProperty.setValue(2000);
-            } else if (newValue == sensor2200RadioButton) {
-                pressMultiplierProperty.setValue(2200);
-            } else {
-                pressMultiplierProperty.setValue(2400);
-            }
+            pressMultiplierProperty.setValue((Integer)(newValue.getUserData()));
+            highPressureSectionController.getPressReg1Spinner().setValueFactory(
+                    new SpinnerValueFactory.IntegerSpinnerValueFactory(PRESS_REG_1_SPINNER_MIN, (Integer)newValue.getUserData(), PRESS_REG_1_SPINNER_INIT, PRESS_REG_1_SPINNER_STEP));
         });
     }
 

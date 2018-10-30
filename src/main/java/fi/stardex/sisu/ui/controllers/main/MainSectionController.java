@@ -14,7 +14,9 @@ import fi.stardex.sisu.store.FlowReport;
 import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.*;
+import fi.stardex.sisu.ui.controllers.additional.tabs.DelayController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.InfoController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.RLCController;
 import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.ui.controllers.dialogs.ManufacturerMenuDialogController;
 import fi.stardex.sisu.ui.controllers.dialogs.NewEditInjectorDialogController;
@@ -29,8 +31,6 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -39,7 +39,6 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.geometry.Point2D;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxListCell;
@@ -51,7 +50,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -229,8 +227,6 @@ public class MainSectionController {
 
     private VoltAmpereProfileController voltAmpereProfileController;
 
-    private RLC_ReportController rlc_reportController;
-
     private Spinner<Integer> widthCurrentSignalSpinner;
 
     private Spinner<Double> freqCurrentSignalSpinner;
@@ -393,10 +389,6 @@ public class MainSectionController {
 
     public void setVoltAmpereProfileController(VoltAmpereProfileController voltAmpereProfileController) {
         this.voltAmpereProfileController = voltAmpereProfileController;
-    }
-
-    public void setRlc_reportController(RLC_ReportController rlc_reportController) {
-        this.rlc_reportController = rlc_reportController;
     }
 
     public void setWidthCurrentSignalSpinner(Spinner<Integer> widthCurrentSignalSpinner) {

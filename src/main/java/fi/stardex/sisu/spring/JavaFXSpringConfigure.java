@@ -97,7 +97,6 @@ public class JavaFXSpringConfigure {
                                                        @Lazy FlowReport flowReport,
                                                        TestBenchSectionController testBenchSectionController,
                                                        InfoController infoController,
-                                                       RLC_ReportController rlcReportController,
                                                        DelayController delayController,
                                                        RLCController rlcController) {
         MainSectionController mainSectionController = (MainSectionController) mainSection().getController();
@@ -119,7 +118,6 @@ public class JavaFXSpringConfigure {
         mainSectionController.setMeasurements(measurements);
         mainSectionController.setFlowReport(flowReport);
         mainSectionController.setInfoController(infoController);
-        mainSectionController.setRlc_reportController(rlcReportController);
         mainSectionController.setTargetRPMSpinner(testBenchSectionController.getTargetRPMSpinner());
         mainSectionController.setDelayController(delayController);
         mainSectionController.setPrintDialogPanel(printDialogPanel());

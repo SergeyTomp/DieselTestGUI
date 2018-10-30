@@ -93,6 +93,7 @@ public class SpinnerManager {
 
         InputController.blockTextInputToSpinners(spinner, MAX_LENGTH);
 
+
         StringConverter<Integer> converter = spinner.getValueFactory().getConverter();
 
         spinner.getValueFactory().setConverter(new StringConverter<Integer>() {

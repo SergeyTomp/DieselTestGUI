@@ -356,7 +356,6 @@ public class PDFService {
         InputStream inputStream;
 
         if (additionalSectionController.getSettingsController().getLanguagesConfigComboBox().getSelectionModel().getSelectedItem().toString().equals("RUSSIAN")) {
-            System.err.println("true");
             inputStream = this.getClass().getResourceAsStream("/fonts/Arial_Cyr.ttf");
         } else {
             inputStream = this.getClass().getResourceAsStream("/fonts/LiberationSans-Bold.ttf");

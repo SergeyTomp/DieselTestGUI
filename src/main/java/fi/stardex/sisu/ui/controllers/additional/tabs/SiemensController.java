@@ -25,6 +25,8 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.PostConstruct;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 import static fi.stardex.sisu.util.VisualUtils.copyToClipBoard;
 
@@ -167,49 +169,55 @@ public class SiemensController {
         sb.setLength(0);
         String injectorCode = CurrentInjectorObtainer.getInjector().getInjectorCode()
                 .replaceAll("-", "").replaceAll(" ", "").trim();
+
         Reference refByInjector = siemensReferenceRepository.findByInjector(injectorCode);
+        if(refByInjector != null){
 
-        engine = refByInjector.getEngine();
-        if (engine != null){
-            List<Cars> carsList = engine.getCarsList();
-            List<Spares> sparesList = engine.getSparesList();
-            infoSource.add(new InfoTableLine(ENGINE, engine.getEngine()));
-            infoSource.add(new InfoTableLine(ENGINE_TYPE, engine.getEngineType()));
+            engine = refByInjector.getEngine();
 
-            Iterator<Cars> clit = carsList.iterator();
-            if(clit.hasNext()){
-                sb.append(clit.next().getCar());
-                while (clit.hasNext()){
-                    sb.append(", ").append(clit.next().getCar());
+            if(engine != null){
+                List<Cars> carsList = engine.getCarsList();
+                List<Spares> sparesList = engine.getSparesList();
+                infoSource.add(new InfoTableLine(ENGINE, engine.getEngine()));
+                infoSource.add(new InfoTableLine(ENGINE_TYPE, engine.getEngineType()));
+
+                Iterator<Cars> clit = carsList.iterator();
+                if(clit.hasNext()){
+                    sb.append(clit.next().getCar());
+                    while (clit.hasNext()){
+                        sb.append(", ").append(clit.next().getCar());
+                    }
                 }
+                infoSource.add(new InfoTableLine(USED_IN, sb.toString()));
+                sb.setLength(0);
+                sparesList.forEach(sp->sparesSource.add(new SparesTableLine(sp.getCategory(), sp.getOrderNumber(), sp.getDescription())));
             }
-            infoSource.add(new InfoTableLine(USED_IN, sb.toString()));
-            sb.setLength(0);
-            sparesList.forEach(sp->sparesSource.add(new SparesTableLine(sp.getCategory(), sp.getOrderNumber(), sp.getDescription())));
-        }
 
-        orderNumber = refByInjector.getOrderNumber();
-        if(orderNumber != null){
-            List<Reference> refListByOrderNumber = siemensReferenceRepository.findByOrderNumber(orderNumber);
-            Iterator<Reference> rlit = refListByOrderNumber.iterator();
-            if(rlit.hasNext()){
-                sb.append(rlit.next().getInjector());
-                while (rlit.hasNext()){
-                    sb.append("\n").append(rlit.next().getInjector());
+            orderNumber = refByInjector.getOrderNumber();
+
+            if(orderNumber != null){
+                List<Reference> refListByOrderNumber = siemensReferenceRepository.findByOrderNumber(orderNumber);
+                Iterator<Reference> rlit = refListByOrderNumber.iterator();
+                if(rlit.hasNext()){
+                    sb.append(rlit.next().getInjector());
+                    while (rlit.hasNext()){
+                        sb.append("\n").append(rlit.next().getInjector());
+                    }
                 }
+                infoSource.add(new InfoTableLine(CROSS_REFERENCE, sb.toString()));
+                sb.setLength(0);
+
+                infoSource.add(new InfoTableLine(ORDER_NUMBER, refByInjector.getOrderNumber()));
+                infoSource.add(new InfoTableLine(DESCRIPTION, refByInjector.getDescription()));
+
+                infoSource.add(new InfoTableLine(REMARKS, refByInjector.getRemarks()));
+
+                infoTableView.setItems(infoSource);
+                sparesTableView.setItems(sparesSource);
+
+                logger.info("Change to Siemens Label");
             }
-            infoSource.add(new InfoTableLine(CROSS_REFERENCE, sb.toString()));
-            sb.setLength(0);
-
-            infoSource.add(new InfoTableLine(ORDER_NUMBER, refByInjector.getOrderNumber()));
-            infoSource.add(new InfoTableLine(DESCRIPTION, refByInjector.getDescription()));
         }
-        infoSource.add(new InfoTableLine(REMARKS, refByInjector.getRemarks()));
-
-        infoTableView.setItems(infoSource);
-        sparesTableView.setItems(sparesSource);
-
-        logger.info("Change to Siemens Label");
     }
 
     private class InfoTableLine{
