@@ -9,7 +9,7 @@ import fi.stardex.sisu.persistence.orm.cr.pump.Pump;
 import fi.stardex.sisu.persistence.orm.interfaces.Model;
 import fi.stardex.sisu.store.FlowReport;
 import fi.stardex.sisu.store.FlowReport.FlowTestResult;
-import fi.stardex.sisu.ui.controllers.additional.AdditionalSectionController;
+import fi.stardex.sisu.ui.controllers.additional.TabSectionController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.DelayController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.RLCController;
 import fi.stardex.sisu.ui.controllers.dialogs.PrintDialogPanelController;
@@ -106,7 +106,7 @@ public class PDFService {
     private PDPage currentPage;
     private PDFont font;
 
-    private AdditionalSectionController additionalSectionController;
+    private TabSectionController tabSectionController;
     private I18N i18N;
 
 
@@ -133,8 +133,8 @@ public class PDFService {
         this.desktopFiles = desktopFiles;
     }
 
-    public void setAdditionalSectionController(AdditionalSectionController additionalSectionController) {
-        this.additionalSectionController = additionalSectionController;
+    public void setTabSectionController(TabSectionController tabSectionController) {
+        this.tabSectionController = tabSectionController;
     }
 
     public void setDelayController(DelayController delayController) {
@@ -355,7 +355,7 @@ public class PDFService {
 
         InputStream inputStream;
 
-        if (additionalSectionController.getSettingsController().getLanguagesConfigComboBox().getSelectionModel().getSelectedItem().toString().equals("RUSSIAN")) {
+        if (tabSectionController.getSettingsController().getLanguagesConfigComboBox().getSelectionModel().getSelectedItem().toString().equals("RUSSIAN")) {
             inputStream = this.getClass().getResourceAsStream("/fonts/Arial_Cyr.ttf");
         } else {
             inputStream = this.getClass().getResourceAsStream("/fonts/LiberationSans-Bold.ttf");

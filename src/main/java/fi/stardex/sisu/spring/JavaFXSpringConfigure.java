@@ -14,10 +14,10 @@ import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.store.FlowReport;
 import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.ui.ViewHolder;
+import fi.stardex.sisu.ui.controllers.GUI_TypeController;
 import fi.stardex.sisu.ui.controllers.ISADetectionController;
-import fi.stardex.sisu.ui.controllers.RootLayoutController;
-import fi.stardex.sisu.ui.controllers.additional.AdditionalSectionController;
 import fi.stardex.sisu.ui.controllers.additional.BeakerController;
+import fi.stardex.sisu.ui.controllers.additional.TabSectionController;
 import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.*;
 import fi.stardex.sisu.ui.controllers.cr.CRSectionController;
@@ -26,29 +26,23 @@ import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.cr.TestBenchSectionController;
 import fi.stardex.sisu.ui.controllers.dialogs.*;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
+import fi.stardex.sisu.ui.controllers.uis.RootLayoutController;
 import fi.stardex.sisu.util.DelayCalculator;
 import fi.stardex.sisu.util.enums.BeakerType;
 import fi.stardex.sisu.util.i18n.I18N;
-import fi.stardex.sisu.util.i18n.UTF8Control;
 import fi.stardex.sisu.util.rescalers.Rescaler;
-import fi.stardex.sisu.util.view.ApplicationAppearanceChanger;
 import fi.stardex.sisu.util.wrappers.StatusBarWrapper;
 import fi.stardex.sisu.version.FirmwareVersion;
 import fi.stardex.sisu.version.StardexVersion;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 
-import java.io.IOException;
-import java.util.ResourceBundle;
 import java.util.prefs.Preferences;
 
 import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions;
@@ -56,16 +50,10 @@ import static fi.stardex.sisu.version.StandFirmwareVersion.StandVersions;
 
 @Configuration
 @ComponentScan(value = "fi.stardex.sisu")
-public class JavaFXSpringConfigure {
-
-    private final I18N i18N;
-    private final UTF8Control utf8Control;
-
-    private final Logger logger = LoggerFactory.getLogger(JavaFXSpringConfigure.class);
+public class JavaFXSpringConfigure extends ViewLoader{
 
     public JavaFXSpringConfigure(I18N i18N) {
-        this.i18N = i18N;
-        this.utf8Control = new UTF8Control();
+        super(i18N);
     }
 
     @Bean
@@ -79,6 +67,25 @@ public class JavaFXSpringConfigure {
     }
 
     @Bean
+    public ViewHolder gui_type() {
+        return loadView("/fxml/GUI_Type.fxml");
+    }
+
+    @Bean
+    @Autowired
+    public GUI_TypeController gui_typeController(Preferences rootPrefs, RootLayoutController rootLayoutController) {
+        GUI_TypeController gui_typeController = (GUI_TypeController) rootLayoutController.getGui_typeController();
+        gui_typeController.setRootPrefs(rootPrefs);
+        gui_typeController.setMainSection(mainSection().getView());
+        gui_typeController.setCRSection(crSection().getView());
+        gui_typeController.setUISSection(uisSection().getView());
+        gui_typeController.setTabSection(tabSection().getView());
+        gui_typeController.setMainSectionGridPane(rootLayoutController.getMainSectionGridPane());
+        gui_typeController.setAdditionalSectionGridPane(rootLayoutController.getAdditionalSectionGridPane());
+        return gui_typeController;
+    }
+
+    @Bean
     public ViewHolder mainSection() {
         return loadView("/fxml/sections/Main/MainSection.fxml");
     }
@@ -86,14 +93,13 @@ public class JavaFXSpringConfigure {
     @Bean
     @Autowired
     public MainSectionController mainSectionController(@Lazy Enabler enabler,
-                                                       ApplicationAppearanceChanger applicationAppearanceChanger,
                                                        VoltAmpereProfileController voltAmpereProfileController,
                                                        InjectorSectionController injectorSectionController,
                                                        InjectorsRepository injectorsRepository,
                                                        InjectorTestRepository injectorTestRepository,
                                                        @Lazy ModbusRegisterProcessor flowModbusWriter,
                                                        HighPressureSectionController highPressureSectionController,
-                                                       Preferences rootPrefs, @Lazy Measurements measurements,
+                                                       @Lazy Measurements measurements,
                                                        @Lazy FlowReport flowReport,
                                                        TestBenchSectionController testBenchSectionController,
                                                        InfoController infoController,
@@ -101,7 +107,6 @@ public class JavaFXSpringConfigure {
                                                        RLCController rlcController) {
         MainSectionController mainSectionController = (MainSectionController) mainSection().getController();
         mainSectionController.setEnabler(enabler);
-        mainSectionController.setApplicationAppearanceChanger(applicationAppearanceChanger);
         mainSectionController.setManufacturerMenuDialog(manufacturerMenuDialog());
         mainSectionController.setNewEditInjectorDialog(newEditInjectorDialog());
         mainSectionController.setNewEditTestDialog(newEditTestDialog());
@@ -114,7 +119,6 @@ public class JavaFXSpringConfigure {
         mainSectionController.setFlowModbusWriter(flowModbusWriter);
         mainSectionController.setHighPressureSectionController(highPressureSectionController);
         mainSectionController.setI18N(i18N);
-        mainSectionController.setRootPrefs(rootPrefs);
         mainSectionController.setMeasurements(measurements);
         mainSectionController.setFlowReport(flowReport);
         mainSectionController.setInfoController(infoController);
@@ -137,9 +141,9 @@ public class JavaFXSpringConfigure {
 
     @Bean
     @Autowired
-    public TestBenchSectionController testBenchSectionController(CRSectionController crSectionController,
+    public TestBenchSectionController testBenchSectionController(RootLayoutController rootLayoutController,
                                                                  @Lazy ModbusRegisterProcessor standModbusWriter) {
-        TestBenchSectionController testBenchController = crSectionController.getTestBenchSectionController();
+        TestBenchSectionController testBenchController = rootLayoutController.getTestBenchSectionController();
         testBenchController.setStandModbusWriter(standModbusWriter);
         testBenchController.setI18N(i18N);
         return testBenchController;
@@ -176,8 +180,8 @@ public class JavaFXSpringConfigure {
     }
 
     @Bean
-    public ViewHolder additionalSection() {
-        return loadView("/fxml/sections/Additional/AdditionalSection.fxml");
+    public ViewHolder tabSection() {
+        return loadView("/fxml/sections/Additional/TabSection.fxml");
     }
 
     @Bean
@@ -242,33 +246,33 @@ public class JavaFXSpringConfigure {
     }
 
     @Bean
-    public AdditionalSectionController additionalSectionController() {
-        AdditionalSectionController additionalSectionController = (AdditionalSectionController)additionalSection().getController();
-        additionalSectionController.setI18N(i18N);
-        return additionalSectionController;
+    public TabSectionController tabSectionController() {
+        TabSectionController tabSectionController = (TabSectionController) tabSection().getController();
+        tabSectionController.setI18N(i18N);
+        return tabSectionController;
     }
 
     @Bean
     @Autowired
-    public CodingController codingController(AdditionalSectionController additionalSectionController){
-        CodingController codingController = additionalSectionController.getCodingController();
+    public CodingController codingController(TabSectionController tabSectionController){
+        CodingController codingController = tabSectionController.getCodingController();
         codingController.setI18N(i18N);
         return codingController;
     }
 
     @Bean
     @Autowired
-    public FlowController flowController(AdditionalSectionController additionalSectionController) {
-        FlowController flowController = additionalSectionController.getFlowController();
+    public FlowController flowController(TabSectionController tabSectionController) {
+        FlowController flowController = tabSectionController.getFlowController();
         flowController.setI18N(i18N);
         return flowController;
     }
 
     @Bean
     @Autowired
-    public ReportController reportController(AdditionalSectionController additionalSectionController,
+    public ReportController reportController(TabSectionController tabSectionController,
                                              I18N i18N) {
-        ReportController reportController = additionalSectionController.getReportController();
+        ReportController reportController = tabSectionController.getReportController();
         reportController.setI18N(i18N);
         return reportController;
     }
@@ -407,10 +411,10 @@ public class JavaFXSpringConfigure {
 
     @Bean
     @Autowired
-    public VoltageController voltageController(AdditionalSectionController additionalSectionController, InjectorSectionController injectorSectionController) {
-        VoltageController voltageController = additionalSectionController.getVoltageController();
+    public VoltageController voltageController(TabSectionController tabSectionController, InjectorSectionController injectorSectionController) {
+        VoltageController voltageController = tabSectionController.getVoltageController();
         voltageController.setVoltAmpereProfileDialog(voltAmpereProfileDialog());
-        voltageController.setParentController(additionalSectionController);
+        voltageController.setParentController(tabSectionController);
         voltageController.setInjectorSectionController(injectorSectionController);
         voltageController.setI18N(i18N);
         return voltageController;
@@ -418,12 +422,12 @@ public class JavaFXSpringConfigure {
 
     @Bean
     @Autowired
-    public DelayController delayController(AdditionalSectionController additionalSectionController,
+    public DelayController delayController(TabSectionController tabSectionController,
                                            DelayCalculator delayCalculator,
                                            DelayReportController delayReportController) {
-        DelayController delayController = additionalSectionController.getDelayController();
+        DelayController delayController = tabSectionController.getDelayController();
         delayController.setDelayCalculator(delayCalculator);
-        delayController.setAdditionalSectionController(additionalSectionController);
+        delayController.setTabSectionController(tabSectionController);
         delayController.setI18N(i18N);
         delayController.setDelayReportController(delayReportController);
          return delayController;
@@ -431,10 +435,10 @@ public class JavaFXSpringConfigure {
 
     @Bean
     @Autowired
-    public SettingsController settingsController(AdditionalSectionController additionalSectionController,
+    public SettingsController settingsController(TabSectionController tabSectionController,
                                                  Preferences rootPrefs,
                                                  HighPressureSectionController highPressureSectionController) {
-        SettingsController settingsController = additionalSectionController.getSettingsController();
+        SettingsController settingsController = tabSectionController.getSettingsController();
         settingsController.setI18N(i18N);
         settingsController.setRootPrefs(rootPrefs);
         settingsController.setHighPressureSectionController(highPressureSectionController);
@@ -523,8 +527,8 @@ public class JavaFXSpringConfigure {
                                          ViewHolder infoCaterpillar,
                                          ViewHolder infoAZPI,
                                          ViewHolder infoDelphi,
-                                         AdditionalSectionController additionalSectionController){
-        InfoController infoController = additionalSectionController.getInfoController();
+                                         TabSectionController tabSectionController){
+        InfoController infoController = tabSectionController.getInfoController();
         infoController.setInfoDefault(infoDefault.getView());
         infoController.setInfoBosch(infoBosch.getView());
         infoController.setInfoSiemens(infoSiemens.getView());
@@ -539,14 +543,6 @@ public class JavaFXSpringConfigure {
         infoController.setCaterpillarController((CaterpillarController)infoCaterpillar.getController());
         infoController.setAzpiController((AZPIController)infoAZPI.getController());
         return infoController;
-    }
-
-    @Bean
-    @Autowired
-    public ApplicationAppearanceChanger applicationAppearanceChanger(ViewHolder crSection, ViewHolder uisSection,
-                                                                     ViewHolder additionalSection, RootLayoutController rootLayoutController) {
-        return new ApplicationAppearanceChanger(crSection.getView(), uisSection.getView(),
-                additionalSection.getView(), rootLayoutController.getSectionLayout());
     }
 
     @Bean
@@ -643,9 +639,9 @@ public class JavaFXSpringConfigure {
                                        SettingsController settingsController,
                                        ModbusRegisterProcessor ultimaModbusWriter,
                                        RegisterProvider ultimaRegisterProvider,
-                                       AdditionalSectionController additionalSectionController,
+                                       TabSectionController tabSectionController,
                                        RLC_ReportController rlc_reportController) {
-        RLCController RLCController = additionalSectionController.getRlCController();
+        RLCController RLCController = tabSectionController.getRlCController();
         RLCController.setInjectorSectionController(injectorSectionController);
         RLCController.setSettingsController(settingsController);
         RLCController.setUltimaModbusWriter(ultimaModbusWriter);
@@ -654,19 +650,6 @@ public class JavaFXSpringConfigure {
         RLCController.setRLC_reportController(rlc_reportController);
         return RLCController;
 
-    }
-
-    private ViewHolder loadView(String url) {
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource(url),
-                ResourceBundle.getBundle("properties.labels", i18N.getLocale(), utf8Control));
-        ViewHolder viewHolder = new ViewHolder();
-        try {
-            viewHolder.setView(fxmlLoader.load());
-        } catch (IOException e) {
-            logger.error("Exception while load view {}", url, e);
-        }
-        viewHolder.setController(fxmlLoader.getController());
-        return viewHolder;
     }
 
 }

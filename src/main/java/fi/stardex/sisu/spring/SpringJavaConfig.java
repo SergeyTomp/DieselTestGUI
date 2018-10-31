@@ -27,8 +27,9 @@ import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.store.FlowReport;
 import fi.stardex.sisu.ui.Enabler;
+import fi.stardex.sisu.ui.controllers.GUI_TypeController;
 import fi.stardex.sisu.ui.controllers.ISADetectionController;
-import fi.stardex.sisu.ui.controllers.additional.AdditionalSectionController;
+import fi.stardex.sisu.ui.controllers.additional.TabSectionController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.*;
 import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
@@ -509,9 +510,9 @@ public class SpringJavaConfig {
     @Autowired
     public Enabler enabler(MainSectionController mainSectionController, InjectorSectionController injectorSectionController,
                            RLCController rlcController, VoltageController voltageController, FlowController flowController,
-                           FlowReportController flowReportController, FlowReport flowReport) {
+                           FlowReportController flowReportController, FlowReport flowReport, GUI_TypeController gui_typeController) {
         return new Enabler(mainSectionController, injectorSectionController, rlcController,
-                voltageController, flowController, flowReportController, flowReport);
+                voltageController, flowController, flowReportController, flowReport, gui_typeController.getGui_typeComboBox());
     }
 
     @Bean
@@ -589,7 +590,7 @@ public class SpringJavaConfig {
 
     @Bean
     @Autowired
-    public PDFService pdfService(AdditionalSectionController additionalSectionController,
+    public PDFService pdfService(TabSectionController tabSectionController,
                                  I18N i18N,
                                  DesktopFiles desktopFiles,
                                  DelayController delayController,
@@ -597,7 +598,7 @@ public class SpringJavaConfig {
                                  FlowReport flowReport,
                                  Measurements measurements){
         PDFService pdfService = new PDFService();
-        pdfService.setAdditionalSectionController(additionalSectionController);
+        pdfService.setTabSectionController(tabSectionController);
         pdfService.setI18N(i18N);
         pdfService.setDesktopFiles(desktopFiles);
         pdfService.setDelayController(delayController);

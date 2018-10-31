@@ -9,7 +9,6 @@ import fi.stardex.sisu.ui.controllers.additional.tabs.*;
 import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
-import fi.stardex.sisu.ui.controllers.main.MainSectionController.GUIType;
 import fi.stardex.sisu.util.enums.Tests.TestType;
 import fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer;
 import javafx.scene.Node;
@@ -24,6 +23,7 @@ import javax.annotation.PostConstruct;
 import static fi.stardex.sisu.util.enums.Tests.TestType.AUTO;
 import static fi.stardex.sisu.util.enums.Tests.TestType.CODING;
 import static fi.stardex.sisu.util.enums.Tests.getTestType;
+import static fi.stardex.sisu.ui.controllers.GUI_TypeController.GUIType;
 
 public class Enabler {
 
@@ -41,7 +41,7 @@ public class Enabler {
 
     private VBox injectorsVBox;
 
-    private ComboBox<GUIType> versionComboBox;
+    private ComboBox<GUIType> gui_typeComboBox;
 
     private ComboBox<String> speedComboBox;
 
@@ -113,7 +113,7 @@ public class Enabler {
 
     public Enabler(MainSectionController mainSectionController, InjectorSectionController injectorSectionController,
                    RLCController rlcController, VoltageController voltageController, FlowController flowController,
-                   FlowReportController flowReportController, FlowReport flowReport) {
+                   FlowReportController flowReportController, FlowReport flowReport, ComboBox<GUIType> gui_typeComboBox) {
 
         mainSectionStartToggleButton = mainSectionController.getStartToggleButton();
         testListView = mainSectionController.getTestListView();
@@ -122,7 +122,6 @@ public class Enabler {
         injectorTestsVBox = mainSectionController.getInjectorTestsVBox();
         timingGridPane = mainSectionController.getTimingGridPane();
         startHBox = mainSectionController.getStartHBox();
-        versionComboBox = mainSectionController.getVersionComboBox();
         speedComboBox = mainSectionController.getSpeedComboBox();
         moveUpButton = mainSectionController.getMoveUpButton();
         moveDownButton = mainSectionController.getMoveDownButton();
@@ -163,6 +162,7 @@ public class Enabler {
         flowReportAttentionLabel = flowReportController.getFlowReportAttentionLabel();
 
         this.flowReport = flowReport;
+        this.gui_typeComboBox = gui_typeComboBox;
 
     }
 
@@ -192,7 +192,7 @@ public class Enabler {
                 break;
         }
 
-        disableNode(isStarted || injectorSectionStartToggleButton.isSelected(), versionComboBox);
+        disableNode(isStarted || injectorSectionStartToggleButton.isSelected(), gui_typeComboBox);
 
         disableRadioButtons(testsToggleGroup, isStarted);
 
@@ -293,7 +293,7 @@ public class Enabler {
 
         }
 
-        disableNode(isStarted || mainSectionStartToggleButton.isSelected(), versionComboBox);
+        disableNode(isStarted || mainSectionStartToggleButton.isSelected(), gui_typeComboBox);
 
         disableNode(isStarted, ledBeaker1, ledBeaker2, ledBeaker3, ledBeaker4, pulseSettingsButton, widthCurrentSignalSpinner, freqCurrentSignalSpinner);
 

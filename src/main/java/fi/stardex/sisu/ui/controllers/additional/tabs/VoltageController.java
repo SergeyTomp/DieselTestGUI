@@ -1,7 +1,7 @@
 package fi.stardex.sisu.ui.controllers.additional.tabs;
 
 import fi.stardex.sisu.ui.ViewHolder;
-import fi.stardex.sisu.ui.controllers.additional.AdditionalSectionController;
+import fi.stardex.sisu.ui.controllers.additional.TabSectionController;
 import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.util.i18n.I18N;
@@ -95,7 +95,7 @@ public class VoltageController {
 
     private Stage voapStage;
 
-    private AdditionalSectionController additionalSectionController;
+    private TabSectionController tabSectionController;
 
     private ObjectProperty<Boolean> isTabVoltageShowing = new SimpleObjectProperty<>();
 
@@ -171,8 +171,8 @@ public class VoltageController {
         this.voltAmpereProfileDialog = voltAmpereProfileDialog;
     }
 
-    public void setParentController(AdditionalSectionController additionalSectionController) {
-        this.additionalSectionController = additionalSectionController;
+    public void setParentController(TabSectionController tabSectionController) {
+        this.tabSectionController = tabSectionController;
     }
 
     public void setInjectorSectionController(InjectorSectionController injectorSectionController) {
@@ -186,7 +186,7 @@ public class VoltageController {
     @PostConstruct
     private void init() {
 
-        isTabVoltageShowing.bind(additionalSectionController.getTabVoltage().selectedProperty());
+        isTabVoltageShowing.bind(tabSectionController.getTabVoltage().selectedProperty());
 
         setupVoltAmpereProfileDialog();
 

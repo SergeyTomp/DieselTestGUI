@@ -24,7 +24,6 @@ import fi.stardex.sisu.ui.controllers.dialogs.NewEditTestDialogController;
 import fi.stardex.sisu.ui.controllers.dialogs.PrintDialogPanelController;
 import fi.stardex.sisu.util.enums.Measurement;
 import fi.stardex.sisu.util.i18n.I18N;
-import fi.stardex.sisu.util.view.ApplicationAppearanceChanger;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -159,13 +158,6 @@ public class MainSectionController {
     private RadioButton customRadioButton;
 
     @FXML
-    private ComboBox<GUIType> versionComboBox;
-
-    public enum GUIType {
-        CR_Inj, CR_Pump, UIS
-    }
-
-    @FXML
     private ListView<Manufacturer> manufacturerListView;
 
     @FXML
@@ -205,8 +197,6 @@ public class MainSectionController {
 
     private int currentMeasuringTime;
 
-    private Preferences rootPrefs;
-
     private Measurements measurements;
 
     private FlowReport flowReport;
@@ -214,8 +204,6 @@ public class MainSectionController {
     private ModbusRegisterProcessor flowModbusWriter;
 
     private Enabler enabler;
-
-    private ApplicationAppearanceChanger applicationAppearanceChanger;
 
     private ViewHolder manufacturerMenuDialog;
 
@@ -311,10 +299,6 @@ public class MainSectionController {
         return modelListView;
     }
 
-    public ComboBox<GUIType> getVersionComboBox() {
-        return versionComboBox;
-    }
-
     public ModbusRegisterProcessor getFlowModbusWriter() {
         return flowModbusWriter;
     }
@@ -365,10 +349,6 @@ public class MainSectionController {
 
     public void setEnabler(Enabler enabler) {
         this.enabler = enabler;
-    }
-
-    public void setApplicationAppearanceChanger(ApplicationAppearanceChanger applicationAppearanceChanger) {
-        this.applicationAppearanceChanger = applicationAppearanceChanger;
     }
 
     public void setManufacturerMenuDialog(ViewHolder manufacturerMenuDialog) {
@@ -447,10 +427,6 @@ public class MainSectionController {
         this.i18N = i18N;
     }
 
-    public void setRootPrefs(Preferences rootPrefs) {
-        this.rootPrefs = rootPrefs;
-    }
-
     @PostConstruct
     private void init() {
 
@@ -460,7 +436,6 @@ public class MainSectionController {
                 .bindingI18N()
                 .setupStoreButton()
                 .setupResetButton()
-                .setupVersionComboBox()
                 .initManufacturerContextMenu()
                 .initModelContextMenu()
                 .initTestContextMenu()
@@ -815,38 +790,6 @@ public class MainSectionController {
 
     }
 
-    private MainSectionController setupVersionComboBox() {
-
-        versionComboBox.getItems().addAll(GUIType.values());
-
-        versionComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue == null)
-                return;
-
-            switch (newValue) {
-                case UIS:
-                    applicationAppearanceChanger.changeToUIS();
-                    break;
-                case CR_Inj:
-                    applicationAppearanceChanger.changeToCRInj();
-                    break;
-                case CR_Pump:
-                    applicationAppearanceChanger.changeToCRPump();
-                    break;
-            }
-
-            rootPrefs.put("GUI_Type", newValue.name());
-
-        });
-
-        GUIType currentGUIType = GUIType.valueOf(rootPrefs.get("GUI_Type", GUIType.CR_Inj.name()));
-
-        versionComboBox.getSelectionModel().select(currentGUIType);
-
-        return this;
-
-    }
-
     private void setDefaultSpinnerValueFactories(boolean isDefault) {
 
         if (isDefault) {
@@ -958,18 +901,7 @@ public class MainSectionController {
             } else
                 defaultRadioButton.setDisable(false);
 
-
-            switch (versionComboBox.getSelectionModel().getSelectedItem()) {
-                case CR_Inj:
-                    setFilteredItems(newValue);
-                    break;
-                case CR_Pump:
-                    //TODO
-                    break;
-                case UIS:
-                    //TODO
-                    break;
-            }
+            setFilteredItems(newValue);
 
         }));
 

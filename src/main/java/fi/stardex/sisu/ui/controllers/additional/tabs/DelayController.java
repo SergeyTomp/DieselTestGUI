@@ -1,7 +1,7 @@
 package fi.stardex.sisu.ui.controllers.additional.tabs;
 
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
-import fi.stardex.sisu.ui.controllers.additional.AdditionalSectionController;
+import fi.stardex.sisu.ui.controllers.additional.TabSectionController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.DelayReportController.DelayReportTableLine;
 import fi.stardex.sisu.pdf.Result;
 import fi.stardex.sisu.util.DelayCalculator;
@@ -83,7 +83,7 @@ public class DelayController {
 
     private DelayCalculator delayCalculator;
 
-    private AdditionalSectionController additionalSectionController;
+    private TabSectionController tabSectionController;
 
     private DelayReportController delayReportController;
 
@@ -126,8 +126,8 @@ public class DelayController {
         return isTabDelayShowing;
     }
 
-    public void setAdditionalSectionController(AdditionalSectionController additionalSectionController) {
-        this.additionalSectionController = additionalSectionController;
+    public void setTabSectionController(TabSectionController tabSectionController) {
+        this.tabSectionController = tabSectionController;
     }
 
     public void setDelayCalculator(DelayCalculator delayCalculator) {
@@ -173,7 +173,7 @@ public class DelayController {
                                                                                             SENSITIVITY_SPINNER_INIT,
                                                                                             SENSITIVITY_SPINNER_STEP));
         
-        isTabDelayShowing.bind(additionalSectionController.getTabDelay().selectedProperty());
+        isTabDelayShowing.bind(tabSectionController.getTabDelay().selectedProperty());
     }
 
     private void setupDelayChart() {

@@ -12,7 +12,7 @@ import javafx.scene.layout.StackPane;
 
 import javax.annotation.PostConstruct;
 
-public class AdditionalSectionController {
+public class TabSectionController {
 
     @FXML private Tab tabDelay;
 

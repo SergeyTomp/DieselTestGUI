@@ -3,29 +3,34 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.layout.VBox?>
 
-<GridPane fx:id="rootLayout" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="1230.0" styleClass="root-layout" stylesheets="@../css/Styling.css" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.RootLayoutController">
-  <columnConstraints>
-    <ColumnConstraints hgrow="SOMETIMES" />
-    <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="864.0" prefWidth="864.0" />
-  </columnConstraints>
-  <rowConstraints>
-    <RowConstraints maxHeight="1.7976931348623157E308" vgrow="SOMETIMES" />
-  </rowConstraints>
-   <children>
-      <VBox fx:id="vBoxBackground" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1">
-         <children>
-            <GridPane fx:id="sectionLayout" gridLinesVisible="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS">
-              <columnConstraints>
-                <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="1000.0" />
-              </columnConstraints>
-              <rowConstraints>
-                <RowConstraints maxHeight="390.0" minHeight="-Infinity" prefHeight="360.0" vgrow="ALWAYS" />
-                <RowConstraints maxHeight="1.7976931348623157E308" minHeight="-Infinity" prefHeight="210.0" vgrow="ALWAYS" />
-              </rowConstraints>
-            </GridPane>
-         </children>
-      </VBox>
-   </children>
+<GridPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="root-layout" stylesheets="@../css/Styling.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.uis.RootLayoutController">
+    <columnConstraints>
+        <ColumnConstraints halignment="CENTER" hgrow="NEVER" maxWidth="300.0" minWidth="300.0" prefWidth="300.0" />
+        <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="910.0" />
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints maxHeight="1.7976931348623157E308" vgrow="SOMETIMES" />
+    </rowConstraints>
+    <GridPane fx:id="mainSectionGridPane" maxHeight="1.7976931348623157E308" maxWidth="300.0" minHeight="768.0" minWidth="300.0" prefHeight="768.0" prefWidth="300.0">
+        <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints percentHeight="10.0" vgrow="NEVER" />
+            <RowConstraints percentHeight="90.0" vgrow="NEVER" />
+        </rowConstraints>
+        <fx:include fx:id="gui_type" source="GUI_Type.fxml" GridPane.rowIndex="0" />
+    </GridPane>
+    <GridPane fx:id="additionalSectionGridPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="768.0" prefWidth="910.0" GridPane.columnIndex="1">
+        <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="10.0" prefWidth="910.0" />
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="120.0" vgrow="NEVER" />
+            <RowConstraints maxHeight="260.0" minHeight="-Infinity" prefHeight="240.0" vgrow="ALWAYS" />
+            <RowConstraints maxHeight="1.7976931348623157E308" minHeight="-Infinity" prefHeight="210.0" vgrow="ALWAYS" />
+        </rowConstraints>
+        <fx:include fx:id="testBenchSectionHBox" source="sections/CR/TestBenchSection.fxml" GridPane.rowIndex="0" />
+    </GridPane>
 </GridPane>
