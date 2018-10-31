@@ -12,14 +12,15 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.*;
+import javafx.scene.input.KeyCode;
+import javafx.scene.input.KeyCodeCombination;
+import javafx.scene.input.KeyCombination;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
@@ -31,10 +32,8 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.PostConstruct;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
-import java.util.function.Consumer;
 
-import static fi.stardex.sisu.util.VisualUtils.copyToClipBoard;
+import static fi.stardex.sisu.util.CopyUtils.copyToClipBoard;
 import static fi.stardex.sisu.util.enums.BoschImg.*;
 
 

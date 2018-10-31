@@ -5,7 +5,6 @@ import fi.stardex.sisu.annotations.Module;
 import fi.stardex.sisu.devices.Device;
 import fi.stardex.sisu.registers.stand.ModbusMapStand;
 import fi.stardex.sisu.ui.controllers.cr.TestBenchSectionController;
-import fi.stardex.sisu.util.VisualUtils;
 import fi.stardex.sisu.version.FirmwareVersion;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.control.Spinner;
@@ -126,7 +125,28 @@ public class TestBenchSectionUpdater implements Updater {
         Double registerLastValue = (Double) register.getLastValue();
 
         if (registerLastValue != null)
-            VisualUtils.setPressureProgress(progressBar, text, registerLastValue);
+            setProgress(3, 5, progressBar, text, registerLastValue);
+
+    }
+
+    private static void setProgress(int left, int right, ProgressBar progressBar, Text text, double pressureValue){
+        if (pressureValue <= left) {
+            progressBarStyle(progressBar, "green-progress-bar");
+        }
+        if (pressureValue > left && pressureValue < right) {
+            progressBarStyle(progressBar, "orange-progress-bar");
+        }
+        if (pressureValue >= right) {
+            progressBarStyle(progressBar, "red-progress-bar");
+        }
+        text.setText(String.format("%.1f", pressureValue));
+        progressBar.setProgress(pressureValue < 1 ? 1.0 : pressureValue);
+    }
+
+    private static void progressBarStyle(ProgressBar progressBar, String style){
+        progressBar.getStyleClass().clear();
+        progressBar.getStyleClass().add("progress-bar");
+        progressBar.getStyleClass().add(style);
 
     }
 

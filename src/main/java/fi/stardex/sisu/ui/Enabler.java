@@ -5,10 +5,8 @@ import fi.stardex.sisu.persistence.orm.Manufacturer;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.persistence.orm.interfaces.Model;
 import fi.stardex.sisu.store.FlowReport;
-import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.FlowReportController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.RLCController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.*;
+import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController.GUIType;
@@ -397,17 +395,24 @@ public class Enabler {
     }
 
     public void disableNode(boolean disable, Node ... nodes) {
-
         for (Node node : nodes)
             node.setDisable(disable);
 
     }
 
     public void showNode(boolean show, Node ... nodes) {
-
         for (Node node : nodes)
             node.setVisible(show);
 
+    }
+
+    public static void setVisible(boolean visible, Node... nodes){
+        for (Node node: nodes) {
+            if (node instanceof Toggle && !visible) {
+                ((Toggle)node).setSelected(false);
+            }
+            node.setVisible(visible);
+        }
     }
 
 }

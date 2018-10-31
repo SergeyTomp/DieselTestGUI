@@ -3,6 +3,7 @@ package fi.stardex.sisu.ui.updaters;
 import fi.stardex.sisu.annotations.Module;
 import fi.stardex.sisu.devices.Device;
 import fi.stardex.sisu.ui.controllers.additional.AdditionalSectionController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
 import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.util.enums.RegActive;
 import javafx.beans.property.ObjectProperty;
@@ -20,10 +21,9 @@ public class HighPressureSectionUpdater implements Updater {
     private ObjectProperty<Integer> pressMultiplierProperty = new SimpleObjectProperty<>();
 
 
-    public HighPressureSectionUpdater(HighPressureSectionController highPressureSectionController,
-                                      AdditionalSectionController additionalSectionController) {
-        this.highPressureSectionController = highPressureSectionController;
-        pressMultiplierProperty.bind(additionalSectionController.getSettingsController().pressMultiplierPropertyProperty());
+    public HighPressureSectionUpdater(SettingsController settingsController) {
+        this.highPressureSectionController = settingsController.getHighPressureSectionController();
+        pressMultiplierProperty.bind(settingsController.pressMultiplierPropertyProperty());
     }
 
     @Override

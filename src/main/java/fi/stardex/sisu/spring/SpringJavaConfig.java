@@ -37,6 +37,7 @@ import fi.stardex.sisu.ui.controllers.main.MainSectionController;
 import fi.stardex.sisu.ui.updaters.*;
 import fi.stardex.sisu.util.DelayCalculator;
 import fi.stardex.sisu.util.DesktopFiles;
+import fi.stardex.sisu.util.SpecialBeanPostProcessor;
 import fi.stardex.sisu.util.converters.FlowResolver;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.rescalers.BackFlowRescaler;
@@ -408,9 +409,8 @@ public class SpringJavaConfig {
 
     @Bean
     @Autowired
-    public HighPressureSectionUpdater highPressureSectionUpdater(HighPressureSectionController highPressureSectionController,
-                                                                 AdditionalSectionController additionalSectionController) {
-        return new HighPressureSectionUpdater(highPressureSectionController, additionalSectionController);
+    public HighPressureSectionUpdater highPressureSectionUpdater(SettingsController settingsController) {
+        return new HighPressureSectionUpdater(settingsController);
     }
 
     @Bean

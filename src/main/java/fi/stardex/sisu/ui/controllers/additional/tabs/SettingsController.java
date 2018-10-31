@@ -7,7 +7,6 @@ import fi.stardex.sisu.util.Pair;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.i18n.Locales;
 import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -134,6 +133,10 @@ public class SettingsController {
 
     public void setHighPressureSectionController(HighPressureSectionController highPressureSectionController) {
         this.highPressureSectionController = highPressureSectionController;
+    }
+
+    public HighPressureSectionController getHighPressureSectionController() {
+        return highPressureSectionController;
     }
 
     public ComboBox<InjectorChannel> getInjectorsConfigComboBox() {
