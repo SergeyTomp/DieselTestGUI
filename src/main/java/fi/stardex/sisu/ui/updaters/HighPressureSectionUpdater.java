@@ -2,7 +2,6 @@ package fi.stardex.sisu.ui.updaters;
 
 import fi.stardex.sisu.annotations.Module;
 import fi.stardex.sisu.devices.Device;
-import fi.stardex.sisu.ui.controllers.additional.AdditionalSectionController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
 import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.util.enums.RegActive;

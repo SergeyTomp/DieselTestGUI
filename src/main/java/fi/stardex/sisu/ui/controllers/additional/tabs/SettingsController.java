@@ -2,6 +2,7 @@ package fi.stardex.sisu.ui.controllers.additional.tabs;
 
 import fi.stardex.sisu.combobox_values.Dimension;
 import fi.stardex.sisu.combobox_values.InjectorChannel;
+import fi.stardex.sisu.state.DimasState;
 import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.util.Pair;
 import fi.stardex.sisu.util.i18n.I18N;
@@ -102,6 +103,8 @@ public class SettingsController {
 
     private HighPressureSectionController highPressureSectionController;
 
+    private DimasState dimasState;
+
 //    private InjectorChannel SINGLE;
 //    private InjectorChannel MULTY;
 //    private StringProperty single = new SimpleStringProperty(SINGLE.getCHANNEL_QTY());
@@ -133,6 +136,10 @@ public class SettingsController {
 
     public void setHighPressureSectionController(HighPressureSectionController highPressureSectionController) {
         this.highPressureSectionController = highPressureSectionController;
+    }
+
+    public void setDimasState(DimasState dimasState) {
+        this.dimasState = dimasState;
     }
 
     public HighPressureSectionController getHighPressureSectionController() {
@@ -184,6 +191,7 @@ public class SettingsController {
         bindingI18N();
         setupSettingsControls();
         setupConnectionControls();
+        dimasState.isDimasGuiProperty().bind(isDIMASCheckBox.selectedProperty());
     }
 
     private void bindingI18N() {

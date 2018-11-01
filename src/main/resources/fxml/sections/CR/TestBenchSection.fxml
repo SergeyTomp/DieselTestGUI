@@ -38,20 +38,23 @@
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
-                  <ToggleButton fx:id="leftDirectionRotationToggleButton" mnemonicParsing="false" prefHeight="26.0" prefWidth="33.0" styleClass="leftArrow-button" stylesheets="@../../../css/Styling.css" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                  <ToggleButton fx:id="leftDirectionRotationToggleButton" mnemonicParsing="false" prefHeight="26.0" prefWidth="33.0" styleClass="leftArrow-button" stylesheets="@../../../css/Styling.css" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                       <toggleGroup>
                           <ToggleGroup fx:id="rotationDirectionToggleGroup" />
                       </toggleGroup>
                      <GridPane.margin>
-                        <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                        <Insets bottom="2.0" left="2.0" right="10.0" top="2.0" />
                      </GridPane.margin>
                   </ToggleButton>
-                  <ToggleButton fx:id="rightDirectionRotationToggleButton" mnemonicParsing="false" prefHeight="26.0" prefWidth="32.0" styleClass="rightArrow-button" stylesheets="@../../../css/Styling.css" toggleGroup="$rotationDirectionToggleGroup" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                  <ToggleButton fx:id="rightDirectionRotationToggleButton" mnemonicParsing="false" prefHeight="26.0" prefWidth="32.0" styleClass="rightArrow-button" stylesheets="@../../../css/Styling.css" toggleGroup="$rotationDirectionToggleGroup" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                      <GridPane.margin>
-                        <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                        <Insets bottom="2.0" left="18.0" right="2.0" top="2.0" />
                      </GridPane.margin>
                   </ToggleButton>
                </children>
+               <GridPane.margin>
+                  <Insets />
+               </GridPane.margin>
             </GridPane>
          </children>
       </GridPane>

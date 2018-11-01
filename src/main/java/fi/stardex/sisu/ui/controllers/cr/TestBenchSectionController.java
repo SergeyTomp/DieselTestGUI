@@ -3,10 +3,13 @@ package fi.stardex.sisu.ui.controllers.cr;
 import eu.hansolo.enzo.lcd.Lcd;
 import eu.hansolo.enzo.lcd.LcdBuilder;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
+import fi.stardex.sisu.state.DimasState;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.spinners.SpinnerManager;
 import fi.stardex.sisu.util.spinners.SpinnerValueObtainer;
 import fi.stardex.sisu.util.tooltips.CustomTooltip;
+import javafx.beans.binding.BooleanBinding;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -71,6 +74,8 @@ public class TestBenchSectionController {
     @FXML private HBox rootHbox;
 
     private I18N i18N;
+
+    private DimasState dimasState;
 
     private static final String PUMP_BUTTON_ON = "pump-button-on";
 
@@ -166,6 +171,10 @@ public class TestBenchSectionController {
         this.i18N = i18N;
     }
 
+    public void setDimasState(DimasState dimasState) {
+        this.dimasState = dimasState;
+    }
+
     public enum StatePump {
 
         ON("PUMP\n ON", true, PUMP_BUTTON_ON),
@@ -216,6 +225,17 @@ public class TestBenchSectionController {
 
         rootHbox.widthProperty().addListener(new HboxWidthListener(rootHbox, lcdStackPane));
 
+        leftDirectionRotationToggleButton.visibleProperty().bind(dimasState.isDimasGuiProperty().not());
+        rightDirectionRotationToggleButton.visibleProperty().bind(dimasState.isDimasGuiProperty().not());
+        pressText1.visibleProperty().bind(dimasState.isDimasGuiProperty().not());
+        labelPressure1.visibleProperty().bind(dimasState.isDimasGuiProperty().not());
+        pressProgressBar1.visibleProperty().bind(dimasState.isDimasGuiProperty().not());
+        dimasState.isDimasGuiProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue){
+                rightDirectionRotationToggleButton.setSelected(newValue);
+            }
+
+        });
     }
 
     private void bindingI18N() {
@@ -249,9 +269,12 @@ public class TestBenchSectionController {
 
         rightDirectionRotationToggleButton.setUserData(true);
 
-        rotationDirectionToggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null)
-                standModbusWriter.add(RotationDirection, newValue.getUserData());
+        rotationDirectionToggleGroup.selectedToggleProperty().addListener(new ChangeListener<Toggle>() {
+            @Override
+            public void changed(ObservableValue<? extends Toggle> observable, Toggle oldValue, Toggle newValue) {
+                if (newValue != null)
+                    standModbusWriter.add(RotationDirection, newValue.getUserData());
+            }
         });
 
     }

@@ -1,5 +1,6 @@
 package fi.stardex.sisu.ui.controllers;
 
+import fi.stardex.sisu.state.DimasState;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.ComboBox;
@@ -41,6 +42,8 @@ public class GUI_TypeController {
 
     private Parent activeTabSection;
 
+    private DimasState dimasState;
+
     public ComboBox<GUIType> getGui_typeComboBox() {
         return gui_typeComboBox;
     }
@@ -73,6 +76,10 @@ public class GUI_TypeController {
         this.additionalSectionGridPane = additionalSectionGridPane;
     }
 
+    public void setDimasState(DimasState dimasState) {
+        this.dimasState = dimasState;
+    }
+
     @PostConstruct
     private void init() {
 
@@ -99,6 +106,7 @@ public class GUI_TypeController {
         GUIType currentGUIType = GUIType.valueOf(rootPrefs.get("GUI_Type", GUIType.CR_Inj.toString()));
 
         gui_typeComboBox.getSelectionModel().select(currentGUIType);
+        gui_typeComboBox.visibleProperty().bind(dimasState.isDimasGuiProperty().not());
 
     }
 

@@ -4,6 +4,7 @@ import eu.hansolo.medusa.Gauge;
 import fi.stardex.sisu.persistence.orm.Manufacturer;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.persistence.orm.interfaces.Model;
+import fi.stardex.sisu.state.DimasState;
 import fi.stardex.sisu.store.FlowReport;
 import fi.stardex.sisu.ui.controllers.additional.tabs.*;
 import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
@@ -111,9 +112,13 @@ public class Enabler {
 
     private FlowReport flowReport;
 
+    private DimasState dimasState;
+
     public Enabler(MainSectionController mainSectionController, InjectorSectionController injectorSectionController,
                    RLCController rlcController, VoltageController voltageController, FlowController flowController,
-                   FlowReportController flowReportController, FlowReport flowReport, ComboBox<GUIType> gui_typeComboBox) {
+                   FlowReportController flowReportController, FlowReport flowReport, ComboBox<GUIType> gui_typeComboBox, DimasState dimasState) {
+
+        this.dimasState = dimasState;
 
         mainSectionStartToggleButton = mainSectionController.getStartToggleButton();
         testListView = mainSectionController.getTestListView();

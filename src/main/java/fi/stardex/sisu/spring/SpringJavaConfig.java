@@ -25,6 +25,7 @@ import fi.stardex.sisu.registers.flow.ModbusMapFlow;
 import fi.stardex.sisu.registers.stand.ModbusMapStand;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
+import fi.stardex.sisu.state.DimasState;
 import fi.stardex.sisu.store.FlowReport;
 import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.ui.controllers.GUI_TypeController;
@@ -510,9 +511,11 @@ public class SpringJavaConfig {
     @Autowired
     public Enabler enabler(MainSectionController mainSectionController, InjectorSectionController injectorSectionController,
                            RLCController rlcController, VoltageController voltageController, FlowController flowController,
-                           FlowReportController flowReportController, FlowReport flowReport, GUI_TypeController gui_typeController) {
+                           FlowReportController flowReportController, FlowReport flowReport, GUI_TypeController gui_typeController,
+                           DimasState dimasState) {
         return new Enabler(mainSectionController, injectorSectionController, rlcController,
-                voltageController, flowController, flowReportController, flowReport, gui_typeController.getGui_typeComboBox());
+                voltageController, flowController, flowReportController, flowReport,
+                gui_typeController.getGui_typeComboBox(), dimasState);
     }
 
     @Bean
@@ -606,5 +609,10 @@ public class SpringJavaConfig {
         pdfService.setMeasurements(measurements);
         pdfService.setRlcController(rlcController);
         return pdfService;
+    }
+
+    @Bean
+    public DimasState dimasState(){
+        return new DimasState();
     }
 }

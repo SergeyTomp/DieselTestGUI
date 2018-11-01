@@ -11,6 +11,7 @@ import fi.stardex.sisu.persistence.repos.ManufacturerRepository;
 import fi.stardex.sisu.persistence.repos.cr.*;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
+import fi.stardex.sisu.state.DimasState;
 import fi.stardex.sisu.store.FlowReport;
 import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.ui.ViewHolder;
@@ -73,7 +74,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
 
     @Bean
     @Autowired
-    public GUI_TypeController gui_typeController(Preferences rootPrefs, RootLayoutController rootLayoutController) {
+    public GUI_TypeController gui_typeController(Preferences rootPrefs, RootLayoutController rootLayoutController, DimasState dimasState) {
         GUI_TypeController gui_typeController = (GUI_TypeController) rootLayoutController.getGui_typeController();
         gui_typeController.setRootPrefs(rootPrefs);
         gui_typeController.setMainSection(mainSection().getView());
@@ -82,6 +83,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         gui_typeController.setTabSection(tabSection().getView());
         gui_typeController.setMainSectionGridPane(rootLayoutController.getMainSectionGridPane());
         gui_typeController.setAdditionalSectionGridPane(rootLayoutController.getAdditionalSectionGridPane());
+        gui_typeController.setDimasState(dimasState);
         return gui_typeController;
     }
 
@@ -142,10 +144,12 @@ public class JavaFXSpringConfigure extends ViewLoader{
     @Bean
     @Autowired
     public TestBenchSectionController testBenchSectionController(RootLayoutController rootLayoutController,
-                                                                 @Lazy ModbusRegisterProcessor standModbusWriter) {
+                                                                 @Lazy ModbusRegisterProcessor standModbusWriter,
+                                                                 DimasState dimasState) {
         TestBenchSectionController testBenchController = rootLayoutController.getTestBenchSectionController();
         testBenchController.setStandModbusWriter(standModbusWriter);
         testBenchController.setI18N(i18N);
+        testBenchController.setDimasState(dimasState);
         return testBenchController;
     }
 
@@ -437,11 +441,13 @@ public class JavaFXSpringConfigure extends ViewLoader{
     @Autowired
     public SettingsController settingsController(TabSectionController tabSectionController,
                                                  Preferences rootPrefs,
-                                                 HighPressureSectionController highPressureSectionController) {
+                                                 HighPressureSectionController highPressureSectionController,
+                                                 DimasState dimasState) {
         SettingsController settingsController = tabSectionController.getSettingsController();
         settingsController.setI18N(i18N);
         settingsController.setRootPrefs(rootPrefs);
         settingsController.setHighPressureSectionController(highPressureSectionController);
+        settingsController.setDimasState(dimasState);
         return settingsController;
     }
 
