@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+
+
+<GridPane fx:id="testModeGridPane" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.pumps.TestModeController">
+   <columnConstraints>
+      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="10.0" prefWidth="100.0" />
+      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+   </columnConstraints>
+   <rowConstraints>
+      <RowConstraints minHeight="-Infinity" prefHeight="35.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="-Infinity" prefHeight="35.0" vgrow="SOMETIMES" />
+   </rowConstraints>
+   <children>
+      <RadioButton fx:id="autoTestRadioButton" mnemonicParsing="false" selected="true" styleClass="radioButton" stylesheets="@../../css/Styling.css" text="%main.auto.radiobutton" GridPane.columnIndex="1">
+         <GridPane.margin>
+            <Insets left="5.0" />
+         </GridPane.margin>
+         <toggleGroup>
+            <ToggleGroup fx:id="testsToggleGroup" />
+         </toggleGroup>
+      </RadioButton>
+      <RadioButton fx:id="testPlanTestRadioButton" mnemonicParsing="false" styleClass="radioButton" stylesheets="@../../css/Styling.css" text="%main.testPlan.radiobutton" toggleGroup="$testsToggleGroup" GridPane.columnIndex="1" GridPane.rowIndex="1">
+         <GridPane.margin>
+            <Insets left="5.0" />
+         </GridPane.margin>
+      </RadioButton>
+   </children>
+</GridPane>

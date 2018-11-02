@@ -27,6 +27,7 @@ import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.cr.TestBenchSectionController;
 import fi.stardex.sisu.ui.controllers.dialogs.*;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
+import fi.stardex.sisu.ui.controllers.pumps.PumpTabSectionController;
 import fi.stardex.sisu.ui.controllers.uis.RootLayoutController;
 import fi.stardex.sisu.util.DelayCalculator;
 import fi.stardex.sisu.util.enums.BeakerType;
@@ -39,10 +40,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
+import org.springframework.context.annotation.*;
 
 import java.util.prefs.Preferences;
 
@@ -50,6 +48,7 @@ import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions;
 import static fi.stardex.sisu.version.StandFirmwareVersion.StandVersions;
 
 @Configuration
+@Import(JavaFXSpringConfigurePumps.class)
 @ComponentScan(value = "fi.stardex.sisu")
 public class JavaFXSpringConfigure extends ViewLoader{
 
@@ -74,16 +73,30 @@ public class JavaFXSpringConfigure extends ViewLoader{
 
     @Bean
     @Autowired
-    public GUI_TypeController gui_typeController(Preferences rootPrefs, RootLayoutController rootLayoutController, DimasState dimasState) {
+    public GUI_TypeController gui_typeController(Preferences rootPrefs,
+                                                 RootLayoutController rootLayoutController,
+                                                 DimasState dimasState,
+                                                 ViewHolder mainSectionPumps,
+                                                 ViewHolder pumpsSection,
+                                                 ViewHolder pumpTabSection,
+                                                 ViewHolder settings,
+                                                 ViewHolder connection) {
         GUI_TypeController gui_typeController = (GUI_TypeController) rootLayoutController.getGui_typeController();
         gui_typeController.setRootPrefs(rootPrefs);
         gui_typeController.setMainSection(mainSection().getView());
+        gui_typeController.setMainSectionPumps(mainSectionPumps.getView());
         gui_typeController.setCRSection(crSection().getView());
         gui_typeController.setUISSection(uisSection().getView());
         gui_typeController.setTabSection(tabSection().getView());
+        gui_typeController.setTabSectionController((TabSectionController) tabSection().getController());
         gui_typeController.setMainSectionGridPane(rootLayoutController.getMainSectionGridPane());
         gui_typeController.setAdditionalSectionGridPane(rootLayoutController.getAdditionalSectionGridPane());
         gui_typeController.setDimasState(dimasState);
+        gui_typeController.setPumpSection(pumpsSection.getView());
+        gui_typeController.setTabSectionPumps(pumpTabSection.getView());
+        gui_typeController.setPumpTabSectionController((PumpTabSectionController) pumpTabSection.getController());
+        gui_typeController.setSettings(settings.getView());
+        gui_typeController.setConnection(connection.getView());
         return gui_typeController;
     }
 
@@ -438,12 +451,32 @@ public class JavaFXSpringConfigure extends ViewLoader{
     }
 
     @Bean
+    public ViewHolder connection(){
+        return loadView("/fxml/sections/Additional/tabs/Connection.fxml");
+    }
+
+    @Bean
+    public ViewHolder settings(){
+        return loadView("/fxml/sections/Additional/tabs/Settings.fxml");
+    }
+
+    @Bean
     @Autowired
-    public SettingsController settingsController(TabSectionController tabSectionController,
-                                                 Preferences rootPrefs,
+    public ConnectionController connectionController(Preferences rootPrefs,
+                                                     ViewHolder connection){
+        ConnectionController connectionController = (ConnectionController)connection.getController();
+        connectionController.setI18N(i18N);
+        connectionController.setRootPrefs(rootPrefs);
+        return connectionController;
+    }
+
+    @Bean
+    @Autowired
+    public SettingsController settingsController(Preferences rootPrefs,
                                                  HighPressureSectionController highPressureSectionController,
-                                                 DimasState dimasState) {
-        SettingsController settingsController = tabSectionController.getSettingsController();
+                                                 DimasState dimasState,
+                                                 ViewHolder settings){
+        SettingsController settingsController = (SettingsController)settings.getController();
         settingsController.setI18N(i18N);
         settingsController.setRootPrefs(rootPrefs);
         settingsController.setHighPressureSectionController(highPressureSectionController);
@@ -657,5 +690,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         return RLCController;
 
     }
+
+
 
 }

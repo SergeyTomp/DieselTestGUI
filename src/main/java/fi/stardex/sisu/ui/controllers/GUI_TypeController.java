@@ -1,7 +1,11 @@
 package fi.stardex.sisu.ui.controllers;
 
 import fi.stardex.sisu.state.DimasState;
+import fi.stardex.sisu.ui.controllers.additional.TabSectionController;
+import fi.stardex.sisu.ui.controllers.pumps.PumpTabSectionController;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.GridPane;
@@ -26,11 +30,17 @@ public class GUI_TypeController {
 
     private Parent mainSection;
 
+    private Parent mainSectionPumps;
+
     private Parent crSection;
+
+    private Parent pumpSection;
 
     private Parent uisSection;
 
     private Parent tabSection;
+
+    private Parent tabSectionPumps;
 
     private GridPane mainSectionGridPane;
 
@@ -42,7 +52,15 @@ public class GUI_TypeController {
 
     private Parent activeTabSection;
 
+    private Parent settings;
+
+    private Parent connection;
+
     private DimasState dimasState;
+
+    private TabSectionController tabSectionController;
+
+    private PumpTabSectionController pumpTabSectionController;
 
     public ComboBox<GUIType> getGui_typeComboBox() {
         return gui_typeComboBox;
@@ -78,6 +96,34 @@ public class GUI_TypeController {
 
     public void setDimasState(DimasState dimasState) {
         this.dimasState = dimasState;
+    }
+
+    public void setMainSectionPumps(Parent mainSectionPumps) {
+        this.mainSectionPumps = mainSectionPumps;
+    }
+
+    public void setPumpSection(Parent pumpSection) {
+        this.pumpSection = pumpSection;
+    }
+
+    public void setTabSectionPumps(Parent tabSectionPumps) {
+        this.tabSectionPumps = tabSectionPumps;
+    }
+
+    public void setTabSectionController(TabSectionController tabSectionController) {
+        this.tabSectionController = tabSectionController;
+    }
+
+    public void setPumpTabSectionController(PumpTabSectionController pumpTabSectionController) {
+        this.pumpTabSectionController = pumpTabSectionController;
+    }
+
+    public void setSettings(Parent settings) {
+        this.settings = settings;
+    }
+
+    public void setConnection(Parent connection) {
+        this.connection = connection;
     }
 
     @PostConstruct
@@ -116,6 +162,8 @@ public class GUI_TypeController {
 
         mainSectionGridPane.add(mainSection, 0, 1);
         additionalSectionGridPane.add(crSection, 0, 1);
+        tabSectionController.getSettingsGridPane().add(connection, 0, 0);
+        tabSectionController.getSettingsGridPane().add(settings, 1, 0);
         additionalSectionGridPane.add(tabSection, 0, 2);
 
         activeMainSection = mainSection;
@@ -130,13 +178,15 @@ public class GUI_TypeController {
 
         clearSections();
 
-        mainSectionGridPane.add(mainSection, 0, 1);
-        additionalSectionGridPane.add(crSection, 0, 1);
-        additionalSectionGridPane.add(tabSection, 0, 2);
+        mainSectionGridPane.add(mainSectionPumps, 0, 1);
+        additionalSectionGridPane.add(pumpSection, 0, 1);
+        pumpTabSectionController.getSettingsGridPane().add(connection, 0, 0);
+        pumpTabSectionController.getSettingsGridPane().add(settings, 1, 0);
+        additionalSectionGridPane.add(tabSectionPumps, 0, 2);
 
-        activeMainSection = mainSection;
-        activeChangeableSection = crSection;
-        activeTabSection = tabSection;
+        activeMainSection = mainSectionPumps;
+        activeChangeableSection = pumpSection;
+        activeTabSection = tabSectionPumps;
 
         logger.info("Changed to CrPump");
 

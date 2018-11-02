@@ -22,10 +22,12 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
@@ -78,6 +80,8 @@ public class InjectorSectionController {
     @FXML private ToggleButton led3ToggleButton;
 
     @FXML private ToggleButton led4ToggleButton;
+
+    @FXML private HBox rootHBox;
 
     private static final double LED_GAP = 10;
 
@@ -218,10 +222,10 @@ public class InjectorSectionController {
 
         new PowerButtonChangeListener();
 
-        led1StackPane.widthProperty().addListener(new StackPaneWidthListener(led1AnchorPane, led1StackPane.heightProperty()));
-        led2StackPane.widthProperty().addListener(new StackPaneWidthListener(led2AnchorPane, led2StackPane.heightProperty()));
-        led3StackPane.widthProperty().addListener(new StackPaneWidthListener(led3AnchorPane, led3StackPane.heightProperty()));
-        led4StackPane.widthProperty().addListener(new StackPaneWidthListener(led4AnchorPane, led4StackPane.heightProperty()));
+        led1StackPane.widthProperty().addListener(new StackPaneWidthListener(led1AnchorPane));
+        led2StackPane.widthProperty().addListener(new StackPaneWidthListener(led2AnchorPane));
+        led3StackPane.widthProperty().addListener(new StackPaneWidthListener(led3AnchorPane));
+        led4StackPane.widthProperty().addListener(new StackPaneWidthListener(led4AnchorPane));
 
         timeLinesList = new ArrayList<>();
         keyFramesList = new ArrayList<>();
@@ -461,29 +465,28 @@ public class InjectorSectionController {
     private class StackPaneWidthListener implements ChangeListener<Number>{
 
         final AnchorPane ledAnchorPane;
-        final ReadOnlyDoubleProperty heightProperty;
 
-        public StackPaneWidthListener(AnchorPane ledAnchorPane, ReadOnlyDoubleProperty heightProperty){
+        public StackPaneWidthListener(AnchorPane ledAnchorPane){
             this.ledAnchorPane = ledAnchorPane;
-            this.heightProperty = heightProperty;
         }
 
         @Override
         public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-            double height = heightProperty.getValue();
+            double height = rootHBox.getHeight();
             if (newValue.doubleValue() > 75) {
                 if(height > newValue.doubleValue()){
-                    ledAnchorPane.setPrefWidth(newValue.doubleValue() * 0.7 - LED_GAP);
-                    ledAnchorPane.setPrefHeight(newValue.doubleValue() * 0.7 - LED_GAP);
+                    ledAnchorPane.setPrefWidth(newValue.doubleValue() * 0.75 - LED_GAP);
+                    ledAnchorPane.setPrefHeight(newValue.doubleValue() * 0.75 - LED_GAP);
                 }
                 else {
-                    ledAnchorPane.setPrefWidth(height * 0.8 - LED_GAP);
-                    ledAnchorPane.setPrefHeight(height * 0.8 - LED_GAP);
+                    ledAnchorPane.setPrefWidth(height * 0.75 - LED_GAP);
+                    ledAnchorPane.setPrefHeight(height * 0.75 - LED_GAP);
                 }
 
-            } else {
-                ledAnchorPane.setPrefWidth(80);
-                ledAnchorPane.setPrefHeight(80);
+            }
+            else {
+                ledAnchorPane.setPrefWidth(60);
+                ledAnchorPane.setPrefHeight(60);
             }
         }
     }

@@ -14,13 +14,13 @@ import javax.annotation.PostConstruct;
 
 public class TabSectionController {
 
+    @FXML private GridPane settingsGridPane;
+
     @FXML private Tab tabDelay;
 
     @FXML private Tab tabVoltage;
 
     @FXML private Tab tabRLC;
-
-    @FXML private Tab tabLink;
 
     @FXML private Tab tabSettings;
 
@@ -34,8 +34,6 @@ public class TabSectionController {
 
     @FXML private TabPane tabPane;
 
-    @FXML private StackPane connection;
-
     @FXML private StackPane voltage;
 
     @FXML private GridPane delay;
@@ -44,8 +42,6 @@ public class TabSectionController {
 
     @FXML private GridPane coding;
 
-    @FXML private GridPane settings;
-
     @FXML private GridPane rlc;
 
     @FXML private GridPane info;
@@ -53,8 +49,6 @@ public class TabSectionController {
     @FXML private VoltageController voltageController;
 
     @FXML private DelayController delayController;
-
-    @FXML private SettingsController settingsController;
 
     @FXML private FlowController flowController;
 
@@ -90,10 +84,6 @@ public class TabSectionController {
         return delayController;
     }
 
-    public SettingsController getSettingsController() {
-        return settingsController;
-    }
-
     public CodingController getCodingController() {
         return codingController;
     }
@@ -118,6 +108,14 @@ public class TabSectionController {
         return tabInfo;
     }
 
+    public Tab getTabSettings() {
+        return tabSettings;
+    }
+
+    public GridPane getSettingsGridPane() {
+        return settingsGridPane;
+    }
+
     @PostConstruct
     private void init(){
         bindingI18N();
@@ -131,5 +129,6 @@ public class TabSectionController {
         tabFlow.textProperty().bind(i18N.createStringBinding("additional.flow"));
         tabReport.textProperty().bind(i18N.createStringBinding("additional.report"));
         tabCoding.textProperty().bind(i18N.createStringBinding("additional.coding"));
+        tabInfo.textProperty().bind(i18N.createStringBinding("additional.info"));
     }
 }

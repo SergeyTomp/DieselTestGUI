@@ -1,17 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
 
-<GridPane maxHeight="1.7976931348623157E308" maxWidth="300.0" minHeight="768.0" minWidth="300.0" prefHeight="768.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.main.MainSectionController">
+<GridPane gridLinesVisible="true" maxHeight="1.7976931348623157E308" maxWidth="300.0" minHeight="600.0" minWidth="300.0" prefHeight="600.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.pumps.MainSectionPumpsController">
     <columnConstraints>
         <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
     </columnConstraints>
     <rowConstraints>
         <RowConstraints minHeight="10.0" percentHeight="40.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" percentHeight="40.0" vgrow="NEVER" />
+        <RowConstraints maxHeight="1.7976931348623157E308" minHeight="100.0" percentHeight="40.0" vgrow="NEVER" />
         <RowConstraints maxHeight="99.0" minHeight="10.0" percentHeight="15.0" prefHeight="94.0" vgrow="NEVER" />
       <RowConstraints minHeight="10.0" percentHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
     </rowConstraints>
+   <children>
+
+      <GridPane fx:id="pumpSelectGridPane">
+          <fx:include fx:id="pumpsOEMListListView" source="OEMList.fxml" GridPane.columnIndex="0" />
+          <fx:include fx:id="pumpsModelsListVBox" source="ModelsList.fxml" GridPane.columnIndex="1" />
+         <HBox prefHeight="100.0" prefWidth="200.0" GridPane.columnIndex="1"/>
+        <columnConstraints>
+          <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="-Infinity" prefWidth="100.0" />
+          <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="-Infinity" prefWidth="200.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+      </GridPane>
+
+      <VBox fx:id="pumpTestsVBox" prefHeight="200.0" prefWidth="300.0" spacing="5.0" GridPane.rowIndex="1">
+          <fx:include fx:id="pumpFieldTextField" source="PumpField.fxml" />
+          <fx:include fx:id="testModeGridPane" source="TestMode.fxml" />
+          <fx:include fx:id="testListHBox" source="TestList.fxml" />
+          <fx:include fx:id="storeResetPrintHBox" source="StoreResetPrint.fxml" />
+         <padding>
+            <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+         </padding>
+      </VBox>
+       <fx:include fx:id="testSpeedGridPane" source="TestSpeed.fxml" GridPane.rowIndex="2"/>
+       <fx:include fx:id="startButtonHBox" source="StartButton.fxml" GridPane.rowIndex="3"/>
+   </children>
 </GridPane>

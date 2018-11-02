@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<GridPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="210.0" prefWidth="495.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.additional.tabs.ConnectionController">
+      <columnConstraints>
+          <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="99.0" minWidth="10.0" prefWidth="94.0" />
+          <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="239.0" minWidth="10.0" prefWidth="234.0" />
+          <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="10.0" prefWidth="100.0" />
+      </columnConstraints>
+      <rowConstraints>
+          <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" percentHeight="10.0" prefHeight="10.0" vgrow="SOMETIMES" />
+          <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" percentHeight="20.0" prefHeight="10.0" vgrow="SOMETIMES" />
+          <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" percentHeight="20.0" prefHeight="10.0" vgrow="SOMETIMES" />
+          <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" percentHeight="20.0" prefHeight="10.0" vgrow="SOMETIMES" />
+          <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" percentHeight="20.0" prefHeight="10.0" vgrow="SOMETIMES" />
+      </rowConstraints>
+      <children>
+          <Label fx:id="ipAddressLabel" text="%link.ipAddress.label" GridPane.columnIndex="1" />
+          <Label fx:id="portLabel" text="%link.port.label" GridPane.columnIndex="2" />
+          <Label fx:id="ultimaLabel" text="%link.ultima.label" GridPane.rowIndex="1" />
+          <Label fx:id="flowMeterLabel" text="%link.flowmeter.label" GridPane.rowIndex="2" />
+          <Label fx:id="standLabel" text="%link.stand.label" GridPane.rowIndex="3" />
+          <TextField fx:id="ultimaIPField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="38.0" prefWidth="210.0" promptText="192.168.*.*" styleClass="modelTextField" stylesheets="@../../../../css/Styling.css" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+          <TextField fx:id="flowMeterIPField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="38.0" prefWidth="210.0" promptText="192.168.*.*" styleClass="modelTextField" stylesheets="@../../../../css/Styling.css" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+          <TextField fx:id="standIPField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="38.0" prefWidth="210.0" promptText="192.168.*.*" styleClass="modelTextField" stylesheets="@../../../../css/Styling.css" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+          <TextField fx:id="ultimaPortField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="38.0" prefWidth="80.0" promptText="502" styleClass="modelTextField" stylesheets="@../../../../css/Styling.css" text="502" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+          <TextField fx:id="flowMeterPortField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="38.0" prefWidth="80.0" promptText="502" styleClass="modelTextField" stylesheets="@../../../../css/Styling.css" text="502" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+          <TextField fx:id="standPortField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="38.0" prefWidth="80.0" promptText="502" styleClass="modelTextField" stylesheets="@../../../../css/Styling.css" text="502" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+          <Button fx:id="acceptButton" mnemonicParsing="false" stylesheets="@../../../../css/Styling.css" text="%link.accept.button" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+      </children>
+  </GridPane>

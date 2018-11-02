@@ -28,9 +28,9 @@ import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.state.DimasState;
 import fi.stardex.sisu.store.FlowReport;
 import fi.stardex.sisu.ui.Enabler;
+import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.GUI_TypeController;
 import fi.stardex.sisu.ui.controllers.ISADetectionController;
-import fi.stardex.sisu.ui.controllers.additional.TabSectionController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.*;
 import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
@@ -39,7 +39,6 @@ import fi.stardex.sisu.ui.controllers.main.MainSectionController;
 import fi.stardex.sisu.ui.updaters.*;
 import fi.stardex.sisu.util.DelayCalculator;
 import fi.stardex.sisu.util.DesktopFiles;
-import fi.stardex.sisu.util.SpecialBeanPostProcessor;
 import fi.stardex.sisu.util.converters.FlowResolver;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.rescalers.BackFlowRescaler;
@@ -95,23 +94,23 @@ public class SpringJavaConfig {
 
     @Bean
     @Autowired
-    public ModbusConnect ultimaModbusConnect(SettingsController settingsController, ConnectProcessor connectProcessor, Devices devices, StatusBarWrapper statusBar,
+    public ModbusConnect ultimaModbusConnect(ConnectionController connectionController, ConnectProcessor connectProcessor, Devices devices, StatusBarWrapper statusBar,
                                              InetAddressWrapper inetAddressWrapper) {
-        return new ModbusConnect(settingsController.getUltimaConnect(), connectProcessor, devices, statusBar, Device.ULTIMA, inetAddressWrapper);
+        return new ModbusConnect(connectionController.getUltimaConnect(), connectProcessor, devices, statusBar, Device.ULTIMA, inetAddressWrapper);
     }
 
     @Bean
     @Autowired
-    public ModbusConnect flowModbusConnect(SettingsController settingsController, ConnectProcessor connectProcessor, Devices devices, StatusBarWrapper statusBar,
+    public ModbusConnect flowModbusConnect(ConnectionController connectionController, ConnectProcessor connectProcessor, Devices devices, StatusBarWrapper statusBar,
                                            InetAddressWrapper inetAddressWrapper) {
-        return new ModbusConnect(settingsController.getFlowMeterConnect(), connectProcessor, devices, statusBar, Device.MODBUS_FLOW, inetAddressWrapper);
+        return new ModbusConnect(connectionController.getFlowMeterConnect(), connectProcessor, devices, statusBar, Device.MODBUS_FLOW, inetAddressWrapper);
     }
 
     @Bean
     @Autowired
-    public ModbusConnect standModbusConnect(SettingsController settingsController, ConnectProcessor connectProcessor, Devices devices, StatusBarWrapper statusBar,
+    public ModbusConnect standModbusConnect(ConnectionController connectionController, ConnectProcessor connectProcessor, Devices devices, StatusBarWrapper statusBar,
                                             InetAddressWrapper inetAddressWrapper) {
-        return new ModbusConnect(settingsController.getStandConnect(), connectProcessor, devices, statusBar, Device.MODBUS_STAND, inetAddressWrapper);
+        return new ModbusConnect(connectionController.getStandConnect(), connectProcessor, devices, statusBar, Device.MODBUS_STAND, inetAddressWrapper);
     }
 
     @Bean
@@ -166,7 +165,7 @@ public class SpringJavaConfig {
 
     @Bean
     @Autowired
-    public RegisterProvider flowRegisterProvider(ModbusConnect flowModbusConnect, SettingsController settingsController,
+    public RegisterProvider flowRegisterProvider(ModbusConnect flowModbusConnect, ConnectionController connectionController,
                                                  FirmwareVersion<FlowVersions> flowFirmwareVersion) {
         return new RegisterProvider(flowModbusConnect) {
             @Override
@@ -178,8 +177,8 @@ public class SpringJavaConfig {
                     flowFirmwareVersion.setVersions(FlowVersions.NO_VERSION);
 
                 connectedProperty.addListener((observable, oldValue, newValue) -> {
-                    TextField standIPField = settingsController.getStandIPField();
-                    TextField standPortField = settingsController.getStandPortField();
+                    TextField standIPField = connectionController.getStandIPField();
+                    TextField standPortField = connectionController.getStandPortField();
                     if (newValue) {
                         int firmwareVersionNumber = (int) read(ModbusMapFlow.FirmwareVersion);
                         switch (firmwareVersionNumber) {
@@ -569,8 +568,7 @@ public class SpringJavaConfig {
     public FlowReport flowReport(FlowReportController flowReportController,
                                  FlowController flowController,
                                  SettingsController settingsController) {
-        FlowReport flowReport = new FlowReport(flowReportController, flowController, settingsController);
-        return flowReport;
+        return new FlowReport(flowReportController, flowController, settingsController);
     }
 
     private List<Updater> addUpdaters(List<Updater> updatersList, Device targetDevice) {
@@ -593,21 +591,21 @@ public class SpringJavaConfig {
 
     @Bean
     @Autowired
-    public PDFService pdfService(TabSectionController tabSectionController,
-                                 I18N i18N,
+    public PDFService pdfService(I18N i18N,
                                  DesktopFiles desktopFiles,
                                  DelayController delayController,
                                  RLCController rlcController,
                                  FlowReport flowReport,
-                                 Measurements measurements){
+                                 Measurements measurements,
+                                 ViewHolder settings){
         PDFService pdfService = new PDFService();
-        pdfService.setTabSectionController(tabSectionController);
         pdfService.setI18N(i18N);
         pdfService.setDesktopFiles(desktopFiles);
         pdfService.setDelayController(delayController);
         pdfService.setFlowReport(flowReport);
         pdfService.setMeasurements(measurements);
         pdfService.setRlcController(rlcController);
+        pdfService.setSettingsController((SettingsController)settings.getController());
         return pdfService;
     }
 
