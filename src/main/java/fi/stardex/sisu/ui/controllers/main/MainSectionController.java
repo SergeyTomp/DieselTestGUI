@@ -59,7 +59,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.prefs.Preferences;
 import java.util.stream.Collectors;
 
 import static fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest.getChangedInjectorTest;

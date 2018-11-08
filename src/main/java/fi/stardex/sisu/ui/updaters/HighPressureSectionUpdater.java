@@ -20,8 +20,9 @@ public class HighPressureSectionUpdater implements Updater {
     private ObjectProperty<Integer> pressMultiplierProperty = new SimpleObjectProperty<>();
 
 
-    public HighPressureSectionUpdater(SettingsController settingsController) {
-        this.highPressureSectionController = settingsController.getHighPressureSectionController();
+    public HighPressureSectionUpdater(SettingsController settingsController, HighPressureSectionController highPressureSectionController) {
+        this.highPressureSectionController = highPressureSectionController;
+//        this.highPressureSectionController = settingsController.getHighPressureSectionController();
         pressMultiplierProperty.bind(settingsController.pressMultiplierPropertyProperty());
     }
 

@@ -11,7 +11,7 @@ import fi.stardex.sisu.persistence.repos.ManufacturerRepository;
 import fi.stardex.sisu.persistence.repos.cr.*;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
-import fi.stardex.sisu.state.DimasState;
+import fi.stardex.sisu.state.*;
 import fi.stardex.sisu.store.FlowReport;
 import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.ui.ViewHolder;
@@ -28,6 +28,7 @@ import fi.stardex.sisu.ui.controllers.cr.TestBenchSectionController;
 import fi.stardex.sisu.ui.controllers.dialogs.*;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
 import fi.stardex.sisu.ui.controllers.pumps.PumpTabSectionController;
+import fi.stardex.sisu.ui.controllers.pumps.settings.*;
 import fi.stardex.sisu.ui.controllers.uis.RootLayoutController;
 import fi.stardex.sisu.util.DelayCalculator;
 import fi.stardex.sisu.util.enums.BeakerType;
@@ -691,6 +692,133 @@ public class JavaFXSpringConfigure extends ViewLoader{
 
     }
 
+    @Bean
+    public ViewHolder dimasGuiEdition(){
+            return loadView("/fxml/sections/Additional/tabs/settings/DimasGuiEdition.fxml");
+    }
 
+    @Bean
+    public ViewHolder fastCoding(){
+        return loadView("/fxml/sections/Additional/tabs/settings/FastCoding.fxml");
+    }
 
+    @Bean
+    public ViewHolder flowView(){
+        return loadView("/fxml/sections/Additional/tabs/settings/FlowView.fxml");
+    }
+
+    @Bean
+    public ViewHolder injConfiguration(){
+        return loadView("/fxml/sections/Additional/tabs/settings/InjConfiguration.fxml");
+    }
+
+    @Bean
+    public ViewHolder instantFlow(){
+        return loadView("/fxml/sections/Additional/tabs/settings/InstantFlow.fxml");
+    }
+
+    @Bean
+    public ViewHolder language(){
+        return loadView("/fxml/sections/Additional/tabs/settings/Language.fxml");
+    }
+
+    @Bean
+    public ViewHolder pressureSensor(){
+        return loadView("/fxml/sections/Additional/tabs/settings/PressureSensor.fxml");
+    }
+
+    @Bean
+    public ViewHolder regulatorsQTY(){
+        return loadView("/fxml/sections/Additional/tabs/settings/RegulatorsQTY.fxml");
+    }
+
+    @Bean
+    public ViewHolder settingsNew(){
+        return loadView("/fxml/sections/Additional/tabs/SettingsNew.fxml");
+    }
+
+    @Bean
+    @Autowired
+    public DimasGuiEditionController dimasGuiEditionController(DimasGUIEditionState dimasGUIEditionState,
+                                                               Preferences preferences){
+        DimasGuiEditionController dimasGuiEditionController = (DimasGuiEditionController)dimasGuiEdition().getController();
+        dimasGuiEditionController.setDimasGUIEditionState(dimasGUIEditionState);
+        dimasGuiEditionController.setI18N(i18N);
+        dimasGuiEditionController.setRootPrefs(preferences);
+        return dimasGuiEditionController;
+    }
+
+    @Bean
+    @Autowired
+    public FastCodingController fastCodingController(FastCodingState fastCodingState,
+                                                     Preferences preferences){
+        FastCodingController fastCodingController = (FastCodingController) fastCoding().getController();
+        fastCodingController.setFastCodingState(fastCodingState);
+        fastCodingController.setI18N(i18N);
+        fastCodingController.setRootPrefs(preferences);
+        return fastCodingController;
+    }
+
+    @Bean
+    @Autowired
+    public InstantFlowController instantFlowController(InstantFlowState instantFlowState,
+                                                       Preferences preferences){
+        InstantFlowController instantFlowController = (InstantFlowController) instantFlow().getController();
+        instantFlowController.setInstantFlowState(instantFlowState);
+        instantFlowController.setI18N(i18N);
+        instantFlowController.setRootPrefs(preferences);
+        return instantFlowController;
+    }
+
+    @Bean
+    @Autowired
+    public FlowViewController flowViewController(FlowViewState flowViewState,
+                                                 Preferences preferences){
+        FlowViewController flowViewController = (FlowViewController)flowView().getController();
+        flowViewController.setFlowViewState(flowViewState);
+        flowViewController.setRootPrefs(preferences);
+        return flowViewController;
+    }
+
+    @Bean
+    @Autowired
+    public InjConfigurationController injConfigurationController(InjConfigurationState injConfigurationState,
+                                                                 Preferences preferences){
+        InjConfigurationController injConfigurationController = (InjConfigurationController)injConfiguration().getController();
+        injConfigurationController.setInjConfigurationState(injConfigurationState);
+        injConfigurationController.setI18N(i18N);
+        injConfigurationController.setRootPrefs(preferences);
+        return injConfigurationController;
+    }
+
+    @Bean
+    @Autowired
+    public LanguageController languageController(LanguageState languageState,
+                                                 Preferences preferences){
+        LanguageController languageController = (LanguageController)language().getController();
+        languageController.setLanguageState(languageState);
+        languageController.setRootPrefs(preferences);
+        languageController.setI18N(i18N);
+        return languageController;
+    }
+
+    @Bean
+    @Autowired
+    public PressureSensorController pressureSensorController(PressureSensorState pressureSensorState,
+                                                             Preferences preferences){
+        PressureSensorController pressureSensorController = (PressureSensorController)pressureSensor().getController();
+        pressureSensorController.setPressureSensorState(pressureSensorState);
+        pressureSensorController.setRootPrefs(preferences);
+        return pressureSensorController;
+    }
+
+    @Bean
+    @Autowired
+    public RegulatorsQTYController regulatorsQTYController(RegulatorsQTYState regulatorsQTYState,
+                                                           Preferences preferences){
+        RegulatorsQTYController regulatorsQTYController = (RegulatorsQTYController)regulatorsQTY().getController();
+        regulatorsQTYController.setPressureSensorState(regulatorsQTYState);
+        regulatorsQTYController.setRootPrefs(preferences);
+        return regulatorsQTYController;
+    }
 }

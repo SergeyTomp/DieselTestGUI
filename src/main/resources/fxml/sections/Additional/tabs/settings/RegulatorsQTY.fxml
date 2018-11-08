@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.layout.HBox?>
+
+
+<HBox xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.pumps.settings.RegulatorsQTYController">
+   <children>
+      <ComboBox fx:id="regulatorsConfigComboBox" prefWidth="180.0" stylesheets="@../../../../../css/Styling.css">
+         <HBox.margin>
+            <Insets left="15.0" />
+         </HBox.margin>
+      </ComboBox>
+   </children>
+</HBox>

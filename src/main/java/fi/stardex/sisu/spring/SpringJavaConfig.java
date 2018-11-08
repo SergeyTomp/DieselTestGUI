@@ -25,7 +25,7 @@ import fi.stardex.sisu.registers.flow.ModbusMapFlow;
 import fi.stardex.sisu.registers.stand.ModbusMapStand;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
-import fi.stardex.sisu.state.DimasState;
+import fi.stardex.sisu.state.*;
 import fi.stardex.sisu.store.FlowReport;
 import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.ui.ViewHolder;
@@ -410,8 +410,8 @@ public class SpringJavaConfig {
 
     @Bean
     @Autowired
-    public HighPressureSectionUpdater highPressureSectionUpdater(SettingsController settingsController) {
-        return new HighPressureSectionUpdater(settingsController);
+    public HighPressureSectionUpdater highPressureSectionUpdater(SettingsController settingsController, HighPressureSectionController highPressureSectionController) {
+        return new HighPressureSectionUpdater(settingsController, highPressureSectionController);
     }
 
     @Bean
@@ -612,5 +612,45 @@ public class SpringJavaConfig {
     @Bean
     public DimasState dimasState(){
         return new DimasState();
+    }
+
+    @Bean
+    public FlowViewState flowViewState(){
+        return new FlowViewState();
+    }
+
+    @Bean
+    public DimasGUIEditionState dimasGUIEditionState(){
+        return new DimasGUIEditionState();
+    }
+
+    @Bean
+    public FastCodingState fastCodingState(){
+        return new FastCodingState();
+    }
+
+    @Bean
+    public InjConfigurationState injConfigurationState(){
+        return new InjConfigurationState();
+    }
+
+    @Bean
+    public InstantFlowState instantFlowState(){
+        return new InstantFlowState();
+    }
+
+    @Bean
+    public LanguageState languageState(){
+        return new LanguageState();
+    }
+
+    @Bean
+    public PressureSensorState pressureSensorState(){
+        return new PressureSensorState();
+    }
+
+    @Bean
+    public RegulatorsQTYState regulatorsQTYState(){
+        return new RegulatorsQTYState();
     }
 }
