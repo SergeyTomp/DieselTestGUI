@@ -5,7 +5,6 @@ import be.quodlibet.boxable.*;
 import fi.stardex.sisu.company.CompanyDetails;
 import fi.stardex.sisu.measurement.Measurements;
 import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
-import fi.stardex.sisu.persistence.orm.cr.pump.Pump;
 import fi.stardex.sisu.persistence.orm.interfaces.Model;
 import fi.stardex.sisu.states.LanguageState;
 import fi.stardex.sisu.store.FlowReport;
@@ -391,10 +390,10 @@ public class PDFService {
             infoLine = injectorInfoTitle.getValue();
         }
 
-        if (model instanceof Pump) {
-            manufacturer = model.getManufacturer().toString();
-            infoLine = pumpInfoTitle.getValue();
-        }
+//        if (model instanceof Pump) {
+//            manufacturer = model.getManufacturer().toString();
+//            infoLine = pumpInfoTitle.getValue();
+//        }
         /*
          * Draw Customer data
          * **/

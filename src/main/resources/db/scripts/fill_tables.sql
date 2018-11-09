@@ -60,4 +60,10 @@ INSERT INTO REFERENCE (INJECTOR, DESCRIPTION, ENGINE, ORDER_NUMBER, REMARKS)
   SELECT * FROM CSVREAD('classpath:/db/csv/siemens/siemensCrossReference.csv');
 
 INSERT INTO DENSOINJECTORS(ID, CODE1, DESCRIPTION, CODE2)
-  SELECT * FROM CSVREAD('classpath:/db/csv/denso/densoInjectors.csv')
+  SELECT * FROM CSVREAD('classpath:/db/csv/denso/densoInjectors.csv');
+
+INSERT INTO MANUFACTURER_PUMP (MANUFACTURER_NAME, CUSTOM)
+  SELECT * FROM CSVREAD('classpath:/db/csv/pumps/manufacturerPump.csv');
+
+INSERT INTO PUMP (PUMP_CODE, MANUFACTURER_NAME, CUSTOM)
+ SELECT * FROM CSVREAD('classpath:/db/csv/pumps/pump.csv');

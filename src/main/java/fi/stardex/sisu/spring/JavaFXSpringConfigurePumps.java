@@ -1,8 +1,11 @@
 package fi.stardex.sisu.spring;
 
+import fi.stardex.sisu.model.ManufacturerPumpModel;
+import fi.stardex.sisu.model.PumpModel;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.pumps.*;
 import fi.stardex.sisu.util.i18n.I18N;
+import javafx.embed.swing.JFXPanel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -14,6 +17,8 @@ public class JavaFXSpringConfigurePumps extends ViewLoader{
 
     public JavaFXSpringConfigurePumps(I18N i18N) {
         super(i18N);
+        // Для работы JUnit, иначе бросается исключение toolkit not initialized
+        new JFXPanel();
     }
 
     @Bean
@@ -38,14 +43,22 @@ public class JavaFXSpringConfigurePumps extends ViewLoader{
 
     @Bean
     @Autowired
-    public PumpsModelsListController pumpsModelsListController(MainSectionPumpsController mainSectionPumpsController){
-        return mainSectionPumpsController.getPumpsModelsListController();
+    public PumpsModelsListController pumpsModelsListController(MainSectionPumpsController mainSectionPumpsController,
+                                                               PumpModel pumpModel){
+        PumpsModelsListController pumpsModelsListController = mainSectionPumpsController.getPumpsModelsListController();
+        pumpsModelsListController.setPumpModel(pumpModel);
+        return pumpsModelsListController;
     }
 
     @Bean
     @Autowired
-    public PumpsOEMListController pumpsOEMListController(MainSectionPumpsController mainSectionPumpsController){
-        return mainSectionPumpsController.getPumpsOEMListController();
+    public PumpsOEMListController pumpsOEMListController(MainSectionPumpsController mainSectionPumpsController,
+                                                         ManufacturerPumpModel manufacturerPumpModel,
+                                                         PumpModel pumpModel){
+        PumpsOEMListController pumpsOEMListController = mainSectionPumpsController.getPumpsOEMListController();
+        pumpsOEMListController.setManufacturerPumpModel(manufacturerPumpModel);
+        pumpsOEMListController.setPumpModel(pumpModel);
+        return pumpsOEMListController;
     }
 
     @Bean

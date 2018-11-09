@@ -513,10 +513,8 @@ public class MainSectionController {
     private void fetchTestsFromRepository() {
 
         ObjectProperty<List<InjectorTest>> property = new SimpleObjectProperty<>();
-//        List<InjectorTest> allByInjector = injectorTestRepository.findAllByInjector(getInjector());
-//
-//        Platform.runLater(()->setInjectorTests(allByInjector));
-        Task<List<InjectorTest>> task = new Task<List<InjectorTest>>() {
+
+        Task<List<InjectorTest>> task = new Task<>() {
             @Override
             protected List<InjectorTest> call() {
                 return injectorTestRepository.findAllByInjector(getInjector());
@@ -532,8 +530,7 @@ public class MainSectionController {
                 setInjectorTests(newValue);
 
                 if (!checkInjectorForCoding(getInjector().getCodetype()) && codingTestRadioButton.isSelected())
-//                    Platform.runLater(() -> autoTestRadioButton.setSelected(true));
-                autoTestRadioButton.setSelected(true);
+                    Platform.runLater(() -> autoTestRadioButton.setSelected(true));
                 else
                     setTests();
 
@@ -542,12 +539,15 @@ public class MainSectionController {
         });
 
         Thread t = new Thread(task);
+
         t.start();
+
         try {
             t.join();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+
     }
 
     public void pointToFirstTest() {

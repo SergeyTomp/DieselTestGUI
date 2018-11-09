@@ -3,6 +3,7 @@ package fi.stardex.sisu.spring;
 import fi.stardex.sisu.charts.TimerTasksManager;
 import fi.stardex.sisu.devices.Devices;
 import fi.stardex.sisu.measurement.Measurements;
+import fi.stardex.sisu.model.ManufacturerPumpModel;
 import fi.stardex.sisu.pdf.PDFService;
 import fi.stardex.sisu.persistence.orm.Manufacturer;
 import fi.stardex.sisu.persistence.repos.ISADetectionRepository;
@@ -37,6 +38,7 @@ import fi.stardex.sisu.util.rescalers.Rescaler;
 import fi.stardex.sisu.util.wrappers.StatusBarWrapper;
 import fi.stardex.sisu.version.FirmwareVersion;
 import fi.stardex.sisu.version.StardexVersion;
+import javafx.embed.swing.JFXPanel;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
@@ -55,6 +57,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
 
     public JavaFXSpringConfigure(I18N i18N) {
         super(i18N);
+        // Для работы JUnit, иначе бросается исключение toolkit not initialized
+        new JFXPanel();
     }
 
     @Bean
@@ -72,8 +76,10 @@ public class JavaFXSpringConfigure extends ViewLoader{
         return loadView("/fxml/GUI_Type.fxml");
     }
 
+    // Depends on нужен для инициализации листенера в бине pumpsOEMListController
     @Bean
     @Autowired
+    @DependsOn("pumpsOEMListController")
     public GUI_TypeController gui_typeController(Preferences rootPrefs,
                                                  RootLayoutController rootLayoutController,
                                                  DimasGUIEditionState dimasGUIEditionState,
@@ -81,7 +87,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                  ViewHolder pumpsSection,
                                                  ViewHolder pumpTabSection,
                                                  ViewHolder settings,
-                                                 ViewHolder connection) {
+                                                 ViewHolder connection,
+                                                 ManufacturerPumpModel manufacturerPumpModel) {
         GUI_TypeController gui_typeController = rootLayoutController.getGui_typeController();
         gui_typeController.setRootPrefs(rootPrefs);
         gui_typeController.setMainSection(mainSection().getView());
@@ -98,6 +105,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         gui_typeController.setSettings(settings.getView());
         gui_typeController.setConnection(connection.getView());
         gui_typeController.setDimasGUIEditionState(dimasGUIEditionState);
+        gui_typeController.setManufacturerPumpModel(manufacturerPumpModel);
         return gui_typeController;
     }
 

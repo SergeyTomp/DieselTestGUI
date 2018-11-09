@@ -1,11 +1,10 @@
 package fi.stardex.sisu.ui.controllers;
 
 import fi.stardex.sisu.states.DimasGUIEditionState;
+import fi.stardex.sisu.model.ManufacturerPumpModel;
 import fi.stardex.sisu.ui.controllers.additional.TabSectionController;
 import fi.stardex.sisu.ui.controllers.pumps.PumpTabSectionController;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.ComboBox;
 import javafx.scene.layout.GridPane;
@@ -62,8 +61,14 @@ public class GUI_TypeController {
 
     private PumpTabSectionController pumpTabSectionController;
 
+    private ManufacturerPumpModel manufacturerPumpModel;
+
     public ComboBox<GUIType> getGui_typeComboBox() {
         return gui_typeComboBox;
+    }
+
+    public void setManufacturerPumpModel(ManufacturerPumpModel manufacturerPumpModel) {
+        this.manufacturerPumpModel = manufacturerPumpModel;
     }
 
     public void setRootPrefs(Preferences rootPrefs) {
@@ -190,6 +195,8 @@ public class GUI_TypeController {
         activeMainSection = mainSectionPumps;
         activeChangeableSection = pumpSection;
         activeTabSection = tabSectionPumps;
+
+        manufacturerPumpModel.initManufacturerPumpList();
 
         logger.info("Changed to CrPump");
 

@@ -11,6 +11,8 @@ import fi.stardex.sisu.connect.ModbusConnect;
 import fi.stardex.sisu.devices.Device;
 import fi.stardex.sisu.devices.Devices;
 import fi.stardex.sisu.measurement.Measurements;
+import fi.stardex.sisu.model.ManufacturerPumpModel;
+import fi.stardex.sisu.model.PumpModel;
 import fi.stardex.sisu.pdf.PDFService;
 import fi.stardex.sisu.persistence.CheckAndInitializeBD;
 import fi.stardex.sisu.persistence.orm.CSVSUpdater;
@@ -19,6 +21,8 @@ import fi.stardex.sisu.persistence.repos.ManufacturerRepository;
 import fi.stardex.sisu.persistence.repos.cr.InjectorTestRepository;
 import fi.stardex.sisu.persistence.repos.cr.InjectorsRepository;
 import fi.stardex.sisu.persistence.repos.cr.VoltAmpereProfileRepository;
+import fi.stardex.sisu.persistence.repos.pump.ManufacturerPumpRepository;
+import fi.stardex.sisu.persistence.repos.pump.PumpRepository;
 import fi.stardex.sisu.registers.ModbusMap;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.flow.ModbusMapFlow;
@@ -655,6 +659,22 @@ public class SpringJavaConfig {
     public RegulatorsQTYState regulatorsQTYState(){
         return new RegulatorsQTYState();
     }
+
+
+    // --------------------------------------Model-----------------------------------------------
+
+    @Bean
+    @Autowired
+    public ManufacturerPumpModel manufacturerPumpModel(ManufacturerPumpRepository manufacturerPumpRepository) {
+        return new ManufacturerPumpModel(manufacturerPumpRepository);
+    }
+
+    @Bean
+    @Autowired
+    public PumpModel pumpModel(PumpRepository pumpRepository) {
+        return new PumpModel(pumpRepository);
+    }
+
 
     @Bean
     public InjectorTypeToggleState injectorTypeToggleState(){
