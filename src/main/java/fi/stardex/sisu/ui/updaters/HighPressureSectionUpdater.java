@@ -2,11 +2,9 @@ package fi.stardex.sisu.ui.updaters;
 
 import fi.stardex.sisu.annotations.Module;
 import fi.stardex.sisu.devices.Device;
-import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
+import fi.stardex.sisu.states.PressureSensorState;
 import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.util.enums.RegActive;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
 
 import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.*;
 import static fi.stardex.sisu.util.converters.DataConverter.round;
@@ -17,13 +15,13 @@ import static fi.stardex.sisu.util.enums.RegActive.DUTY;
 public class HighPressureSectionUpdater implements Updater {
 
     private HighPressureSectionController highPressureSectionController;
-    private ObjectProperty<Integer> pressMultiplierProperty = new SimpleObjectProperty<>();
+    private PressureSensorState pressureSensorState;
 
 
-    public HighPressureSectionUpdater(SettingsController settingsController, HighPressureSectionController highPressureSectionController) {
+    public HighPressureSectionUpdater(HighPressureSectionController highPressureSectionController,
+                                      PressureSensorState pressureSensorState) {
         this.highPressureSectionController = highPressureSectionController;
-//        this.highPressureSectionController = settingsController.getHighPressureSectionController();
-        pressMultiplierProperty.bind(settingsController.pressMultiplierPropertyProperty());
+        this.pressureSensorState = pressureSensorState;
     }
 
     @Override
@@ -38,7 +36,7 @@ public class HighPressureSectionUpdater implements Updater {
         RegActive reg3paramActive = highPressureSectionController.getReg3paramActive();
 
         if(PressureReg1_PressFact.getLastValue() != null){
-            Double pressure = (pressMultiplierProperty.get() * (Double) PressureReg1_PressFact.getLastValue());
+            double pressure = pressureSensorState.pressureSensorStateProperty().get() * (Double) PressureReg1_PressFact.getLastValue();
 //            if(reg1paramActive != PRESSURE){
 //                highPressureSectionController.getPressReg1Spinner().getValueFactory().setValue(pressure.intValue());
 //            }

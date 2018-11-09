@@ -6,6 +6,7 @@ import fi.stardex.sisu.combobox_values.InjectorChannel;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
+import fi.stardex.sisu.states.InjConfigurationState;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.pdf.Result;
 import fi.stardex.sisu.util.i18n.I18N;
@@ -72,10 +73,9 @@ public class RLCController {
     private int ledNumber;
 
     private InjectorSectionController injectorSectionController;
-    private SettingsController settingsController;
+    private InjConfigurationState injConfigurationState;
     private ModbusRegisterProcessor ultimaModbusWriter;
     private RegisterProvider ultimaRegisterProvider;
-    private CurrentInjectorObtainer currentInjectorObtainer;
     private I18N i18N;
 
     public Button getMeasureButton() {
@@ -101,17 +101,12 @@ public class RLCController {
     public void setInjectorSectionController(InjectorSectionController injectorSectionController) {
         this.injectorSectionController = injectorSectionController;
     }
-    public void setSettingsController(SettingsController settingsController) {
-        this.settingsController = settingsController;
-    }
+
     public void setUltimaModbusWriter(ModbusRegisterProcessor ultimaModbusWriter) {
         this.ultimaModbusWriter = ultimaModbusWriter;
     }
     public void setUltimaRegisterProvider(RegisterProvider ultimaRegisterProvider) {
         this.ultimaRegisterProvider = ultimaRegisterProvider;
-    }
-    public void setCurrentInjectorObtainer(CurrentInjectorObtainer currentInjectorObtainer) {
-        this.currentInjectorObtainer = currentInjectorObtainer;
     }
 
     public void setRLC_reportController(RLC_ReportController rlc_reportController) {
@@ -124,6 +119,10 @@ public class RLCController {
 
     public void setI18N(I18N i18N) {
         this.i18N = i18N;
+    }
+
+    public void setInjConfigurationState(InjConfigurationState injConfigurationState) {
+        this.injConfigurationState = injConfigurationState;
     }
 
     public Gauge getParameter1Gauge() {
@@ -143,7 +142,6 @@ public class RLCController {
     }
 
     private List<ToggleButton> activeLedToggleButtonsList;
-    private ComboBox<InjectorChannel> injectorChannelComboBox;
 
     @PostConstruct
     private void init() {
@@ -160,7 +158,6 @@ public class RLCController {
         parameter3StackPane.getChildren().add(parameter3Gauge);
         parameter4StackPane.getChildren().add(parameter4Gauge);
         measurementTabPane.getTabs().remove(tabCoilTwo);
-        injectorChannelComboBox = settingsController.getInjectorsConfigComboBox();
         coilRadioButton = injectorSectionController.getCoilRadioButton();
         attentionLabel.setVisible(false);                                    //for this GUI this label is not used
         mapOfTableLines = new HashMap<>();
@@ -215,7 +212,7 @@ public class RLCController {
                 progressIndicatorDoubleCoil.setVisible(true);
             });
             try {
-                int injectorModbusChannel = injectorChannelComboBox.getSelectionModel().getSelectedItem() == InjectorChannel.SINGLE_CHANNEL ?
+                int injectorModbusChannel = injConfigurationState.injConfigurationStateProperty().get() == InjectorChannel.SINGLE_CHANNEL ?
                         1 : getNumber(ledController);
                 ultimaModbusWriter.add(ModbusMapUltima.RLC_measure_channel_num, injectorModbusChannel);
                 ultimaModbusWriter.add(ModbusMapUltima.RLC_measure_request, true);

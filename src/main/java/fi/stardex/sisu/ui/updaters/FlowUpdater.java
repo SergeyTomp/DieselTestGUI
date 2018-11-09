@@ -1,11 +1,14 @@
 package fi.stardex.sisu.ui.updaters;
 
 import fi.stardex.sisu.combobox_values.InjectorChannel;
+import fi.stardex.sisu.states.InjConfigurationState;
+import fi.stardex.sisu.states.InstantFlowState;
 import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.version.FirmwareVersion;
 import fi.stardex.sisu.version.Versions;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.scene.control.*;
 
 import java.util.ArrayList;
@@ -94,9 +97,9 @@ public abstract class FlowUpdater {
 
     protected ComboBox<String> backFlowComboBox;
 
-    protected CheckBox checkBoxFlowVisible;
+    protected ObjectProperty<InjectorChannel> injConfigurationState;
 
-    protected ComboBox<InjectorChannel> comboInjectorConfig;
+    protected BooleanProperty isInstantFlowStateProperty;
 
     protected ToggleButton ledBeaker1ToggleButton;
 
@@ -109,7 +112,8 @@ public abstract class FlowUpdater {
     protected ToggleButton injectorSectionPowerSwitch;
 
     public FlowUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
-                       SettingsController settingsController, FirmwareVersion<FlowVersions> flowFirmwareVersion) {
+                       FirmwareVersion<FlowVersions> flowFirmwareVersion,
+                       InjConfigurationState injConfigurationState, InstantFlowState instantFlowState) {
 
         this.flowController = flowController;
         this.flowFirmwareVersion = flowFirmwareVersion;
@@ -142,8 +146,9 @@ public abstract class FlowUpdater {
         backFlow4TextField = flowController.getBackFlow4TextField();
         deliveryFlowComboBox = flowController.getDeliveryFlowComboBox();
         backFlowComboBox = flowController.getBackFlowComboBox();
-        checkBoxFlowVisible = settingsController.getFlowVisibleCheckBox();
-        comboInjectorConfig = settingsController.getInjectorsConfigComboBox();
+
+        this.isInstantFlowStateProperty = instantFlowState.isInstantFlowStateProperty();
+        this.injConfigurationState = injConfigurationState.injConfigurationStateProperty();
         ledBeaker1ToggleButton = injectorSectionController.getLed1ToggleButton();
         ledBeaker2ToggleButton = injectorSectionController.getLed2ToggleButton();
         ledBeaker3ToggleButton = injectorSectionController.getLed3ToggleButton();
@@ -198,13 +203,13 @@ public abstract class FlowUpdater {
         initLedBeakerListener(ledBeaker4ToggleButton, temperature1Delivery4Label, temperature2Delivery4Label,
                 temperature1BackFlow4Label, temperature2BackFlow4Label, delivery4TextField, backFlow4TextField);
 
-        checkBoxFlowVisible.selectedProperty().addListener((observable, oldValue, newValue) -> {
+        isInstantFlowStateProperty.addListener((observable, oldValue, newValue) -> {
             if (!newValue)
                 setAllLabelsAndFieldsToNull();
         });
 
         injectorSectionPowerSwitch.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            if (!newValue && !checkBoxFlowVisible.isSelected())
+            if (!newValue && !isInstantFlowStateProperty.get())
                 setAllLabelsAndFieldsToNull();
         });
 
@@ -409,7 +414,7 @@ public abstract class FlowUpdater {
     }
 
     protected boolean isNotInstantFlow() {
-        return !checkBoxFlowVisible.isSelected() && !injectorSectionPowerSwitch.isSelected();
+        return !isInstantFlowStateProperty.get() && !injectorSectionPowerSwitch.isSelected();
     }
 
     protected boolean isNotMeasuring() {

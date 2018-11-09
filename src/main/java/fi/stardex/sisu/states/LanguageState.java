@@ -1,4 +1,4 @@
-package fi.stardex.sisu.state;
+package fi.stardex.sisu.states;
 
 import fi.stardex.sisu.util.i18n.Locales;
 import javafx.beans.property.ObjectProperty;

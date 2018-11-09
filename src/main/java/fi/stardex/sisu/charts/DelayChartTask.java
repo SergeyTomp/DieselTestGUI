@@ -115,11 +115,7 @@ public class DelayChartTask extends ChartTask {
 
         int remainder = n % DELAY_SAMPLE_SIZE;
 
-        int injectorModbusChannel = settingsController
-                .getInjectorsConfigComboBox().getSelectionModel().getSelectedItem()
-                == InjectorChannel.SINGLE_CHANNEL ? 1 : getNumber(ledController);
-
-
+        int injectorModbusChannel = injConfigurationState.injConfigurationStateProperty().get() == InjectorChannel.SINGLE_CHANNEL ? 1 : getNumber(ledController);
 
         ArrayList<Integer> resultDataList = new ArrayList<>();
 

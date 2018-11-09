@@ -4,8 +4,11 @@ import fi.stardex.sisu.charts.TimerTasksManager;
 import fi.stardex.sisu.combobox_values.InjectorChannel;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
+import fi.stardex.sisu.states.InjConfigurationState;
+import fi.stardex.sisu.states.InjectorTypeToggleState;
 import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.ui.controllers.additional.tabs.DelayController;
+import fi.stardex.sisu.util.enums.InjectorType;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.spinners.SpinnerManager;
 import fi.stardex.sisu.util.spinners.SpinnerValueObtainer;
@@ -97,9 +100,9 @@ public class InjectorSectionController {
 
     private TimerTasksManager timerTasksManager;
 
-    private ComboBox<InjectorChannel> injectorsConfigComboBox;
+    private InjConfigurationState injConfigurationState;
 
-    private SingleSelectionModel<InjectorChannel> injectorsConfigComboBoxSelectionModel;
+    private InjectorTypeToggleState injectorTypeToggleState;
 
     private DelayController delayController;
 
@@ -116,6 +119,7 @@ public class InjectorSectionController {
     private LedParametersChangeListener ledParametersChangeListener;
 
     private List<Timeline> timeLinesList;
+
     private List<KeyFrame> keyFramesList;
 
     public Spinner<Integer> getWidthCurrentSignalSpinner() {
@@ -167,10 +171,6 @@ public class InjectorSectionController {
         return arrayNumbersOfActiveLedToggleButtons;
     }
 
-    public void setInjectorsConfigComboBox(ComboBox<InjectorChannel> injectorsConfigComboBox) {
-        this.injectorsConfigComboBox = injectorsConfigComboBox;
-    }
-
     public void setEnabler(Enabler enabler) {
         this.enabler = enabler;
     }
@@ -185,6 +185,14 @@ public class InjectorSectionController {
 
     public void setDelayController(DelayController delayController) {
         this.delayController = delayController;
+    }
+
+    public void setInjConfigurationState(InjConfigurationState injConfigurationState) {
+        this.injConfigurationState = injConfigurationState;
+    }
+
+    public void setInjectorTypeToggleState(InjectorTypeToggleState injectorTypeToggleState) {
+        this.injectorTypeToggleState = injectorTypeToggleState;
     }
 
     public synchronized List<ToggleButton> getActiveLedToggleButtonsList() {
@@ -208,8 +216,6 @@ public class InjectorSectionController {
     @PostConstruct
     private void init() {
 
-        injectorsConfigComboBoxSelectionModel = injectorsConfigComboBox.getSelectionModel();
-
         bindingI18N();
 
         setupLedControllers();
@@ -218,9 +224,23 @@ public class InjectorSectionController {
 
         setupSpinners();
 
+        injectorTypeToggleState.injectorTypeObjectPropertyProperty().setValue(InjectorType.COIL);
+
         ledParametersChangeListener = new LedParametersChangeListener();
 
         new PowerButtonChangeListener();
+
+        piezoCoilToggleGroup.selectedToggleProperty().addListener((observableValue, oldValue, newValue) -> {
+            if (newValue == piezoDelphiRadioButton){
+                injectorTypeToggleState.injectorTypeObjectPropertyProperty().setValue(InjectorType.PIEZO_DELPHI);
+            }
+            else if(newValue == coilRadioButton){
+                injectorTypeToggleState.injectorTypeObjectPropertyProperty().setValue(InjectorType.COIL);
+            }
+            else if(newValue == piezoRadioButton){
+                injectorTypeToggleState.injectorTypeObjectPropertyProperty().setValue(InjectorType.PIEZO);
+            }
+        });
 
         led1StackPane.widthProperty().addListener(new StackPaneWidthListener(led1AnchorPane));
         led2StackPane.widthProperty().addListener(new StackPaneWidthListener(led2AnchorPane));
@@ -285,9 +305,8 @@ public class InjectorSectionController {
 
     private void setupInjectorConfigComboBox() {
 
-        setToggleGroupToLeds(injectorsConfigComboBoxSelectionModel.getSelectedItem() == InjectorChannel.SINGLE_CHANNEL ? toggleGroup : null);
-
-        injectorsConfigComboBoxSelectionModel.selectedItemProperty().addListener((observable, oldValue, newValue) ->
+        setToggleGroupToLeds(injConfigurationState.injConfigurationStateProperty().get() == InjectorChannel.SINGLE_CHANNEL ? toggleGroup : null);
+        injConfigurationState.injConfigurationStateProperty().addListener((observable, oldValue, newValue) ->
                 setToggleGroupToLeds(newValue == InjectorChannel.SINGLE_CHANNEL ? toggleGroup : null));
     }
 
@@ -328,7 +347,7 @@ public class InjectorSectionController {
         LedParametersChangeListener() {
 
             injectorTypeProperty = piezoCoilToggleGroup.selectedToggleProperty();
-            injectorChannelProperty = injectorsConfigComboBoxSelectionModel.selectedItemProperty();
+            injectorChannelProperty = injConfigurationState.injConfigurationStateProperty();
             freqCurrentSignalSpinner.valueProperty().addListener(this);
             injectorTypeProperty.addListener(this);
             ledToggleButtons.forEach(s -> s.selectedProperty().addListener(this));
@@ -346,7 +365,7 @@ public class InjectorSectionController {
             } else if (newValue instanceof Toggle) {
                 if (newValue == piezoDelphiRadioButton) {
                     enabler.disableNode(true, led2ToggleButton, led3ToggleButton, led4ToggleButton);
-                    injectorsConfigComboBoxSelectionModel.select(InjectorChannel.SINGLE_CHANNEL);
+                    injectorTypeToggleState.injectorTypeObjectPropertyProperty().setValue(InjectorType.PIEZO_DELPHI);
                     led1ToggleButton.setSelected(true);
                 } else {
                     enabler.disableNode(false, led2ToggleButton, led3ToggleButton, led4ToggleButton);

@@ -1,6 +1,6 @@
 package fi.stardex.sisu.ui.controllers;
 
-import fi.stardex.sisu.state.DimasState;
+import fi.stardex.sisu.states.DimasGUIEditionState;
 import fi.stardex.sisu.ui.controllers.additional.TabSectionController;
 import fi.stardex.sisu.ui.controllers.pumps.PumpTabSectionController;
 import javafx.collections.ObservableList;
@@ -56,7 +56,7 @@ public class GUI_TypeController {
 
     private Parent connection;
 
-    private DimasState dimasState;
+    private DimasGUIEditionState dimasGUIEditionState;
 
     private TabSectionController tabSectionController;
 
@@ -94,10 +94,6 @@ public class GUI_TypeController {
         this.additionalSectionGridPane = additionalSectionGridPane;
     }
 
-    public void setDimasState(DimasState dimasState) {
-        this.dimasState = dimasState;
-    }
-
     public void setMainSectionPumps(Parent mainSectionPumps) {
         this.mainSectionPumps = mainSectionPumps;
     }
@@ -126,6 +122,10 @@ public class GUI_TypeController {
         this.connection = connection;
     }
 
+    public void setDimasGUIEditionState(DimasGUIEditionState dimasGUIEditionState) {
+        this.dimasGUIEditionState = dimasGUIEditionState;
+    }
+
     @PostConstruct
     private void init() {
 
@@ -152,7 +152,7 @@ public class GUI_TypeController {
         GUIType currentGUIType = GUIType.valueOf(rootPrefs.get("GUI_Type", GUIType.CR_Inj.toString()));
 
         gui_typeComboBox.getSelectionModel().select(currentGUIType);
-        gui_typeComboBox.visibleProperty().bind(dimasState.isDimasGuiProperty().not());
+        gui_typeComboBox.visibleProperty().bind(dimasGUIEditionState.isDimasGuiEditionProperty().not());
 
     }
 
@@ -163,6 +163,7 @@ public class GUI_TypeController {
         mainSectionGridPane.add(mainSection, 0, 1);
         additionalSectionGridPane.add(crSection, 0, 1);
         tabSectionController.getSettingsGridPane().add(connection, 0, 0);
+        settings.getChildrenUnmodifiable().stream().filter(node -> node.getId().equals("isDIMASCheckBox")).forEach(node -> node.setVisible(true));
         tabSectionController.getSettingsGridPane().add(settings, 1, 0);
         additionalSectionGridPane.add(tabSection, 0, 2);
 
@@ -181,7 +182,9 @@ public class GUI_TypeController {
         mainSectionGridPane.add(mainSectionPumps, 0, 1);
         additionalSectionGridPane.add(pumpSection, 0, 1);
         pumpTabSectionController.getSettingsGridPane().add(connection, 0, 0);
+        settings.getChildrenUnmodifiable().stream().filter(node -> node.getId().equals("isDIMASCheckBox")).forEach(node -> node.setVisible(false));
         pumpTabSectionController.getSettingsGridPane().add(settings, 1, 0);
+
         additionalSectionGridPane.add(tabSectionPumps, 0, 2);
 
         activeMainSection = mainSectionPumps;
@@ -191,13 +194,12 @@ public class GUI_TypeController {
         logger.info("Changed to CrPump");
 
     }
-
+    //TODO do not forget to hide/show DIMASCheckBox after implementation
     private void changeToUIS() {
 
         clearSections();
 
         additionalSectionGridPane.add(uisSection, 0, 1);
-
         activeMainSection = null;
         activeChangeableSection = uisSection;
         activeTabSection = null;

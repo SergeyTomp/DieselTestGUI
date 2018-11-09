@@ -25,7 +25,7 @@ import fi.stardex.sisu.registers.flow.ModbusMapFlow;
 import fi.stardex.sisu.registers.stand.ModbusMapStand;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
-import fi.stardex.sisu.state.*;
+import fi.stardex.sisu.states.*;
 import fi.stardex.sisu.store.FlowReport;
 import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.ui.ViewHolder;
@@ -410,8 +410,9 @@ public class SpringJavaConfig {
 
     @Bean
     @Autowired
-    public HighPressureSectionUpdater highPressureSectionUpdater(SettingsController settingsController, HighPressureSectionController highPressureSectionController) {
-        return new HighPressureSectionUpdater(settingsController, highPressureSectionController);
+    public HighPressureSectionUpdater highPressureSectionUpdater(HighPressureSectionController highPressureSectionController,
+                                                                 PressureSensorState pressureSensorState) {
+        return new HighPressureSectionUpdater(highPressureSectionController, pressureSensorState);
     }
 
     @Bean
@@ -422,16 +423,22 @@ public class SpringJavaConfig {
 
     @Bean
     @Autowired
-    public FlowMasterUpdater flowMasterUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
-                                               SettingsController settingsController, FirmwareVersion<FlowVersions> flowFirmwareVersion) {
-        return new FlowMasterUpdater(flowController, injectorSectionController, settingsController, flowFirmwareVersion);
+    public FlowMasterUpdater flowMasterUpdater(FlowController flowController,
+                                               InjectorSectionController injectorSectionController,
+                                               FirmwareVersion<FlowVersions> flowFirmwareVersion,
+                                               InjConfigurationState injConfigurationState,
+                                               InstantFlowState instantFlowState) {
+        return new FlowMasterUpdater(flowController, injectorSectionController, flowFirmwareVersion, injConfigurationState, instantFlowState);
     }
 
     @Bean
     @Autowired
-    public FlowStreamUpdater flowStreamUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
-                                               SettingsController settingsController, FirmwareVersion<FlowVersions> flowFirmwareVersion) {
-        return new FlowStreamUpdater(flowController, injectorSectionController, settingsController, flowFirmwareVersion);
+    public FlowStreamUpdater flowStreamUpdater(FlowController flowController,
+                                               InjectorSectionController injectorSectionController,
+                                               FirmwareVersion<FlowVersions> flowFirmwareVersion,
+                                               InjConfigurationState injConfigurationState,
+                                               InstantFlowState instantFlowState) {
+        return new FlowStreamUpdater(flowController, injectorSectionController, flowFirmwareVersion, injConfigurationState, instantFlowState);
     }
 
     @Bean
@@ -510,18 +517,18 @@ public class SpringJavaConfig {
     @Autowired
     public Enabler enabler(MainSectionController mainSectionController, InjectorSectionController injectorSectionController,
                            RLCController rlcController, VoltageController voltageController, FlowController flowController,
-                           FlowReportController flowReportController, FlowReport flowReport, GUI_TypeController gui_typeController,
-                           DimasState dimasState) {
+                           FlowReportController flowReportController, FlowReport flowReport, GUI_TypeController gui_typeController) {
         return new Enabler(mainSectionController, injectorSectionController, rlcController,
                 voltageController, flowController, flowReportController, flowReport,
-                gui_typeController.getGui_typeComboBox(), dimasState);
+                gui_typeController.getGui_typeComboBox());
     }
 
     @Bean
     @Autowired
-    public FlowResolver flowResolver(MainSectionController mainSectionController, SettingsController settingsController, FlowController flowController) {
-        return new FlowResolver(mainSectionController.getTestListView().getSelectionModel(),
-                settingsController.getFlowOutputDimensionsComboBox().getSelectionModel(), flowController);
+    public FlowResolver flowResolver(MainSectionController mainSectionController,
+                                     FlowController flowController,
+                                     FlowViewState flowViewState) {
+        return new FlowResolver(mainSectionController.getTestListView().getSelectionModel(), flowController, flowViewState);
     }
 
     @Bean
@@ -558,17 +565,16 @@ public class SpringJavaConfig {
                                      InjectorSectionController injectorSectionController,
                                      Enabler enabler, FlowReport flowReport, CodingController codingController,
                                      ISADetectionController isaDetectionController) {
-        Measurements measurements = new Measurements(mainSectionController, testBenchSectionController, highPressureSectionController,
+        return new Measurements(mainSectionController, testBenchSectionController, highPressureSectionController,
                 injectorSectionController, enabler, flowReport, codingController, isaDetectionController);
-        return measurements;
     }
 
     @Bean
     @Autowired
     public FlowReport flowReport(FlowReportController flowReportController,
                                  FlowController flowController,
-                                 SettingsController settingsController) {
-        return new FlowReport(flowReportController, flowController, settingsController);
+                                 FlowViewState flowViewState) {
+        return new FlowReport(flowReportController, flowController, flowViewState);
     }
 
     private List<Updater> addUpdaters(List<Updater> updatersList, Device targetDevice) {
@@ -597,7 +603,7 @@ public class SpringJavaConfig {
                                  RLCController rlcController,
                                  FlowReport flowReport,
                                  Measurements measurements,
-                                 ViewHolder settings){
+                                 LanguageState languageState){
         PDFService pdfService = new PDFService();
         pdfService.setI18N(i18N);
         pdfService.setDesktopFiles(desktopFiles);
@@ -605,14 +611,10 @@ public class SpringJavaConfig {
         pdfService.setFlowReport(flowReport);
         pdfService.setMeasurements(measurements);
         pdfService.setRlcController(rlcController);
-        pdfService.setSettingsController((SettingsController)settings.getController());
+        pdfService.setLanguageState(languageState);
         return pdfService;
     }
 
-    @Bean
-    public DimasState dimasState(){
-        return new DimasState();
-    }
 
     @Bean
     public FlowViewState flowViewState(){
@@ -652,5 +654,10 @@ public class SpringJavaConfig {
     @Bean
     public RegulatorsQTYState regulatorsQTYState(){
         return new RegulatorsQTYState();
+    }
+
+    @Bean
+    public InjectorTypeToggleState injectorTypeToggleState(){
+        return new InjectorTypeToggleState();
     }
 }

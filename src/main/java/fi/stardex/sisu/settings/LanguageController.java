@@ -1,6 +1,6 @@
-package fi.stardex.sisu.ui.controllers.pumps.settings;
+package fi.stardex.sisu.settings;
 
-import fi.stardex.sisu.state.LanguageState;
+import fi.stardex.sisu.states.LanguageState;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.i18n.Locales;
 import javafx.collections.FXCollections;

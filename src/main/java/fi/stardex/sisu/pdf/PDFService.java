@@ -7,12 +7,11 @@ import fi.stardex.sisu.measurement.Measurements;
 import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
 import fi.stardex.sisu.persistence.orm.cr.pump.Pump;
 import fi.stardex.sisu.persistence.orm.interfaces.Model;
+import fi.stardex.sisu.states.LanguageState;
 import fi.stardex.sisu.store.FlowReport;
 import fi.stardex.sisu.store.FlowReport.FlowTestResult;
-import fi.stardex.sisu.ui.controllers.additional.TabSectionController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.DelayController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.RLCController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
 import fi.stardex.sisu.ui.controllers.dialogs.PrintDialogPanelController;
 import fi.stardex.sisu.util.DesktopFiles;
 import fi.stardex.sisu.util.i18n.I18N;
@@ -107,9 +106,8 @@ public class PDFService {
     private PDPage currentPage;
     private PDFont font;
 
-    private SettingsController settingsController;
+    private LanguageState languageState;
     private I18N i18N;
-
 
     private List<Result> rlcResultsList;
 
@@ -129,13 +127,12 @@ public class PDFService {
 
     private Measurements measurements;
 
-
     public void setDesktopFiles(DesktopFiles desktopFiles) {
         this.desktopFiles = desktopFiles;
     }
 
-    public void setSettingsController(SettingsController settingsController) {
-        this.settingsController = settingsController;
+    public void setLanguageState(LanguageState languageState) {
+        this.languageState = languageState;
     }
 
     public void setDelayController(DelayController delayController) {
@@ -270,7 +267,7 @@ public class PDFService {
                 true, true);
     }
 
-    private void checkForNewPage(BaseTable baseTable) throws IOException {
+    private void checkForNewPage(BaseTable baseTable) {
         if (baseTable.getCurrentPage() != currentPage) {
             currentPage = baseTable.getCurrentPage();
         }
@@ -356,9 +353,10 @@ public class PDFService {
 
         InputStream inputStream;
 
-        if (settingsController.getLanguagesConfigComboBox().getSelectionModel().getSelectedItem().toString().equals("RUSSIAN")) {
+        if(languageState.languageStateProperty().get().equals("RUSSIAN")){
             inputStream = this.getClass().getResourceAsStream("/fonts/Arial_Cyr.ttf");
-        } else {
+        }
+        else {
             inputStream = this.getClass().getResourceAsStream("/fonts/LiberationSans-Bold.ttf");
         }
         font = PDType0Font.load(document, inputStream);
@@ -534,7 +532,7 @@ public class PDFService {
         }
     }
 
-    private PDImageXObject getCompanyImage(PDDocument document) throws IOException {
+    private PDImageXObject getCompanyImage(PDDocument document) {
         String urlLine = CompanyDetails.LOGO_URL.get();
         if (Objects.equals(urlLine, "")) {
             return null;

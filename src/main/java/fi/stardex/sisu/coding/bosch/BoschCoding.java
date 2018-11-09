@@ -22,7 +22,7 @@ public class BoschCoding {
 
     private static final String NO_CODING = "NO_CODING";
 
-    private static final Map<String, Integer> CODE_FIELD_SIZE = new HashMap<String, Integer>() {{
+    private static final Map<String, Integer> CODE_FIELD_SIZE = new HashMap<>() {{
         put("Emission Point", 7);
         put("Idle", 5);
         put("Maximum Load", 7);
@@ -119,9 +119,7 @@ public class BoschCoding {
                 value += getInjector().getCoefficient();
                 value = (value & 15) + ((value & 240) >> 4) + 1 & 15;
             }
-
             resultCheckSum.add(value);
-
         }
 
         logger.debug("2. Check sum list: {}", resultCheckSum);
@@ -142,11 +140,8 @@ public class BoschCoding {
                     value = value < 0 ? value + (int) Math.pow(2d, CODE_FIELD_SIZE.get(entry.getKey())) : value;
                     entry.getValue().set(i, value);
                 }
-
             }
-
         }
-
     }
 
     private static List<String> getCodeResult(Map<String, List<Integer>> preparedMap) {

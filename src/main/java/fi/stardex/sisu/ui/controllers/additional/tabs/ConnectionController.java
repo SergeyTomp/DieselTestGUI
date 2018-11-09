@@ -7,12 +7,15 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
+import javafx.scene.layout.GridPane;
 
 import javax.annotation.PostConstruct;
 import java.util.function.UnaryOperator;
 import java.util.prefs.Preferences;
 
 public class ConnectionController {
+
+    @FXML private GridPane connectionGridPane;
 
     @FXML private TextField ultimaIPField;
 

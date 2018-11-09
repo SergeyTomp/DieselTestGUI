@@ -1,6 +1,6 @@
-package fi.stardex.sisu.ui.controllers.pumps.settings;
+package fi.stardex.sisu.settings;
 
-import fi.stardex.sisu.state.PressureSensorState;
+import fi.stardex.sisu.states.PressureSensorState;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;

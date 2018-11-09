@@ -2,6 +2,7 @@ package fi.stardex.sisu.util.converters;
 
 import fi.stardex.sisu.combobox_values.Dimension;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
+import fi.stardex.sisu.states.FlowViewState;
 import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
 import fi.stardex.sisu.util.enums.Measurement;
 import javafx.scene.control.Label;
@@ -18,8 +19,6 @@ public class FlowResolver {
 
     private MultipleSelectionModel<InjectorTest> testsSelectionModel;
 
-    private SingleSelectionModel<Dimension> flowOutputDimensionsSelectionModel;
-
     private SingleSelectionModel<String> deliveryFlowComboBoxSelectionModel;
 
     private SingleSelectionModel<String> backFlowComboBoxSelectionModel;
@@ -30,15 +29,17 @@ public class FlowResolver {
 
     private FlowController flowController;
 
+    private FlowViewState flowViewState;
+
     private static final double PERCENT = 0.01;
 
     public FlowResolver(MultipleSelectionModel<InjectorTest> testsSelectionModel,
-                        SingleSelectionModel<Dimension> flowOutputDimensionsSelectionModel,
-                        FlowController flowController) {
+                        FlowController flowController,
+                        FlowViewState flowViewState) {
 
         this.testsSelectionModel = testsSelectionModel;
-        this.flowOutputDimensionsSelectionModel = flowOutputDimensionsSelectionModel;
         this.flowController = flowController;
+        this.flowViewState = flowViewState;
 
         deliveryFlowComboBoxSelectionModel = flowController.getDeliveryFlowComboBox().getSelectionModel();
         backFlowComboBoxSelectionModel = flowController.getBackFlowComboBox().getSelectionModel();
@@ -52,17 +53,16 @@ public class FlowResolver {
     private void init() {
 
         testsSelectionModel.selectedItemProperty().addListener((observable, oldValue, newValue) ->
-                setFlowLabels(newValue, flowOutputDimensionsSelectionModel.getSelectedItem()));
+                setFlowLabels(newValue, flowViewState.flowViewStateProperty().get()));
 
-        flowOutputDimensionsSelectionModel.selectedItemProperty().addListener((observable, oldValue, newValue) ->
+        flowViewState.flowViewStateProperty().addListener((observable, oldValue, newValue) ->
                 setFlowLabels(testsSelectionModel.getSelectedItem(), newValue));
 
         deliveryFlowComboBoxSelectionModel.selectedItemProperty().addListener((observable, oldValue, newValue) ->
-                setFlowLabels(testsSelectionModel.getSelectedItem(), flowOutputDimensionsSelectionModel.getSelectedItem()));
+                setFlowLabels(testsSelectionModel.getSelectedItem(), flowViewState.flowViewStateProperty().get()));
 
         backFlowComboBoxSelectionModel.selectedItemProperty().addListener((observable, oldValue, newValue) ->
-                setFlowLabels(testsSelectionModel.getSelectedItem(), flowOutputDimensionsSelectionModel.getSelectedItem()));
-
+                setFlowLabels(testsSelectionModel.getSelectedItem(), flowViewState.flowViewStateProperty().get()));
     }
 
     private void setFlowLabels(InjectorTest injectorTest, Dimension dimension) {

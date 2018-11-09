@@ -11,7 +11,7 @@ import fi.stardex.sisu.persistence.repos.ManufacturerRepository;
 import fi.stardex.sisu.persistence.repos.cr.*;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
-import fi.stardex.sisu.state.*;
+import fi.stardex.sisu.states.*;
 import fi.stardex.sisu.store.FlowReport;
 import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.ui.ViewHolder;
@@ -28,7 +28,7 @@ import fi.stardex.sisu.ui.controllers.cr.TestBenchSectionController;
 import fi.stardex.sisu.ui.controllers.dialogs.*;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
 import fi.stardex.sisu.ui.controllers.pumps.PumpTabSectionController;
-import fi.stardex.sisu.ui.controllers.pumps.settings.*;
+import fi.stardex.sisu.settings.*;
 import fi.stardex.sisu.ui.controllers.uis.RootLayoutController;
 import fi.stardex.sisu.util.DelayCalculator;
 import fi.stardex.sisu.util.enums.BeakerType;
@@ -76,13 +76,13 @@ public class JavaFXSpringConfigure extends ViewLoader{
     @Autowired
     public GUI_TypeController gui_typeController(Preferences rootPrefs,
                                                  RootLayoutController rootLayoutController,
-                                                 DimasState dimasState,
+                                                 DimasGUIEditionState dimasGUIEditionState,
                                                  ViewHolder mainSectionPumps,
                                                  ViewHolder pumpsSection,
                                                  ViewHolder pumpTabSection,
                                                  ViewHolder settings,
                                                  ViewHolder connection) {
-        GUI_TypeController gui_typeController = (GUI_TypeController) rootLayoutController.getGui_typeController();
+        GUI_TypeController gui_typeController = rootLayoutController.getGui_typeController();
         gui_typeController.setRootPrefs(rootPrefs);
         gui_typeController.setMainSection(mainSection().getView());
         gui_typeController.setMainSectionPumps(mainSectionPumps.getView());
@@ -92,12 +92,12 @@ public class JavaFXSpringConfigure extends ViewLoader{
         gui_typeController.setTabSectionController((TabSectionController) tabSection().getController());
         gui_typeController.setMainSectionGridPane(rootLayoutController.getMainSectionGridPane());
         gui_typeController.setAdditionalSectionGridPane(rootLayoutController.getAdditionalSectionGridPane());
-        gui_typeController.setDimasState(dimasState);
         gui_typeController.setPumpSection(pumpsSection.getView());
         gui_typeController.setTabSectionPumps(pumpTabSection.getView());
         gui_typeController.setPumpTabSectionController((PumpTabSectionController) pumpTabSection.getController());
         gui_typeController.setSettings(settings.getView());
         gui_typeController.setConnection(connection.getView());
+        gui_typeController.setDimasGUIEditionState(dimasGUIEditionState);
         return gui_typeController;
     }
 
@@ -159,36 +159,45 @@ public class JavaFXSpringConfigure extends ViewLoader{
     @Autowired
     public TestBenchSectionController testBenchSectionController(RootLayoutController rootLayoutController,
                                                                  @Lazy ModbusRegisterProcessor standModbusWriter,
-                                                                 DimasState dimasState) {
+                                                                 DimasGUIEditionState dimasGUIEditionState) {
         TestBenchSectionController testBenchController = rootLayoutController.getTestBenchSectionController();
         testBenchController.setStandModbusWriter(standModbusWriter);
         testBenchController.setI18N(i18N);
-        testBenchController.setDimasState(dimasState);
+        testBenchController.setDimasGUIEditionState(dimasGUIEditionState);
         return testBenchController;
     }
 
     @Bean
     @Autowired
+    @DependsOn("regulatorsQTYController")
     public HighPressureSectionController highPressureSectionController(CRSectionController crSectionController,
-                                                                       @Lazy ModbusRegisterProcessor ultimaModbusWriter) {
+                                                                       @Lazy ModbusRegisterProcessor ultimaModbusWriter,
+                                                                       PressureSensorState pressureSensorState,
+                                                                       RegulatorsQTYState regulatorsQTYState) {
         HighPressureSectionController highPressureSectionController = crSectionController.getHighPressureSectionController();
         highPressureSectionController.setUltimaModbusWriter(ultimaModbusWriter);
         highPressureSectionController.setI18N(i18N);
+        highPressureSectionController.setPressureSensorState(pressureSensorState);
+        highPressureSectionController.setRegulatorsQTYState(regulatorsQTYState);
         return highPressureSectionController;
     }
 
     @Bean
     @Autowired
-    public InjectorSectionController injectorSectionController(SettingsController settingsController, @Lazy Enabler enabler,
+    public InjectorSectionController injectorSectionController(@Lazy Enabler enabler,
                                                                @Lazy ModbusRegisterProcessor ultimaModbusWriter,
-                                                               TimerTasksManager timerTasksManager, DelayController delayController) {
+                                                               TimerTasksManager timerTasksManager,
+                                                               DelayController delayController,
+                                                               InjConfigurationState injConfigurationState,
+                                                               InjectorTypeToggleState injectorTypeToggleState) {
         InjectorSectionController injectorSectionController = crSectionController().getInjectorSectionController();
-        injectorSectionController.setInjectorsConfigComboBox(settingsController.getInjectorsConfigComboBox());
         injectorSectionController.setEnabler(enabler);
         injectorSectionController.setUltimaModbusWriter(ultimaModbusWriter);
         injectorSectionController.setTimerTasksManager(timerTasksManager);
         injectorSectionController.setDelayController(delayController);
         injectorSectionController.setI18N(i18N);
+        injectorSectionController.setInjConfigurationState(injConfigurationState);
+        injectorSectionController.setInjectorTypeToggleState(injectorTypeToggleState);
         return injectorSectionController;
     }
 
@@ -456,10 +465,6 @@ public class JavaFXSpringConfigure extends ViewLoader{
         return loadView("/fxml/sections/Additional/tabs/Connection.fxml");
     }
 
-    @Bean
-    public ViewHolder settings(){
-        return loadView("/fxml/sections/Additional/tabs/Settings.fxml");
-    }
 
     @Bean
     @Autowired
@@ -471,17 +476,13 @@ public class JavaFXSpringConfigure extends ViewLoader{
         return connectionController;
     }
 
+
+
     @Bean
     @Autowired
-    public SettingsController settingsController(Preferences rootPrefs,
-                                                 HighPressureSectionController highPressureSectionController,
-                                                 DimasState dimasState,
-                                                 ViewHolder settings){
+    SettingsController settingsController(ViewHolder settings){
         SettingsController settingsController = (SettingsController)settings.getController();
         settingsController.setI18N(i18N);
-        settingsController.setRootPrefs(rootPrefs);
-        settingsController.setHighPressureSectionController(highPressureSectionController);
-        settingsController.setDimasState(dimasState);
         return settingsController;
     }
 
@@ -676,18 +677,18 @@ public class JavaFXSpringConfigure extends ViewLoader{
     @Bean
     @Autowired
     public RLCController rlcController(InjectorSectionController injectorSectionController,
-                                       SettingsController settingsController,
                                        ModbusRegisterProcessor ultimaModbusWriter,
                                        RegisterProvider ultimaRegisterProvider,
                                        TabSectionController tabSectionController,
-                                       RLC_ReportController rlc_reportController) {
+                                       RLC_ReportController rlc_reportController,
+                                       InjConfigurationState injConfigurationState) {
         RLCController RLCController = tabSectionController.getRlCController();
         RLCController.setInjectorSectionController(injectorSectionController);
-        RLCController.setSettingsController(settingsController);
         RLCController.setUltimaModbusWriter(ultimaModbusWriter);
         RLCController.setUltimaRegisterProvider(ultimaRegisterProvider);
         RLCController.setI18N(i18N);
         RLCController.setRLC_reportController(rlc_reportController);
+        RLCController.setInjConfigurationState(injConfigurationState);
         return RLCController;
 
     }
@@ -733,15 +734,16 @@ public class JavaFXSpringConfigure extends ViewLoader{
     }
 
     @Bean
-    public ViewHolder settingsNew(){
-        return loadView("/fxml/sections/Additional/tabs/SettingsNew.fxml");
+    public ViewHolder settings(){
+        return loadView("/fxml/sections/Additional/tabs/Settings.fxml");
     }
 
     @Bean
     @Autowired
     public DimasGuiEditionController dimasGuiEditionController(DimasGUIEditionState dimasGUIEditionState,
-                                                               Preferences preferences){
-        DimasGuiEditionController dimasGuiEditionController = (DimasGuiEditionController)dimasGuiEdition().getController();
+                                                               Preferences preferences,
+                                                               SettingsController settingsController){
+        DimasGuiEditionController dimasGuiEditionController = settingsController.getDimasGuiEditionController();
         dimasGuiEditionController.setDimasGUIEditionState(dimasGUIEditionState);
         dimasGuiEditionController.setI18N(i18N);
         dimasGuiEditionController.setRootPrefs(preferences);
@@ -751,8 +753,9 @@ public class JavaFXSpringConfigure extends ViewLoader{
     @Bean
     @Autowired
     public FastCodingController fastCodingController(FastCodingState fastCodingState,
-                                                     Preferences preferences){
-        FastCodingController fastCodingController = (FastCodingController) fastCoding().getController();
+                                                     Preferences preferences,
+                                                     SettingsController settingsController){
+        FastCodingController fastCodingController = settingsController.getFastCodingController();
         fastCodingController.setFastCodingState(fastCodingState);
         fastCodingController.setI18N(i18N);
         fastCodingController.setRootPrefs(preferences);
@@ -762,8 +765,9 @@ public class JavaFXSpringConfigure extends ViewLoader{
     @Bean
     @Autowired
     public InstantFlowController instantFlowController(InstantFlowState instantFlowState,
-                                                       Preferences preferences){
-        InstantFlowController instantFlowController = (InstantFlowController) instantFlow().getController();
+                                                       Preferences preferences,
+                                                       SettingsController settingsController){
+        InstantFlowController instantFlowController = settingsController.getInstantFlowController();
         instantFlowController.setInstantFlowState(instantFlowState);
         instantFlowController.setI18N(i18N);
         instantFlowController.setRootPrefs(preferences);
@@ -773,8 +777,9 @@ public class JavaFXSpringConfigure extends ViewLoader{
     @Bean
     @Autowired
     public FlowViewController flowViewController(FlowViewState flowViewState,
-                                                 Preferences preferences){
-        FlowViewController flowViewController = (FlowViewController)flowView().getController();
+                                                 Preferences preferences,
+                                                 SettingsController settingsController){
+        FlowViewController flowViewController = settingsController.getFlowViewController();
         flowViewController.setFlowViewState(flowViewState);
         flowViewController.setRootPrefs(preferences);
         return flowViewController;
@@ -783,19 +788,23 @@ public class JavaFXSpringConfigure extends ViewLoader{
     @Bean
     @Autowired
     public InjConfigurationController injConfigurationController(InjConfigurationState injConfigurationState,
-                                                                 Preferences preferences){
-        InjConfigurationController injConfigurationController = (InjConfigurationController)injConfiguration().getController();
+                                                                 Preferences preferences,
+                                                                 InjectorTypeToggleState injectorTypeToggleState,
+                                                                 SettingsController settingsController){
+        InjConfigurationController injConfigurationController = settingsController.getInjConfigurationController();
         injConfigurationController.setInjConfigurationState(injConfigurationState);
         injConfigurationController.setI18N(i18N);
         injConfigurationController.setRootPrefs(preferences);
+        injConfigurationController.setInjectorTypeToggleState(injectorTypeToggleState);
         return injConfigurationController;
     }
 
     @Bean
     @Autowired
     public LanguageController languageController(LanguageState languageState,
-                                                 Preferences preferences){
-        LanguageController languageController = (LanguageController)language().getController();
+                                                 Preferences preferences,
+                                                 SettingsController settingsController){
+        LanguageController languageController = settingsController.getLanguageController();
         languageController.setLanguageState(languageState);
         languageController.setRootPrefs(preferences);
         languageController.setI18N(i18N);
@@ -805,8 +814,9 @@ public class JavaFXSpringConfigure extends ViewLoader{
     @Bean
     @Autowired
     public PressureSensorController pressureSensorController(PressureSensorState pressureSensorState,
-                                                             Preferences preferences){
-        PressureSensorController pressureSensorController = (PressureSensorController)pressureSensor().getController();
+                                                             Preferences preferences,
+                                                             SettingsController settingsController){
+        PressureSensorController pressureSensorController = settingsController.getPressureSensorController();
         pressureSensorController.setPressureSensorState(pressureSensorState);
         pressureSensorController.setRootPrefs(preferences);
         return pressureSensorController;
@@ -815,8 +825,9 @@ public class JavaFXSpringConfigure extends ViewLoader{
     @Bean
     @Autowired
     public RegulatorsQTYController regulatorsQTYController(RegulatorsQTYState regulatorsQTYState,
-                                                           Preferences preferences){
-        RegulatorsQTYController regulatorsQTYController = (RegulatorsQTYController)regulatorsQTY().getController();
+                                                           Preferences preferences,
+                                                           SettingsController settingsController){
+        RegulatorsQTYController regulatorsQTYController = settingsController.getRegulatorsQTYController();
         regulatorsQTYController.setPressureSensorState(regulatorsQTYState);
         regulatorsQTYController.setRootPrefs(preferences);
         return regulatorsQTYController;

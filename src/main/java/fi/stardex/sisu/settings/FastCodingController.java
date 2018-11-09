@@ -1,6 +1,6 @@
-package fi.stardex.sisu.ui.controllers.pumps.settings;
+package fi.stardex.sisu.settings;
 
-import fi.stardex.sisu.state.FastCodingState;
+import fi.stardex.sisu.states.FastCodingState;
 import fi.stardex.sisu.util.i18n.I18N;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;

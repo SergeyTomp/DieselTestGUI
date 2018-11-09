@@ -2,10 +2,10 @@ package fi.stardex.sisu.store;
 
 import fi.stardex.sisu.combobox_values.Dimension;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
+import fi.stardex.sisu.states.FlowViewState;
 import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.FlowReportController;
 import fi.stardex.sisu.pdf.Result;
-import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
 import fi.stardex.sisu.util.enums.Measurement;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -30,7 +30,7 @@ public class FlowReport {
 
     private SingleSelectionModel<String> backFlowComboBoxSelectionModel;
 
-    private SingleSelectionModel<Dimension> flowOutputDimensionsSelectionModel;
+    private FlowViewState flowViewState;
 
     private Label deliveryRangeLabel;
 
@@ -63,12 +63,12 @@ public class FlowReport {
         return mapOfFlowTestResults;
     }
 
-    public FlowReport(FlowReportController flowReportController, FlowController flowController, SettingsController settingsController) {
+    public FlowReport(FlowReportController flowReportController, FlowController flowController, FlowViewState flowViewState) {
 
         flowTableViewItems = flowReportController.getFlowTableView().getItems();
         deliveryFlowComboBoxSelectionModel = flowController.getDeliveryFlowComboBox().getSelectionModel();
         backFlowComboBoxSelectionModel = flowController.getBackFlowComboBox().getSelectionModel();
-        flowOutputDimensionsSelectionModel = settingsController.getFlowOutputDimensionsComboBox().getSelectionModel();
+        this.flowViewState = flowViewState;
 
         deliveryRangeLabel = flowController.getDeliveryRangeLabel();
         backFlowRangeLabel = flowController.getBackFlowRangeLabel();
@@ -114,41 +114,35 @@ public class FlowReport {
     private void setNewFlowTestResult(InjectorTest injectorTest, Measurement measurement) {
 
         switch (measurement) {
-
             case DELIVERY:
                 flowTableViewItems.set(flowTableViewItems.indexOf(mapOfFlowTestResults.get(injectorTest)), new FlowTestResult(injectorTest, measurement.name(),
                         getNominalFlow(deliveryRangeLabel.getText(), deliveryFlowComboBoxSelectionModel.getSelectedItem()),
                         getFlow(delivery1TextField.getText()), getFlow(delivery2TextField.getText()),
-                        getFlow(delivery3TextField.getText()), getFlow(delivery4TextField.getText()), flowOutputDimensionsSelectionModel.getSelectedItem(), measurement));
+                        getFlow(delivery3TextField.getText()), getFlow(delivery4TextField.getText()), flowViewState.flowViewStateProperty().get(), measurement));
                 break;
             case BACK_FLOW:
                 flowTableViewItems.set(flowTableViewItems.indexOf(mapOfFlowTestResults.get(injectorTest)), new FlowTestResult(injectorTest, measurement.name(),
                         getNominalFlow(backFlowRangeLabel.getText(), backFlowComboBoxSelectionModel.getSelectedItem()),
                         getFlow(backFlow1TextField.getText()), getFlow(backFlow2TextField.getText()),
-                        getFlow(backFlow3TextField.getText()), getFlow(backFlow4TextField.getText()), flowOutputDimensionsSelectionModel.getSelectedItem(), measurement));
+                        getFlow(backFlow3TextField.getText()), getFlow(backFlow4TextField.getText()), flowViewState.flowViewStateProperty().get(), measurement));
                 break;
-
         }
-
-
-
     }
 
     private void addNewFlowTestResult(InjectorTest injectorTest, Measurement measurement) {
 
         switch (measurement) {
-
             case DELIVERY:
                 flowTableViewItems.add(new FlowTestResult(injectorTest, measurement.name(),
                         getNominalFlow(deliveryRangeLabel.getText(), deliveryFlowComboBoxSelectionModel.getSelectedItem()),
                         getFlow(delivery1TextField.getText()), getFlow(delivery2TextField.getText()),
-                        getFlow(delivery3TextField.getText()), getFlow(delivery4TextField.getText()), flowOutputDimensionsSelectionModel.getSelectedItem(), measurement));
+                        getFlow(delivery3TextField.getText()), getFlow(delivery4TextField.getText()), flowViewState.flowViewStateProperty().get(), measurement));
                 break;
             case BACK_FLOW:
                 flowTableViewItems.add(new FlowTestResult(injectorTest, measurement.name(),
                         getNominalFlow(backFlowRangeLabel.getText(), backFlowComboBoxSelectionModel.getSelectedItem()),
                         getFlow(backFlow1TextField.getText()), getFlow(backFlow2TextField.getText()),
-                        getFlow(backFlow3TextField.getText()), getFlow(backFlow4TextField.getText()), flowOutputDimensionsSelectionModel.getSelectedItem(), measurement));
+                        getFlow(backFlow3TextField.getText()), getFlow(backFlow4TextField.getText()), flowViewState.flowViewStateProperty().get(), measurement));
                 break;
 
         }
@@ -156,7 +150,6 @@ public class FlowReport {
     }
 
     private boolean alreadyContainsTest(InjectorTest injectorTest) {
-
         return mapOfFlowTestResults.containsKey(injectorTest);
 
     }
@@ -175,7 +168,6 @@ public class FlowReport {
 //    }
 
     private String getNominalFlow(String range, String flowUnit) {
-
         return range + " " + flowUnit;
 
     }

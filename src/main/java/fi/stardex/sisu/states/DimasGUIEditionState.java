@@ -1,4 +1,4 @@
-package fi.stardex.sisu.state;
+package fi.stardex.sisu.states;
 
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;

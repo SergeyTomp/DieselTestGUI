@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.HBox?>
 
 
-<HBox xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.pumps.settings.InjConfigurationController">
+<HBox xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.settings.InjConfigurationController">
    <children>
       <ComboBox fx:id="injectorsConfigComboBox" prefWidth="180.0" stylesheets="@../../../../../css/Styling.css">
          <HBox.margin>

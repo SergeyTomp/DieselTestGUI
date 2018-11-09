@@ -9,4 +9,4 @@
           text="%settings.fastCoding.CheckBox"
           xmlns="http://javafx.com/javafx/8.0.121"
           xmlns:fx="http://javafx.com/fxml/1"
-          fx:controller="fi.stardex.sisu.ui.controllers.pumps.settings.FastCodingController" />
+          fx:controller="fi.stardex.sisu.settings.FastCodingController" />

@@ -1,4 +1,4 @@
-package fi.stardex.sisu.state;
+package fi.stardex.sisu.states;
 
 import fi.stardex.sisu.combobox_values.InjectorChannel;
 import javafx.beans.property.ObjectProperty;

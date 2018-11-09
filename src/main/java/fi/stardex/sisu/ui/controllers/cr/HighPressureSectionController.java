@@ -4,6 +4,8 @@ import eu.hansolo.enzo.lcd.Lcd;
 import eu.hansolo.enzo.lcd.LcdBuilder;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
+import fi.stardex.sisu.states.PressureSensorState;
+import fi.stardex.sisu.states.RegulatorsQTYState;
 import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.util.enums.RegActive;
 import fi.stardex.sisu.util.i18n.I18N;
@@ -106,6 +108,9 @@ public class HighPressureSectionController {
     private RegActive Reg3paramActive;
     private ModbusRegisterProcessor ultimaModbusWriter;
     private I18N i18N;
+    private PressureSensorState pressureSensorState;
+    private RegulatorsQTYState regulatorsQTYState;
+
     public static final String GREEN_STYLE_CLASS = "regulator-spinner-selected";
 
     public Spinner<Integer> getPressReg1Spinner() {
@@ -136,52 +141,8 @@ public class HighPressureSectionController {
         return dutyCycleReg3Spinner;
     }
 
-    public Label getLabelAmpReg2() {
-        return labelAmpReg2;
-    }
-
-    public Label getLabelCycleReg2() {
-        return labelCycleReg2;
-    }
-
-    public Label getLabelReg2() {
-        return labelReg2;
-    }
-
-    public Label getLabelAmpReg3() {
-        return labelAmpReg3;
-    }
-
-    public Label getLabelCycleReg3() {
-        return labelCycleReg3;
-    }
-
-    public Label getLabelReg3() {
-        return labelReg3;
-    }
-
-    public ToggleButton getPowerButton2() {
-        return powerButton2;
-    }
-
-    public ToggleButton getPowerButton3() {
-        return powerButton3;
-    }
-
     public void setUltimaModbusWriter(ModbusRegisterProcessor ultimaModbusWriter) {
         this.ultimaModbusWriter = ultimaModbusWriter;
-    }
-
-    public void setReg1paramActive(RegActive reg1paramActive) {
-        Reg1paramActive = reg1paramActive;
-    }
-
-    public void setReg2paramActive(RegActive reg2paramActive) {
-        Reg2paramActive = reg2paramActive;
-    }
-
-    public void setReg3paramActive(RegActive reg3paramActive) {
-        Reg3paramActive = reg3paramActive;
     }
 
     public RegActive getReg1paramActive() {
@@ -200,8 +161,6 @@ public class HighPressureSectionController {
         return stackPaneLCD;
     }
 
-
-
     public ToggleButton getHighPressureStartToggleButton() {
         return highPressureStartToggleButton;
     }
@@ -212,6 +171,14 @@ public class HighPressureSectionController {
 
     public void setI18N(I18N i18N) {
         this.i18N = i18N;
+    }
+
+    public void setPressureSensorState(PressureSensorState pressureSensorState) {
+        this.pressureSensorState = pressureSensorState;
+    }
+
+    public void setRegulatorsQTYState(RegulatorsQTYState regulatorsQTYState) {
+        this.regulatorsQTYState = regulatorsQTYState;
     }
 
     @PostConstruct
@@ -225,7 +192,6 @@ public class HighPressureSectionController {
         Reg3paramActive = CURRENT;
 
         /** создаём спиннеры регуляторов */
-        pressReg1Spinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(PRESS_REG_1_SPINNER_MIN, PRESS_REG_1_SPINNER_MAX, PRESS_REG_1_SPINNER_INIT, PRESS_REG_1_SPINNER_STEP));
         currentReg1Spinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(CURRENT_REG_1_SPINNER_MIN, CURRENT_REG_1_SPINNER_MAX, CURRENT_REG_1_SPINNER_INIT, CURRENT_REG_1_SPINNER_STEP));
         dutyCycleReg1Spinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(DUTY_CYCLE_REG_1_SPINNER_MIN, DUTY_CYCLE_REG_1_SPINNER_MAX, DUTY_CYCLE_REG_1_SPINNER_INIT, DUTY_CYCLE_REG_1_SPINNER_STEP));
         currentReg2Spinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(CURRENT_REG_2_SPINNER_MIN, CURRENT_REG_2_SPINNER_MAX, CURRENT_REG_2_SPINNER_INIT, CURRENT_REG_2_SPINNER_STEP));
@@ -241,6 +207,13 @@ public class HighPressureSectionController {
         currentReg3Spinner.getStyleClass().add(1, GREEN_STYLE_CLASS);
         dutyCycleReg3Spinner.getStyleClass().add(1, "");
 
+        Integer maxPressure = pressureSensorState.pressureSensorStateProperty().intValue();
+        pressReg1Spinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(PRESS_REG_1_SPINNER_MIN, maxPressure, PRESS_REG_1_SPINNER_INIT, PRESS_REG_1_SPINNER_STEP));
+        pressureSensorState.pressureSensorStateProperty().addListener(((observable, oldValue, newValue) -> pressReg1Spinner.setValueFactory(
+                new SpinnerValueFactory.IntegerSpinnerValueFactory(PRESS_REG_1_SPINNER_MIN, newValue.intValue(), PRESS_REG_1_SPINNER_INIT, PRESS_REG_1_SPINNER_STEP))));
+
+        configRegulatorsInvolved(Integer.parseInt(regulatorsQTYState.regulatorsQTYStateProperty().get()));
+        regulatorsQTYState.regulatorsQTYStateProperty().addListener(new RegulatorsConfigListener());
 
         SpinnerManager.setupSpinner(pressReg1Spinner, PRESS_REG_1_SPINNER_INIT, PRESS_REG_1_SPINNER_MIN, PRESS_REG_1_SPINNER_MAX, new CustomTooltip(), new SpinnerValueObtainer(PRESS_REG_1_SPINNER_INIT));
         SpinnerManager.setupSpinner(currentReg1Spinner, CURRENT_REG_1_SPINNER_INIT, CURRENT_REG_1_SPINNER_FAKE, new CustomTooltip(), new SpinnerValueObtainer(CURRENT_REG_1_SPINNER_INIT));
@@ -461,6 +434,47 @@ public class HighPressureSectionController {
         labelReg3.textProperty().bind(i18N.createStringBinding("highPressure.label.reg3.name"));
     }
 
+    private void configRegulatorsInvolved(int number) {
+        switch (number){
+            case 1:
+                setVisibleRegulator2(false);
+                setVisibleRegulator3(false);
+                break;
+            case 2:
+                setVisibleRegulator2(true);
+                setVisibleRegulator3(false);
+                break;
+            case 3:
+                setVisibleRegulator2(true);
+                setVisibleRegulator3(true);
+                break;
+            default:
+                setVisibleRegulator2(true);
+                setVisibleRegulator3(true);
+                break;
+        }
+    }
+
+    private class RegulatorsConfigListener implements ChangeListener<String> {
+        @Override
+        public void changed(ObservableValue<? extends String> observable, String  oldValue, String  newValue) {
+            switch (Integer.parseInt(newValue)){
+                case 1:
+                    configRegulatorsInvolved(1);
+                    break;
+                case 2:
+                    configRegulatorsInvolved(2);
+                    break;
+                case 3:
+                    configRegulatorsInvolved(3);
+                    break;
+                default:
+                    configRegulatorsInvolved(3);
+                    break;
+            }
+        }
+    }
+
     private class StackPanePowerButtonWidthListener implements ChangeListener<Number> {
 
         private final StackPane stackPWB;
@@ -576,6 +590,8 @@ public class HighPressureSectionController {
             }
         }
     }
+
+
 
     private class ThreeSpinnerFocusListener implements ChangeListener<Boolean>{
         RegActive activeParam;

@@ -7,7 +7,7 @@ public class PumpFieldController {
 
     @FXML private TextField pumpTextField;
 
-    public TextField getInjectorTextField() {
+    public TextField getPumpTextField() {
         return pumpTextField;
     }
 }

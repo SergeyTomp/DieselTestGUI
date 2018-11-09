@@ -3,8 +3,9 @@ package fi.stardex.sisu.ui.updaters;
 import fi.stardex.sisu.annotations.Module;
 import fi.stardex.sisu.combobox_values.InjectorChannel;
 import fi.stardex.sisu.devices.Device;
+import fi.stardex.sisu.states.InjConfigurationState;
+import fi.stardex.sisu.states.InstantFlowState;
 import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.version.FirmwareVersion;
 import javafx.scene.control.TextField;
@@ -21,9 +22,10 @@ import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions.STREAM;
 public class FlowStreamUpdater extends FlowUpdater implements Updater {
 
     public FlowStreamUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
-                             SettingsController settingsController, FirmwareVersion<FlowVersions> flowFirmwareVersion) {
+                             FirmwareVersion<FlowVersions> flowFirmwareVersion,
+                             InjConfigurationState injConfigurationState, InstantFlowState instantFlowState) {
 
-        super(flowController, injectorSectionController, settingsController, flowFirmwareVersion);
+        super(flowController, injectorSectionController, flowFirmwareVersion, injConfigurationState, instantFlowState);
 
     }
 
@@ -46,9 +48,9 @@ public class FlowStreamUpdater extends FlowUpdater implements Updater {
             return;
         }
 
-        if (comboInjectorConfig.getSelectionModel().getSelectedItem() == InjectorChannel.SINGLE_CHANNEL)
-
+        if(injConfigurationState.get() == InjectorChannel.SINGLE_CHANNEL){
             runOnSingleChannelMode(STREAM);
+        }
 
         else {
 

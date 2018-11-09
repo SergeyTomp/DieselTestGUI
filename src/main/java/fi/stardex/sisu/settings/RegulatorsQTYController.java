@@ -1,6 +1,6 @@
-package fi.stardex.sisu.ui.controllers.pumps.settings;
+package fi.stardex.sisu.settings;
 
-import fi.stardex.sisu.state.RegulatorsQTYState;
+import fi.stardex.sisu.states.RegulatorsQTYState;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
@@ -34,5 +34,6 @@ public class RegulatorsQTYController {
         regulatorsQTYState.regulatorsQTYStateProperty().bind(regulatorsConfigComboBox.valueProperty());
         regulatorsConfigComboBox.getSelectionModel().select(rootPrefs.get(PREF_KEY, "3"));
         regulatorsConfigComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> rootPrefs.put(PREF_KEY, newValue));
+
     }
 }

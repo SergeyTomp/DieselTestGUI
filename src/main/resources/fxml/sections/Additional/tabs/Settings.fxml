@@ -1,61 +1,35 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.CheckBox?>
-<?import javafx.scene.control.ComboBox?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<GridPane fx:id="settingsGridPane"
+          prefHeight="241.0"
+          prefWidth="506.0"
+          stylesheets="@../../../../css/Styling.css"
+          xmlns="http://javafx.com/javafx/8.0.121"
+          xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController">
 
-<GridPane prefHeight="241.0" prefWidth="506.0" stylesheets="@../../../../css/Styling.css" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.additional.tabs.SettingsController">
     <children>
-        <CheckBox fx:id="fastCodingCheckBox" mnemonicParsing="false" selected="true" styleClass="checkBox" stylesheets="@../../../../css/Styling.css" text="%settings.fastCoding.CheckBox" GridPane.halignment="LEFT" GridPane.rowIndex="7">
-            <GridPane.margin>
-                <Insets />
-            </GridPane.margin>
-        </CheckBox>
+
+        <fx:include fx:id="pressureSensor" source="settings/PressureSensor.fxml" GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.halignment="LEFT"/>
+        <fx:include fx:id="injConfiguration" source="settings/InjConfiguration.fxml" GridPane.halignment="LEFT" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+        <fx:include fx:id="language" source="settings/Language.fxml" GridPane.halignment="LEFT" GridPane.columnIndex= "1" GridPane.rowIndex="3"/>
+        <fx:include fx:id="flowView" source="settings/FlowView.fxml" GridPane.halignment="LEFT" GridPane.columnIndex= "1" GridPane.rowIndex= "4"/>
+        <fx:include fx:id="regulatorsQTY" source="settings/RegulatorsQTY.fxml" GridPane.halignment="LEFT" GridPane.columnIndex= "1" GridPane.rowIndex = "1"/>
+
+        <fx:include fx:id="fastCoding" source="settings/FastCoding.fxml" GridPane.halignment="LEFT" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+        <fx:include fx:id="dimasGuiEdition" source="settings/DimasGuiEdition.fxml" GridPane.halignment="LEFT" GridPane.columnIndex="0" GridPane.rowIndex = "7"/>
+        <fx:include fx:id="instantFlow" source="settings/InstantFlow.fxml" GridPane.halignment="LEFT" GridPane.columnIndex="0" GridPane.rowIndex = "6"/>
+
         <Label fx:id="regulatorsConfigLabel" prefHeight="16.0" stylesheets="@../../../../css/Styling.css" text="%settings.regulatorsConfig.ComboBox" GridPane.rowIndex="1" />
         <Label fx:id="injectorsConfigLabel" prefHeight="16.0" stylesheets="@../../../../css/Styling.css" text="%settings.injectorsConfig.ComboBox" GridPane.rowIndex="2" />
         <Label fx:id="languagesLabel" prefHeight="16.0" stylesheets="@../../../../css/Styling.css" text="%settings.languages.ComboBox" GridPane.rowIndex="3" />
-        <ComboBox fx:id="pressureSensorComboBox" prefWidth="180.0" GridPane.columnIndex="1" GridPane.halignment="LEFT">
-            <GridPane.margin>
-                <Insets left="15.0" />
-            </GridPane.margin>
-        </ComboBox>
-        <ComboBox fx:id="injectorsConfigComboBox" prefWidth="180.0" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="2">
-            <GridPane.margin>
-                <Insets left="15.0" />
-            </GridPane.margin>
-        </ComboBox>
-        <ComboBox fx:id="languagesConfigComboBox" prefWidth="180.0" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="3">
-            <GridPane.margin>
-                <Insets left="15.0" />
-            </GridPane.margin>
-        </ComboBox>
+        <Label fx:id="pressureSensorLabel" layoutX="80.0" layoutY="15.0" stylesheets="@../../../../css/Styling.css" text="%settings.pressureSensor.Label" GridPane.rowIndex="0"/>
         <Label fx:id="flowOutputDimensionLabel" prefHeight="16.0" stylesheets="@../../../../css/Styling.css" text="%settings.FlowOutputDimension.ComboBox" GridPane.rowIndex="4" />
-        <ComboBox fx:id="flowOutputDimensionsComboBox" prefWidth="180.0" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="4">
-            <GridPane.margin>
-                <Insets left="15.0" />
-            </GridPane.margin>
-        </ComboBox>
-        <CheckBox fx:id="isDIMASCheckBox" mnemonicParsing="false" selected="true" styleClass="checkBox" stylesheets="@../../../../css/Styling.css" text="%settings.isDIMAS.CheckBox" GridPane.halignment="LEFT" GridPane.rowIndex="5">
-            <GridPane.margin>
-                <Insets />
-            </GridPane.margin>
-        </CheckBox>
-        <CheckBox fx:id="flowVisibleCheckBox" mnemonicParsing="false" styleClass="checkBox" stylesheets="@../../../../css/Styling.css" text="%settings.flowVisible.CheckBox" GridPane.halignment="LEFT" GridPane.rowIndex="6">
-            <GridPane.margin>
-                <Insets />
-            </GridPane.margin>
-        </CheckBox>
-        <Label fx:id="pressureSensorLabel" layoutX="80.0" layoutY="15.0" stylesheets="@../../../../css/Styling.css" text="%settings.pressureSensor.Label" />
-        <ComboBox fx:id="regulatorsConfigComboBox" prefWidth="180.0" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="1">
-            <GridPane.margin>
-                <Insets left="15.0" />
-            </GridPane.margin>
-        </ComboBox>
+
     </children>
+
     <columnConstraints>
         <ColumnConstraints halignment="LEFT" hgrow="ALWAYS" maxWidth="200.0" minWidth="180.0" prefWidth="180.0" />
         <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="462.0" minWidth="200.0" prefWidth="200.0" />
