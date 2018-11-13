@@ -2,6 +2,8 @@ package fi.stardex.sisu.spring;
 
 import fi.stardex.sisu.model.ManufacturerPumpModel;
 import fi.stardex.sisu.model.PumpModel;
+import fi.stardex.sisu.states.ManufacturerPumpSelectionState;
+import fi.stardex.sisu.states.PumpSelectionState;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.pumps.*;
 import fi.stardex.sisu.ui.controllers.pumps.flow.PumpBeakerController;
@@ -21,7 +23,7 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 @ComponentScan(value = "fi.stardex.sisu")
-public class JavaFXSpringConfigurePumps extends ViewLoader{
+public class JavaFXSpringConfigurePumps extends ViewLoader {
 
     public JavaFXSpringConfigurePumps(I18N i18N) {
         super(i18N);
@@ -38,75 +40,87 @@ public class JavaFXSpringConfigurePumps extends ViewLoader{
         return loadView("/fxml/pumps/pressure/PumpHighPressureSection.fxml");
     }
 
-    @Bean public
-    ViewHolder pumpTabSection(){
+    @Bean
+    public ViewHolder pumpTabSection() {
         return loadView("/fxml/pumps/TabSectionPumps.fxml");
     }
 
     @Bean
-    public MainSectionPumpsController mainSectionPumpsController(){
-        return (MainSectionPumpsController)mainSectionPumps().getController();
-    }
-
-    @Bean
     @Autowired
-    public PumpsModelsListController pumpsModelsListController(MainSectionPumpsController mainSectionPumpsController,
-                                                               PumpModel pumpModel){
-        PumpsModelsListController pumpsModelsListController = mainSectionPumpsController.getPumpsModelsListController();
-        pumpsModelsListController.setPumpModel(pumpModel);
-        return pumpsModelsListController;
+    public MainSectionPumpsController mainSectionPumpsController(PumpSelectionState pumpSelectionState) {
+        MainSectionPumpsController mainSectionPumpsController = (MainSectionPumpsController) mainSectionPumps().getController();
+        mainSectionPumpsController.setPumpSelectionState(pumpSelectionState);
+        return mainSectionPumpsController;
     }
 
     @Bean
     @Autowired
     public PumpsOEMListController pumpsOEMListController(MainSectionPumpsController mainSectionPumpsController,
                                                          ManufacturerPumpModel manufacturerPumpModel,
-                                                         PumpModel pumpModel){
+                                                         PumpModel pumpModel,
+                                                         ManufacturerPumpSelectionState manufacturerPumpSelectionState) {
         PumpsOEMListController pumpsOEMListController = mainSectionPumpsController.getPumpsOEMListController();
         pumpsOEMListController.setManufacturerPumpModel(manufacturerPumpModel);
         pumpsOEMListController.setPumpModel(pumpModel);
+        pumpsOEMListController.setManufacturerPumpSelectionState(manufacturerPumpSelectionState);
         return pumpsOEMListController;
     }
 
     @Bean
     @Autowired
-    public StoreResetPrintController storeResetPrintController(MainSectionPumpsController mainSectionPumpsController){
+    public PumpsModelsListController pumpsModelsListController(MainSectionPumpsController mainSectionPumpsController,
+                                                               PumpModel pumpModel,
+                                                               ManufacturerPumpSelectionState manufacturerPumpSelectionState,
+                                                               PumpSelectionState pumpSelectionState) {
+        PumpsModelsListController pumpsModelsListController = mainSectionPumpsController.getPumpsModelsListController();
+        pumpsModelsListController.setPumpModel(pumpModel);
+        pumpsModelsListController.setManufacturerPumpSelectionState(manufacturerPumpSelectionState);
+        pumpsModelsListController.setPumpSelectionState(pumpSelectionState);
+        return pumpsModelsListController;
+    }
+
+    @Bean
+    @Autowired
+    public StoreResetPrintController storeResetPrintController(MainSectionPumpsController mainSectionPumpsController) {
         return mainSectionPumpsController.getStoreResetPrintController();
     }
 
     @Bean
     @Autowired
-    public TestModeController testModeController(MainSectionPumpsController mainSectionPumpsController){
+    public TestModeController testModeController(MainSectionPumpsController mainSectionPumpsController) {
         return mainSectionPumpsController.getTestModeController();
     }
 
     @Bean
     @Autowired
-    public PumpFieldController pumpFieldController(MainSectionPumpsController mainSectionPumpsController){
-        return mainSectionPumpsController.getPumpFieldController();
+    public PumpFieldController pumpFieldController(MainSectionPumpsController mainSectionPumpsController,
+                                                   PumpModel pumpModel) {
+        PumpFieldController pumpFieldController = mainSectionPumpsController.getPumpFieldController();
+        pumpFieldController.setPumpModel(pumpModel);
+        return pumpFieldController;
     }
 
     @Bean
     @Autowired
-    public TestListController testListController(MainSectionPumpsController mainSectionPumpsController){
+    public TestListController testListController(MainSectionPumpsController mainSectionPumpsController) {
         return mainSectionPumpsController.getTestListController();
     }
 
     @Bean
     @Autowired
-    public TestSpeedController testSpeedController(MainSectionPumpsController mainSectionPumpsController){
+    public TestSpeedController testSpeedController(MainSectionPumpsController mainSectionPumpsController) {
         return mainSectionPumpsController.getTestSpeedController();
     }
 
     @Bean
     @Autowired
-    public StartButtonController startButtonController(MainSectionPumpsController mainSectionPumpsController){
+    public StartButtonController startButtonController(MainSectionPumpsController mainSectionPumpsController) {
         return mainSectionPumpsController.getStartButtonController();
     }
 
     @Bean
     @Autowired
-    public PumpTabSectionController pumpsTabSectionController(I18N i18N){
+    public PumpTabSectionController pumpsTabSectionController(I18N i18N) {
         PumpTabSectionController pumpTabSectionController = (PumpTabSectionController) pumpTabSection().getController();
         pumpTabSectionController.setI18N(i18N);
         return pumpTabSectionController;
@@ -114,7 +128,7 @@ public class JavaFXSpringConfigurePumps extends ViewLoader{
 
     @Bean
     @Autowired
-    public PumpFlowController pumpFlowController(PumpTabSectionController pumpTabSectionController){
+    public PumpFlowController pumpFlowController(PumpTabSectionController pumpTabSectionController) {
         return pumpTabSectionController.getPumpFlowController();
     }
 
@@ -148,13 +162,13 @@ public class JavaFXSpringConfigurePumps extends ViewLoader{
 
     @Bean
     @Autowired
-    public PumpReportController pumpReportController(PumpTabSectionController pumpTabSectionController){
+    public PumpReportController pumpReportController(PumpTabSectionController pumpTabSectionController) {
         return pumpTabSectionController.getPumpReportController();
     }
 
     @Bean
     @Autowired
-    public  PumpInfoController pumpInfoController(PumpTabSectionController pumpTabSectionController){
+    public PumpInfoController pumpInfoController(PumpTabSectionController pumpTabSectionController) {
         return pumpTabSectionController.getPumpInfoController();
     }
 

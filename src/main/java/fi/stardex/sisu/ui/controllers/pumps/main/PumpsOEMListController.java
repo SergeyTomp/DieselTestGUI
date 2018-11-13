@@ -3,6 +3,7 @@ package fi.stardex.sisu.ui.controllers.pumps.main;
 import fi.stardex.sisu.model.ManufacturerPumpModel;
 import fi.stardex.sisu.model.PumpModel;
 import fi.stardex.sisu.persistence.orm.pump.ManufacturerPump;
+import fi.stardex.sisu.states.ManufacturerPumpSelectionState;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
@@ -13,11 +14,14 @@ import javax.annotation.PostConstruct;
 
 public class PumpsOEMListController implements ListChangeListener<ManufacturerPump>, ChangeListener<ManufacturerPump> {
 
-    @FXML private ListView<ManufacturerPump> oemListView;
+    @FXML
+    private ListView<ManufacturerPump> oemListView;
 
     private ManufacturerPumpModel manufacturerPumpModel;
 
     private PumpModel pumpModel;
+
+    private ManufacturerPumpSelectionState manufacturerPumpSelectionState;
 
     public void setManufacturerPumpModel(ManufacturerPumpModel manufacturerPumpModel) {
         this.manufacturerPumpModel = manufacturerPumpModel;
@@ -27,10 +31,15 @@ public class PumpsOEMListController implements ListChangeListener<ManufacturerPu
         this.pumpModel = pumpModel;
     }
 
+    public void setManufacturerPumpSelectionState(ManufacturerPumpSelectionState manufacturerPumpSelectionState) {
+        this.manufacturerPumpSelectionState = manufacturerPumpSelectionState;
+    }
+
     @PostConstruct
     private void init() {
 
         manufacturerPumpModel.getManufacturerPumpObservableList().addListener(this);
+
         oemListView.getSelectionModel().selectedItemProperty().addListener(this);
 
     }
@@ -46,6 +55,10 @@ public class PumpsOEMListController implements ListChangeListener<ManufacturerPu
     public void changed(ObservableValue<? extends ManufacturerPump> observableValue, ManufacturerPump oldValue, ManufacturerPump newValue) {
 
         pumpModel.initPumpList(newValue);
+
+        if (oldValue == null)
+            manufacturerPumpSelectionState.manufacturerPumpSelectionProperty().setValue(true);
+
 
     }
 }

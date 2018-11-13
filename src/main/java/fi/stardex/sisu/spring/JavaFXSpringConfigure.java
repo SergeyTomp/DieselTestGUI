@@ -89,6 +89,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
     @DependsOn("pumpsOEMListController")
     public GUI_TypeController gui_typeController(Preferences rootPrefs,
                                                  RootLayoutController rootLayoutController,
+                                                 TabSectionController tabSectionController,
+                                                 PumpTabSectionController pumpTabSectionController,
                                                  DimasGUIEditionState dimasGUIEditionState,
                                                  ViewHolder mainSectionPumps,
                                                  ViewHolder pumpHighPressureSection,
@@ -103,12 +105,12 @@ public class JavaFXSpringConfigure extends ViewLoader{
         gui_typeController.setCRSection(crSection().getView());
         gui_typeController.setUISSection(uisSection().getView());
         gui_typeController.setTabSection(tabSection().getView());
-        gui_typeController.setTabSectionController((TabSectionController) tabSection().getController());
+        gui_typeController.setSettingsGridPaneCR(tabSectionController.getSettingsGridPane());
+        gui_typeController.setSettingsGridPanePumps(pumpTabSectionController.getSettingsGridPane());
         gui_typeController.setMainSectionGridPane(rootLayoutController.getMainSectionGridPane());
         gui_typeController.setAdditionalSectionGridPane(rootLayoutController.getAdditionalSectionGridPane());
         gui_typeController.setPumpSection(pumpHighPressureSection.getView());
         gui_typeController.setTabSectionPumps(pumpTabSection.getView());
-        gui_typeController.setPumpTabSectionController((PumpTabSectionController) pumpTabSection.getController());
         gui_typeController.setSettings(settings.getView());
         gui_typeController.setConnection(connection.getView());
         gui_typeController.setDimasGUIEditionState(dimasGUIEditionState);

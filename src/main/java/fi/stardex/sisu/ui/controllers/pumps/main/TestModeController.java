@@ -3,12 +3,13 @@ package fi.stardex.sisu.ui.controllers.pumps.main;
 import javafx.fxml.FXML;
 import javafx.scene.control.RadioButton;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 
 public class TestModeController {
 
+    @FXML private GridPane testModeGridPane;
     @FXML private RadioButton autoTestRadioButton;
     @FXML private RadioButton testPlanTestRadioButton;
-    @FXML private GridPane testModeGridPane;
 
     public RadioButton getAutoTestRadioButton() {
         return autoTestRadioButton;

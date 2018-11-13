@@ -596,7 +596,7 @@ public class SpringJavaConfig {
 
 
     @Bean
-    public DesktopFiles desktopFiles(){
+    public DesktopFiles desktopFiles() {
         return new DesktopFiles();
     }
 
@@ -608,7 +608,7 @@ public class SpringJavaConfig {
                                  RLCController rlcController,
                                  FlowReport flowReport,
                                  Measurements measurements,
-                                 LanguageState languageState){
+                                 LanguageState languageState) {
         PDFService pdfService = new PDFService();
         pdfService.setI18N(i18N);
         pdfService.setDesktopFiles(desktopFiles);
@@ -620,47 +620,63 @@ public class SpringJavaConfig {
         return pdfService;
     }
 
+    // --------------------------------------State-----------------------------------------------
 
     @Bean
-    public FlowViewState flowViewState(){
+    public FlowViewState flowViewState() {
         return new FlowViewState();
     }
 
     @Bean
-    public DimasGUIEditionState dimasGUIEditionState(){
+    public DimasGUIEditionState dimasGUIEditionState() {
         return new DimasGUIEditionState();
     }
 
     @Bean
-    public FastCodingState fastCodingState(){
+    public FastCodingState fastCodingState() {
         return new FastCodingState();
     }
 
     @Bean
-    public InjConfigurationState injConfigurationState(){
+    public InjConfigurationState injConfigurationState() {
         return new InjConfigurationState();
     }
 
     @Bean
-    public InstantFlowState instantFlowState(){
+    public InstantFlowState instantFlowState() {
         return new InstantFlowState();
     }
 
     @Bean
-    public LanguageState languageState(){
+    public LanguageState languageState() {
         return new LanguageState();
     }
 
     @Bean
-    public PressureSensorState pressureSensorState(){
+    public PressureSensorState pressureSensorState() {
         return new PressureSensorState();
     }
 
     @Bean
-    public RegulatorsQTYState regulatorsQTYState(){
+    public RegulatorsQTYState regulatorsQTYState() {
         return new RegulatorsQTYState();
     }
 
+
+    @Bean
+    public InjectorTypeToggleState injectorTypeToggleState() {
+        return new InjectorTypeToggleState();
+    }
+
+    @Bean
+    public ManufacturerPumpSelectionState manufacturerPumpSelectionState() {
+        return new ManufacturerPumpSelectionState();
+    }
+
+    @Bean
+    public PumpSelectionState pumpSelectionState() {
+        return new PumpSelectionState();
+    }
 
     // --------------------------------------Model-----------------------------------------------
 
@@ -674,11 +690,5 @@ public class SpringJavaConfig {
     @Autowired
     public PumpModel pumpModel(PumpRepository pumpRepository) {
         return new PumpModel(pumpRepository);
-    }
-
-
-    @Bean
-    public InjectorTypeToggleState injectorTypeToggleState(){
-        return new InjectorTypeToggleState();
     }
 }

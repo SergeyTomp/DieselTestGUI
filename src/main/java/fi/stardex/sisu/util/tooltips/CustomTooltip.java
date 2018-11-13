@@ -1,12 +1,6 @@
 package fi.stardex.sisu.util.tooltips;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Tooltip;
-import javafx.util.Duration;
-import java.lang.reflect.Field;
 
 public class CustomTooltip extends Tooltip {
 

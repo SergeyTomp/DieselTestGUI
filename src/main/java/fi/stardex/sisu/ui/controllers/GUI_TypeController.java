@@ -2,7 +2,6 @@ package fi.stardex.sisu.ui.controllers;
 
 import fi.stardex.sisu.states.DimasGUIEditionState;
 import fi.stardex.sisu.model.ManufacturerPumpModel;
-import fi.stardex.sisu.ui.controllers.additional.TabSectionController;
 import fi.stardex.sisu.ui.controllers.pumps.PumpTabSectionController;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -45,6 +44,10 @@ public class GUI_TypeController {
 
     private GridPane additionalSectionGridPane;
 
+    private GridPane settingsGridPaneCR;
+
+    private GridPane settingsGridPanePumps;
+
     private Parent activeMainSection;
 
     private Parent activeChangeableSection;
@@ -56,8 +59,6 @@ public class GUI_TypeController {
     private Parent connection;
 
     private DimasGUIEditionState dimasGUIEditionState;
-
-    private TabSectionController tabSectionController;
 
     private PumpTabSectionController pumpTabSectionController;
 
@@ -99,6 +100,14 @@ public class GUI_TypeController {
         this.additionalSectionGridPane = additionalSectionGridPane;
     }
 
+    public void setSettingsGridPaneCR(GridPane settingsGridPaneCR) {
+        this.settingsGridPaneCR = settingsGridPaneCR;
+    }
+
+    public void setSettingsGridPanePumps(GridPane settingsGridPanePumps) {
+        this.settingsGridPanePumps = settingsGridPanePumps;
+    }
+
     public void setMainSectionPumps(Parent mainSectionPumps) {
         this.mainSectionPumps = mainSectionPumps;
     }
@@ -109,10 +118,6 @@ public class GUI_TypeController {
 
     public void setTabSectionPumps(Parent tabSectionPumps) {
         this.tabSectionPumps = tabSectionPumps;
-    }
-
-    public void setTabSectionController(TabSectionController tabSectionController) {
-        this.tabSectionController = tabSectionController;
     }
 
     public void setPumpTabSectionController(PumpTabSectionController pumpTabSectionController) {
@@ -167,10 +172,14 @@ public class GUI_TypeController {
 
         mainSectionGridPane.add(mainSection, 0, 1);
         additionalSectionGridPane.add(crSection, 0, 1);
-        tabSectionController.getSettingsGridPane().add(connection, 0, 0);
-        settings.getChildrenUnmodifiable().stream().filter(node -> node.getId().equals("isDIMASCheckBox")).forEach(node -> node.setVisible(true));
-        tabSectionController.getSettingsGridPane().add(settings, 1, 0);
         additionalSectionGridPane.add(tabSection, 0, 2);
+
+        if (settingsGridPaneCR.getChildren().isEmpty()) {
+            settingsGridPaneCR.add(connection, 0, 0);
+            settingsGridPaneCR.add(settings, 1, 0);
+        }
+
+        settings.getChildrenUnmodifiable().stream().filter(node -> node.getId().equals("isDIMASCheckBox")).forEach(node -> node.setVisible(true));
 
         activeMainSection = mainSection;
         activeChangeableSection = crSection;
@@ -186,11 +195,15 @@ public class GUI_TypeController {
 
         mainSectionGridPane.add(mainSectionPumps, 0, 1);
         additionalSectionGridPane.add(pumpSection, 0, 1);
-        pumpTabSectionController.getSettingsGridPane().add(connection, 0, 0);
-        settings.getChildrenUnmodifiable().stream().filter(node -> node.getId().equals("isDIMASCheckBox")).forEach(node -> node.setVisible(false));
-        pumpTabSectionController.getSettingsGridPane().add(settings, 1, 0);
-
         additionalSectionGridPane.add(tabSectionPumps, 0, 2);
+
+        if (settingsGridPanePumps.getChildren().isEmpty()) {
+            settingsGridPanePumps.add(connection, 0, 0);
+            settingsGridPanePumps.add(settings, 1, 0);
+        }
+
+        settings.getChildrenUnmodifiable().stream().filter(node -> node.getId().equals("isDIMASCheckBox")).forEach(node -> node.setVisible(false));
+
 
         activeMainSection = mainSectionPumps;
         activeChangeableSection = pumpSection;
@@ -223,4 +236,3 @@ public class GUI_TypeController {
     }
 
 }
-
