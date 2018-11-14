@@ -1,5 +1,6 @@
 package fi.stardex.sisu.ui.controllers.pumps;
 
+import fi.stardex.sisu.ui.controllers.pumps.flow.PumpFlowController;
 import fi.stardex.sisu.util.i18n.I18N;
 import javafx.fxml.FXML;
 import javafx.scene.control.Tab;
@@ -22,7 +23,7 @@ public class PumpTabSectionController {
     @FXML private AnchorPane pumpReportAnchorPane;
 
     @FXML private PumpInfoController pumpInfoAnchorPaneController;
-    @FXML private PumpFlowController pumpFlowAnchorPaneController;
+    @FXML private PumpFlowController pumpFlowController;
     @FXML private PumpReportController pumpReportAnchorPaneController;
 
     private I18N i18N;
@@ -64,7 +65,7 @@ public class PumpTabSectionController {
     }
 
     public PumpFlowController getPumpFlowController() {
-        return pumpFlowAnchorPaneController;
+        return pumpFlowController;
     }
 
     public PumpReportController getPumpReportController() {

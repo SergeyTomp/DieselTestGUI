@@ -1,6 +1,8 @@
 package fi.stardex.sisu.ui.controllers.additional;
 
 import fi.stardex.sisu.ui.controllers.additional.tabs.*;
+import fi.stardex.sisu.ui.controllers.additional.tabs.info.InfoController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.report.ReportController;
 import fi.stardex.sisu.util.i18n.I18N;
 import javafx.fxml.FXML;
 import javafx.scene.control.Spinner;

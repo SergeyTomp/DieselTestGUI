@@ -6,6 +6,7 @@ import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.persistence.orm.interfaces.Model;
 import fi.stardex.sisu.store.FlowReport;
 import fi.stardex.sisu.ui.controllers.additional.tabs.*;
+import fi.stardex.sisu.ui.controllers.additional.tabs.report.FlowReportController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
 import fi.stardex.sisu.util.enums.Tests.TestType;

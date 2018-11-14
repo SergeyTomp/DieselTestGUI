@@ -15,7 +15,7 @@ import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.DelayController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.InfoController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.info.InfoController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.RLCController;
 import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.ui.controllers.dialogs.ManufacturerMenuDialogController;

@@ -25,10 +25,10 @@
             <fx:include fx:id="rlc" source="tabs/RLC.fxml" />
         </Tab>
         <Tab fx:id="tabInfo" text="%additional.info">
-            <fx:include fx:id="info" source="tabs/Info.fxml" />
+            <fx:include fx:id="info" source="tabs/info/Info.fxml" />
         </Tab>
         <Tab fx:id="tabReport" text="%additional.report">
-            <fx:include fx:id="report" source="tabs/Report.fxml" />
+            <fx:include fx:id="report" source="tabs/report/Report.fxml" />
         </Tab>
         <Tab fx:id="tabSettings" text="%additional.settings">
          <content>

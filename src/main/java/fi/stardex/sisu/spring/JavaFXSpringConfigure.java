@@ -22,6 +22,13 @@ import fi.stardex.sisu.ui.controllers.additional.BeakerController;
 import fi.stardex.sisu.ui.controllers.additional.TabSectionController;
 import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.*;
+import fi.stardex.sisu.ui.controllers.additional.tabs.info.*;
+import fi.stardex.sisu.ui.controllers.additional.tabs.report.DelayReportController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.report.FlowReportController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.report.RLC_ReportController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.report.ReportController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.settings.ConnectionController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.settings.SettingsController;
 import fi.stardex.sisu.ui.controllers.cr.CRSectionController;
 import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
@@ -253,31 +260,31 @@ public class JavaFXSpringConfigure extends ViewLoader{
 
     @Bean
     public ViewHolder infoDefault(){
-        return loadView("/fxml/sections/Additional/tabs/DefaultOEM.fxml");
+        return loadView("/fxml/sections/Additional/tabs/info/DefaultOEM.fxml");
     }
 
     @Bean ViewHolder infoBosch(){
-        return loadView("/fxml/sections/Additional/tabs/Bosch.fxml");
+        return loadView("/fxml/sections/Additional/tabs/info/Bosch.fxml");
     }
 
     @Bean ViewHolder infoSiemens(){
-        return loadView("/fxml/sections/Additional/tabs/Siemens.fxml");
+        return loadView("/fxml/sections/Additional/tabs/info/Siemens.fxml");
     }
 
     @Bean ViewHolder infoDenso(){
-        return loadView("/fxml/sections/Additional/tabs/Denso.fxml");
+        return loadView("/fxml/sections/Additional/tabs/info/Denso.fxml");
     }
 
     @Bean ViewHolder infoCaterpillar(){
-        return loadView("/fxml/sections/Additional/tabs/Caterpillar.fxml");
+        return loadView("/fxml/sections/Additional/tabs/info/Caterpillar.fxml");
     }
 
     @Bean ViewHolder infoAZPI(){
-        return loadView("/fxml/sections/Additional/tabs/AZPI.fxml");
+        return loadView("/fxml/sections/Additional/tabs/info/AZPI.fxml");
     }
 
     @Bean ViewHolder infoDelphi(){
-        return loadView("/fxml/sections/Additional/tabs/Delphi.fxml");
+        return loadView("/fxml/sections/Additional/tabs/info/Delphi.fxml");
     }
 
     @Bean
@@ -470,7 +477,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
 
     @Bean
     public ViewHolder connection(){
-        return loadView("/fxml/sections/Additional/tabs/Connection.fxml");
+        return loadView("/fxml/sections/Additional/tabs/settings/Connection.fxml");
     }
 
 
@@ -743,7 +750,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
 
     @Bean
     public ViewHolder settings(){
-        return loadView("/fxml/sections/Additional/tabs/Settings.fxml");
+        return loadView("/fxml/sections/Additional/tabs/settings/Settings.fxml");
     }
 
     @Bean

@@ -1596,3 +1596,55 @@ label
     -fx-background-color: #7676a2;
     -fx-text-fill: #ffff66;
 }
+/***************
+*.text-area
+****************/
+.text-area{
+
+    -textFont-color: #ddff99;
+    -background-color: #424242;
+    -fx-text-fill:-textFont-color;
+    -fx-font-size: 10pt;
+    -fx-font-family: monospace;
+    -border-color: #4d2600;
+    -fx-border-width: 1px;
+    -fx-text-box-border-width: 1px;
+    -fx-background-color: -border-color, -border-color, -border-color,  -background-color;
+    -fx-background-insets: 0;
+    -fx-opacity: 1;
+
+}
+
+
+.text-area:focused {
+
+    -borderSelect-color: #cc6600;
+    -fx-border-color:  -borderSelect-color;
+    -fx-background-insets: 0;
+
+}
+
+.text-area .content{
+
+    -fx-border-width: 0px;
+    -background-color: #424242;
+    -border-color: #4d2600;
+    -textFont-color: #ffff66;
+    -fx-background-color: -border-color, -border-color, -border-color,  -background-color;
+    -fx-border-color: -border-color;
+    -fx-text-box-border: #000000;
+    -fx-text-fill:-textFont-color;
+    -fx-font-size: 12pt;
+    -fx-font-family: "Arial";
+
+}
+
+.text-area:focused .content {
+
+    -borderSelect-color: #cc6600;
+    -fx-border-color:  -borderSelect-color;
+    -fx-background-insets: 0;
+
+}
+
+

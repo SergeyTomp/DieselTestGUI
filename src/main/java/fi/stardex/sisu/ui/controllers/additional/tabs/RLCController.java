@@ -1,22 +1,20 @@
 package fi.stardex.sisu.ui.controllers.additional.tabs;
 
 import eu.hansolo.medusa.Gauge;
-import eu.hansolo.medusa.GaugeBuilder;
 import fi.stardex.sisu.combobox_values.InjectorChannel;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.InjConfigurationState;
+import fi.stardex.sisu.ui.controllers.additional.tabs.report.RLC_ReportController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.pdf.Result;
 import fi.stardex.sisu.util.GaugeCreator;
 import fi.stardex.sisu.util.i18n.I18N;
-import fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,7 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static fi.stardex.sisu.ui.controllers.additional.tabs.RLC_ReportController.RLCreportTableLine;
+import static fi.stardex.sisu.ui.controllers.additional.tabs.report.RLC_ReportController.RLCreportTableLine;
 
 public class RLCController {
     private static final Logger logger = LoggerFactory.getLogger(RLCController.class);
