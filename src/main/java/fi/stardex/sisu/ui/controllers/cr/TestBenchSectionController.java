@@ -4,6 +4,7 @@ import eu.hansolo.enzo.lcd.Lcd;
 import eu.hansolo.enzo.lcd.LcdBuilder;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.DimasGUIEditionState;
+import fi.stardex.sisu.util.GaugeCreator;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.spinners.SpinnerManager;
 import fi.stardex.sisu.util.spinners.SpinnerValueObtainer;
@@ -243,13 +244,7 @@ public class TestBenchSectionController {
 
     private void setupLCD() {
 
-        currentRPMLcd = LcdBuilder.create().prefWidth(130).prefHeight(60).styleClass(Lcd.STYLE_CLASS_BLACK_YELLOW)
-                .backgroundVisible(true).foregroundShadowVisible(true).crystalOverlayVisible(true)
-                .title("").titleVisible(false).batteryVisible(false).signalVisible(false).alarmVisible(false)
-                .unit("rpm").unitVisible(true).decimals(0).minMeasuredValueDecimals(4).minMeasuredValueVisible(false)
-                .maxMeasuredValueDecimals(4).maxMeasuredValueVisible(false).formerValueVisible(false).threshold(26)
-                .thresholdVisible(false).trendVisible(false).trend(Lcd.Trend.RISING).numberSystemVisible(false)
-                .lowerRightTextVisible(true).valueFont(Lcd.LcdFont.DIGITAL_BOLD).animated(false).build();
+        currentRPMLcd = GaugeCreator.createLcd();
 
         currentRPMLcd.setMaxValue(5000.0);
 

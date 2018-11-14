@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+
+<StackPane fx:id="rootStackPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="260.0" minWidth="500.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.pumps.PumpHighPressureSectionController">
+   <children>
+      <GridPane>
+          <fx:include fx:id="pumpRegulatorSectionOne" source="PumpRegulatorSectionOne.fxml" GridPane.columnIndex="0" />
+          <fx:include fx:id="pumpRegulatorSectionTwo" source="PumpRegulatorSectionTwo.fxml" GridPane.columnIndex="1" />
+          <fx:include fx:id="pumpRegulatorSectionThree" source="PumpRegulatorSectionThree.fxml" GridPane.columnIndex="2" />
+          <fx:include fx:id="pumpHighPressureSectionLcd" source="PumpHighPressureSectionLcd.fxml" GridPane.columnIndex="3" />
+          <fx:include fx:id="pumpHighPressureSectionPwr" source="PumpHighPressureSectionPwr.fxml" GridPane.columnIndex="4" />
+         <columnConstraints>
+            <ColumnConstraints hgrow="ALWAYS" minWidth="160.0" prefWidth="190.0" />
+            <ColumnConstraints hgrow="ALWAYS" minWidth="160.0" prefWidth="190.0" />
+            <ColumnConstraints hgrow="ALWAYS" minWidth="160.0" prefWidth="190.0" />
+            <ColumnConstraints fillWidth="false" halignment="RIGHT" hgrow="ALWAYS" minWidth="70.0" prefWidth="86.0" />
+            <ColumnConstraints halignment="RIGHT" hgrow="ALWAYS" maxWidth="67.0" minWidth="42.0" prefWidth="61.0" />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints vgrow="SOMETIMES" />
+         </rowConstraints>
+      </GridPane>
+   </children>
+</StackPane>

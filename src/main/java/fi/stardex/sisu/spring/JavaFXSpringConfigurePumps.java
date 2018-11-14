@@ -26,9 +26,8 @@ public class JavaFXSpringConfigurePumps extends ViewLoader{
         return loadView("/fxml/pumps/MainSectionPumps.fxml");
     }
 
-    @Bean
-    public ViewHolder pumpsSection(){
-        return loadView("/fxml/pumps/PumpSection.fxml");
+    @Bean ViewHolder pumpHighPressureSection(){
+        return loadView("/fxml/pumps/PumpHighPressureSection.fxml");
     }
 
     @Bean public
@@ -98,11 +97,6 @@ public class JavaFXSpringConfigurePumps extends ViewLoader{
     }
 
     @Bean
-    public PumpSectionController pumpSectionController(){
-        return (PumpSectionController)pumpsSection().getController();
-    }
-
-    @Bean
     @Autowired
     public PumpTabSectionController pumpsTabSectionController(I18N i18N){
         PumpTabSectionController pumpTabSectionController = (PumpTabSectionController) pumpTabSection().getController();
@@ -127,4 +121,46 @@ public class JavaFXSpringConfigurePumps extends ViewLoader{
     public  PumpInfoController pumpInfoController(PumpTabSectionController pumpTabSectionController){
         return pumpTabSectionController.getPumpInfoController();
     }
+
+    @Bean
+    public PumpHighPressureSectionController pumpHighPressureSectionController(){
+        return (PumpHighPressureSectionController) pumpHighPressureSection().getController();
+    }
+
+    @Bean
+    @Autowired
+    public PumpRegulatorSectionOneController pumpRegulatorSectionOneController(PumpHighPressureSectionController pumpHighPressureSectionController){
+        PumpRegulatorSectionOneController pumpRegulatorSectionOneController = pumpHighPressureSectionController.getPumpRegulatorSectionOneController();
+        pumpRegulatorSectionOneController.setI18N(i18N);
+        return pumpRegulatorSectionOneController;
+    }
+
+    @Bean
+    @Autowired
+    public PumpRegulatorSectionTwoController pumpRegulatorSectionTwoController (PumpHighPressureSectionController pumpHighPressureSectionController){
+        PumpRegulatorSectionTwoController pumpRegulatorSectionTwoController =   pumpHighPressureSectionController.getPumpRegulatorSectionTwoController();
+        pumpRegulatorSectionTwoController.setI18N(i18N);
+        return pumpRegulatorSectionTwoController;
+    }
+
+    @Bean
+    @Autowired
+    public PumpRegulatorSectionThreeController pumpRegulatorSectionThreeController(PumpHighPressureSectionController pumpHighPressureSectionController){
+        PumpRegulatorSectionThreeController pumpRegulatorSectionThreeController = pumpHighPressureSectionController.getPumpRegulatorSectionThreeController();
+        pumpRegulatorSectionThreeController.setI18N(i18N);
+        return pumpRegulatorSectionThreeController;
+    }
+
+    @Bean
+    @Autowired
+    public PumpHighPressureSectionLcdController pumpHighPressureSectionLcdController(PumpHighPressureSectionController pumpHighPressureSectionController){
+        return pumpHighPressureSectionController.getPumpHighPressureSectionLcdController();
+    }
+
+    @Bean
+    @Autowired
+    public PumpHighPressureSectionPwrController pumpHighPressureSectionPwrController(PumpHighPressureSectionController pumpHighPressureSectionController){
+        return pumpHighPressureSectionController.getPumpHighPressureSectionPwrController();
+    }
+
 }

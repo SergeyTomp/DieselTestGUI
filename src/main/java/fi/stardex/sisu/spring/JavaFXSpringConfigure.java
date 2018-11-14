@@ -84,7 +84,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                  RootLayoutController rootLayoutController,
                                                  DimasGUIEditionState dimasGUIEditionState,
                                                  ViewHolder mainSectionPumps,
-                                                 ViewHolder pumpsSection,
+                                                 ViewHolder pumpHighPressureSection,
                                                  ViewHolder pumpTabSection,
                                                  ViewHolder settings,
                                                  ViewHolder connection,
@@ -99,7 +99,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         gui_typeController.setTabSectionController((TabSectionController) tabSection().getController());
         gui_typeController.setMainSectionGridPane(rootLayoutController.getMainSectionGridPane());
         gui_typeController.setAdditionalSectionGridPane(rootLayoutController.getAdditionalSectionGridPane());
-        gui_typeController.setPumpSection(pumpsSection.getView());
+        gui_typeController.setPumpSection(pumpHighPressureSection.getView());
         gui_typeController.setTabSectionPumps(pumpTabSection.getView());
         gui_typeController.setPumpTabSectionController((PumpTabSectionController) pumpTabSection.getController());
         gui_typeController.setSettings(settings.getView());

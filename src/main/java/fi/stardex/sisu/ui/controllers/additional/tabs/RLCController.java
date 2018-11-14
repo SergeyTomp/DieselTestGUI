@@ -9,6 +9,7 @@ import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.InjConfigurationState;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.pdf.Result;
+import fi.stardex.sisu.util.GaugeCreator;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer;
 import javafx.application.Platform;
@@ -149,10 +150,10 @@ public class RLCController {
         bindingI18N();
         storeButton.setDisable(true);
         measureButton.setDisable(true);
-        parameter1Gauge = createGauge();
-        parameter2Gauge = createGauge();
-        parameter3Gauge = createGauge();
-        parameter4Gauge = createGauge();
+        parameter1Gauge = GaugeCreator.createRLCGauge();
+        parameter2Gauge = GaugeCreator.createRLCGauge();
+        parameter3Gauge = GaugeCreator.createRLCGauge();
+        parameter4Gauge = GaugeCreator.createRLCGauge();
         parameter1StackPane.getChildren().add(parameter1Gauge);
         parameter2StackPane.getChildren().add(parameter2Gauge);
         parameter3StackPane.getChildren().add(parameter3Gauge);
@@ -172,25 +173,6 @@ public class RLCController {
 
         storeButton.textProperty().bind(i18N.createStringBinding("rlc.store.button"));
         measureButton.textProperty().bind(i18N.createStringBinding("rlc.measure.button"));
-    }
-
-    private static Gauge createGauge() {
-        return GaugeBuilder.create()
-                .skinType(Gauge.SkinType.SIMPLE_SECTION)
-                .titleColor(Color.YELLOW)
-                .title(" ")
-                .minValue(0)
-                .maxValue(35)
-                .valueColor(Color.WHITE)
-                .barColor(Color.YELLOW)
-                .unitColor(Color.YELLOW)
-                .animated(true)
-                .decimals(2)
-                .maxMeasuredValueVisible(false)
-                .minMeasuredValueVisible(false)
-                .oldValueVisible(false)
-                .animated(false)
-                .build();
     }
 
     private void measure() {
