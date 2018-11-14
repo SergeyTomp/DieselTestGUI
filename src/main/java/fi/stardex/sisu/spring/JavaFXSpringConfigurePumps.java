@@ -4,8 +4,16 @@ import fi.stardex.sisu.model.ManufacturerPumpModel;
 import fi.stardex.sisu.model.PumpModel;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.pumps.*;
+import fi.stardex.sisu.ui.controllers.pumps.flow.PumpBeakerController;
+import fi.stardex.sisu.ui.controllers.pumps.flow.PumpFlowController;
+import fi.stardex.sisu.ui.controllers.pumps.flow.PumpFlowTextAreaController;
+import fi.stardex.sisu.ui.controllers.pumps.main.*;
+import fi.stardex.sisu.ui.controllers.pumps.pressure.*;
+import fi.stardex.sisu.util.enums.BeakerType;
 import fi.stardex.sisu.util.i18n.I18N;
+import fi.stardex.sisu.util.rescalers.Rescaler;
 import javafx.embed.swing.JFXPanel;
+import javafx.scene.control.TextField;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -23,11 +31,11 @@ public class JavaFXSpringConfigurePumps extends ViewLoader{
 
     @Bean
     public ViewHolder mainSectionPumps(){
-        return loadView("/fxml/pumps/MainSectionPumps.fxml");
+        return loadView("/fxml/pumps/main/MainSectionPumps.fxml");
     }
 
     @Bean ViewHolder pumpHighPressureSection(){
-        return loadView("/fxml/pumps/PumpHighPressureSection.fxml");
+        return loadView("/fxml/pumps/pressure/PumpHighPressureSection.fxml");
     }
 
     @Bean public
@@ -108,6 +116,38 @@ public class JavaFXSpringConfigurePumps extends ViewLoader{
     @Autowired
     public PumpFlowController pumpFlowController(PumpTabSectionController pumpTabSectionController){
         return pumpTabSectionController.getPumpFlowController();
+    }
+
+    @Bean
+    @Autowired
+    public PumpBeakerController pumpDeliveryController(PumpFlowController pumpFlowController,
+                                                       Rescaler deliveryRescaler){
+        PumpBeakerController pumpDeliveryController = pumpFlowController.getPumpDeliveryController();
+        pumpDeliveryController.setI18N(i18N);
+        pumpDeliveryController.setBeakerType(BeakerType.DELIVERY);
+        pumpDeliveryController.setRescaler(deliveryRescaler);
+        //TODO - define textField
+        pumpDeliveryController.setTextField(new TextField());
+        return pumpDeliveryController;
+    }
+
+    @Bean
+    @Autowired
+    public PumpBeakerController pumpBackflowController(PumpFlowController pumpFlowController,
+                                                       Rescaler backFlowRescaler){
+        PumpBeakerController pumpBackflowController = pumpFlowController.getPumpBackflowController();
+        pumpBackflowController.setI18N(i18N);
+        pumpBackflowController.setBeakerType(BeakerType.BACKFLOW);
+        pumpBackflowController.setRescaler(backFlowRescaler);
+        //TODO - define textField
+        pumpBackflowController.setTextField(new TextField());
+        return pumpBackflowController;
+    }
+
+    @Bean
+    @Autowired
+    public PumpFlowTextAreaController pumpFlowTextAreaController(PumpFlowController pumpFlowController){
+        return pumpFlowController.getPumpFlowTextAreaController();
     }
 
     @Bean

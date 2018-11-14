@@ -2,7 +2,8 @@ package fi.stardex.sisu.ui.controllers.additional.tabs;
 
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.ui.controllers.additional.TabSectionController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.DelayReportController.DelayReportTableLine;
+import fi.stardex.sisu.ui.controllers.additional.tabs.report.DelayReportController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.report.DelayReportController.DelayReportTableLine;
 import fi.stardex.sisu.pdf.Result;
 import fi.stardex.sisu.util.DelayCalculator;
 import fi.stardex.sisu.util.i18n.I18N;

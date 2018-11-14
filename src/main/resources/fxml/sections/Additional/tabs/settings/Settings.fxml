@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<GridPane fx:id="settingsGridPane"
+          prefHeight="241.0"
+          prefWidth="506.0"
+          stylesheets="@../../../../../css/Styling.css"
+          xmlns="http://javafx.com/javafx/8.0.121"
+          xmlns:fx="http://javafx.com/fxml/1"
+          fx:controller="fi.stardex.sisu.ui.controllers.additional.tabs.settings.SettingsController">
+
+    <children>
+
+        <fx:include fx:id="pressureSensor" source="PressureSensor.fxml" GridPane.columnIndex="1" GridPane.rowIndex="0" GridPane.halignment="LEFT"/>
+        <fx:include fx:id="injConfiguration" source="InjConfiguration.fxml" GridPane.halignment="LEFT" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+        <fx:include fx:id="language" source="Language.fxml" GridPane.halignment="LEFT" GridPane.columnIndex= "1" GridPane.rowIndex="3"/>
+        <fx:include fx:id="flowView" source="FlowView.fxml" GridPane.halignment="LEFT" GridPane.columnIndex= "1" GridPane.rowIndex= "4"/>
+        <fx:include fx:id="regulatorsQTY" source="RegulatorsQTY.fxml" GridPane.halignment="LEFT" GridPane.columnIndex= "1" GridPane.rowIndex = "1"/>
+
+        <fx:include fx:id="fastCoding" source="FastCoding.fxml" GridPane.halignment="LEFT" GridPane.columnIndex="0" GridPane.rowIndex="5"/>
+        <fx:include fx:id="dimasGuiEdition" source="DimasGuiEdition.fxml" GridPane.halignment="LEFT" GridPane.columnIndex="0" GridPane.rowIndex = "7"/>
+        <fx:include fx:id="instantFlow" source="InstantFlow.fxml" GridPane.halignment="LEFT" GridPane.columnIndex="0" GridPane.rowIndex = "6"/>
+
+        <Label fx:id="regulatorsConfigLabel" prefHeight="16.0" stylesheets="@../../../../../css/Styling.css" text="%settings.regulatorsConfig.ComboBox" GridPane.rowIndex="1" />
+        <Label fx:id="injectorsConfigLabel" prefHeight="16.0" stylesheets="@../../../../../css/Styling.css" text="%settings.injectorsConfig.ComboBox" GridPane.rowIndex="2" />
+        <Label fx:id="languagesLabel" prefHeight="16.0" stylesheets="@../../../../../css/Styling.css" text="%settings.languages.ComboBox" GridPane.rowIndex="3" />
+        <Label fx:id="pressureSensorLabel" layoutX="80.0" layoutY="15.0" stylesheets="@../../../../../css/Styling.css" text="%settings.pressureSensor.Label" GridPane.rowIndex="0"/>
+        <Label fx:id="flowOutputDimensionLabel" prefHeight="16.0" stylesheets="@../../../../../css/Styling.css" text="%settings.FlowOutputDimension.ComboBox" GridPane.rowIndex="4" />
+
+    </children>
+
+    <columnConstraints>
+        <ColumnConstraints halignment="LEFT" hgrow="ALWAYS" maxWidth="200.0" minWidth="180.0" prefWidth="180.0" />
+        <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="462.0" minWidth="200.0" prefWidth="200.0" />
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints maxHeight="50.0" minHeight="10.0" prefHeight="50.0" valignment="CENTER" vgrow="ALWAYS" />
+        <RowConstraints maxHeight="50.0" minHeight="10.0" prefHeight="50.0" vgrow="ALWAYS" />
+        <RowConstraints maxHeight="50.0" minHeight="10.0" prefHeight="50.0" vgrow="ALWAYS" />
+        <RowConstraints maxHeight="50.0" minHeight="10.0" prefHeight="50.0" vgrow="ALWAYS" />
+        <RowConstraints maxHeight="50.0" minHeight="10.0" prefHeight="50.0" vgrow="ALWAYS" />
+        <RowConstraints maxHeight="50.0" minHeight="10.0" prefHeight="50.0" vgrow="ALWAYS" />
+        <RowConstraints maxHeight="50.0" minHeight="10.0" prefHeight="50.0" vgrow="ALWAYS" />
+        <RowConstraints maxHeight="50.0" minHeight="10.0" prefHeight="50.0" vgrow="ALWAYS" />
+        <RowConstraints maxHeight="50.0" minHeight="10.0" prefHeight="50.0" vgrow="ALWAYS" />
+    </rowConstraints>
+</GridPane>

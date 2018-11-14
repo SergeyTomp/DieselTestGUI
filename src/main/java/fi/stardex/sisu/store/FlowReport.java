@@ -4,7 +4,7 @@ import fi.stardex.sisu.combobox_values.Dimension;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.states.FlowViewState;
 import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.FlowReportController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.report.FlowReportController;
 import fi.stardex.sisu.pdf.Result;
 import fi.stardex.sisu.util.enums.Measurement;
 import javafx.beans.property.ObjectProperty;

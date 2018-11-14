@@ -8,7 +8,7 @@
     <tabs>
 
         <Tab fx:id="tabPumpFlow" text="%additional.flow">
-            <fx:include fx:id="pumpFlowAnchorPane" source="PumpFlow.fxml" />
+            <fx:include fx:id="pumpFlow" source="flow/PumpFlow.fxml" />
         </Tab>
         <Tab fx:id="tabPumpInfo" text="Info">
             <fx:include fx:id="pumpInfoAnchorPane" source="PumpInfo.fxml" />
