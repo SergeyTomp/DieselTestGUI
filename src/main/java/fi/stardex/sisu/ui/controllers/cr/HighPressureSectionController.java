@@ -1,7 +1,6 @@
 package fi.stardex.sisu.ui.controllers.cr;
 
 import eu.hansolo.enzo.lcd.Lcd;
-import eu.hansolo.enzo.lcd.LcdBuilder;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.PressureSensorState;
@@ -12,7 +11,6 @@ import fi.stardex.sisu.util.enums.RegActive;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.spinners.SpinnerManager;
 import fi.stardex.sisu.util.spinners.SpinnerValueObtainer;
-import fi.stardex.sisu.util.tooltips.CustomTooltip;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
@@ -208,7 +206,7 @@ public class HighPressureSectionController {
         currentReg3Spinner.getStyleClass().add(1, GREEN_STYLE_CLASS);
         dutyCycleReg3Spinner.getStyleClass().add(1, "");
 
-        Integer maxPressure = pressureSensorState.pressureSensorStateProperty().intValue();
+        int maxPressure = pressureSensorState.pressureSensorStateProperty().intValue();
         pressReg1Spinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(PRESS_REG_1_SPINNER_MIN, maxPressure, PRESS_REG_1_SPINNER_INIT, PRESS_REG_1_SPINNER_STEP));
         pressureSensorState.pressureSensorStateProperty().addListener(((observable, oldValue, newValue) -> pressReg1Spinner.setValueFactory(
                 new SpinnerValueFactory.IntegerSpinnerValueFactory(PRESS_REG_1_SPINNER_MIN, newValue.intValue(), PRESS_REG_1_SPINNER_INIT, PRESS_REG_1_SPINNER_STEP))));
@@ -216,13 +214,13 @@ public class HighPressureSectionController {
         configRegulatorsInvolved(Integer.parseInt(regulatorsQTYState.regulatorsQTYStateProperty().get()));
         regulatorsQTYState.regulatorsQTYStateProperty().addListener(new RegulatorsConfigListener());
 
-        SpinnerManager.setupSpinner(pressReg1Spinner, PRESS_REG_1_SPINNER_INIT, PRESS_REG_1_SPINNER_MIN, PRESS_REG_1_SPINNER_MAX, new CustomTooltip(), new SpinnerValueObtainer(PRESS_REG_1_SPINNER_INIT));
-        SpinnerManager.setupSpinner(currentReg1Spinner, CURRENT_REG_1_SPINNER_INIT, CURRENT_REG_1_SPINNER_FAKE, new CustomTooltip(), new SpinnerValueObtainer(CURRENT_REG_1_SPINNER_INIT));
-        SpinnerManager.setupSpinner(dutyCycleReg1Spinner, DUTY_CYCLE_REG_1_SPINNER_INIT, DUTY_CYCLE_REG_1_SPINNER_FAKE, new CustomTooltip(), new SpinnerValueObtainer(DUTY_CYCLE_REG_1_SPINNER_INIT));
-        SpinnerManager.setupSpinner(currentReg2Spinner, CURRENT_REG_2_SPINNER_INIT, CURRENT_REG_2_SPINNER_FAKE, new CustomTooltip(), new SpinnerValueObtainer(CURRENT_REG_2_SPINNER_INIT));
-        SpinnerManager.setupSpinner(dutyCycleReg2Spinner, DUTY_CYCLE_REG_2_SPINNER_INIT, DUTY_CYCLE_REG_2_SPINNER_FAKE, new CustomTooltip(), new SpinnerValueObtainer(DUTY_CYCLE_REG_2_SPINNER_INIT));
-        SpinnerManager.setupSpinner(currentReg3Spinner, CURRENT_REG_3_SPINNER_INIT, CURRENT_REG_3_SPINNER_FAKE, new CustomTooltip(), new SpinnerValueObtainer(CURRENT_REG_3_SPINNER_INIT));
-        SpinnerManager.setupSpinner(dutyCycleReg3Spinner, DUTY_CYCLE_REG_3_SPINNER_INIT, DUTY_CYCLE_REG_3_SPINNER_FAKE, new CustomTooltip(), new SpinnerValueObtainer(DUTY_CYCLE_REG_3_SPINNER_INIT));
+        SpinnerManager.setupSpinner(pressReg1Spinner, PRESS_REG_1_SPINNER_INIT, PRESS_REG_1_SPINNER_MIN, PRESS_REG_1_SPINNER_MAX, new Tooltip(), new SpinnerValueObtainer(PRESS_REG_1_SPINNER_INIT));
+        SpinnerManager.setupSpinner(currentReg1Spinner, CURRENT_REG_1_SPINNER_INIT, CURRENT_REG_1_SPINNER_FAKE, new Tooltip(), new SpinnerValueObtainer(CURRENT_REG_1_SPINNER_INIT));
+        SpinnerManager.setupSpinner(dutyCycleReg1Spinner, DUTY_CYCLE_REG_1_SPINNER_INIT, DUTY_CYCLE_REG_1_SPINNER_FAKE, new Tooltip(), new SpinnerValueObtainer(DUTY_CYCLE_REG_1_SPINNER_INIT));
+        SpinnerManager.setupSpinner(currentReg2Spinner, CURRENT_REG_2_SPINNER_INIT, CURRENT_REG_2_SPINNER_FAKE, new Tooltip(), new SpinnerValueObtainer(CURRENT_REG_2_SPINNER_INIT));
+        SpinnerManager.setupSpinner(dutyCycleReg2Spinner, DUTY_CYCLE_REG_2_SPINNER_INIT, DUTY_CYCLE_REG_2_SPINNER_FAKE, new Tooltip(), new SpinnerValueObtainer(DUTY_CYCLE_REG_2_SPINNER_INIT));
+        SpinnerManager.setupSpinner(currentReg3Spinner, CURRENT_REG_3_SPINNER_INIT, CURRENT_REG_3_SPINNER_FAKE, new Tooltip(), new SpinnerValueObtainer(CURRENT_REG_3_SPINNER_INIT));
+        SpinnerManager.setupSpinner(dutyCycleReg3Spinner, DUTY_CYCLE_REG_3_SPINNER_INIT, DUTY_CYCLE_REG_3_SPINNER_FAKE, new Tooltip(), new SpinnerValueObtainer(DUTY_CYCLE_REG_3_SPINNER_INIT));
 
         /** слушаем активацию спиннеров регуляторов */
 

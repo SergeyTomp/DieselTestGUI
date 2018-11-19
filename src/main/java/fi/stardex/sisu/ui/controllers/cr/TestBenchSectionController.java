@@ -1,14 +1,12 @@
 package fi.stardex.sisu.ui.controllers.cr;
 
 import eu.hansolo.enzo.lcd.Lcd;
-import eu.hansolo.enzo.lcd.LcdBuilder;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.DimasGUIEditionState;
 import fi.stardex.sisu.util.GaugeCreator;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.spinners.SpinnerManager;
 import fi.stardex.sisu.util.spinners.SpinnerValueObtainer;
-import fi.stardex.sisu.util.tooltips.CustomTooltip;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -271,7 +269,7 @@ public class TestBenchSectionController {
 
         targetRPMSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 3000, 0, 50));
 
-        SpinnerManager.setupSpinner(targetRPMSpinner, 0, 0, 3000, new CustomTooltip(), new SpinnerValueObtainer(0));
+        SpinnerManager.setupSpinner(targetRPMSpinner, 0, 0, 3000, new Tooltip(), new SpinnerValueObtainer(0));
 
         targetRPMSpinner.valueProperty().addListener((observable, oldValue, newValue) -> standModbusWriter.add(TargetRPM, newValue));
 

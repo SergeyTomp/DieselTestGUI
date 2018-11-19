@@ -8,7 +8,6 @@ import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.spinners.SpinnerManager;
 import fi.stardex.sisu.util.spinners.SpinnerValueObtainer;
 import fi.stardex.sisu.util.spinners.WidthSpinnerValueObtainer;
-import fi.stardex.sisu.util.tooltips.CustomTooltip;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
@@ -227,46 +226,46 @@ public class VoltAmpereProfileController {
                 WIDTH_CURRENT_SIGNAL_SPINNER_INIT,
                 WIDTH_CURRENT_SIGNAL_SPINNER_MIN,
                 WIDTH_CURRENT_SIGNAL_SPINNER_MAX,
-                new CustomTooltip(),
+                new Tooltip(),
                 widthCurrentSignalValueObtainer);
         SpinnerManager.setupSpinner(firstWSpinner,
                 FIRST_W_SPINNER_INIT,
                 FIRST_W_SPINNER_MIN,
                 FIRST_W_SPINNER_MAX,
-                new CustomTooltip(),
+                new Tooltip(),
                 new SpinnerValueObtainer(FIRST_W_SPINNER_INIT));
         SpinnerManager.setupSpinner(boostISpinner,
                 BOOST_I_SPINNER_INIT,
                 BOOST_U_SPINNER_FAKE,
-                new CustomTooltip(),
+                new Tooltip(),
                 new SpinnerValueObtainer(BOOST_U_SPINNER_INIT));
         SpinnerManager.setupSpinner(firstISpinner,
                 FIRST_I_SPINNER_INIT,
                 FIRST_I_SPINNER_FAKE,
-                new CustomTooltip(),
+                new Tooltip(),
                 new SpinnerValueObtainer(FIRST_W_SPINNER_INIT));
         SpinnerManager.setupSpinner(secondISpinner,
                 SECOND_I_SPINNER_INIT,
                 SECOND_I_SPINNER_FAKE,
-                new CustomTooltip(),
+                new Tooltip(),
                 new SpinnerValueObtainer(SECOND_I_SPINNER_INIT));
         SpinnerManager.setupSpinner(batteryUSpinner,
                 BATTERY_U_SPINNER_INIT,
                 BATTERY_U_SPINNER_MIN,
                 BATTERY_U_SPINNER_MAX,
-                new CustomTooltip(),
+                new Tooltip(),
                 new SpinnerValueObtainer(BATTERY_U_SPINNER_INIT));
         SpinnerManager.setupSpinner(negativeUSpinner,
                 NEGATIVE_U_SPINNER_INIT,
                 NEGATIVE_U_SPINNER_MIN,
                 NEGATIVE_U_SPINNER_MAX,
-                new CustomTooltip(),
+                new Tooltip(),
                 new SpinnerValueObtainer(NEGATIVE_U_SPINNER_INIT));
         SpinnerManager.setupSpinner(boostUSpinner,
                 BOOST_U_SPINNER_INIT,
                 BOOST_U_SPINNER_MIN,
                 BOOST_U_SPINNER_MAX,
-                new CustomTooltip(),
+                new Tooltip(),
                 new SpinnerValueObtainer(BOOST_U_SPINNER_INIT));
 
         listOfVAPSpinners.add(widthCurrentSignal);

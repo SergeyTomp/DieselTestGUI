@@ -12,11 +12,9 @@ import fi.stardex.sisu.util.enums.InjectorType;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.spinners.SpinnerManager;
 import fi.stardex.sisu.util.spinners.SpinnerValueObtainer;
-import fi.stardex.sisu.util.tooltips.CustomTooltip;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -30,7 +28,6 @@ import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
@@ -325,7 +322,7 @@ public class InjectorSectionController {
         SpinnerManager.setupSpinner(freqCurrentSignalSpinner,
                 FREQ_CURRENT_SIGNAL_SPINNER_INIT,
                 FREQ_CURRENT_SIGNAL_SPINNER_FAKE,
-                new CustomTooltip(),
+                new Tooltip(),
                 new SpinnerValueObtainer(FREQ_CURRENT_SIGNAL_SPINNER_INIT));
 
     }
