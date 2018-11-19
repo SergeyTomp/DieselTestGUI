@@ -231,13 +231,10 @@ public class SpringJavaConfig {
                 connectedProperty.addListener((observable, oldValue, newValue) -> {
                     if (newValue) {
                         int firmwareVersionNumber = (int) read(ModbusMapStand.FirmwareVersion);
-                        switch (firmwareVersionNumber) {
-                            case 0x1122:
-                                standFirmwareVersion.setVersions(STAND);
-                                break;
-                            default:
-                                standFirmwareVersion.setVersions(UNKNOWN);
-                                break;
+                        if (firmwareVersionNumber == 0x1122) {
+                            standFirmwareVersion.setVersions(STAND);
+                        } else {
+                            standFirmwareVersion.setVersions(UNKNOWN);
                         }
                     } else {
                         standFirmwareVersion.setVersions(StandVersions.NO_VERSION);
@@ -292,16 +289,11 @@ public class SpringJavaConfig {
                     protected void readAll() {
 
                         FlowVersions version = flowFirmwareVersion.getVersions();
-                        switch (version) {
-                            case STAND_FM:
-                                Arrays.stream(standRegisters).filter(this::isStand).forEach(registerProvider::read);
-                                super.readAll();
-                                break;
-                            default:
-                                super.readAll();
-                                break;
-                        }
 
+                        if (version == STAND_FM)
+                            Arrays.stream(standRegisters).filter(this::isStand).forEach(registerProvider::read);
+
+                        super.readAll();
                     }
 
                     @Override
@@ -391,14 +383,11 @@ public class SpringJavaConfig {
                     protected void readAll() {
 
                         FlowVersions version = flowFirmwareVersion.getVersions();
-                        switch (version) {
-                            case STAND_FM:
-                                Arrays.stream(readArray).filter(this::isStand).forEach(registerProvider::read);
-                                break;
-                            default:
-                                Arrays.stream(readArray).filter(this::isNotStand).forEach(registerProvider::read);
-                                break;
-                        }
+
+                        if (version == STAND_FM)
+                            Arrays.stream(readArray).filter(this::isStand).forEach(registerProvider::read);
+                        else
+                            Arrays.stream(readArray).filter(this::isNotStand).forEach(registerProvider::read);
 
                     }
 
@@ -670,20 +659,14 @@ public class SpringJavaConfig {
         return new RegulatorsQTYState();
     }
 
-
     @Bean
     public InjectorTypeToggleState injectorTypeToggleState() {
         return new InjectorTypeToggleState();
     }
 
     @Bean
-    public ManufacturerPumpSelectionState manufacturerPumpSelectionState() {
-        return new ManufacturerPumpSelectionState();
-    }
-
-    @Bean
-    public PumpSelectionState pumpSelectionState() {
-        return new PumpSelectionState();
+    public CustomPumpState customPumpState() {
+        return new CustomPumpState();
     }
 
     @Bean

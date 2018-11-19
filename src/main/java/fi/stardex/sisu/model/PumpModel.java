@@ -3,42 +3,33 @@ package fi.stardex.sisu.model;
 import fi.stardex.sisu.persistence.orm.pump.ManufacturerPump;
 import fi.stardex.sisu.persistence.orm.pump.Pump;
 import fi.stardex.sisu.persistence.repos.pump.PumpRepository;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 public class PumpModel {
 
-    private PumpRepository pumpRepository;
+    private final PumpRepository pumpRepository;
 
-    private ObservableList<Pump> pumpObservableList = FXCollections.observableArrayList();
+    private final ObjectProperty<ObservableList<Pump>> pumpObservableListProperty = new SimpleObjectProperty<>();
 
-    private StringProperty pumpCodeProperty = new SimpleStringProperty();
-
-    private BooleanProperty customProperty = new SimpleBooleanProperty();
+    private final ObjectProperty<Pump> pumpProperty = new SimpleObjectProperty<>();
 
     public PumpModel(PumpRepository pumpRepository) {
         this.pumpRepository = pumpRepository;
     }
 
-    public ObservableList<Pump> getPumpObservableList() {
-        return pumpObservableList;
+    public ObjectProperty<ObservableList<Pump>> getPumpObservableListProperty() {
+        return pumpObservableListProperty;
     }
 
-    public StringProperty pumpCodeProperty() {
-        return pumpCodeProperty;
+    public ObjectProperty<Pump> pumpProperty() {
+        return pumpProperty;
     }
 
-    public BooleanProperty customProperty() {
-        return customProperty;
-    }
+    public void initPumpList(ManufacturerPump manufacturerPump, boolean custom) {
 
-    public void initPumpList(ManufacturerPump manufacturerPump) {
-
-        pumpObservableList.setAll(pumpRepository.findAllByManufacturerPumpAndCustom(manufacturerPump, false));
+        pumpObservableListProperty.setValue(FXCollections.observableArrayList(pumpRepository.findAllByManufacturerPumpAndCustom(manufacturerPump, custom)));
 
     }
 

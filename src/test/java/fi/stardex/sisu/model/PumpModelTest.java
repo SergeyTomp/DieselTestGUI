@@ -3,6 +3,8 @@ package fi.stardex.sisu.model;
 import fi.stardex.sisu.persistence.orm.pump.ManufacturerPump;
 import fi.stardex.sisu.persistence.orm.pump.Pump;
 import fi.stardex.sisu.persistence.repos.pump.PumpRepository;
+import javafx.beans.property.ObjectProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -25,11 +27,11 @@ class PumpModelTest extends ModelTest{
 
         assumeFalse(temp.isEmpty());
 
-        ObservableList<Pump> pumpObservableList = pumpModel.getPumpObservableList();
+        ObjectProperty<ObservableList<Pump>> pumpObservableListProperty = pumpModel.getPumpObservableListProperty();
 
-        pumpObservableList.setAll(temp);
+        pumpObservableListProperty.setValue(FXCollections.observableArrayList(temp));
 
-        testReporter.publishEntry("Number of Delphi non-custom pumps in the list", String.valueOf(pumpObservableList.size()));
+        testReporter.publishEntry("Number of Delphi non-custom pumps in the list", String.valueOf(pumpObservableListProperty.get().size()));
 
     }
 

@@ -488,26 +488,18 @@ public class Measurements implements ChangeListener<Boolean> {
 
             TestName testName = injectorTest.getTestName();
 
-            switch (getTestType()) {
+            flowReportModel.storeResult(injectorTest);
 
-                case AUTO:
-//                    flowReport.save(injectorTest);
-                    flowReportModel.storeResult(injectorTest);
-                    break;
-                case CODING:
-                    if (isDensoCoding() && testName.getMeasurement() != Measurement.VISUAL) {
-//                        flowReport.save(injectorTest);
-                        flowReportModel.storeResult(injectorTest);
-                        DensoCodingDataStorage.store(widthCurrentSignalSpinner.getValue(), flowReportModel.getResultObservableMap().get(injectorTest));
-                    } else if (testName.isTestPoint()) {
-//                        flowReport.save(injectorTest);
-                        flowReportModel.storeResult(injectorTest);
-                        if (isDelphiC2ICoding())
-                            DelphiC2ICodingDataStorage.store(flowReportModel.getResultObservableMap().get(injectorTest));
-                        else if (isDelphiC3ICoding())
-                            DelphiC3ICodingDataStorage.store(flowReportModel.getResultObservableMap().get(injectorTest));
-                    }
-                    break;
+            if (getTestType() == CODING) {
+
+                if (isDensoCoding() && testName.getMeasurement() != Measurement.VISUAL) {
+                    DensoCodingDataStorage.store(widthCurrentSignalSpinner.getValue(), flowReportModel.getResultObservableMap().get(injectorTest));
+                } else if (testName.isTestPoint()) {
+                    if (isDelphiC2ICoding())
+                        DelphiC2ICodingDataStorage.store(flowReportModel.getResultObservableMap().get(injectorTest));
+                    else if (isDelphiC3ICoding())
+                        DelphiC3ICodingDataStorage.store(flowReportModel.getResultObservableMap().get(injectorTest));
+                }
 
             }
 

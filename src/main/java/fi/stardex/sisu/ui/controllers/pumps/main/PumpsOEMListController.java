@@ -3,7 +3,7 @@ package fi.stardex.sisu.ui.controllers.pumps.main;
 import fi.stardex.sisu.model.ManufacturerPumpModel;
 import fi.stardex.sisu.model.PumpModel;
 import fi.stardex.sisu.persistence.orm.pump.ManufacturerPump;
-import fi.stardex.sisu.states.ManufacturerPumpSelectionState;
+import fi.stardex.sisu.states.CustomPumpState;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
@@ -21,7 +21,7 @@ public class PumpsOEMListController implements ListChangeListener<ManufacturerPu
 
     private PumpModel pumpModel;
 
-    private ManufacturerPumpSelectionState manufacturerPumpSelectionState;
+    private CustomPumpState customPumpState;
 
     public void setManufacturerPumpModel(ManufacturerPumpModel manufacturerPumpModel) {
         this.manufacturerPumpModel = manufacturerPumpModel;
@@ -31,8 +31,8 @@ public class PumpsOEMListController implements ListChangeListener<ManufacturerPu
         this.pumpModel = pumpModel;
     }
 
-    public void setManufacturerPumpSelectionState(ManufacturerPumpSelectionState manufacturerPumpSelectionState) {
-        this.manufacturerPumpSelectionState = manufacturerPumpSelectionState;
+    public void setCustomPumpState(CustomPumpState customPumpState) {
+        this.customPumpState = customPumpState;
     }
 
     @PostConstruct
@@ -54,11 +54,10 @@ public class PumpsOEMListController implements ListChangeListener<ManufacturerPu
     @Override
     public void changed(ObservableValue<? extends ManufacturerPump> observableValue, ManufacturerPump oldValue, ManufacturerPump newValue) {
 
-        pumpModel.initPumpList(newValue);
+        manufacturerPumpModel.manufacturerPumpProperty().set(newValue);
 
-        if (oldValue == null)
-            manufacturerPumpSelectionState.manufacturerPumpSelectionProperty().setValue(true);
-
+        pumpModel.initPumpList(newValue, customPumpState.customPumpProperty().get());
 
     }
+
 }

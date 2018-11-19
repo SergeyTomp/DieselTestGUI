@@ -1,7 +1,9 @@
 package fi.stardex.sisu.ui.controllers.pumps.main;
 
-import fi.stardex.sisu.states.PumpSelectionState;
-import javafx.beans.property.BooleanProperty;
+import fi.stardex.sisu.model.PumpModel;
+import fi.stardex.sisu.persistence.orm.pump.Pump;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
@@ -11,7 +13,7 @@ import javafx.scene.layout.VBox;
 
 import javax.annotation.PostConstruct;
 
-public class MainSectionPumpsController {
+public class MainSectionPumpsController implements ChangeListener<Pump> {
 
     @FXML private HBox startButtonHBox;
 
@@ -53,7 +55,7 @@ public class MainSectionPumpsController {
 
     @FXML private StartButtonController startButtonHBoxController;
 
-    private PumpSelectionState pumpSelectionState;
+    private PumpModel pumpModel;
 
     public PumpFieldController getPumpFieldController() {
         return pumpFieldTextFieldController;
@@ -87,20 +89,25 @@ public class MainSectionPumpsController {
         return startButtonHBoxController;
     }
 
-    public void setPumpSelectionState(PumpSelectionState pumpSelectionState) {
-        this.pumpSelectionState = pumpSelectionState;
+    public void setPumpModel(PumpModel pumpModel) {
+        this.pumpModel = pumpModel;
     }
 
     @PostConstruct
     private void init() {
 
-        BooleanProperty pumpSelectionProperty = pumpSelectionState.pumpSelectionProperty();
+        pumpModel.pumpProperty().addListener(this);
 
-        pumpTestsVBox.visibleProperty().bind(pumpSelectionProperty);
+    }
 
-        testSpeedVBox.visibleProperty().bind(pumpSelectionProperty);
+    @Override
+    public void changed(ObservableValue<? extends Pump> observableValue, Pump oldValue, Pump newValue) {
 
-        startButtonVBox.visibleProperty().bind(pumpSelectionProperty);
+        pumpTestsVBox.setVisible(newValue != null);
+
+        testSpeedVBox.setVisible(newValue != null);
+
+        startButtonVBox.setVisible(newValue != null);
 
     }
 

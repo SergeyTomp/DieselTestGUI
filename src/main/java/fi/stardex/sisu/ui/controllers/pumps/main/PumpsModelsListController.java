@@ -1,12 +1,13 @@
 package fi.stardex.sisu.ui.controllers.pumps.main;
 
+import fi.stardex.sisu.model.ManufacturerPumpModel;
 import fi.stardex.sisu.model.PumpModel;
 import fi.stardex.sisu.persistence.orm.pump.Pump;
-import fi.stardex.sisu.states.ManufacturerPumpSelectionState;
-import fi.stardex.sisu.states.PumpSelectionState;
+import fi.stardex.sisu.states.CustomPumpState;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.ListChangeListener;
+import javafx.collections.transformation.FilteredList;
 import javafx.fxml.FXML;
 import javafx.scene.control.ListView;
 import javafx.scene.control.RadioButton;
@@ -15,9 +16,8 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.VBox;
 
 import javax.annotation.PostConstruct;
-import java.util.Optional;
 
-public class PumpsModelsListController implements ListChangeListener<Pump>, ChangeListener<Pump> {
+public class PumpsModelsListController implements ChangeListener<Pump> {
 
     @FXML private VBox injectorsVBox;
 
@@ -31,11 +31,13 @@ public class PumpsModelsListController implements ListChangeListener<Pump>, Chan
 
     @FXML private ToggleGroup baseTypeToggleGroup;
 
+    private ManufacturerPumpModel manufacturerPumpModel;
+
     private PumpModel pumpModel;
 
-    private ManufacturerPumpSelectionState manufacturerPumpSelectionState;
+    private CustomPumpState customPumpState;
 
-    private PumpSelectionState pumpSelectionState;
+    private FilteredList<Pump> filteredModelList;
 
     public VBox getInjectorsVBox() {
         return injectorsVBox;
@@ -61,42 +63,68 @@ public class PumpsModelsListController implements ListChangeListener<Pump>, Chan
         return baseTypeToggleGroup;
     }
 
+    public void setManufacturerPumpModel(ManufacturerPumpModel manufacturerPumpModel) {
+        this.manufacturerPumpModel = manufacturerPumpModel;
+    }
+
     public void setPumpModel(PumpModel pumpModel) {
         this.pumpModel = pumpModel;
     }
 
-    public void setManufacturerPumpSelectionState(ManufacturerPumpSelectionState manufacturerPumpSelectionState) {
-        this.manufacturerPumpSelectionState = manufacturerPumpSelectionState;
-    }
-
-    public void setPumpSelectionState(PumpSelectionState pumpSelectionState) {
-        this.pumpSelectionState = pumpSelectionState;
+    public void setCustomPumpState(CustomPumpState customPumpState) {
+        this.customPumpState = customPumpState;
     }
 
     @PostConstruct
     private void init() {
 
-        pumpModel.getPumpObservableList().addListener(this);
+        baseTypeToggleGroup.selectedToggleProperty().addListener(((observable, oldValue, newValue) -> {
+
+            BooleanProperty customPumpProperty = customPumpState.customPumpProperty();
+
+            customPumpProperty.setValue(newValue == customRadioButton);
+
+            pumpModel.initPumpList(manufacturerPumpModel.manufacturerPumpProperty().get(), customPumpProperty.get());
+
+        }));
+
+        setupSearchModelTextField();
+
+        pumpModel.getPumpObservableListProperty().addListener((observable, oldValue, newValue) -> {
+
+            filteredModelList = new FilteredList<>(newValue, pump -> true);
+
+            modelListView.setItems(filteredModelList);
+
+        });
 
         modelListView.getSelectionModel().selectedItemProperty().addListener(this);
 
-        injectorsVBox.disableProperty().bind(manufacturerPumpSelectionState.manufacturerPumpSelectionProperty().not());
+        manufacturerPumpModel.manufacturerPumpProperty().addListener((observableValue, oldValue, newValue) -> injectorsVBox.setDisable(newValue == null));
 
     }
 
-    @Override
-    public void onChanged(Change<? extends Pump> change) {
+    private void setupSearchModelTextField() {
 
-        modelListView.getItems().setAll(change.getList());
+        searchModelTextField.textProperty().addListener(((observable, oldValue, newValue) -> filteredModelList.setPredicate(data -> {
+
+            if (newValue == null || newValue.isEmpty())
+                return true;
+            else {
+                return (data.toString().contains(newValue.toUpperCase())
+                        || data.toString().replace("-", "").contains(newValue.toUpperCase())
+                        || data.toString().replace("#", "").contains(newValue.toUpperCase())
+                        || data.toString().replaceFirst("-", "").contains(newValue.toUpperCase()));
+            }
+
+        })));
 
     }
 
     @Override
     public void changed(ObservableValue<? extends Pump> observableValue, Pump oldValue, Pump newValue) {
 
-        pumpSelectionState.pumpSelectionProperty().setValue(newValue != null);
-
-        pumpModel.pumpCodeProperty().setValue(newValue != null ? newValue.getPumpCode() : "");
+        pumpModel.pumpProperty().set(newValue);
 
     }
 }
