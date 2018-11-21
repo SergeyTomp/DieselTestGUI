@@ -10,6 +10,8 @@ import fi.stardex.sisu.persistence.repos.cr.InjectorTestRepository;
 import fi.stardex.sisu.persistence.repos.cr.InjectorsRepository;
 import fi.stardex.sisu.registers.flow.ModbusMapFlow;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
+import fi.stardex.sisu.states.BoostU_State;
+import fi.stardex.sisu.states.BoostUadjustmentState;
 import fi.stardex.sisu.store.FlowReport;
 import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.ui.ViewHolder;
@@ -30,6 +32,8 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -43,9 +47,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -80,6 +82,8 @@ public class MainSectionController {
 
     private static Logger logger = LoggerFactory.getLogger(MainSectionController.class);
 
+
+
     @FXML
     private TextField injectorNumberTextField;
 
@@ -90,7 +94,10 @@ public class MainSectionController {
     private GridPane timingGridPane;
 
     @FXML
-    private HBox startHBox;
+    private StackPane startStackPane;
+
+    @FXML
+    private Pane coverPane;
 
     @FXML
     private Button moveUpButton;
@@ -254,6 +261,10 @@ public class MainSectionController {
 
     private Stage printStage;
 
+    private BoostU_State boostU_state;
+
+    private BoostUadjustmentState boostUadjustmentState;
+
     public ToggleGroup getTestsToggleGroup() {
         return testsToggleGroup;
     }
@@ -278,8 +289,8 @@ public class MainSectionController {
         return baseTypeToggleGroup;
     }
 
-    public HBox getStartHBox() {
-        return startHBox;
+    public StackPane getStartStackPane() {
+        return startStackPane;
     }
 
     public GridPane getTimingGridPane() {
@@ -426,6 +437,14 @@ public class MainSectionController {
         this.i18N = i18N;
     }
 
+    public void setBoostU_state(BoostU_State boostU_state) {
+        this.boostU_state = boostU_state;
+    }
+
+    public void setBoostUadjustmentState(BoostUadjustmentState boostUadjustmentState) {
+        this.boostUadjustmentState = boostUadjustmentState;
+    }
+
     @PostConstruct
     private void init() {
 
@@ -450,6 +469,19 @@ public class MainSectionController {
                 .setupTestListAutoChangeListener();
 
         printButton.setOnAction(new PrintButtonEventHandler());
+
+        //TODO FIXME: switch from overlaying by Node to ToogleButton.setDisable() method after Enabler refactoring
+        boostUadjustmentState.boostUadjustmentStateProperty().addListener((observable, oldValue, newValue) -> {
+
+            coverPane.setVisible(newValue);
+            if(newValue) {
+                coverPane.toFront();
+            }
+            else {
+                coverPane.toBack();
+            }
+        });
+
     }
 
     private MainSectionController makeReferenceToInternalObjects() {
@@ -988,11 +1020,13 @@ public class MainSectionController {
             Double firstI = currentVoltAmpereProfile.getFirstI();
             Double secondI = currentVoltAmpereProfile.getSecondI();
             Double boostI = currentVoltAmpereProfile.getBoostI();
+            Integer boostU = currentVoltAmpereProfile.getBoostU();
+            boostU_state.boostU_property().setValue(boostU);
 
             firstI = (boostI - firstI >= 0.5) ? firstI : boostI - 0.5;
             secondI = (firstI - secondI >= 0.5) ? secondI : firstI - 0.5;
 
-            voltAmpereProfileController.getBoostUSpinner().getValueFactory().setValue(currentVoltAmpereProfile.getBoostU());
+            voltAmpereProfileController.getBoostUSpinner().getValueFactory().setValue(boostU);
             voltAmpereProfileController.getFirstWSpinner().getValueFactory().setValue(currentVoltAmpereProfile.getFirstW());
             voltAmpereProfileController.getFirstISpinner().getValueFactory().setValue((firstI * 100 % 10 != 0) ? round(firstI) : firstI);
             voltAmpereProfileController.getSecondISpinner().getValueFactory().setValue((secondI * 100 % 10 != 0) ? round(secondI) : secondI);
@@ -1000,6 +1034,8 @@ public class MainSectionController {
             voltAmpereProfileController.getBatteryUSpinner().getValueFactory().setValue(currentVoltAmpereProfile.getBatteryU());
             voltAmpereProfileController.getNegativeUSpinner().getValueFactory().setValue(currentVoltAmpereProfile.getNegativeU());
             voltAmpereProfileController.getEnableBoostToggleButton().setSelected(currentVoltAmpereProfile.getBoostDisable());
+
+
 
             String manufacturerName = injector.getManufacturer().getManufacturerName();
             switch (manufacturerName){

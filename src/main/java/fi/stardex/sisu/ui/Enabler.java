@@ -16,6 +16,7 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 import javax.annotation.PostConstruct;
@@ -53,7 +54,7 @@ public class Enabler {
 
     private GridPane timingGridPane;
 
-    private HBox startHBox;
+    private StackPane startStackPane;
 
     private ToggleButton injectorSectionStartToggleButton;
 
@@ -121,7 +122,7 @@ public class Enabler {
         modelListView = mainSectionController.getModelListView();
         injectorTestsVBox = mainSectionController.getInjectorTestsVBox();
         timingGridPane = mainSectionController.getTimingGridPane();
-        startHBox = mainSectionController.getStartHBox();
+        startStackPane = mainSectionController.getStartStackPane();
         speedComboBox = mainSectionController.getSpeedComboBox();
         moveUpButton = mainSectionController.getMoveUpButton();
         moveDownButton = mainSectionController.getMoveDownButton();
@@ -338,7 +339,7 @@ public class Enabler {
     public Enabler showInjectorTests(boolean show) {
 
         showNode(show && (getTestType() == AUTO || getTestType() == CODING), timingGridPane);
-        showNode(show, injectorTestsVBox, startHBox);
+        showNode(show, injectorTestsVBox, startStackPane);
 
         return this;
 

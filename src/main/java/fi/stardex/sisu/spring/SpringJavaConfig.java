@@ -678,6 +678,16 @@ public class SpringJavaConfig {
         return new PumpSelectionState();
     }
 
+    @Bean
+    public BoostU_State boostU_state(){
+        return new BoostU_State();
+    }
+
+    @Bean
+    public BoostUadjustmentState boostUadjustmentState(){
+        return new BoostUadjustmentState();
+    }
+
     // --------------------------------------Model-----------------------------------------------
 
     @Bean

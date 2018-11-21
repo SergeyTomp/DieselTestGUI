@@ -2,8 +2,12 @@ package fi.stardex.sisu.ui.controllers.cr;
 
 import fi.stardex.sisu.charts.TimerTasksManager;
 import fi.stardex.sisu.combobox_values.InjectorChannel;
+import fi.stardex.sisu.devices.Device;
+import fi.stardex.sisu.devices.Devices;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
+import fi.stardex.sisu.states.BoostU_State;
+import fi.stardex.sisu.states.BoostUadjustmentState;
 import fi.stardex.sisu.states.InjConfigurationState;
 import fi.stardex.sisu.states.InjectorTypeToggleState;
 import fi.stardex.sisu.ui.Enabler;
@@ -15,14 +19,20 @@ import fi.stardex.sisu.util.spinners.SpinnerValueObtainer;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
+import javafx.beans.InvalidationListener;
 import javafx.beans.property.ReadOnlyObjectProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.concurrent.Service;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
@@ -36,6 +46,10 @@ import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.*;
 import static fi.stardex.sisu.util.SpinnerDefaults.*;
 
 public class InjectorSectionController {
+
+    @FXML private GridPane gridLedBeaker;
+
+    @FXML private ProgressBar switcherProgressBar;
 
     @FXML private Spinner<Integer> widthCurrentSignalSpinner;
 
@@ -56,6 +70,8 @@ public class InjectorSectionController {
     @FXML private Label freqLabel;
 
     @FXML private Label statusBoostULabelText;
+
+    @FXML private Label statusBoostULabel;
 
     @FXML private StackPane led1StackPane;
 
@@ -93,6 +109,8 @@ public class InjectorSectionController {
 
     private Enabler enabler;
 
+    private Devices devices;
+
     private Logger logger = LoggerFactory.getLogger(InjectorSectionController.class);
 
     private TimerTasksManager timerTasksManager;
@@ -100,6 +118,10 @@ public class InjectorSectionController {
     private InjConfigurationState injConfigurationState;
 
     private InjectorTypeToggleState injectorTypeToggleState;
+
+    private BoostU_State boostU_state;
+
+    private BoostUadjustmentState boostUadjustmentState;
 
     private DelayController delayController;
 
@@ -210,6 +232,18 @@ public class InjectorSectionController {
         this.i18N = i18N;
     }
 
+    public void setBoostU_state(BoostU_State boostU_state) {
+        this.boostU_state = boostU_state;
+    }
+
+    public void setBoostUadjustmentState(BoostUadjustmentState boostUadjustmentState) {
+        this.boostUadjustmentState = boostUadjustmentState;
+    }
+
+    public void setDevices(Devices devices) {
+        this.devices = devices;
+    }
+
     @PostConstruct
     private void init() {
 
@@ -220,6 +254,8 @@ public class InjectorSectionController {
         setupInjectorConfigComboBox();
 
         setupSpinners();
+
+        boostU_state.boostU_property().addListener(new BoostU_ChangeListener());
 
         injectorTypeToggleState.injectorTypeObjectPropertyProperty().setValue(InjectorType.COIL);
 
@@ -277,6 +313,7 @@ public class InjectorSectionController {
         piezoDelphiRadioButton.textProperty().bind(i18N.createStringBinding("injSection.radio.piezoDelphi"));
         widthLabel.textProperty().bind(i18N.createStringBinding("injSection.label.width"));
         freqLabel.textProperty().bind(i18N.createStringBinding("injSection.label.freq"));
+        statusBoostULabelText.textProperty().bind(i18N.createStringBinding("injSection.label.adjustingBoostU"));
     }
 
     private void setupLedControllers() {
@@ -569,5 +606,87 @@ public class InjectorSectionController {
     private void getLoggingInjectorSelection(Boolean value, ToggleButton ledController) {
         String s = String.format("LedBeaker %s selected: %s", ledController.getText(), value);
         logger.info(s);
+    }
+
+    private class BoostU_ChangeListener extends Service<Void> implements ChangeListener<Number> {
+
+        private double timeOut = 0d; // TimeOut seconds
+        private double adjBoostInitValue;
+        private boolean adjBoostBreak;
+
+        @Override
+        public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+
+            if (devices.isConnected(Device.ULTIMA)) {
+                if (oldValue.intValue() - newValue.intValue() >= 20d) {
+
+                    adjBoostInitValue = oldValue.intValue();
+                    adjBoostBreak = false;
+                    timeOut = (oldValue.intValue() - newValue.intValue()); // calculated timeOut
+
+                    setStartStopValues(true);
+
+                    this.restart();
+
+                    statusBoostULabel.textProperty().bind(this.messageProperty());
+                } else {
+                    if (!(adjBoostInitValue - newValue.intValue() >= 20d))
+                        adjBoostBreak = true;
+                }
+            }
+        }
+
+        @Override
+        protected Task<Void> createTask() {
+            return new Task<>() {
+                @Override
+                protected Void call() throws InterruptedException {
+
+                    int timeSleep;
+
+                    if (injConfigurationState.injConfigurationStateProperty().get() == InjectorChannel.SINGLE_CHANNEL)
+                        timeSleep = (int) (timeOut / 2);
+                    else
+                        timeSleep = (int) timeOut;
+
+                    for (int i = 0; i < 100; i++) {
+
+                        if (adjBoostBreak)
+                            break;
+
+                        timeOut = timeOut - (timeOut / 100);
+                        updateProgress(i, 100);
+                        updateMessage("..." + String.valueOf(i) + "%");
+                        Thread.sleep(timeSleep * 10);
+                    }
+
+                    timeOut = 0;
+                    return null;
+                }
+
+                @Override
+                protected void updateProgress(long workDone, long max) {
+
+                    switcherProgressBar.setProgress((double) workDone / (double) max);
+                }
+
+                @Override
+                protected void done() {
+
+                    Platform.runLater(() -> {
+                        setStartStopValues(false);
+                    });
+                }
+            };
+        }
+    }
+
+    private void setStartStopValues(boolean started){
+
+        boostUadjustmentState.boostUadjustmentStateProperty().set(started);
+        injectorSectionStartToggleButton.setDisable(started);
+        switcherProgressBar.setVisible(started);
+        statusBoostULabel.setVisible(started);
+        statusBoostULabelText.setVisible(started);
     }
 }

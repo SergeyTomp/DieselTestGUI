@@ -137,7 +137,9 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                        TestBenchSectionController testBenchSectionController,
                                                        InfoController infoController,
                                                        DelayController delayController,
-                                                       RLCController rlcController) {
+                                                       RLCController rlcController,
+                                                       BoostU_State boostU_state,
+                                                       BoostUadjustmentState boostUadjustmentState) {
         MainSectionController mainSectionController = (MainSectionController) mainSection().getController();
         mainSectionController.setEnabler(enabler);
         mainSectionController.setManufacturerMenuDialog(manufacturerMenuDialog());
@@ -159,6 +161,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
         mainSectionController.setDelayController(delayController);
         mainSectionController.setPrintDialogPanel(printDialogPanel());
         mainSectionController.setRlcController(rlcController);
+        mainSectionController.setBoostU_state(boostU_state);
+        mainSectionController.setBoostUadjustmentState(boostUadjustmentState);
         return mainSectionController;
     }
 
@@ -206,7 +210,10 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                                TimerTasksManager timerTasksManager,
                                                                DelayController delayController,
                                                                InjConfigurationState injConfigurationState,
-                                                               InjectorTypeToggleState injectorTypeToggleState) {
+                                                               InjectorTypeToggleState injectorTypeToggleState,
+                                                               BoostU_State boostU_state,
+                                                               BoostUadjustmentState boostUadjustmentState,
+                                                               Devices devices) {
         InjectorSectionController injectorSectionController = crSectionController().getInjectorSectionController();
         injectorSectionController.setEnabler(enabler);
         injectorSectionController.setUltimaModbusWriter(ultimaModbusWriter);
@@ -215,6 +222,9 @@ public class JavaFXSpringConfigure extends ViewLoader{
         injectorSectionController.setI18N(i18N);
         injectorSectionController.setInjConfigurationState(injConfigurationState);
         injectorSectionController.setInjectorTypeToggleState(injectorTypeToggleState);
+        injectorSectionController.setBoostU_state(boostU_state);
+        injectorSectionController.setBoostUadjustmentState(boostUadjustmentState);
+        injectorSectionController.setDevices(devices);
         return injectorSectionController;
     }
 

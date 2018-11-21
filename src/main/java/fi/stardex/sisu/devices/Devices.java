@@ -59,7 +59,7 @@ public class Devices {
         listeners.forEach(deviceListener -> deviceListener.deviceChanged(device, connect));
     }
 
-    private boolean isConnected(Device device) {
+    public boolean isConnected(Device device) {
         return connectedDevices.contains(device);
     }
 

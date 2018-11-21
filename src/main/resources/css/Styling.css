@@ -298,6 +298,47 @@ label
     -fx-text-fill:red;
 }
 
+.label-progress{
+    -fx-font-size: 14;
+    -textFont-color: #FFA500;
+    -fx-font-family: "Arial";
+    -fx-text-fill:-textFont-color;
+    -fx-opacity: 0.7;
+}
+
+.label:disabled {
+    -fx-font-size: 13;
+    -textFont-color: #ddff99;
+    -fx-font-family: "Arial";
+    -fx-text-fill:-textFont-color;
+    -fx-opacity: 0.3;
+}
+
+.label16{
+    -fx-font-size: 16;
+    -textFont-color: #ddff99;
+    -fx-font-family: "Arial";
+    -fx-text-fill:-textFont-color;
+    -fx-opacity: 0.7;
+}
+
+.labelTemperature{
+    -fx-font-size: 14;
+    -textFont-color: #00ff00;
+    -fx-font-family: "Arial";
+    -fx-text-fill:-textFont-color;
+    -fx-opacity: 0.7;
+}
+
+.labelAttention{
+    -fx-font-size: 18;
+    -textFont-color: red;
+    -fx-font-family: "Arial";
+    -fx-text-fill:-textFont-color;
+    -fx-font-weight: bold;
+    -fx-opacity: 0.7;
+}
+
 /***************
 *led
 ****************/
@@ -1647,4 +1688,69 @@ label
 
 }
 
+/***************
+*progress-bar
+****************/
 
+.progress-bar {
+    -border-color: #4d2600;
+    -fx-background-color: transparent;
+    -fx-border-color: -border-color;
+    -fx-border-radius: 5, 5, 5, 5;
+}
+
+.green-bar  { -fx-accent: green;  }
+
+
+.progress-bar .track{
+    -background-color: #1f1f2e;
+    -fx-background-color: -background-color;
+}
+
+.progress-bar-narrow > .bar {
+    -fx-background-insets: 1 1 2 1;
+    -fx-padding: 0.20em;
+}
+
+.progress-bar .bar {
+    -progressBar-color: #254d74;
+    -fx-background-color: -progressBar-color;
+    -fx-opacity: 0.8;
+}
+
+.green-progress-bar .bar {
+    -progressBar-color: #009933;
+    -fx-background-color: -progressBar-color;
+    -fx-opacity: 0.8;
+}
+
+.yellow-progress-bar .bar {
+    -progressBar-color: #e6e600;
+    -fx-background-color: -progressBar-color;
+    -fx-opacity: 0.8;
+}
+
+.red-progress-bar .bar {
+    -progressBar-color: #ff3300;
+    -fx-background-color: -progressBar-color;
+    -fx-opacity: 0.8;
+}
+
+.orange-progress-bar .bar {
+    -progressBar-color: #e59400;
+    -fx-background-color: -progressBar-color;
+    -fx-opacity: 0.8;
+}
+
+.statusBarV{
+
+
+    -fx-background-color: #0086b3;
+    -fx-border-width: 3px;
+    -fx-border-color: #000000;
+
+}
+
+.pane{
+    -fx-background-color:#666666;
+}
