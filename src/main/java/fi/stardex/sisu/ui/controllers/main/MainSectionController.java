@@ -1,6 +1,9 @@
 package fi.stardex.sisu.ui.controllers.main;
 
 import fi.stardex.sisu.measurement.Measurements;
+import fi.stardex.sisu.model.CodingReportModel;
+import fi.stardex.sisu.model.DelayReportModel;
+import fi.stardex.sisu.model.RLC_ReportModel;
 import fi.stardex.sisu.persistence.orm.Manufacturer;
 import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
@@ -18,7 +21,6 @@ import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.DelayController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.info.InfoController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.RLCController;
 import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.ui.controllers.dialogs.ManufacturerMenuDialogController;
 import fi.stardex.sisu.ui.controllers.dialogs.NewEditInjectorDialogController;
@@ -32,8 +34,6 @@ import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -47,7 +47,10 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.*;
+import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -231,11 +234,15 @@ public class MainSectionController {
 
     private HighPressureSectionController highPressureSectionController;
 
-    private RLCController rlcController;
-
     private InfoController infoController;
 
     private DelayController delayController;
+
+    private DelayReportModel delayReportModel;
+
+    private RLC_ReportModel rlc_reportModel;
+
+    private CodingReportModel codingReportModel;
 
     private InjectorsRepository injectorsRepository;
 
@@ -377,10 +384,6 @@ public class MainSectionController {
         this.printDialogPanel = printDialogPanel;
     }
 
-    public void setVoltAmpereProfileController(VoltAmpereProfileController voltAmpereProfileController) {
-        this.voltAmpereProfileController = voltAmpereProfileController;
-    }
-
     public void setWidthCurrentSignalSpinner(Spinner<Integer> widthCurrentSignalSpinner) {
         this.widthCurrentSignalSpinner = widthCurrentSignalSpinner;
     }
@@ -429,8 +432,20 @@ public class MainSectionController {
         this.delayController = delayController;
     }
 
-    public void setRlcController(RLCController rlcController) {
-        this.rlcController = rlcController;
+    public void setVoltAmpereProfileController(VoltAmpereProfileController voltAmpereProfileController) {
+        this.voltAmpereProfileController = voltAmpereProfileController;
+    }
+
+    public void setDelayReportModel(DelayReportModel delayReportModel) {
+        this.delayReportModel = delayReportModel;
+    }
+
+    public void setRlc_reportModel(RLC_ReportModel rlc_reportModel) {
+        this.rlc_reportModel = rlc_reportModel;
+    }
+
+    public void setCodingReportModel(CodingReportModel codingReportModel) {
+        this.codingReportModel = codingReportModel;
     }
 
     public void setI18N(I18N i18N) {
@@ -928,10 +943,10 @@ public class MainSectionController {
             setManufacturer(newValue);
             infoController.changeToDefault();
 
-            delayController.clearReportResults();
-            rlcController.clearReportResults();
+            delayReportModel.clearResults();
+            rlc_reportModel.clearResults();
             flowReport.clear();
-            measurements.clearCodingResults();
+            codingReportModel.clearResults();
 
 
             if (newValue.isCustom()) {
@@ -990,10 +1005,10 @@ public class MainSectionController {
 
             returnToDefaultTestListAuto();
 
-            delayController.clearReportResults();
-            rlcController.clearReportResults();
+            delayReportModel.clearResults();
+            rlc_reportModel.clearResults();
             flowReport.clear();
-            measurements.clearCodingResults();
+            codingReportModel.clearResults();
 
             injectorNumberTextField.setText((newValue != null) ? ((Injector) newValue).getInjectorCode() : null);
 
@@ -1110,6 +1125,8 @@ public class MainSectionController {
 
             Measurement measurementType = newValue.getTestName().getMeasurement();
 
+            delayController.clearDelayResults();
+
             switch (measurementType) {
 
                 case NO:
@@ -1127,8 +1144,6 @@ public class MainSectionController {
                     Integer motorSpeed = newValue.getMotorSpeed();
                     setInjectorTypeValues(freq, firstW, width, motorSpeed);
                     delayController.setInjectorTestName(newValue.getTestName().toString());
-                    delayController.setInjectorTest(newValue);
-                    delayController.clearDelayResults();
                     delayController.getSaveDelayButton().setDisable(false);
                     break;
             }

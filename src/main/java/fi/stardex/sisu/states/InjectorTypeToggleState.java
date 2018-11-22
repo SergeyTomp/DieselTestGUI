@@ -6,9 +6,9 @@ import javafx.beans.property.SimpleObjectProperty;
 
 public class InjectorTypeToggleState {
 
-    private ObjectProperty<InjectorType> injectorTypeObjectProperty = new SimpleObjectProperty<>();
+    private ObjectProperty<InjectorType> injectorType = new SimpleObjectProperty<>();
 
-    public ObjectProperty<InjectorType> injectorTypeObjectPropertyProperty() {
-        return injectorTypeObjectProperty;
+    public ObjectProperty<InjectorType> injectorTypeProperty() {
+        return injectorType;
     }
 }

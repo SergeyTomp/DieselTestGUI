@@ -1,10 +1,14 @@
 package fi.stardex.sisu.ui.controllers.additional.tabs.report;
 
+import fi.stardex.sisu.model.DelayReportModel;
+import fi.stardex.sisu.model.DelayReportModel.DelayResult;
 import fi.stardex.sisu.pdf.Result;
 import fi.stardex.sisu.util.i18n.I18N;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
@@ -18,26 +22,31 @@ public class DelayReportController {
     @FXML
     private TableColumn deleteColumn;
     @FXML
-    private TableView<DelayReportTableLine> delayTableView;
+    private TableView<DelayResult> delayTableView;
     @FXML
-    private TableColumn<DelayReportTableLine, String> parameterColumn;
+    private TableColumn<DelayResult, String> parameterColumn;
     @FXML
-    private TableColumn<DelayReportTableLine,String> unitsColumn;
+    private TableColumn<DelayResult,String> unitsColumn;
     @FXML
-    private TableColumn<DelayReportTableLine,String> channel1Column;
+    private TableColumn<DelayResult,String> channel1Column;
     @FXML
-    private TableColumn<DelayReportTableLine,String> channel2Column;
+    private TableColumn<DelayResult,String> channel2Column;
     @FXML
-    private TableColumn<DelayReportTableLine,String> channel3Column;
+    private TableColumn<DelayResult,String> channel3Column;
     @FXML
-    private TableColumn<DelayReportTableLine,String> channel4Column;
+    private TableColumn<DelayResult,String> channel4Column;
 
-    private ObservableList<DelayReportTableLine> delayResultSource;
+    private ObservableList<DelayResult> delayResultSource;
+
+    private BooleanProperty newResultFlag;
+
+    private DelayReportModel delayReportModel;
 
     private I18N i18N;
 
-
-
+    public void setDelayReportModel(DelayReportModel delayReportModel) {
+        this.delayReportModel = delayReportModel;
+    }
     public void setI18N(I18N i18N) {
         this.i18N = i18N;
     }
@@ -45,86 +54,29 @@ public class DelayReportController {
     @PostConstruct
     private void init(){
         delayResultSource = FXCollections.observableArrayList();
-        parameterColumn.setCellValueFactory(c->c.getValue().test);
-        unitsColumn.setCellValueFactory(c->c.getValue().units);
-        channel1Column.setCellValueFactory(c->c.getValue().channel_1);
-        channel2Column.setCellValueFactory(c->c.getValue().channel_2);
-        channel3Column.setCellValueFactory(c->c.getValue().channel_3);
-        channel4Column.setCellValueFactory(c->c.getValue().channel_4);
+        parameterColumn.setCellValueFactory(c -> c.getValue().testProperty());
+        unitsColumn.setCellValueFactory(c->c.getValue().unitsProperty());
+        channel1Column.setCellValueFactory(c->c.getValue().channel_1Property());
+        channel2Column.setCellValueFactory(c->c.getValue().channel_2Property());
+        channel3Column.setCellValueFactory(c->c.getValue().channel_3Property());
+        channel4Column.setCellValueFactory(c->c.getValue().channel_4Property());
         delayTableView.getSelectionModel().setCellSelectionEnabled(true);
+        newResultFlag = delayReportModel.newResultAddedProperty();
         bindingI18N();
 
-    }
-
-    public void showResults(Collection<DelayReportTableLine> setOfTableLines){
-        delayResultSource.clear();
-        delayResultSource.addAll(setOfTableLines);
-        delayTableView.setItems(delayResultSource);
-    }
-
-    public void clearTable(){
-        delayResultSource.clear();
-        delayTableView.refresh();
-    }
-
-    public static class DelayReportTableLine implements Result {
-
-        StringProperty test;
-        StringProperty units;
-        StringProperty channel_1;
-        StringProperty channel_2;
-        StringProperty channel_3;
-        StringProperty channel_4;
-        private List<String> parameterValues;
-
-        public DelayReportTableLine(String test){
-            this.test = new SimpleStringProperty(test);
-            this.units = new SimpleStringProperty("mkS");
-            parameterValues = new ArrayList<>(Arrays.asList("-", "-", "-", "-"));
-            setParameterValues();
-        }
-
-        public void setParameterValue(int number, String value) {
-            if(value.equals("")){
-                value = "Incorrect result!";
+        newResultFlag.addListener((observable, oldValue, newValue) -> {
+            if(newValue){
+                newResultFlag.setValue(false);
+                delayResultSource.clear();
+                delayResultSource.addAll(delayReportModel.getResultObservableMap().values());
+                delayTableView.setItems(delayResultSource);
+                delayTableView.refresh();
             }
-            parameterValues.set(number - 1, value);
-            setParameterValues();
-        }
-
-        private void setParameterValues() {
-            channel_1 = new SimpleStringProperty(parameterValues.get(0));
-            channel_2 = new SimpleStringProperty(parameterValues.get(1));
-            channel_3 = new SimpleStringProperty(parameterValues.get(2));
-            channel_4 = new SimpleStringProperty(parameterValues.get(3));
-        }
-
-        @Override
-        public String getMainColumn() {
-            return test.getValue();
-        }
-
-        @Override
-        public String getSubColumn1() {
-            return units.getValue();
-        }
-
-        @Override
-        public String getSubColumn2() {
-            return null;
-        }
-
-        @Override
-        public List<String> getValueColumns() {
-            return parameterValues;
-        }
-
+        });
     }
 
     private void bindingI18N() {
         parameterColumn.textProperty().bind(i18N.createStringBinding("h4.report.table.label.testName"));
         unitsColumn.textProperty().bind(i18N.createStringBinding("h4.report.measure.label.units"));
     }
-
-
 }

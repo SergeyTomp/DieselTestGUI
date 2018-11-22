@@ -6,6 +6,7 @@ import fi.stardex.sisu.store.FlowReport.FlowTestResult;
 import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.util.i18n.I18N;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -101,6 +102,15 @@ public class FlowReportController {
         flow2Column.setCellValueFactory(new PropertyValueFactory<>("flow2"));
         flow3Column.setCellValueFactory(new PropertyValueFactory<>("flow3"));
         flow4Column.setCellValueFactory(new PropertyValueFactory<>("flow4"));
+
+//        flowTestNameColumn.setCellValueFactory(param -> param.getValue().injectorTestProperty());
+//        flowTypeColumn.setCellValueFactory(param -> param.getValue().flowTypeProperty());
+//        flowNominalColumn.setCellValueFactory(param -> param.getValue().nominalFlowProperty());
+//        flow1Column.setCellValueFactory(param -> param.getValue().flow1Property());
+//        flow1Column.setCellValueFactory(param -> param.getValue().flow2Property());
+//        flow1Column.setCellValueFactory(param -> param.getValue().flow3Property());
+//        flow1Column.setCellValueFactory(param -> param.getValue().flow4Property());
+
         deleteColumn.setCellValueFactory(param -> new SimpleBooleanProperty());
 
         setCellFactory(flow1Column);

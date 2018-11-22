@@ -52,7 +52,7 @@ public class InjConfigurationController {
 
         injectorsConfigComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> rootPrefs.put(PREF_KEY, newValue.name()));
 
-        injectorTypeToggleState.injectorTypeObjectPropertyProperty().addListener((observableValue, oldValue, newValue) -> {
+        injectorTypeToggleState.injectorTypeProperty().addListener((observableValue, oldValue, newValue) -> {
             if(newValue.equals(InjectorType.PIEZO_DELPHI))
             injectorsConfigComboBox.getSelectionModel().select(InjectorChannel.SINGLE_CHANNEL);});
     }

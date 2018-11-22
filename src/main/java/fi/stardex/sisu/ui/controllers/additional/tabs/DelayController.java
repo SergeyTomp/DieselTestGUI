@@ -1,10 +1,8 @@
 package fi.stardex.sisu.ui.controllers.additional.tabs;
 
-import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
+import fi.stardex.sisu.model.DelayReportModel;
 import fi.stardex.sisu.ui.controllers.additional.TabSectionController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.report.DelayReportController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.report.DelayReportController.DelayReportTableLine;
-import fi.stardex.sisu.pdf.Result;
 import fi.stardex.sisu.util.DelayCalculator;
 import fi.stardex.sisu.util.i18n.I18N;
 import javafx.beans.property.ObjectProperty;
@@ -20,10 +18,6 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.regex.Pattern;
 
 import static fi.stardex.sisu.util.SpinnerDefaults.*;
@@ -68,13 +62,7 @@ public class DelayController {
 
     private String injectorTestName;
 
-    private InjectorTest injectorTest;
-
     private int channelNumber;
-
-    private Map<String, DelayReportTableLine> mapOfTableLines;
-
-    private List<Result> resultsList;
 
     public ObservableList<XYChart.Data<Double, Double>> getDelayData() {
         return delayData;
@@ -86,8 +74,7 @@ public class DelayController {
 
     private TabSectionController tabSectionController;
 
-    private DelayReportController delayReportController;
-
+    private DelayReportModel delayReportModel;
 
     public int getAddingTimeValue() {
         return Integer.parseInt(addingTime.getText());
@@ -113,10 +100,6 @@ public class DelayController {
         return saveDelayButton;
     }
 
-    public List<Result> getResultsList() {
-        return resultsList;
-    }
-
     public void setI18N(I18N i18N) {
         this.i18N = i18N;
     }
@@ -135,26 +118,18 @@ public class DelayController {
         this.delayCalculator = delayCalculator;
     }
 
-    public void setDelayReportController(DelayReportController delayReportController) {
-        this.delayReportController = delayReportController;
+    public void setDelayReportModel(DelayReportModel delayReportModel) {
+        this.delayReportModel = delayReportModel;
     }
-
 
     public void setInjectorTestName(String injectorTestName) {
         this.injectorTestName = injectorTestName;
-    }
-
-    public void setInjectorTest(InjectorTest injectorTest) {
-        this.injectorTest = injectorTest;
     }
 
     public void setChannelNumber(int channelNumber) {
         this.channelNumber = channelNumber;
     }
 
-    public DelayReportController getDelayReportController() {
-        return delayReportController;
-    }
 
     @PostConstruct
     private void init() {
@@ -166,7 +141,7 @@ public class DelayController {
         setupAddingTime();
 
         resetDelayButton.setOnAction(event -> clearDelayResults());
-        saveDelayButton.setOnAction(event-> storeAverageDelay());
+        saveDelayButton.setOnAction(event-> delayReportModel.storeResult(channelNumber, injectorTestName, averageDelay.getText()));
         saveDelayButton.setDisable(true);
 
         sensitivitySpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(SENSITIVITY_SPINNER_MIN,
@@ -227,30 +202,6 @@ public class DelayController {
         averageDelay.setText("");
 
     }
-
-    public void clearReportResults(){
-        if (resultsList != null){
-            resultsList.clear();
-        }
-        delayReportController.clearTable();
-    }
-
-    private void storeAverageDelay(){
-        if(mapOfTableLines == null){
-            mapOfTableLines = new HashMap<>();
-            resultsList = new ArrayList<>();
-        }
-        if(mapOfTableLines.get(injectorTestName) == null){
-            mapOfTableLines.put(injectorTestName, new DelayReportTableLine(injectorTestName));
-
-        }
-        mapOfTableLines.get(injectorTestName).setParameterValue(channelNumber, averageDelay.getText());
-        delayReportController.showResults(mapOfTableLines.values());
-
-        resultsList.clear();
-        resultsList.addAll(mapOfTableLines.values());
-    }
-
 
     public void showAttentionLabel(boolean notSingle) {
 

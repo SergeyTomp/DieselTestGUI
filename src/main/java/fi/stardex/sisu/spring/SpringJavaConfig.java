@@ -11,8 +11,7 @@ import fi.stardex.sisu.connect.ModbusConnect;
 import fi.stardex.sisu.devices.Device;
 import fi.stardex.sisu.devices.Devices;
 import fi.stardex.sisu.measurement.Measurements;
-import fi.stardex.sisu.model.ManufacturerPumpModel;
-import fi.stardex.sisu.model.PumpModel;
+import fi.stardex.sisu.model.*;
 import fi.stardex.sisu.pdf.PDFService;
 import fi.stardex.sisu.persistence.CheckAndInitializeBD;
 import fi.stardex.sisu.persistence.orm.CSVSUpdater;
@@ -35,7 +34,9 @@ import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.ui.controllers.GUI_TypeController;
 import fi.stardex.sisu.ui.controllers.ISADetectionController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.*;
+import fi.stardex.sisu.ui.controllers.additional.tabs.report.DelayReportController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.report.FlowReportController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.report.RLC_ReportController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.settings.ConnectionController;
 import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
@@ -569,9 +570,10 @@ public class SpringJavaConfig {
                                      HighPressureSectionController highPressureSectionController,
                                      InjectorSectionController injectorSectionController,
                                      Enabler enabler, FlowReport flowReport, CodingController codingController,
-                                     ISADetectionController isaDetectionController) {
+                                     ISADetectionController isaDetectionController,
+                                     CodingReportModel codingReportModel) {
         return new Measurements(mainSectionController, testBenchSectionController, highPressureSectionController,
-                injectorSectionController, enabler, flowReport, codingController, isaDetectionController);
+                injectorSectionController, enabler, flowReport, codingController, isaDetectionController, codingReportModel);
     }
 
     @Bean
@@ -604,19 +606,23 @@ public class SpringJavaConfig {
     @Autowired
     public PDFService pdfService(I18N i18N,
                                  DesktopFiles desktopFiles,
-                                 DelayController delayController,
-                                 RLCController rlcController,
                                  FlowReport flowReport,
-                                 Measurements measurements,
-                                 LanguageState languageState) {
+                                 LanguageState languageState,
+                                 RLC_ReportController rlc_reportController,
+                                 DelayReportModel delayReportModel,
+                                 RLC_ReportModel rlc_reportModel,
+                                 CodingReportModel codingReportModel,
+                                 FlowResultModel flowResultModel) {
         PDFService pdfService = new PDFService();
         pdfService.setI18N(i18N);
         pdfService.setDesktopFiles(desktopFiles);
-        pdfService.setDelayController(delayController);
         pdfService.setFlowReport(flowReport);
-        pdfService.setMeasurements(measurements);
-        pdfService.setRlcController(rlcController);
+        pdfService.setRlc_reportController(rlc_reportController);
         pdfService.setLanguageState(languageState);
+        pdfService.setDelayReportModel(delayReportModel);
+        pdfService.setRlc_reportModel(rlc_reportModel);
+        pdfService.setCodingReportModel(codingReportModel);
+        pdfService.setFlowResultModel(flowResultModel);
         return pdfService;
     }
 
@@ -700,5 +706,29 @@ public class SpringJavaConfig {
     @Autowired
     public PumpModel pumpModel(PumpRepository pumpRepository) {
         return new PumpModel(pumpRepository);
+    }
+
+    @Bean
+    @Lazy
+    public DelayReportModel delayReportModel(){
+        return new DelayReportModel();
+    }
+
+    @Bean
+    @Lazy
+    public RLC_ReportModel rlc_reportModel(){
+        return new RLC_ReportModel();
+    }
+
+    @Bean
+    @Lazy
+    public CodingReportModel codingReportModel(){
+        return new CodingReportModel();
+    }
+
+    @Bean
+    @Lazy
+    public FlowResultModel flowResultModel(){
+        return new FlowResultModel();
     }
 }

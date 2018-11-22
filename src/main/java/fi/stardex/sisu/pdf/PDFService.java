@@ -3,14 +3,16 @@ package fi.stardex.sisu.pdf;
 
 import be.quodlibet.boxable.*;
 import fi.stardex.sisu.company.CompanyDetails;
-import fi.stardex.sisu.measurement.Measurements;
+import fi.stardex.sisu.model.CodingReportModel;
+import fi.stardex.sisu.model.DelayReportModel;
+import fi.stardex.sisu.model.FlowResultModel;
+import fi.stardex.sisu.model.RLC_ReportModel;
 import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
 import fi.stardex.sisu.persistence.orm.interfaces.Model;
 import fi.stardex.sisu.states.LanguageState;
 import fi.stardex.sisu.store.FlowReport;
 import fi.stardex.sisu.store.FlowReport.FlowTestResult;
-import fi.stardex.sisu.ui.controllers.additional.tabs.DelayController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.RLCController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.report.RLC_ReportController;
 import fi.stardex.sisu.ui.controllers.dialogs.PrintDialogPanelController;
 import fi.stardex.sisu.util.DesktopFiles;
 import fi.stardex.sisu.util.i18n.I18N;
@@ -42,8 +44,10 @@ import java.io.InputStream;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 import static fi.stardex.sisu.company.CompanyDetails.*;
 
@@ -118,13 +122,14 @@ public class PDFService {
 
     private DesktopFiles desktopFiles;
 
-    private DelayController delayController;
-
-    private RLCController rlcController;
+    private RLC_ReportController rlc_reportController;
 
     private FlowReport flowReport;
 
-    private Measurements measurements;
+    private DelayReportModel delayReportModel;
+    private RLC_ReportModel rlc_reportModel;
+    private CodingReportModel codingReportModel;
+    private FlowResultModel flowResultModel;
 
     public void setDesktopFiles(DesktopFiles desktopFiles) {
         this.desktopFiles = desktopFiles;
@@ -134,20 +139,28 @@ public class PDFService {
         this.languageState = languageState;
     }
 
-    public void setDelayController(DelayController delayController) {
-        this.delayController = delayController;
-    }
-
-    public void setRlcController(RLCController rlcController) {
-        this.rlcController = rlcController;
+    public void setRlc_reportController(RLC_ReportController rlc_reportController) {
+        this.rlc_reportController = rlc_reportController;
     }
 
     public void setFlowReport(FlowReport flowReport) {
         this.flowReport = flowReport;
     }
 
-    public void setMeasurements(Measurements measurements) {
-        this.measurements = measurements;
+    public void setDelayReportModel(DelayReportModel delayReportModel) {
+        this.delayReportModel = delayReportModel;
+    }
+
+    public void setRlc_reportModel(RLC_ReportModel rlc_reportModel) {
+        this.rlc_reportModel = rlc_reportModel;
+    }
+
+    public void setCodingReportModel(CodingReportModel codingReportModel) {
+        this.codingReportModel = codingReportModel;
+    }
+
+    public void setFlowResultModel(FlowResultModel flowResultModel) {
+        this.flowResultModel = flowResultModel;
     }
 
     public void setI18N(I18N i18N) {
@@ -211,10 +224,11 @@ public class PDFService {
         currentPage = new PDPage();
         document.addPage(currentPage);
 
-        rlcResultsList = rlcController.getResultsList();
-        delayResultsList = delayController.getResultsList();
+//        rlcResultsList = rlc_reportController.getResultsList();
+        rlcResultsList = rlc_reportModel.getResultsList();
         flowResultsList = flowReport.getResultList();
-        codingResultsList = measurements.getResultList();
+        delayResultsList = delayReportModel.getResultsList();
+        codingResultsList = codingReportModel.getResultsList();
 
         drawHeaderPage(document, currentPage);
 
@@ -236,7 +250,9 @@ public class PDFService {
         if (resultsList != null && !resultsList.isEmpty()) {
             BaseTable baseTable = createTable(document, yStart);
             drawHeader(header, baseTable);
+
             drawData(baseTable, resultsList);
+
             float newStartY = baseTable.draw() - CELL_HEIGHT;
             checkForNewPage(baseTable);
             return newStartY;
@@ -286,6 +302,7 @@ public class PDFService {
     }
 
     private void drawData(BaseTable baseTable, List<Result> resultsStorage) {
+
         for (Result result : resultsStorage) {
             if(result == null)
                 continue;
@@ -658,7 +675,7 @@ public class PDFService {
         }
 
         public List<HeaderCell> getHeaderCells() {
-            return new ArrayList<>(Arrays.asList(new HeaderCell(30, injectorNumber.getValue()), new HeaderCell(70, code.getValue())));
+            return new ArrayList<>(Arrays.asList(new HeaderCell(20, injectorNumber.getValue()), new HeaderCell(80, code.getValue())));
         }
     }
 

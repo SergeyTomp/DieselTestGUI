@@ -9,6 +9,7 @@ import fi.stardex.sisu.coding.delphi.c2i.DelphiC2ICoding;
 import fi.stardex.sisu.coding.delphi.c2i.DelphiC2ICodingDataStorage;
 import fi.stardex.sisu.coding.denso.DensoCoding;
 import fi.stardex.sisu.coding.denso.DensoCodingDataStorage;
+import fi.stardex.sisu.model.CodingReportModel;
 import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.persistence.orm.cr.inj.TestName;
@@ -113,6 +114,8 @@ public class Measurements implements ChangeListener<Boolean> {
 
     private ISADetectionController isaDetectionController;
 
+    private CodingReportModel codingReportModel;
+
     private boolean codingComplete;
 
     private Iterator<Integer> densoCodingPointsIterator;
@@ -121,22 +124,24 @@ public class Measurements implements ChangeListener<Boolean> {
         this.codingComplete = codingComplete;
     }
 
-    public List<Result> getResultList() {
-        return resultList;
-    }
+//    public List<Result> getResultList() {
+//        return resultList;
+//    }
 
     public Measurements(MainSectionController mainSectionController,
                         TestBenchSectionController testBenchSectionController,
                         HighPressureSectionController highPressureSectionController,
                         InjectorSectionController injectorSectionController,
                         Enabler enabler, FlowReport flowReport, CodingController codingController,
-                        ISADetectionController isaDetectionController) {
+                        ISADetectionController isaDetectionController,
+                        CodingReportModel codingReportModel) {
 
         this.enabler = enabler;
 
         this.flowReport = flowReport;
 
         this.mainSectionController = mainSectionController;
+        this.codingReportModel = codingReportModel;
         testListView = mainSectionController.getTestListView();
         testListViewItems = mainSectionController.getTestListViewItems();
         testsSelectionModel = mainSectionController.getTestsSelectionModel();
@@ -204,7 +209,7 @@ public class Measurements implements ChangeListener<Boolean> {
 
         flowReport.clear();
 
-        clearCodingResults();
+//        clearCodingResults();
 
         switch (getTestType()) {
             case AUTO:
@@ -293,34 +298,7 @@ public class Measurements implements ChangeListener<Boolean> {
 
     private void setCodingResults(List<String> codeResult) {
 
-        String code1 = codeResult.get(0);
-        String code2 = codeResult.get(1);
-        String code3 = codeResult.get(2);
-        String code4 = codeResult.get(3);
-        Injector injector = CurrentInjectorObtainer.getInjector();
-        injectorCode1TextField.setText(code1);
-        injectorCode2TextField.setText(code2);
-        injectorCode3TextField.setText(code3);
-        injectorCode4TextField.setText(code4);
-
-        if(resultList == null){
-            resultList = new ArrayList<>();
-        }
-        resultList.clear();
-        resultList.add(new CodingResult(injector.getInjectorCode(), code1, code2, code3, code3));
-
-    }
-
-    public void clearCodingResults() {
-
-        injectorCode1TextField.setText("");
-        injectorCode2TextField.setText("");
-        injectorCode3TextField.setText("");
-        injectorCode4TextField.setText("");
-        if(resultList != null){
-            resultList.clear();
-        }
-
+        codeResult.stream().filter(c -> !c.equals("")).forEach(code -> codingReportModel.storeResult((codeResult.indexOf(code)), code));
     }
 
     public void switchOffSections() {

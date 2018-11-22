@@ -1,35 +1,45 @@
 package fi.stardex.sisu.ui.controllers.additional.tabs.report;
 
+import fi.stardex.sisu.model.RLC_ReportModel;
+import fi.stardex.sisu.model.RLC_ReportModel.RlcResult;
 import fi.stardex.sisu.pdf.Result;
 import fi.stardex.sisu.util.i18n.I18N;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.util.Callback;
 
 import javax.annotation.PostConstruct;
 import java.util.*;
 
 public class RLC_ReportController {
     @FXML
-    private TableView<RLCreportTableLine> rlcTableView;
+    private TableView<RlcResult> rlcTableView;
     @FXML
-    private TableColumn<RLCreportTableLine, String> parameterColumn;
+    private TableColumn<RlcResult, String> parameterColumn;
     @FXML
-    private TableColumn<RLCreportTableLine,String> unitsColumn;
+    private TableColumn<RlcResult,String> unitsColumn;
     @FXML
-    private TableColumn<RLCreportTableLine,String> channel1Column;
+    private TableColumn<RlcResult,String> channel1Column;
     @FXML
-    private TableColumn<RLCreportTableLine,String> channel2Column;
+    private TableColumn<RlcResult,String> channel2Column;
     @FXML
-    private TableColumn<RLCreportTableLine,String> channel3Column;
+    private TableColumn<RlcResult,String> channel3Column;
     @FXML
-    private TableColumn<RLCreportTableLine,String> channel4Column;
+    private TableColumn<RlcResult,String> channel4Column;
 
-    private ObservableList<RLCreportTableLine> RLCresultSource;
+    private BooleanProperty newResultFlag;
+
+    private RLC_ReportModel rlc_reportModel;
+
+    private ObservableList<RlcResult> RLCresultSource;
 
     private I18N i18N;
 
@@ -37,85 +47,34 @@ public class RLC_ReportController {
         this.i18N = i18N;
     }
 
-
+    public void setRlc_reportModel(RLC_ReportModel rlc_reportModel) {
+        this.rlc_reportModel = rlc_reportModel;
+    }
 
     @PostConstruct
     private void init(){
         RLCresultSource = FXCollections.observableArrayList();
-        parameterColumn.setCellValueFactory(c->c.getValue().parameter);
-        unitsColumn.setCellValueFactory(c->c.getValue().units);
-        channel1Column.setCellValueFactory(c->c.getValue().channel_1);
-        channel2Column.setCellValueFactory(c->c.getValue().channel_2);
-        channel3Column.setCellValueFactory(c->c.getValue().channel_3);
-        channel4Column.setCellValueFactory(c->c.getValue().channel_4);
+        newResultFlag = rlc_reportModel.newRlcAddedProperty();
+        parameterColumn.setCellValueFactory(c->c.getValue().parameterProperty());
+        unitsColumn.setCellValueFactory(c->c.getValue().unitsProperty());
+        channel1Column.setCellValueFactory(c -> c.getValue().channel_1Property());
+        channel2Column.setCellValueFactory(c->c.getValue().channel_2Property());
+        channel3Column.setCellValueFactory(c->c.getValue().channel_3Property());
+        channel4Column.setCellValueFactory(c->c.getValue().channel_4Property());
         rlcTableView.getSelectionModel().setCellSelectionEnabled(true);
+//        mapOfTableLines = new HashMap<>();
         bindingI18N();
-
+        newResultFlag.addListener((observable, oldValue, newValue) -> {
+            if(newValue){
+                newResultFlag.setValue(false);
+                RLCresultSource.clear();
+                RLCresultSource.addAll(rlc_reportModel.getResultObservableMap().values());
+                rlcTableView.setItems(RLCresultSource);
+                rlcTableView.refresh();
+            }
+        });
     }
 
-    public void showResults(Collection<RLCreportTableLine> setOfTableLines){
-        RLCresultSource.clear();
-        RLCresultSource.addAll(setOfTableLines);
-        rlcTableView.setItems(RLCresultSource);
-
-    }
-
-    public void clearTable(){
-        RLCresultSource.clear();
-        rlcTableView.refresh();
-    }
-
-    public static class RLCreportTableLine implements Result {
-        StringProperty parameter;
-        StringProperty units;
-        StringProperty channel_1;
-        StringProperty channel_2;
-        StringProperty channel_3;
-        StringProperty channel_4;
-
-        private List<String> parameterValues;
-
-        public RLCreportTableLine(String parameter,
-                                  String units){
-            this.parameter = new SimpleStringProperty(parameter);
-            this.units = new SimpleStringProperty(units);
-            parameterValues = new ArrayList<>(Arrays.asList("-", "-", "-", "-"));
-            setParameterValues();
-
-        }
-
-        public void setParameterValue(int number, String value) {
-            parameterValues.set(number - 1, value);
-            setParameterValues();
-        }
-
-        private void setParameterValues() {
-            channel_1 = new SimpleStringProperty(parameterValues.get(0));
-            channel_2 = new SimpleStringProperty(parameterValues.get(1));
-            channel_3 = new SimpleStringProperty(parameterValues.get(2));
-            channel_4 = new SimpleStringProperty(parameterValues.get(3));
-        }
-
-        @Override
-        public String getMainColumn() {
-            return parameter.getValue();
-        }
-
-        @Override
-        public String getSubColumn1() {
-            return units.getValue();
-        }
-
-        @Override
-        public String getSubColumn2() {
-            return null;
-        }
-
-        @Override
-        public List<String> getValueColumns() {
-            return parameterValues;
-        }
-    }
     private void bindingI18N() {
         parameterColumn.textProperty().bind(i18N.createStringBinding("h4.report.measure.label.parameterName"));
         unitsColumn.textProperty().bind(i18N.createStringBinding("h4.report.measure.label.units"));

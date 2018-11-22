@@ -20,9 +20,7 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.beans.InvalidationListener;
 import javafx.beans.property.ReadOnlyObjectProperty;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -257,7 +255,7 @@ public class InjectorSectionController {
 
         boostU_state.boostU_property().addListener(new BoostU_ChangeListener());
 
-        injectorTypeToggleState.injectorTypeObjectPropertyProperty().setValue(InjectorType.COIL);
+        injectorTypeToggleState.injectorTypeProperty().setValue(InjectorType.COIL);
 
         ledParametersChangeListener = new LedParametersChangeListener();
 
@@ -265,13 +263,13 @@ public class InjectorSectionController {
 
         piezoCoilToggleGroup.selectedToggleProperty().addListener((observableValue, oldValue, newValue) -> {
             if (newValue == piezoDelphiRadioButton){
-                injectorTypeToggleState.injectorTypeObjectPropertyProperty().setValue(InjectorType.PIEZO_DELPHI);
+                injectorTypeToggleState.injectorTypeProperty().setValue(InjectorType.PIEZO_DELPHI);
             }
             else if(newValue == coilRadioButton){
-                injectorTypeToggleState.injectorTypeObjectPropertyProperty().setValue(InjectorType.COIL);
+                injectorTypeToggleState.injectorTypeProperty().setValue(InjectorType.COIL);
             }
             else if(newValue == piezoRadioButton){
-                injectorTypeToggleState.injectorTypeObjectPropertyProperty().setValue(InjectorType.PIEZO);
+                injectorTypeToggleState.injectorTypeProperty().setValue(InjectorType.PIEZO);
             }
         });
 
@@ -399,7 +397,7 @@ public class InjectorSectionController {
             } else if (newValue instanceof Toggle) {
                 if (newValue == piezoDelphiRadioButton) {
                     enabler.disableNode(true, led2ToggleButton, led3ToggleButton, led4ToggleButton);
-                    injectorTypeToggleState.injectorTypeObjectPropertyProperty().setValue(InjectorType.PIEZO_DELPHI);
+                    injectorTypeToggleState.injectorTypeProperty().setValue(InjectorType.PIEZO_DELPHI);
                     led1ToggleButton.setSelected(true);
                 } else {
                     enabler.disableNode(false, led2ToggleButton, led3ToggleButton, led4ToggleButton);

@@ -3,7 +3,10 @@ package fi.stardex.sisu.spring;
 import fi.stardex.sisu.charts.TimerTasksManager;
 import fi.stardex.sisu.devices.Devices;
 import fi.stardex.sisu.measurement.Measurements;
+import fi.stardex.sisu.model.CodingReportModel;
+import fi.stardex.sisu.model.DelayReportModel;
 import fi.stardex.sisu.model.ManufacturerPumpModel;
+import fi.stardex.sisu.model.RLC_ReportModel;
 import fi.stardex.sisu.pdf.PDFService;
 import fi.stardex.sisu.persistence.orm.Manufacturer;
 import fi.stardex.sisu.persistence.repos.ISADetectionRepository;
@@ -137,9 +140,11 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                        TestBenchSectionController testBenchSectionController,
                                                        InfoController infoController,
                                                        DelayController delayController,
-                                                       RLCController rlcController,
                                                        BoostU_State boostU_state,
-                                                       BoostUadjustmentState boostUadjustmentState) {
+                                                       BoostUadjustmentState boostUadjustmentState,
+                                                       CodingReportModel codingReportModel,
+                                                       DelayReportModel delayReportModel,
+                                                       RLC_ReportModel rlc_reportModel) {
         MainSectionController mainSectionController = (MainSectionController) mainSection().getController();
         mainSectionController.setEnabler(enabler);
         mainSectionController.setManufacturerMenuDialog(manufacturerMenuDialog());
@@ -160,9 +165,11 @@ public class JavaFXSpringConfigure extends ViewLoader{
         mainSectionController.setTargetRPMSpinner(testBenchSectionController.getTargetRPMSpinner());
         mainSectionController.setDelayController(delayController);
         mainSectionController.setPrintDialogPanel(printDialogPanel());
-        mainSectionController.setRlcController(rlcController);
         mainSectionController.setBoostU_state(boostU_state);
         mainSectionController.setBoostUadjustmentState(boostUadjustmentState);
+        mainSectionController.setDelayReportModel(delayReportModel);
+        mainSectionController.setRlc_reportModel(rlc_reportModel);
+        mainSectionController.setCodingReportModel(codingReportModel);
         return mainSectionController;
     }
 
@@ -308,9 +315,11 @@ public class JavaFXSpringConfigure extends ViewLoader{
 
     @Bean
     @Autowired
-    public CodingController codingController(TabSectionController tabSectionController){
+    public CodingController codingController(TabSectionController tabSectionController,
+                                             CodingReportModel codingReportModel){
         CodingController codingController = tabSectionController.getCodingController();
         codingController.setI18N(i18N);
+        codingController.setCodingReportModel(codingReportModel);
         return codingController;
     }
 
@@ -346,18 +355,22 @@ public class JavaFXSpringConfigure extends ViewLoader{
     @Bean
     @Autowired
     public RLC_ReportController rlcReportController(ReportController reportController,
-                                                    I18N i18N){
+                                                    I18N i18N,
+                                                    RLC_ReportModel rlc_reportModel){
         RLC_ReportController rlcReportController = reportController.getRLCreportController();
         rlcReportController.setI18N(i18N);
+        rlcReportController.setRlc_reportModel(rlc_reportModel);
         return rlcReportController;
     }
 
     @Bean
     @Autowired
     public DelayReportController delayReportController(ReportController reportController,
-                                                       I18N i18N){
+                                                       I18N i18N,
+                                                       DelayReportModel delayReportModel){
         DelayReportController delayReportController = reportController.getDelayReportController();
         delayReportController.setI18N(i18N);
+        delayReportController.setDelayReportModel(delayReportModel);
         return delayReportController;
     }
 
@@ -478,12 +491,12 @@ public class JavaFXSpringConfigure extends ViewLoader{
     @Autowired
     public DelayController delayController(TabSectionController tabSectionController,
                                            DelayCalculator delayCalculator,
-                                           DelayReportController delayReportController) {
+                                           DelayReportModel delayReportModel) {
         DelayController delayController = tabSectionController.getDelayController();
         delayController.setDelayCalculator(delayCalculator);
         delayController.setTabSectionController(tabSectionController);
         delayController.setI18N(i18N);
-        delayController.setDelayReportController(delayReportController);
+        delayController.setDelayReportModel(delayReportModel);
          return delayController;
     }
 
@@ -707,15 +720,18 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                        ModbusRegisterProcessor ultimaModbusWriter,
                                        RegisterProvider ultimaRegisterProvider,
                                        TabSectionController tabSectionController,
-                                       RLC_ReportController rlc_reportController,
-                                       InjConfigurationState injConfigurationState) {
+                                       InjConfigurationState injConfigurationState,
+                                       InjectorTypeToggleState injectorTypeToggleState,
+                                       RLC_ReportModel rlc_reportModel) {
         RLCController RLCController = tabSectionController.getRlCController();
         RLCController.setInjectorSectionController(injectorSectionController);
         RLCController.setUltimaModbusWriter(ultimaModbusWriter);
         RLCController.setUltimaRegisterProvider(ultimaRegisterProvider);
         RLCController.setI18N(i18N);
-        RLCController.setRLC_reportController(rlc_reportController);
         RLCController.setInjConfigurationState(injConfigurationState);
+        RLCController.setInjConfigurationState(injConfigurationState);
+        RLCController.setInjectorTypeToggleState(injectorTypeToggleState);
+        RLCController.setRlc_reportModel(rlc_reportModel);
         return RLCController;
 
     }
