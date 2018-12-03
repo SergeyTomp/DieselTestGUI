@@ -3,6 +3,7 @@ package fi.stardex.sisu.ui.controllers.main;
 import fi.stardex.sisu.measurement.Measurements;
 import fi.stardex.sisu.model.CodingReportModel;
 import fi.stardex.sisu.model.DelayReportModel;
+import fi.stardex.sisu.model.FlowReportModel;
 import fi.stardex.sisu.model.RLC_ReportModel;
 import fi.stardex.sisu.persistence.orm.Manufacturer;
 import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
@@ -15,7 +16,6 @@ import fi.stardex.sisu.registers.flow.ModbusMapFlow;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.BoostU_State;
 import fi.stardex.sisu.states.BoostUadjustmentState;
-import fi.stardex.sisu.store.FlowReport;
 import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
@@ -208,7 +208,7 @@ public class MainSectionController {
 
     private Measurements measurements;
 
-    private FlowReport flowReport;
+    private FlowReportModel flowReportModel;
 
     private ModbusRegisterProcessor flowModbusWriter;
 
@@ -412,8 +412,8 @@ public class MainSectionController {
         this.measurements = measurements;
     }
 
-    public void setFlowReport(FlowReport flowReport) {
-        this.flowReport = flowReport;
+    public void setFlowReportModel(FlowReportModel flowReportModel) {
+        this.flowReportModel = flowReportModel;
     }
 
     public void setFlowModbusWriter(ModbusRegisterProcessor flowModbusWriter) {
@@ -541,7 +541,8 @@ public class MainSectionController {
 
         storeButton.setOnAction((event) -> {
             if (startToggleButton.isSelected())
-                flowReport.save(testsSelectionModel.getSelectedItem());
+//                flowReport.save(testsSelectionModel.getSelectedItem());
+                flowReportModel.storeResult(testsSelectionModel.getSelectedItem());
         });
 
         return this;
@@ -945,7 +946,7 @@ public class MainSectionController {
 
             delayReportModel.clearResults();
             rlc_reportModel.clearResults();
-            flowReport.clear();
+            flowReportModel.clearResults();
             codingReportModel.clearResults();
 
 
@@ -1007,7 +1008,7 @@ public class MainSectionController {
 
             delayReportModel.clearResults();
             rlc_reportModel.clearResults();
-            flowReport.clear();
+            flowReportModel.clearResults();
             codingReportModel.clearResults();
 
             injectorNumberTextField.setText((newValue != null) ? ((Injector) newValue).getInjectorCode() : null);

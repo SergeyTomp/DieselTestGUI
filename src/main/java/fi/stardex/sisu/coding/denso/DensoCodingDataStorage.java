@@ -1,7 +1,7 @@
 package fi.stardex.sisu.coding.denso;
 
+import fi.stardex.sisu.model.FlowReportModel.FlowResult;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
-import fi.stardex.sisu.store.FlowReport;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -62,7 +62,7 @@ public class DensoCodingDataStorage {
 
     }
 
-    public static void store(int width, FlowReport.FlowTestResult flowTestResult) {
+    public static void store(int width, FlowResult flowTestResult) {
 
         InjectorTest injectorTest = flowTestResult.getInjectorTest();
 

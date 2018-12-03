@@ -2,20 +2,17 @@ package fi.stardex.sisu.ui.controllers.additional.tabs.report;
 
 import fi.stardex.sisu.model.DelayReportModel;
 import fi.stardex.sisu.model.DelayReportModel.DelayResult;
-import fi.stardex.sisu.pdf.Result;
 import fi.stardex.sisu.util.i18n.I18N;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
-import javafx.collections.MapChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
+import javafx.util.Callback;
 
 import javax.annotation.PostConstruct;
-import java.util.*;
 
 public class DelayReportController {
 
@@ -56,8 +53,13 @@ public class DelayReportController {
         delayResultSource = FXCollections.observableArrayList();
         parameterColumn.setCellValueFactory(c -> c.getValue().testProperty());
         unitsColumn.setCellValueFactory(c->c.getValue().unitsProperty());
-        channel1Column.setCellValueFactory(c->c.getValue().channel_1Property());
-        channel2Column.setCellValueFactory(c->c.getValue().channel_2Property());
+        channel1Column.setCellValueFactory(c -> c.getValue().channel_1Property());
+        channel2Column.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<DelayResult, String>, ObservableValue<String>>() {
+            @Override
+            public ObservableValue<String> call(TableColumn.CellDataFeatures<DelayResult, String> c) {
+                return c.getValue().channel_2Property();
+            }
+        });
         channel3Column.setCellValueFactory(c->c.getValue().channel_3Property());
         channel4Column.setCellValueFactory(c->c.getValue().channel_4Property());
         delayTableView.getSelectionModel().setCellSelectionEnabled(true);

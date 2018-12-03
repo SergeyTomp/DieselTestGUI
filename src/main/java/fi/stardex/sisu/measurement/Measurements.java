@@ -2,20 +2,18 @@ package fi.stardex.sisu.measurement;
 
 import eu.hansolo.enzo.lcd.Lcd;
 import fi.stardex.sisu.coding.bosch.BoschCoding;
-import fi.stardex.sisu.coding.delphi.c3i.DelphiC3ICoding;
-import fi.stardex.sisu.coding.delphi.c3i.DelphiC3ICodingDataStorage;
-import fi.stardex.sisu.coding.denso.DensoCodingDataStorage;
 import fi.stardex.sisu.coding.delphi.c2i.DelphiC2ICoding;
 import fi.stardex.sisu.coding.delphi.c2i.DelphiC2ICodingDataStorage;
+import fi.stardex.sisu.coding.delphi.c3i.DelphiC3ICoding;
+import fi.stardex.sisu.coding.delphi.c3i.DelphiC3ICodingDataStorage;
 import fi.stardex.sisu.coding.denso.DensoCoding;
 import fi.stardex.sisu.coding.denso.DensoCodingDataStorage;
 import fi.stardex.sisu.model.CodingReportModel;
-import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
+import fi.stardex.sisu.model.FlowReportModel;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.persistence.orm.cr.inj.TestName;
 import fi.stardex.sisu.registers.flow.ModbusMapFlow;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
-import fi.stardex.sisu.store.FlowReport;
 import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.ui.controllers.ISADetectionController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.CodingController;
@@ -23,10 +21,8 @@ import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.cr.TestBenchSectionController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
-import fi.stardex.sisu.pdf.Result;
 import fi.stardex.sisu.util.enums.Measurement;
 import fi.stardex.sisu.util.enums.Tests.TestType;
-import fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -38,12 +34,10 @@ import javafx.util.Duration;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static fi.stardex.sisu.store.FlowReport.getMapOfFlowTestResults;
 import static fi.stardex.sisu.util.enums.Tests.TestType.CODING;
 import static fi.stardex.sisu.util.enums.Tests.TestType.TESTPLAN;
 import static fi.stardex.sisu.util.enums.Tests.getTestType;
@@ -59,8 +53,6 @@ public class Measurements implements ChangeListener<Boolean> {
     private MultipleSelectionModel<InjectorTest> testsSelectionModel;
 
     private Enabler enabler;
-
-    private FlowReport flowReport;
 
     private Button resetButton;
 
@@ -100,8 +92,6 @@ public class Measurements implements ChangeListener<Boolean> {
 
     private MainSectionController mainSectionController;
 
-    private List<Result> resultList;
-
     private TextField injectorCode1TextField;
 
     private TextField injectorCode2TextField;
@@ -116,6 +106,8 @@ public class Measurements implements ChangeListener<Boolean> {
 
     private CodingReportModel codingReportModel;
 
+    private FlowReportModel flowReportModel;
+
     private boolean codingComplete;
 
     private Iterator<Integer> densoCodingPointsIterator;
@@ -124,22 +116,18 @@ public class Measurements implements ChangeListener<Boolean> {
         this.codingComplete = codingComplete;
     }
 
-//    public List<Result> getResultList() {
-//        return resultList;
-//    }
-
     public Measurements(MainSectionController mainSectionController,
                         TestBenchSectionController testBenchSectionController,
                         HighPressureSectionController highPressureSectionController,
                         InjectorSectionController injectorSectionController,
-                        Enabler enabler, FlowReport flowReport, CodingController codingController,
+                        Enabler enabler,
+                        CodingController codingController,
                         ISADetectionController isaDetectionController,
-                        CodingReportModel codingReportModel) {
+                        CodingReportModel codingReportModel,
+                        FlowReportModel flowReportModel) {
 
         this.enabler = enabler;
-
-        this.flowReport = flowReport;
-
+        this.flowReportModel = flowReportModel;
         this.mainSectionController = mainSectionController;
         this.codingReportModel = codingReportModel;
         testListView = mainSectionController.getTestListView();
@@ -207,7 +195,9 @@ public class Measurements implements ChangeListener<Boolean> {
 
         enabler.startTest(true);
 
-        flowReport.clear();
+//        flowReport.clear();
+
+        flowReportModel.clearResults();
 
 //        clearCodingResults();
 
@@ -280,7 +270,7 @@ public class Measurements implements ChangeListener<Boolean> {
         switch (getManufacturer().toString()) {
 
             case "Bosch":
-                setCodingResults(BoschCoding.calculate());
+                setCodingResults(BoschCoding.calculate(flowReportModel.getResultObservableMap()));
                 break;
             case "Denso":
                 setCodingResults(DensoCoding.calculate());
@@ -501,18 +491,21 @@ public class Measurements implements ChangeListener<Boolean> {
             switch (getTestType()) {
 
                 case AUTO:
-                    flowReport.save(injectorTest);
+//                    flowReport.save(injectorTest);
+                    flowReportModel.storeResult(injectorTest);
                     break;
                 case CODING:
                     if (isDensoCoding() && testName.getMeasurement() != Measurement.VISUAL) {
-                        flowReport.save(injectorTest);
-                        DensoCodingDataStorage.store(widthCurrentSignalSpinner.getValue(), getMapOfFlowTestResults().get(injectorTest));
+//                        flowReport.save(injectorTest);
+                        flowReportModel.storeResult(injectorTest);
+                        DensoCodingDataStorage.store(widthCurrentSignalSpinner.getValue(), flowReportModel.getResultObservableMap().get(injectorTest));
                     } else if (testName.isTestPoint()) {
-                        flowReport.save(injectorTest);
+//                        flowReport.save(injectorTest);
+                        flowReportModel.storeResult(injectorTest);
                         if (isDelphiC2ICoding())
-                            DelphiC2ICodingDataStorage.store(getMapOfFlowTestResults().get(injectorTest));
+                            DelphiC2ICodingDataStorage.store(flowReportModel.getResultObservableMap().get(injectorTest));
                         else if (isDelphiC3ICoding())
-                            DelphiC3ICodingDataStorage.store(getMapOfFlowTestResults().get(injectorTest));
+                            DelphiC3ICodingDataStorage.store(flowReportModel.getResultObservableMap().get(injectorTest));
                     }
                     break;
 
@@ -566,45 +559,4 @@ public class Measurements implements ChangeListener<Boolean> {
         return codingPointsList.iterator();
 
     }
-
-    private static class CodingResult implements Result {
-
-        private String injectorNumber;
-        private String generatedCode1;
-        private String generatedCode2;
-        private String generatedCode3;
-        private String generatedCode4;
-        List<String> codesList = new ArrayList<>();
-
-        public CodingResult(String injectorNumber, String code1, String code2, String code3, String code4) {
-            this.injectorNumber = injectorNumber;
-            this.generatedCode1 = code1;
-            this.generatedCode2 = code2;
-            this.generatedCode3 = code3;
-            this.generatedCode4 = code4;
-            this.codesList.addAll(Arrays.asList(generatedCode1, generatedCode2, generatedCode3, generatedCode4));
-        }
-
-
-        @Override
-        public String getMainColumn() {
-            return injectorNumber;
-        }
-
-        @Override
-        public String getSubColumn1() {
-            return null;
-        }
-
-        @Override
-        public String getSubColumn2() {
-            return null;
-        }
-
-        @Override
-        public List<String> getValueColumns() {
-            return codesList;
-        }
-    }
-
 }

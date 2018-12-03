@@ -3,10 +3,7 @@ package fi.stardex.sisu.spring;
 import fi.stardex.sisu.charts.TimerTasksManager;
 import fi.stardex.sisu.devices.Devices;
 import fi.stardex.sisu.measurement.Measurements;
-import fi.stardex.sisu.model.CodingReportModel;
-import fi.stardex.sisu.model.DelayReportModel;
-import fi.stardex.sisu.model.ManufacturerPumpModel;
-import fi.stardex.sisu.model.RLC_ReportModel;
+import fi.stardex.sisu.model.*;
 import fi.stardex.sisu.pdf.PDFService;
 import fi.stardex.sisu.persistence.orm.Manufacturer;
 import fi.stardex.sisu.persistence.repos.ISADetectionRepository;
@@ -15,8 +12,8 @@ import fi.stardex.sisu.persistence.repos.ManufacturerRepository;
 import fi.stardex.sisu.persistence.repos.cr.*;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
+import fi.stardex.sisu.settings.*;
 import fi.stardex.sisu.states.*;
-import fi.stardex.sisu.store.FlowReport;
 import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.GUI_TypeController;
@@ -39,7 +36,6 @@ import fi.stardex.sisu.ui.controllers.cr.TestBenchSectionController;
 import fi.stardex.sisu.ui.controllers.dialogs.*;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
 import fi.stardex.sisu.ui.controllers.pumps.PumpTabSectionController;
-import fi.stardex.sisu.settings.*;
 import fi.stardex.sisu.ui.controllers.uis.RootLayoutController;
 import fi.stardex.sisu.util.DelayCalculator;
 import fi.stardex.sisu.util.enums.BeakerType;
@@ -136,7 +132,6 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                        @Lazy ModbusRegisterProcessor flowModbusWriter,
                                                        HighPressureSectionController highPressureSectionController,
                                                        @Lazy Measurements measurements,
-                                                       @Lazy FlowReport flowReport,
                                                        TestBenchSectionController testBenchSectionController,
                                                        InfoController infoController,
                                                        DelayController delayController,
@@ -144,7 +139,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                        BoostUadjustmentState boostUadjustmentState,
                                                        CodingReportModel codingReportModel,
                                                        DelayReportModel delayReportModel,
-                                                       RLC_ReportModel rlc_reportModel) {
+                                                       RLC_ReportModel rlc_reportModel,
+                                                       FlowReportModel flowReportModel) {
         MainSectionController mainSectionController = (MainSectionController) mainSection().getController();
         mainSectionController.setEnabler(enabler);
         mainSectionController.setManufacturerMenuDialog(manufacturerMenuDialog());
@@ -160,7 +156,6 @@ public class JavaFXSpringConfigure extends ViewLoader{
         mainSectionController.setHighPressureSectionController(highPressureSectionController);
         mainSectionController.setI18N(i18N);
         mainSectionController.setMeasurements(measurements);
-        mainSectionController.setFlowReport(flowReport);
         mainSectionController.setInfoController(infoController);
         mainSectionController.setTargetRPMSpinner(testBenchSectionController.getTargetRPMSpinner());
         mainSectionController.setDelayController(delayController);
@@ -170,6 +165,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         mainSectionController.setDelayReportModel(delayReportModel);
         mainSectionController.setRlc_reportModel(rlc_reportModel);
         mainSectionController.setCodingReportModel(codingReportModel);
+        mainSectionController.setFlowReportModel(flowReportModel);
         return mainSectionController;
     }
 
@@ -325,9 +321,19 @@ public class JavaFXSpringConfigure extends ViewLoader{
 
     @Bean
     @Autowired
-    public FlowController flowController(TabSectionController tabSectionController) {
+    public FlowController flowController(TabSectionController tabSectionController,
+                                         FlowValuesModel flowValuesModel,
+                                         DeliveryFlowUnitsModel deliveryFlowUnitsModel,
+                                         DeliveryFlowRangeModel deliveryFlowRangeModel,
+                                         BackFlowUnitsModel backFlowUnitsModel,
+                                         BackFlowRangeModel backFlowRangeModel) {
         FlowController flowController = tabSectionController.getFlowController();
         flowController.setI18N(i18N);
+        flowController.setFlowValuesModel(flowValuesModel);
+        flowController.setDeliveryFlowUnitsModel(deliveryFlowUnitsModel);
+        flowController.setDeliveryFlowRangeModel(deliveryFlowRangeModel);
+        flowController.setBackFlowUnitsModel(backFlowUnitsModel);
+        flowController.setBackFlowRangeModel(backFlowRangeModel);
         return flowController;
     }
 
@@ -342,13 +348,16 @@ public class JavaFXSpringConfigure extends ViewLoader{
 
     @Bean
     @Autowired
-    public FlowReportController flowReportController(ReportController reportController, @Lazy FlowReport flowReport,
-                                                     I18N i18N, @Lazy Enabler enabler, MainSectionController mainSectionController) {
+    public FlowReportController flowReportController(ReportController reportController,
+                                                     I18N i18N,
+                                                     @Lazy Enabler enabler,
+                                                     MainSectionController mainSectionController,
+                                                     FlowReportModel flowReportModel) {
         FlowReportController flowReportController = reportController.getFlowReportController();
-        flowReportController.setFlowReport(flowReport);
         flowReportController.setI18N(i18N);
         flowReportController.setEnabler(enabler);
         flowReportController.setMainSectionStartToggleButton(mainSectionController.getStartToggleButton());
+        flowReportController.setFlowReportModel(flowReportModel);
         return flowReportController;
     }
 

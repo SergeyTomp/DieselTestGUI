@@ -1,11 +1,14 @@
 package fi.stardex.sisu.ui;
 
 import eu.hansolo.medusa.Gauge;
+import fi.stardex.sisu.model.FlowReportModel;
+import fi.stardex.sisu.model.FlowReportModel.FlowResult;
 import fi.stardex.sisu.persistence.orm.Manufacturer;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.persistence.orm.interfaces.Model;
-import fi.stardex.sisu.store.FlowReport;
-import fi.stardex.sisu.ui.controllers.additional.tabs.*;
+import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.RLCController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.report.FlowReportController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
@@ -15,16 +18,15 @@ import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 import javax.annotation.PostConstruct;
 
+import static fi.stardex.sisu.ui.controllers.GUI_TypeController.GUIType;
 import static fi.stardex.sisu.util.enums.Tests.TestType.AUTO;
 import static fi.stardex.sisu.util.enums.Tests.TestType.CODING;
 import static fi.stardex.sisu.util.enums.Tests.getTestType;
-import static fi.stardex.sisu.ui.controllers.GUI_TypeController.GUIType;
 
 public class Enabler {
 
@@ -106,15 +108,20 @@ public class Enabler {
 
     private ComboBox<String> backFlowComboBox;
 
-    private TableView<FlowReport.FlowTestResult> flowTableView;
+    private TableView<FlowResult> flowTableView;
 
     private Label flowReportAttentionLabel;
 
-    private FlowReport flowReport;
+    private FlowReportModel flowReportModel;
 
-    public Enabler(MainSectionController mainSectionController, InjectorSectionController injectorSectionController,
-                   RLCController rlcController, VoltageController voltageController, FlowController flowController,
-                   FlowReportController flowReportController, FlowReport flowReport, ComboBox<GUIType> gui_typeComboBox) {
+    public Enabler(MainSectionController mainSectionController,
+                   InjectorSectionController injectorSectionController,
+                   RLCController rlcController,
+                   VoltageController voltageController,
+                   FlowController flowController,
+                   FlowReportController flowReportController,
+                   ComboBox<GUIType> gui_typeComboBox,
+                   FlowReportModel flowReportModel) {
 
         mainSectionStartToggleButton = mainSectionController.getStartToggleButton();
         testListView = mainSectionController.getTestListView();
@@ -162,7 +169,7 @@ public class Enabler {
         flowTableView = flowReportController.getFlowTableView();
         flowReportAttentionLabel = flowReportController.getFlowReportAttentionLabel();
 
-        this.flowReport = flowReport;
+        this.flowReportModel = flowReportModel;
         this.gui_typeComboBox = gui_typeComboBox;
 
     }
@@ -280,7 +287,9 @@ public class Enabler {
 
         showNode(isTestAuto, flowTableView);
 
-        flowReport.clear();
+//        flowReport.clear();
+
+        flowReportModel.clearResults();
 
     }
 

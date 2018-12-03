@@ -1,7 +1,7 @@
 package fi.stardex.sisu.coding.delphi.c3i;
 
+import fi.stardex.sisu.model.FlowReportModel.FlowResult;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
-import fi.stardex.sisu.store.FlowReport;
 
 import java.util.List;
 import java.util.Optional;
@@ -71,7 +71,7 @@ public class DelphiC3ICodingDataStorage {
 
     }
 
-    public static void store(FlowReport.FlowTestResult flowTestResult) {
+    public static void store(FlowResult flowTestResult) {
 
         InjectorTest injectorTest = flowTestResult.getInjectorTest();
 

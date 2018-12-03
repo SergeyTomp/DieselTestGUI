@@ -29,12 +29,13 @@ import fi.stardex.sisu.registers.stand.ModbusMapStand;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.*;
-import fi.stardex.sisu.store.FlowReport;
 import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.ui.controllers.GUI_TypeController;
 import fi.stardex.sisu.ui.controllers.ISADetectionController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.*;
-import fi.stardex.sisu.ui.controllers.additional.tabs.report.DelayReportController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.CodingController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.RLCController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.report.FlowReportController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.report.RLC_ReportController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.settings.ConnectionController;
@@ -521,12 +522,21 @@ public class SpringJavaConfig {
     @Bean
     @Lazy
     @Autowired
-    public Enabler enabler(MainSectionController mainSectionController, InjectorSectionController injectorSectionController,
-                           RLCController rlcController, VoltageController voltageController, FlowController flowController,
-                           FlowReportController flowReportController, FlowReport flowReport, GUI_TypeController gui_typeController) {
-        return new Enabler(mainSectionController, injectorSectionController, rlcController,
-                voltageController, flowController, flowReportController, flowReport,
-                gui_typeController.getGui_typeComboBox());
+    public Enabler enabler(MainSectionController mainSectionController,
+                           InjectorSectionController injectorSectionController,
+                           RLCController rlcController,
+                           VoltageController voltageController,
+                           FlowController flowController,
+                           FlowReportController flowReportController,
+                           GUI_TypeController gui_typeController,
+                           FlowReportModel flowReportModel) {
+        return new Enabler(mainSectionController,
+                injectorSectionController,
+                rlcController,
+                voltageController,
+                flowController, flowReportController,
+                gui_typeController.getGui_typeComboBox(),
+                flowReportModel);
     }
 
     @Bean
@@ -569,19 +579,13 @@ public class SpringJavaConfig {
                                      TestBenchSectionController testBenchSectionController,
                                      HighPressureSectionController highPressureSectionController,
                                      InjectorSectionController injectorSectionController,
-                                     Enabler enabler, FlowReport flowReport, CodingController codingController,
+                                     Enabler enabler,
+                                     CodingController codingController,
                                      ISADetectionController isaDetectionController,
-                                     CodingReportModel codingReportModel) {
+                                     CodingReportModel codingReportModel,
+                                     FlowReportModel flowReportModel) {
         return new Measurements(mainSectionController, testBenchSectionController, highPressureSectionController,
-                injectorSectionController, enabler, flowReport, codingController, isaDetectionController, codingReportModel);
-    }
-
-    @Bean
-    @Autowired
-    public FlowReport flowReport(FlowReportController flowReportController,
-                                 FlowController flowController,
-                                 FlowViewState flowViewState) {
-        return new FlowReport(flowReportController, flowController, flowViewState);
+                injectorSectionController, enabler, codingController, isaDetectionController, codingReportModel, flowReportModel);
     }
 
     private List<Updater> addUpdaters(List<Updater> updatersList, Device targetDevice) {
@@ -606,23 +610,21 @@ public class SpringJavaConfig {
     @Autowired
     public PDFService pdfService(I18N i18N,
                                  DesktopFiles desktopFiles,
-                                 FlowReport flowReport,
                                  LanguageState languageState,
                                  RLC_ReportController rlc_reportController,
                                  DelayReportModel delayReportModel,
                                  RLC_ReportModel rlc_reportModel,
                                  CodingReportModel codingReportModel,
-                                 FlowResultModel flowResultModel) {
+                                 FlowReportModel flowReportModel) {
         PDFService pdfService = new PDFService();
         pdfService.setI18N(i18N);
         pdfService.setDesktopFiles(desktopFiles);
-        pdfService.setFlowReport(flowReport);
         pdfService.setRlc_reportController(rlc_reportController);
         pdfService.setLanguageState(languageState);
         pdfService.setDelayReportModel(delayReportModel);
         pdfService.setRlc_reportModel(rlc_reportModel);
         pdfService.setCodingReportModel(codingReportModel);
-        pdfService.setFlowResultModel(flowResultModel);
+        pdfService.setFlowReportModel(flowReportModel);
         return pdfService;
     }
 
@@ -728,7 +730,44 @@ public class SpringJavaConfig {
 
     @Bean
     @Lazy
-    public FlowResultModel flowResultModel(){
-        return new FlowResultModel();
+    @Autowired
+    public FlowReportModel flowReportModel(FlowValuesModel flowValuesModel,
+                                           BackFlowRangeModel backFlowRangeModel,
+                                           BackFlowUnitsModel backFlowUnitsModel,
+                                           DeliveryFlowRangeModel deliveryFlowRangeModel,
+                                           DeliveryFlowUnitsModel deliveryFlowUnitsModel,
+                                           FlowViewState flowViewState){
+        FlowReportModel flowReportModel = new FlowReportModel();
+        flowReportModel.setFlowValuesModel(flowValuesModel);
+        flowReportModel.setDeliveryFlowUnitsModel(deliveryFlowUnitsModel);
+        flowReportModel.setDeliveryFlowRangeModel(deliveryFlowRangeModel);
+        flowReportModel.setBackFlowUnitsModel(backFlowUnitsModel);
+        flowReportModel.setBackFlowRangeModel(backFlowRangeModel);
+        flowReportModel.setFlowViewState(flowViewState);
+
+        return flowReportModel;
     }
+
+    @Bean
+    @Lazy
+    public FlowValuesModel flowValuesModel(){
+        return new FlowValuesModel();
+    }
+
+    @Bean
+    @Lazy
+    public BackFlowRangeModel backFlowRangeModel(){return new BackFlowRangeModel();}
+
+    @Bean
+    @Lazy
+    public BackFlowUnitsModel backFlowUnitsModel(){return new BackFlowUnitsModel();}
+
+    @Bean
+    @Lazy
+    public DeliveryFlowRangeModel deliveryFlowRangeModel(){return new DeliveryFlowRangeModel();}
+
+    @Bean
+    @Lazy
+    public DeliveryFlowUnitsModel deliveryFlowUnitsModel(){return new DeliveryFlowUnitsModel();}
+
 }

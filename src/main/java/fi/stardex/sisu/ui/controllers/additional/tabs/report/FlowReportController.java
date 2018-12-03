@@ -1,15 +1,16 @@
 package fi.stardex.sisu.ui.controllers.additional.tabs.report;
 
+import fi.stardex.sisu.model.FlowReportModel;
+import fi.stardex.sisu.model.FlowReportModel.FlowResult;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
-import fi.stardex.sisu.store.FlowReport;
-import fi.stardex.sisu.store.FlowReport.FlowTestResult;
 import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.util.i18n.I18N;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.util.Callback;
 
 import javax.annotation.PostConstruct;
@@ -22,31 +23,31 @@ public class FlowReportController {
     private Label flowReportAttentionLabel;
 
     @FXML
-    private TableView<FlowTestResult> flowTableView;
+    private TableView<FlowResult> flowTableView;
 
     @FXML
-    private TableColumn<FlowTestResult, InjectorTest> flowTestNameColumn;
+    private TableColumn<FlowResult, InjectorTest> flowTestNameColumn;
 
     @FXML
-    private TableColumn<FlowTestResult, String> flowTypeColumn;
+    private TableColumn<FlowResult, String> flowTypeColumn;
 
     @FXML
-    private TableColumn<FlowTestResult, String> flowNominalColumn;
+    private TableColumn<FlowResult, String> flowNominalColumn;
 
     @FXML
-    private TableColumn<FlowTestResult, String> flow1Column;
+    private TableColumn<FlowResult, String> flow1Column;
 
     @FXML
-    private TableColumn<FlowTestResult, String> flow2Column;
+    private TableColumn<FlowResult, String> flow2Column;
 
     @FXML
-    private TableColumn<FlowTestResult, String> flow3Column;
+    private TableColumn<FlowResult, String> flow3Column;
 
     @FXML
-    private TableColumn<FlowTestResult, String> flow4Column;
+    private TableColumn<FlowResult, String> flow4Column;
 
     @FXML
-    private TableColumn<FlowTestResult, Boolean> deleteColumn;
+    private TableColumn<FlowResult, Boolean> deleteColumn;
 
     private I18N i18N;
 
@@ -60,10 +61,12 @@ public class FlowReportController {
 
     private static final String CELL_COLOR_RED = "-fx-text-fill: red;";
 
-    private FlowReport flowReport;
+    private FlowReportModel flowReportModel;
 
-    public void setFlowReport(FlowReport flowReport) {
-        this.flowReport = flowReport;
+    private BooleanProperty resultSourceChanged;
+
+    public void setFlowReportModel(FlowReportModel flowReportModel) {
+        this.flowReportModel = flowReportModel;
     }
 
     public void setI18N(I18N i18N) {
@@ -78,7 +81,7 @@ public class FlowReportController {
         this.mainSectionStartToggleButton = mainSectionStartToggleButton;
     }
 
-    public TableView<FlowTestResult> getFlowTableView() {
+    public TableView<FlowResult> getFlowTableView() {
         return flowTableView;
     }
 
@@ -88,28 +91,20 @@ public class FlowReportController {
 
     @PostConstruct
     private void init() {
-
         setupTableColumns();
         bindingI18N();
+        setupResultChangeListener();
     }
 
     private void setupTableColumns() {
 
-        flowTestNameColumn.setCellValueFactory(new PropertyValueFactory<>("injectorTest"));
-        flowTypeColumn.setCellValueFactory(new PropertyValueFactory<>("flowType"));
-        flowNominalColumn.setCellValueFactory(new PropertyValueFactory<>("nominalFlow"));
-        flow1Column.setCellValueFactory(new PropertyValueFactory<>("flow1"));
-        flow2Column.setCellValueFactory(new PropertyValueFactory<>("flow2"));
-        flow3Column.setCellValueFactory(new PropertyValueFactory<>("flow3"));
-        flow4Column.setCellValueFactory(new PropertyValueFactory<>("flow4"));
-
-//        flowTestNameColumn.setCellValueFactory(param -> param.getValue().injectorTestProperty());
-//        flowTypeColumn.setCellValueFactory(param -> param.getValue().flowTypeProperty());
-//        flowNominalColumn.setCellValueFactory(param -> param.getValue().nominalFlowProperty());
-//        flow1Column.setCellValueFactory(param -> param.getValue().flow1Property());
-//        flow1Column.setCellValueFactory(param -> param.getValue().flow2Property());
-//        flow1Column.setCellValueFactory(param -> param.getValue().flow3Property());
-//        flow1Column.setCellValueFactory(param -> param.getValue().flow4Property());
+        flowTestNameColumn.setCellValueFactory(param -> param.getValue().injectorTestProperty());
+        flowTypeColumn.setCellValueFactory(param -> param.getValue().flowTypeProperty());
+        flowNominalColumn.setCellValueFactory(param -> param.getValue().nominalFlowProperty());
+        flow1Column.setCellValueFactory(param -> param.getValue().flow1Property());
+        flow2Column.setCellValueFactory(param -> param.getValue().flow2Property());
+        flow3Column.setCellValueFactory(param -> param.getValue().flow3Property());
+        flow4Column.setCellValueFactory(param -> param.getValue().flow4Property());
 
         deleteColumn.setCellValueFactory(param -> new SimpleBooleanProperty());
 
@@ -119,15 +114,29 @@ public class FlowReportController {
         setCellFactory(flow4Column);
 
         deleteColumn.setCellFactory(tableColumn -> new ButtonCell());
-
     }
 
-    private void setCellFactory(TableColumn<FlowTestResult, String> column) {
+    private void setupResultChangeListener(){
 
-        column.setCellFactory(new Callback<TableColumn<FlowTestResult, String>, TableCell<FlowTestResult, String>>() {
+        ObservableList<FlowResult> flowResultsSource = FXCollections.observableArrayList();
+        resultSourceChanged = flowReportModel.resultMapChangedProperty();
+        resultSourceChanged.addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                flowResultsSource.clear();
+                flowResultsSource.addAll(flowReportModel.getResultObservableMap().values());
+                flowTableView.setItems(flowResultsSource);
+                flowTableView.refresh();
+                resultSourceChanged.setValue(false);
+            }
+        });
+    }
+
+    private void setCellFactory(TableColumn<FlowResult, String> column) {
+
+        column.setCellFactory(new Callback<>() {
             @Override
-            public TableCell<FlowTestResult, String> call(TableColumn<FlowTestResult, String> param) {
-                return new TableCell<FlowTestResult, String>() {
+            public TableCell<FlowResult, String> call(TableColumn<FlowResult, String> param) {
+                return new TableCell<>() {
 
                     @Override
                     protected void updateItem(String item, boolean empty) {
@@ -140,7 +149,7 @@ public class FlowReportController {
                         } else {
                             setText(item);
 
-                            FlowTestResult flowTestResult = flowTableView.getItems().get(getTableRow().getIndex());
+                            FlowResult flowTestResult = flowTableView.getItems().get(getTableRow().getIndex());
 
                             double flowRangeLeft = flowTestResult.getFlowRangeLeft();
                             double flowRangeRight = flowTestResult.getFlowRangeRight();
@@ -151,15 +160,11 @@ public class FlowReportController {
                                 setStyle(CELL_COLOR_DEFAULT);
                             else
                                 setStyle(getColorForCell(convertDataToDouble(item), flowRangeLeft, flowRangeRight, acceptableFlowRangeLeft, acceptableFlowRangeRight));
-
                         }
-
                     }
-
                 };
             }
         });
-
     }
 
     private static String getColorForCell(Double cellValue, double flowRangeLeft, double flowRangeRight, double acceptableFlowRangeLeft, double acceptableFlowRangeRight) {
@@ -174,6 +179,9 @@ public class FlowReportController {
                 return (cellValue < acceptableFlowRangeLeft) || (cellValue > acceptableFlowRangeRight);
             }
 
+            private boolean inRange(){
+                return (cellValue > flowRangeLeft && cellValue < flowRangeRight);
+            }
         }
 
         Range range = new Range();
@@ -182,14 +190,14 @@ public class FlowReportController {
             return CELL_COLOR_RED;
         else if (range.inAcceptableRange())
             return CELL_COLOR_ORANGE;
-        else
-            throw new RuntimeException("Invalid cell value");
-
+        else if(range.inRange())
+            return CELL_COLOR_DEFAULT;
+        else throw new RuntimeException("Invalid cell value");
     }
 
 
 
-    private class ButtonCell extends TableCell<FlowTestResult, Boolean> {
+    private class ButtonCell extends TableCell<FlowResult, Boolean> {
 
         private final Button deleteButton;
 
@@ -203,8 +211,7 @@ public class FlowReportController {
 
             deleteButton.visibleProperty().bind(mainSectionStartToggleButton.selectedProperty().not());
 
-            deleteButton.setOnAction(event -> flowReport.delete(getTableRow().getIndex()));
-
+            deleteButton.setOnAction(event -> flowReportModel.deleteResult(getTableRow().getTableView().getItems().get(getTableRow().getIndex()).getInjectorTest()));
         }
 
         @Override
@@ -216,9 +223,7 @@ public class FlowReportController {
                 setGraphic(null);
             else
                 setGraphic(deleteButton);
-
         }
-
     }
     private void bindingI18N() {
 

@@ -1,5 +1,6 @@
 package fi.stardex.sisu.ui.controllers.additional.tabs;
 
+import fi.stardex.sisu.model.*;
 import fi.stardex.sisu.ui.controllers.additional.BeakerController;
 import fi.stardex.sisu.util.InputController;
 import fi.stardex.sisu.util.i18n.I18N;
@@ -114,6 +115,12 @@ public class FlowController {
     @FXML private BeakerController beakerBackFlow4Controller;
 
     private I18N i18N;
+
+    private FlowValuesModel flowValuesModel;
+    private BackFlowRangeModel backFlowRangeModel;
+    private BackFlowUnitsModel backFlowUnitsModel;
+    private DeliveryFlowRangeModel deliveryFlowRangeModel;
+    private DeliveryFlowUnitsModel deliveryFlowUnitsModel;
 
     private static final int TEXT_FIELD_MAX_LENGTH = 7;
 
@@ -305,6 +312,26 @@ public class FlowController {
         this.i18N = i18N;
     }
 
+    public void setFlowValuesModel(FlowValuesModel flowValuesModel) {
+        this.flowValuesModel = flowValuesModel;
+    }
+
+    public void setBackFlowRangeModel(BackFlowRangeModel backFlowRangeModel) {
+        this.backFlowRangeModel = backFlowRangeModel;
+    }
+
+    public void setBackFlowUnitsModel(BackFlowUnitsModel backFlowUnitsModel) {
+        this.backFlowUnitsModel = backFlowUnitsModel;
+    }
+
+    public void setDeliveryFlowRangeModel(DeliveryFlowRangeModel deliveryFlowRangeModel) {
+        this.deliveryFlowRangeModel = deliveryFlowRangeModel;
+    }
+
+    public void setDeliveryFlowUnitsModel(DeliveryFlowUnitsModel deliveryFlowUnitsModel) {
+        this.deliveryFlowUnitsModel = deliveryFlowUnitsModel;
+    }
+
     @PostConstruct
     private void init() {
 
@@ -324,6 +351,19 @@ public class FlowController {
         InputController.blockTextInputToNumberFields(backFlow3TextField, TEXT_FIELD_MAX_LENGTH);
         InputController.blockTextInputToNumberFields(backFlow4TextField, TEXT_FIELD_MAX_LENGTH);
 
+        flowValuesModel.backFlow1Property().bind(backFlow1TextField.textProperty());
+        flowValuesModel.backFlow2Property().bind(backFlow2TextField.textProperty());
+        flowValuesModel.backFlow3Property().bind(backFlow3TextField.textProperty());
+        flowValuesModel.backFlow4Property().bind(backFlow4TextField.textProperty());
+        flowValuesModel.delivery1Property().bind(delivery1TextField.textProperty());
+        flowValuesModel.delivery2Property().bind(delivery2TextField.textProperty());
+        flowValuesModel.delivery3Property().bind(delivery3TextField.textProperty());
+        flowValuesModel.delivery4Property().bind(delivery4TextField.textProperty());
+
+        deliveryFlowUnitsModel.deliveryFlowUnitsProperty().bind(deliveryFlowComboBox.valueProperty());
+        deliveryFlowRangeModel.deliveryFlowRangeProperty().bind(deliveryRangeLabel.textProperty());
+        backFlowUnitsModel.backFlowUnitsProperty().bind(backFlowComboBox.valueProperty());
+        backFlowRangeModel.backFlowRangeProperty().bind(backFlowRangeLabel.textProperty());
     }
 
     private void setupDeliveryFlowComboBox() {

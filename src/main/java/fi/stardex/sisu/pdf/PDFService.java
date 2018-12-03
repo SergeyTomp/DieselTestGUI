@@ -5,13 +5,12 @@ import be.quodlibet.boxable.*;
 import fi.stardex.sisu.company.CompanyDetails;
 import fi.stardex.sisu.model.CodingReportModel;
 import fi.stardex.sisu.model.DelayReportModel;
-import fi.stardex.sisu.model.FlowResultModel;
+import fi.stardex.sisu.model.FlowReportModel;
+import fi.stardex.sisu.model.FlowReportModel.FlowResult;
 import fi.stardex.sisu.model.RLC_ReportModel;
 import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
 import fi.stardex.sisu.persistence.orm.interfaces.Model;
 import fi.stardex.sisu.states.LanguageState;
-import fi.stardex.sisu.store.FlowReport;
-import fi.stardex.sisu.store.FlowReport.FlowTestResult;
 import fi.stardex.sisu.ui.controllers.additional.tabs.report.RLC_ReportController;
 import fi.stardex.sisu.ui.controllers.dialogs.PrintDialogPanelController;
 import fi.stardex.sisu.util.DesktopFiles;
@@ -102,34 +101,23 @@ public class PDFService {
     private StringProperty nominalFlowRange;
     private StringProperty value;
 
-
     private Customer customer;
     private PDPageContentStream contentStream;
     private PDDocument document;
     private PDPage currentPage;
     private PDFont font;
-
     private LanguageState languageState;
     private I18N i18N;
-
     private List<Result> rlcResultsList;
-
     private List<Result> delayResultsList;
-
-    private List<FlowTestResult> flowResultsList;
-
+    private List<FlowResult> flowResultsList;
     private List<Result> codingResultsList;
-
     private DesktopFiles desktopFiles;
-
     private RLC_ReportController rlc_reportController;
-
-    private FlowReport flowReport;
-
     private DelayReportModel delayReportModel;
     private RLC_ReportModel rlc_reportModel;
     private CodingReportModel codingReportModel;
-    private FlowResultModel flowResultModel;
+    private FlowReportModel flowReportModel;
 
     public void setDesktopFiles(DesktopFiles desktopFiles) {
         this.desktopFiles = desktopFiles;
@@ -141,10 +129,6 @@ public class PDFService {
 
     public void setRlc_reportController(RLC_ReportController rlc_reportController) {
         this.rlc_reportController = rlc_reportController;
-    }
-
-    public void setFlowReport(FlowReport flowReport) {
-        this.flowReport = flowReport;
     }
 
     public void setDelayReportModel(DelayReportModel delayReportModel) {
@@ -159,8 +143,8 @@ public class PDFService {
         this.codingReportModel = codingReportModel;
     }
 
-    public void setFlowResultModel(FlowResultModel flowResultModel) {
-        this.flowResultModel = flowResultModel;
+    public void setFlowReportModel(FlowReportModel flowReportModel) {
+        this.flowReportModel = flowReportModel;
     }
 
     public void setI18N(I18N i18N) {
@@ -224,9 +208,10 @@ public class PDFService {
         currentPage = new PDPage();
         document.addPage(currentPage);
 
-//        rlcResultsList = rlc_reportController.getResultsList();
         rlcResultsList = rlc_reportModel.getResultsList();
-        flowResultsList = flowReport.getResultList();
+//        flowResultsList = flowReport.getResultList();
+        flowResultsList = flowReportModel.getResultsList();
+
         delayResultsList = delayReportModel.getResultsList();
         codingResultsList = codingReportModel.getResultsList();
 
@@ -322,7 +307,7 @@ public class PDFService {
 
     private void drawFlowData(BaseTable baseTable, Injector injector) {
 
-        for (FlowTestResult result: flowResultsList) {
+        for (FlowResult result: flowResultsList) {
             Row<PDPage> row = baseTable.createRow(CELL_HEIGHT);
             Cell<PDPage> cell = row.createCell(result.getMainColumn());
             row.createCell(result.getSubColumn1());
@@ -581,7 +566,7 @@ public class PDFService {
         contentStream.fill();
     }
 
-    private Color getColorCellOfResult(double flow, FlowTestResult result){
+    private Color getColorCellOfResult(double flow, FlowResult result){
 
         double nominalRight = result.getFlowRangeRight();
         double nominalLeft = result.getFlowRangeLeft();

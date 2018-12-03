@@ -3,11 +3,9 @@ package fi.stardex.sisu.model;
 import fi.stardex.sisu.combobox_values.Dimension;
 import fi.stardex.sisu.pdf.Result;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
+import fi.stardex.sisu.states.FlowViewState;
 import fi.stardex.sisu.util.enums.Measurement;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 
@@ -17,36 +15,101 @@ import static fi.stardex.sisu.util.FlowUnitObtainer.getBackFlowCoefficient;
 import static fi.stardex.sisu.util.FlowUnitObtainer.getDeliveryCoefficient;
 import static fi.stardex.sisu.util.converters.DataConverter.convertDataToDouble;
 
-public class FlowResultModel{
+public class FlowReportModel {
 
+    private FlowValuesModel flowValuesModel;
+    private BackFlowRangeModel backFlowRangeModel;
+    private BackFlowUnitsModel backFlowUnitsModel;
+    private DeliveryFlowRangeModel deliveryFlowRangeModel;
+    private DeliveryFlowUnitsModel deliveryFlowUnitsModel;
+    private FlowViewState flowViewState;
+    private BooleanProperty resultMapChanged = new SimpleBooleanProperty();
     private ObservableMap<InjectorTest, FlowResult> resultObservableMap = FXCollections.observableMap(new HashMap<>());
+    private final double DEVIATION = 0.03;
 
     public List<FlowResult> getResultsList(){
         return new ArrayList<>(resultObservableMap.values());
     }
 
-    public void clearResults(){
-        resultObservableMap.clear();
+    public ObservableMap<InjectorTest, FlowResult> getResultObservableMap() {
+        return resultObservableMap;
     }
 
-    public void storeResult(InjectorTest injectorTest,
-                            String flowType,
-                            String nominalFlow,
-                            String flow1,
-                            String flow2,
-                            String flow3,
-                            String flow4,
-                            Dimension dimension,
-                            Measurement measurement){
+    public BooleanProperty resultMapChangedProperty() {
+        return resultMapChanged;
+    }
 
-        resultObservableMap.put(injectorTest, new FlowResult(injectorTest, flowType, nominalFlow, flow1, flow2, flow3, flow4, dimension, measurement));
+    public void setFlowValuesModel(FlowValuesModel flowValuesModel) {
+        this.flowValuesModel = flowValuesModel;
+    }
+
+    public void setBackFlowRangeModel(BackFlowRangeModel backFlowRangeModel) {
+        this.backFlowRangeModel = backFlowRangeModel;
+    }
+
+    public void setBackFlowUnitsModel(BackFlowUnitsModel backFlowUnitsModel) {
+        this.backFlowUnitsModel = backFlowUnitsModel;
+    }
+
+    public void setDeliveryFlowRangeModel(DeliveryFlowRangeModel deliveryFlowRangeModel) {
+        this.deliveryFlowRangeModel = deliveryFlowRangeModel;
+    }
+
+    public void setDeliveryFlowUnitsModel(DeliveryFlowUnitsModel deliveryFlowUnitsModel) {
+        this.deliveryFlowUnitsModel = deliveryFlowUnitsModel;
+    }
+
+    public void setFlowViewState(FlowViewState flowViewState) {
+        this.flowViewState = flowViewState;
+    }
+
+    public void clearResults(){
+        resultObservableMap.clear();
+        resultMapChanged.setValue(true);
+    }
+
+    public void storeResult(InjectorTest injectorTest){
+
+        Measurement measurement = injectorTest.getTestName().getMeasurement();
+        switch (measurement){
+            case DELIVERY:
+                resultObservableMap.put(injectorTest, new FlowResult(
+                    injectorTest,
+                    getNominalFlow(deliveryFlowRangeModel.deliveryFlowRangeProperty().get(), deliveryFlowUnitsModel.deliveryFlowUnitsProperty().get()),
+                    getFlow(flowValuesModel.delivery1Property().get()),
+                    getFlow(flowValuesModel.delivery2Property().get()),
+                    getFlow(flowValuesModel.delivery3Property().get()),
+                    getFlow(flowValuesModel.delivery4Property().get()),
+                    flowViewState.flowViewStateProperty().get()));
+                break;
+            case BACK_FLOW:
+                resultObservableMap.put(injectorTest, new FlowResult(
+                    injectorTest,
+                    getNominalFlow(backFlowRangeModel.backFlowRangeProperty().get(), backFlowUnitsModel.backFlowUnitsProperty().get()),
+                    getFlow(flowValuesModel.backFlow1Property().get()),
+                    getFlow(flowValuesModel.backFlow2Property().get()),
+                    getFlow(flowValuesModel.backFlow3Property().get()),
+                    getFlow(flowValuesModel.backFlow4Property().get()),
+                    flowViewState.flowViewStateProperty().get()));
+                break;
+        }
+        resultMapChanged.setValue(true);
     }
 
     public void deleteResult(InjectorTest injectorTest){
         resultObservableMap.remove(injectorTest);
+        resultMapChanged.setValue(true);
     }
 
-    private class FlowResult implements Result{
+    private String getNominalFlow(String range, String flowUnit) {
+        return range + " " + flowUnit;
+    }
+
+    private String getFlow(String flow) {
+        return (flow == null || flow.isEmpty()) ? "-" : flow;
+    }
+
+    public class FlowResult implements Result{
 
         private final ObjectProperty<InjectorTest> injectorTest;
 
@@ -106,6 +169,34 @@ public class FlowResultModel{
             return flow4.get();
         }
 
+        public ObjectProperty<InjectorTest> injectorTestProperty() {
+            return injectorTest;
+        }
+
+        public StringProperty flowTypeProperty() {
+            return flowType;
+        }
+
+        public StringProperty nominalFlowProperty() {
+            return nominalFlow;
+        }
+
+        public StringProperty flow1Property() {
+            return flow1;
+        }
+
+        public StringProperty flow2Property() {
+            return flow2;
+        }
+
+        public StringProperty flow3Property() {
+            return flow3;
+        }
+
+        public StringProperty flow4Property() {
+            return flow4;
+        }
+
         public double getFlow1_double() {
             return flow1_double;
         }
@@ -139,25 +230,22 @@ public class FlowResultModel{
         }
 
         public FlowResult(InjectorTest injectorTest,
-                          String flowType,
                           String nominalFlow,
                           String flow1,
                           String flow2,
                           String flow3,
                           String flow4,
-                          Dimension dimension,
-                          Measurement measurement) {
+                          Dimension dimension) {
 
             this.injectorTest = new SimpleObjectProperty<>(injectorTest);
-            this.flowType = new SimpleStringProperty(flowType);
+            this.flowType = new SimpleStringProperty(injectorTest.getTestName().getMeasurement().name());
             this.nominalFlow = new SimpleStringProperty(nominalFlow);
             this.flow1 = new SimpleStringProperty(flow1);
             this.flow2 = new SimpleStringProperty(flow2);
             this.flow3 = new SimpleStringProperty(flow3);
             this.flow4 = new SimpleStringProperty(flow4);
 
-            setupDoubleFlowValues(measurement);
-
+            setupDoubleFlowValues(injectorTest.getTestName().getMeasurement());
             extractFromNominalFlow(nominalFlow, dimension);
         }
 
@@ -200,11 +288,10 @@ public class FlowResultModel{
                     break;
 
             }
-
-            acceptableFlowRangeLeft -= flowRangeLeft * 0.03;
-            acceptableFlowRangeRight += flowRangeRight * 0.03;
-
+            acceptableFlowRangeLeft = flowRangeLeft - flowRangeLeft * DEVIATION;
+            acceptableFlowRangeRight = flowRangeRight + flowRangeRight * DEVIATION;
         }
+
         @Override
         public String getMainColumn() {
             return getInjectorTest().getTestName().toString();
