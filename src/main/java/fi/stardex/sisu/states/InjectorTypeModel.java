@@ -4,11 +4,11 @@ import fi.stardex.sisu.util.enums.InjectorType;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
-public class InjectorTypeToggleState {
+public class InjectorTypeModel {
 
-    private ObjectProperty<InjectorType> injectorType = new SimpleObjectProperty<>();
+    private ObjectProperty<InjectorType> injectorTypeProperty = new SimpleObjectProperty<>();
 
     public ObjectProperty<InjectorType> injectorTypeProperty() {
-        return injectorType;
+        return injectorTypeProperty;
     }
 }

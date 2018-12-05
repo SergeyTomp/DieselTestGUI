@@ -196,12 +196,12 @@ public class JavaFXSpringConfigure extends ViewLoader{
     @DependsOn("regulatorsQTYController")
     public HighPressureSectionController highPressureSectionController(CRSectionController crSectionController,
                                                                        @Lazy ModbusRegisterProcessor ultimaModbusWriter,
-                                                                       PressureSensorState pressureSensorState,
+                                                                       PressureSensorModel pressureSensorModel,
                                                                        RegulatorsQTYState regulatorsQTYState) {
         HighPressureSectionController highPressureSectionController = crSectionController.getHighPressureSectionController();
         highPressureSectionController.setUltimaModbusWriter(ultimaModbusWriter);
         highPressureSectionController.setI18N(i18N);
-        highPressureSectionController.setPressureSensorState(pressureSensorState);
+        highPressureSectionController.setPressureSensorModel(pressureSensorModel);
         highPressureSectionController.setRegulatorsQTYState(regulatorsQTYState);
         return highPressureSectionController;
     }
@@ -212,8 +212,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                                @Lazy ModbusRegisterProcessor ultimaModbusWriter,
                                                                TimerTasksManager timerTasksManager,
                                                                DelayController delayController,
-                                                               InjConfigurationState injConfigurationState,
-                                                               InjectorTypeToggleState injectorTypeToggleState,
+                                                               InjConfigurationModel injConfigurationModel,
+                                                               InjectorTypeModel injectorTypeModel,
                                                                BoostU_State boostU_state,
                                                                BoostUadjustmentState boostUadjustmentState,
                                                                Devices devices) {
@@ -223,8 +223,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
         injectorSectionController.setTimerTasksManager(timerTasksManager);
         injectorSectionController.setDelayController(delayController);
         injectorSectionController.setI18N(i18N);
-        injectorSectionController.setInjConfigurationState(injConfigurationState);
-        injectorSectionController.setInjectorTypeToggleState(injectorTypeToggleState);
+        injectorSectionController.setInjConfigurationModel(injConfigurationModel);
+        injectorSectionController.setInjectorTypeModel(injectorTypeModel);
         injectorSectionController.setBoostU_state(boostU_state);
         injectorSectionController.setBoostUadjustmentState(boostUadjustmentState);
         injectorSectionController.setDevices(devices);
@@ -729,17 +729,16 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                        ModbusRegisterProcessor ultimaModbusWriter,
                                        RegisterProvider ultimaRegisterProvider,
                                        TabSectionController tabSectionController,
-                                       InjConfigurationState injConfigurationState,
-                                       InjectorTypeToggleState injectorTypeToggleState,
+                                       InjConfigurationModel injConfigurationModel,
+                                       InjectorTypeModel injectorTypeModel,
                                        RLC_ReportModel rlc_reportModel) {
         RLCController RLCController = tabSectionController.getRlCController();
         RLCController.setInjectorSectionController(injectorSectionController);
         RLCController.setUltimaModbusWriter(ultimaModbusWriter);
         RLCController.setUltimaRegisterProvider(ultimaRegisterProvider);
         RLCController.setI18N(i18N);
-        RLCController.setInjConfigurationState(injConfigurationState);
-        RLCController.setInjConfigurationState(injConfigurationState);
-        RLCController.setInjectorTypeToggleState(injectorTypeToggleState);
+        RLCController.setInjConfigurationModel(injConfigurationModel);
+        RLCController.setInjectorTypeModel(injectorTypeModel);
         RLCController.setRlc_reportModel(rlc_reportModel);
         return RLCController;
 
@@ -828,36 +827,35 @@ public class JavaFXSpringConfigure extends ViewLoader{
 
     @Bean
     @Autowired
-    public FlowViewController flowViewController(FlowViewState flowViewState,
+    public FlowViewController flowViewController(FlowViewModel flowViewModel,
                                                  Preferences preferences,
                                                  SettingsController settingsController){
         FlowViewController flowViewController = settingsController.getFlowViewController();
-        flowViewController.setFlowViewState(flowViewState);
+        flowViewController.setFlowViewModel(flowViewModel);
         flowViewController.setRootPrefs(preferences);
         return flowViewController;
     }
 
     @Bean
     @Autowired
-    public InjConfigurationController injConfigurationController(InjConfigurationState injConfigurationState,
+    public InjConfigurationController injConfigurationController(InjConfigurationModel injConfigurationModel,
                                                                  Preferences preferences,
-                                                                 InjectorTypeToggleState injectorTypeToggleState,
+                                                                 InjectorTypeModel injectorTypeModel,
                                                                  SettingsController settingsController){
         InjConfigurationController injConfigurationController = settingsController.getInjConfigurationController();
-        injConfigurationController.setInjConfigurationState(injConfigurationState);
-        injConfigurationController.setI18N(i18N);
+        injConfigurationController.setInjConfigurationModel(injConfigurationModel);
         injConfigurationController.setRootPrefs(preferences);
-        injConfigurationController.setInjectorTypeToggleState(injectorTypeToggleState);
+        injConfigurationController.setInjectorTypeModel(injectorTypeModel);
         return injConfigurationController;
     }
 
     @Bean
     @Autowired
-    public LanguageController languageController(LanguageState languageState,
+    public LanguageController languageController(LanguageModel languageModel,
                                                  Preferences preferences,
                                                  SettingsController settingsController){
         LanguageController languageController = settingsController.getLanguageController();
-        languageController.setLanguageState(languageState);
+        languageController.setLanguageModel(languageModel);
         languageController.setRootPrefs(preferences);
         languageController.setI18N(i18N);
         return languageController;
@@ -865,11 +863,11 @@ public class JavaFXSpringConfigure extends ViewLoader{
 
     @Bean
     @Autowired
-    public PressureSensorController pressureSensorController(PressureSensorState pressureSensorState,
+    public PressureSensorController pressureSensorController(PressureSensorModel pressureSensorModel,
                                                              Preferences preferences,
                                                              SettingsController settingsController){
         PressureSensorController pressureSensorController = settingsController.getPressureSensorController();
-        pressureSensorController.setPressureSensorState(pressureSensorState);
+        pressureSensorController.setPressureSensorModel(pressureSensorModel);
         pressureSensorController.setRootPrefs(preferences);
         return pressureSensorController;
     }

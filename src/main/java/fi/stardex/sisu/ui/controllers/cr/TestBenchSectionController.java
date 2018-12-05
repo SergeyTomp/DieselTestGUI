@@ -7,6 +7,7 @@ import fi.stardex.sisu.util.GaugeCreator;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.spinners.SpinnerManager;
 import fi.stardex.sisu.util.spinners.SpinnerValueObtainer;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -221,16 +222,8 @@ public class TestBenchSectionController {
 
         rootHbox.widthProperty().addListener(new HboxWidthListener(rootHbox, lcdStackPane));
 
-        leftDirectionRotationToggleButton.visibleProperty().bind(dimasGUIEditionState.isDimasGuiEditionProperty().not());
-        rightDirectionRotationToggleButton.visibleProperty().bind(dimasGUIEditionState.isDimasGuiEditionProperty().not());
-        pressText1.visibleProperty().bind(dimasGUIEditionState.isDimasGuiEditionProperty().not());
-        labelPressure1.visibleProperty().bind(dimasGUIEditionState.isDimasGuiEditionProperty().not());
-        pressProgressBar1.visibleProperty().bind(dimasGUIEditionState.isDimasGuiEditionProperty().not());
-        dimasGUIEditionState.isDimasGuiEditionProperty().addListener((observableValue, oldvalue, newValue) -> {
-            if (newValue){
-                rightDirectionRotationToggleButton.setSelected(newValue);
-            }
-        });
+        setupDimasGuiBinding();
+
     }
 
     private void bindingI18N() {
@@ -330,6 +323,19 @@ public class TestBenchSectionController {
             }
             pumpStateChange();
         }
+
+    }
+
+    private void setupDimasGuiBinding() {
+
+        BooleanProperty dimasGuiEditionProperty = dimasGUIEditionState.isDimasGuiEditionProperty();
+
+        leftDirectionRotationToggleButton.visibleProperty().bind(dimasGuiEditionProperty.not());
+        rightDirectionRotationToggleButton.visibleProperty().bind(dimasGuiEditionProperty.not());
+        pressText1.visibleProperty().bind(dimasGuiEditionProperty.not());
+        labelPressure1.visibleProperty().bind(dimasGuiEditionProperty.not());
+        pressProgressBar1.visibleProperty().bind(dimasGuiEditionProperty.not());
+        rightDirectionRotationToggleButton.selectedProperty().bind(dimasGuiEditionProperty);
 
     }
 

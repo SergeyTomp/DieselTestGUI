@@ -11,14 +11,14 @@ import java.util.prefs.Preferences;
 public class FastCodingController {
 
     @FXML private CheckBox fastCodingCheckBox;
-    private FastCodingState fastCodingState;
-    private I18N i18N;
-    private Preferences rootPrefs;
-    private final String PREF_KEY = "fastCodingCheckBoxSelected";
 
-    public CheckBox getFastCodingCheckBox() {
-        return fastCodingCheckBox;
-    }
+    private FastCodingState fastCodingState;
+
+    private I18N i18N;
+
+    private Preferences rootPrefs;
+
+    private static final String PREF_KEY = "fastCodingCheckBoxSelected";
 
     public void setFastCodingState(FastCodingState fastCodingState) {
         this.fastCodingState = fastCodingState;
@@ -34,9 +34,12 @@ public class FastCodingController {
 
     @PostConstruct
     public void init(){
+
         fastCodingState.isFastCodingStateProperty().bind(fastCodingCheckBox.selectedProperty());
         fastCodingCheckBox.textProperty().bind(i18N.createStringBinding("settings.fastCoding.CheckBox"));
         fastCodingCheckBox.setSelected(rootPrefs.getBoolean(PREF_KEY, false));
         fastCodingCheckBox.selectedProperty().addListener((observable, oldValue, newValue) -> rootPrefs.putBoolean(PREF_KEY, newValue));
+
     }
+
 }

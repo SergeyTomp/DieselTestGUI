@@ -1,15 +1,16 @@
 package fi.stardex.sisu.ui.updaters;
 
-import fi.stardex.sisu.combobox_values.InjectorChannel;
-import fi.stardex.sisu.states.InjConfigurationState;
+import fi.stardex.sisu.states.InjConfigurationModel;
 import fi.stardex.sisu.states.InstantFlowState;
 import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.version.FirmwareVersion;
 import fi.stardex.sisu.version.Versions;
 import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.scene.control.*;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -97,7 +98,7 @@ public abstract class FlowUpdater {
 
     protected ComboBox<String> backFlowComboBox;
 
-    protected ObjectProperty<InjectorChannel> injConfigurationState;
+    protected InjConfigurationModel injConfigurationModel;
 
     protected BooleanProperty isInstantFlowStateProperty;
 
@@ -113,7 +114,7 @@ public abstract class FlowUpdater {
 
     public FlowUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
                        FirmwareVersion<FlowVersions> flowFirmwareVersion,
-                       InjConfigurationState injConfigurationState, InstantFlowState instantFlowState) {
+                       InjConfigurationModel injConfigurationModel, InstantFlowState instantFlowState) {
 
         this.flowController = flowController;
         this.flowFirmwareVersion = flowFirmwareVersion;
@@ -148,7 +149,7 @@ public abstract class FlowUpdater {
         backFlowComboBox = flowController.getBackFlowComboBox();
 
         this.isInstantFlowStateProperty = instantFlowState.isInstantFlowStateProperty();
-        this.injConfigurationState = injConfigurationState.injConfigurationStateProperty();
+        this.injConfigurationModel = injConfigurationModel;
         ledBeaker1ToggleButton = injectorSectionController.getLed1ToggleButton();
         ledBeaker2ToggleButton = injectorSectionController.getLed2ToggleButton();
         ledBeaker3ToggleButton = injectorSectionController.getLed3ToggleButton();

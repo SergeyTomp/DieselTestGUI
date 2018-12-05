@@ -1,8 +1,6 @@
 package fi.stardex.sisu.ui.controllers.additional.tabs.settings;
 
 import fi.stardex.sisu.settings.*;
-import fi.stardex.sisu.states.FastCodingState;
-import fi.stardex.sisu.states.InjectorTypeToggleState;
 import fi.stardex.sisu.util.i18n.I18N;
 import javafx.fxml.FXML;
 import javafx.scene.control.CheckBox;

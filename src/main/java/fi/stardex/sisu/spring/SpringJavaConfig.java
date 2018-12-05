@@ -407,8 +407,8 @@ public class SpringJavaConfig {
     @Bean
     @Autowired
     public HighPressureSectionUpdater highPressureSectionUpdater(HighPressureSectionController highPressureSectionController,
-                                                                 PressureSensorState pressureSensorState) {
-        return new HighPressureSectionUpdater(highPressureSectionController, pressureSensorState);
+                                                                 PressureSensorModel pressureSensorModel) {
+        return new HighPressureSectionUpdater(highPressureSectionController, pressureSensorModel);
     }
 
     @Bean
@@ -422,9 +422,9 @@ public class SpringJavaConfig {
     public FlowMasterUpdater flowMasterUpdater(FlowController flowController,
                                                InjectorSectionController injectorSectionController,
                                                FirmwareVersion<FlowVersions> flowFirmwareVersion,
-                                               InjConfigurationState injConfigurationState,
+                                               InjConfigurationModel injConfigurationModel,
                                                InstantFlowState instantFlowState) {
-        return new FlowMasterUpdater(flowController, injectorSectionController, flowFirmwareVersion, injConfigurationState, instantFlowState);
+        return new FlowMasterUpdater(flowController, injectorSectionController, flowFirmwareVersion, injConfigurationModel, instantFlowState);
     }
 
     @Bean
@@ -432,9 +432,9 @@ public class SpringJavaConfig {
     public FlowStreamUpdater flowStreamUpdater(FlowController flowController,
                                                InjectorSectionController injectorSectionController,
                                                FirmwareVersion<FlowVersions> flowFirmwareVersion,
-                                               InjConfigurationState injConfigurationState,
+                                               InjConfigurationModel injConfigurationModel,
                                                InstantFlowState instantFlowState) {
-        return new FlowStreamUpdater(flowController, injectorSectionController, flowFirmwareVersion, injConfigurationState, instantFlowState);
+        return new FlowStreamUpdater(flowController, injectorSectionController, flowFirmwareVersion, injConfigurationModel, instantFlowState);
     }
 
     @Bean
@@ -532,8 +532,8 @@ public class SpringJavaConfig {
     @Autowired
     public FlowResolver flowResolver(MainSectionController mainSectionController,
                                      FlowController flowController,
-                                     FlowViewState flowViewState) {
-        return new FlowResolver(mainSectionController.getTestListView().getSelectionModel(), flowController, flowViewState);
+                                     FlowViewModel flowViewModel) {
+        return new FlowResolver(mainSectionController.getTestListView().getSelectionModel(), flowController, flowViewModel);
     }
 
     @Bean
@@ -599,7 +599,7 @@ public class SpringJavaConfig {
     @Autowired
     public PDFService pdfService(I18N i18N,
                                  DesktopFiles desktopFiles,
-                                 LanguageState languageState,
+                                 LanguageModel languageModel,
                                  RLC_ReportController rlc_reportController,
                                  DelayReportModel delayReportModel,
                                  RLC_ReportModel rlc_reportModel,
@@ -609,7 +609,7 @@ public class SpringJavaConfig {
         pdfService.setI18N(i18N);
         pdfService.setDesktopFiles(desktopFiles);
         pdfService.setRlc_reportController(rlc_reportController);
-        pdfService.setLanguageState(languageState);
+        pdfService.setLanguageModel(languageModel);
         pdfService.setDelayReportModel(delayReportModel);
         pdfService.setRlc_reportModel(rlc_reportModel);
         pdfService.setCodingReportModel(codingReportModel);
@@ -618,11 +618,6 @@ public class SpringJavaConfig {
     }
 
     // --------------------------------------State-----------------------------------------------
-
-    @Bean
-    public FlowViewState flowViewState() {
-        return new FlowViewState();
-    }
 
     @Bean
     public DimasGUIEditionState dimasGUIEditionState() {
@@ -635,33 +630,13 @@ public class SpringJavaConfig {
     }
 
     @Bean
-    public InjConfigurationState injConfigurationState() {
-        return new InjConfigurationState();
-    }
-
-    @Bean
     public InstantFlowState instantFlowState() {
         return new InstantFlowState();
     }
 
     @Bean
-    public LanguageState languageState() {
-        return new LanguageState();
-    }
-
-    @Bean
-    public PressureSensorState pressureSensorState() {
-        return new PressureSensorState();
-    }
-
-    @Bean
     public RegulatorsQTYState regulatorsQTYState() {
         return new RegulatorsQTYState();
-    }
-
-    @Bean
-    public InjectorTypeToggleState injectorTypeToggleState() {
-        return new InjectorTypeToggleState();
     }
 
     @Bean
@@ -689,8 +664,35 @@ public class SpringJavaConfig {
 
     @Bean
     @Autowired
-    public PumpModel pumpModel(PumpRepository pumpRepository) {
-        return new PumpModel(pumpRepository);
+    public PumpModel pumpModel(PumpRepository pumpRepository,
+                               ManufacturerPumpModel manufacturerPumpModel,
+                               CustomPumpState customPumpState) {
+        return new PumpModel(pumpRepository, manufacturerPumpModel, customPumpState);
+    }
+
+    @Bean
+    public InjectorTypeModel injectorTypeModel() {
+        return new InjectorTypeModel();
+    }
+
+    @Bean
+    public PressureSensorModel pressureSensorModel() {
+        return new PressureSensorModel();
+    }
+
+    @Bean
+    public LanguageModel languageModel() {
+        return new LanguageModel();
+    }
+
+    @Bean
+    public InjConfigurationModel injConfigurationModel() {
+        return new InjConfigurationModel();
+    }
+
+    @Bean
+    public FlowViewModel flowViewModel() {
+        return new FlowViewModel();
     }
 
     @Bean
@@ -719,14 +721,14 @@ public class SpringJavaConfig {
                                            BackFlowUnitsModel backFlowUnitsModel,
                                            DeliveryFlowRangeModel deliveryFlowRangeModel,
                                            DeliveryFlowUnitsModel deliveryFlowUnitsModel,
-                                           FlowViewState flowViewState){
+                                           FlowViewModel flowViewModel){
         FlowReportModel flowReportModel = new FlowReportModel();
         flowReportModel.setFlowValuesModel(flowValuesModel);
         flowReportModel.setDeliveryFlowUnitsModel(deliveryFlowUnitsModel);
         flowReportModel.setDeliveryFlowRangeModel(deliveryFlowRangeModel);
         flowReportModel.setBackFlowUnitsModel(backFlowUnitsModel);
         flowReportModel.setBackFlowRangeModel(backFlowRangeModel);
-        flowReportModel.setFlowViewState(flowViewState);
+        flowReportModel.setFlowViewModel(flowViewModel);
 
         return flowReportModel;
     }

@@ -1,6 +1,6 @@
 package fi.stardex.sisu.settings;
 
-import fi.stardex.sisu.states.PressureSensorState;
+import fi.stardex.sisu.states.PressureSensorModel;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
@@ -12,16 +12,15 @@ public class PressureSensorController {
 
     @FXML
     private ComboBox <Integer> pressureSensorComboBox;
-    private PressureSensorState pressureSensorState;
+
+    private PressureSensorModel pressureSensorModel;
+
     private Preferences rootPrefs;
-    private final String PREF_KEY = "pressureSensorSelected";
 
-    public ComboBox <Integer> getPressureSensorComboBox() {
-        return pressureSensorComboBox;
-    }
+    private static final String PREF_KEY = "pressureSensorSelected";
 
-    public void setPressureSensorState(PressureSensorState pressureSensorState) {
-        this.pressureSensorState = pressureSensorState;
+    public void setPressureSensorModel(PressureSensorModel pressureSensorModel) {
+        this.pressureSensorModel = pressureSensorModel;
     }
 
     public void setRootPrefs(Preferences rootPrefs) {
@@ -30,9 +29,15 @@ public class PressureSensorController {
 
     @PostConstruct
     public void init(){
+
         pressureSensorComboBox.setItems(FXCollections.observableArrayList(1500, 1800, 2000, 2200, 2400));
-        pressureSensorState.pressureSensorStateProperty().bind(pressureSensorComboBox.valueProperty());
-        pressureSensorComboBox.getSelectionModel().select(new Integer(rootPrefs.getInt(PREF_KEY, 1500)));
+
+        pressureSensorModel.pressureSensorProperty().bind(pressureSensorComboBox.valueProperty());
+
+        pressureSensorComboBox.getSelectionModel().select(Integer.valueOf(rootPrefs.getInt(PREF_KEY, 1500)));
+
         pressureSensorComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> rootPrefs.putInt(PREF_KEY, newValue));
+
     }
+
 }

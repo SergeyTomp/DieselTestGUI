@@ -4,7 +4,7 @@ import fi.stardex.sisu.combobox_values.InjectorChannel;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
-import fi.stardex.sisu.states.InjConfigurationState;
+import fi.stardex.sisu.states.InjConfigurationModel;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.util.filters.FilterInputChartData;
@@ -54,7 +54,7 @@ public abstract class ChartTask extends TimerTask {
     protected FirmwareVersion<UltimaVersions> ultimaFirmwareVersion;
 
     @Autowired
-    protected InjConfigurationState injConfigurationState;
+    protected InjConfigurationModel injConfigurationModel;
 
     protected abstract ModbusMapUltima getCurrentGraph();
 
@@ -164,7 +164,7 @@ public abstract class ChartTask extends TimerTask {
         if (injectorSectionController.getActiveLedToggleButtonsList().size() == 0)
             return;
 
-        if(injConfigurationState.injConfigurationStateProperty().get() == InjectorChannel.SINGLE_CHANNEL){
+        if(injConfigurationModel.injConfigurationProperty().get() == InjectorChannel.SINGLE_CHANNEL){
             int number = getChartNumber();
             if (number == 2 | number == 3 | number == 4)
                 return;

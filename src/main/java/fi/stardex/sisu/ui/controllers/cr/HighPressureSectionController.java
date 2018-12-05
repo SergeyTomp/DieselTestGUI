@@ -3,7 +3,7 @@ package fi.stardex.sisu.ui.controllers.cr;
 import eu.hansolo.enzo.lcd.Lcd;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
-import fi.stardex.sisu.states.PressureSensorState;
+import fi.stardex.sisu.states.PressureSensorModel;
 import fi.stardex.sisu.states.RegulatorsQTYState;
 import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.util.GaugeCreator;
@@ -107,7 +107,7 @@ public class HighPressureSectionController {
     private RegActive Reg3paramActive;
     private ModbusRegisterProcessor ultimaModbusWriter;
     private I18N i18N;
-    private PressureSensorState pressureSensorState;
+    private PressureSensorModel pressureSensorModel;
     private RegulatorsQTYState regulatorsQTYState;
 
     public static final String GREEN_STYLE_CLASS = "regulator-spinner-selected";
@@ -172,8 +172,8 @@ public class HighPressureSectionController {
         this.i18N = i18N;
     }
 
-    public void setPressureSensorState(PressureSensorState pressureSensorState) {
-        this.pressureSensorState = pressureSensorState;
+    public void setPressureSensorModel(PressureSensorModel pressureSensorModel) {
+        this.pressureSensorModel = pressureSensorModel;
     }
 
     public void setRegulatorsQTYState(RegulatorsQTYState regulatorsQTYState) {
@@ -206,9 +206,9 @@ public class HighPressureSectionController {
         currentReg3Spinner.getStyleClass().add(1, GREEN_STYLE_CLASS);
         dutyCycleReg3Spinner.getStyleClass().add(1, "");
 
-        int maxPressure = pressureSensorState.pressureSensorStateProperty().intValue();
+        int maxPressure = pressureSensorModel.pressureSensorProperty().intValue();
         pressReg1Spinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(PRESS_REG_1_SPINNER_MIN, maxPressure, PRESS_REG_1_SPINNER_INIT, PRESS_REG_1_SPINNER_STEP));
-        pressureSensorState.pressureSensorStateProperty().addListener(((observable, oldValue, newValue) -> pressReg1Spinner.setValueFactory(
+        pressureSensorModel.pressureSensorProperty().addListener(((observable, oldValue, newValue) -> pressReg1Spinner.setValueFactory(
                 new SpinnerValueFactory.IntegerSpinnerValueFactory(PRESS_REG_1_SPINNER_MIN, newValue.intValue(), PRESS_REG_1_SPINNER_INIT, PRESS_REG_1_SPINNER_STEP))));
 
         configRegulatorsInvolved(Integer.parseInt(regulatorsQTYState.regulatorsQTYStateProperty().get()));

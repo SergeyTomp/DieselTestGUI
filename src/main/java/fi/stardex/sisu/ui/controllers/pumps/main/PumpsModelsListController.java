@@ -80,11 +80,9 @@ public class PumpsModelsListController implements ChangeListener<Pump> {
 
         baseTypeToggleGroup.selectedToggleProperty().addListener(((observable, oldValue, newValue) -> {
 
-            BooleanProperty customPumpProperty = customPumpState.customPumpProperty();
+            customPumpState.customPumpProperty().setValue(newValue == customRadioButton);
 
-            customPumpProperty.setValue(newValue == customRadioButton);
-
-            pumpModel.initPumpList(manufacturerPumpModel.manufacturerPumpProperty().get(), customPumpProperty.get());
+            pumpModel.initPumpList();
 
         }));
 

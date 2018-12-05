@@ -6,8 +6,8 @@ import fi.stardex.sisu.model.RLC_ReportModel;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
-import fi.stardex.sisu.states.InjConfigurationState;
-import fi.stardex.sisu.states.InjectorTypeToggleState;
+import fi.stardex.sisu.states.InjConfigurationModel;
+import fi.stardex.sisu.states.InjectorTypeModel;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.util.GaugeCreator;
 import fi.stardex.sisu.util.enums.InjectorType;
@@ -50,9 +50,9 @@ public class RLCController {
     @FXML
     private Button storeButton;
 
-    private InjectorTypeToggleState injectorTypeToggleState;
+    private InjectorTypeModel injectorTypeModel;
     private InjectorSectionController injectorSectionController;
-    private InjConfigurationState injConfigurationState;
+    private InjConfigurationModel injConfigurationModel;
     private RLC_ReportModel rlc_reportModel;
     private ModbusRegisterProcessor ultimaModbusWriter;
     private RegisterProvider ultimaRegisterProvider;
@@ -106,12 +106,12 @@ public class RLCController {
         this.i18N = i18N;
     }
 
-    public void setInjConfigurationState(InjConfigurationState injConfigurationState) {
-        this.injConfigurationState = injConfigurationState;
+    public void setInjConfigurationModel(InjConfigurationModel injConfigurationModel) {
+        this.injConfigurationModel = injConfigurationModel;
     }
 
-    public void setInjectorTypeToggleState(InjectorTypeToggleState injectorTypeToggleState) {
-        this.injectorTypeToggleState = injectorTypeToggleState;
+    public void setInjectorTypeModel(InjectorTypeModel injectorTypeModel) {
+        this.injectorTypeModel = injectorTypeModel;
     }
 
     public void setRlc_reportModel(RLC_ReportModel rlc_reportModel) {
@@ -184,7 +184,7 @@ public class RLCController {
                 progressIndicatorDoubleCoil.setVisible(true);
             });
             try {
-                int injectorModbusChannel = injConfigurationState.injConfigurationStateProperty().get() == InjectorChannel.SINGLE_CHANNEL ?
+                int injectorModbusChannel = injConfigurationModel.injConfigurationProperty().get() == InjectorChannel.SINGLE_CHANNEL ?
                         1 : getNumber(ledController);
                 ultimaModbusWriter.add(ModbusMapUltima.RLC_measure_channel_num, injectorModbusChannel);
                 ultimaModbusWriter.add(ModbusMapUltima.RLC_measure_request, true);
@@ -205,7 +205,7 @@ public class RLCController {
                 } while (ready);
                 progressIndicator.setVisible(false);
 
-                if (injectorTypeToggleState.injectorTypeProperty().get() == InjectorType.COIL) {
+                if (injectorTypeModel.injectorTypeProperty().get() == InjectorType.COIL) {
 
                     parameter1 = (Double) ultimaRegisterProvider.read(ModbusMapUltima.Inductance_result);
                     parameter2 = (Double) ultimaRegisterProvider.read(ModbusMapUltima.Resistance_result);

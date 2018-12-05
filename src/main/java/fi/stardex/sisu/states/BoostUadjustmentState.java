@@ -1,12 +1,13 @@
 package fi.stardex.sisu.states;
 
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 
 public class BoostUadjustmentState {
 
-    private SimpleBooleanProperty boostUadjustmentState = new SimpleBooleanProperty();
+    private BooleanProperty boostUadjustmentState = new SimpleBooleanProperty();
 
-    public SimpleBooleanProperty boostUadjustmentStateProperty() {
+    public BooleanProperty boostUadjustmentStateProperty() {
         return boostUadjustmentState;
     }
 }

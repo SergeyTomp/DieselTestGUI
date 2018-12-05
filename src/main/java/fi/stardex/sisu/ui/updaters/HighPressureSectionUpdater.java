@@ -2,7 +2,7 @@ package fi.stardex.sisu.ui.updaters;
 
 import fi.stardex.sisu.annotations.Module;
 import fi.stardex.sisu.devices.Device;
-import fi.stardex.sisu.states.PressureSensorState;
+import fi.stardex.sisu.states.PressureSensorModel;
 import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.util.enums.RegActive;
 
@@ -15,13 +15,13 @@ import static fi.stardex.sisu.util.enums.RegActive.DUTY;
 public class HighPressureSectionUpdater implements Updater {
 
     private HighPressureSectionController highPressureSectionController;
-    private PressureSensorState pressureSensorState;
+    private PressureSensorModel pressureSensorModel;
 
 
     public HighPressureSectionUpdater(HighPressureSectionController highPressureSectionController,
-                                      PressureSensorState pressureSensorState) {
+                                      PressureSensorModel pressureSensorModel) {
         this.highPressureSectionController = highPressureSectionController;
-        this.pressureSensorState = pressureSensorState;
+        this.pressureSensorModel = pressureSensorModel;
     }
 
     @Override
@@ -36,7 +36,7 @@ public class HighPressureSectionUpdater implements Updater {
         RegActive reg3paramActive = highPressureSectionController.getReg3paramActive();
 
         if(PressureReg1_PressFact.getLastValue() != null){
-            double pressure = pressureSensorState.pressureSensorStateProperty().get() * (Double) PressureReg1_PressFact.getLastValue();
+            double pressure = pressureSensorModel.pressureSensorProperty().get() * (Double) PressureReg1_PressFact.getLastValue();
 //            if(reg1paramActive != PRESSURE){
 //                highPressureSectionController.getPressReg1Spinner().getValueFactory().setValue(pressure.intValue());
 //            }

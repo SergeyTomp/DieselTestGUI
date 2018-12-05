@@ -58,12 +58,10 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
     @Autowired
     public PumpsOEMListController pumpsOEMListController(MainSectionPumpsController mainSectionPumpsController,
                                                          ManufacturerPumpModel manufacturerPumpModel,
-                                                         PumpModel pumpModel,
-                                                         CustomPumpState customPumpState) {
+                                                         PumpModel pumpModel) {
         PumpsOEMListController pumpsOEMListController = mainSectionPumpsController.getPumpsOEMListController();
         pumpsOEMListController.setManufacturerPumpModel(manufacturerPumpModel);
         pumpsOEMListController.setPumpModel(pumpModel);
-        pumpsOEMListController.setCustomPumpState(customPumpState);
         return pumpsOEMListController;
     }
 

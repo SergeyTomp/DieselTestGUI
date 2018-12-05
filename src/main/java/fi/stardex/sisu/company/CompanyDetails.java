@@ -15,6 +15,7 @@ public enum CompanyDetails {
     private Preferences preferences;
     private String key;
     private static final String COMPANY_DETAILS = "companydetails";
+    public static final String DEFAULT_VALUE = "__";
 
     CompanyDetails(String key) {
         this.key = key;
@@ -30,7 +31,7 @@ public enum CompanyDetails {
     }
 
     public String get() {
-        return get("__");
+        return get(DEFAULT_VALUE);
     }
 
 }

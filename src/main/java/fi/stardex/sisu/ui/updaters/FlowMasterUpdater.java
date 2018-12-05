@@ -2,7 +2,7 @@ package fi.stardex.sisu.ui.updaters;
 
 import fi.stardex.sisu.annotations.Module;
 import fi.stardex.sisu.devices.Device;
-import fi.stardex.sisu.states.InjConfigurationState;
+import fi.stardex.sisu.states.InjConfigurationModel;
 import fi.stardex.sisu.states.InstantFlowState;
 import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
@@ -18,9 +18,9 @@ public class FlowMasterUpdater extends FlowUpdater implements Updater {
 
     public FlowMasterUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
                              FirmwareVersion<FlowVersions> flowFirmwareVersion,
-                             InjConfigurationState injConfigurationState, InstantFlowState instantFlowState) {
+                             InjConfigurationModel injConfigurationModel, InstantFlowState instantFlowState) {
 
-        super(flowController, injectorSectionController, flowFirmwareVersion, injConfigurationState, instantFlowState);
+        super(flowController, injectorSectionController, flowFirmwareVersion, injConfigurationModel, instantFlowState);
 
     }
 

@@ -1,7 +1,7 @@
 package fi.stardex.sisu.settings;
 
 import fi.stardex.sisu.combobox_values.Dimension;
-import fi.stardex.sisu.states.FlowViewState;
+import fi.stardex.sisu.states.FlowViewModel;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
@@ -13,16 +13,15 @@ public class FlowViewController {
 
     @FXML
     private ComboBox <Dimension> flowOutputDimensionsComboBox;
-    private FlowViewState flowViewState;
+
+    private FlowViewModel flowViewModel;
+
     private Preferences rootPrefs;
-    private final String PREF_KEY = "flowOutputDimensionSelected";
 
-    public ComboBox <Dimension> getFlowOutputDimensionsComboBox() {
-        return flowOutputDimensionsComboBox;
-    }
+    private static final String PREF_KEY = "flowOutputDimensionSelected";
 
-    public void setFlowViewState(FlowViewState flowViewState) {
-        this.flowViewState = flowViewState;
+    public void setFlowViewModel(FlowViewModel flowViewModel) {
+        this.flowViewModel = flowViewModel;
     }
 
     public void setRootPrefs(Preferences rootPrefs) {
@@ -31,9 +30,12 @@ public class FlowViewController {
 
     @PostConstruct
     public void init(){
+
         flowOutputDimensionsComboBox.setItems(FXCollections.observableArrayList(Dimension.LIMIT, Dimension.PLUS_OR_MINUS));
-        flowViewState.flowViewStateProperty().bind(flowOutputDimensionsComboBox.valueProperty());
+        flowViewModel.flowViewProperty().bind(flowOutputDimensionsComboBox.valueProperty());
         flowOutputDimensionsComboBox.getSelectionModel().select(Dimension.valueOf(rootPrefs.get(PREF_KEY, Dimension.LIMIT.name())));
         flowOutputDimensionsComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> rootPrefs.put(PREF_KEY, newValue.name()));
+
     }
+
 }

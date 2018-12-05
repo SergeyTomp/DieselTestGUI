@@ -16,10 +16,6 @@ public class DimasGuiEditionController {
     private Preferences rootPrefs;
     private final String PREF_KEY = "isDIMASCheckBoxSelected";
 
-    public CheckBox getIsDIMASCheckBox() {
-        return isDIMASCheckBox;
-    }
-
     public void setDimasGUIEditionState(DimasGUIEditionState dimasGUIEditionState) {
         this.dimasGUIEditionState = dimasGUIEditionState;
     }

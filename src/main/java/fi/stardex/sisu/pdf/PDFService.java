@@ -10,7 +10,7 @@ import fi.stardex.sisu.model.FlowReportModel.FlowResult;
 import fi.stardex.sisu.model.RLC_ReportModel;
 import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
 import fi.stardex.sisu.persistence.orm.interfaces.Model;
-import fi.stardex.sisu.states.LanguageState;
+import fi.stardex.sisu.states.LanguageModel;
 import fi.stardex.sisu.ui.controllers.additional.tabs.report.RLC_ReportController;
 import fi.stardex.sisu.ui.controllers.dialogs.PrintDialogPanelController;
 import fi.stardex.sisu.util.DesktopFiles;
@@ -106,7 +106,7 @@ public class PDFService {
     private PDDocument document;
     private PDPage currentPage;
     private PDFont font;
-    private LanguageState languageState;
+    private LanguageModel languageModel;
     private I18N i18N;
     private List<Result> rlcResultsList;
     private List<Result> delayResultsList;
@@ -123,8 +123,8 @@ public class PDFService {
         this.desktopFiles = desktopFiles;
     }
 
-    public void setLanguageState(LanguageState languageState) {
-        this.languageState = languageState;
+    public void setLanguageModel(LanguageModel languageModel) {
+        this.languageModel = languageModel;
     }
 
     public void setRlc_reportController(RLC_ReportController rlc_reportController) {
@@ -354,7 +354,7 @@ public class PDFService {
 
         InputStream inputStream;
 
-        if(languageState.languageStateProperty().get().equals("RUSSIAN")){
+        if(languageModel.languageProperty().get().equals("RUSSIAN")){
             inputStream = this.getClass().getResourceAsStream("/fonts/Arial_Cyr.ttf");
         }
         else {

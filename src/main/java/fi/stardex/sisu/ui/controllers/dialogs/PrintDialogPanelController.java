@@ -1,7 +1,5 @@
 package fi.stardex.sisu.ui.controllers.dialogs;
 
-
-import fi.stardex.sisu.company.ResourceURLChecker;
 import fi.stardex.sisu.pdf.Customer;
 import fi.stardex.sisu.pdf.ExceptionalConsumer;
 import fi.stardex.sisu.pdf.PDFService;
@@ -158,8 +156,8 @@ public class PrintDialogPanelController{
         paneDataPicker.getChildren().add(datePicker);
 
         try {
-            ResourceURLChecker resourceURLChecker = new ResourceURLChecker();
-            if (resourceURLChecker.fileExists(LOGO_URL.get())) {
+            String logo_url = LOGO_URL.get();
+            if (!logo_url.isEmpty() && !logo_url.equals(DEFAULT_VALUE)) {
                 selectedFile = new File(new URL(LOGO_URL.get()).toURI());
                 imageView.setImage(new Image(LOGO_URL.get()));
             }

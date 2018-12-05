@@ -1,6 +1,6 @@
 package fi.stardex.sisu.settings;
 
-import fi.stardex.sisu.states.LanguageState;
+import fi.stardex.sisu.states.LanguageModel;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.i18n.Locales;
 import javafx.collections.FXCollections;
@@ -14,16 +14,15 @@ public class LanguageController {
 
     @FXML
     private ComboBox <Locales> languagesConfigComboBox;
-    private LanguageState languageState;
+
+    private LanguageModel languageModel;
+
     private Preferences rootPrefs;
+
     private I18N i18N;
 
-    public ComboBox <Locales> getLanguagesConfigComboBox() {
-        return languagesConfigComboBox;
-    }
-
-    public void setLanguageState(LanguageState languageState) {
-        this.languageState = languageState;
+    public void setLanguageModel(LanguageModel languageModel) {
+        this.languageModel = languageModel;
     }
 
     public void setRootPrefs(Preferences rootPrefs) {
@@ -36,12 +35,18 @@ public class LanguageController {
 
     @PostConstruct
     public void init(){
+
         languagesConfigComboBox.setItems(FXCollections.observableArrayList(Locales.RUSSIAN, Locales.ENGLISH, Locales.KOREAN));
-        languageState.languageStateProperty().bind(languagesConfigComboBox.valueProperty());
+
+        languageModel.languageProperty().bind(languagesConfigComboBox.valueProperty());
+
         languagesConfigComboBox.getSelectionModel().select(Locales.valueOf(rootPrefs.get("Language", Locales.ENGLISH.name())));
+
         languagesConfigComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             rootPrefs.put("Language", newValue.name());
             i18N.setLocale(Locales.getLocale(newValue.name()));
         });
+
     }
+
 }

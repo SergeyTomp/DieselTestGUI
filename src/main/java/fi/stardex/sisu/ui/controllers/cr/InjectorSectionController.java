@@ -8,8 +8,8 @@ import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.BoostU_State;
 import fi.stardex.sisu.states.BoostUadjustmentState;
-import fi.stardex.sisu.states.InjConfigurationState;
-import fi.stardex.sisu.states.InjectorTypeToggleState;
+import fi.stardex.sisu.states.InjConfigurationModel;
+import fi.stardex.sisu.states.InjectorTypeModel;
 import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.ui.controllers.additional.tabs.DelayController;
 import fi.stardex.sisu.util.enums.InjectorType;
@@ -20,6 +20,7 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.ReadOnlyObjectProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -113,9 +114,9 @@ public class InjectorSectionController {
 
     private TimerTasksManager timerTasksManager;
 
-    private InjConfigurationState injConfigurationState;
+    private InjConfigurationModel injConfigurationModel;
 
-    private InjectorTypeToggleState injectorTypeToggleState;
+    private InjectorTypeModel injectorTypeModel;
 
     private BoostU_State boostU_state;
 
@@ -204,12 +205,12 @@ public class InjectorSectionController {
         this.delayController = delayController;
     }
 
-    public void setInjConfigurationState(InjConfigurationState injConfigurationState) {
-        this.injConfigurationState = injConfigurationState;
+    public void setInjConfigurationModel(InjConfigurationModel injConfigurationModel) {
+        this.injConfigurationModel = injConfigurationModel;
     }
 
-    public void setInjectorTypeToggleState(InjectorTypeToggleState injectorTypeToggleState) {
-        this.injectorTypeToggleState = injectorTypeToggleState;
+    public void setInjectorTypeModel(InjectorTypeModel injectorTypeModel) {
+        this.injectorTypeModel = injectorTypeModel;
     }
 
     public synchronized List<ToggleButton> getActiveLedToggleButtonsList() {
@@ -255,7 +256,7 @@ public class InjectorSectionController {
 
         boostU_state.boostU_property().addListener(new BoostU_ChangeListener());
 
-        injectorTypeToggleState.injectorTypeProperty().setValue(InjectorType.COIL);
+        injectorTypeModel.injectorTypeProperty().setValue(InjectorType.COIL);
 
         ledParametersChangeListener = new LedParametersChangeListener();
 
@@ -263,13 +264,13 @@ public class InjectorSectionController {
 
         piezoCoilToggleGroup.selectedToggleProperty().addListener((observableValue, oldValue, newValue) -> {
             if (newValue == piezoDelphiRadioButton){
-                injectorTypeToggleState.injectorTypeProperty().setValue(InjectorType.PIEZO_DELPHI);
+                injectorTypeModel.injectorTypeProperty().setValue(InjectorType.PIEZO_DELPHI);
             }
             else if(newValue == coilRadioButton){
-                injectorTypeToggleState.injectorTypeProperty().setValue(InjectorType.COIL);
+                injectorTypeModel.injectorTypeProperty().setValue(InjectorType.COIL);
             }
             else if(newValue == piezoRadioButton){
-                injectorTypeToggleState.injectorTypeProperty().setValue(InjectorType.PIEZO);
+                injectorTypeModel.injectorTypeProperty().setValue(InjectorType.PIEZO);
             }
         });
 
@@ -337,9 +338,17 @@ public class InjectorSectionController {
 
     private void setupInjectorConfigComboBox() {
 
-        setToggleGroupToLeds(injConfigurationState.injConfigurationStateProperty().get() == InjectorChannel.SINGLE_CHANNEL ? toggleGroup : null);
-        injConfigurationState.injConfigurationStateProperty().addListener((observable, oldValue, newValue) ->
+        ObjectProperty<InjectorChannel> injConfigurationProperty = injConfigurationModel.injConfigurationProperty();
+
+        setToggleGroupToLeds(injConfigurationProperty.get() == InjectorChannel.SINGLE_CHANNEL ? toggleGroup : null);
+
+        injConfigurationProperty.addListener((observable, oldValue, newValue) ->
                 setToggleGroupToLeds(newValue == InjectorChannel.SINGLE_CHANNEL ? toggleGroup : null));
+
+    }
+
+    private void setToggleGroupToLeds(ToggleGroup toggleGroup) {
+        ledToggleButtons.forEach(s -> s.setToggleGroup(toggleGroup));
     }
 
     private void setupSpinners() {
@@ -362,10 +371,6 @@ public class InjectorSectionController {
 
     }
 
-    private void setToggleGroupToLeds(ToggleGroup toggleGroup) {
-        ledToggleButtons.forEach(s -> s.setToggleGroup(toggleGroup));
-    }
-
     private class LedParametersChangeListener implements ChangeListener<Object> {
 
         private ReadOnlyObjectProperty<Toggle> injectorTypeProperty;
@@ -379,7 +384,7 @@ public class InjectorSectionController {
         LedParametersChangeListener() {
 
             injectorTypeProperty = piezoCoilToggleGroup.selectedToggleProperty();
-            injectorChannelProperty = injConfigurationState.injConfigurationStateProperty();
+            injectorChannelProperty = injConfigurationModel.injConfigurationProperty();
             freqCurrentSignalSpinner.valueProperty().addListener(this);
             injectorTypeProperty.addListener(this);
             ledToggleButtons.forEach(s -> s.selectedProperty().addListener(this));
@@ -397,7 +402,6 @@ public class InjectorSectionController {
             } else if (newValue instanceof Toggle) {
                 if (newValue == piezoDelphiRadioButton) {
                     enabler.disableNode(true, led2ToggleButton, led3ToggleButton, led4ToggleButton);
-                    injectorTypeToggleState.injectorTypeProperty().setValue(InjectorType.PIEZO_DELPHI);
                     led1ToggleButton.setSelected(true);
                 } else {
                     enabler.disableNode(false, led2ToggleButton, led3ToggleButton, led4ToggleButton);
@@ -642,7 +646,7 @@ public class InjectorSectionController {
 
                     int timeSleep;
 
-                    if (injConfigurationState.injConfigurationStateProperty().get() == InjectorChannel.SINGLE_CHANNEL)
+                    if (injConfigurationModel.injConfigurationProperty().get() == InjectorChannel.SINGLE_CHANNEL)
                         timeSleep = (int) (timeOut / 2);
                     else
                         timeSleep = (int) timeOut;
@@ -654,7 +658,7 @@ public class InjectorSectionController {
 
                         timeOut = timeOut - (timeOut / 100);
                         updateProgress(i, 100);
-                        updateMessage("..." + String.valueOf(i) + "%");
+                        updateMessage("..." + i + "%");
                         Thread.sleep(timeSleep * 10);
                     }
 
@@ -671,9 +675,8 @@ public class InjectorSectionController {
                 @Override
                 protected void done() {
 
-                    Platform.runLater(() -> {
-                        setStartStopValues(false);
-                    });
+                    Platform.runLater(() -> setStartStopValues(false));
+
                 }
             };
         }

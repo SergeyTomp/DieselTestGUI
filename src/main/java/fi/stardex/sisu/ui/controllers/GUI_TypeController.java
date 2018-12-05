@@ -60,8 +60,6 @@ public class GUI_TypeController {
 
     private DimasGUIEditionState dimasGUIEditionState;
 
-    private PumpTabSectionController pumpTabSectionController;
-
     private ManufacturerPumpModel manufacturerPumpModel;
 
     public ComboBox<GUIType> getGui_typeComboBox() {
@@ -118,10 +116,6 @@ public class GUI_TypeController {
 
     public void setTabSectionPumps(Parent tabSectionPumps) {
         this.tabSectionPumps = tabSectionPumps;
-    }
-
-    public void setPumpTabSectionController(PumpTabSectionController pumpTabSectionController) {
-        this.pumpTabSectionController = pumpTabSectionController;
     }
 
     public void setSettings(Parent settings) {

@@ -21,18 +21,12 @@ public class PumpsOEMListController implements ListChangeListener<ManufacturerPu
 
     private PumpModel pumpModel;
 
-    private CustomPumpState customPumpState;
-
     public void setManufacturerPumpModel(ManufacturerPumpModel manufacturerPumpModel) {
         this.manufacturerPumpModel = manufacturerPumpModel;
     }
 
     public void setPumpModel(PumpModel pumpModel) {
         this.pumpModel = pumpModel;
-    }
-
-    public void setCustomPumpState(CustomPumpState customPumpState) {
-        this.customPumpState = customPumpState;
     }
 
     @PostConstruct
@@ -56,8 +50,7 @@ public class PumpsOEMListController implements ListChangeListener<ManufacturerPu
 
         manufacturerPumpModel.manufacturerPumpProperty().set(newValue);
 
-        pumpModel.initPumpList(newValue, customPumpState.customPumpProperty().get());
+        pumpModel.initPumpList();
 
     }
-
 }

@@ -3,7 +3,7 @@ package fi.stardex.sisu.model;
 import fi.stardex.sisu.combobox_values.Dimension;
 import fi.stardex.sisu.pdf.Result;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
-import fi.stardex.sisu.states.FlowViewState;
+import fi.stardex.sisu.states.FlowViewModel;
 import fi.stardex.sisu.util.enums.Measurement;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
@@ -22,7 +22,7 @@ public class FlowReportModel {
     private BackFlowUnitsModel backFlowUnitsModel;
     private DeliveryFlowRangeModel deliveryFlowRangeModel;
     private DeliveryFlowUnitsModel deliveryFlowUnitsModel;
-    private FlowViewState flowViewState;
+    private FlowViewModel flowViewModel;
     private BooleanProperty resultMapChanged = new SimpleBooleanProperty();
     private ObservableMap<InjectorTest, FlowResult> resultObservableMap = FXCollections.observableMap(new HashMap<>());
     private final double DEVIATION = 0.03;
@@ -59,8 +59,8 @@ public class FlowReportModel {
         this.deliveryFlowUnitsModel = deliveryFlowUnitsModel;
     }
 
-    public void setFlowViewState(FlowViewState flowViewState) {
-        this.flowViewState = flowViewState;
+    public void setFlowViewModel(FlowViewModel flowViewModel) {
+        this.flowViewModel = flowViewModel;
     }
 
     public void clearResults(){
@@ -80,7 +80,7 @@ public class FlowReportModel {
                     getFlow(flowValuesModel.delivery2Property().get()),
                     getFlow(flowValuesModel.delivery3Property().get()),
                     getFlow(flowValuesModel.delivery4Property().get()),
-                    flowViewState.flowViewStateProperty().get()));
+                    flowViewModel.flowViewProperty().get()));
                 break;
             case BACK_FLOW:
                 resultObservableMap.put(injectorTest, new FlowResult(
@@ -90,7 +90,7 @@ public class FlowReportModel {
                     getFlow(flowValuesModel.backFlow2Property().get()),
                     getFlow(flowValuesModel.backFlow3Property().get()),
                     getFlow(flowValuesModel.backFlow4Property().get()),
-                    flowViewState.flowViewStateProperty().get()));
+                    flowViewModel.flowViewProperty().get()));
                 break;
         }
         resultMapChanged.setValue(true);
