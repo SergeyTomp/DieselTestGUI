@@ -287,8 +287,6 @@ public class Enabler {
 
         showNode(isTestAuto, flowTableView);
 
-//        flowReport.clear();
-
         flowReportModel.clearResults();
 
     }
@@ -424,5 +422,4 @@ public class Enabler {
             node.setVisible(visible);
         }
     }
-
 }

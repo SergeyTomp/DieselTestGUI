@@ -6,20 +6,19 @@ import javafx.scene.layout.StackPane;
 
 public class CRSectionController {
 
-    @FXML private StackPane highPressureSection;
+    @FXML private StackPane injectorHighPressureSection;
 
     @FXML private HBox injectorSection;
 
-    @FXML private HighPressureSectionController highPressureSectionController;
+    @FXML private InjectorHighPressureSectionController injectorHighPressureSectionController;
 
     @FXML private InjectorSectionController injectorSectionController;
-
-    public HighPressureSectionController getHighPressureSectionController() {
-        return highPressureSectionController;
-    }
 
     public InjectorSectionController getInjectorSectionController() {
         return injectorSectionController;
     }
 
+    public InjectorHighPressureSectionController getInjectorHighPressureSectionController() {
+        return injectorHighPressureSectionController;
+    }
 }

@@ -2,6 +2,8 @@ package fi.stardex.sisu.ui.controllers;
 
 import eu.hansolo.enzo.lcd.Lcd;
 import fi.stardex.sisu.measurement.Measurements;
+import fi.stardex.sisu.model.PressureRegulatorOneModel;
+import fi.stardex.sisu.model.updateModels.HighPressureSectionUpdateModel;
 import fi.stardex.sisu.persistence.orm.ISADetection;
 import fi.stardex.sisu.persistence.repos.ISADetectionRepository;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
@@ -75,8 +77,6 @@ public class ISADetectionController {
 
     private Spinner<Integer> boostUSpinner;
 
-    private Spinner<Integer> pressReg1Spinner;
-
     private Button voltAmpereProfileApplyButton;
 
     private Button resetButton;
@@ -97,6 +97,10 @@ public class ISADetectionController {
 
     private ISAState isaState;
 
+    private HighPressureSectionUpdateModel highPressureSectionUpdateModel;
+
+    private PressureRegulatorOneModel pressureRegulatorOneModel;
+
     public static List<ISAResult> getIsaResult() {
         return ISA_RESULT;
     }
@@ -113,6 +117,14 @@ public class ISADetectionController {
         this.injectorSectionController = injectorSectionController;
     }
 
+    public void setHighPressureSectionUpdateModel(HighPressureSectionUpdateModel highPressureSectionUpdateModel) {
+        this.highPressureSectionUpdateModel = highPressureSectionUpdateModel;
+    }
+
+    public void setPressureRegulatorOneModel(PressureRegulatorOneModel pressureRegulatorOneModel) {
+        this.pressureRegulatorOneModel = pressureRegulatorOneModel;
+    }
+
     public void setMeasurements(Measurements measurements) {
         this.measurements = measurements;
     }
@@ -127,14 +139,6 @@ public class ISADetectionController {
 
     public void setBoostUSpinner(Spinner<Integer> boostUSpinner) {
         this.boostUSpinner = boostUSpinner;
-    }
-
-    public void setPressReg1Spinner(Spinner<Integer> pressReg1Spinner) {
-        this.pressReg1Spinner = pressReg1Spinner;
-    }
-
-    public void setPressureLcd(Lcd pressureLcd) {
-        this.pressureLcd = pressureLcd;
     }
 
     public void setResetButton(Button resetButton) {
@@ -396,7 +400,11 @@ public class ISADetectionController {
     }
 
     private boolean isPressureReady() {
-        return Math.abs((pressReg1Spinner.getValue() - pressureLcd.getValue()) / pressReg1Spinner.getValue()) < 0.2;
+
+        int pressSpinnerValue = pressureRegulatorOneModel.pressureRegOneProperty().get();
+        int realPressValue = highPressureSectionUpdateModel.lcdPressureProperty().get();
+
+        return Math.abs((pressSpinnerValue - realPressValue) / pressSpinnerValue) < 0.2;
     }
 
     private void startMeasurement() {

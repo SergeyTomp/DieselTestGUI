@@ -10,14 +10,16 @@ import fi.stardex.sisu.coding.denso.DensoCoding;
 import fi.stardex.sisu.coding.denso.DensoCodingDataStorage;
 import fi.stardex.sisu.model.CodingReportModel;
 import fi.stardex.sisu.model.FlowReportModel;
+import fi.stardex.sisu.model.PressureRegulatorOneModel;
+import fi.stardex.sisu.model.updateModels.HighPressureSectionUpdateModel;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.persistence.orm.cr.inj.TestName;
 import fi.stardex.sisu.registers.flow.ModbusMapFlow;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
+import fi.stardex.sisu.states.HighPressureSectionPwrState;
 import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.ui.controllers.ISADetectionController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.CodingController;
-import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.cr.TestBenchSectionController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
@@ -60,8 +62,6 @@ public class Measurements implements ChangeListener<Boolean> {
 
     private ToggleButton testBenchStartToggleButton;
 
-    private ToggleButton highPressureStartToggleButton;
-
     private InjectorSectionController injectorSectionController;
 
     private ToggleButton injectorSectionStartToggleButton;
@@ -70,11 +70,7 @@ public class Measurements implements ChangeListener<Boolean> {
 
     private Spinner<Integer> targetRPMSpinner;
 
-    private Spinner<Integer> pressReg1Spinner;
-
     private Lcd currentRPMLcd;
-
-    private Lcd pressureLcd;
 
     private MainSectionController.TimeProgressBar adjustingTime;
 
@@ -108,6 +104,12 @@ public class Measurements implements ChangeListener<Boolean> {
 
     private FlowReportModel flowReportModel;
 
+    private HighPressureSectionPwrState highPressureSectionPwrState;
+
+    private PressureRegulatorOneModel pressureRegulatorOneModel;
+
+    private HighPressureSectionUpdateModel highPressureSectionUpdateModel;
+
     private boolean codingComplete;
 
     private Iterator<Integer> densoCodingPointsIterator;
@@ -118,18 +120,23 @@ public class Measurements implements ChangeListener<Boolean> {
 
     public Measurements(MainSectionController mainSectionController,
                         TestBenchSectionController testBenchSectionController,
-                        HighPressureSectionController highPressureSectionController,
                         InjectorSectionController injectorSectionController,
                         Enabler enabler,
                         CodingController codingController,
                         ISADetectionController isaDetectionController,
                         CodingReportModel codingReportModel,
-                        FlowReportModel flowReportModel) {
+                        FlowReportModel flowReportModel,
+                        HighPressureSectionPwrState highPressureSectionPwrState,
+                        PressureRegulatorOneModel pressureRegulatorOneModel,
+                        HighPressureSectionUpdateModel highPressureSectionUpdateModel) {
 
         this.enabler = enabler;
         this.flowReportModel = flowReportModel;
         this.mainSectionController = mainSectionController;
         this.codingReportModel = codingReportModel;
+        this.pressureRegulatorOneModel = pressureRegulatorOneModel;
+        this.highPressureSectionPwrState = highPressureSectionPwrState;
+        this.highPressureSectionUpdateModel = highPressureSectionUpdateModel;
         testListView = mainSectionController.getTestListView();
         testListViewItems = mainSectionController.getTestListViewItems();
         testsSelectionModel = mainSectionController.getTestsSelectionModel();
@@ -138,10 +145,6 @@ public class Measurements implements ChangeListener<Boolean> {
         adjustingTime = mainSectionController.getAdjustingTime();
         measuringTime = mainSectionController.getMeasuringTime();
         flowModbusWriter = mainSectionController.getFlowModbusWriter();
-
-        highPressureStartToggleButton = highPressureSectionController.getHighPressureStartToggleButton();
-        pressReg1Spinner = highPressureSectionController.getPressReg1Spinner();
-        pressureLcd = highPressureSectionController.getPressureLcd();
 
         testBenchStartToggleButton = testBenchSectionController.getTestBenchStartToggleButton();
         targetRPMSpinner = testBenchSectionController.getTargetRPMSpinner();
@@ -195,11 +198,7 @@ public class Measurements implements ChangeListener<Boolean> {
 
         enabler.startTest(true);
 
-//        flowReport.clear();
-
         flowReportModel.clearResults();
-
-//        clearCodingResults();
 
         switch (getTestType()) {
             case AUTO:
@@ -294,7 +293,7 @@ public class Measurements implements ChangeListener<Boolean> {
     public void switchOffSections() {
 
         injectorSectionStartToggleButton.setSelected(false);
-        highPressureStartToggleButton.setSelected(false);
+        highPressureSectionPwrState.powerButtonProperty().setValue(false);
         testBenchStartToggleButton.setSelected(false);
 
         flowModbusWriter.add(ModbusMapFlow.StopMeasurementCycle, true);
@@ -429,14 +428,14 @@ public class Measurements implements ChangeListener<Boolean> {
 
     private void startPressure() {
 
-        highPressureStartToggleButton.setSelected(true);
+        highPressureSectionPwrState.powerButtonProperty().setValue(true);
         pressurePreparationTimeline.play();
 
     }
 
     private void motorPreparation() {
 
-        if (isSectionReady(targetRPMSpinner.getValue().doubleValue(), currentRPMLcd, 0.1)) {
+        if (isSectionReady(targetRPMSpinner.getValue().doubleValue(), currentRPMLcd.getValue(), 0.1)) {
 
             motorPreparationTimeline.stop();
             startPressure();
@@ -447,24 +446,25 @@ public class Measurements implements ChangeListener<Boolean> {
 
     private void pressurePreparation() {
 
-        if (isSectionReady(pressReg1Spinner.getValue().doubleValue(), pressureLcd, 0.2)) {
-
+        if(isSectionReady(pressureRegulatorOneModel.pressureRegOneProperty().get(), highPressureSectionUpdateModel.lcdPressureProperty().get(), 0.2)){
             injectorSectionStartToggleButton.setSelected(true);
             resetButton.fire();
             pressurePreparationTimeline.stop();
 
             if (getTestType() != TESTPLAN)
                 adjustingTimeline.play();
-
         }
 
-    }
-
-    private boolean isSectionReady(double currentValue, Lcd lcd, double margin) {
-
-        return Math.abs((currentValue - lcd.getValue()) / currentValue) < margin;
 
     }
+
+
+    private boolean isSectionReady(double currentValue, double lcdValue, double margin) {
+
+        return Math.abs((currentValue - lcdValue) / currentValue) < margin;
+
+    }
+
 
     private void tickAdjustingTime() {
 

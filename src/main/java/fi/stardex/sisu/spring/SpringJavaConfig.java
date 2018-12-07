@@ -12,6 +12,7 @@ import fi.stardex.sisu.devices.Device;
 import fi.stardex.sisu.devices.Devices;
 import fi.stardex.sisu.measurement.Measurements;
 import fi.stardex.sisu.model.*;
+import fi.stardex.sisu.model.updateModels.HighPressureSectionUpdateModel;
 import fi.stardex.sisu.pdf.PDFService;
 import fi.stardex.sisu.persistence.CheckAndInitializeBD;
 import fi.stardex.sisu.persistence.orm.CSVSUpdater;
@@ -39,7 +40,6 @@ import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.report.FlowReportController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.report.RLC_ReportController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.settings.ConnectionController;
-import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.cr.TestBenchSectionController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
@@ -406,13 +406,6 @@ public class SpringJavaConfig {
 
     @Bean
     @Autowired
-    public HighPressureSectionUpdater highPressureSectionUpdater(HighPressureSectionController highPressureSectionController,
-                                                                 PressureSensorModel pressureSensorModel) {
-        return new HighPressureSectionUpdater(highPressureSectionController, pressureSensorModel);
-    }
-
-    @Bean
-    @Autowired
     public InjectorSectionUpdater injectorSectionUpdater(VoltageController voltageController) {
         return new InjectorSectionUpdater(voltageController);
     }
@@ -566,15 +559,21 @@ public class SpringJavaConfig {
     @Autowired
     public Measurements measurements(MainSectionController mainSectionController,
                                      TestBenchSectionController testBenchSectionController,
-                                     HighPressureSectionController highPressureSectionController,
                                      InjectorSectionController injectorSectionController,
                                      Enabler enabler,
                                      CodingController codingController,
                                      ISADetectionController isaDetectionController,
                                      CodingReportModel codingReportModel,
-                                     FlowReportModel flowReportModel) {
-        return new Measurements(mainSectionController, testBenchSectionController, highPressureSectionController,
-                injectorSectionController, enabler, codingController, isaDetectionController, codingReportModel, flowReportModel);
+                                     FlowReportModel flowReportModel,
+                                     HighPressureSectionPwrState highPressureSectionPwrState,
+                                     PressureRegulatorOneModel pressureRegulatorOneModel,
+                                     HighPressureSectionUpdateModel highPressureSectionUpdateModel) {
+        return new Measurements(mainSectionController, testBenchSectionController,
+                injectorSectionController, enabler, codingController,
+                isaDetectionController, codingReportModel, flowReportModel,
+                highPressureSectionPwrState,
+                pressureRegulatorOneModel,
+                highPressureSectionUpdateModel);
     }
 
     private List<Updater> addUpdaters(List<Updater> updatersList, Device targetDevice) {
@@ -653,6 +652,9 @@ public class SpringJavaConfig {
     public BoostUadjustmentState boostUadjustmentState(){
         return new BoostUadjustmentState();
     }
+
+    @Bean
+    public HighPressureSectionPwrState highPressureSectionPwrState(){return new HighPressureSectionPwrState();}
 
     // --------------------------------------Model-----------------------------------------------
 
@@ -755,4 +757,24 @@ public class SpringJavaConfig {
     @Lazy
     public DeliveryFlowUnitsModel deliveryFlowUnitsModel(){return new DeliveryFlowUnitsModel();}
 
+    @Bean
+    @Autowired
+    public HighPressureSectionUpdateModel highPressureSectionUpdateModel(PressureSensorModel pressureSensorModel,
+                                                                         RegulationModesModel regulationModesModel){
+        return new HighPressureSectionUpdateModel(pressureSensorModel, regulationModesModel);
+    }
+    @Bean
+    public InjectorTestModel injectorTestModel(InjectorTestRepository injectorTestRepository){
+        return new InjectorTestModel(injectorTestRepository);
+    }
+
+    @Bean
+    public PressureRegulatorOneModel pressureRegulatorOneModel(){
+        return new PressureRegulatorOneModel();
+    }
+
+    @Bean
+    public RegulationModesModel regulationModesModel(){
+        return new RegulationModesModel();
+    }
 }

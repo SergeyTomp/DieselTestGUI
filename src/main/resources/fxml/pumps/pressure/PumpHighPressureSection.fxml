@@ -5,7 +5,11 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 
-<StackPane fx:id="rootStackPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="260.0" minWidth="500.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.pumps.pressure.PumpHighPressureSectionController">
+<StackPane fx:id="rootStackPane"
+           maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="260.0" minWidth="500.0"
+           xmlns="http://javafx.com/javafx/8.0.121"
+           xmlns:fx="http://javafx.com/fxml/1"
+           fx:controller="fi.stardex.sisu.ui.controllers.pumps.pressure.PumpHighPressureSectionController">
    <children>
       <GridPane>
           <fx:include fx:id="pumpRegulatorSectionOne" source="PumpRegulatorSectionOne.fxml" GridPane.columnIndex="0" />

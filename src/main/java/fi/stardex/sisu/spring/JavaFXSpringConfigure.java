@@ -4,6 +4,7 @@ import fi.stardex.sisu.charts.TimerTasksManager;
 import fi.stardex.sisu.devices.Devices;
 import fi.stardex.sisu.measurement.Measurements;
 import fi.stardex.sisu.model.*;
+import fi.stardex.sisu.model.updateModels.HighPressureSectionUpdateModel;
 import fi.stardex.sisu.pdf.PDFService;
 import fi.stardex.sisu.persistence.orm.Manufacturer;
 import fi.stardex.sisu.persistence.repos.ISADetectionRepository;
@@ -29,10 +30,7 @@ import fi.stardex.sisu.ui.controllers.additional.tabs.report.RLC_ReportControlle
 import fi.stardex.sisu.ui.controllers.additional.tabs.report.ReportController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.settings.ConnectionController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.settings.SettingsController;
-import fi.stardex.sisu.ui.controllers.cr.CRSectionController;
-import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
-import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
-import fi.stardex.sisu.ui.controllers.cr.TestBenchSectionController;
+import fi.stardex.sisu.ui.controllers.cr.*;
 import fi.stardex.sisu.ui.controllers.dialogs.*;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
 import fi.stardex.sisu.ui.controllers.pumps.PumpTabSectionController;
@@ -130,7 +128,6 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                        InjectorsRepository injectorsRepository,
                                                        InjectorTestRepository injectorTestRepository,
                                                        @Lazy ModbusRegisterProcessor flowModbusWriter,
-                                                       HighPressureSectionController highPressureSectionController,
                                                        @Lazy Measurements measurements,
                                                        TestBenchSectionController testBenchSectionController,
                                                        InfoController infoController,
@@ -140,7 +137,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                        CodingReportModel codingReportModel,
                                                        DelayReportModel delayReportModel,
                                                        RLC_ReportModel rlc_reportModel,
-                                                       FlowReportModel flowReportModel) {
+                                                       FlowReportModel flowReportModel,
+                                                       InjectorTestModel injectorTestModel) {
         MainSectionController mainSectionController = (MainSectionController) mainSection().getController();
         mainSectionController.setEnabler(enabler);
         mainSectionController.setManufacturerMenuDialog(manufacturerMenuDialog());
@@ -153,7 +151,6 @@ public class JavaFXSpringConfigure extends ViewLoader{
         mainSectionController.setInjectorsRepository(injectorsRepository);
         mainSectionController.setInjectorTestRepository(injectorTestRepository);
         mainSectionController.setFlowModbusWriter(flowModbusWriter);
-        mainSectionController.setHighPressureSectionController(highPressureSectionController);
         mainSectionController.setI18N(i18N);
         mainSectionController.setMeasurements(measurements);
         mainSectionController.setInfoController(infoController);
@@ -166,6 +163,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         mainSectionController.setRlc_reportModel(rlc_reportModel);
         mainSectionController.setCodingReportModel(codingReportModel);
         mainSectionController.setFlowReportModel(flowReportModel);
+        mainSectionController.setInjectorTestModel(injectorTestModel);
         return mainSectionController;
     }
 
@@ -194,16 +192,87 @@ public class JavaFXSpringConfigure extends ViewLoader{
     @Bean
     @Autowired
     @DependsOn("regulatorsQTYController")
-    public HighPressureSectionController highPressureSectionController(CRSectionController crSectionController,
-                                                                       @Lazy ModbusRegisterProcessor ultimaModbusWriter,
-                                                                       PressureSensorModel pressureSensorModel,
-                                                                       RegulatorsQTYState regulatorsQTYState) {
-        HighPressureSectionController highPressureSectionController = crSectionController.getHighPressureSectionController();
-        highPressureSectionController.setUltimaModbusWriter(ultimaModbusWriter);
-        highPressureSectionController.setI18N(i18N);
-        highPressureSectionController.setPressureSensorModel(pressureSensorModel);
-        highPressureSectionController.setRegulatorsQTYState(regulatorsQTYState);
-        return highPressureSectionController;
+    public InjectorHighPressureSectionController injectorHighPressureSectionController(CRSectionController crSectionController,
+                                                                                       RegulatorsQTYState regulatorsQTYState){
+        InjectorHighPressureSectionController injectorHighPressureSectionController = crSectionController.getInjectorHighPressureSectionController();
+        injectorHighPressureSectionController.setRegulatorsQTYState(regulatorsQTYState);
+        return injectorHighPressureSectionController;
+    }
+
+    @Bean
+    @Autowired
+    public HighPressureSectionOneController highPressureSectionOneController(InjectorHighPressureSectionController injectorHighPressureSectionController,
+                                                                             HighPressureSectionPwrState highPressureSectionPwrState,
+                                                                             PressureSensorModel pressureSensorModel,
+                                                                             ModbusRegisterProcessor ultimaModbusWriter,
+                                                                             HighPressureSectionUpdateModel highPressureSectionUpdateModel,
+                                                                             InjectorTestModel injectorTestModel,
+                                                                             PressureRegulatorOneModel pressureRegulatorOneModel,
+                                                                             I18N i18N,
+                                                                             RegulationModesModel regulationModesModel){
+        HighPressureSectionOneController highPressureSectionOneController = injectorHighPressureSectionController.getHighPressureSectionOneController();
+        highPressureSectionOneController.setHighPressureSectionPwrState(highPressureSectionPwrState);
+        highPressureSectionOneController.setPressureSensorModel(pressureSensorModel);
+        highPressureSectionOneController.setUltimaModbusWriter(ultimaModbusWriter);
+        highPressureSectionOneController.setHighPressureSectionUpdateModel(highPressureSectionUpdateModel);
+        highPressureSectionOneController.setInjectorTestModel(injectorTestModel);
+        highPressureSectionOneController.setPressureRegulatorOneModel(pressureRegulatorOneModel);
+        highPressureSectionOneController.setI18N(i18N);
+        highPressureSectionOneController.setRegulationModesModel(regulationModesModel);
+        return highPressureSectionOneController;
+    }
+
+    @Bean
+    @Autowired
+
+    public HighPressureSectionTwoController highPressureSectionTwoController(InjectorHighPressureSectionController injectorHighPressureSectionController,
+                                                                             HighPressureSectionPwrState highPressureSectionPwrState,
+                                                                             ModbusRegisterProcessor ultimaModbusWriter,
+                                                                             HighPressureSectionUpdateModel highPressureSectionUpdateModel,
+                                                                             I18N i18N,
+                                                                             RegulationModesModel regulationModesModel){
+        HighPressureSectionTwoController highPressureSectionTwoController = injectorHighPressureSectionController.getHighPressureSectionTwoController();
+        highPressureSectionTwoController.setHighPressureSectionPwrState(highPressureSectionPwrState);
+        highPressureSectionTwoController.setUltimaModbusWriter(ultimaModbusWriter);
+        highPressureSectionTwoController.setHighPressureSectionUpdateModel(highPressureSectionUpdateModel);
+        highPressureSectionTwoController.setI18N(i18N);
+        highPressureSectionTwoController.setRegulationModesModel(regulationModesModel);
+        return highPressureSectionTwoController;
+    }
+
+    @Bean
+    @Autowired
+    public HighPressureSectionThreeController highPressureSectionThreeController(InjectorHighPressureSectionController injectorHighPressureSectionController,
+                                                                                 HighPressureSectionPwrState highPressureSectionPwrState,
+                                                                                 ModbusRegisterProcessor ultimaModbusWriter,
+                                                                                 HighPressureSectionUpdateModel highPressureSectionUpdateModel,
+                                                                                 I18N i18N,
+                                                                                 RegulationModesModel regulationModesModel){
+        HighPressureSectionThreeController highPressureSectionThreeController = injectorHighPressureSectionController.getHighPressureSectionThreeController();
+        highPressureSectionThreeController.setHighPressureSectionPwrState(highPressureSectionPwrState);
+        highPressureSectionThreeController.setUltimaModbusWriter(ultimaModbusWriter);
+        highPressureSectionThreeController.setHighPressureSectionUpdateModel(highPressureSectionUpdateModel);
+        highPressureSectionThreeController.setI18N(i18N);
+        highPressureSectionThreeController.setRegulationModesModel(regulationModesModel);
+        return highPressureSectionThreeController;
+    }
+
+    @Bean
+    @Autowired
+    public HighPressureSectionLcdController highPressureSectionLcdController(InjectorHighPressureSectionController injectorHighPressureSectionController,
+                                                                             HighPressureSectionUpdateModel highPressureSectionUpdateModel){
+        HighPressureSectionLcdController highPressureSectionLcdController = injectorHighPressureSectionController.getHighPressureSectionLcdController();
+        highPressureSectionLcdController.setHighPressureSectionUpdateModel(highPressureSectionUpdateModel);
+        return highPressureSectionLcdController;
+    }
+
+    @Bean
+    @Autowired
+    public HighPressureSectionPwrController highPressureSectionPwrController(InjectorHighPressureSectionController injectorHighPressureSectionController,
+                                                                             HighPressureSectionPwrState highPressureSectionPwrState){
+        HighPressureSectionPwrController highPressureSectionPwrController = injectorHighPressureSectionController.getHighPressureSectionPwrController();
+        highPressureSectionPwrController.setHighPressureSectionPwrState(highPressureSectionPwrState);
+        return highPressureSectionPwrController;
     }
 
     @Bean
@@ -252,8 +321,9 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                          @Lazy Measurements measurements, MainSectionController mainSectionController,
                                                          ISADetectionRepository isaDetectionRepository,
                                                          VoltAmpereProfileController voltAmpereProfileController,
-                                                         HighPressureSectionController highPressureSectionController,
-                                                         FlowController flowController) {
+                                                         FlowController flowController,
+                                                         HighPressureSectionUpdateModel highPressureSectionUpdateModel,
+                                                         PressureRegulatorOneModel pressureRegulatorOneModel) {
         ISADetectionController isaDetectionController = (ISADetectionController) isaDetection().getController();
         isaDetectionController.setISAParent(isaDetection().getView());
         isaDetectionController.setRootParent(rootLayout.getView());
@@ -264,12 +334,12 @@ public class JavaFXSpringConfigure extends ViewLoader{
         isaDetectionController.setISADetectionRepository(isaDetectionRepository);
         isaDetectionController.setBoostUSpinner(voltAmpereProfileController.getBoostUSpinner());
         isaDetectionController.setVoltAmpereProfileApplyButton(voltAmpereProfileController.getApplyButton());
-        isaDetectionController.setPressReg1Spinner(highPressureSectionController.getPressReg1Spinner());
-        isaDetectionController.setPressureLcd(highPressureSectionController.getPressureLcd());
         isaDetectionController.setDelivery1TextField(flowController.getDelivery1TextField());
         isaDetectionController.setDelivery2TextField(flowController.getDelivery2TextField());
         isaDetectionController.setDelivery3TextField(flowController.getDelivery3TextField());
         isaDetectionController.setDelivery4TextField(flowController.getDelivery4TextField());
+        isaDetectionController.setHighPressureSectionUpdateModel(highPressureSectionUpdateModel);
+        isaDetectionController.setPressureRegulatorOneModel(pressureRegulatorOneModel);
         return isaDetectionController;
     }
 

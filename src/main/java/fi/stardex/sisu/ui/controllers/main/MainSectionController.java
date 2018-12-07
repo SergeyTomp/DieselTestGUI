@@ -1,10 +1,7 @@
 package fi.stardex.sisu.ui.controllers.main;
 
 import fi.stardex.sisu.measurement.Measurements;
-import fi.stardex.sisu.model.CodingReportModel;
-import fi.stardex.sisu.model.DelayReportModel;
-import fi.stardex.sisu.model.FlowReportModel;
-import fi.stardex.sisu.model.RLC_ReportModel;
+import fi.stardex.sisu.model.*;
 import fi.stardex.sisu.persistence.orm.Manufacturer;
 import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
@@ -21,7 +18,6 @@ import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.DelayController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.info.InfoController;
-import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionController;
 import fi.stardex.sisu.ui.controllers.dialogs.ManufacturerMenuDialogController;
 import fi.stardex.sisu.ui.controllers.dialogs.NewEditInjectorDialogController;
 import fi.stardex.sisu.ui.controllers.dialogs.NewEditTestDialogController;
@@ -87,102 +83,71 @@ public class MainSectionController {
 
 
 
-    @FXML
-    private TextField injectorNumberTextField;
+    @FXML private TextField injectorNumberTextField;
 
-    @FXML
-    private VBox injectorTestsVBox;
+    @FXML private VBox injectorTestsVBox;
 
-    @FXML
-    private GridPane timingGridPane;
+    @FXML private GridPane timingGridPane;
 
-    @FXML
-    private StackPane startStackPane;
+    @FXML private StackPane startStackPane;
 
-    @FXML
-    private Pane coverPane;
+    @FXML private Pane coverPane;
 
-    @FXML
-    private Button moveUpButton;
+    @FXML private Button moveUpButton;
 
-    @FXML
-    private Button moveDownButton;
+    @FXML private Button moveDownButton;
 
     private enum Move {
         UP, DOWN
     }
 
-    @FXML
-    private Label timingSpeedLabel;
+    @FXML private Label timingSpeedLabel;
 
-    @FXML
-    private ToggleButton startToggleButton;
+    @FXML private ToggleButton startToggleButton;
 
-    @FXML
-    private ProgressBar adjustingTimeProgressBar;
+    @FXML private ProgressBar adjustingTimeProgressBar;
 
-    @FXML
-    private ProgressBar measuringTimeProgressBar;
+    @FXML private ProgressBar measuringTimeProgressBar;
 
-    @FXML
-    private Text adjustingText;
+    @FXML private Text adjustingText;
 
-    @FXML
-    private Text measuringText;
+    @FXML private Text measuringText;
 
-    @FXML
-    private Label labelAdjustTime;
+    @FXML private Label labelAdjustTime;
 
-    @FXML
-    private Label labelMeasureTime;
+    @FXML private Label labelMeasureTime;
 
-    @FXML
-    private Button storeButton;
+    @FXML private Button storeButton;
 
-    @FXML
-    private Button resetButton;
+    @FXML private Button resetButton;
 
-    @FXML
-    private Button printButton;
+    @FXML private Button printButton;
 
-    @FXML
-    private ToggleGroup testsToggleGroup;
+    @FXML private ToggleGroup testsToggleGroup;
 
-    @FXML
-    private RadioButton testPlanTestRadioButton;
+    @FXML private RadioButton testPlanTestRadioButton;
 
-    @FXML
-    private RadioButton autoTestRadioButton;
+    @FXML private RadioButton autoTestRadioButton;
 
-    @FXML
-    private RadioButton codingTestRadioButton;
+    @FXML private RadioButton codingTestRadioButton;
 
-    @FXML
-    private ToggleGroup baseTypeToggleGroup;
+    @FXML private ToggleGroup baseTypeToggleGroup;
 
-    @FXML
-    private RadioButton defaultRadioButton;
+    @FXML private RadioButton defaultRadioButton;
 
-    @FXML
-    private RadioButton customRadioButton;
+    @FXML private RadioButton customRadioButton;
 
-    @FXML
-    private ListView<Manufacturer> manufacturerListView;
+    @FXML private ListView<Manufacturer> manufacturerListView;
 
-    @FXML
-    private TextField searchModelTextField;
+    @FXML private TextField searchModelTextField;
 
-    @FXML
-    private ListView<Model> modelListView;
+    @FXML private ListView<Model> modelListView;
 
-    @FXML
-    private ListView<InjectorTest> testListView;
+    @FXML private ListView<InjectorTest> testListView;
 
-    @FXML
-    private ComboBox<String> speedComboBox;
+    @FXML private ComboBox<String> speedComboBox;
 
-    @FXML
-    private VBox injectorsVBox;
+    @FXML private VBox injectorsVBox;
 
     private MultipleSelectionModel<InjectorTest> testsSelectionModel;
 
@@ -232,8 +197,6 @@ public class MainSectionController {
 
     private Spinner<Integer> targetRPMSpinner;
 
-    private HighPressureSectionController highPressureSectionController;
-
     private InfoController infoController;
 
     private DelayController delayController;
@@ -271,6 +234,8 @@ public class MainSectionController {
     private BoostU_State boostU_state;
 
     private BoostUadjustmentState boostUadjustmentState;
+
+    private InjectorTestModel injectorTestModel;
 
     public ToggleGroup getTestsToggleGroup() {
         return testsToggleGroup;
@@ -420,10 +385,6 @@ public class MainSectionController {
         this.flowModbusWriter = flowModbusWriter;
     }
 
-    public void setHighPressureSectionController(HighPressureSectionController highPressureSectionController) {
-        this.highPressureSectionController = highPressureSectionController;
-    }
-
     public void setInfoController(InfoController infoController) {
         this.infoController = infoController;
     }
@@ -458,6 +419,10 @@ public class MainSectionController {
 
     public void setBoostUadjustmentState(BoostUadjustmentState boostUadjustmentState) {
         this.boostUadjustmentState = boostUadjustmentState;
+    }
+
+    public void setInjectorTestModel(InjectorTestModel injectorTestModel) {
+        this.injectorTestModel = injectorTestModel;
     }
 
     @PostConstruct
@@ -496,7 +461,6 @@ public class MainSectionController {
                 coverPane.toBack();
             }
         });
-
     }
 
     private MainSectionController makeReferenceToInternalObjects() {
@@ -519,7 +483,6 @@ public class MainSectionController {
         measuringTime = new TimeProgressBar(measuringTimeProgressBar, measuringText);
 
         return this;
-
     }
 
     private MainSectionController bindingI18N() {
@@ -534,19 +497,16 @@ public class MainSectionController {
         customRadioButton.textProperty().bind(i18N.createStringBinding("main.customRB.radiobutton"));
 
         return this;
-
     }
 
     private MainSectionController setupStoreButton() {
 
         storeButton.setOnAction((event) -> {
             if (startToggleButton.isSelected())
-//                flowReport.save(testsSelectionModel.getSelectedItem());
                 flowReportModel.storeResult(testsSelectionModel.getSelectedItem());
         });
 
         return this;
-
     }
 
     private void setFilteredItems(Manufacturer manufacturer) {
@@ -555,7 +515,6 @@ public class MainSectionController {
         ObservableList<Model> injectors = FXCollections.observableArrayList(modelsByManufacturers);
         filteredModelList = new FilteredList<>(injectors, model -> true);
         modelListView.setItems(filteredModelList);
-
     }
 
     private void fetchTestsFromRepository() {
@@ -581,9 +540,7 @@ public class MainSectionController {
                     Platform.runLater(() -> autoTestRadioButton.setSelected(true));
                 else
                     setTests();
-
             }
-
         });
 
         Thread t = new Thread(task);
@@ -1092,8 +1049,9 @@ public class MainSectionController {
             if (isFocusMoved)
                 return;
 
+            injectorTestModel.injectorTestProperty().set(newValue);
+
             if (newValue == null) {
-                highPressureSectionController.regulator1pressModeOFF();
                 setDefaultSpinnerValueFactories(true);
                 enabler.disableNode(false, widthCurrentSignalSpinner, freqCurrentSignalSpinner, injectorSectionStartToggleButton);
                 return;
@@ -1112,17 +1070,11 @@ public class MainSectionController {
 
             }
 
-//            currentAdjustingTime = newValue.getAdjustingTime();
-//
-//            currentMeasuringTime = newValue.getMeasurementTime();
-
             currentAdjustingTime = 1;
 
             currentMeasuringTime = 1;
 
             setProgress(speedComboBoxSelectionModel.getSelectedItem());
-
-            highPressureSectionController.regulator1pressModeON(newValue.getSettedPressure());
 
             Measurement measurementType = newValue.getTestName().getMeasurement();
 

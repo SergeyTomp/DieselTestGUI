@@ -65,7 +65,8 @@ public class SpinnerManager {
 
         spinner.focusedProperty().addListener((observable, oldValue, newValue) -> {
             if(!newValue){
-                spinner.getValueFactory().setValue((Double) obtainer.getInitialSpinnerOldValue());
+
+                spinner.getValueFactory().setValue(obtainer.getInitialSpinnerOldValue().doubleValue());
             }
         });
 
