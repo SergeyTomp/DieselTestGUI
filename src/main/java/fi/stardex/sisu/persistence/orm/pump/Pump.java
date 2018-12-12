@@ -2,10 +2,12 @@ package fi.stardex.sisu.persistence.orm.pump;
 
 import fi.stardex.sisu.util.enums.pump.PumpPressureControl;
 import fi.stardex.sisu.util.enums.pump.PumpRegulatorConfig;
-import fi.stardex.sisu.util.enums.pump.PumpRegulatortype;
+import fi.stardex.sisu.util.enums.pump.PumpRegulatorType;
 import fi.stardex.sisu.util.enums.pump.PumpRotation;
 
 import javax.persistence.*;
+import java.util.LinkedList;
+import java.util.List;
 
 @Entity
 @Table(name = "pump")
@@ -16,7 +18,7 @@ public class Pump {
     private String pumpCode;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "manufacturer_name")
+    @JoinColumn(name = "manufacturer")
     private ManufacturerPump manufacturerPump;
 
     @Column
@@ -29,26 +31,29 @@ public class Pump {
     @Enumerated(EnumType.STRING)
     private PumpRotation pumpRotation;
 
-    @Column(name = "regulator_config")
+    @Column(name = "regulator_config", nullable = false)
     @Enumerated(EnumType.STRING)
     private PumpRegulatorConfig pumpRegulatorConfig;
 
-    @Column(name = "pressure_control")
+    @Column(name = "pressure_control", nullable = false)
     @Enumerated(EnumType.STRING)
     private PumpPressureControl pumpPressureControl;
 
-    @Column(name = "regulator_type")
+    @Column(name = "regulator_type", nullable = false)
     @Enumerated(EnumType.STRING)
-    private PumpRegulatortype pumpRegulatortype;
+    private PumpRegulatorType pumpRegulatorType;
 
-    @Column(name = "scv_current_inj")
-    private Double scvCurrentInj;
+    @Column(name = "scv_curr_inj")
+    private Double scvCurrInj;
 
-    @Column(name = "scv_min_current")
-    private Double scvMinCurrent;
+    @Column(name = "scv_min_curr")
+    private Double scvMinCurr;
 
-    @Column(name = "scv_max_current")
-    private Double scvMaxCurrent;
+    @Column(name = "scv_max_curr")
+    private Double scvMaxCurr;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "pump", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PumpTest> pumpTests = new LinkedList<>();
 
     public String getPumpCode() {
         return pumpCode;
