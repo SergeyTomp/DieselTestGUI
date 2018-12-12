@@ -21,6 +21,7 @@ import fi.stardex.sisu.ui.controllers.GUI_TypeController;
 import fi.stardex.sisu.ui.controllers.ISADetectionController;
 import fi.stardex.sisu.ui.controllers.additional.BeakerController;
 import fi.stardex.sisu.ui.controllers.additional.TabSectionController;
+import fi.stardex.sisu.ui.controllers.additional.dialogs.FirmwareDialogController;
 import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.*;
 import fi.stardex.sisu.ui.controllers.additional.tabs.info.*;
@@ -29,6 +30,7 @@ import fi.stardex.sisu.ui.controllers.additional.tabs.report.FlowReportControlle
 import fi.stardex.sisu.ui.controllers.additional.tabs.report.RLC_ReportController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.report.ReportController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.settings.ConnectionController;
+import fi.stardex.sisu.ui.controllers.additional.tabs.settings.FirmwareButtonController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.settings.SettingsController;
 import fi.stardex.sisu.ui.controllers.cr.*;
 import fi.stardex.sisu.ui.controllers.dialogs.*;
@@ -747,6 +749,9 @@ public class JavaFXSpringConfigure extends ViewLoader{
     public ViewHolder printDialogPanel(){ return loadView("/fxml/dialogs/PrintDialogPanel.fxml"); }
 
     @Bean
+    public ViewHolder firmwareDialog(){return loadView("/fxml/dialogs/FirmwareDialog.fxml");}
+
+    @Bean
     @Autowired
     public PrintDialogPanelController newPrintDialogPanelController(MainSectionController mainSectionController,
                                                                     PDFService pdfService,
@@ -951,5 +956,24 @@ public class JavaFXSpringConfigure extends ViewLoader{
         regulatorsQTYController.setPressureSensorState(regulatorsQTYState);
         regulatorsQTYController.setRootPrefs(preferences);
         return regulatorsQTYController;
+    }
+
+    @Bean
+    @Autowired
+    public FirmwareButtonController firmwareController(SettingsController settingsController,
+                                                       I18N i18N){
+        FirmwareButtonController firmwareButtonController = settingsController.getFirmwareButtonController();
+        firmwareButtonController.setI18N(i18N);
+        firmwareButtonController.setFirmwareWindow(firmwareDialog());
+        return firmwareButtonController;
+    }
+
+
+    @Bean
+    @Autowired
+    public FirmwareDialogController firmwareDialogController(I18N i18N){
+        FirmwareDialogController firmwareDialogController = (FirmwareDialogController)firmwareDialog().getController();
+        firmwareDialogController.setI18N(i18N);
+        return firmwareDialogController;
     }
 }

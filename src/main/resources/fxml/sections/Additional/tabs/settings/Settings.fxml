@@ -22,6 +22,8 @@
         <fx:include fx:id="dimasGuiEdition" source="DimasGuiEdition.fxml" GridPane.halignment="LEFT" GridPane.columnIndex="0" GridPane.rowIndex = "7"/>
         <fx:include fx:id="instantFlow" source="InstantFlow.fxml" GridPane.halignment="LEFT" GridPane.columnIndex="0" GridPane.rowIndex = "6"/>
 
+        <fx:include fx:id="firmwareButton" source="FirmwareButton.fxml" GridPane.columnIndex="1" GridPane.rowIndex="7" GridPane.halignment="LEFT"/>
+
         <Label fx:id="regulatorsConfigLabel" prefHeight="16.0" stylesheets="@../../../../../css/Styling.css" text="%settings.regulatorsConfig.ComboBox" GridPane.rowIndex="1" />
         <Label fx:id="injectorsConfigLabel" prefHeight="16.0" stylesheets="@../../../../../css/Styling.css" text="%settings.injectorsConfig.ComboBox" GridPane.rowIndex="2" />
         <Label fx:id="languagesLabel" prefHeight="16.0" stylesheets="@../../../../../css/Styling.css" text="%settings.languages.ComboBox" GridPane.rowIndex="3" />

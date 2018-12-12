@@ -777,4 +777,9 @@ public class SpringJavaConfig {
     public RegulationModesModel regulationModesModel(){
         return new RegulationModesModel();
     }
+
+    @Bean
+    public FirmwareModel firmwareModel(){
+        return new FirmwareModel();
+    }
 }

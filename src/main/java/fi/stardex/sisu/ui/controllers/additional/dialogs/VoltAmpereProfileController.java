@@ -8,6 +8,8 @@ import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.spinners.SpinnerManager;
 import fi.stardex.sisu.util.spinners.SpinnerValueObtainer;
 import fi.stardex.sisu.util.spinners.WidthSpinnerValueObtainer;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
@@ -315,15 +317,18 @@ public class VoltAmpereProfileController {
     // FIXME: есть баги, не пишется старое значение при закрытии окна при горящем tooltip
     private void setupCancelButton() {
 
-        cancelButton.setOnAction(event -> {
-            firstWSpinner.getValueFactory().setValue(firstWSavedValue);
-            boostISpinner.getValueFactory().setValue(boostISavedValue);
-            firstISpinner.getValueFactory().setValue(firstISavedValue);
-            secondISpinner.getValueFactory().setValue(secondISavedValue);
-            batteryUSpinner.getValueFactory().setValue(batteryUSavedValue);
-            negativeUSpinner.getValueFactory().setValue(negativeUSavedValue);
-            boostUSpinner.getValueFactory().setValue(boostUSavedValue);
-            stage.close();
+        cancelButton.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                firstWSpinner.getValueFactory().setValue(firstWSavedValue);
+                boostISpinner.getValueFactory().setValue(boostISavedValue);
+                firstISpinner.getValueFactory().setValue(firstISavedValue);
+                secondISpinner.getValueFactory().setValue(secondISavedValue);
+                batteryUSpinner.getValueFactory().setValue(batteryUSavedValue);
+                negativeUSpinner.getValueFactory().setValue(negativeUSavedValue);
+                boostUSpinner.getValueFactory().setValue(boostUSavedValue);
+                stage.close();
+            }
         });
 
     }

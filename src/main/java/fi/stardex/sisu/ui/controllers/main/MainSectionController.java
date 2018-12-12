@@ -82,72 +82,102 @@ public class MainSectionController {
     private static Logger logger = LoggerFactory.getLogger(MainSectionController.class);
 
 
+    @FXML
+    private TextField injectorNumberTextField;
 
-    @FXML private TextField injectorNumberTextField;
+    @FXML
+    private VBox injectorTestsVBox;
 
-    @FXML private VBox injectorTestsVBox;
+    @FXML
+    private GridPane timingGridPane;
 
-    @FXML private GridPane timingGridPane;
+    @FXML
+    private StackPane startStackPane;
 
-    @FXML private StackPane startStackPane;
+    @FXML
+    private Pane coverPane;
 
-    @FXML private Pane coverPane;
+    @FXML
+    private Button moveUpButton;
 
-    @FXML private Button moveUpButton;
-
-    @FXML private Button moveDownButton;
+    @FXML
+    private Button moveDownButton;
 
     private enum Move {
         UP, DOWN
     }
 
-    @FXML private Label timingSpeedLabel;
+    @FXML
+    private Label timingSpeedLabel;
 
-    @FXML private ToggleButton startToggleButton;
+    @FXML
+    private ToggleButton startToggleButton;
 
-    @FXML private ProgressBar adjustingTimeProgressBar;
+    @FXML
+    private ProgressBar adjustingTimeProgressBar;
 
-    @FXML private ProgressBar measuringTimeProgressBar;
+    @FXML
+    private ProgressBar measuringTimeProgressBar;
 
-    @FXML private Text adjustingText;
+    @FXML
+    private Text adjustingText;
 
-    @FXML private Text measuringText;
+    @FXML
+    private Text measuringText;
 
-    @FXML private Label labelAdjustTime;
+    @FXML
+    private Label labelAdjustTime;
 
-    @FXML private Label labelMeasureTime;
+    @FXML
+    private Label labelMeasureTime;
 
-    @FXML private Button storeButton;
+    @FXML
+    private Button storeButton;
 
-    @FXML private Button resetButton;
+    @FXML
+    private Button resetButton;
 
-    @FXML private Button printButton;
+    @FXML
+    private Button printButton;
 
-    @FXML private ToggleGroup testsToggleGroup;
+    @FXML
+    private ToggleGroup testsToggleGroup;
 
-    @FXML private RadioButton testPlanTestRadioButton;
+    @FXML
+    private RadioButton testPlanTestRadioButton;
 
-    @FXML private RadioButton autoTestRadioButton;
+    @FXML
+    private RadioButton autoTestRadioButton;
 
-    @FXML private RadioButton codingTestRadioButton;
+    @FXML
+    private RadioButton codingTestRadioButton;
 
-    @FXML private ToggleGroup baseTypeToggleGroup;
+    @FXML
+    private ToggleGroup baseTypeToggleGroup;
 
-    @FXML private RadioButton defaultRadioButton;
+    @FXML
+    private RadioButton defaultRadioButton;
 
-    @FXML private RadioButton customRadioButton;
+    @FXML
+    private RadioButton customRadioButton;
 
-    @FXML private ListView<Manufacturer> manufacturerListView;
+    @FXML
+    private ListView<Manufacturer> manufacturerListView;
 
-    @FXML private TextField searchModelTextField;
+    @FXML
+    private TextField searchModelTextField;
 
-    @FXML private ListView<Model> modelListView;
+    @FXML
+    private ListView<Model> modelListView;
 
-    @FXML private ListView<InjectorTest> testListView;
+    @FXML
+    private ListView<InjectorTest> testListView;
 
-    @FXML private ComboBox<String> speedComboBox;
+    @FXML
+    private ComboBox<String> speedComboBox;
 
-    @FXML private VBox injectorsVBox;
+    @FXML
+    private VBox injectorsVBox;
 
     private MultipleSelectionModel<InjectorTest> testsSelectionModel;
 
@@ -454,10 +484,9 @@ public class MainSectionController {
         boostUadjustmentState.boostUadjustmentStateProperty().addListener((observable, oldValue, newValue) -> {
 
             coverPane.setVisible(newValue);
-            if(newValue) {
+            if (newValue) {
                 coverPane.toFront();
-            }
-            else {
+            } else {
                 coverPane.toBack();
             }
         });
@@ -536,22 +565,14 @@ public class MainSectionController {
 
                 setInjectorTests(newValue);
 
-                if (!checkInjectorForCoding(getInjector().getCodetype()) && codingTestRadioButton.isSelected())
-                    Platform.runLater(() -> autoTestRadioButton.setSelected(true));
-                else
-                    setTests();
+
+                setTests();
             }
         });
 
         Thread t = new Thread(task);
 
         t.start();
-
-        try {
-            t.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
 
     }
 
@@ -985,6 +1006,9 @@ public class MainSectionController {
 
             fetchTestsFromRepository();
 
+            if (!checkInjectorForCoding(getInjector().getCodetype()) && codingTestRadioButton.isSelected())
+                autoTestRadioButton.setSelected(true);
+
             enabler
                     .showInjectorTests(true)
                     .selectInjectorType(currentVoltAmpereProfile.getInjectorType().getInjectorType())
@@ -1009,9 +1033,8 @@ public class MainSectionController {
             voltAmpereProfileController.getEnableBoostToggleButton().setSelected(currentVoltAmpereProfile.getBoostDisable());
 
 
-
             String manufacturerName = injector.getManufacturer().getManufacturerName();
-            switch (manufacturerName){
+            switch (manufacturerName) {
                 case "Bosch":
                     infoController.changeToBosch();
                     break;
@@ -1030,8 +1053,9 @@ public class MainSectionController {
                 case "AZPI":
                     infoController.changeToAZPI();
                     break;
-                default:infoController.changeToDefault();
-                break;
+                default:
+                    infoController.changeToDefault();
+                    break;
             }
 
             voltAmpereProfileController.getApplyButton().fire();
@@ -1238,7 +1262,7 @@ public class MainSectionController {
 
     }
 
-    private class PrintButtonEventHandler implements EventHandler<ActionEvent>{
+    private class PrintButtonEventHandler implements EventHandler<ActionEvent> {
         @Override
         public void handle(ActionEvent event) {
 

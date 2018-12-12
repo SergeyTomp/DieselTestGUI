@@ -7,11 +7,13 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 
 import javax.annotation.PostConstruct;
 
 public class SettingsController {
 
+    @FXML private StackPane firmwareButton;
     @FXML private HBox pressureSensor;
     @FXML private HBox injConfiguration;
     @FXML private HBox language;
@@ -35,6 +37,7 @@ public class SettingsController {
     @FXML private PressureSensorController pressureSensorController;
     @FXML private RegulatorsQTYController regulatorsQTYController;
     @FXML private InstantFlowController instantFlowController;
+    @FXML private FirmwareButtonController firmwareButtonController;
 
     protected I18N i18N;
 
@@ -68,6 +71,10 @@ public class SettingsController {
 
     public InstantFlowController getInstantFlowController() {
         return instantFlowController;
+    }
+
+    public FirmwareButtonController getFirmwareButtonController() {
+        return firmwareButtonController;
     }
 
     public void setI18N(I18N i18N) {
