@@ -2,7 +2,9 @@ package fi.stardex.sisu.spring;
 
 import fi.stardex.sisu.model.ManufacturerPumpModel;
 import fi.stardex.sisu.model.PumpModel;
+import fi.stardex.sisu.model.PumpTestModel;
 import fi.stardex.sisu.states.CustomPumpState;
+import fi.stardex.sisu.states.LanguageModel;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.pumps.PumpInfoController;
 import fi.stardex.sisu.ui.controllers.pumps.PumpReportController;
@@ -70,11 +72,13 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
     public PumpsModelsListController pumpsModelsListController(MainSectionPumpsController mainSectionPumpsController,
                                                                ManufacturerPumpModel manufacturerPumpModel,
                                                                PumpModel pumpModel,
-                                                               CustomPumpState customPumpState) {
+                                                               CustomPumpState customPumpState,
+                                                               PumpTestModel pumpTestModel) {
         PumpsModelsListController pumpsModelsListController = mainSectionPumpsController.getPumpsModelsListController();
         pumpsModelsListController.setManufacturerPumpModel(manufacturerPumpModel);
         pumpsModelsListController.setPumpModel(pumpModel);
         pumpsModelsListController.setCustomPumpState(customPumpState);
+        pumpsModelsListController.setPumpTestModel(pumpTestModel);
         return pumpsModelsListController;
     }
 
@@ -101,8 +105,11 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
 
     @Bean
     @Autowired
-    public TestListController testListController(MainSectionPumpsController mainSectionPumpsController) {
-        return mainSectionPumpsController.getTestListController();
+    public PumpTestListController pumpTestListController(MainSectionPumpsController mainSectionPumpsController,
+                                                         PumpTestModel pumpTestModel) {
+        PumpTestListController pumpTestListController = mainSectionPumpsController.getPumpTestListController();
+        pumpTestListController.setPumpTestModel(pumpTestModel);
+        return pumpTestListController;
     }
 
     @Bean
@@ -155,8 +162,17 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
 
     @Bean
     @Autowired
-    public PumpFlowTextAreaController pumpFlowTextAreaController(PumpFlowController pumpFlowController) {
-        return pumpFlowController.getPumpFlowTextAreaController();
+    public PumpFlowTextAreaController pumpFlowTextAreaController(PumpFlowController pumpFlowController,
+                                                                 PumpModel pumpModel,
+                                                                 PumpTestModel pumpTestModel,
+                                                                 I18N i18N,
+                                                                 LanguageModel languageModel) {
+        PumpFlowTextAreaController pumpFlowTextAreaController = pumpFlowController.getPumpFlowTextAreaController();
+        pumpFlowTextAreaController.setPumpModel(pumpModel);
+        pumpFlowTextAreaController.setPumpTestModel(pumpTestModel);
+        pumpFlowTextAreaController.setI18N(i18N);
+        pumpFlowTextAreaController.setLanguageModel(languageModel);
+        return pumpFlowTextAreaController;
     }
 
     @Bean

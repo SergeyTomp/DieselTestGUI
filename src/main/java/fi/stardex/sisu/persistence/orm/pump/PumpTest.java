@@ -11,11 +11,11 @@ public class PumpTest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "pump_code", nullable = false)
     private Pump pump;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "test_name", nullable = false)
     private PumpTestName pumpTestName;
 
@@ -67,4 +67,24 @@ public class PumpTest {
     @Column(name = "calibration_i_offset")
     private Double calibrationIoffset;
 
+    public Double getRegulatorCurrent() {
+        return regulatorCurrent;
+    }
+
+    public Integer getPcvCurrent() {
+        return pcvCurrent;
+    }
+
+    public int getMotorSpeed() {
+        return motorSpeed;
+    }
+
+    public int getTargetPressure() {
+        return targetPressure;
+    }
+
+    @Override
+    public String toString() {
+        return pumpTestName.toString();
+    }
 }

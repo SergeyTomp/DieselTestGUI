@@ -6,7 +6,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "pump_info")
-@NamedEntityGraph(name = "carModels", attributeNodes = {@NamedAttributeNode("pumpCarModels")})
+//@NamedEntityGraph(name = "carModels", attributeNodes = {@NamedAttributeNode("pumpCarModels")})
 public class PumpInfo {
 
     @Id
@@ -16,12 +16,12 @@ public class PumpInfo {
     @Column(name = "pump_type")
     private String pumpType;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "pumpCode", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PumpCarModel> pumpCarModels = new LinkedList<>();
-
-    public List<PumpCarModel> getPumpCarModels() {
-        return pumpCarModels;
-    }
+//    @OneToMany(fetch = FetchType.LAZY, mappedBy = "pumpCode", cascade = CascadeType.ALL, orphanRemoval = true)
+//    private List<PumpCarModel> pumpCarModels = new LinkedList<>();
+//
+//    public List<PumpCarModel> getPumpCarModels() {
+//        return pumpCarModels;
+//    }
 
     @Override
     public String toString() {

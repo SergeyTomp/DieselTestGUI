@@ -85,7 +85,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
     // Depends on нужен для инициализации листенера в бине pumpsOEMListController
     @Bean
     @Autowired
-    @DependsOn("pumpsOEMListController")
+    @DependsOn({"pumpsOEMListController", "checkAndInitializeBD"})
     public GUI_TypeController gui_typeController(Preferences rootPrefs,
                                                  RootLayoutController rootLayoutController,
                                                  TabSectionController tabSectionController,

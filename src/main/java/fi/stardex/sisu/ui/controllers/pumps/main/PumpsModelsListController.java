@@ -2,6 +2,7 @@ package fi.stardex.sisu.ui.controllers.pumps.main;
 
 import fi.stardex.sisu.model.ManufacturerPumpModel;
 import fi.stardex.sisu.model.PumpModel;
+import fi.stardex.sisu.model.PumpTestModel;
 import fi.stardex.sisu.persistence.orm.pump.Pump;
 import fi.stardex.sisu.states.CustomPumpState;
 import javafx.beans.property.BooleanProperty;
@@ -34,6 +35,8 @@ public class PumpsModelsListController implements ChangeListener<Pump> {
     private ManufacturerPumpModel manufacturerPumpModel;
 
     private PumpModel pumpModel;
+
+    private PumpTestModel pumpTestModel;
 
     private CustomPumpState customPumpState;
 
@@ -73,6 +76,10 @@ public class PumpsModelsListController implements ChangeListener<Pump> {
 
     public void setCustomPumpState(CustomPumpState customPumpState) {
         this.customPumpState = customPumpState;
+    }
+
+    public void setPumpTestModel(PumpTestModel pumpTestModel) {
+        this.pumpTestModel = pumpTestModel;
     }
 
     @PostConstruct
@@ -123,6 +130,8 @@ public class PumpsModelsListController implements ChangeListener<Pump> {
     public void changed(ObservableValue<? extends Pump> observableValue, Pump oldValue, Pump newValue) {
 
         pumpModel.pumpProperty().set(newValue);
+        pumpModel.initPumpType();
+        pumpTestModel.initPumpTestList();
 
     }
 }

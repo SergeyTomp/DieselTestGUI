@@ -25,7 +25,7 @@ public class MainSectionPumpsController implements ChangeListener<Pump> {
 
     @FXML private GridPane testModeGridPane;
 
-    @FXML private HBox testListHBox;
+    @FXML private HBox pumpTestList;
 
     @FXML private GridPane pumpSelectGridPane;
 
@@ -49,7 +49,7 @@ public class MainSectionPumpsController implements ChangeListener<Pump> {
 
     @FXML private StoreResetPrintController storeResetPrintHBoxController;
 
-    @FXML private TestListController testListHBoxController;
+    @FXML private PumpTestListController pumpTestListController;
 
     @FXML private TestSpeedController testSpeedGridPaneController;
 
@@ -69,8 +69,8 @@ public class MainSectionPumpsController implements ChangeListener<Pump> {
         return storeResetPrintHBoxController;
     }
 
-    public TestListController getTestListController() {
-        return testListHBoxController;
+    public PumpTestListController getPumpTestListController() {
+        return pumpTestListController;
     }
 
     public PumpsModelsListController getPumpsModelsListController() {

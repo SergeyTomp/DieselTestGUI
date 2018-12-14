@@ -23,6 +23,8 @@ import fi.stardex.sisu.persistence.repos.cr.InjectorsRepository;
 import fi.stardex.sisu.persistence.repos.cr.VoltAmpereProfileRepository;
 import fi.stardex.sisu.persistence.repos.pump.ManufacturerPumpRepository;
 import fi.stardex.sisu.persistence.repos.pump.PumpRepository;
+import fi.stardex.sisu.persistence.repos.pump.PumpTestRepository;
+import fi.stardex.sisu.persistence.repos.pump.PumpTypeRepository;
 import fi.stardex.sisu.registers.ModbusMap;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.flow.ModbusMapFlow;
@@ -668,8 +670,16 @@ public class SpringJavaConfig {
     @Autowired
     public PumpModel pumpModel(PumpRepository pumpRepository,
                                ManufacturerPumpModel manufacturerPumpModel,
-                               CustomPumpState customPumpState) {
-        return new PumpModel(pumpRepository, manufacturerPumpModel, customPumpState);
+                               CustomPumpState customPumpState,
+                               PumpTypeRepository pumpTypeRepository) {
+        return new PumpModel(pumpRepository, manufacturerPumpModel, customPumpState, pumpTypeRepository);
+    }
+
+    @Bean
+    @Autowired
+    public PumpTestModel pumpTestModel(PumpTestRepository pumpTestRepository,
+                                       PumpModel pumpModel){
+        return new PumpTestModel(pumpTestRepository, pumpModel);
     }
 
     @Bean

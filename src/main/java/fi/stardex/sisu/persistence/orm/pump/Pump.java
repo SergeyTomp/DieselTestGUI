@@ -6,6 +6,7 @@ import fi.stardex.sisu.util.enums.pump.PumpRegulatorType;
 import fi.stardex.sisu.util.enums.pump.PumpRotation;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -17,7 +18,7 @@ public class Pump {
     @Column(name = "pump_code")
     private String pumpCode;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "manufacturer")
     private ManufacturerPump manufacturerPump;
 
@@ -55,8 +56,27 @@ public class Pump {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "pump", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PumpTest> pumpTests = new LinkedList<>();
 
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "pumpCode", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PumpCarModel> pumpCarModelList = new ArrayList<>();
+
+    public List<PumpCarModel> getPumpCarModelList() {
+        return pumpCarModelList;
+    }
+
     public String getPumpCode() {
         return pumpCode;
+    }
+
+    public double getFeedPressure() {
+        return feedPressure;
+    }
+
+    public PumpRotation getPumpRotation() {
+        return pumpRotation;
+    }
+
+    public PumpRegulatorConfig getPumpRegulatorConfig() {
+        return pumpRegulatorConfig;
     }
 
     public ManufacturerPump getManufacturerPump() {

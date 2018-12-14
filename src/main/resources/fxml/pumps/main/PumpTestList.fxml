@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.VBox?>
 
 
-<HBox xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.pumps.main.TestListController">
+<HBox xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.pumps.main.PumpTestListController">
    <children>
       <ListView fx:id="testListView" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minWidth="200.0" prefHeight="140.0" prefWidth="263.0" stylesheets="@../../../css/Styling.css" />
       <VBox alignment="CENTER" prefHeight="200.0" prefWidth="14.0" spacing="30.0">

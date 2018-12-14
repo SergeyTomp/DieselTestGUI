@@ -14,4 +14,8 @@ public class PumpTestName {
     @Column(name = "test_name")
     private String testName;
 
+    @Override
+    public String toString() {
+        return testName;
+    }
 }

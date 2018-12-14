@@ -35,6 +35,7 @@ public class ManufacturerPumpModel {
         if (manufacturerPumpObservableList.isEmpty()) {
 
             List<ManufacturerPump> temp = new ArrayList<>();
+
             manufacturerPumpRepository.findAll().forEach(temp::add);
             manufacturerPumpObservableList.setAll(temp);
 

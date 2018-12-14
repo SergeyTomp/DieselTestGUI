@@ -33,7 +33,7 @@
       <VBox fx:id="pumpTestsVBox" prefHeight="200.0" prefWidth="300.0" spacing="5.0" visible="false" GridPane.rowIndex="1">
           <fx:include fx:id="pumpFieldTextField" source="PumpField.fxml" />
           <fx:include fx:id="testModeGridPane" source="TestMode.fxml" />
-          <fx:include fx:id="testListHBox" source="TestList.fxml" />
+          <fx:include fx:id="pumpTestList" source="PumpTestList.fxml" />
           <fx:include fx:id="storeResetPrintHBox" source="StoreResetPrint.fxml" />
          <padding>
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />

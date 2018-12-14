@@ -15,7 +15,7 @@ public class ManufacturerPump {
     @Column
     private boolean custom;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "manufacturerPump", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "manufacturerPump", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Pump> pumps = new LinkedList<>();
 
     public ManufacturerPump() {
