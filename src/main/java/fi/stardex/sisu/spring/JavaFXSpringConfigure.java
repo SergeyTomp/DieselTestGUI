@@ -43,12 +43,12 @@ import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.rescalers.Rescaler;
 import fi.stardex.sisu.util.wrappers.StatusBarWrapper;
 import fi.stardex.sisu.version.FirmwareVersion;
-import fi.stardex.sisu.version.StardexVersion;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.*;
 
 import java.util.prefs.Preferences;
@@ -59,7 +59,11 @@ import static fi.stardex.sisu.version.StandFirmwareVersion.StandVersions;
 @Configuration
 @Import(JavaFXSpringConfigurePumps.class)
 @ComponentScan(value = "fi.stardex.sisu")
+@PropertySource("classpath:properties/app.properties")
 public class JavaFXSpringConfigure extends ViewLoader{
+
+    @Value("${stardex.version}")
+    public String softVersionNum;
 
     public JavaFXSpringConfigure(I18N i18N) {
         super(i18N);
@@ -709,10 +713,11 @@ public class JavaFXSpringConfigure extends ViewLoader{
 
     @Bean
     @Autowired
+
     public StatusBarWrapper statusBar(Devices devices, FirmwareVersion<FlowVersions> flowFirmwareVersion,
                                       FirmwareVersion<StandVersions> standFirmwareVersion) {
         return new StatusBarWrapper(devices, "Ready", "Device not connected",
-                StardexVersion.VERSION, flowFirmwareVersion, standFirmwareVersion);
+                softVersionNum, flowFirmwareVersion, standFirmwareVersion);
     }
 
     @Bean
