@@ -9,7 +9,7 @@ import javafx.scene.paint.Color;
 
 public class GaugeCreator {
 
-    public static Lcd createLcd() {
+    public static Lcd createLcd(String label) {
         Lcd pressureLcd = LcdBuilder.create()
                 .prefWidth(130)
                 .prefHeight(60)
@@ -22,7 +22,7 @@ public class GaugeCreator {
                 .batteryVisible(false)
                 .signalVisible(false)
                 .alarmVisible(false)
-                .unit(" bar")
+                .unit(" " + label)
                 .unitVisible(true)
                 .decimals(0)
                 .minMeasuredValueDecimals(4)

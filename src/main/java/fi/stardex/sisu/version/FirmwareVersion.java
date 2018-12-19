@@ -11,6 +11,10 @@ public abstract class FirmwareVersion<T extends Versions>  {
         versionProperty = new SimpleObjectProperty<>(version);
     }
 
+    public ObjectProperty<T> versionProperty() {
+        return versionProperty;
+    }
+
     public T getVersions() {
         return versionProperty.get();
     }

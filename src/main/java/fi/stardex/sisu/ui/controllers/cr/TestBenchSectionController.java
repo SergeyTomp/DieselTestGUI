@@ -7,6 +7,7 @@ import fi.stardex.sisu.util.GaugeCreator;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.spinners.SpinnerManager;
 import fi.stardex.sisu.util.spinners.SpinnerValueObtainer;
+import fi.stardex.sisu.version.FirmwareVersion;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -23,52 +24,77 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.PostConstruct;
 
 import static fi.stardex.sisu.registers.stand.ModbusMapStand.*;
+import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions;
+import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions.STAND_FM;
+import static fi.stardex.sisu.version.StandFirmwareVersion.StandVersions;
+import static fi.stardex.sisu.version.StandFirmwareVersion.StandVersions.STAND;
 
 public class TestBenchSectionController {
 
     private Logger logger = LoggerFactory.getLogger(TestBenchSectionController.class);
 
-    @FXML private StackPane lcdStackPane;
+    @FXML
+    private StackPane lcdStackPane;
 
-    @FXML private Spinner<Integer> targetRPMSpinner;
+    @FXML
+    private Spinner<Integer> targetRPMSpinner;
 
-    @FXML private ToggleButton leftDirectionRotationToggleButton;
+    @FXML
+    private ToggleButton leftDirectionRotationToggleButton;
 
-    @FXML private ToggleGroup rotationDirectionToggleGroup;
+    @FXML
+    private ToggleGroup rotationDirectionToggleGroup;
 
-    @FXML private ToggleButton rightDirectionRotationToggleButton;
+    @FXML
+    private ToggleButton rightDirectionRotationToggleButton;
 
-    @FXML private ToggleButton testBenchStartToggleButton;
+    @FXML
+    private ToggleButton testBenchStartToggleButton;
 
-    @FXML private ToggleButton pumpControlToggleButton;
+    @FXML
+    private ToggleButton pumpControlToggleButton;
 
-    @FXML private ToggleButton fanControlToggleButton;
+    @FXML
+    private ToggleButton fanControlToggleButton;
 
-    @FXML private ProgressBar tempProgressBar1;
+    @FXML
+    private ProgressBar tempProgressBar1;
 
-    @FXML private ProgressBar tempProgressBar2;
+    @FXML
+    private ProgressBar tempProgressBar2;
 
-    @FXML private ProgressBar pressProgressBar1;
+    @FXML
+    private ProgressBar pressProgressBar1;
 
-    @FXML private ProgressBar tankOil;
+    @FXML
+    private ProgressBar tankOil;
 
-    @FXML private Text tankOilText;
+    @FXML
+    private Text tankOilText;
 
-    @FXML private Text tempText1;
+    @FXML
+    private Text tempText1;
 
-    @FXML private Text pressText1;
+    @FXML
+    private Text pressText1;
 
-    @FXML private Text tempText2;
+    @FXML
+    private Text tempText2;
 
-    @FXML private Label labelTemp1;
+    @FXML
+    private Label labelTemp1;
 
-    @FXML private Label labelTemp2;
+    @FXML
+    private Label labelTemp2;
 
-    @FXML private Label labelPressure1;
+    @FXML
+    private Label labelPressure1;
 
-    @FXML private Label labelRPM;
+    @FXML
+    private Label labelRPM;
 
-    @FXML private HBox rootHbox;
+    @FXML
+    private HBox rootHbox;
 
     private I18N i18N;
 
@@ -80,9 +106,15 @@ public class TestBenchSectionController {
 
     private StatePump pumpState;
 
+    private ModbusRegisterProcessor flowModbusWriter;
+
     private ModbusRegisterProcessor standModbusWriter;
 
     private Lcd currentRPMLcd;
+
+    private FirmwareVersion<FlowVersions> flowFirmwareVersion;
+
+    private FirmwareVersion<StandVersions> standFirmwareVersion;
 
     public Spinner<Integer> getTargetRPMSpinner() {
         return targetRPMSpinner;
@@ -144,6 +176,10 @@ public class TestBenchSectionController {
         return tankOilText;
     }
 
+    public void setFlowModbusWriter(ModbusRegisterProcessor flowModbusWriter) {
+        this.flowModbusWriter = flowModbusWriter;
+    }
+
     public void setStandModbusWriter(ModbusRegisterProcessor standModbusWriter) {
         this.standModbusWriter = standModbusWriter;
     }
@@ -170,6 +206,14 @@ public class TestBenchSectionController {
 
     public void setDimasGUIEditionState(DimasGUIEditionState dimasGUIEditionState) {
         this.dimasGUIEditionState = dimasGUIEditionState;
+    }
+
+    public void setFlowFirmwareVersion(FirmwareVersion<FlowVersions> flowFirmwareVersion) {
+        this.flowFirmwareVersion = flowFirmwareVersion;
+    }
+
+    public void setStandFirmwareVersion(FirmwareVersion<StandVersions> standFirmwareVersion) {
+        this.standFirmwareVersion = standFirmwareVersion;
     }
 
     public enum StatePump {
@@ -208,6 +252,10 @@ public class TestBenchSectionController {
 
         bindingI18N();
 
+        setupFlowFirmwareVersionListener();
+
+        setupStandFirmwareVersionListener();
+
         setupLCD();
 
         setupRotationDirectionToggleButton();
@@ -233,9 +281,35 @@ public class TestBenchSectionController {
         labelRPM.textProperty().bind(i18N.createStringBinding("bench.label.rpm"));
     }
 
+    private void setupFlowFirmwareVersionListener() {
+
+        flowFirmwareVersion.versionProperty().addListener((observableValue, oldValue, newValue) -> {
+
+            if (newValue == STAND_FM)
+                testBenchStartToggleButton.setDisable(false);
+            else
+                testBenchStartToggleButton.setDisable(true);
+
+        });
+
+    }
+
+    private void setupStandFirmwareVersionListener() {
+
+        standFirmwareVersion.versionProperty().addListener((observableValue, oldValue, newValue) -> {
+
+            if (newValue == STAND)
+                testBenchStartToggleButton.setDisable(false);
+            else
+                testBenchStartToggleButton.setDisable(true);
+
+        });
+
+    }
+
     private void setupLCD() {
 
-        currentRPMLcd = GaugeCreator.createLcd();
+        currentRPMLcd = GaugeCreator.createLcd("rpm");
 
         currentRPMLcd.setMaxValue(5000.0);
 
@@ -252,8 +326,14 @@ public class TestBenchSectionController {
         rightDirectionRotationToggleButton.setUserData(true);
 
         rotationDirectionToggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != null)
-                standModbusWriter.add(RotationDirection, newValue.getUserData());
+
+            if (newValue != null) {
+                if ((flowFirmwareVersion.getVersions() == FlowVersions.STAND_FM))
+                    flowModbusWriter.add(RotationDirectionStandFM, newValue.getUserData());
+                else
+                    standModbusWriter.add(RotationDirection, newValue.getUserData());
+            }
+
         });
 
     }
@@ -264,16 +344,29 @@ public class TestBenchSectionController {
 
         SpinnerManager.setupSpinner(targetRPMSpinner, 0, 0, 3000, new Tooltip(), new SpinnerValueObtainer(0));
 
-        targetRPMSpinner.valueProperty().addListener((observable, oldValue, newValue) -> standModbusWriter.add(TargetRPM, newValue));
+        targetRPMSpinner.valueProperty().addListener((observable, oldValue, newValue) -> {
+
+            if ((flowFirmwareVersion.getVersions() == FlowVersions.STAND_FM))
+                flowModbusWriter.add(TargetRPMStandFM, newValue);
+            else
+                standModbusWriter.add(TargetRPM, newValue);
+
+        });
 
     }
 
     private void setupTestBenchStartToggleButton() {
 
         testBenchStartToggleButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            standModbusWriter.add(Rotation, newValue);
+
+            if ((flowFirmwareVersion.getVersions() == FlowVersions.STAND_FM))
+                flowModbusWriter.add(RotationStandFM, newValue);
+            else
+                standModbusWriter.add(Rotation, newValue);
+
             if (StatePump.isAuto(pumpState))
                 setPumpAuto(newValue);
+
         });
 
     }
@@ -298,7 +391,14 @@ public class TestBenchSectionController {
 
     private void setupFanControlToggleButton() {
 
-        fanControlToggleButton.selectedProperty().addListener((observable, oldValue, newValue) -> standModbusWriter.add(FanTurnOn, newValue));
+        fanControlToggleButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
+
+            if ((flowFirmwareVersion.getVersions() == FlowVersions.STAND_FM))
+                flowModbusWriter.add(FanTurnOnStandFM, newValue);
+            else
+                standModbusWriter.add(FanTurnOn, newValue);
+
+        });
 
     }
 
@@ -309,11 +409,17 @@ public class TestBenchSectionController {
                 logger.warn("Double clicked");
                 if (isAuto()) {
                     setPumpState(TestBenchSectionController.StatePump.OFF);
-                    standModbusWriter.add(PumpAutoMode, false);
+                    if ((flowFirmwareVersion.getVersions() == FlowVersions.STAND_FM))
+                        flowModbusWriter.add(PumpAutoModeStandFM, false);
+                    else
+                        standModbusWriter.add(PumpAutoMode, false);
                 } else {
                     setPumpState(testBenchStartToggleButton.isSelected() ?
                             TestBenchSectionController.StatePump.AUTO_ON : TestBenchSectionController.StatePump.AUTO_OFF);
-                    standModbusWriter.add(PumpAutoMode, true);
+                    if ((flowFirmwareVersion.getVersions() == FlowVersions.STAND_FM))
+                        flowModbusWriter.add(PumpAutoModeStandFM, true);
+                    else
+                        standModbusWriter.add(PumpAutoMode, true);
                 }
             } else if (mouseEvent.getClickCount() == 1) {
                 if (pumpState == TestBenchSectionController.StatePump.OFF)
@@ -335,7 +441,8 @@ public class TestBenchSectionController {
         pressText1.visibleProperty().bind(dimasGuiEditionProperty.not());
         labelPressure1.visibleProperty().bind(dimasGuiEditionProperty.not());
         pressProgressBar1.visibleProperty().bind(dimasGuiEditionProperty.not());
-        rightDirectionRotationToggleButton.selectedProperty().bind(dimasGuiEditionProperty);
+
+        dimasGuiEditionProperty.addListener((observableValue, oldValue, newValue) -> rightDirectionRotationToggleButton.setSelected(newValue));
 
     }
 
@@ -345,7 +452,10 @@ public class TestBenchSectionController {
 
         pumpControlToggleButton.setText(pumpState.getText());
 
-        standModbusWriter.add(PumpTurnOn, pumpState.isActive);
+        if ((flowFirmwareVersion.getVersions() == FlowVersions.STAND_FM))
+            flowModbusWriter.add(PumpTurnOnStandFM, pumpState.isActive);
+        else
+            standModbusWriter.add(PumpTurnOn, pumpState.isActive);
 
     }
 

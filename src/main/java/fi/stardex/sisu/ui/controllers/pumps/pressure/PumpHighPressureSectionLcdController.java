@@ -23,7 +23,7 @@ public class PumpHighPressureSectionLcdController {
     @PostConstruct
     public void init(){
 
-        lcdStackPane.getChildren().add(0, GaugeCreator.createLcd());
+        lcdStackPane.getChildren().add(0, GaugeCreator.createLcd("bar"));
         rootStackPane = (StackPane) lcdStackPane.getParent().getParent();
         rootStackPane.widthProperty().addListener(new StackPaneWidthListener(rootStackPane, lcdStackPane));
     }

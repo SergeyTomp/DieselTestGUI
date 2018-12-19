@@ -76,7 +76,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.prefs.Preferences;
 
-import static fi.stardex.sisu.registers.stand.ModbusMapStand.*;
 import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.FirmwareVersion;
 import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions;
 import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions.*;
@@ -274,6 +273,29 @@ public class SpringJavaConfig {
     public ModbusRegisterProcessor flowModbusWriter(List<Updater> updatersList, RegisterProvider flowRegisterProvider,
                                                     FirmwareVersion<FlowVersions> flowFirmwareVersion) {
         return new ModbusRegisterProcessor(flowRegisterProvider, ModbusMapFlow.values()) {
+
+            @Override
+            public boolean add(ModbusMap reg, Object value) {
+
+                boolean added = super.add(reg, value);
+
+                switch ((ModbusMapStand) reg) {
+
+                    case TargetRPMStandFM:
+                    case RotationDirectionStandFM:
+                    case RotationStandFM:
+                    case FanTurnOnStandFM:
+                        ((ModbusMapStand) reg).setSyncWriteRead(true);
+                        break;
+                    default:
+                        break;
+
+                }
+
+                return added;
+
+            }
+
             @Override
             protected void initThread() {
 
@@ -336,34 +358,22 @@ public class SpringJavaConfig {
             @Override
             public boolean add(ModbusMap reg, Object value) {
 
-                boolean isStandFMVersion = (flowFirmwareVersion.getVersions() == STAND_FM);
+                boolean added = super.add(reg, value);
 
                 switch ((ModbusMapStand) reg) {
+
                     case TargetRPM:
-                        reg = isStandFMVersion ? TargetRPMStandFM : TargetRPM;
-                        ((ModbusMapStand) reg).setSyncWriteRead(true);
-                        break;
                     case RotationDirection:
-                        reg = isStandFMVersion ? RotationDirectionStandFM : RotationDirection;
-                        ((ModbusMapStand) reg).setSyncWriteRead(true);
-                        break;
                     case Rotation:
-                        reg = isStandFMVersion ? RotationStandFM : Rotation;
-                        ((ModbusMapStand) reg).setSyncWriteRead(true);
-                        break;
                     case FanTurnOn:
-                        reg = isStandFMVersion ? FanTurnOnStandFM : FanTurnOn;
                         ((ModbusMapStand) reg).setSyncWriteRead(true);
                         break;
-                    case PumpTurnOn:
-                        reg = isStandFMVersion ? PumpTurnOnStandFM : PumpTurnOn;
+                    default:
                         break;
-                    case PumpAutoMode:
-                        reg = isStandFMVersion ? PumpAutoModeStandFM : PumpAutoMode;
-                        break;
+
                 }
 
-                return super.add(reg, value);
+                return added;
 
             }
 
@@ -437,6 +447,14 @@ public class SpringJavaConfig {
     public TestBenchSectionUpdater testBenchSectionUpdater(TestBenchSectionController testBenchSectionController,
                                                            FirmwareVersion<FlowVersions> flowFirmwareVersion) {
         return new TestBenchSectionUpdater(testBenchSectionController, flowFirmwareVersion);
+    }
+
+    @Bean
+    @Autowired
+    public TachometerUltimaUpdater tachometerUltimaUpdater(TestBenchSectionController testBenchSectionController,
+                                                           FirmwareVersion<FlowVersions> flowFirmwareVersion,
+                                                           ModbusConnect standModbusConnect) {
+        return new TachometerUltimaUpdater(testBenchSectionController, flowFirmwareVersion, standModbusConnect.connectedProperty());
     }
 
     @Bean
@@ -546,15 +564,13 @@ public class SpringJavaConfig {
     }
 
     @Bean
-    @Autowired
-    public FirmwareVersion<FlowVersions> flowFirmwareVersion(TestBenchSectionController testBenchSectionController) {
-        return new FlowFirmwareVersion<>(MASTER, testBenchSectionController.getTestBenchStartToggleButton());
+    public FirmwareVersion<FlowVersions> flowFirmwareVersion() {
+        return new FlowFirmwareVersion<>(MASTER);
     }
 
     @Bean
-    @Autowired
-    public FirmwareVersion<StandVersions> standFirmwareVersion(TestBenchSectionController testBenchSectionController) {
-        return new StandFirmwareVersion<>(STAND, testBenchSectionController.getTestBenchStartToggleButton());
+    public FirmwareVersion<StandVersions> standFirmwareVersion() {
+        return new StandFirmwareVersion<>(STAND);
     }
 
     @Bean
@@ -646,17 +662,19 @@ public class SpringJavaConfig {
     }
 
     @Bean
-    public BoostU_State boostU_state(){
+    public BoostU_State boostU_state() {
         return new BoostU_State();
     }
 
     @Bean
-    public BoostUadjustmentState boostUadjustmentState(){
+    public BoostUadjustmentState boostUadjustmentState() {
         return new BoostUadjustmentState();
     }
 
     @Bean
-    public HighPressureSectionPwrState highPressureSectionPwrState(){return new HighPressureSectionPwrState();}
+    public HighPressureSectionPwrState highPressureSectionPwrState() {
+        return new HighPressureSectionPwrState();
+    }
 
     // --------------------------------------Model-----------------------------------------------
 
@@ -709,19 +727,19 @@ public class SpringJavaConfig {
 
     @Bean
     @Lazy
-    public DelayReportModel delayReportModel(){
+    public DelayReportModel delayReportModel() {
         return new DelayReportModel();
     }
 
     @Bean
     @Lazy
-    public RLC_ReportModel rlc_reportModel(){
+    public RLC_ReportModel rlc_reportModel() {
         return new RLC_ReportModel();
     }
 
     @Bean
     @Lazy
-    public CodingReportModel codingReportModel(){
+    public CodingReportModel codingReportModel() {
         return new CodingReportModel();
     }
 
@@ -733,7 +751,7 @@ public class SpringJavaConfig {
                                            BackFlowUnitsModel backFlowUnitsModel,
                                            DeliveryFlowRangeModel deliveryFlowRangeModel,
                                            DeliveryFlowUnitsModel deliveryFlowUnitsModel,
-                                           FlowViewModel flowViewModel){
+                                           FlowViewModel flowViewModel) {
         FlowReportModel flowReportModel = new FlowReportModel();
         flowReportModel.setFlowValuesModel(flowValuesModel);
         flowReportModel.setDeliveryFlowUnitsModel(deliveryFlowUnitsModel);
@@ -747,49 +765,58 @@ public class SpringJavaConfig {
 
     @Bean
     @Lazy
-    public FlowValuesModel flowValuesModel(){
+    public FlowValuesModel flowValuesModel() {
         return new FlowValuesModel();
     }
 
     @Bean
     @Lazy
-    public BackFlowRangeModel backFlowRangeModel(){return new BackFlowRangeModel();}
+    public BackFlowRangeModel backFlowRangeModel() {
+        return new BackFlowRangeModel();
+    }
 
     @Bean
     @Lazy
-    public BackFlowUnitsModel backFlowUnitsModel(){return new BackFlowUnitsModel();}
+    public BackFlowUnitsModel backFlowUnitsModel() {
+        return new BackFlowUnitsModel();
+    }
 
     @Bean
     @Lazy
-    public DeliveryFlowRangeModel deliveryFlowRangeModel(){return new DeliveryFlowRangeModel();}
+    public DeliveryFlowRangeModel deliveryFlowRangeModel() {
+        return new DeliveryFlowRangeModel();
+    }
 
     @Bean
     @Lazy
-    public DeliveryFlowUnitsModel deliveryFlowUnitsModel(){return new DeliveryFlowUnitsModel();}
+    public DeliveryFlowUnitsModel deliveryFlowUnitsModel() {
+        return new DeliveryFlowUnitsModel();
+    }
 
     @Bean
     @Autowired
     public HighPressureSectionUpdateModel highPressureSectionUpdateModel(PressureSensorModel pressureSensorModel,
-                                                                         RegulationModesModel regulationModesModel){
+                                                                         RegulationModesModel regulationModesModel) {
         return new HighPressureSectionUpdateModel(pressureSensorModel, regulationModesModel);
     }
+
     @Bean
-    public InjectorTestModel injectorTestModel(InjectorTestRepository injectorTestRepository){
+    public InjectorTestModel injectorTestModel(InjectorTestRepository injectorTestRepository) {
         return new InjectorTestModel(injectorTestRepository);
     }
 
     @Bean
-    public PressureRegulatorOneModel pressureRegulatorOneModel(){
+    public PressureRegulatorOneModel pressureRegulatorOneModel() {
         return new PressureRegulatorOneModel();
     }
 
     @Bean
-    public RegulationModesModel regulationModesModel(){
+    public RegulationModesModel regulationModesModel() {
         return new RegulationModesModel();
     }
 
     @Bean
-    public FirmwareModel firmwareModel(){
+    public FirmwareModel firmwareModel() {
         return new FirmwareModel();
     }
 }

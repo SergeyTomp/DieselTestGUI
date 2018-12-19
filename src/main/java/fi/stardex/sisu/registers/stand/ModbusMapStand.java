@@ -46,7 +46,7 @@ public enum ModbusMapStand implements ModbusMap {
     private final boolean autoUpdate;
     private final boolean isStandFMRegister;
     private Object lastValue;
-    private boolean syncWriteRead;
+    private boolean syncWriteRead = true;
 
     ModbusMapStand(RegisterType type, int ref, int count, boolean autoUpdate, boolean isStandFMRegister) {
         this.type = type;

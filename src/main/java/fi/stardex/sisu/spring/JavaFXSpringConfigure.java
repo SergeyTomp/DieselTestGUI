@@ -186,13 +186,19 @@ public class JavaFXSpringConfigure extends ViewLoader{
     @Bean
     @Autowired
     public TestBenchSectionController testBenchSectionController(RootLayoutController rootLayoutController,
+                                                                 @Lazy ModbusRegisterProcessor flowModbusWriter,
                                                                  @Lazy ModbusRegisterProcessor standModbusWriter,
-                                                                 DimasGUIEditionState dimasGUIEditionState) {
-        TestBenchSectionController testBenchController = rootLayoutController.getTestBenchSectionController();
-        testBenchController.setStandModbusWriter(standModbusWriter);
-        testBenchController.setI18N(i18N);
-        testBenchController.setDimasGUIEditionState(dimasGUIEditionState);
-        return testBenchController;
+                                                                 DimasGUIEditionState dimasGUIEditionState,
+                                                                 FirmwareVersion<FlowVersions> flowFirmwareVersion,
+                                                                 FirmwareVersion<StandVersions> standFirmwareVersion) {
+        TestBenchSectionController testBenchSectionController = rootLayoutController.getTestBenchSectionController();
+        testBenchSectionController.setFlowModbusWriter(flowModbusWriter);
+        testBenchSectionController.setStandModbusWriter(standModbusWriter);
+        testBenchSectionController.setI18N(i18N);
+        testBenchSectionController.setDimasGUIEditionState(dimasGUIEditionState);
+        testBenchSectionController.setFlowFirmwareVersion(flowFirmwareVersion);
+        testBenchSectionController.setStandFirmwareVersion(standFirmwareVersion);
+        return testBenchSectionController;
     }
 
     @Bean

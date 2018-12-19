@@ -565,8 +565,8 @@ public class MainSectionController {
 
                 setInjectorTests(newValue);
 
-
                 setTests();
+
             }
         });
 
@@ -1094,9 +1094,9 @@ public class MainSectionController {
 
             }
 
-            currentAdjustingTime = 1;
+            currentAdjustingTime = newValue.getAdjustingTime();
 
-            currentMeasuringTime = 1;
+            currentMeasuringTime = newValue.getMeasurementTime();
 
             setProgress(speedComboBoxSelectionModel.getSelectedItem());
 

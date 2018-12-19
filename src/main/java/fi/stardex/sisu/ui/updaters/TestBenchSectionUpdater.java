@@ -50,7 +50,6 @@ public class TestBenchSectionUpdater implements Updater {
 
     private TestBenchSectionController testBenchSectionController;
 
-
     private FirmwareVersion<FlowVersions> flowFirmwareVersion;
 
     public TestBenchSectionUpdater(TestBenchSectionController testBenchSectionController,
@@ -129,7 +128,7 @@ public class TestBenchSectionUpdater implements Updater {
 
     }
 
-    private static void setProgress(int left, int right, ProgressBar progressBar, Text text, double pressureValue){
+    private static void setProgress(int left, int right, ProgressBar progressBar, Text text, double pressureValue) {
         if (pressureValue <= left) {
             progressBarStyle(progressBar, "green-progress-bar");
         }
@@ -143,7 +142,7 @@ public class TestBenchSectionUpdater implements Updater {
         progressBar.setProgress(pressureValue < 1 ? 1.0 : pressureValue);
     }
 
-    private static void progressBarStyle(ProgressBar progressBar, String style){
+    private static void progressBarStyle(ProgressBar progressBar, String style) {
         progressBar.getStyleClass().clear();
         progressBar.getStyleClass().add("progress-bar");
         progressBar.getStyleClass().add(style);
@@ -156,9 +155,8 @@ public class TestBenchSectionUpdater implements Updater {
 
         if (register.isSyncWriteRead())
             register.setSyncWriteRead(false);
-        else if (targetRPMLastValue != null) {
+        else if (targetRPMLastValue != null)
             targetRPMSpinner.getValueFactory().setValue(targetRPMLastValue);
-        }
 
     }
 
