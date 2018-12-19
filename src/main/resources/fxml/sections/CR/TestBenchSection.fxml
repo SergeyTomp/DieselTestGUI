@@ -97,7 +97,7 @@
                <effect>
                   <Glow level="0.49" />
                </effect></ProgressBar>
-            <ToggleButton fx:id="fanControlToggleButton" contentDisplay="CENTER" lineSpacing="2.0" maxHeight="94.0" maxWidth="94.0" minHeight="30.0" minWidth="30.0" mnemonicParsing="false" pickOnBounds="true" styleClass="cooler" stylesheets="@../../../css/Styling.css" textAlignment="CENTER" textFill="#36231dc1" wrapText="true">
+            <ToggleButton fx:id="fanControlToggleButton" contentDisplay="CENTER" lineSpacing="2.0" maxHeight="94.0" maxWidth="94.0" minHeight="30.0" minWidth="30.0" mnemonicParsing="false" pickOnBounds="true" styleClass="cooler" stylesheets="@../../../css/Styling.css" text="FAN" textAlignment="CENTER" textFill="#36231dc1" wrapText="true">
                <font>
                   <Font name="Calibri" size="12.0" />
                </font>
