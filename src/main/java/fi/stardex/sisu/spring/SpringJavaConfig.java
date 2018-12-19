@@ -279,16 +279,20 @@ public class SpringJavaConfig {
 
                 boolean added = super.add(reg, value);
 
-                switch ((ModbusMapStand) reg) {
+                if (reg instanceof ModbusMapStand) {
 
-                    case TargetRPMStandFM:
-                    case RotationDirectionStandFM:
-                    case RotationStandFM:
-                    case FanTurnOnStandFM:
-                        ((ModbusMapStand) reg).setSyncWriteRead(true);
-                        break;
-                    default:
-                        break;
+                    switch ((ModbusMapStand) reg) {
+
+                        case TargetRPMStandFM:
+                        case RotationDirectionStandFM:
+                        case RotationStandFM:
+                        case FanTurnOnStandFM:
+                            ((ModbusMapStand) reg).setSyncWriteRead(true);
+                            break;
+                        default:
+                            break;
+
+                    }
 
                 }
 
