@@ -128,7 +128,7 @@
                         </AnchorPane>
                     </children>
                 </StackPane>
-                <ProgressBar fx:id="switcherProgressBar" minHeight="16.0" prefHeight="22.0" prefWidth="470.0" progress="0.0" visible="false" GridPane.columnSpan="4" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="BOTTOM" />
+                <ProgressBar fx:id="switcherProgressBar" maxWidth="1.7976931348623157E308" minHeight="16.0" prefHeight="22.0" progress="0.0" visible="false" GridPane.columnSpan="4" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="BOTTOM" />
             <Label fx:id="statusBoostULabel" alignment="TOP_LEFT" styleClass="label-progress" stylesheets="@../../../css/Styling.css" GridPane.columnIndex="3" GridPane.halignment="LEFT" GridPane.valignment="TOP" />
             </children>
             <columnConstraints>
