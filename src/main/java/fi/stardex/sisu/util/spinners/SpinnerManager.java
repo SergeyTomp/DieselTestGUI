@@ -64,6 +64,12 @@ public class SpinnerManager {
         });
 
         spinner.focusedProperty().addListener((observable, oldValue, newValue) -> {
+
+            if(newValue){
+                obtainer.setInitialSpinnerOldValue(spinner.getValue());
+                obtainer.setOldValue(spinner.getValue());
+            }
+
             if(!newValue){
 
                 spinner.getValueFactory().setValue(obtainer.getInitialSpinnerOldValue().doubleValue());
@@ -125,6 +131,11 @@ public class SpinnerManager {
         });
 
         spinner.focusedProperty().addListener((observable, oldValue, newValue) -> {
+
+            if(newValue){
+                obtainer.setInitialSpinnerOldValue(spinner.getValue());
+                obtainer.setOldValue(spinner.getValue());
+            }
 
             if(!newValue){
 

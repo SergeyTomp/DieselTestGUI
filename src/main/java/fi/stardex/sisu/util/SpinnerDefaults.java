@@ -66,7 +66,7 @@ public class SpinnerDefaults {
 
     public static final double CURRENT_REG_1_SPINNER_MIN = 0;
     public static final double CURRENT_REG_1_SPINNER_MAX = 2.5;
-    public static final double CURRENT_REG_1_SPINNER_INIT = 0.0;
+    public static final double CURRENT_REG_1_SPINNER_INIT = 0.01;
     public static final double CURRENT_REG_1_SPINNER_STEP = 0.01;
     public static final double CURRENT_REG_1_SPINNER_FAKE = 0.011;
 

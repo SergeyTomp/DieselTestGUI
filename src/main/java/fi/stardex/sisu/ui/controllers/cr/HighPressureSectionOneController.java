@@ -145,10 +145,10 @@ public class HighPressureSectionOneController {
         dutySpinner.focusedProperty().addListener(new ThreeSpinnerStyleChangeListener(pressSpinner, currentSpinner, dutySpinner, DUTY));
 
         /** слушаем изменения значений в спиннерах и отправляем уставки спиннеров */
-        pressSpinner.valueProperty().addListener(new ParameterChangeListener());
+        pressSpinner.valueProperty().addListener(new ParameterChangeListener(PRESSURE));
         pressureRegulatorOneModel.pressureRegOneProperty().bind(pressSpinner.valueProperty());
-        currentSpinner.valueProperty().addListener(new ParameterChangeListener());
-        dutySpinner.valueProperty().addListener(new ParameterChangeListener());
+        currentSpinner.valueProperty().addListener(new ParameterChangeListener(CURRENT));
+        dutySpinner.valueProperty().addListener(new ParameterChangeListener(DUTY));
 
         /** слушаем кнопку включения секции регуляторов*/
         highPressureSectionPwrState.powerButtonProperty().addListener(new HighPressureSectionPwrListener());
@@ -261,20 +261,32 @@ public class HighPressureSectionOneController {
 
     private class ParameterChangeListener implements ChangeListener<Number>{
 
+        RegActive activeParam;
+
+        public ParameterChangeListener(RegActive activeParam) {
+            this.activeParam = activeParam;
+        }
+
         @Override
         public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
 
-            if((highPressureSectionPwrState.powerButtonProperty().get() && regToggleButton.isSelected())){
+            if((highPressureSectionPwrState.powerButtonProperty().get()
+                    && regToggleButton.isSelected()
+                    && activeParam == regulationModesModel.getRegulatorOneMode().get())){
 
                 switch (regulationModesModel.getRegulatorOneMode().get()){
                     case PRESSURE:
-                        ultimaModbusWriter.add(PressureReg1_PressTask, newValue);
+                        ultimaModbusWriter.add(PressureReg1_PressTask, calcTargetPress(newValue.intValue()));
+//                        System.err.println("press " + newValue);
                         break;
                     case CURRENT:
                         ultimaModbusWriter.add(PressureReg1_I_Task, newValue);
+//                        System.err.println("current " + newValue);
                         break;
                     case DUTY:
                         ultimaModbusWriter.add(PressureReg1_DutyTask, newValue);
+//                        System.err.println("duty " + newValue);
+
                         break;
                 }
             }
@@ -315,7 +327,7 @@ public class HighPressureSectionOneController {
         ultimaModbusWriter.add(PressureReg1_ON, true);
         switch(regulationModesModel.getRegulatorOneMode().get()){
             case PRESSURE:
-                double press1 = pressSpinner.getValue();
+                double press1 = calcTargetPress(pressSpinner.getValue());
                 ultimaModbusWriter.add(PressureReg1_PressTask, press1);
                 break;
             case CURRENT:
@@ -338,7 +350,7 @@ public class HighPressureSectionOneController {
             ultimaModbusWriter.add(PressureReg1_I_Mode, false);     //откл.режим тока
         }
         pressSpinner.getValueFactory().setValue(targetPress);
-        ultimaModbusWriter.add(PressureReg1_PressTask, targetPress);
+        ultimaModbusWriter.add(PressureReg1_PressTask, calcTargetPress(targetPress));
         regToggleButton.setSelected(true);
     }
 
@@ -347,4 +359,10 @@ public class HighPressureSectionOneController {
         ultimaModbusWriter.add(PressureReg1_ON, false);
         regToggleButton.setSelected(false);
     }
+
+    private double calcTargetPress(Integer target){
+        return target.doubleValue() / pressureSensorModel.pressureSensorProperty().get();
+    }
+
+
 }

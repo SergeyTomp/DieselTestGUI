@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 
 public abstract class RegisterProvider {
 
@@ -223,8 +224,10 @@ public abstract class RegisterProvider {
                     floatValue = ((Integer) value).floatValue();
                     byteData = ModbusUtil.floatToRegisters(floatValue);
 
-                } else
+                } else{
                     byteData = ModbusUtil.floatToRegisters(((Number) value).floatValue());
+                }
+
 
                 short firstWord = (short) (((byteData[0] & 0xFF) << 8) | (byteData[1] & 0xFF));
                 short secondWord = (short) (((byteData[2] & 0xFF) << 8) | (byteData[3] & 0xFF));

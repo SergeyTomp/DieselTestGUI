@@ -102,8 +102,8 @@ public class HighPressureSectionTwoController {
         dutySpinner.focusedProperty().addListener(new TwoSpinnerStyleChangeListener(currentSpinner, dutySpinner, DUTY));
 
         /** слушаем изменения значений в спиннерах и отправляем уставки спиннеров */
-        currentSpinner.valueProperty().addListener(new ParameterChangeListener());
-        dutySpinner.valueProperty().addListener(new ParameterChangeListener());
+        currentSpinner.valueProperty().addListener(new ParameterChangeListener(CURRENT));
+        dutySpinner.valueProperty().addListener(new ParameterChangeListener(DUTY));
 
         /** слушаем кнопку включения секции регуляторов*/
         highPressureSectionPwrState.powerButtonProperty().addListener(new HighPressureSectionPwrListener());
@@ -171,9 +171,19 @@ public class HighPressureSectionTwoController {
 
     private class ParameterChangeListener implements ChangeListener<Number>{
 
+        RegActive regActive;
+
+        public ParameterChangeListener(RegActive regActive) {
+            this.regActive = regActive;
+        }
+
         @Override
         public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
-            if((highPressureSectionPwrState.powerButtonProperty().get() && regToggleButton.isSelected())){
+
+            if((highPressureSectionPwrState.powerButtonProperty().get()
+                    && regToggleButton.isSelected()
+                    && regActive == regulationModesModel.getRegulatorTwoMode().get())){
+
                 switch (regulationModesModel.getRegulatorTwoMode().get()){
                     case CURRENT:
                         ultimaModbusWriter.add(PressureReg2_I_Task, newValue);
