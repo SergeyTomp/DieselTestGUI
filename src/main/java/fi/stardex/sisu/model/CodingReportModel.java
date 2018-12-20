@@ -13,6 +13,10 @@ public class CodingReportModel {
 
     private ObservableMap<String, CodingResult> resultObservableMap = FXCollections.observableMap(new HashMap<>());
 
+    public ObservableMap<String, CodingResult> getResultObservableMap() {
+        return resultObservableMap;
+    }
+
     public void storeResult(int  ledNumber, String code){
 
         String channel = ((Integer)(ledNumber + 1)).toString();
@@ -32,16 +36,12 @@ public class CodingReportModel {
         return results;
     }
 
-    public ObservableMap<String, CodingResult> getResultObservableMap() {
-        return resultObservableMap;
-    }
-
     public class CodingResult implements Result {
 
         private String ledNumber;
         private String code;
 
-        public CodingResult(String ledNumber,String code) {
+        CodingResult(String ledNumber,String code) {
 
             this.ledNumber = ledNumber;
             this.code = code;

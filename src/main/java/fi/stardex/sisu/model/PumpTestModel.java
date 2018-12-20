@@ -18,25 +18,29 @@ public class PumpTestModel {
 
     private final ObservableList<PumpTest> pumpTestObservableList = FXCollections.observableList(new ArrayList<>());
 
-    private final ObjectProperty<PumpTest> pumpTestObjectProperty = new SimpleObjectProperty<>();
+    private final ObjectProperty<PumpTest> pumpTestProperty = new SimpleObjectProperty<>();
 
     public ObservableList<PumpTest> getPumpTestObservableList() {
         return pumpTestObservableList;
     }
 
-    public ObjectProperty<PumpTest> pumpTestObjectProperty() {
-        return pumpTestObjectProperty;
+    public ObjectProperty<PumpTest> pumpTestProperty() {
+        return pumpTestProperty;
     }
 
     public PumpTestModel(PumpTestRepository pumpTestRepository, PumpModel pumpModel) {
+
         this.pumpTestRepository = pumpTestRepository;
         this.pumpModel = pumpModel;
+
     }
 
+    // TODO: добавить тестирование метода
     public void initPumpTestList(){
 
         List<PumpTest> allByPump = pumpTestRepository.findAllByPump(pumpModel.pumpProperty().get());
         pumpTestObservableList.setAll(allByPump);
 
     }
+
 }

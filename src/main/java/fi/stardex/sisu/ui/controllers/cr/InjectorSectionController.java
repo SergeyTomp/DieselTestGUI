@@ -4,12 +4,12 @@ import fi.stardex.sisu.charts.TimerTasksManager;
 import fi.stardex.sisu.combobox_values.InjectorChannel;
 import fi.stardex.sisu.devices.Device;
 import fi.stardex.sisu.devices.Devices;
+import fi.stardex.sisu.model.InjConfigurationModel;
+import fi.stardex.sisu.model.InjectorTypeModel;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
-import fi.stardex.sisu.states.BoostU_State;
+import fi.stardex.sisu.states.BoostUModel;
 import fi.stardex.sisu.states.BoostUadjustmentState;
-import fi.stardex.sisu.states.InjConfigurationModel;
-import fi.stardex.sisu.states.InjectorTypeModel;
 import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.ui.controllers.additional.tabs.DelayController;
 import fi.stardex.sisu.util.enums.InjectorType;
@@ -118,7 +118,7 @@ public class InjectorSectionController {
 
     private InjectorTypeModel injectorTypeModel;
 
-    private BoostU_State boostU_state;
+    private BoostUModel boostU_model;
 
     private BoostUadjustmentState boostUadjustmentState;
 
@@ -231,8 +231,8 @@ public class InjectorSectionController {
         this.i18N = i18N;
     }
 
-    public void setBoostU_state(BoostU_State boostU_state) {
-        this.boostU_state = boostU_state;
+    public void setBoostUModel(BoostUModel boostU_model) {
+        this.boostU_model = boostU_model;
     }
 
     public void setBoostUadjustmentState(BoostUadjustmentState boostUadjustmentState) {
@@ -254,7 +254,7 @@ public class InjectorSectionController {
 
         setupSpinners();
 
-        boostU_state.boostU_property().addListener(new BoostU_ChangeListener());
+        boostU_model.boostUProperty().addListener(new BoostU_ChangeListener());
 
         injectorTypeModel.injectorTypeProperty().setValue(InjectorType.COIL);
 

@@ -68,7 +68,7 @@ public class HighPressureSectionThreeController {
     public void init(){
 
         bindingI18N();
-        regulationModesModel.getRegulatorThreeMode().setValue(CURRENT);
+        regulationModesModel.regulatorThreeModeProperty().setValue(CURRENT);
         setupSpinners();
         addListeners();
 
@@ -139,7 +139,7 @@ public class HighPressureSectionThreeController {
 
         @Override
         public void handle(MouseEvent event) {
-            regulationModesModel.getRegulatorThreeMode().setValue(activeParam);
+            regulationModesModel.regulatorThreeModeProperty().setValue(activeParam);
             if (highPressureSectionPwrState.powerButtonProperty().get() && regToggleButton.isSelected()) {
                 ultimaModbusWriter.add(mapParam, mapParam_ON);
             }
@@ -163,7 +163,7 @@ public class HighPressureSectionThreeController {
         public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
 
             if (newValue) {
-                regulationModesModel.getRegulatorThreeMode().setValue(activeParam);
+                regulationModesModel.regulatorThreeModeProperty().setValue(activeParam);
                 if(highPressureSectionPwrState.powerButtonProperty().get() && regToggleButton.isSelected()){
                     ultimaModbusWriter.add(mapParam, mapParam_ON);
                 }
@@ -184,9 +184,9 @@ public class HighPressureSectionThreeController {
 
             if((highPressureSectionPwrState.powerButtonProperty().get()
                     && regToggleButton.isSelected()
-                    && regActive == regulationModesModel.getRegulatorThreeMode().get())){
+                    && regActive == regulationModesModel.regulatorThreeModeProperty().get())){
 
-                switch (regulationModesModel.getRegulatorThreeMode().get()){
+                switch (regulationModesModel.regulatorThreeModeProperty().get()){
                     case CURRENT:
                         ultimaModbusWriter.add(PressureReg3_I_Task, newValue);
                         System.err.println("current3 " + newValue);
@@ -232,7 +232,7 @@ public class HighPressureSectionThreeController {
 
     private void regulator_ON (){
         ultimaModbusWriter.add(PressureReg3_ON, true);
-        switch (regulationModesModel.getRegulatorThreeMode().get()){
+        switch (regulationModesModel.regulatorThreeModeProperty().get()){
             case CURRENT:
                 double current = currentSpinner.getValue();
                 ultimaModbusWriter.add(PressureReg3_I_Task, current);

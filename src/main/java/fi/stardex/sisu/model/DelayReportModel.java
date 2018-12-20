@@ -1,7 +1,10 @@
 package fi.stardex.sisu.model;
 
 import fi.stardex.sisu.pdf.Result;
-import javafx.beans.property.*;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 
@@ -14,9 +17,9 @@ public class DelayReportModel {
 
     private ObservableMap<String, DelayResult> resultObservableMap = FXCollections.observableMap(new HashMap<>());
 
-    private BooleanProperty newDelayAdded = new SimpleBooleanProperty();
+    private BooleanProperty newDelayAddedProperty = new SimpleBooleanProperty();
 
-    public List<Result> getResultsList(){
+    public List<Result> getResultsList() {
         return new ArrayList<>(resultObservableMap.values());
     }
 
@@ -24,23 +27,23 @@ public class DelayReportModel {
         return resultObservableMap;
     }
 
-    public BooleanProperty newResultAddedProperty() {
-        return newDelayAdded;
+    public BooleanProperty newDelayAddedProperty() {
+        return newDelayAddedProperty;
     }
 
-    public void storeResult(int channelNumber, String injectorTestName, String averageDelay){
+    public void storeResult(int channelNumber, String injectorTestName, String averageDelay) {
 
-        if(!resultObservableMap.containsKey(injectorTestName)){
+        if (!resultObservableMap.containsKey(injectorTestName)) {
             resultObservableMap.put(injectorTestName, new DelayResult(injectorTestName));
         }
         resultObservableMap.get(injectorTestName).setParameterValue(channelNumber, averageDelay);
-        newDelayAdded.setValue(true);
+        newDelayAddedProperty.setValue(true);
     }
 
-    public void clearResults(){
+    public void clearResults() {
 
         resultObservableMap.clear();
-        newDelayAdded.setValue(true);
+        newDelayAddedProperty.setValue(true);
     }
 
     public class DelayResult implements Result {

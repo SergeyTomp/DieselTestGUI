@@ -2,12 +2,12 @@ package fi.stardex.sisu.ui.controllers.additional.tabs;
 
 import eu.hansolo.medusa.Gauge;
 import fi.stardex.sisu.combobox_values.InjectorChannel;
+import fi.stardex.sisu.model.InjConfigurationModel;
+import fi.stardex.sisu.model.InjectorTypeModel;
 import fi.stardex.sisu.model.RLC_ReportModel;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
-import fi.stardex.sisu.states.InjConfigurationModel;
-import fi.stardex.sisu.states.InjectorTypeModel;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.util.GaugeCreator;
 import fi.stardex.sisu.util.enums.InjectorType;
@@ -60,8 +60,6 @@ public class RLCController {
 
     private Gauge parameter1Gauge;
     private Gauge parameter2Gauge;
-    private Gauge parameter3Gauge;
-    private Gauge parameter4Gauge;
     private int ledNumber;
     private String titleGauge1;
     private String titleGauge2;
@@ -126,14 +124,6 @@ public class RLCController {
         return parameter2Gauge;
     }
 
-    public Gauge getParameter3Gauge() {
-        return parameter3Gauge;
-    }
-
-    public Gauge getParameter4Gauge() {
-        return parameter4Gauge;
-    }
-
     private List<ToggleButton> activeLedToggleButtonsList;
 
     @PostConstruct
@@ -144,8 +134,8 @@ public class RLCController {
         measureButton.setDisable(true);
         parameter1Gauge = GaugeCreator.createRLCGauge();
         parameter2Gauge = GaugeCreator.createRLCGauge();
-        parameter3Gauge = GaugeCreator.createRLCGauge();
-        parameter4Gauge = GaugeCreator.createRLCGauge();
+        Gauge parameter3Gauge = GaugeCreator.createRLCGauge();
+        Gauge parameter4Gauge = GaugeCreator.createRLCGauge();
         parameter1StackPane.getChildren().add(parameter1Gauge);
         parameter2StackPane.getChildren().add(parameter2Gauge);
         parameter3StackPane.getChildren().add(parameter3Gauge);

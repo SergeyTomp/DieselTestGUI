@@ -1,6 +1,6 @@
 package fi.stardex.sisu.ui.updaters;
 
-import fi.stardex.sisu.states.InjConfigurationModel;
+import fi.stardex.sisu.model.InjConfigurationModel;
 import fi.stardex.sisu.states.InstantFlowState;
 import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;

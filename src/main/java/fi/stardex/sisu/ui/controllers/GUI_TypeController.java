@@ -1,8 +1,7 @@
 package fi.stardex.sisu.ui.controllers;
 
-import fi.stardex.sisu.states.DimasGUIEditionState;
 import fi.stardex.sisu.model.ManufacturerPumpModel;
-import fi.stardex.sisu.ui.controllers.pumps.PumpTabSectionController;
+import fi.stardex.sisu.states.DimasGUIEditionState;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.ComboBox;
@@ -25,7 +24,7 @@ public class GUI_TypeController {
     @FXML
     private ComboBox<GUIType> gui_typeComboBox;
 
-    private Preferences rootPrefs;
+    private Preferences rootPreferences;
 
     private Parent mainSection;
 
@@ -71,8 +70,8 @@ public class GUI_TypeController {
         this.manufacturerPumpModel = manufacturerPumpModel;
     }
 
-    public void setRootPrefs(Preferences rootPrefs) {
-        this.rootPrefs = rootPrefs;
+    public void setRootPreferences(Preferences rootPreferences) {
+        this.rootPreferences = rootPreferences;
     }
 
     public void setMainSection(Parent mainSection) {
@@ -150,11 +149,11 @@ public class GUI_TypeController {
                     break;
             }
 
-            rootPrefs.put("GUI_Type", newValue.toString());
+            rootPreferences.put("GUI_Type", newValue.toString());
 
         });
 
-        GUIType currentGUIType = GUIType.valueOf(rootPrefs.get("GUI_Type", GUIType.CR_Inj.toString()));
+        GUIType currentGUIType = GUIType.valueOf(rootPreferences.get("GUI_Type", GUIType.CR_Inj.toString()));
 
         gui_typeComboBox.getSelectionModel().select(currentGUIType);
         gui_typeComboBox.visibleProperty().bind(dimasGUIEditionState.isDimasGuiEditionProperty().not());

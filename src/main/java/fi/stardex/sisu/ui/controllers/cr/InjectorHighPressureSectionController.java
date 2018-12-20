@@ -1,6 +1,6 @@
 package fi.stardex.sisu.ui.controllers.cr;
 
-import fi.stardex.sisu.states.RegulatorsQTYState;
+import fi.stardex.sisu.model.RegulatorsQTYModel;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -34,7 +34,7 @@ public class InjectorHighPressureSectionController {
     @FXML
     private HighPressureSectionPwrController highPressureSectionPwrController;
 
-    private RegulatorsQTYState regulatorsQTYState;
+    private RegulatorsQTYModel regulatorsQTYModel;
 
     public HighPressureSectionOneController getHighPressureSectionOneController() {
         return highPressureSectionOneController;
@@ -56,14 +56,14 @@ public class InjectorHighPressureSectionController {
         return highPressureSectionPwrController;
     }
 
-    public void setRegulatorsQTYState(RegulatorsQTYState regulatorsQTYState) {
-        this.regulatorsQTYState = regulatorsQTYState;
+    public void setRegulatorsQTYModel(RegulatorsQTYModel regulatorsQTYModel) {
+        this.regulatorsQTYModel = regulatorsQTYModel;
     }
 
     @PostConstruct
     public void init() {
-        configRegulatorsInvolved(Integer.parseInt(regulatorsQTYState.regulatorsQTYStateProperty().get()));
-        regulatorsQTYState.regulatorsQTYStateProperty().addListener(new RegulatorsConfigListener());
+        configRegulatorsInvolved(Integer.parseInt(regulatorsQTYModel.regulatorsQTYProperty().get()));
+        regulatorsQTYModel.regulatorsQTYProperty().addListener(new RegulatorsConfigListener());
 
     }
 

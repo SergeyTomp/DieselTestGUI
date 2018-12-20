@@ -5,9 +5,9 @@ import javafx.beans.property.SimpleIntegerProperty;
 
 public class PressureRegulatorOneModel {
 
-    private IntegerProperty pressureRegOne = new SimpleIntegerProperty();
+    private IntegerProperty pressureRegOneProperty = new SimpleIntegerProperty();
 
     public IntegerProperty pressureRegOneProperty() {
-        return pressureRegOne;
+        return pressureRegOneProperty;
     }
 }

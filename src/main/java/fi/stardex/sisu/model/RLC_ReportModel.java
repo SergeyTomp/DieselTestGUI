@@ -16,14 +16,14 @@ import java.util.List;
 public class RLC_ReportModel {
 
     private ObservableMap<String, RlcResult> resultObservableMap = FXCollections.observableMap(new HashMap<>());
-    private BooleanProperty newRlcAdded = new SimpleBooleanProperty();
+    private BooleanProperty newRlcAddedProperty = new SimpleBooleanProperty();
 
     public List<Result> getResultsList(){
         return new ArrayList<>(resultObservableMap.values());
     }
 
     public BooleanProperty newRlcAddedProperty() {
-        return newRlcAdded;
+        return newRlcAddedProperty;
     }
 
     public ObservableMap<String, RlcResult> getResultObservableMap() {
@@ -39,12 +39,12 @@ public class RLC_ReportModel {
         }
         resultObservableMap.get(titleGauge1).setParameterValue(ledNumber, parameter1.toString());
         resultObservableMap.get(titleGauge2).setParameterValue(ledNumber, parameter2.toString());
-        newRlcAdded.setValue(true);
+        newRlcAddedProperty.setValue(true);
     }
 
     public void clearResults(){
         resultObservableMap.clear();
-        newRlcAdded.setValue(true);
+        newRlcAddedProperty.setValue(true);
     }
 
     public static class RlcResult implements Result {
@@ -81,7 +81,7 @@ public class RLC_ReportModel {
             return channel_4;
         }
 
-        public RlcResult(String parameter, String units){
+        RlcResult(String parameter, String units){
 
             this.parameter = new SimpleStringProperty(parameter);
             this.units = new SimpleStringProperty(units);
@@ -90,7 +90,7 @@ public class RLC_ReportModel {
 
         }
 
-        public void setParameterValue(int number, String value) {
+        void setParameterValue(int number, String value) {
             parameterValues.set(number - 1, value);
             setParameterValues();
         }

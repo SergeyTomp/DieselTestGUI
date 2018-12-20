@@ -1,10 +1,10 @@
 package fi.stardex.sisu.charts;
 
 import fi.stardex.sisu.combobox_values.InjectorChannel;
+import fi.stardex.sisu.model.InjConfigurationModel;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
-import fi.stardex.sisu.states.InjConfigurationModel;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.util.filters.FilterInputChartData;

@@ -24,7 +24,6 @@ import fi.stardex.sisu.persistence.repos.cr.VoltAmpereProfileRepository;
 import fi.stardex.sisu.persistence.repos.pump.ManufacturerPumpRepository;
 import fi.stardex.sisu.persistence.repos.pump.PumpRepository;
 import fi.stardex.sisu.persistence.repos.pump.PumpTestRepository;
-import fi.stardex.sisu.persistence.repos.pump.PumpTypeRepository;
 import fi.stardex.sisu.registers.ModbusMap;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.flow.ModbusMapFlow;
@@ -656,18 +655,8 @@ public class SpringJavaConfig {
     }
 
     @Bean
-    public RegulatorsQTYState regulatorsQTYState() {
-        return new RegulatorsQTYState();
-    }
-
-    @Bean
     public CustomPumpState customPumpState() {
         return new CustomPumpState();
-    }
-
-    @Bean
-    public BoostU_State boostU_state() {
-        return new BoostU_State();
     }
 
     @Bean
@@ -692,9 +681,8 @@ public class SpringJavaConfig {
     @Autowired
     public PumpModel pumpModel(PumpRepository pumpRepository,
                                ManufacturerPumpModel manufacturerPumpModel,
-                               CustomPumpState customPumpState,
-                               PumpTypeRepository pumpTypeRepository) {
-        return new PumpModel(pumpRepository, manufacturerPumpModel, customPumpState, pumpTypeRepository);
+                               CustomPumpState customPumpState) {
+        return new PumpModel(pumpRepository, manufacturerPumpModel, customPumpState);
     }
 
     @Bean
@@ -707,6 +695,16 @@ public class SpringJavaConfig {
     @Bean
     public InjectorTypeModel injectorTypeModel() {
         return new InjectorTypeModel();
+    }
+
+    @Bean
+    public RegulatorsQTYModel regulatorsQTYModel() {
+        return new RegulatorsQTYModel();
+    }
+
+    @Bean
+    public BoostUModel boostU_state() {
+        return new BoostUModel();
     }
 
     @Bean
@@ -756,15 +754,8 @@ public class SpringJavaConfig {
                                            DeliveryFlowRangeModel deliveryFlowRangeModel,
                                            DeliveryFlowUnitsModel deliveryFlowUnitsModel,
                                            FlowViewModel flowViewModel) {
-        FlowReportModel flowReportModel = new FlowReportModel();
-        flowReportModel.setFlowValuesModel(flowValuesModel);
-        flowReportModel.setDeliveryFlowUnitsModel(deliveryFlowUnitsModel);
-        flowReportModel.setDeliveryFlowRangeModel(deliveryFlowRangeModel);
-        flowReportModel.setBackFlowUnitsModel(backFlowUnitsModel);
-        flowReportModel.setBackFlowRangeModel(backFlowRangeModel);
-        flowReportModel.setFlowViewModel(flowViewModel);
-
-        return flowReportModel;
+        return new FlowReportModel(flowViewModel, flowValuesModel, deliveryFlowRangeModel,
+                deliveryFlowUnitsModel, backFlowRangeModel, backFlowUnitsModel);
     }
 
     @Bean
@@ -805,8 +796,8 @@ public class SpringJavaConfig {
     }
 
     @Bean
-    public InjectorTestModel injectorTestModel(InjectorTestRepository injectorTestRepository) {
-        return new InjectorTestModel(injectorTestRepository);
+    public InjectorTestModel injectorTestModel() {
+        return new InjectorTestModel();
     }
 
     @Bean
@@ -819,8 +810,4 @@ public class SpringJavaConfig {
         return new RegulationModesModel();
     }
 
-    @Bean
-    public FirmwareModel firmwareModel() {
-        return new FirmwareModel();
-    }
 }

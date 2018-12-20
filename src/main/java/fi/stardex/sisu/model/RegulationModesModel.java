@@ -6,19 +6,22 @@ import javafx.beans.property.SimpleObjectProperty;
 
 public class RegulationModesModel {
 
-    private ObjectProperty<RegActive> regulatorOneMode = new SimpleObjectProperty<>();
-    private ObjectProperty<RegActive> regulatorTwoMode = new SimpleObjectProperty<>();
-    private ObjectProperty<RegActive> regulatorThreeMode = new SimpleObjectProperty<>();;
+    private ObjectProperty<RegActive> regulatorOneModeProperty = new SimpleObjectProperty<>();
 
-    public ObjectProperty<RegActive> getRegulatorOneMode() {
-        return regulatorOneMode;
+    private ObjectProperty<RegActive> regulatorTwoModeProperty = new SimpleObjectProperty<>();
+
+    private ObjectProperty<RegActive> regulatorThreeModeProperty = new SimpleObjectProperty<>();
+
+    public ObjectProperty<RegActive> regulatorOneModeProperty() {
+        return regulatorOneModeProperty;
     }
 
-    public ObjectProperty<RegActive> getRegulatorTwoMode() {
-        return regulatorTwoMode;
+    public ObjectProperty<RegActive> regulatorTwoModeProperty() {
+        return regulatorTwoModeProperty;
     }
 
-    public ObjectProperty<RegActive> getRegulatorThreeMode() {
-        return regulatorThreeMode;
+    public ObjectProperty<RegActive> regulatorThreeModeProperty() {
+        return regulatorThreeModeProperty;
     }
+
 }

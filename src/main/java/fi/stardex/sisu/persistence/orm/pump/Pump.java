@@ -7,7 +7,6 @@ import fi.stardex.sisu.util.enums.pump.PumpRotation;
 
 import javax.persistence.*;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 @Entity
@@ -53,14 +52,20 @@ public class Pump {
     @Column(name = "scv_max_curr")
     private Double scvMaxCurr;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "pump", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PumpTest> pumpTests = new LinkedList<>();
-
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "pumpCode", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "pump_code", referencedColumnName = "pump_code")
     private List<PumpCarModel> pumpCarModelList = new ArrayList<>();
+
+    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "pump_code", referencedColumnName = "pump_code")
+    private PumpInfo pumpInfo;
 
     public List<PumpCarModel> getPumpCarModelList() {
         return pumpCarModelList;
+    }
+
+    public PumpInfo getPumpInfo() {
+        return pumpInfo;
     }
 
     public String getPumpCode() {

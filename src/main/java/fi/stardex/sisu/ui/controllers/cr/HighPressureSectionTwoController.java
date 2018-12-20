@@ -67,7 +67,7 @@ public class HighPressureSectionTwoController {
     public void init(){
 
         bindingI18N();
-        regulationModesModel.getRegulatorTwoMode().setValue(CURRENT);
+        regulationModesModel.regulatorTwoModeProperty().setValue(CURRENT);
         setupSpinners();
         addListeners();
     }
@@ -137,7 +137,7 @@ public class HighPressureSectionTwoController {
 
         @Override
         public void handle(MouseEvent event) {
-            regulationModesModel.getRegulatorTwoMode().setValue(activeParam);
+            regulationModesModel.regulatorTwoModeProperty().setValue(activeParam);
             if (highPressureSectionPwrState.powerButtonProperty().get() && regToggleButton.isSelected()) {
                 ultimaModbusWriter.add(mapParam, mapParam_ON);
             }
@@ -161,7 +161,7 @@ public class HighPressureSectionTwoController {
         public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
 
             if (newValue) {
-                regulationModesModel.getRegulatorTwoMode().setValue(activeParam);
+                regulationModesModel.regulatorTwoModeProperty().setValue(activeParam);
                 if(highPressureSectionPwrState.powerButtonProperty().get() && regToggleButton.isSelected()){
                     ultimaModbusWriter.add(mapParam, mapParam_ON);
                 }
@@ -182,9 +182,9 @@ public class HighPressureSectionTwoController {
 
             if((highPressureSectionPwrState.powerButtonProperty().get()
                     && regToggleButton.isSelected()
-                    && regActive == regulationModesModel.getRegulatorTwoMode().get())){
+                    && regActive == regulationModesModel.regulatorTwoModeProperty().get())){
 
-                switch (regulationModesModel.getRegulatorTwoMode().get()){
+                switch (regulationModesModel.regulatorTwoModeProperty().get()){
                     case CURRENT:
                         ultimaModbusWriter.add(PressureReg2_I_Task, newValue);
                         System.err.println("current2 " + newValue);
@@ -230,7 +230,7 @@ public class HighPressureSectionTwoController {
 
     private void regulator_ON (){
         ultimaModbusWriter.add(PressureReg2_ON, true);
-        switch (regulationModesModel.getRegulatorTwoMode().get()){
+        switch (regulationModesModel.regulatorTwoModeProperty().get()){
             case CURRENT:
                 double current2 = currentSpinner.getValue();
                 ultimaModbusWriter.add(PressureReg2_I_Task, current2);

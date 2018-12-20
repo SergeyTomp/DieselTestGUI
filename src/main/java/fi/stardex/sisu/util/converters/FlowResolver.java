@@ -1,8 +1,8 @@
 package fi.stardex.sisu.util.converters;
 
 import fi.stardex.sisu.combobox_values.Dimension;
+import fi.stardex.sisu.model.FlowViewModel;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
-import fi.stardex.sisu.states.FlowViewModel;
 import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
 import fi.stardex.sisu.util.enums.Measurement;
 import javafx.scene.control.Label;

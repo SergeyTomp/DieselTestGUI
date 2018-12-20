@@ -11,7 +11,7 @@ import fi.stardex.sisu.persistence.repos.cr.InjectorTestRepository;
 import fi.stardex.sisu.persistence.repos.cr.InjectorsRepository;
 import fi.stardex.sisu.registers.flow.ModbusMapFlow;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
-import fi.stardex.sisu.states.BoostU_State;
+import fi.stardex.sisu.states.BoostUModel;
 import fi.stardex.sisu.states.BoostUadjustmentState;
 import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.ui.ViewHolder;
@@ -261,7 +261,7 @@ public class MainSectionController {
 
     private Stage printStage;
 
-    private BoostU_State boostU_state;
+    private BoostUModel boostU_model;
 
     private BoostUadjustmentState boostUadjustmentState;
 
@@ -443,8 +443,8 @@ public class MainSectionController {
         this.i18N = i18N;
     }
 
-    public void setBoostU_state(BoostU_State boostU_state) {
-        this.boostU_state = boostU_state;
+    public void setBoostUModel(BoostUModel boostU_model) {
+        this.boostU_model = boostU_model;
     }
 
     public void setBoostUadjustmentState(BoostUadjustmentState boostUadjustmentState) {
@@ -1016,7 +1016,7 @@ public class MainSectionController {
             Double secondI = currentVoltAmpereProfile.getSecondI();
             Double boostI = currentVoltAmpereProfile.getBoostI();
             Integer boostU = currentVoltAmpereProfile.getBoostU();
-            boostU_state.boostU_property().setValue(boostU);
+            boostU_model.boostUProperty().setValue(boostU);
 
             firstI = (boostI - firstI >= 0.5) ? firstI : boostI - 0.5;
             secondI = (firstI - secondI >= 0.5) ? secondI : firstI - 0.5;

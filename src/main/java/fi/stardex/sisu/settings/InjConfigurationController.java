@@ -1,8 +1,8 @@
 package fi.stardex.sisu.settings;
 
 import fi.stardex.sisu.combobox_values.InjectorChannel;
-import fi.stardex.sisu.states.InjConfigurationModel;
-import fi.stardex.sisu.states.InjectorTypeModel;
+import fi.stardex.sisu.model.InjConfigurationModel;
+import fi.stardex.sisu.model.InjectorTypeModel;
 import fi.stardex.sisu.util.enums.InjectorType;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;

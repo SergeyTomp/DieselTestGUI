@@ -90,7 +90,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
     @Bean
     @Autowired
     @DependsOn({"pumpsOEMListController", "checkAndInitializeBD"})
-    public GUI_TypeController gui_typeController(Preferences rootPrefs,
+    public GUI_TypeController gui_typeController(Preferences rootPreferences,
                                                  RootLayoutController rootLayoutController,
                                                  TabSectionController tabSectionController,
                                                  PumpTabSectionController pumpTabSectionController,
@@ -102,7 +102,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                  ViewHolder connection,
                                                  ManufacturerPumpModel manufacturerPumpModel) {
         GUI_TypeController gui_typeController = rootLayoutController.getGui_typeController();
-        gui_typeController.setRootPrefs(rootPrefs);
+        gui_typeController.setRootPreferences(rootPreferences);
         gui_typeController.setMainSection(mainSection().getView());
         gui_typeController.setMainSectionPumps(mainSectionPumps.getView());
         gui_typeController.setCRSection(crSection().getView());
@@ -138,7 +138,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                        TestBenchSectionController testBenchSectionController,
                                                        InfoController infoController,
                                                        DelayController delayController,
-                                                       BoostU_State boostU_state,
+                                                       BoostUModel boostUModel,
                                                        BoostUadjustmentState boostUadjustmentState,
                                                        CodingReportModel codingReportModel,
                                                        DelayReportModel delayReportModel,
@@ -163,7 +163,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         mainSectionController.setTargetRPMSpinner(testBenchSectionController.getTargetRPMSpinner());
         mainSectionController.setDelayController(delayController);
         mainSectionController.setPrintDialogPanel(printDialogPanel());
-        mainSectionController.setBoostU_state(boostU_state);
+        mainSectionController.setBoostUModel(boostUModel);
         mainSectionController.setBoostUadjustmentState(boostUadjustmentState);
         mainSectionController.setDelayReportModel(delayReportModel);
         mainSectionController.setRlc_reportModel(rlc_reportModel);
@@ -205,9 +205,9 @@ public class JavaFXSpringConfigure extends ViewLoader{
     @Autowired
     @DependsOn("regulatorsQTYController")
     public InjectorHighPressureSectionController injectorHighPressureSectionController(CRSectionController crSectionController,
-                                                                                       RegulatorsQTYState regulatorsQTYState){
+                                                                                       RegulatorsQTYModel regulatorsQTYModel){
         InjectorHighPressureSectionController injectorHighPressureSectionController = crSectionController.getInjectorHighPressureSectionController();
-        injectorHighPressureSectionController.setRegulatorsQTYState(regulatorsQTYState);
+        injectorHighPressureSectionController.setRegulatorsQTYModel(regulatorsQTYModel);
         return injectorHighPressureSectionController;
     }
 
@@ -295,7 +295,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                                DelayController delayController,
                                                                InjConfigurationModel injConfigurationModel,
                                                                InjectorTypeModel injectorTypeModel,
-                                                               BoostU_State boostU_state,
+                                                               BoostUModel boostUModel,
                                                                BoostUadjustmentState boostUadjustmentState,
                                                                Devices devices) {
         InjectorSectionController injectorSectionController = crSectionController().getInjectorSectionController();
@@ -306,7 +306,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         injectorSectionController.setI18N(i18N);
         injectorSectionController.setInjConfigurationModel(injConfigurationModel);
         injectorSectionController.setInjectorTypeModel(injectorTypeModel);
-        injectorSectionController.setBoostU_state(boostU_state);
+        injectorSectionController.setBoostUModel(boostUModel);
         injectorSectionController.setBoostUadjustmentState(boostUadjustmentState);
         injectorSectionController.setDevices(devices);
         return injectorSectionController;
@@ -960,12 +960,12 @@ public class JavaFXSpringConfigure extends ViewLoader{
 
     @Bean
     @Autowired
-    public RegulatorsQTYController regulatorsQTYController(RegulatorsQTYState regulatorsQTYState,
-                                                           Preferences preferences,
-                                                           SettingsController settingsController){
+    public RegulatorsQTYController regulatorsQTYController(SettingsController settingsController,
+                                                           RegulatorsQTYModel regulatorsQTYModel,
+                                                           Preferences preferences){
         RegulatorsQTYController regulatorsQTYController = settingsController.getRegulatorsQTYController();
-        regulatorsQTYController.setPressureSensorState(regulatorsQTYState);
-        regulatorsQTYController.setRootPrefs(preferences);
+        regulatorsQTYController.setPressureSensorState(regulatorsQTYModel);
+        regulatorsQTYController.setRootPreferences(preferences);
         return regulatorsQTYController;
     }
 

@@ -1,6 +1,6 @@
 package fi.stardex.sisu.settings;
 
-import fi.stardex.sisu.states.RegulatorsQTYState;
+import fi.stardex.sisu.model.RegulatorsQTYModel;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
@@ -12,28 +12,29 @@ public class RegulatorsQTYController {
 
     @FXML
     private ComboBox<String> regulatorsConfigComboBox;
-    private RegulatorsQTYState regulatorsQTYState;
-    private Preferences rootPrefs;
+
+    private RegulatorsQTYModel regulatorsQTYModel;
+
+    private Preferences rootPreferences;
+
     private final String PREF_KEY = "regulatorsConfigSelected";
 
-    public ComboBox<String> getRegulatorsConfigComboBox() {
-        return regulatorsConfigComboBox;
+    public void setPressureSensorState(RegulatorsQTYModel regulatorsQTYModel) {
+        this.regulatorsQTYModel = regulatorsQTYModel;
     }
 
-    public void setPressureSensorState(RegulatorsQTYState regulatorsQTYState) {
-        this.regulatorsQTYState = regulatorsQTYState;
-    }
-
-    public void setRootPrefs(Preferences rootPrefs) {
-        this.rootPrefs = rootPrefs;
+    public void setRootPreferences(Preferences rootPreferences) {
+        this.rootPreferences = rootPreferences;
     }
 
     @PostConstruct
     public void init(){
+
         regulatorsConfigComboBox.setItems(FXCollections.observableArrayList("3", "2", "1"));
-        regulatorsQTYState.regulatorsQTYStateProperty().bind(regulatorsConfigComboBox.valueProperty());
-        regulatorsConfigComboBox.getSelectionModel().select(rootPrefs.get(PREF_KEY, "3"));
-        regulatorsConfigComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> rootPrefs.put(PREF_KEY, newValue));
+        regulatorsQTYModel.regulatorsQTYProperty().bind(regulatorsConfigComboBox.valueProperty());
+        regulatorsConfigComboBox.getSelectionModel().select(rootPreferences.get(PREF_KEY, "3"));
+        regulatorsConfigComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> rootPreferences.put(PREF_KEY, newValue));
 
     }
+
 }

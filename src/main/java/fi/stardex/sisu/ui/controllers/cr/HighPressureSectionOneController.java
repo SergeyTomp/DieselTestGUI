@@ -2,12 +2,12 @@ package fi.stardex.sisu.ui.controllers.cr;
 
 import fi.stardex.sisu.model.InjectorTestModel;
 import fi.stardex.sisu.model.PressureRegulatorOneModel;
+import fi.stardex.sisu.model.PressureSensorModel;
 import fi.stardex.sisu.model.RegulationModesModel;
 import fi.stardex.sisu.model.updateModels.HighPressureSectionUpdateModel;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.HighPressureSectionPwrState;
-import fi.stardex.sisu.states.PressureSensorModel;
 import fi.stardex.sisu.util.enums.RegActive;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.listeners.ThreeSpinnerStyleChangeListener;
@@ -85,7 +85,7 @@ public class HighPressureSectionOneController {
     public void init(){
 
         bindingI18N();
-        regulationModesModel.getRegulatorOneMode().setValue(PRESSURE);
+        regulationModesModel.regulatorOneModeProperty().setValue(PRESSURE);
         setupSpinners();
         addListeners();
     }
@@ -219,7 +219,7 @@ public class HighPressureSectionOneController {
         public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
 
             if (newValue){
-                regulationModesModel.getRegulatorOneMode().setValue(activeParam);
+                regulationModesModel.regulatorOneModeProperty().setValue(activeParam);
                 if(highPressureSectionPwrState.powerButtonProperty().get() && regToggleButton.isSelected()){
                     ultimaModbusWriter.add(mapParam_1, mapParam_1_ON);
                     ultimaModbusWriter.add(mapParam_2, mapParam_2_ON);
@@ -250,7 +250,7 @@ public class HighPressureSectionOneController {
 
         @Override
         public void handle(MouseEvent event) {
-            regulationModesModel.getRegulatorOneMode().setValue(activeParam);
+            regulationModesModel.regulatorOneModeProperty().setValue(activeParam);
             if (highPressureSectionPwrState.powerButtonProperty().get()  && regToggleButton.isSelected()) {
                 ultimaModbusWriter.add(mapParam_1, mapParam_1_ON);
                 ultimaModbusWriter.add(mapParam_2, mapParam_2_ON);
@@ -272,9 +272,9 @@ public class HighPressureSectionOneController {
 
             if((highPressureSectionPwrState.powerButtonProperty().get()
                     && regToggleButton.isSelected()
-                    && activeParam == regulationModesModel.getRegulatorOneMode().get())){
+                    && activeParam == regulationModesModel.regulatorOneModeProperty().get())){
 
-                switch (regulationModesModel.getRegulatorOneMode().get()){
+                switch (regulationModesModel.regulatorOneModeProperty().get()){
                     case PRESSURE:
                         ultimaModbusWriter.add(PressureReg1_PressTask, calcTargetPress(newValue.intValue()));
                         System.err.println("press1 " + newValue);
@@ -325,7 +325,7 @@ public class HighPressureSectionOneController {
 
     private void regulator_ON(){
         ultimaModbusWriter.add(PressureReg1_ON, true);
-        switch(regulationModesModel.getRegulatorOneMode().get()){
+        switch(regulationModesModel.regulatorOneModeProperty().get()){
             case PRESSURE:
                 double press1 = calcTargetPress(pressSpinner.getValue());
                 ultimaModbusWriter.add(PressureReg1_PressTask, press1);
@@ -344,8 +344,8 @@ public class HighPressureSectionOneController {
 
     /** метод запускается при выборе режимов тест и авто */
     private void regulator1pressModeON(Integer targetPress){
-        if (regulationModesModel.getRegulatorOneMode().get() != PRESSURE){
-            regulationModesModel.getRegulatorOneMode().setValue(PRESSURE);
+        if (regulationModesModel.regulatorOneModeProperty().get() != PRESSURE){
+            regulationModesModel.regulatorOneModeProperty().setValue(PRESSURE);
             ultimaModbusWriter.add(PressureReg1_PressMode, true);   //вкл.режим давления
             ultimaModbusWriter.add(PressureReg1_I_Mode, false);     //откл.режим тока
         }

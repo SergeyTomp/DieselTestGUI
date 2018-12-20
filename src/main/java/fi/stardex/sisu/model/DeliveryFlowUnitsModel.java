@@ -6,9 +6,10 @@ import javafx.beans.property.StringProperty;
 //TODO this model is currently auxiliary, use it as separate during FlowController model-concept implementation
 public class DeliveryFlowUnitsModel {
 
-    private StringProperty deliveryFlowUnits = new SimpleStringProperty();
+    private StringProperty deliveryFlowUnitsProperty = new SimpleStringProperty();
 
     public StringProperty deliveryFlowUnitsProperty() {
-        return deliveryFlowUnits;
+        return deliveryFlowUnitsProperty;
     }
+
 }

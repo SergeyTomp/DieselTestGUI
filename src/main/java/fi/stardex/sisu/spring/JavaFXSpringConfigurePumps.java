@@ -1,10 +1,10 @@
 package fi.stardex.sisu.spring;
 
+import fi.stardex.sisu.model.LanguageModel;
 import fi.stardex.sisu.model.ManufacturerPumpModel;
 import fi.stardex.sisu.model.PumpModel;
 import fi.stardex.sisu.model.PumpTestModel;
 import fi.stardex.sisu.states.CustomPumpState;
-import fi.stardex.sisu.states.LanguageModel;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.pumps.PumpInfoController;
 import fi.stardex.sisu.ui.controllers.pumps.PumpReportController;

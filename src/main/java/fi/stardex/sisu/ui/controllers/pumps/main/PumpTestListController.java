@@ -2,10 +2,7 @@ package fi.stardex.sisu.ui.controllers.pumps.main;
 
 import fi.stardex.sisu.model.PumpTestModel;
 import fi.stardex.sisu.persistence.orm.pump.PumpTest;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
@@ -44,7 +41,7 @@ public class PumpTestListController {
         pumpTestModel.getPumpTestObservableList().addListener((ListChangeListener<PumpTest>) change -> {
 
             testListView.getItems().setAll(change.getList());
-            pumpTestModel.pumpTestObjectProperty().setValue(null);
+            pumpTestModel.pumpTestProperty().setValue(null);
             if(!change.getList().isEmpty()){
                 testListView.getSelectionModel().selectFirst();
 
@@ -52,6 +49,6 @@ public class PumpTestListController {
             }
         });
 
-        testListView.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> pumpTestModel.pumpTestObjectProperty().setValue(newValue));
+        testListView.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> pumpTestModel.pumpTestProperty().setValue(newValue));
     }
 }

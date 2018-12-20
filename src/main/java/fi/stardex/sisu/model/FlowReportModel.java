@@ -3,13 +3,15 @@ package fi.stardex.sisu.model;
 import fi.stardex.sisu.combobox_values.Dimension;
 import fi.stardex.sisu.pdf.Result;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
-import fi.stardex.sisu.states.FlowViewModel;
 import fi.stardex.sisu.util.enums.Measurement;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 import static fi.stardex.sisu.util.FlowUnitObtainer.getBackFlowCoefficient;
 import static fi.stardex.sisu.util.FlowUnitObtainer.getDeliveryCoefficient;
@@ -25,7 +27,22 @@ public class FlowReportModel {
     private FlowViewModel flowViewModel;
     private BooleanProperty resultMapChanged = new SimpleBooleanProperty();
     private ObservableMap<InjectorTest, FlowResult> resultObservableMap = FXCollections.observableMap(new HashMap<>());
-    private final double DEVIATION = 0.03;
+
+    public FlowReportModel(FlowViewModel flowViewModel,
+                           FlowValuesModel flowValuesModel,
+                           DeliveryFlowRangeModel deliveryFlowRangeModel,
+                           DeliveryFlowUnitsModel deliveryFlowUnitsModel,
+                           BackFlowRangeModel backFlowRangeModel,
+                           BackFlowUnitsModel backFlowUnitsModel) {
+
+        this.flowViewModel = flowViewModel;
+        this.flowValuesModel = flowValuesModel;
+        this.deliveryFlowRangeModel = deliveryFlowRangeModel;
+        this.deliveryFlowUnitsModel = deliveryFlowUnitsModel;
+        this.backFlowRangeModel = backFlowRangeModel;
+        this.backFlowUnitsModel = backFlowUnitsModel;
+
+    }
 
     public List<FlowResult> getResultsList(){
         return new ArrayList<>(resultObservableMap.values());
@@ -37,30 +54,6 @@ public class FlowReportModel {
 
     public BooleanProperty resultMapChangedProperty() {
         return resultMapChanged;
-    }
-
-    public void setFlowValuesModel(FlowValuesModel flowValuesModel) {
-        this.flowValuesModel = flowValuesModel;
-    }
-
-    public void setBackFlowRangeModel(BackFlowRangeModel backFlowRangeModel) {
-        this.backFlowRangeModel = backFlowRangeModel;
-    }
-
-    public void setBackFlowUnitsModel(BackFlowUnitsModel backFlowUnitsModel) {
-        this.backFlowUnitsModel = backFlowUnitsModel;
-    }
-
-    public void setDeliveryFlowRangeModel(DeliveryFlowRangeModel deliveryFlowRangeModel) {
-        this.deliveryFlowRangeModel = deliveryFlowRangeModel;
-    }
-
-    public void setDeliveryFlowUnitsModel(DeliveryFlowUnitsModel deliveryFlowUnitsModel) {
-        this.deliveryFlowUnitsModel = deliveryFlowUnitsModel;
-    }
-
-    public void setFlowViewModel(FlowViewModel flowViewModel) {
-        this.flowViewModel = flowViewModel;
     }
 
     public void clearResults(){
@@ -145,14 +138,6 @@ public class FlowReportModel {
             return injectorTest.get();
         }
 
-        public String getFlowType() {
-            return flowType.get();
-        }
-
-        public String getNominalFlow() {
-            return nominalFlow.get();
-        }
-
         public String getFlow1() {
             return flow1.get();
         }
@@ -229,13 +214,13 @@ public class FlowReportModel {
             return acceptableFlowRangeRight;
         }
 
-        public FlowResult(InjectorTest injectorTest,
-                          String nominalFlow,
-                          String flow1,
-                          String flow2,
-                          String flow3,
-                          String flow4,
-                          Dimension dimension) {
+        FlowResult(InjectorTest injectorTest,
+                   String nominalFlow,
+                   String flow1,
+                   String flow2,
+                   String flow3,
+                   String flow4,
+                   Dimension dimension) {
 
             this.injectorTest = new SimpleObjectProperty<>(injectorTest);
             this.flowType = new SimpleStringProperty(injectorTest.getTestName().getMeasurement().name());
@@ -288,8 +273,8 @@ public class FlowReportModel {
                     break;
 
             }
-            acceptableFlowRangeLeft = flowRangeLeft - flowRangeLeft * DEVIATION;
-            acceptableFlowRangeRight = flowRangeRight + flowRangeRight * DEVIATION;
+            acceptableFlowRangeLeft = flowRangeLeft - flowRangeLeft * 0.03;
+            acceptableFlowRangeRight = flowRangeRight + flowRangeRight * 0.03;
         }
 
         @Override
@@ -299,12 +284,12 @@ public class FlowReportModel {
 
         @Override
         public String getSubColumn1() {
-            return getFlowType();
+            return flowType.get();
         }
 
         @Override
         public String getSubColumn2() {
-            return getNominalFlow();
+            return nominalFlow.get();
         }
 
         @Override
@@ -313,4 +298,3 @@ public class FlowReportModel {
         }
     }
 }
-

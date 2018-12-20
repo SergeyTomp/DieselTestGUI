@@ -1,4 +1,4 @@
-package fi.stardex.sisu.states;
+package fi.stardex.sisu.model;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
@@ -10,4 +10,5 @@ public class PressureSensorModel {
     public IntegerProperty pressureSensorProperty() {
         return pressureSensorProperty;
     }
+
 }

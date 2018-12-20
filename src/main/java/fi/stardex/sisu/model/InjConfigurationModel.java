@@ -1,4 +1,4 @@
-package fi.stardex.sisu.states;
+package fi.stardex.sisu.model;
 
 import fi.stardex.sisu.combobox_values.InjectorChannel;
 import javafx.beans.property.ObjectProperty;
@@ -11,4 +11,5 @@ public class InjConfigurationModel {
     public ObjectProperty<InjectorChannel> injConfigurationProperty() {
         return injConfigurationProperty;
     }
+
 }

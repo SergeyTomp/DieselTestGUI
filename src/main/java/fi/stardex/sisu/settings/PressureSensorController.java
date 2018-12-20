@@ -1,6 +1,6 @@
 package fi.stardex.sisu.settings;
 
-import fi.stardex.sisu.states.PressureSensorModel;
+import fi.stardex.sisu.model.PressureSensorModel;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;

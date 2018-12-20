@@ -1,4 +1,4 @@
-package fi.stardex.sisu.states;
+package fi.stardex.sisu.model;
 
 import fi.stardex.sisu.util.i18n.Locales;
 import javafx.beans.property.ObjectProperty;
@@ -11,4 +11,5 @@ public class LanguageModel {
     public ObjectProperty<Locales> languageProperty() {
         return languageProperty;
     }
+
 }
