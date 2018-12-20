@@ -548,7 +548,6 @@ public class MainSectionController {
 
     private void fetchTestsFromRepository() {
 
-        ObjectProperty<List<InjectorTest>> property = new SimpleObjectProperty<>();
 
         Task<List<InjectorTest>> task = new Task<>() {
             @Override
@@ -557,9 +556,8 @@ public class MainSectionController {
             }
         };
 
-        property.bind(task.valueProperty());
 
-        property.addListener((observable, oldValue, newValue) -> {
+        task.valueProperty().addListener((observable, oldValue, newValue) -> {
 
             if (newValue != null) {
 
