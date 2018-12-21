@@ -153,9 +153,19 @@ public class FlowResolver {
 
         double coefficient = (measurement == Measurement.DELIVERY) ? getDeliveryCoefficient() : getBackFlowCoefficient();
 
-        result[0] = round(nominalFlow * coefficient);
-        result[1] = round((nominalFlow * (flowRange * PERCENT)) * coefficient);
+        result[0] = round((nominalFlow * (flowRange * PERCENT)) * coefficient);
+        result[1] = round(nominalFlow * coefficient);
 
+        switch (measurement) {
+
+            case DELIVERY:
+                flowController.setCurrentDeliveryFlowLevels(result);
+                break;
+            case BACK_FLOW:
+                flowController.setCurrentBackFlowLevels(result);
+                break;
+
+        }
 
         flowLabel.setText(String.format("%.1f \u00B1 %.1f", result[0], result[1]));
 

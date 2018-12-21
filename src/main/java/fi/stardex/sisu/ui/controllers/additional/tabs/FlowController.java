@@ -368,7 +368,7 @@ public class FlowController {
 
     private void setupDeliveryFlowComboBox() {
 
-        deliveryFlowComboBox.getItems().setAll(MILLILITRE_PER_MINUTE, LITRE_PER_HOUR, MILLILITRE_PER_100RPM, MILLILITRE_PER_200RPM, MILLILITRE_PER_1000RPM);
+        deliveryFlowComboBox.getItems().setAll(MILLILITRE_PER_MINUTE, LITRE_PER_HOUR);
         createDeliveryFlowUnitBinding(deliveryFlowComboBox);
         deliveryFlowComboBox.getSelectionModel().selectFirst();
 
@@ -376,7 +376,7 @@ public class FlowController {
 
     private void setupBackFlowComboBox() {
 
-        backFlowComboBox.getItems().setAll(MILLILITRE_PER_MINUTE, LITRE_PER_HOUR, MILLILITRE_PER_100RPM, MILLILITRE_PER_200RPM, MILLILITRE_PER_1000RPM);
+        backFlowComboBox.getItems().setAll(MILLILITRE_PER_MINUTE, LITRE_PER_HOUR);
         createBackFlowUnitBinding(backFlowComboBox);
         backFlowComboBox.getSelectionModel().selectFirst();
 

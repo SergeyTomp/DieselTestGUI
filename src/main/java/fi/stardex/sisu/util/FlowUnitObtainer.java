@@ -10,11 +10,11 @@ public class FlowUnitObtainer {
 
     public static final String LITRE_PER_HOUR = "l/h";
 
-    public static final String MILLILITRE_PER_100RPM = "ml/100str";
-
-    public static final String MILLILITRE_PER_200RPM = "ml/200str";
-
-    public static final String MILLILITRE_PER_1000RPM = "ml/1000str";
+//    public static final String MILLILITRE_PER_100RPM = "ml/100str";
+//
+//    public static final String MILLILITRE_PER_200RPM = "ml/200str";
+//
+//    public static final String MILLILITRE_PER_1000RPM = "ml/1000str";
 
     private static double deliveryCoefficient;
 
@@ -44,15 +44,15 @@ public class FlowUnitObtainer {
                 case LITRE_PER_HOUR:
                     deliveryCoefficient = 0.06;
                     break;
-                case MILLILITRE_PER_100RPM:
-                    deliveryCoefficient = 1;
-                    break;
-                case MILLILITRE_PER_200RPM:
-                    deliveryCoefficient = 1;
-                    break;
-                case MILLILITRE_PER_1000RPM:
-                    deliveryCoefficient = 1;
-                    break;
+//                case MILLILITRE_PER_100RPM:
+//                    deliveryCoefficient = 1;
+//                    break;
+//                case MILLILITRE_PER_200RPM:
+//                    deliveryCoefficient = 1;
+//                    break;
+//                case MILLILITRE_PER_1000RPM:
+//                    deliveryCoefficient = 1;
+//                    break;
             }
 
         });
@@ -71,15 +71,15 @@ public class FlowUnitObtainer {
                 case LITRE_PER_HOUR:
                     backFlowCoefficient = 0.06;
                     break;
-                case MILLILITRE_PER_100RPM:
-                    backFlowCoefficient = 1;
-                    break;
-                case MILLILITRE_PER_200RPM:
-                    backFlowCoefficient = 1;
-                    break;
-                case MILLILITRE_PER_1000RPM:
-                    backFlowCoefficient = 1;
-                    break;
+//                case MILLILITRE_PER_100RPM:
+//                    backFlowCoefficient = 1;
+//                    break;
+//                case MILLILITRE_PER_200RPM:
+//                    backFlowCoefficient = 1;
+//                    break;
+//                case MILLILITRE_PER_1000RPM:
+//                    backFlowCoefficient = 1;
+//                    break;
             }
 
         });
