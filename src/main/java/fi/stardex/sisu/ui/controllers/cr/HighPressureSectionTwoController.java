@@ -187,9 +187,11 @@ public class HighPressureSectionTwoController {
                 switch (regulationModesModel.getRegulatorTwoMode().get()){
                     case CURRENT:
                         ultimaModbusWriter.add(PressureReg2_I_Task, newValue);
+                        System.err.println("current2 " + newValue);
                         break;
                     case DUTY:
                         ultimaModbusWriter.add(PressureReg2_DutyTask, newValue);
+                        System.err.println("duty2 " + newValue);
                         break;
 
                 }

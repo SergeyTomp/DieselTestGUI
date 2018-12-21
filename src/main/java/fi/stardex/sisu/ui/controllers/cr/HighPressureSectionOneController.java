@@ -277,15 +277,15 @@ public class HighPressureSectionOneController {
                 switch (regulationModesModel.getRegulatorOneMode().get()){
                     case PRESSURE:
                         ultimaModbusWriter.add(PressureReg1_PressTask, calcTargetPress(newValue.intValue()));
-//                        System.err.println("press " + newValue);
+                        System.err.println("press1 " + newValue);
                         break;
                     case CURRENT:
                         ultimaModbusWriter.add(PressureReg1_I_Task, newValue);
-//                        System.err.println("current " + newValue);
+                        System.err.println("current1 " + newValue);
                         break;
                     case DUTY:
                         ultimaModbusWriter.add(PressureReg1_DutyTask, newValue);
-//                        System.err.println("duty " + newValue);
+                        System.err.println("duty1 " + newValue);
 
                         break;
                 }

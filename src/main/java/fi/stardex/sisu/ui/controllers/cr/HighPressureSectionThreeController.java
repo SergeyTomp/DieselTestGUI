@@ -189,9 +189,11 @@ public class HighPressureSectionThreeController {
                 switch (regulationModesModel.getRegulatorThreeMode().get()){
                     case CURRENT:
                         ultimaModbusWriter.add(PressureReg3_I_Task, newValue);
+                        System.err.println("current3 " + newValue);
                         break;
                     case DUTY:
                         ultimaModbusWriter.add(PressureReg3_DutyTask, newValue);
+                        System.err.println("duty3 " + newValue);
                         break;
 
                 }

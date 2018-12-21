@@ -91,7 +91,9 @@ public class PumpFlowTextAreaController {
         PumpTest pumpTest = pumpTestModel.pumpTestObjectProperty().get();
 
         sb.setLength(0);
-        sb.append(oem.get()).append(pmp.getManufacturerPump()).append(LF)
+        sb.append(oem.get())
+                .append(pmp.getManufacturerPump())
+                .append(LF)
                 .append(pump.get()).append(pmp.getPumpCode()).append(LF)
                 .append(type.get()).append(pumpModel.getPumpType()).append(LF)
                 .append(car.get());

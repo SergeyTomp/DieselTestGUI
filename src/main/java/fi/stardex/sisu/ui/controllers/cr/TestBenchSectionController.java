@@ -31,7 +31,10 @@ import static fi.stardex.sisu.version.StandFirmwareVersion.StandVersions.STAND;
 
 public class TestBenchSectionController {
 
+
     private Logger logger = LoggerFactory.getLogger(TestBenchSectionController.class);
+
+    @FXML private Label fuelLevelLabel;
 
     @FXML
     private StackPane lcdStackPane;
@@ -279,6 +282,7 @@ public class TestBenchSectionController {
         labelTemp2.textProperty().bind(i18N.createStringBinding("bench.label.temp2"));
         labelPressure1.textProperty().bind(i18N.createStringBinding("bench.label.pressure1"));
         labelRPM.textProperty().bind(i18N.createStringBinding("bench.label.rpm"));
+        fuelLevelLabel.textProperty().bind(i18N.createStringBinding("bench.label.fuelLevel"));
     }
 
     private void setupFlowFirmwareVersionListener() {

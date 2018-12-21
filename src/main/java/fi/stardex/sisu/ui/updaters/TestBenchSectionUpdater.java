@@ -222,7 +222,7 @@ public class TestBenchSectionUpdater implements Updater {
             else
                 changeTankOil("red-oil-bar", "VERY\nLOW");
 
-            tankOil.setProgress(tankOilLevelLastValue / 100.0);
+            tankOil.setProgress(tankOilLevelLastValue / 110.0);
         }
 
     }

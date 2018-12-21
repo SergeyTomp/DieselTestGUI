@@ -41,8 +41,9 @@ public class SpinnerManager {
                         throw new RuntimeException("Invalid spinner value!");
                     return converter.fromString(string);
                 } catch (RuntimeException ex) {
-                    spinner.getValueFactory().setValue(fake_value);
-                    spinner.getValueFactory().setValue(initValue);
+//                    spinner.getValueFactory().setValue(fake_value);
+//                    spinner.getValueFactory().setValue(initValue);
+                    spinner.cancelEdit();
                     return spinner.getValue();
                 }
             }
@@ -52,8 +53,9 @@ public class SpinnerManager {
             if (event.getCode() == KeyCode.ESCAPE) {
                 spinner.requestFocus();
                 escapePressed = true;
-                spinner.getValueFactory().setValue(fake_value);
-                spinner.getValueFactory().setValue((Double) obtainer.getInitialSpinnerOldValue());
+//                spinner.getValueFactory().setValue(fake_value);
+//                spinner.getValueFactory().setValue((Double) obtainer.getInitialSpinnerOldValue());
+                spinner.cancelEdit();
                 escapePressed = false;
             }else if(event.getCode() == KeyCode.ENTER){
                 if (spinner.getEditor().textProperty().get().isEmpty()){
@@ -93,17 +95,20 @@ public class SpinnerManager {
             @Override
             public Integer fromString(String string) {
                 try {
-                    if (string.isEmpty())
+                    if (string.isEmpty()){
                         throw new RuntimeException("Invalid spinner value!");
+                    }
+
                     return converter.fromString(string);
                 } catch (RuntimeException ex) {
-                    if (obtainer instanceof WidthSpinnerValueObtainer) {
-                        ((WidthSpinnerValueObtainer) obtainer).setGeneratedFakeValue(generateRandomFakeInt(minValue, maxValue));
-                        spinner.getValueFactory().setValue(((WidthSpinnerValueObtainer) obtainer).getGeneratedFakeValue());
-                    } else {
-                        spinner.getValueFactory().setValue(generateRandomFakeInt(minValue, maxValue));
-                    }
-                    spinner.getValueFactory().setValue(initValue);
+//                    if (obtainer instanceof WidthSpinnerValueObtainer) {
+//                        ((WidthSpinnerValueObtainer) obtainer).setGeneratedFakeValue(generateRandomFakeInt(minValue, maxValue));
+//                        spinner.getValueFactory().setValue(((WidthSpinnerValueObtainer) obtainer).getGeneratedFakeValue());
+//                    } else {
+//                        spinner.getValueFactory().setValue(generateRandomFakeInt(minValue, maxValue));
+//                    }
+//                    spinner.getValueFactory().setValue(initValue);
+                    spinner.cancelEdit();
                     return spinner.getValue();
                 }
             }
@@ -114,13 +119,14 @@ public class SpinnerManager {
             if (event.getCode() == KeyCode.ESCAPE) {
                 spinner.requestFocus();
                 escapePressed = true;
-                if(obtainer instanceof WidthSpinnerValueObtainer) {
-                    ((WidthSpinnerValueObtainer) obtainer).setGeneratedFakeValue(generateRandomFakeInt(minValue, maxValue));
-                    spinner.getValueFactory().setValue(((WidthSpinnerValueObtainer) obtainer).getGeneratedFakeValue());
-                } else {
-                    spinner.getValueFactory().setValue(generateRandomFakeInt(minValue, maxValue));
-                }
-                spinner.getValueFactory().setValue((Integer) obtainer.getInitialSpinnerOldValue());
+//                if(obtainer instanceof WidthSpinnerValueObtainer) {
+//                    ((WidthSpinnerValueObtainer) obtainer).setGeneratedFakeValue(generateRandomFakeInt(minValue, maxValue));
+//                    spinner.getValueFactory().setValue(((WidthSpinnerValueObtainer) obtainer).getGeneratedFakeValue());
+//                } else {
+//                    spinner.getValueFactory().setValue(generateRandomFakeInt(minValue, maxValue));
+//                }
+//                spinner.getValueFactory().setValue((Integer) obtainer.getInitialSpinnerOldValue());
+                spinner.cancelEdit();
                 escapePressed = false;
             }else if(event.getCode() == KeyCode.ENTER){
                 if (spinner.getEditor().textProperty().get().isEmpty()){
@@ -162,11 +168,11 @@ public class SpinnerManager {
         spinner.getEditor().textProperty().addListener((observable, oldValue, newValue) -> {
 
             if (!escapePressed) {
-                try {
-                    obtainer.setOldValue(Integer.parseInt(oldValue));
-                } catch (NumberFormatException ex) {
-                    obtainer.setOldValue(obtainer.getInitialSpinnerOldValue());
-                }
+//                try {
+//                    obtainer.setOldValue(Integer.parseInt(oldValue));
+//                } catch (NumberFormatException ex) {
+//                    obtainer.setOldValue(obtainer.getInitialSpinnerOldValue());
+//                }
                 Point2D p = spinner.localToScene(0.0, 0.0);
                 spinner.setTooltip(tooltip);
                 if (!tooltip.isShowing() && spinner.getScene() != null) {
