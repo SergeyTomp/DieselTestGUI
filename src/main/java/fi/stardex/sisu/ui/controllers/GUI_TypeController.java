@@ -18,7 +18,8 @@ public class GUI_TypeController {
     private final Logger logger = LoggerFactory.getLogger(GUI_TypeController.class);
 
     public enum GUIType {
-        CR_Inj, CR_Pump, UIS
+        CR_Inj
+        , CR_Pump, UIS
     }
 
     @FXML

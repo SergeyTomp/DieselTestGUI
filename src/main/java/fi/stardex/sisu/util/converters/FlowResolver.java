@@ -159,10 +159,10 @@ public class FlowResolver {
         switch (measurement) {
 
             case DELIVERY:
-                flowController.setCurrentDeliveryFlowLevels(result);
+                flowController.setCurrentDeliveryFlowLevels(getRange(nominalFlow, flowRange, getDeliveryCoefficient()));
                 break;
             case BACK_FLOW:
-                flowController.setCurrentBackFlowLevels(result);
+                flowController.setCurrentBackFlowLevels(getRange(nominalFlow, flowRange, getBackFlowCoefficient()));
                 break;
 
         }
