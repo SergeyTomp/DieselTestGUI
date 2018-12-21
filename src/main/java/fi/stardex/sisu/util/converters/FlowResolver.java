@@ -167,7 +167,7 @@ public class FlowResolver {
 
         }
 
-        flowLabel.setText(String.format("%.1f \u00B1 %.1f", result[0], result[1]));
+        flowLabel.setText(String.format("%.1f \u00B1 %.1f", result[1], result[0]));
 
     }
 
