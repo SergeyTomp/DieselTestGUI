@@ -15,7 +15,6 @@ import fi.stardex.sisu.ui.controllers.additional.tabs.DelayController;
 import fi.stardex.sisu.util.enums.InjectorType;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.spinners.SpinnerManager;
-import fi.stardex.sisu.util.spinners.SpinnerValueObtainer;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -363,11 +362,7 @@ public class InjectorSectionController {
                 FREQ_CURRENT_SIGNAL_SPINNER_INIT,
                 FREQ_CURRENT_SIGNAL_SPINNER_STEP));
 
-        SpinnerManager.setupSpinner(freqCurrentSignalSpinner,
-                FREQ_CURRENT_SIGNAL_SPINNER_INIT,
-                FREQ_CURRENT_SIGNAL_SPINNER_FAKE,
-                new Tooltip(),
-                new SpinnerValueObtainer(FREQ_CURRENT_SIGNAL_SPINNER_INIT));
+        SpinnerManager.setupDoubleSpinner(freqCurrentSignalSpinner);
 
     }
 

@@ -6,8 +6,6 @@ import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.spinners.SpinnerManager;
-import fi.stardex.sisu.util.spinners.SpinnerValueObtainer;
-import fi.stardex.sisu.util.spinners.WidthSpinnerValueObtainer;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -85,8 +83,6 @@ public class VoltAmpereProfileController {
     private VoltageController voltageController;
 
     private List<Spinner> listOfVAPSpinners = new ArrayList<>();
-
-    private WidthSpinnerValueObtainer widthCurrentSignalValueObtainer = new WidthSpinnerValueObtainer(WIDTH_CURRENT_SIGNAL_SPINNER_INIT);
 
     private InjectorSectionController injectorSectionController;
 
@@ -224,51 +220,14 @@ public class VoltAmpereProfileController {
                 BOOST_U_SPINNER_INIT,
                 BOOST_U_SPINNER_STEP));
 
-        SpinnerManager.setupSpinner(widthCurrentSignal,
-                WIDTH_CURRENT_SIGNAL_SPINNER_INIT,
-                WIDTH_CURRENT_SIGNAL_SPINNER_MIN,
-                WIDTH_CURRENT_SIGNAL_SPINNER_MAX,
-                new Tooltip(),
-                widthCurrentSignalValueObtainer);
-        SpinnerManager.setupSpinner(firstWSpinner,
-                FIRST_W_SPINNER_INIT,
-                FIRST_W_SPINNER_MIN,
-                FIRST_W_SPINNER_MAX,
-                new Tooltip(),
-                new SpinnerValueObtainer(FIRST_W_SPINNER_INIT));
-        SpinnerManager.setupSpinner(boostISpinner,
-                BOOST_I_SPINNER_INIT,
-                BOOST_U_SPINNER_FAKE,
-                new Tooltip(),
-                new SpinnerValueObtainer(BOOST_U_SPINNER_INIT));
-        SpinnerManager.setupSpinner(firstISpinner,
-                FIRST_I_SPINNER_INIT,
-                FIRST_I_SPINNER_FAKE,
-                new Tooltip(),
-                new SpinnerValueObtainer(FIRST_W_SPINNER_INIT));
-        SpinnerManager.setupSpinner(secondISpinner,
-                SECOND_I_SPINNER_INIT,
-                SECOND_I_SPINNER_FAKE,
-                new Tooltip(),
-                new SpinnerValueObtainer(SECOND_I_SPINNER_INIT));
-        SpinnerManager.setupSpinner(batteryUSpinner,
-                BATTERY_U_SPINNER_INIT,
-                BATTERY_U_SPINNER_MIN,
-                BATTERY_U_SPINNER_MAX,
-                new Tooltip(),
-                new SpinnerValueObtainer(BATTERY_U_SPINNER_INIT));
-        SpinnerManager.setupSpinner(negativeUSpinner,
-                NEGATIVE_U_SPINNER_INIT,
-                NEGATIVE_U_SPINNER_MIN,
-                NEGATIVE_U_SPINNER_MAX,
-                new Tooltip(),
-                new SpinnerValueObtainer(NEGATIVE_U_SPINNER_INIT));
-        SpinnerManager.setupSpinner(boostUSpinner,
-                BOOST_U_SPINNER_INIT,
-                BOOST_U_SPINNER_MIN,
-                BOOST_U_SPINNER_MAX,
-                new Tooltip(),
-                new SpinnerValueObtainer(BOOST_U_SPINNER_INIT));
+        SpinnerManager.setupIntegerSpinner(widthCurrentSignal);
+        SpinnerManager.setupIntegerSpinner(firstWSpinner);
+        SpinnerManager.setupDoubleSpinner(boostISpinner);
+        SpinnerManager.setupDoubleSpinner(firstISpinner);
+        SpinnerManager.setupDoubleSpinner(secondISpinner);
+        SpinnerManager.setupIntegerSpinner(batteryUSpinner);
+        SpinnerManager.setupIntegerSpinner(negativeUSpinner);
+        SpinnerManager.setupIntegerSpinner(boostUSpinner);
 
         listOfVAPSpinners.add(widthCurrentSignal);
         listOfVAPSpinners.add(firstWSpinner);
@@ -317,18 +276,15 @@ public class VoltAmpereProfileController {
     // FIXME: есть баги, не пишется старое значение при закрытии окна при горящем tooltip
     private void setupCancelButton() {
 
-        cancelButton.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                firstWSpinner.getValueFactory().setValue(firstWSavedValue);
-                boostISpinner.getValueFactory().setValue(boostISavedValue);
-                firstISpinner.getValueFactory().setValue(firstISavedValue);
-                secondISpinner.getValueFactory().setValue(secondISavedValue);
-                batteryUSpinner.getValueFactory().setValue(batteryUSavedValue);
-                negativeUSpinner.getValueFactory().setValue(negativeUSavedValue);
-                boostUSpinner.getValueFactory().setValue(boostUSavedValue);
-                stage.close();
-            }
+        cancelButton.setOnAction(event -> {
+            firstWSpinner.getValueFactory().setValue(firstWSavedValue);
+            boostISpinner.getValueFactory().setValue(boostISavedValue);
+            firstISpinner.getValueFactory().setValue(firstISavedValue);
+            secondISpinner.getValueFactory().setValue(secondISavedValue);
+            batteryUSpinner.getValueFactory().setValue(batteryUSavedValue);
+            negativeUSpinner.getValueFactory().setValue(negativeUSavedValue);
+            boostUSpinner.getValueFactory().setValue(boostUSavedValue);
+            stage.close();
         });
 
     }
@@ -337,8 +293,7 @@ public class VoltAmpereProfileController {
 
         widthCurrentSignal.valueProperty().addListener((observable, oldValue, newValue) -> {
             if ((newValue >= WIDTH_CURRENT_SIGNAL_SPINNER_MIN) &&
-                    (newValue <= WIDTH_CURRENT_SIGNAL_SPINNER_MAX) &&
-                    (!(newValue == widthCurrentSignalValueObtainer.getGeneratedFakeValue()))) {
+                    (newValue <= WIDTH_CURRENT_SIGNAL_SPINNER_MAX)) {
                 sendVAPRegisters();
             }
         });

@@ -12,12 +12,14 @@ import fi.stardex.sisu.util.enums.RegActive;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.listeners.ThreeSpinnerStyleChangeListener;
 import fi.stardex.sisu.util.spinners.SpinnerManager;
-import fi.stardex.sisu.util.spinners.SpinnerValueObtainer;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Label;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 
@@ -106,9 +108,9 @@ public class HighPressureSectionOneController {
         pressureSensorModel.pressureSensorProperty().addListener(((observable, oldValue, newValue) -> pressSpinner.setValueFactory(
                 new SpinnerValueFactory.IntegerSpinnerValueFactory(PRESS_REG_1_SPINNER_MIN, newValue.intValue(), PRESS_REG_1_SPINNER_INIT, PRESS_REG_1_SPINNER_STEP))));
 
-        SpinnerManager.setupSpinner(pressSpinner, PRESS_REG_1_SPINNER_INIT, PRESS_REG_1_SPINNER_MIN, PRESS_REG_1_SPINNER_MAX, new Tooltip(), new SpinnerValueObtainer(PRESS_REG_1_SPINNER_INIT));
-        SpinnerManager.setupSpinner(currentSpinner, CURRENT_REG_1_SPINNER_INIT, CURRENT_REG_1_SPINNER_FAKE, new Tooltip(), new SpinnerValueObtainer(CURRENT_REG_1_SPINNER_INIT));
-        SpinnerManager.setupSpinner(dutySpinner, DUTY_CYCLE_REG_1_SPINNER_INIT, DUTY_CYCLE_REG_1_SPINNER_FAKE, new Tooltip(), new SpinnerValueObtainer(DUTY_CYCLE_REG_1_SPINNER_INIT));
+        SpinnerManager.setupIntegerSpinner(pressSpinner);
+        SpinnerManager.setupDoubleSpinner(currentSpinner);
+        SpinnerManager.setupDoubleSpinner(dutySpinner);
 
         pressSpinner.getStyleClass().add(1, GREEN_STYLE_CLASS);
         currentSpinner.getStyleClass().add(1, "");
