@@ -6,49 +6,38 @@ import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
-import javafx.scene.layout.HBox;
 
 import javax.annotation.PostConstruct;
+import java.util.Optional;
 
 public class PumpTestListController {
 
-    @FXML private ListView<PumpTest> testListView;
-    @FXML private Button upButton;
-    @FXML private Button downButton;
-    @FXML private HBox testListHBox;
+    @FXML
+    private ListView<PumpTest> testListView;
+    @FXML
+    private Button upButton;
+    @FXML
+    private Button downButton;
 
     private PumpTestModel pumpTestModel;
-
-    public ListView<PumpTest> getPumpTestListView() {
-        return testListView;
-    }
-
-    public Button getUpButton() {
-        return upButton;
-    }
-
-    public Button getDownButton() {
-        return downButton;
-    }
 
     public void setPumpTestModel(PumpTestModel pumpTestModel) {
         this.pumpTestModel = pumpTestModel;
     }
 
     @PostConstruct
-    public void init(){
+    public void init() {
 
         pumpTestModel.getPumpTestObservableList().addListener((ListChangeListener<PumpTest>) change -> {
 
             testListView.getItems().setAll(change.getList());
-            pumpTestModel.pumpTestProperty().setValue(null);
-            if(!change.getList().isEmpty()){
-                testListView.getSelectionModel().selectFirst();
+            testListView.getSelectionModel().selectFirst();
 
-
-            }
         });
 
-        testListView.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> pumpTestModel.pumpTestProperty().setValue(newValue));
+        testListView.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) ->
+                Optional.ofNullable(newValue).ifPresent(value -> pumpTestModel.pumpTestProperty().setValue(value)));
+
     }
+
 }

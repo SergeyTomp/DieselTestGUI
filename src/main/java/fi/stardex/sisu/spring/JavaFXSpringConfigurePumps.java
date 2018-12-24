@@ -1,9 +1,6 @@
 package fi.stardex.sisu.spring;
 
-import fi.stardex.sisu.model.LanguageModel;
-import fi.stardex.sisu.model.ManufacturerPumpModel;
-import fi.stardex.sisu.model.PumpModel;
-import fi.stardex.sisu.model.PumpTestModel;
+import fi.stardex.sisu.model.*;
 import fi.stardex.sisu.states.CustomPumpState;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.pumps.PumpInfoController;
@@ -114,8 +111,13 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
 
     @Bean
     @Autowired
-    public TestSpeedController testSpeedController(MainSectionPumpsController mainSectionPumpsController) {
-        return mainSectionPumpsController.getTestSpeedController();
+    public TestSpeedController testSpeedController(MainSectionPumpsController mainSectionPumpsController,
+                                                   PumpTestModel pumpTestModel,
+                                                   PumpTimeProgressModel pumpTimeProgressModel) {
+        TestSpeedController testSpeedController = mainSectionPumpsController.getTestSpeedController();
+        testSpeedController.setPumpTestModel(pumpTestModel);
+        testSpeedController.setPumpTimeProgressModel(pumpTimeProgressModel);
+        return testSpeedController;
     }
 
     @Bean

@@ -83,6 +83,14 @@ public class PumpTest {
         return targetPressure;
     }
 
+    public Integer getAdjustingTime() {
+        return adjustingTime;
+    }
+
+    public Integer getMeasuringTime() {
+        return measuringTime;
+    }
+
     @Override
     public String toString() {
         return pumpTestName.toString();

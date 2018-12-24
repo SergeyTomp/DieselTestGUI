@@ -819,4 +819,9 @@ public class SpringJavaConfig {
         return new RegulationModesModel();
     }
 
+    @Bean
+    public PumpTimeProgressModel pumpTimeProgressModel() {
+        return new PumpTimeProgressModel();
+    }
+
 }
