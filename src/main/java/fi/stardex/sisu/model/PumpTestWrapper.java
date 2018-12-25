@@ -7,7 +7,7 @@ import javafx.beans.property.SimpleBooleanProperty;
 public class PumpTestWrapper {
 
     private PumpTest pumpTest;
-    private BooleanProperty isIncluded = new SimpleBooleanProperty();
+    private BooleanProperty isIncluded = new SimpleBooleanProperty(true);
 
     public PumpTest getPumpTest() {
         return pumpTest;
@@ -17,9 +17,8 @@ public class PumpTestWrapper {
         return isIncluded;
     }
 
-    public PumpTestWrapper(PumpTest pumpTest, boolean isIncluded) {
+    public PumpTestWrapper(PumpTest pumpTest) {
         this.pumpTest = pumpTest;
-        this.isIncluded.setValue(isIncluded);
     }
 
     @Override

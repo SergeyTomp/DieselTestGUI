@@ -67,6 +67,10 @@ public class PumpTest {
     @Column(name = "calibration_i_offset")
     private Double calibrationIoffset;
 
+    public int getId() {
+        return id;
+    }
+
     public Double getRegulatorCurrent() {
         return regulatorCurrent;
     }

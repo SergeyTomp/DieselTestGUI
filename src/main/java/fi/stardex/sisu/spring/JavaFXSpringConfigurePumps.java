@@ -89,8 +89,11 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
 
     @Bean
     @Autowired
-    public TestModeController testModeController(MainSectionPumpsController mainSectionPumpsController) {
-        return mainSectionPumpsController.getTestModeController();
+    public TestModeController testModeController(MainSectionPumpsController mainSectionPumpsController,
+                                                 PumpTestModeModel pumpTestModeModel) {
+        TestModeController testModeController = mainSectionPumpsController.getTestModeController();
+        testModeController.setPumpTestModeModel(pumpTestModeModel);
+        return testModeController;
     }
 
     @Bean
@@ -106,10 +109,12 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
     @Autowired
     public PumpTestListController pumpTestListController(MainSectionPumpsController mainSectionPumpsController,
                                                          PumpTestModel pumpTestModel,
-                                                         PumpTestListModel pumpTestListModel) {
+                                                         PumpTestListModel pumpTestListModel,
+                                                         PumpTestModeModel pumpTestModeModel) {
         PumpTestListController pumpTestListController = mainSectionPumpsController.getPumpTestListController();
         pumpTestListController.setPumpTestModel(pumpTestModel);
         pumpTestListController.setPumpTestListModel(pumpTestListModel);
+        pumpTestListController.setPumpTestModeModel(pumpTestModeModel);
         return pumpTestListController;
     }
 

@@ -6,7 +6,9 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class PumpTestListModel {
 
@@ -26,6 +28,11 @@ public class PumpTestListModel {
     public void initPumpTestList(){
 
         List<PumpTest> allByPump = pumpTestRepository.findAllByPump(pumpModel.pumpProperty().get());
-        allByPump.stream().map(p -> new PumpTestWrapper(p, true)).forEach(pumpTestObservableList::add);
+        List<PumpTestWrapper> pumpTestWrappers = allByPump
+                .stream()
+                .map(PumpTestWrapper::new)
+                .sorted((Comparator.comparingInt(pumpTestWrapper -> pumpTestWrapper.getPumpTest().getId())))
+                .collect(Collectors.toList());
+        pumpTestObservableList.setAll(pumpTestWrappers);
     }
 }

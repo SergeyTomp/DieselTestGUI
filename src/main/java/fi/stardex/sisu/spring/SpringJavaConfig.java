@@ -828,4 +828,9 @@ public class SpringJavaConfig {
                                                PumpModel pumpModel){
         return new PumpTestListModel(pumpTestRepository, pumpModel);
     }
+
+    @Bean
+    public PumpTestModeModel pumpTestModeModel(){
+        return new PumpTestModeModel();
+    }
 }
