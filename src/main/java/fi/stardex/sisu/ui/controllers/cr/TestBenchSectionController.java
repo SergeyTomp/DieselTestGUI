@@ -25,6 +25,7 @@ import javax.annotation.PostConstruct;
 import static fi.stardex.sisu.registers.stand.ModbusMapStand.*;
 import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions;
 import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions.STAND_FM;
+import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions.STAND_FM_4_CH;
 import static fi.stardex.sisu.version.StandFirmwareVersion.StandVersions;
 import static fi.stardex.sisu.version.StandFirmwareVersion.StandVersions.STAND;
 
@@ -288,7 +289,7 @@ public class TestBenchSectionController {
 
         flowFirmwareVersion.versionProperty().addListener((observableValue, oldValue, newValue) -> {
 
-            if (newValue == STAND_FM)
+            if (newValue == STAND_FM || newValue == STAND_FM_4_CH)
                 testBenchStartToggleButton.setDisable(false);
             else
                 testBenchStartToggleButton.setDisable(true);
@@ -331,7 +332,7 @@ public class TestBenchSectionController {
         rotationDirectionToggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
 
             if (newValue != null) {
-                if ((flowFirmwareVersion.getVersions() == FlowVersions.STAND_FM))
+                if ((flowFirmwareVersion.getVersions() == STAND_FM) || (flowFirmwareVersion.getVersions() == STAND_FM_4_CH))
                     flowModbusWriter.add(RotationDirectionStandFM, newValue.getUserData());
                 else
                     standModbusWriter.add(RotationDirection, newValue.getUserData());
@@ -349,7 +350,7 @@ public class TestBenchSectionController {
 
         targetRPMSpinner.valueProperty().addListener((observable, oldValue, newValue) -> {
 
-            if ((flowFirmwareVersion.getVersions() == FlowVersions.STAND_FM))
+            if ((flowFirmwareVersion.getVersions() == STAND_FM) || (flowFirmwareVersion.getVersions() == STAND_FM_4_CH))
                 flowModbusWriter.add(TargetRPMStandFM, newValue);
             else
                 standModbusWriter.add(TargetRPM, newValue);
@@ -362,7 +363,7 @@ public class TestBenchSectionController {
 
         testBenchStartToggleButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
 
-            if ((flowFirmwareVersion.getVersions() == FlowVersions.STAND_FM))
+            if ((flowFirmwareVersion.getVersions() == STAND_FM) || (flowFirmwareVersion.getVersions() == STAND_FM_4_CH))
                 flowModbusWriter.add(RotationStandFM, newValue);
             else
                 standModbusWriter.add(Rotation, newValue);
@@ -396,7 +397,7 @@ public class TestBenchSectionController {
 
         fanControlToggleButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
 
-            if ((flowFirmwareVersion.getVersions() == FlowVersions.STAND_FM))
+            if ((flowFirmwareVersion.getVersions() == STAND_FM) || (flowFirmwareVersion.getVersions() == STAND_FM_4_CH))
                 flowModbusWriter.add(FanTurnOnStandFM, newValue);
             else
                 standModbusWriter.add(FanTurnOn, newValue);
@@ -412,14 +413,14 @@ public class TestBenchSectionController {
                 logger.warn("Double clicked");
                 if (isAuto()) {
                     setPumpState(TestBenchSectionController.StatePump.OFF);
-                    if ((flowFirmwareVersion.getVersions() == FlowVersions.STAND_FM))
+                    if ((flowFirmwareVersion.getVersions() == STAND_FM) || (flowFirmwareVersion.getVersions() == STAND_FM_4_CH))
                         flowModbusWriter.add(PumpAutoModeStandFM, false);
                     else
                         standModbusWriter.add(PumpAutoMode, false);
                 } else {
                     setPumpState(testBenchStartToggleButton.isSelected() ?
                             TestBenchSectionController.StatePump.AUTO_ON : TestBenchSectionController.StatePump.AUTO_OFF);
-                    if ((flowFirmwareVersion.getVersions() == FlowVersions.STAND_FM))
+                    if ((flowFirmwareVersion.getVersions() == STAND_FM) || (flowFirmwareVersion.getVersions() == STAND_FM_4_CH))
                         flowModbusWriter.add(PumpAutoModeStandFM, true);
                     else
                         standModbusWriter.add(PumpAutoMode, true);
@@ -455,7 +456,7 @@ public class TestBenchSectionController {
 
         pumpControlToggleButton.setText(pumpState.getText());
 
-        if ((flowFirmwareVersion.getVersions() == FlowVersions.STAND_FM))
+        if ((flowFirmwareVersion.getVersions() == STAND_FM) || (flowFirmwareVersion.getVersions() == STAND_FM_4_CH))
             flowModbusWriter.add(PumpTurnOnStandFM, pumpState.isActive);
         else
             standModbusWriter.add(PumpTurnOn, pumpState.isActive);

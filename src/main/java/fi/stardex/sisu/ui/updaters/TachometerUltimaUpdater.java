@@ -41,7 +41,9 @@ public class TachometerUltimaUpdater implements Updater {
     @Override
     public void run() {
 
-        if (flowFirmwareVersion.getVersions() != FlowVersions.STAND_FM && !standModbusConnectProperty.get()) {
+        if (flowFirmwareVersion.getVersions() != FlowVersions.STAND_FM
+                && flowFirmwareVersion.getVersions() != FlowVersions.STAND_FM_4_CH
+                && !standModbusConnectProperty.get()) {
 
             Integer currentRPMLastValue = (Integer) ModbusMapUltima.Tachometer.getLastValue();
 

@@ -14,6 +14,7 @@ import javafx.scene.text.Text;
 import static fi.stardex.sisu.registers.stand.ModbusMapStand.*;
 import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions;
 import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions.STAND_FM;
+import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions.STAND_FM_4_CH;
 
 @Module(value = {Device.MODBUS_FLOW, Device.MODBUS_STAND})
 public class TestBenchSectionUpdater implements Updater {
@@ -84,7 +85,7 @@ public class TestBenchSectionUpdater implements Updater {
     @Override
     public void run() {
 
-        boolean isStandFMVersion = (flowFirmwareVersion.getVersions() == STAND_FM);
+        boolean isStandFMVersion = (flowFirmwareVersion.getVersions() == STAND_FM) || (flowFirmwareVersion.getVersions() == STAND_FM_4_CH);
 
         runSyncWriteReadBooleanRegisters(isStandFMVersion ? RotationStandFM : Rotation, testBenchStartToggleButton);
 

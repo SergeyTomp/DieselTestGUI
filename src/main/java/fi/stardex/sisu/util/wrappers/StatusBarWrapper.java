@@ -122,6 +122,9 @@ public class StatusBarWrapper {
             case STAND_FM:
                 sb.append("Stand FM");
                 break;
+            case STAND_FM_4_CH:
+                sb.append("Stand FM 4 CH");
+                break;
         }
 
     }

@@ -204,6 +204,11 @@ public class SpringJavaConfig {
                                 standIPField.setDisable(true);
                                 standPortField.setDisable(true);
                                 break;
+                            case 0xCCDD:
+                                flowFirmwareVersion.setVersions(STAND_FM_4_CH);
+                                standIPField.setDisable(true);
+                                standPortField.setDisable(true);
+                                break;
                         }
                     } else {
                         flowFirmwareVersion.setVersions(FlowVersions.NO_VERSION);
@@ -317,7 +322,7 @@ public class SpringJavaConfig {
 
                         FlowVersions version = flowFirmwareVersion.getVersions();
 
-                        if (version == STAND_FM)
+                        if (version == STAND_FM || version == STAND_FM_4_CH)
                             Arrays.stream(standRegisters).filter(this::isStand).forEach(registerProvider::read);
 
                         super.readAll();
@@ -332,10 +337,14 @@ public class SpringJavaConfig {
                                 updaters.stream().filter(updater -> updater instanceof FlowMasterUpdater).forEach(Platform::runLater);
                                 break;
                             case STREAM:
-                                updaters.stream().filter(updater -> updater instanceof FlowMasterUpdater).forEach(Platform::runLater);
+                                updaters.stream().filter(updater -> updater instanceof FlowStreamUpdater).forEach(Platform::runLater);
                                 break;
                             case STAND_FM:
                                 updaters.stream().filter(updater -> updater instanceof FlowMasterUpdater
+                                        || updater instanceof TestBenchSectionUpdater).forEach(Platform::runLater);
+                                break;
+                            case STAND_FM_4_CH:
+                                updaters.stream().filter(updater -> updater instanceof FlowStreamUpdater
                                         || updater instanceof TestBenchSectionUpdater).forEach(Platform::runLater);
                                 break;
                             default:
@@ -399,7 +408,7 @@ public class SpringJavaConfig {
 
                         FlowVersions version = flowFirmwareVersion.getVersions();
 
-                        if (version == STAND_FM)
+                        if (version == STAND_FM || version == STAND_FM_4_CH)
                             Arrays.stream(readArray).filter(this::isStand).forEach(registerProvider::read);
                         else
                             Arrays.stream(readArray).filter(this::isNotStand).forEach(registerProvider::read);
