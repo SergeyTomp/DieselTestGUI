@@ -138,8 +138,6 @@ public class TestBenchSectionUpdater implements Updater {
 
     private void setPressureProgress(int left, int right, ProgressBar progressBar, Text text, double pressureValue) {
 
-        System.err.println(pressureValue);
-
         if (pressureValue <= left) {
             progressBarStyle(progressBar, "green-progress-bar");
         }
@@ -154,7 +152,7 @@ public class TestBenchSectionUpdater implements Updater {
 
     private void setTemperatureProgress(int left, int right, ProgressBar progressBar, Text text, double temperatureValue){
 
-        if (temperatureValue <= left && temperatureValue >= right) {
+        if (temperatureValue <= left || temperatureValue >= right) {
             progressBarStyle(progressBar, "red-progress-bar");
         }
         else {
