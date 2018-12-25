@@ -8,10 +8,7 @@ import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 import static fi.stardex.sisu.util.FlowUnitObtainer.getBackFlowCoefficient;
 import static fi.stardex.sisu.util.FlowUnitObtainer.getDeliveryCoefficient;
@@ -26,7 +23,7 @@ public class FlowReportModel {
     private DeliveryFlowUnitsModel deliveryFlowUnitsModel;
     private FlowViewModel flowViewModel;
     private BooleanProperty resultMapChanged = new SimpleBooleanProperty();
-    private ObservableMap<InjectorTest, FlowResult> resultObservableMap = FXCollections.observableMap(new HashMap<>());
+    private ObservableMap<InjectorTest, FlowResult> resultObservableMap = FXCollections.observableMap(new LinkedHashMap<>());
 
     public FlowReportModel(FlowViewModel flowViewModel,
                            FlowValuesModel flowValuesModel,

@@ -90,11 +90,11 @@ public class TestBenchSectionUpdater implements Updater {
 
         runSyncWriteReadBooleanRegisters(isStandFMVersion ? FanTurnOnStandFM : FanTurnOn, fanControlToggleButton);
 
-        runPressureAndTemperatureRegisters(isStandFMVersion ? Pressure1StandFM : Pressure1, pressProgressBar1, pressText1);
+        runPressureRegister(isStandFMVersion ? Pressure1StandFM : Pressure1, pressProgressBar1, pressText1);
 
-        runPressureAndTemperatureRegisters(isStandFMVersion ? Temperature1StandFM : Temperature1, tempProgressBar1, tempText1);
+        runTemperatureRegister(isStandFMVersion ? Temperature1StandFM : Temperature1, tempProgressBar1, tempText1);
 
-        runPressureAndTemperatureRegisters(isStandFMVersion ? Temperature2StandFM : Temperature2, tempProgressBar2, tempText2);
+        runTemperatureRegister(isStandFMVersion ? Temperature2StandFM : Temperature2, tempProgressBar2, tempText2);
 
         runTargetRPMRegister(isStandFMVersion ? TargetRPMStandFM : TargetRPM);
 
@@ -119,16 +119,26 @@ public class TestBenchSectionUpdater implements Updater {
 
     }
 
-    private void runPressureAndTemperatureRegisters(ModbusMapStand register, ProgressBar progressBar, Text text) {
+    private void runPressureRegister(ModbusMapStand register, ProgressBar progressBar, Text text) {
 
         Double registerLastValue = (Double) register.getLastValue();
 
         if (registerLastValue != null)
-            setProgress(3, 5, progressBar, text, registerLastValue);
-
+            setPressureProgress(3, 5, progressBar, text, registerLastValue);
     }
 
-    private static void setProgress(int left, int right, ProgressBar progressBar, Text text, double pressureValue) {
+    private void runTemperatureRegister(ModbusMapStand register, ProgressBar progressBar, Text text){
+
+        Double registerLastValue = (Double) register.getLastValue();
+
+        if (registerLastValue != null)
+            setTemperatureProgress(37, 41, progressBar, text, registerLastValue);
+    }
+
+    private void setPressureProgress(int left, int right, ProgressBar progressBar, Text text, double pressureValue) {
+
+        System.err.println(pressureValue);
+
         if (pressureValue <= left) {
             progressBarStyle(progressBar, "green-progress-bar");
         }
@@ -138,15 +148,30 @@ public class TestBenchSectionUpdater implements Updater {
         if (pressureValue >= right) {
             progressBarStyle(progressBar, "red-progress-bar");
         }
-        text.setText(String.format("%.1f", pressureValue));
-        progressBar.setProgress(pressureValue < 1 ? 1.0 : pressureValue);
+        fillProgressBar(pressureValue, text, progressBar);
+    }
+
+    private void setTemperatureProgress(int left, int right, ProgressBar progressBar, Text text, double temperatureValue){
+
+        if (temperatureValue <= left && temperatureValue >= right) {
+            progressBarStyle(progressBar, "red-progress-bar");
+        }
+        else {
+            progressBarStyle(progressBar, "green-progress-bar");
+        }
+        fillProgressBar(temperatureValue, text, progressBar);
+    }
+
+    private void fillProgressBar(double value, Text text, ProgressBar progressBar){
+        text.setText(String.format("%.1f", value));
+        progressBar.setProgress(value < 1 ? 1.0 : value);
     }
 
     private static void progressBarStyle(ProgressBar progressBar, String style) {
+
         progressBar.getStyleClass().clear();
         progressBar.getStyleClass().add("progress-bar");
         progressBar.getStyleClass().add(style);
-
     }
 
     private void runTargetRPMRegister(ModbusMapStand register) {
@@ -157,7 +182,6 @@ public class TestBenchSectionUpdater implements Updater {
             register.setSyncWriteRead(false);
         else if (targetRPMLastValue != null)
             targetRPMSpinner.getValueFactory().setValue(targetRPMLastValue);
-
     }
 
     private void runRotationDirectionRegister(ModbusMapStand register) {
