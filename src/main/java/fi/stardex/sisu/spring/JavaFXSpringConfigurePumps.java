@@ -70,12 +70,14 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
                                                                ManufacturerPumpModel manufacturerPumpModel,
                                                                PumpModel pumpModel,
                                                                CustomPumpState customPumpState,
-                                                               PumpTestModel pumpTestModel) {
+                                                               PumpTestModel pumpTestModel,
+                                                               PumpTestListModel pumpTestListModel) {
         PumpsModelsListController pumpsModelsListController = mainSectionPumpsController.getPumpsModelsListController();
         pumpsModelsListController.setManufacturerPumpModel(manufacturerPumpModel);
         pumpsModelsListController.setPumpModel(pumpModel);
         pumpsModelsListController.setCustomPumpState(customPumpState);
         pumpsModelsListController.setPumpTestModel(pumpTestModel);
+        pumpsModelsListController.setPumpTestListModel(pumpTestListModel);
         return pumpsModelsListController;
     }
 
@@ -103,9 +105,11 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
     @Bean
     @Autowired
     public PumpTestListController pumpTestListController(MainSectionPumpsController mainSectionPumpsController,
-                                                         PumpTestModel pumpTestModel) {
+                                                         PumpTestModel pumpTestModel,
+                                                         PumpTestListModel pumpTestListModel) {
         PumpTestListController pumpTestListController = mainSectionPumpsController.getPumpTestListController();
         pumpTestListController.setPumpTestModel(pumpTestModel);
+        pumpTestListController.setPumpTestListModel(pumpTestListModel);
         return pumpTestListController;
     }
 

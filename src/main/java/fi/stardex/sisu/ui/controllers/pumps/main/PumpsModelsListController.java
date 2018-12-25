@@ -2,6 +2,7 @@ package fi.stardex.sisu.ui.controllers.pumps.main;
 
 import fi.stardex.sisu.model.ManufacturerPumpModel;
 import fi.stardex.sisu.model.PumpModel;
+import fi.stardex.sisu.model.PumpTestListModel;
 import fi.stardex.sisu.model.PumpTestModel;
 import fi.stardex.sisu.persistence.orm.pump.Pump;
 import fi.stardex.sisu.states.CustomPumpState;
@@ -41,6 +42,8 @@ public class PumpsModelsListController implements ChangeListener<Pump> {
 
     private FilteredList<Pump> filteredModelList;
 
+    private PumpTestListModel pumpTestListModel;
+
     public VBox getInjectorsVBox() {
         return injectorsVBox;
     }
@@ -79,6 +82,10 @@ public class PumpsModelsListController implements ChangeListener<Pump> {
 
     public void setPumpTestModel(PumpTestModel pumpTestModel) {
         this.pumpTestModel = pumpTestModel;
+    }
+
+    public void setPumpTestListModel(PumpTestListModel pumpTestListModel) {
+        this.pumpTestListModel = pumpTestListModel;
     }
 
     @PostConstruct
@@ -130,7 +137,7 @@ public class PumpsModelsListController implements ChangeListener<Pump> {
 
         pumpModel.pumpProperty().set(newValue);
 
-        pumpTestModel.initPumpTestList();
+        pumpTestListModel.initPumpTestList();
 
     }
 }

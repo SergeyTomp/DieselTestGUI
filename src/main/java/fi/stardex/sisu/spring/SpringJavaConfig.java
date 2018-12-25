@@ -695,10 +695,8 @@ public class SpringJavaConfig {
     }
 
     @Bean
-    @Autowired
-    public PumpTestModel pumpTestModel(PumpTestRepository pumpTestRepository,
-                                       PumpModel pumpModel){
-        return new PumpTestModel(pumpTestRepository, pumpModel);
+    public PumpTestModel pumpTestModel(){
+        return new PumpTestModel();
     }
 
     @Bean
@@ -824,4 +822,10 @@ public class SpringJavaConfig {
         return new PumpTimeProgressModel();
     }
 
+    @Bean
+    @Autowired
+    public PumpTestListModel pumpTestListModel(PumpTestRepository pumpTestRepository,
+                                               PumpModel pumpModel){
+        return new PumpTestListModel(pumpTestRepository, pumpModel);
+    }
 }
