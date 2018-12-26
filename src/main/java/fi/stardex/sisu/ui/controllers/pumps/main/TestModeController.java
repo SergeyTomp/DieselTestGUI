@@ -43,12 +43,12 @@ public class TestModeController {
 
     @PostConstruct
     public void init(){
+        autoTestRadioButton.setSelected(true);
 
         autoTestRadioButton.selectedProperty().addListener((observableValue, oldValue, newValue) -> {
             if(newValue){
                 pumpTestModeModel.testModeProperty().setValue(AUTO);
             } else pumpTestModeModel.testModeProperty().setValue(TESTPLAN);
         });
-        autoTestRadioButton.setSelected(true);
     }
 }

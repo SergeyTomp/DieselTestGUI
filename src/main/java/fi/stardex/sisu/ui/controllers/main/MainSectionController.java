@@ -23,6 +23,7 @@ import fi.stardex.sisu.ui.controllers.dialogs.NewEditInjectorDialogController;
 import fi.stardex.sisu.ui.controllers.dialogs.NewEditTestDialogController;
 import fi.stardex.sisu.ui.controllers.dialogs.PrintDialogPanelController;
 import fi.stardex.sisu.util.enums.Measurement;
+import fi.stardex.sisu.util.enums.Move;
 import fi.stardex.sisu.util.i18n.I18N;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -66,6 +67,8 @@ import static fi.stardex.sisu.util.SpinnerDefaults.*;
 import static fi.stardex.sisu.util.converters.DataConverter.round;
 import static fi.stardex.sisu.util.enums.Measurement.DELIVERY;
 import static fi.stardex.sisu.util.enums.Measurement.VISUAL;
+import static fi.stardex.sisu.util.enums.Move.*;
+import static fi.stardex.sisu.util.enums.Move.UP;
 import static fi.stardex.sisu.util.enums.Tests.*;
 import static fi.stardex.sisu.util.enums.Tests.TestType.*;
 import static fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer.getInjector;
@@ -101,9 +104,6 @@ public class MainSectionController {
     @FXML
     private Button moveDownButton;
 
-    private enum Move {
-        UP, DOWN
-    }
 
     @FXML
     private Label timingSpeedLabel;
@@ -1152,9 +1152,9 @@ public class MainSectionController {
 
     private MainSectionController setupMoveButtonEventHandlers() {
 
-        moveUpButton.setOnAction(event -> moveTest(Move.UP));
+        moveUpButton.setOnAction(event -> moveTest(UP));
 
-        moveDownButton.setOnAction(event -> moveTest(Move.DOWN));
+        moveDownButton.setOnAction(event -> moveTest(DOWN));
 
         return this;
 

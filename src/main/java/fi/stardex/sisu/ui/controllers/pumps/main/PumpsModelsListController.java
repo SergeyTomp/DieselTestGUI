@@ -129,15 +129,12 @@ public class PumpsModelsListController implements ChangeListener<Pump> {
             }
 
         })));
-
     }
 
     @Override
     public void changed(ObservableValue<? extends Pump> observableValue, Pump oldValue, Pump newValue) {
 
-        pumpModel.pumpProperty().set(newValue);
-
-        pumpTestListModel.initPumpTestList();
-
+            pumpModel.pumpProperty().set(newValue);
+            pumpTestListModel.initPumpTestList();
     }
 }

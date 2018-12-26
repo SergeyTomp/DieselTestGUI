@@ -110,11 +110,13 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
     public PumpTestListController pumpTestListController(MainSectionPumpsController mainSectionPumpsController,
                                                          PumpTestModel pumpTestModel,
                                                          PumpTestListModel pumpTestListModel,
-                                                         PumpTestModeModel pumpTestModeModel) {
+                                                         PumpTestModeModel pumpTestModeModel,
+                                                         AutoTestListLastChangeModel autoTestListLastChangeModel) {
         PumpTestListController pumpTestListController = mainSectionPumpsController.getPumpTestListController();
         pumpTestListController.setPumpTestModel(pumpTestModel);
         pumpTestListController.setPumpTestListModel(pumpTestListModel);
         pumpTestListController.setPumpTestModeModel(pumpTestModeModel);
+        pumpTestListController.setAutoTestListLastChangeModel(autoTestListLastChangeModel);
         return pumpTestListController;
     }
 

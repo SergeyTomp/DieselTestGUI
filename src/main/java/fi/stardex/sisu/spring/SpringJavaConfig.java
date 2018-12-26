@@ -825,12 +825,20 @@ public class SpringJavaConfig {
     @Bean
     @Autowired
     public PumpTestListModel pumpTestListModel(PumpTestRepository pumpTestRepository,
-                                               PumpModel pumpModel){
-        return new PumpTestListModel(pumpTestRepository, pumpModel);
+                                               PumpModel pumpModel,
+                                               AutoTestListLastChangeModel autoTestListLastChangeModel){
+        PumpTestListModel pumpTestListModel = new PumpTestListModel(pumpTestRepository, pumpModel);
+        pumpTestListModel.setAutoTestListLastChangeModel(autoTestListLastChangeModel);
+        return  pumpTestListModel;
     }
 
     @Bean
     public PumpTestModeModel pumpTestModeModel(){
         return new PumpTestModeModel();
+    }
+
+    @Bean
+    public AutoTestListLastChangeModel autoTestListLastChangeModel(){
+        return new AutoTestListLastChangeModel();
     }
 }
