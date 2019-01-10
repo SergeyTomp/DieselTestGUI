@@ -14,6 +14,7 @@ import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
 import fi.stardex.sisu.util.enums.Tests.TestType;
 import fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer;
+import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxListCell;
@@ -22,6 +23,9 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 import javax.annotation.PostConstruct;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static fi.stardex.sisu.ui.controllers.GUI_TypeController.GUIType;
 import static fi.stardex.sisu.util.enums.Tests.TestType.AUTO;
@@ -339,8 +343,10 @@ public class Enabler {
 
     private void disableRadioButtons(ToggleGroup targetToggleGroup, boolean disable) {
 
-        targetToggleGroup.getToggles().stream().filter(radioButton -> !radioButton.isSelected()).forEach(radioButton -> ((Node) radioButton).setDisable(disable));
 
+        targetToggleGroup.getToggles().stream()
+                .filter(radioButton -> !radioButton.isSelected())
+                .forEach(radioButton -> ((Node) radioButton).setDisable(disable));
     }
 
     public Enabler showInjectorTests(boolean show) {

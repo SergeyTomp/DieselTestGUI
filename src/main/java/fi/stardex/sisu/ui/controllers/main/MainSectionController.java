@@ -29,6 +29,7 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -49,6 +50,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -103,7 +105,6 @@ public class MainSectionController {
 
     @FXML
     private Button moveDownButton;
-
 
     @FXML
     private Label timingSpeedLabel;
@@ -222,6 +223,8 @@ public class MainSectionController {
     private Spinner<Double> freqCurrentSignalSpinner;
 
     private ToggleButton injectorSectionStartToggleButton;
+
+    private ToggleButton injectorSectionFirstLedToggleButton;
 
     private Spinner<Integer> targetRPMSpinner;
 
@@ -393,6 +396,10 @@ public class MainSectionController {
         this.injectorSectionStartToggleButton = injectorSectionStartToggleButton;
     }
 
+    public void setInjectorSectionFirstLedToggleButton(ToggleButton injectorSectionFirstLedToggleButton) {
+        this.injectorSectionFirstLedToggleButton = injectorSectionFirstLedToggleButton;
+    }
+
     public void setInjectorsRepository(InjectorsRepository injectorsRepository) {
         this.injectorsRepository = injectorsRepository;
     }
@@ -474,7 +481,7 @@ public class MainSectionController {
                 .setupTestListViewListener()
                 .setupTestsToggleGroupListener()
                 .setupMoveButtonEventHandlers()
-                .setupTestListAutoChangeListener();
+                .setupTestListAutoChangeListenerNew();
 
         printButton.setOnAction(new PrintButtonEventHandler());
 
@@ -991,8 +998,13 @@ public class MainSectionController {
                 setInjector(null);
                 setInjectorTests(null);
                 enabler.showInjectorTests(false).selectInjectorType(null).disableNode(true, codingTestRadioButton);
+                injectorSectionFirstLedToggleButton.setSelected(false);
                 testListViewItems.clear();
+
                 return;
+            }
+            else {
+                injectorSectionFirstLedToggleButton.setSelected(true);
             }
 
             Injector injector = (Injector) newValue;
@@ -1008,7 +1020,7 @@ public class MainSectionController {
             enabler
                     .showInjectorTests(true)
                     .selectInjectorType(currentVoltAmpereProfile.getInjectorType().getInjectorType())
-                    .disableNode(!checkInjectorForCoding(injector.getCodetype()), codingTestRadioButton);
+                    .showNode(checkInjectorForCoding(injector.getCodetype()), codingTestRadioButton);
 
             Double firstI = currentVoltAmpereProfile.getFirstI();
             Double secondI = currentVoltAmpereProfile.getSecondI();
@@ -1192,45 +1204,59 @@ public class MainSectionController {
 
     }
 
-    private void setupTestListAutoChangeListener() {
+    //Old version of resorting upon checkBox check/uncheck - original included tests order was not restored after checkBox check/uncheck
+//    private void setupTestListAutoChangeListener() {
+//
+//        getListOfNonIncludedTests().addListener((ListChangeListener<? super InjectorTest>) change -> {
+//
+//            if (isAnotherAutoOrNewTestList)
+//                return;
+//
+//            int index = testListViewItems.indexOf(getChangedInjectorTest());
+//
+//            while (change.next()) {
+//
+//                if (change.wasAdded()) {
+//
+//                    int lastIndex = testListViewItems.size() - 1;
+//
+//                    if (index == lastIndex)
+//                        enabler.showButtons(false, false);
+//
+//                    for (int i = index; i < lastIndex; i++) {
+//                        Collections.swap(testListViewItems, i, i + 1);
+//                    }
+//
+//                } else if (change.wasRemoved()) {
+//
+//                    if (index == 0)
+//                        enabler.showButtons(true, false);
+//
+//                    for (int i = index; i > 0; i--) {
+//                        Collections.swap(testListViewItems, i, i - 1);
+//                    }
+//
+//                }
+//
+//            }
+//            enabler.enableUpDownButtons(testsSelectionModel.getSelectedIndex(), testListViewItems.size() - change.getList().size());
+//        });
+//    }
+    
+    //TODO FIXME - after MVC-refactoring use AutoTestLastChangeModel approach similarly to pump section
+    private void setupTestListAutoChangeListenerNew(){
 
         getListOfNonIncludedTests().addListener((ListChangeListener<? super InjectorTest>) change -> {
 
             if (isAnotherAutoOrNewTestList)
                 return;
 
-            int index = testListViewItems.indexOf(getChangedInjectorTest());
-
-            while (change.next()) {
-
-                if (change.wasAdded()) {
-
-                    int lastIndex = testListViewItems.size() - 1;
-
-                    if (index == lastIndex)
-                        enabler.showButtons(false, false);
-
-                    for (int i = index; i < lastIndex; i++) {
-                        Collections.swap(testListViewItems, i, i + 1);
-                    }
-
-                } else if (change.wasRemoved()) {
-
-                    if (index == 0)
-                        enabler.showButtons(true, false);
-
-                    for (int i = index; i > 0; i--) {
-                        Collections.swap(testListViewItems, i, i - 1);
-                    }
-
-                }
-
-            }
-
-            enabler.enableUpDownButtons(testsSelectionModel.getSelectedIndex(), testListViewItems.size() - change.getList().size());
+            testListView.getItems().sort((o1, o2) -> Boolean.compare(o2.includedProperty().get(), o1.includedProperty().get()));
+            int includedQty = (int)testListView.getItems().stream().filter(t -> t.includedProperty().get()).count();
+            testListView.getItems().subList(0, includedQty).sort(Comparator.comparingInt(injectorTest -> injectorTest.getId()));
+            testListView.scrollTo(0);
 
         });
-
     }
 
     private void returnToDefaultTestListAuto() {

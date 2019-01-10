@@ -194,7 +194,7 @@ public class VoltageController {
 
         configLineChartData();
 
-        setupYAxisResizable();
+        setupXYAxisResizable();
 
         bindingI18N();
 
@@ -269,6 +269,9 @@ public class VoltageController {
         lineChart.getData().add(series3);
         lineChart.getData().add(series4);
 
+        xAxis.setLowerBound(0);
+        xAxis.setUpperBound(1200);
+        xAxis.setTickUnit(100);
         xAxis.setMinorTickVisible(false);
         yAxis.setLowerBound(-15);
         yAxis.setUpperBound(25);
@@ -276,14 +279,12 @@ public class VoltageController {
         lineChart.setTitle("");
         lineChart.setAnimated(false);
         lineChart.setLegendVisible(false);
-        lineChart.getXAxis().setAutoRanging(true);
+        lineChart.getXAxis().setAutoRanging(false);
         lineChart.getYAxis().setAutoRanging(false);
         lineChart.getXAxis().setTickMarkVisible(true);
-
     }
 
-
-    private void setupYAxisResizable() {
+    private void setupXYAxisResizable() {
 
         injectorSectionController.getPiezoCoilToggleGroup().selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
 
@@ -291,9 +292,10 @@ public class VoltageController {
                 yAxis.setUpperBound(25);
             else
                 yAxis.setUpperBound(15);
-
         });
 
+        injectorSectionController.getWidthCurrentSignalSpinner().valueProperty().addListener((observable, oldValue, newValue) ->
+                xAxis.setUpperBound(newValue == 0 ? 0 : newValue * 1.2));
     }
 
     private class LabelListener implements ChangeListener<String> {
@@ -327,9 +329,10 @@ public class VoltageController {
 
         }
 
+        // TODO FIXME Temporarily deactivated coloring of spinner text, define if it is really necessary
         private void setStyle(String style) {
 
-            spinner.getEditor().setStyle(style);
+//            spinner.getEditor().setStyle(style);
             label.setStyle(style);
 
         }

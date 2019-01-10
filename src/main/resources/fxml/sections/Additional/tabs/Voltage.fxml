@@ -11,7 +11,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 
-<StackPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController">
+<StackPane xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController">
     <children>
         <GridPane StackPane.alignment="CENTER">
             <columnConstraints>
@@ -66,12 +66,12 @@
                         <Label fx:id="firstWidth" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                         <Label fx:id="firstCurrent" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                         <Label fx:id="secondCurrent" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                        <Label fx:id="labelWidth" text="%h4.voltage.label.width" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                        <Label fx:id="labelWidth" text="%h4.voltage.label.width" visible="false" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                            <GridPane.margin>
                               <Insets bottom="2.0" left="4.0" right="6.0" top="2.0" />
                            </GridPane.margin>
                         </Label>
-                        <Label fx:id="width" text="Label" GridPane.columnIndex="1" />
+                        <Label fx:id="width" text="Label" visible="false" GridPane.columnIndex="1" />
                         <Label fx:id="labelBoostI" text="%h4.voltage.label.currentBoost" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="5" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                            <GridPane.margin>
                               <Insets bottom="2.0" left="4.0" right="6.0" top="2.0" />
@@ -90,7 +90,7 @@
                         <Label fx:id="boostI" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                         <Label fx:id="batteryU" GridPane.columnIndex="1" GridPane.rowIndex="6" />
                         <Label fx:id="negativeU" GridPane.columnIndex="1" GridPane.rowIndex="7" />
-                        <Label fx:id="labelWidthUOM" text="%h4.voltage.label.us" GridPane.columnIndex="2" />
+                        <Label fx:id="labelWidthUOM" text="%h4.voltage.label.us" visible="false" GridPane.columnIndex="2" />
                         <Label fx:id="labelVoltageUOM" text="%h4.voltage.label.volt" GridPane.columnIndex="2" GridPane.rowIndex="1" />
                         <Label fx:id="labelFirstWidthUOM" text="%h4.voltage.label.ampere" GridPane.columnIndex="2" GridPane.rowIndex="2" />
                         <Label fx:id="labelCurrent1UOM" text="%h4.voltage.label.ampere" GridPane.columnIndex="2" GridPane.rowIndex="3" />

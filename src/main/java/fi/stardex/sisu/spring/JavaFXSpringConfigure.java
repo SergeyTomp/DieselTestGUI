@@ -154,6 +154,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         mainSectionController.setWidthCurrentSignalSpinner(injectorSectionController.getWidthCurrentSignalSpinner());
         mainSectionController.setFreqCurrentSignalSpinner(injectorSectionController.getFreqCurrentSignalSpinner());
         mainSectionController.setInjectorSectionStartToggleButton(injectorSectionController.getInjectorSectionStartToggleButton());
+        mainSectionController.setInjectorSectionFirstLedToggleButton(injectorSectionController.getLed1ToggleButton());
         mainSectionController.setInjectorsRepository(injectorsRepository);
         mainSectionController.setInjectorTestRepository(injectorTestRepository);
         mainSectionController.setFlowModbusWriter(flowModbusWriter);

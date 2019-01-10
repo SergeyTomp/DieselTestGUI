@@ -37,6 +37,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.text.DateFormat;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -205,7 +207,6 @@ public class PDFService {
         document.addPage(currentPage);
 
         rlcResultsList = rlc_reportModel.getResultsList();
-//        flowResultsList = flowReport.getResultList();
         flowResultsList = flowReportModel.getResultsList();
 
         delayResultsList = delayReportModel.getResultsList();
@@ -509,9 +510,11 @@ public class PDFService {
     }
 
     private void saveDocument() throws IOException {
-        String dateLine = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh-mm-ss"));
+        String dateLine = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH-mm-ss"));
         logger.debug("PDF save");
-        File myPath = new File(desktopFiles.getReportsFolderPath());
+        File myPath = new File(desktopFiles.getReportsFolderPath()
+                + File.separator +  LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+                + File.separator + (customer.getCustomerName().equals(PrintDialogPanelController.UNDERSPACE)? "Customer " : customer.getCustomerName()));
         if (!myPath.exists()) {
             myPath.mkdirs();
         }

@@ -225,8 +225,9 @@ public class PrintDialogPanelController{
         URL_FIELD.put(urlField.getText());
         Customer customer = new Customer();
         customer.setCustomerName(EmptyObjectDefaultChecker.getStringOrDefault(customerName.getText(), UNDERSPACE));
-        customer.setLocalDateLine(EmptyObjectDefaultChecker.getStringOrDefault(datePicker.getDateTimeValue(),
-                LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd hh-mm"))));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH-mm");
+        customer.setLocalDateLine(EmptyObjectDefaultChecker.getStringOrDefault(datePicker.getDateTimeValue().format(formatter),
+                LocalDateTime.now().format(formatter)));
         customer.setSerial1(EmptyObjectDefaultChecker.getStringOrDefault(serial1.getText(), UNDERSPACE));
         customer.setSerial2(EmptyObjectDefaultChecker.getStringOrDefault(serial2.getText(), UNDERSPACE));
         customer.setSerial3(EmptyObjectDefaultChecker.getStringOrDefault(serial3.getText(), UNDERSPACE));

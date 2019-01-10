@@ -226,6 +226,19 @@ public class HighPressureSectionOneController {
                     ultimaModbusWriter.add(mapParam_1, mapParam_1_ON);
                     ultimaModbusWriter.add(mapParam_2, mapParam_2_ON);
                 }
+                if(highPressureSectionPwrState.powerButtonProperty().get() && regToggleButton.isSelected()){
+                    switch (activeParam){
+                        case PRESSURE:
+                            ultimaModbusWriter.add(PressureReg1_PressTask, calcTargetPress(pressSpinner.getValue()));
+                            break;
+                        case CURRENT:
+                            ultimaModbusWriter.add(PressureReg1_I_Task, currentSpinner.getValue());
+                            break;
+                        case DUTY:
+                            ultimaModbusWriter.add(PressureReg1_DutyTask, dutySpinner.getValue());
+                            break;
+                    }
+                }
             }
         }
     }
