@@ -95,6 +95,22 @@ public class PumpTest {
         return measuringTime;
     }
 
+    public Double getMinDirectFlow() {
+        return minDirectFlow;
+    }
+
+    public Double getMaxDirectFlow() {
+        return maxDirectFlow;
+    }
+
+    public Double getMinBackFlow() {
+        return minBackFlow;
+    }
+
+    public Double getMaxBackFlow() {
+        return maxBackFlow;
+    }
+
     @Override
     public String toString() {
         return pumpTestName.toString();

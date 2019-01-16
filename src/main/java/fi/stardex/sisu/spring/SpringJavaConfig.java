@@ -245,15 +245,14 @@ public class SpringJavaConfig {
                         standFirmwareVersion.setVersions(StandVersions.NO_VERSION);
                     }
                 });
-
             }
-
         };
     }
 
     @Bean
     @Autowired
-    public ModbusRegisterProcessor ultimaModbusWriter(List<Updater> updatersList, RegisterProvider ultimaRegisterProvider) {
+    public ModbusRegisterProcessor ultimaModbusWriter(List<Updater> updatersList,
+                                                      RegisterProvider ultimaRegisterProvider) {
         return new ModbusRegisterProcessor(ultimaRegisterProvider, ModbusMapUltima.values()) {
             @Override
             protected void initThread() {
@@ -363,7 +362,8 @@ public class SpringJavaConfig {
 
     @Bean
     @Autowired
-    public ModbusRegisterProcessor standModbusWriter(List<Updater> updatersList, RegisterProvider standRegisterProvider,
+    public ModbusRegisterProcessor standModbusWriter(List<Updater> updatersList,
+                                                     RegisterProvider standRegisterProvider,
                                                      FirmwareVersion<FlowVersions> flowFirmwareVersion) {
         return new ModbusRegisterProcessor(standRegisterProvider, ModbusMapStand.values()) {
 
@@ -840,5 +840,25 @@ public class SpringJavaConfig {
     @Bean
     public AutoTestListLastChangeModel autoTestListLastChangeModel(){
         return new AutoTestListLastChangeModel();
+    }
+
+    @Bean
+    public PumpFlowValuesModel pumpDeliveryFlowValuesModel(){
+        return new PumpFlowValuesModel();
+    }
+
+    @Bean
+    public PumpFlowValuesModel pumpBackFlowValuesModel(){
+        return new PumpFlowValuesModel();
+    }
+
+    @Bean
+    public PumpFlowTemperaturesModel pumpDeliveryFlowTemperaturesModel(){
+        return new PumpFlowTemperaturesModel();
+    }
+
+    @Bean
+    public PumpFlowTemperaturesModel pumpBackFlowTemperaturesModel(){
+        return new PumpFlowTemperaturesModel();
     }
 }
