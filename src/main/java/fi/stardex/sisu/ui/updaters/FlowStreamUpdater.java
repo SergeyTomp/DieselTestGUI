@@ -44,8 +44,12 @@ public class FlowStreamUpdater extends FlowUpdater implements Updater {
     @Override
     public void run() {
 
-        if (isNotInstantFlow() || isNotMeasuring()) {
-            setAllLabelsAndFieldsToNull();
+        if (isNotMeasuring()) {
+            setAllDeliveyLabelsAndFieldsToNull();
+//            setAllLabelsAndFieldsToNull();
+//            return;
+        }else if(isNotInstantFlow()){
+            allFlowLabels.forEach(textField -> textField.setText(null));
             return;
         }
 

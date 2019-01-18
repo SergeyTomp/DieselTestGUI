@@ -73,13 +73,12 @@ public class PumpBeakerController {
     private Rescaler rescaler;
     private String name;
     private float currentMaxLevel;
-    private static final double PERCENT = 0.01;
     private double[] currentFlowLevels;
     private ObjectProperty<String> rangeLabelProperty = new SimpleObjectProperty<>();
-    private DeliveryFlowRangeModel deliveryFlowRangeModel;
-    private DeliveryFlowUnitsModel deliveryFlowUnitsModel;
-    private BackFlowRangeModel backFlowRangeModel;
-    private BackFlowUnitsModel backFlowUnitsModel;
+
+    private FlowRangeModel flowRangeModel;
+    private FlowUnitsModel flowUnitsModel;
+
     private PumpFlowValuesModel pumpFlowValuesModel;
     private PumpFlowTemperaturesModel pumpFlowTemperaturesModel;
     private PumpTestModel pumpTestModel;
@@ -112,18 +111,6 @@ public class PumpBeakerController {
     public void setI18N(I18N i18N) {
         this.i18N = i18N;
     }
-    public void setDeliveryFlowRangeModel(DeliveryFlowRangeModel deliveryFlowRangeModel) {
-        this.deliveryFlowRangeModel = deliveryFlowRangeModel;
-    }
-    public void setDeliveryFlowUnitsModel(DeliveryFlowUnitsModel deliveryFlowUnitsModel) {
-        this.deliveryFlowUnitsModel = deliveryFlowUnitsModel;
-    }
-    public void setBackFlowRangeModel(BackFlowRangeModel backFlowRangeModel) {
-        this.backFlowRangeModel = backFlowRangeModel;
-    }
-    public void setBackFlowUnitsModel(BackFlowUnitsModel backFlowUnitsModel) {
-        this.backFlowUnitsModel = backFlowUnitsModel;
-    }
     public void setPumpFlowValuesModel(PumpFlowValuesModel pumpFlowValuesModel) {
         this.pumpFlowValuesModel = pumpFlowValuesModel;
     }
@@ -135,6 +122,14 @@ public class PumpBeakerController {
     }
     public void setFlowViewModel(FlowViewModel flowViewModel) {
         this.flowViewModel = flowViewModel;
+    }
+
+    public void setFlowRangeModel(FlowRangeModel flowRangeModel) {
+        this.flowRangeModel = flowRangeModel;
+    }
+
+    public void setFlowUnitsModel(FlowUnitsModel flowUnitsModel) {
+        this.flowUnitsModel = flowUnitsModel;
     }
 
     @PostConstruct
@@ -246,18 +241,8 @@ public class PumpBeakerController {
 
     private void setupBindings(){
 
-        switch (beakerType){
-
-            case DELIVERY:
-                deliveryFlowUnitsModel.deliveryFlowUnitsProperty().bind(flowComboBox.getSelectionModel().selectedItemProperty());
-                deliveryFlowRangeModel.deliveryFlowRangeProperty().bind(flowRangeLabel.textProperty());
-                break;
-            case BACKFLOW:
-                backFlowUnitsModel.backFlowUnitsProperty().bind(flowComboBox.getSelectionModel().selectedItemProperty());
-                backFlowRangeModel.backFlowRangeProperty().bind(flowRangeLabel.textProperty());
-                break;
-        }
-
+        flowUnitsModel.flowUnitsProperty().bind(flowComboBox.getSelectionModel().selectedItemProperty());
+        flowRangeModel.flowRangeProperty().bind(flowRangeLabel.textProperty());
         temperature1Flow.textProperty().bind(pumpFlowTemperaturesModel.temperature1FlowProperty());
         temperature2Flow.textProperty().bind(pumpFlowTemperaturesModel.temperature2FlowProperty());
         rangeLabelProperty.bind(flowRangeLabel.textProperty());
@@ -317,21 +302,26 @@ public class PumpBeakerController {
 
             case DELIVERY:
 
-                if(maxDirectFlow.isPresent()){
-                    maxFlow = maxDirectFlow.get();
-                }
-                if(minDirectFlow.isPresent()){
-                    minFlow = minDirectFlow.get();
-                }
+//                if(maxDirectFlow.isPresent()){
+//                    maxFlow = maxDirectFlow.get();
+//                }
+//                if(minDirectFlow.isPresent()){
+//                    minFlow = minDirectFlow.get();
+//                }
+                maxFlow = maxDirectFlow.orElse(0d);
+                minFlow = minDirectFlow.orElse(0d);
                 break;
             case BACKFLOW:
 
-                if(maxBackFlow.isPresent()){
-                    maxFlow = maxBackFlow.get();
-                }
-                if(minBackFlow.isPresent()){
-                    minFlow = minBackFlow.get();
-                }
+//                if(maxBackFlow.isPresent()){
+//                    maxFlow = maxBackFlow.get();
+//                }
+//                if(minBackFlow.isPresent()){
+//                    minFlow = minBackFlow.get();
+//                }
+                maxFlow = maxBackFlow.orElse(0d);
+                minFlow = minBackFlow.orElse(0d);
+
                 break;
         }
 

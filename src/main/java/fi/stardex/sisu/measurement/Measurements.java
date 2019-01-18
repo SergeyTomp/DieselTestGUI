@@ -84,6 +84,10 @@ public class Measurements implements ChangeListener<Boolean> {
 
     private Timeline measurementTimeline;
 
+    private Timeline autoResetTimeline;
+
+    private Timeline preInjectionAutoResetTimeline;
+
     private ModbusRegisterProcessor flowModbusWriter;
 
     private MainSectionController mainSectionController;
@@ -160,7 +164,6 @@ public class Measurements implements ChangeListener<Boolean> {
         injectorCode4TextField = codingController.getInjectorCode4TextField();
 
         this.isaDetectionController = isaDetectionController;
-
     }
 
     @PostConstruct
@@ -180,6 +183,8 @@ public class Measurements implements ChangeListener<Boolean> {
         measurementTimeline = new Timeline(new KeyFrame(Duration.millis(1000), event -> tickMeasurementTime()));
         measurementTimeline.setCycleCount(Animation.INDEFINITE);
 
+        autoResetTimeline = new Timeline(new KeyFrame(Duration.seconds(6), event -> autoReset()));
+        preInjectionAutoResetTimeline = new Timeline(new KeyFrame(Duration.seconds(18), event -> autoReset()));
     }
 
     @Override
@@ -189,15 +194,12 @@ public class Measurements implements ChangeListener<Boolean> {
             startMeasurements();
         else
             stopMeasurements();
-
     }
 
     private void startMeasurements() {
 
         resetButton.fire();
-
         enabler.startTest(true);
-
         flowReportModel.clearResults();
 
         switch (getTestType()) {
@@ -227,18 +229,14 @@ public class Measurements implements ChangeListener<Boolean> {
                     DelphiC3ICodingDataStorage.initialize(activeLedToggleButtonsList);
                 break;
         }
-
         start();
-
     }
 
     private void stopMeasurements() {
 
         stopTimers();
-
         adjustingTime.refreshProgress();
         measuringTime.refreshProgress();
-
         switchOffSections();
 
         if (getTestType() == CODING) {
@@ -247,21 +245,20 @@ public class Measurements implements ChangeListener<Boolean> {
                 performCoding();
 
             DensoCodingDataStorage.clean();
-
             DelphiC2ICodingDataStorage.clean();
-
             DelphiC3ICodingDataStorage.clean();
-
             densoCodingPointsIterator = null;
-
             mainSectionController.pointToFirstTest();
-
             codingComplete = false;
-
         }
 
         enabler.startTest(false);
+        resetButton.fire();
+    }
 
+    private void autoReset(){
+
+        mainSectionController.getResetButton().fire();
     }
 
     private void performCoding() {
@@ -280,9 +277,7 @@ public class Measurements implements ChangeListener<Boolean> {
                 else if (isDelphiC3ICoding())
                     setCodingResults(DelphiC3ICoding.calculate());
                 break;
-
         }
-
     }
 
     private void setCodingResults(List<String> codeResult) {
@@ -295,20 +290,22 @@ public class Measurements implements ChangeListener<Boolean> {
         injectorSectionStartToggleButton.setSelected(false);
         highPressureSectionPwrState.powerButtonProperty().setValue(false);
         testBenchStartToggleButton.setSelected(false);
-
         flowModbusWriter.add(ModbusMapFlow.StopMeasurementCycle, true);
+    }
 
+    public void switchOffInjectorSection() {
+
+        injectorSectionStartToggleButton.setSelected(false);
+        flowModbusWriter.add(ModbusMapFlow.StopMeasurementCycle, true);
     }
 
     public void runNextTest() {
 
         int selectedTestIndex = testsSelectionModel.getSelectedIndex();
-
         InjectorTest injectorTest = testsSelectionModel.getSelectedItem();
-
         TestName testName = injectorTest.getTestName();
-
         TestType testType = getTestType();
+        resetButton.fire();
 
         switch (testType) {
 
@@ -316,8 +313,9 @@ public class Measurements implements ChangeListener<Boolean> {
                 if (selectedTestIndex < includedAutoTestsLength - 1) {
                     selectNextTest(selectedTestIndex);
                     start();
-                } else
+                } else {
                     mainSectionStartToggleButton.setSelected(false);
+                }
                 break;
             case CODING:
                 if (selectedTestIndex < testListViewItems.size() - 1) {
@@ -331,7 +329,7 @@ public class Measurements implements ChangeListener<Boolean> {
                                 if (!densoCodingPointsIterator.hasNext()) {
                                     densoCodingPointsIterator = null;
                                     selectNextTest(selectedTestIndex);
-                                    start();
+                                    start(); // TODO : Is it correct? In this case next test will be run not as DensoTest. May be runNextTest()?
                                 } else
                                     runDensoTest();
                             } else {
@@ -348,10 +346,12 @@ public class Measurements implements ChangeListener<Boolean> {
                         start();
                     } else {
                         selectNextTest(selectedTestIndex);
-                        if (testName.toString().equals("ISA Detection"))
+                        if(testsSelectionModel.getSelectedItem().getTestName().toString().equals("ISA Detection")){
                             startISADetection();
+                        }
                         else
                             start();
+
                     }
                 } else {
                     if (isDensoCoding()) {
@@ -371,9 +371,7 @@ public class Measurements implements ChangeListener<Boolean> {
                         finishCoding();
                 }
                 break;
-
         }
-
     }
 
     private void finishCoding() {
@@ -381,7 +379,6 @@ public class Measurements implements ChangeListener<Boolean> {
         densoCodingPointsIterator = null;
         codingComplete = true;
         mainSectionStartToggleButton.setSelected(false);
-
     }
 
     private void runDensoTest() {
@@ -390,7 +387,6 @@ public class Measurements implements ChangeListener<Boolean> {
         measuringTime.refreshProgress();
         widthCurrentSignalSpinner.getValueFactory().setValue(densoCodingPointsIterator.next());
         start();
-
     }
 
     private void selectNextTest(int testIndex) {
@@ -398,7 +394,6 @@ public class Measurements implements ChangeListener<Boolean> {
         testsSelectionModel.select(++testIndex);
         testListView.scrollTo(testIndex);
         injectorSectionStartToggleButton.setSelected(false);
-
     }
 
     private void stopTimers() {
@@ -407,7 +402,6 @@ public class Measurements implements ChangeListener<Boolean> {
         pressurePreparationTimeline.stop();
         adjustingTimeline.stop();
         measurementTimeline.stop();
-
     }
 
     public void start() {
@@ -416,21 +410,18 @@ public class Measurements implements ChangeListener<Boolean> {
             startPressure();
         else
             startMotor();
-
     }
 
     private void startMotor() {
 
         testBenchStartToggleButton.setSelected(true);
         motorPreparationTimeline.play();
-
     }
 
     private void startPressure() {
 
         highPressureSectionPwrState.powerButtonProperty().setValue(true);
         pressurePreparationTimeline.play();
-
     }
 
     private void motorPreparation() {
@@ -439,32 +430,37 @@ public class Measurements implements ChangeListener<Boolean> {
 
             motorPreparationTimeline.stop();
             startPressure();
-
         }
-
     }
 
     private void pressurePreparation() {
 
         if(isSectionReady(pressureRegulatorOneModel.pressureRegOneProperty().get(), highPressureSectionUpdateModel.lcdPressureProperty().get(), 0.2)){
-            injectorSectionStartToggleButton.setSelected(true);
-            resetButton.fire();
             pressurePreparationTimeline.stop();
+            resetButton.fire();
+            injectorSectionStartToggleButton.setSelected(true);
 
-            if (getTestType() != TESTPLAN)
+            if (getTestType() != TESTPLAN) {
                 adjustingTimeline.play();
+            }
+            playResetTimeLine();
         }
-
-
     }
 
+    private void playResetTimeLine() {
+
+        Integer testId = testsSelectionModel.getSelectedItem().getTestName().getId();
+        if (testId == 11 || testId == 12 || testId == 33) {
+            preInjectionAutoResetTimeline.play();
+            return;
+        }
+        autoResetTimeline.play();
+    }
 
     private boolean isSectionReady(double currentValue, double lcdValue, double margin) {
 
         return Math.abs((currentValue - lcdValue) / currentValue) < margin;
-
     }
-
 
     private void tickAdjustingTime() {
 
@@ -473,9 +469,8 @@ public class Measurements implements ChangeListener<Boolean> {
             adjustingTimeline.stop();
             resetButton.fire();
             measurementTimeline.play();
-
+            playResetTimeLine();
         }
-
     }
 
     private void tickMeasurementTime() {
@@ -500,37 +495,29 @@ public class Measurements implements ChangeListener<Boolean> {
                     else if (isDelphiC3ICoding())
                         DelphiC3ICodingDataStorage.store(flowReportModel.getResultObservableMap().get(injectorTest));
                 }
-
             }
-
             runNextTest();
-
         }
-
     }
 
     private void startISADetection() {
 
         isaDetectionController.work();
-
     }
 
     private boolean isDensoCoding() {
 
         return getManufacturer().getManufacturerName().equals("Denso");
-
     }
 
     private boolean isDelphiC2ICoding() {
 
         return getManufacturer().getManufacturerName().equals("Delphi") && getInjector().getCodetype() == 1;
-
     }
 
     private boolean isDelphiC3ICoding() {
 
         return getManufacturer().getManufacturerName().equals("Delphi") && getInjector().getCodetype() == 2;
-
     }
 
     private Iterator<Integer> getDensoCodingPointsIterator(InjectorTest injectorTest) {
@@ -538,17 +525,14 @@ public class Measurements implements ChangeListener<Boolean> {
         Integer totalPulseTime = injectorTest.getTotalPulseTime();
 
         int count = 3;
-
         int range = 60;
 
         ArrayList<Integer> codingPointsList = new ArrayList<>();
-
         codingPointsList.add(totalPulseTime - range);
 
         for (int i = 1; i < count; i++)
             codingPointsList.add(codingPointsList.get(i - 1) + (range * 2) / (count - 1));
 
         return codingPointsList.iterator();
-
     }
 }

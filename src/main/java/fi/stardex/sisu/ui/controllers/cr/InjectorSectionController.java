@@ -332,7 +332,6 @@ public class InjectorSectionController {
         ledToggleButtons.add(led2ToggleButton);
         ledToggleButtons.add(led3ToggleButton);
         ledToggleButtons.add(led4ToggleButton);
-
     }
 
     private void setupInjectorConfigComboBox() {
@@ -363,7 +362,6 @@ public class InjectorSectionController {
                 FREQ_CURRENT_SIGNAL_SPINNER_STEP));
 
         SpinnerManager.setupDoubleSpinner(freqCurrentSignalSpinner);
-
     }
 
     private class LedParametersChangeListener implements ChangeListener<Object> {
@@ -383,7 +381,6 @@ public class InjectorSectionController {
             freqCurrentSignalSpinner.valueProperty().addListener(this);
             injectorTypeProperty.addListener(this);
             ledToggleButtons.forEach(s -> s.selectedProperty().addListener(this));
-
         }
 
         @Override
@@ -407,7 +404,6 @@ public class InjectorSectionController {
                     sendLedRegisters();
             } else
                 throw new RuntimeException("Wrong listener type!");
-
         }
 
         private boolean isValid(Double newValue) {
@@ -433,7 +429,7 @@ public class InjectorSectionController {
 
             double frequency = freqCurrentSignalSpinner.getValue();
 
-            ultimaModbusWriter.add(GImpulsesPeriod, 1000 / frequency);
+            ultimaModbusWriter.add(GImpulsesPeriod, (int) Math.round(1000 / frequency));
 
             if (activeLeds == 0)
                 return;
@@ -449,16 +445,13 @@ public class InjectorSectionController {
                 ultimaModbusWriter.add(slotNumbersList.get(selectedChannel - 1), injectorChannel);
                 ultimaModbusWriter.add(slotPulsesList.get(selectedChannel - 1), impulseTime);
                 impulseTime += step;
-
             }
-
         }
 
         private void switchOffAll() {
 
             slotNumbersList.forEach((s) -> ultimaModbusWriter.add(s, 255));
             slotPulsesList.forEach((s) -> ultimaModbusWriter.add(s, 65535));
-
         }
 
         private void writeInjectorTypeRegister() {
@@ -471,9 +464,7 @@ public class InjectorSectionController {
                 ultimaModbusWriter.add(Injector_type, 2);
             else
                 throw new AssertionError("Coil or piezo buttons have not been changeFlow.");
-
         }
-
     }
 
     private class PowerButtonChangeListener implements ChangeListener<Boolean> {
@@ -488,8 +479,8 @@ public class InjectorSectionController {
             if (newValue) {
                 fillArrayNumbersOfActiveLedToggleButtons();
                 ledToggleButtons.forEach(l -> {if(l.isSelected()){ledBlinkStart(l);}});
-                ultimaModbusWriter.add(Injectors_Running_En, true);
                 ledParametersChangeListener.sendLedRegisters();
+                ultimaModbusWriter.add(Injectors_Running_En, true);
                 // FIXME: throws NPE if there is no connection
                 // при коннекте должен строиться хотя бы нулевой график
                 timerTasksManager.start();
@@ -505,11 +496,8 @@ public class InjectorSectionController {
                 ledParametersChangeListener.switchOffAll();
                 timerTasksManager.stop();
                 enabler.disableVAP(false);
-
             }
-
         }
-
     }
 
     private class StackPaneWidthListener implements ChangeListener<Number>{
@@ -671,7 +659,6 @@ public class InjectorSectionController {
                 protected void done() {
 
                     Platform.runLater(() -> setStartStopValues(false));
-
                 }
             };
         }

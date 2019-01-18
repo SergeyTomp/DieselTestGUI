@@ -172,7 +172,7 @@ public class FlowReportController {
         class Range {
 
             private boolean inAcceptableRange() {
-                return ((cellValue < flowRangeLeft) && (cellValue >= acceptableFlowRangeLeft)) || ((cellValue > flowRangeRight) && (cellValue <= acceptableFlowRangeRight));
+                return ((cellValue <= flowRangeLeft) && (cellValue >= acceptableFlowRangeLeft)) || ((cellValue >= flowRangeRight) && (cellValue <= acceptableFlowRangeRight));
             }
 
             private boolean beyondAcceptableRange() {

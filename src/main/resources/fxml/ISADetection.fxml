@@ -23,8 +23,9 @@
          <children>
             <ProgressIndicator fx:id="progressIndicator" styleClass="progress-indicator" stylesheets="@../css/Styling.css" />
          </children></HBox>
-      <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0">
+      <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="230.0">
          <children>
+            <Label fx:id="testVoltage" text="Label" />
             <Button fx:id="stopISAButton" maxHeight="30.0" maxWidth="60.0" minHeight="30.0" minWidth="60.0" mnemonicParsing="false" prefHeight="30.0" prefWidth="60.0" text="Stop">
                <HBox.margin>
                   <Insets right="20.0" />

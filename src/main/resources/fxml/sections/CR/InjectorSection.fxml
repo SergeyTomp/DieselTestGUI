@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 
-<HBox fx:id="rootHBox" alignment="CENTER" maxHeight="130.0" maxWidth="1.7976931348623157E308" minHeight="100.0" minWidth="910.0" prefHeight="130.0" prefWidth="910.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.cr.InjectorSectionController">
+<HBox fx:id="rootHBox" alignment="CENTER" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="130.0" minWidth="500.0" stylesheets="@../../../css/Styling.css" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.cr.InjectorSectionController">
     <children>
         <GridPane alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="130.0" minWidth="150.0">
             <children>

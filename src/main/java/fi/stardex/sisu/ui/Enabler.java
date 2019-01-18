@@ -245,10 +245,9 @@ public class Enabler {
 
     private void selectInjectorTypeRadioButton(RadioButton target) {
 
+        disableRadioButtons(piezoCoilToggleGroup, false);
         target.setSelected(true);
-
         disableRadioButtons(piezoCoilToggleGroup, true);
-
     }
 
     public Enabler selectTestType() {
@@ -269,14 +268,14 @@ public class Enabler {
                 showButtons(false, true);
                 showNode(false, timingGridPane);
                 showDefaultFlowUnit(false);
-                showFlowReport(false);
+                showFlowReport(true);   // to switch off report table in TESTPLAN mode set false
                 break;
             case CODING:
                 disableNode(true, testListView);
                 showButtons(false, true);
                 showNode(true, timingGridPane);
                 showDefaultFlowUnit(true);
-                showFlowReport(false);
+                showFlowReport(true);   // to switch off report table in CODING mode set false
                 break;
 
         }

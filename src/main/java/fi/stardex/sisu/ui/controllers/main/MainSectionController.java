@@ -500,22 +500,16 @@ public class MainSectionController {
     private MainSectionController makeReferenceToInternalObjects() {
 
         testsSelectionModel = testListView.getSelectionModel();
-
         testListViewItems = testListView.getItems();
-
         startToggleButtonStyleClass = startToggleButton.getStyleClass();
-
         speedComboBoxSelectionModel = speedComboBox.getSelectionModel();
-
         return this;
-
     }
 
     private MainSectionController setupTimeProgressBars() {
 
         adjustingTime = new TimeProgressBar(adjustingTimeProgressBar, adjustingText);
         measuringTime = new TimeProgressBar(measuringTimeProgressBar, measuringText);
-
         return this;
     }
 
@@ -529,7 +523,6 @@ public class MainSectionController {
         codingTestRadioButton.textProperty().bind(i18N.createStringBinding("main.coding.radiobutton"));
         defaultRadioButton.textProperty().bind(i18N.createStringBinding("main.defaultRB.radiobutton"));
         customRadioButton.textProperty().bind(i18N.createStringBinding("main.customRB.radiobutton"));
-
         return this;
     }
 
@@ -539,7 +532,6 @@ public class MainSectionController {
             if (startToggleButton.isSelected())
                 flowReportModel.storeResult(testsSelectionModel.getSelectedItem());
         });
-
         return this;
     }
 
@@ -567,23 +559,17 @@ public class MainSectionController {
             if (newValue != null) {
 
                 setInjectorTests(newValue);
-
                 setTests();
-
             }
         });
-
         Thread t = new Thread(task);
-
         t.start();
-
     }
 
     public void pointToFirstTest() {
 
         testsSelectionModel.select(0);
         testListView.scrollTo(0);
-
     }
 
     private void setTests() {
@@ -613,12 +599,11 @@ public class MainSectionController {
                         .collect(Collectors.toList()));
                 Platform.runLater(this::pointToFirstTest);
                 break;
-
         }
-
     }
 
     private MainSectionController initManufacturerContextMenu() {
+
         ContextMenu manufacturerMenu = new ContextMenu();
         MenuItem newManufacturer = new MenuItem("New");
         newManufacturer.setOnAction(new ManufacturerMenuEventHandler("New manufacturer", ManufacturerMenuDialogController::setNew));
@@ -640,13 +625,13 @@ public class MainSectionController {
     }
 
     private MainSectionController initModelContextMenu() {
+
         ContextMenu modelMenu = new ContextMenu();
         MenuItem newModel = new MenuItem("New");
         newModel.setOnAction(new ModelMenuEventHandler("New injector", NewEditInjectorDialogController::setNew));
         MenuItem editModel = new MenuItem("Edit");
         editModel.setOnAction(new ModelMenuEventHandler("Edit injector", NewEditInjectorDialogController::setEdit));
         MenuItem copyModel = new MenuItem("Copy");
-
         MenuItem deleteModel = new MenuItem("Delete");
         deleteModel.setOnAction(new ModelMenuEventHandler("Delete injector", NewEditInjectorDialogController::setDelete));
 
@@ -665,7 +650,6 @@ public class MainSectionController {
             } else
                 modelMenu.hide();
         });
-
         return this;
     }
 
@@ -678,15 +662,14 @@ public class MainSectionController {
         editTest.setOnAction(new TestMenuEventHandler("Edit test", NewEditTestDialogController::setEdit));
         MenuItem deleteTest = new MenuItem("Delete");
         deleteTest.setOnAction(new TestMenuEventHandler("Delete test", NewEditTestDialogController::setDelete));
-
         testMenu.getItems().add(newTest);
+
         testListView.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
             if (event.getButton() == MouseButton.SECONDARY) {
                 testMenu.show(testListView, event.getScreenX(), event.getScreenY());
             } else
                 testMenu.hide();
         });
-
         return this;
     }
 
@@ -694,11 +677,8 @@ public class MainSectionController {
 
         speedComboBox.getItems().setAll(NORMAL_SPEED, DOUBLE_SPEED, HALF_SPEED);
         speedComboBoxSelectionModel.selectFirst();
-
         speedComboBoxSelectionModel.selectedItemProperty().addListener((observable, oldValue, newValue) -> setProgress(newValue));
-
         return this;
-
     }
 
     private class ManufacturerMenuEventHandler implements EventHandler<ActionEvent> {
@@ -745,7 +725,6 @@ public class MainSectionController {
                 modelDialogStage.initModality(Modality.APPLICATION_MODAL);
                 controller.setStage(modelDialogStage);
                 controller.setModelListView(modelListView);
-
             }
             modelDialogStage.setTitle(title);
             dialogType.accept(controller);
@@ -754,6 +733,7 @@ public class MainSectionController {
     }
 
     private class TestMenuEventHandler implements EventHandler<ActionEvent> {
+
         private String title;
         private Consumer<NewEditTestDialogController> dialogType;
 
@@ -764,6 +744,7 @@ public class MainSectionController {
 
         @Override
         public void handle(ActionEvent event) {
+
             NewEditTestDialogController controller = (NewEditTestDialogController) newEditTestDialog.getController();
             if (testDialogStage == null) {
                 testDialogStage = new Stage();
@@ -772,7 +753,6 @@ public class MainSectionController {
                 testDialogStage.initModality(Modality.APPLICATION_MODAL);
                 controller.setStage(testDialogStage);
                 controller.setTestListView(testListView);
-
             }
             testDialogStage.setTitle(title);
             dialogType.accept(controller);
@@ -783,9 +763,7 @@ public class MainSectionController {
     public class TimeProgressBar {
 
         private ProgressBar progressBar;
-
         private Text text;
-
         private int initialTime;
 
         TimeProgressBar(ProgressBar progressBar, Text text) {
@@ -811,19 +789,14 @@ public class MainSectionController {
                 text.setText(String.valueOf(--time));
                 progressBar.setProgress((float) time / (float) initialTime);
             }
-
             return time;
-
         }
-
     }
 
     private MainSectionController setupResetButton() {
 
         resetButton.setOnAction(event -> flowModbusWriter.add(ModbusMapFlow.StartMeasurementCycle, true));
-
         return this;
-
     }
 
     private void setDefaultSpinnerValueFactories(boolean isDefault) {
@@ -840,26 +813,19 @@ public class MainSectionController {
                     FREQ_CURRENT_SIGNAL_SPINNER_MAX,
                     FREQ_CURRENT_SIGNAL_SPINNER_INIT,
                     FREQ_CURRENT_SIGNAL_SPINNER_STEP));
-
         } else {
 
             widthCurrentSignalSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 0));
             freqCurrentSignalSpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0d, 0d));
-
         }
-
     }
 
     private void setInjectorTypeValues(Integer freq, Integer firstW, Integer width, Integer motorSpeed) {
 
         freqCurrentSignalSpinner.getValueFactory().setValue((freq != null) ? 1000d / freq : 0);
-
         voltAmpereProfileController.getFirstWSpinner().getValueFactory().setValue(firstW);
-
         widthCurrentSignalSpinner.getValueFactory().setValue(width);
-
         targetRPMSpinner.getValueFactory().setValue(motorSpeed);
-
     }
 
     private void setProgress(String ratio) {
@@ -881,7 +847,6 @@ public class MainSectionController {
                 logger.error("Wrong speed argument!");
                 break;
         }
-
     }
 
     private MainSectionController initStartToggleButtonBlinking() {
@@ -898,9 +863,7 @@ public class MainSectionController {
                 startToggleButtonStyleClass.add("startButton");
             }
         });
-
         return this;
-
     }
 
     private void startBlinking() {
@@ -914,13 +877,13 @@ public class MainSectionController {
             startToggleButtonStyleClass.add("stopButtonLight");
             startLight = true;
         }
-
     }
 
     private MainSectionController setupManufacturerListViewListener() {
 
         manufacturerListView.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) -> {
 
+            resetButton.fire();
             enabler.disableNode(newValue == null, injectorsVBox);
             setManufacturer(newValue);
             infoController.changeToDefault();
@@ -930,7 +893,6 @@ public class MainSectionController {
             flowReportModel.clearResults();
             codingReportModel.clearResults();
 
-
             if (newValue.isCustom()) {
                 defaultRadioButton.setDisable(true);
                 customRadioButton.setSelected(true);
@@ -938,11 +900,8 @@ public class MainSectionController {
                 defaultRadioButton.setDisable(false);
 
             setFilteredItems(newValue);
-
         }));
-
         return this;
-
     }
 
     private MainSectionController setupSearchModelTextFieldListener() {
@@ -957,11 +916,8 @@ public class MainSectionController {
                         || data.toString().replace("#", "").contains(newValue.toUpperCase())
                         || data.toString().replaceFirst("-", "").contains(newValue.toUpperCase()));
             }
-
         })));
-
         return this;
-
     }
 
     private MainSectionController setupBaseTypeToggleGroupListener() {
@@ -974,11 +930,8 @@ public class MainSectionController {
                 return;
 
             setFilteredItems(selectedItem);
-
         }));
-
         return this;
-
     }
 
     private MainSectionController setupModelListViewListener() {
@@ -986,26 +939,22 @@ public class MainSectionController {
         modelListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 
             returnToDefaultTestListAuto();
-
+            resetButton.fire();
             delayReportModel.clearResults();
             rlc_reportModel.clearResults();
             flowReportModel.clearResults();
             codingReportModel.clearResults();
-
             injectorNumberTextField.setText((newValue != null) ? ((Injector) newValue).getInjectorCode() : null);
 
             if (newValue == null) {
                 setInjector(null);
                 setInjectorTests(null);
-                enabler.showInjectorTests(false).selectInjectorType(null).disableNode(true, codingTestRadioButton);
+                enabler.showInjectorTests(false).selectInjectorType(null).showNode(false, codingTestRadioButton);
                 injectorSectionFirstLedToggleButton.setSelected(false);
                 testListViewItems.clear();
-
                 return;
             }
-            else {
                 injectorSectionFirstLedToggleButton.setSelected(true);
-            }
 
             Injector injector = (Injector) newValue;
             currentVoltAmpereProfile = injectorsRepository.findByInjectorCode(injector.getInjectorCode()).getVoltAmpereProfile();
@@ -1040,7 +989,6 @@ public class MainSectionController {
             voltAmpereProfileController.getNegativeUSpinner().getValueFactory().setValue(currentVoltAmpereProfile.getNegativeU());
             voltAmpereProfileController.getEnableBoostToggleButton().setSelected(currentVoltAmpereProfile.getBoostDisable());
 
-
             String manufacturerName = injector.getManufacturer().getManufacturerName();
             switch (manufacturerName) {
                 case "Bosch":
@@ -1065,13 +1013,9 @@ public class MainSectionController {
                     infoController.changeToDefault();
                     break;
             }
-
             voltAmpereProfileController.getApplyButton().fire();
-
         });
-
         return this;
-
     }
 
     private MainSectionController setupTestListViewListener() {
@@ -1097,14 +1041,16 @@ public class MainSectionController {
 
             } else if (testPlanTestRadioButton.isSelected() && startToggleButton.isSelected()) {
 
-                measurements.switchOffSections();
+//                measurements.switchOffSections();
+                measurements.switchOffInjectorSection();
                 measurements.start();
-
             }
 
             currentAdjustingTime = newValue.getAdjustingTime();
+//            currentAdjustingTime = 5;
 
             currentMeasuringTime = newValue.getMeasurementTime();
+//            currentMeasuringTime = 5;
 
             setProgress(speedComboBoxSelectionModel.getSelectedItem());
 
@@ -1112,10 +1058,13 @@ public class MainSectionController {
 
             delayController.clearDelayResults();
 
+            Integer motorSpeed = newValue.getMotorSpeed();
+
             switch (measurementType) {
 
                 case NO:
                     setDefaultSpinnerValueFactories(false);
+                    targetRPMSpinner.getValueFactory().setValue(motorSpeed);
                     enabler.disableNode(true, widthCurrentSignalSpinner, freqCurrentSignalSpinner, injectorSectionStartToggleButton);
                     delayController.getSaveDelayButton().setDisable(true);
                     break;
@@ -1125,21 +1074,16 @@ public class MainSectionController {
                     Integer freq = newValue.getInjectionRate();
                     Integer width = newValue.getTotalPulseTime();
                     Integer firstW = currentVoltAmpereProfile.getFirstW();
-                    firstW = (width - firstW >= 30) ? firstW : width - 30;
-                    Integer motorSpeed = newValue.getMotorSpeed();
+                    firstW = (width - firstW >= MAX_DELTA_WIDTH_TO_FIRST_WIDTH) ? firstW : width - MAX_DELTA_WIDTH_TO_FIRST_WIDTH;
                     setInjectorTypeValues(freq, firstW, width, motorSpeed);
                     delayController.setInjectorTestName(newValue.getTestName().toString());
                     delayController.getSaveDelayButton().setDisable(false);
                     break;
             }
-
         });
-
         return this;
-
     }
 
-    //FIXME: при сортировке несколько раз вызывается листенер списка
     private MainSectionController setupTestsToggleGroupListener() {
 
         testsToggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
@@ -1153,23 +1097,16 @@ public class MainSectionController {
                 setTests();
                 enabler.disableNode(false, startToggleButton);
             }
-
             enabler.selectTestType();
-
         });
-
         return this;
-
     }
 
     private MainSectionController setupMoveButtonEventHandlers() {
 
         moveUpButton.setOnAction(event -> moveTest(UP));
-
         moveDownButton.setOnAction(event -> moveTest(DOWN));
-
         return this;
-
     }
 
     private void moveTest(Move move) {
@@ -1195,13 +1132,9 @@ public class MainSectionController {
                 testListView.scrollTo(testsSelectionModel.getSelectedIndex());
                 enabler.enableUpDownButtons(testsSelectionModel.getSelectedIndex(), testListViewItems.size() - getListOfNonIncludedTests().size());
                 break;
-
         }
-
         enabler.disableNode(testsSelectionModel.getSelectedIndex() != 0, startToggleButton);
-
         isFocusMoved = false;
-
     }
 
     //Old version of resorting upon checkBox check/uncheck - original included tests order was not restored after checkBox check/uncheck
@@ -1255,7 +1188,6 @@ public class MainSectionController {
             int includedQty = (int)testListView.getItems().stream().filter(t -> t.includedProperty().get()).count();
             testListView.getItems().subList(0, includedQty).sort(Comparator.comparingInt(injectorTest -> injectorTest.getId()));
             testListView.scrollTo(0);
-
         });
     }
 
@@ -1268,9 +1200,7 @@ public class MainSectionController {
             List<InjectorTest> temp = new ArrayList<>(listOfNonIncludedTests);
             temp.forEach(injectorTest -> injectorTest.setIncluded(true));
         }
-
         isAnotherAutoOrNewTestList = false;
-
     }
 
     private boolean checkInjectorForCoding(int codetype) {
@@ -1281,7 +1211,6 @@ public class MainSectionController {
             return codetype != 0;
         else
             return false;
-
     }
 
     private class PrintButtonEventHandler implements EventHandler<ActionEvent> {
@@ -1298,7 +1227,6 @@ public class MainSectionController {
                 ((PrintDialogPanelController) printDialogPanel.getController()).setStage(printStage);
             }
             printStage.show();
-
         }
     }
 }

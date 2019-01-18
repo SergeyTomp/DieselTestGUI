@@ -66,6 +66,7 @@ public enum ModbusMapUltima implements ModbusMap {
     Boost_U(REGISTER_HOLDING, 120, 2, true),            // boostUSpinner
     Battery_U(REGISTER_HOLDING, 122, 2, true),          // batteryUSpinner
     Negative_U(REGISTER_HOLDING, 124, 2, true),         // negativeUSpinner
+    Negative_U2(REGISTER_HOLDING, 126, 2, true),
     BoostIBoardOne(REGISTER_HOLDING, 1, 1, true),       // boostISpinner
     FirstIBoardOne(REGISTER_HOLDING, 2, 1, true),       // firstISpinner
     SecondIBoardOne(REGISTER_HOLDING, 3, 1, true),      // secondISpinner

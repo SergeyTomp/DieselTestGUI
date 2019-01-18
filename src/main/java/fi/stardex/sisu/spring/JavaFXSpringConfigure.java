@@ -336,7 +336,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                          VoltAmpereProfileController voltAmpereProfileController,
                                                          FlowController flowController,
                                                          HighPressureSectionUpdateModel highPressureSectionUpdateModel,
-                                                         PressureRegulatorOneModel pressureRegulatorOneModel) {
+                                                         PressureRegulatorOneModel pressureRegulatorOneModel,
+                                                         InjectorTestModel injectorTestModel) {
         ISADetectionController isaDetectionController = (ISADetectionController) isaDetection().getController();
         isaDetectionController.setISAParent(isaDetection().getView());
         isaDetectionController.setRootParent(rootLayout.getView());
@@ -353,6 +354,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         isaDetectionController.setDelivery4TextField(flowController.getDelivery4TextField());
         isaDetectionController.setHighPressureSectionUpdateModel(highPressureSectionUpdateModel);
         isaDetectionController.setPressureRegulatorOneModel(pressureRegulatorOneModel);
+        isaDetectionController.setInjectorTestModel(injectorTestModel);
         return isaDetectionController;
     }
 
@@ -555,13 +557,13 @@ public class JavaFXSpringConfigure extends ViewLoader{
     }
 
     private void setupBeakerController(BeakerController beakerController, FlowController flowController, TextField textField,
-                                       ToggleButton ledBeakerController, Rescaler rescaler, String name, BeakerType beakerType) {
+                                       ToggleButton ledToggleButton, Rescaler rescaler, String name, BeakerType beakerType) {
 
         beakerController.setFlowController(flowController);
         beakerController.setTextField(textField);
         beakerController.setDeliveryRangeLabel(flowController.getDeliveryRangeLabel());
         beakerController.setBackFlowRangeLabel(flowController.getBackFlowRangeLabel());
-        beakerController.setLedController(ledBeakerController);
+        beakerController.setLedButton(ledToggleButton);
         beakerController.setRescaler(rescaler);
         beakerController.setName(name);
         beakerController.setBeakerType(beakerType);

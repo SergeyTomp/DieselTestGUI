@@ -4,6 +4,8 @@ import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
 import fi.stardex.sisu.util.enums.BeakerType;
 import fi.stardex.sisu.util.rescalers.Rescaler;
 import javafx.application.Platform;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.MapChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
@@ -74,7 +76,7 @@ public class BeakerController {
 
     private static final String REGEX = "[0-9.]*[^.]";
 
-    private ToggleButton ledBeakerController;
+    private ToggleButton ledButton;
 
     private TextField textField;
 
@@ -100,8 +102,8 @@ public class BeakerController {
         this.textField = textField;
     }
 
-    public void setLedController(ToggleButton ledBeakerController) {
-        this.ledBeakerController = ledBeakerController;
+    public void setLedButton(ToggleButton ledButton) {
+        this.ledButton = ledButton;
     }
 
     public void setRescaler(Rescaler rescaler) {
@@ -145,63 +147,68 @@ public class BeakerController {
 
         rescaler.getMapOfLevels().put(name, 0f);
 
-        rescaler.getObservableMapOfLevels().addListener((MapChangeListener<String, Float>) change -> {
-
-            currentMaxLevel = rescaler.getMapOfLevels().values().stream().max(Float::compare).get();
-            Platform.runLater(() -> setLevel((rectangleBeaker.getHeight() / 2) * (rescaler.getMapOfLevels().get(name) / currentMaxLevel)));
-
-        });
-
+        switch (beakerType){
+            case DELIVERY:
+                rescaler.getObservableMapOfLevels().addListener(new MapOfLevelsListener(deliveryRangeLabel));
+                break;
+            case BACKFLOW:
+                rescaler.getObservableMapOfLevels().addListener(new MapOfLevelsListener(backFlowRangeLabel));
+                break;
+        }
     }
 
     private void setupListeners() {
-
-        flowController.deliveryRangeLabelPropertyProperty().addListener((observable, oldValue, newValue) ->
-                showBeakerLevels(newValue, backFlowRangeLabel.getText(), ledBeakerController.isSelected()));
-
-        flowController.backFlowRangeLabelPropertyProperty().addListener((observable, oldValue, newValue) ->
-                showBeakerLevels(deliveryRangeLabel.getText(), newValue, ledBeakerController.isSelected()));
-
-        ledBeakerController.selectedProperty().addListener((observable, oldValue, newValue) ->
+        ledButton.selectedProperty().addListener((observable, oldValue, newValue) ->
                 showBeakerLevels(deliveryRangeLabel.getText(), backFlowRangeLabel.getText(), newValue));
 
-        textField.textProperty().addListener((observable, oldValue, newValue) -> {
 
-            if ((deliveryRangeLabel.getText().isEmpty()) && (backFlowRangeLabel.getText().isEmpty())) {
+        /** Listens for ledButton switch on/off and set top and bottom limits arcs with text labels upon switch event*/
 
-                if (newValue == null || newValue.equals("") || newValue.equals("0.0") || newValue.equals("0")) {
-                    rescaler.getMapOfLevels().put(name, 0f);
-                    makeLevelEmpty();
-                    return;
-                }
+        /** First one listens for flowField value changes, set fuel level in corresponding beaker
+         * and put new value into Rescaler's MapOfLevels
+         * Second one listens for rangeLabelProperty and set top and bottom limits arcs with text labels upon UoM changes*/
+        switch (beakerType){
+            case DELIVERY:
+                textField.textProperty().addListener(new FlowFieldListener(deliveryRangeLabel));
+                flowController.deliveryRangeLabelPropertyProperty().addListener((observable, oldValue, newValue) ->
+                        showBeakerLevels(newValue, backFlowRangeLabel.getText(), ledButton.isSelected()));
+                break;
+            case BACKFLOW:
+                textField.textProperty().addListener(new FlowFieldListener(backFlowRangeLabel));
+                flowController.backFlowRangeLabelPropertyProperty().addListener((observable, oldValue, newValue) ->
+                        showBeakerLevels(deliveryRangeLabel.getText(), newValue, ledButton.isSelected()));
+                break;
+        }
+    }
 
-                if (!newValue.matches(REGEX)) {
-                    rescaler.getMapOfLevels().put(name, 0f);
-                    return;
-                }
+    private void setupResizeable() {
 
-                float currentVal = round(convertDataToFloat(newValue));
+        rectangleBeaker.heightProperty().bind(((StackPane) beakerPane.getParent()).heightProperty());
+        rectangleBeaker.widthProperty().bind(((StackPane) beakerPane.getParent()).widthProperty());
+        ellipseTopBeaker.radiusXProperty().bind(((StackPane) beakerPane.getParent()).widthProperty().divide(2));
+        ellipseBottomBeaker.radiusXProperty().bind(((StackPane) beakerPane.getParent()).widthProperty().divide(2));
+        ellipseTopFuel.radiusXProperty().bind(((StackPane) beakerPane.getParent()).widthProperty().divide(2.1));
+        ellipseBottomFuel.radiusXProperty().bind(((StackPane) beakerPane.getParent()).widthProperty().divide(2.1));
+        arcTickTop.radiusXProperty().bind(((StackPane) beakerPane.getParent()).widthProperty().divide(2));
+        arcTickBottom.radiusXProperty().bind(((StackPane) beakerPane.getParent()).widthProperty().divide(2));
+        rectangleFuel.widthProperty().bind(((StackPane) beakerPane.getParent()).widthProperty().divide(1.055));
+        imageViewCenter.fitHeightProperty().bind(rectangleBeaker.heightProperty().subtract(79));
+        imageViewTop.fitWidthProperty().bind(((StackPane) beakerPane.getParent()).widthProperty());
+        imageViewBottom.fitWidthProperty().bind(((StackPane) beakerPane.getParent()).widthProperty());
+        imageViewCenter.fitWidthProperty().bind(((StackPane) beakerPane.getParent()).widthProperty());
 
-                rescaler.getMapOfLevels().put(name, currentVal);
-
-            } else if (newValue != null) {
-
-                if (newValue.equals("") || newValue.equals("0.0") || newValue.equals("0")) {
-                    makeLevelEmpty();
-                    return;
-                }
-
-                if (!newValue.matches(REGEX)) {
-                    return;
-                }
-
-                setNewLevel(newValue);
-
-            } else {
-                makeLevelEmpty();
-            }
+        switch (beakerType){
+            case DELIVERY:
+                ((StackPane) beakerPane.getParent()).heightProperty().addListener(new BeakerHeightListener( deliveryRangeLabel));
+                break;
+            case BACKFLOW:
+                ((StackPane) beakerPane.getParent()).heightProperty().addListener(new BeakerHeightListener( backFlowRangeLabel));
+                break;
+        }
+        ((StackPane) beakerPane.getParent()).widthProperty().addListener((observable, oldValue, newValue) -> {
+            AnchorPane.setLeftAnchor(textTop, arcTickTop.getCenterX() + arcTickTop.getRadiusX() - textTop.getWrappingWidth() / 2);
+            AnchorPane.setLeftAnchor(textBottom, arcTickBottom.getCenterX() + arcTickBottom.getRadiusX() - textBottom.getWrappingWidth() / 2);
         });
-
     }
 
     public void changeFlow(String value) {
@@ -212,7 +219,6 @@ public class BeakerController {
             setNewLevel(value);
         else
             textField.setText(value);
-
     }
 
     private void setNewLevel(String value) {
@@ -239,7 +245,6 @@ public class BeakerController {
                 double highBackFlowLevelValue = round(flowController.getCurrentBackFlowLevels()[1] * coefficient);
                 setBeakerLevel(currentVal, lowBackFlowLevelValue, highBackFlowLevelValue);
         }
-
     }
 
     private void setBeakerLevel(double currentVal, double lowFlowLevelValue, double highFlowLevelValue) {
@@ -250,13 +255,11 @@ public class BeakerController {
             Platform.runLater(() -> setLevel(calculateInRangeLevel(currentVal, lowFlowLevelValue, highFlowLevelValue)));
         else if (currentVal > highFlowLevelValue)
             Platform.runLater(() -> setLevel(calculateAboveRangeLevel(currentVal, lowFlowLevelValue, highFlowLevelValue)));
-
     }
 
     private double calculateBelowRangeLevel(double currentVal, double lowFlowLevelValue) {
 
         return (rectangleBeaker.getHeight() * PERCENT_025) * (currentVal / lowFlowLevelValue);
-
     }
 
     private double calculateInRangeLevel(double currentVal, double lowFlowLevelValue, double highFlowLevelValue) {
@@ -266,7 +269,6 @@ public class BeakerController {
         double intermediateValue = (3 - 1) * ratio + 1;
 
         return (rectangleBeaker.getHeight() * PERCENT_075) * (intermediateValue / 3);
-
     }
 
     private double calculateAboveRangeLevel(double currentVal, double lowFlowLevelValue, double highFlowLevelValue) {
@@ -283,22 +285,21 @@ public class BeakerController {
         double intermediateValue = (4 - 3) * ratio + 3;
 
         return rectangleBeaker.getHeight() * (intermediateValue / 4);
-
     }
 
     private void showBeakerLevels(String deliveryRangeLabel, String backFlowRangeLabel, boolean ledSelected) {
-
         if (ledSelected) {
             switch (beakerType) {
                 case DELIVERY:
                     if (!deliveryRangeLabel.isEmpty()) {
                         double[] currentDeliveryFlowLevels = flowController.getCurrentDeliveryFlowLevels();
-                        textTop.setText(String.valueOf(currentDeliveryFlowLevels[1]));
-                        textBottom.setText(String.valueOf(currentDeliveryFlowLevels[0]));
-                        setArcs();
-                        AnchorPane.setBottomAnchor(textTop, AnchorPane.getBottomAnchor(arcTickTop) + TEXT_DEVIATION);
-                        AnchorPane.setBottomAnchor(textBottom, AnchorPane.getBottomAnchor(arcTickBottom) + TEXT_DEVIATION);
-
+                        setArcAndText(arcTickTop, PERCENT_075, textTop, String.valueOf(currentDeliveryFlowLevels[1]));
+                        if (currentDeliveryFlowLevels[0] != 0) {
+                           setArcAndText(arcTickBottom, PERCENT_025, textBottom, String.valueOf(currentDeliveryFlowLevels[0]));
+                        }
+                        else {
+                            clearArcAndText(arcTickBottom, textBottom);
+                        }
                     } else {
                         makeEmpty();
                     }
@@ -306,11 +307,13 @@ public class BeakerController {
                 case BACKFLOW:
                     if (!backFlowRangeLabel.isEmpty()) {
                         double[] currentBackFlowLevels = flowController.getCurrentBackFlowLevels();
-                        textTop.setText(String.valueOf(currentBackFlowLevels[1]));
-                        textBottom.setText(String.valueOf(currentBackFlowLevels[0]));
-                        setArcs();
-                        AnchorPane.setBottomAnchor(textTop, AnchorPane.getBottomAnchor(arcTickTop) + TEXT_DEVIATION);
-                        AnchorPane.setBottomAnchor(textBottom, AnchorPane.getBottomAnchor(arcTickBottom) + TEXT_DEVIATION);
+                        setArcAndText(arcTickTop, PERCENT_075, textTop, String.valueOf(currentBackFlowLevels[1]));
+                        if (currentBackFlowLevels[0] != 0) {
+                            setArcAndText(arcTickBottom, PERCENT_025, textBottom, String.valueOf(currentBackFlowLevels[0]));
+                        }
+                        else {
+                            clearArcAndText(arcTickBottom, textBottom);
+                        }
                     } else {
                         makeEmpty();
                     }
@@ -321,7 +324,6 @@ public class BeakerController {
         } else {
             makeEmpty();
         }
-
     }
 
     private void setArcs() {
@@ -330,37 +332,30 @@ public class BeakerController {
         setLowerArc(arcTickBottom, PERCENT_025);
         arcTickTop.setOpacity(1d);
         arcTickBottom.setOpacity(1d);
-
     }
 
-    // TODO: доделать resize для FlowMaster/Stream
-    private void setupResizeable() {
+    private void setArc(Arc arc, double value) {
+        arc.setOpacity(1d);
+        AnchorPane.setBottomAnchor(arc, rectangleBeaker.getHeight() * value - ARC_DEVIATION);
+    }
 
-        rectangleBeaker.heightProperty().bind(((StackPane) beakerPane.getParent()).heightProperty());
-        rectangleBeaker.widthProperty().bind(((StackPane) beakerPane.getParent()).widthProperty());
-        ellipseTopBeaker.radiusXProperty().bind(((StackPane) beakerPane.getParent()).widthProperty().divide(2));
-        ellipseBottomBeaker.radiusXProperty().bind(((StackPane) beakerPane.getParent()).widthProperty().divide(2));
-        ellipseTopFuel.radiusXProperty().bind(((StackPane) beakerPane.getParent()).widthProperty().divide(2.1));
-        ellipseBottomFuel.radiusXProperty().bind(((StackPane) beakerPane.getParent()).widthProperty().divide(2.1));
-        arcTickTop.radiusXProperty().bind(((StackPane) beakerPane.getParent()).widthProperty().divide(2));
-        arcTickBottom.radiusXProperty().bind(((StackPane) beakerPane.getParent()).widthProperty().divide(2));
-        rectangleFuel.widthProperty().bind(((StackPane) beakerPane.getParent()).widthProperty().divide(1.055));
-        imageViewCenter.fitHeightProperty().bind(rectangleBeaker.heightProperty().subtract(79));
-        imageViewTop.fitWidthProperty().bind(((StackPane) beakerPane.getParent()).widthProperty());
-        imageViewBottom.fitWidthProperty().bind(((StackPane) beakerPane.getParent()).widthProperty());
-        imageViewCenter.fitWidthProperty().bind(((StackPane) beakerPane.getParent()).widthProperty());
+    private void setArcText(Arc arc, Text arcText, String value){
+        arcText.setText(value);
+        AnchorPane.setBottomAnchor(arcText, AnchorPane.getBottomAnchor(arc) + TEXT_DEVIATION);
+    }
 
-        ((StackPane) beakerPane.getParent()).heightProperty().addListener((observable, oldValue, newValue) -> {
-            setHalfFuelLevel((rectangleBeaker.getHeight() / 2) * (rescaler.getMapOfLevels().get(name) / currentMaxLevel));
-            lineLeft.setEndY(newValue.doubleValue());
-            lineRight.setEndY(newValue.doubleValue());
-        });
+    private void setArcAndText(Arc arc, double arcPosition, Text arcText, String arcTextValue){
 
-        ((StackPane) beakerPane.getParent()).widthProperty().addListener((observable, oldValue, newValue) -> {
-            AnchorPane.setLeftAnchor(textTop, arcTickTop.getCenterX() + arcTickTop.getRadiusX() - textTop.getWrappingWidth() / 2);
-            AnchorPane.setLeftAnchor(textBottom, arcTickBottom.getCenterX() + arcTickBottom.getRadiusX() - textBottom.getWrappingWidth() / 2);
-        });
+        arc.setOpacity(1d);
+        AnchorPane.setBottomAnchor(arc, rectangleBeaker.getHeight() * arcPosition - ARC_DEVIATION);
+        arcText.setText(arcTextValue);
+        AnchorPane.setBottomAnchor(arcText, AnchorPane.getBottomAnchor(arc) + TEXT_DEVIATION);
+    }
 
+    private void clearArcAndText(Arc arc, Text arcText){
+
+        arc.setOpacity(0d);
+        arcText.setText("");
     }
 
     private void makeEmpty() {
@@ -373,7 +368,6 @@ public class BeakerController {
         textBottom.setText("");
         rectangleFuel.setHeight(0);
         rectangleFuel.setOpacity(0);
-
     }
 
     private void makeLevelEmpty() {
@@ -382,7 +376,6 @@ public class BeakerController {
         ellipseTopFuel.setOpacity(0);
         rectangleFuel.setHeight(0);
         rectangleFuel.setOpacity(0);
-
     }
 
     private void setLevel(double level) {
@@ -393,33 +386,127 @@ public class BeakerController {
         ellipseTopFuel.setOpacity(opacityByLevel(level));
 
         setHalfFuelLevel(level);
-
     }
 
     private void setHalfFuelLevel(double level) {
 
         rectangleFuel.setHeight(level);
         AnchorPane.setBottomAnchor(ellipseTopFuel, level - ELLIPSE_TOP_FUEL_DEVIATION);
-
     }
 
 
     private double opacityByLevel(double level) {
 
         return level == 0 ? 0 : 1;
-
     }
 
     private void setBiggerArc(Arc arc, double value) {
 
         AnchorPane.setBottomAnchor(arc, rectangleBeaker.getHeight() * value - ARC_DEVIATION);
-
     }
 
     private void setLowerArc(Arc arc, double value) {
 
         AnchorPane.setBottomAnchor(arc, rectangleBeaker.getHeight() * value - ARC_DEVIATION);
-
     }
 
+
+
+    /** Listens for FlowField value changes,
+     * set fuel level in corresponding beaker and put new value into Rescaler's MapOfLevels*/
+    private class FlowFieldListener implements ChangeListener<String> {
+
+        private Label rangeLabel;
+
+        public FlowFieldListener(Label rangeLabel) {
+            this.rangeLabel = rangeLabel;
+        }
+
+        @Override
+        public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+            if (rangeLabel.getText().isEmpty()) {
+
+                if (newValue == null || newValue.equals("") || newValue.equals("0.0") || newValue.equals("0")) {
+                    rescaler.getObservableMapOfLevels().put(name, 0f);
+                    makeLevelEmpty();
+                    return;
+                }
+
+                if (!newValue.matches(REGEX)) {
+                    rescaler.getObservableMapOfLevels().put(name, 0f);
+                    return;
+                }
+
+                float currentVal = round(convertDataToFloat(newValue));
+                rescaler.getObservableMapOfLevels().put(name, currentVal);
+
+            } else if (newValue != null) {
+
+                if (newValue.equals("") || newValue.equals("0.0") || newValue.equals("0")) {
+                    makeLevelEmpty();
+                    return;
+                }
+
+                if (!newValue.matches(REGEX)) {
+                    return;
+                }
+                float currentVal = round(convertDataToFloat(newValue));
+                rescaler.getObservableMapOfLevels().put(name, currentVal);
+                setNewLevel(newValue);
+
+            } else {
+                makeLevelEmpty();
+            }
+        }
+    }
+    /** Listens for Rescaler's MapOfLevels changes and set level in corresponding beaker
+     * in relation with other beakers levels in the same beaker set
+     * in case corresponding range label is empty
+     * Double.isNaN check is used to avoid color artifacts on fuel cylinder elements in case value.isNaN*/
+    private class MapOfLevelsListener implements MapChangeListener<String, Float>{
+
+        private Label rangeLabel;
+
+        public MapOfLevelsListener(Label rangeLabel) {
+            this.rangeLabel = rangeLabel;
+        }
+
+        @Override
+        public void onChanged(Change<? extends String, ? extends Float> change) {
+            currentMaxLevel = rescaler.getMapOfLevels().values().stream().max(Float::compare).get();
+            if (rangeLabel.getText().isEmpty()) {
+                double value = (rectangleBeaker.getHeight() / 2) * (rescaler.getMapOfLevels().get(name) / currentMaxLevel);
+                Platform.runLater(() -> BeakerController.this.setLevel(Double.isNaN(value) ? 0f : value));
+            }
+        }
+    }
+
+    /** Listens for corresponding beaker height changes and set level in corresponding beaker
+     * either in relation with other beakers levels in the same beaker set in case corresponding range label is empty
+     * or in accordance with not empty flow value in the flow text field*/
+    private class BeakerHeightListener implements ChangeListener<Number>{
+
+        private Label rangeLabel;
+
+        public BeakerHeightListener(Label rangeLabel) {
+            this.rangeLabel = rangeLabel;
+        }
+
+        @Override
+        public void changed(ObservableValue<? extends Number> observableValue, Number oldValue, Number newValue) {
+            if (rangeLabel.getText().isEmpty()) {
+
+                setHalfFuelLevel((rectangleBeaker.getHeight() / 2) * (rescaler.getMapOfLevels().get(name) / currentMaxLevel));
+            }
+            else {
+                if(textField.getText() != null && !textField.getText().isEmpty()){
+
+                    setHalfFuelLevel(rectangleFuel.getHeight() * (newValue.floatValue() / oldValue.floatValue()));
+                }
+                showBeakerLevels(deliveryRangeLabel.getText(), backFlowRangeLabel.getText(), ledButton.isSelected());
+            }
+            lineLeft.setEndY(newValue.doubleValue());
+            lineRight.setEndY(newValue.doubleValue());
+        }
+    }
 }

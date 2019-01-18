@@ -155,8 +155,8 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
     @Autowired
     public PumpBeakerController pumpDeliveryController(PumpFlowController pumpFlowController,
                                                        Rescaler deliveryRescaler,
-                                                       DeliveryFlowUnitsModel deliveryFlowUnitsModel,
-                                                       DeliveryFlowRangeModel deliveryFlowRangeModel,
+                                                       FlowUnitsModel pumpDeliveryFlowUnitsModel,
+                                                       FlowRangeModel pumpDeliveryFlowRangeModel,
                                                        PumpFlowValuesModel pumpDeliveryFlowValuesModel,
                                                        PumpFlowTemperaturesModel pumpDeliveryFlowTemperaturesModel,
                                                        PumpTestModel pumpTestModel,
@@ -165,13 +165,13 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
         pumpDeliveryController.setI18N(i18N);
         pumpDeliveryController.setBeakerType(BeakerType.DELIVERY);
         pumpDeliveryController.setRescaler(deliveryRescaler);
-        pumpDeliveryController.setDeliveryFlowRangeModel(deliveryFlowRangeModel);
-        pumpDeliveryController.setDeliveryFlowUnitsModel(deliveryFlowUnitsModel);
         pumpDeliveryController.setPumpFlowValuesModel(pumpDeliveryFlowValuesModel);
         pumpDeliveryController.setPumpFlowTemperaturesModel(pumpDeliveryFlowTemperaturesModel);
         pumpDeliveryController.setPumpTestModel(pumpTestModel);
         pumpDeliveryController.setFlowViewModel(flowViewModel);
         pumpDeliveryController.setName("PumpDelivery");
+        pumpDeliveryController.setFlowRangeModel(pumpDeliveryFlowRangeModel);
+        pumpDeliveryController.setFlowUnitsModel(pumpDeliveryFlowUnitsModel);
         return pumpDeliveryController;
     }
 
@@ -179,8 +179,8 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
     @Autowired
     public PumpBeakerController pumpBackflowController(PumpFlowController pumpFlowController,
                                                        Rescaler backFlowRescaler,
-                                                       BackFlowUnitsModel backFlowUnitsModel,
-                                                       BackFlowRangeModel backFlowRangeModel,
+                                                       FlowUnitsModel pumpBackFlowUnitsModel,
+                                                       FlowRangeModel pumpBackFlowRangeModel,
                                                        PumpFlowValuesModel pumpBackFlowValuesModel,
                                                        PumpFlowTemperaturesModel pumpBackFlowTemperaturesModel,
                                                        PumpTestModel pumpTestModel,
@@ -189,13 +189,13 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
         pumpBackflowController.setI18N(i18N);
         pumpBackflowController.setBeakerType(BeakerType.BACKFLOW);
         pumpBackflowController.setRescaler(backFlowRescaler);
-        pumpBackflowController.setBackFlowUnitsModel(backFlowUnitsModel);
-        pumpBackflowController.setBackFlowRangeModel(backFlowRangeModel);
         pumpBackflowController.setPumpFlowValuesModel(pumpBackFlowValuesModel);
         pumpBackflowController.setPumpFlowTemperaturesModel(pumpBackFlowTemperaturesModel);
         pumpBackflowController.setPumpTestModel(pumpTestModel);
         pumpBackflowController.setFlowViewModel(flowViewModel);
         pumpBackflowController.setName("PumpBackFlow");
+        pumpBackflowController.setFlowUnitsModel(pumpBackFlowUnitsModel);
+        pumpBackflowController.setFlowRangeModel(pumpBackFlowRangeModel);
         return pumpBackflowController;
     }
 

@@ -52,8 +52,8 @@ public class InjectorSectionUpdater implements Updater {
         if ((value = Battery_U.getLastValue().toString()) != null){
             voltageController.getBatteryU().setText(Integer.toString(convertDataToInt(value)));
         }
-        if ((value = Negative_U.getLastValue().toString()) != null)
+        if ((value = Negative_U.getLastValue().toString()) != null){
             voltageController.getNegativeU().setText(Integer.toString(convertDataToInt(value)));
+        }
     }
-
 }

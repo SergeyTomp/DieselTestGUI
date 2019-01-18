@@ -861,4 +861,24 @@ public class SpringJavaConfig {
     public PumpFlowTemperaturesModel pumpBackFlowTemperaturesModel(){
         return new PumpFlowTemperaturesModel();
     }
+
+    @Bean
+    public FlowRangeModel pumpDeliveryFlowRangeModel(){
+        return new FlowRangeModel();
+    }
+
+    @Bean
+    public FlowRangeModel pumpBackFlowRangeModel(){
+        return new FlowRangeModel();
+    }
+
+    @Bean
+    public FlowUnitsModel pumpDeliveryFlowUnitsModel() {
+        return new FlowUnitsModel();
+    }
+
+    @Bean
+    public FlowUnitsModel pumpBackFlowUnitsModel() {
+        return new FlowUnitsModel();
+    }
 }

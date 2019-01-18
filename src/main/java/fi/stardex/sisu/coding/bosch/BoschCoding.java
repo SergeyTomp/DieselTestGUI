@@ -58,7 +58,9 @@ public class BoschCoding {
 
         for (Map.Entry<InjectorTest, List<Double>> entry : mapToConvert.entrySet()) {
 
-            List<Integer> convertedList = entry.getValue().stream().map(value -> convertToInt(value, entry.getKey().getNominalFlow())).collect(Collectors.toList());
+            Double flowRange = entry.getKey().getFlowRange();
+
+            List<Integer> convertedList = entry.getValue().stream().map(value -> convertToInt(value, entry.getKey().getNominalFlow(), flowRange)).collect(Collectors.toList());
 
             convertedMap.put(entry.getKey().toString(), convertedList);
 
@@ -78,12 +80,19 @@ public class BoschCoding {
 
     }
 
-    private static int convertToInt(double value, Double nominalFlow) {
+    private static int convertToInt(double value, Double nominalFlow, Double flowRange) {
 
         if (value == -99d)
             return -99;
         else {
-            value = nominalFlow - value;
+            /**  Deviation from central point calculation with limitation  within 49 % of flowRange*/
+            double delta = nominalFlow - value;
+            double deltaLimitAbs = (nominalFlow * (flowRange * 0.49 / 100));
+            value = ((value >= (nominalFlow - deltaLimitAbs)) && (value <= (nominalFlow + deltaLimitAbs))) ? delta : delta < 0 ? deltaLimitAbs : - deltaLimitAbs;
+
+            /** Deviation from central point calculation without limitation*/
+//            value = nominalFlow - value;
+
             int coefficient = getInjector().getCoefficient();
             switch (coefficient) {
                 case 0:
@@ -97,22 +106,31 @@ public class BoschCoding {
                     return (int) (value / 0.1);
             }
         }
-
     }
 
     private static List<Integer> addCheckSum(Map<String, List<Integer>> convertedMap) {
 
         List<Integer> resultCheckSum = new ArrayList<>();
+        List <Integer> injectorFlows = new ArrayList<>();
 
         for (int i = 0; i < 4; i++) {
 
             int value = 0;
+            injectorFlows.clear();
 
+            /** Original calculation of flows results sum.
+             * Seems to have a mistake: every time we get sums of flows for all tests and for all channels instead of every channel flows sum individually*/
+//            for (Map.Entry<String, List<Integer>> entry : convertedMap.entrySet()) {
+//
+//                value += entry.getValue().stream().filter(element -> element != -99).reduce(Integer::sum).orElse(0);
+//            }
+
+            /** Corrected variant of summing - now we get flows sum individually for very channel*/
             for (Map.Entry<String, List<Integer>> entry : convertedMap.entrySet()) {
 
-                value += entry.getValue().stream().filter(element -> element != -99).reduce(Integer::sum).orElse(0);
-
+                injectorFlows.add(entry.getValue().get(i));
             }
+            value += injectorFlows.stream().filter(element -> element != -99).reduce(Integer::sum).orElse(0);
 
             if (value != -99) {
                 value += getInjector().getCoefficient();

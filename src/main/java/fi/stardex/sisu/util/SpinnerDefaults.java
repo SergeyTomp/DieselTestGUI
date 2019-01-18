@@ -6,6 +6,7 @@ public class SpinnerDefaults {
     public static final int WIDTH_CURRENT_SIGNAL_SPINNER_MAX = 15500;
     public static final int WIDTH_CURRENT_SIGNAL_SPINNER_INIT = 1000;
     public static final int WIDTH_CURRENT_SIGNAL_SPINNER_STEP = 10;
+    public static final int MAX_DELTA_WIDTH_TO_FIRST_WIDTH = 20;
 
     public static final int FIRST_W_SPINNER_MIN = 90;
     public static final int FIRST_W_SPINNER_MAX = 15500;

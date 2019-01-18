@@ -2,6 +2,7 @@ package fi.stardex.sisu.ui.controllers;
 
 import eu.hansolo.enzo.lcd.Lcd;
 import fi.stardex.sisu.measurement.Measurements;
+import fi.stardex.sisu.model.InjectorTestModel;
 import fi.stardex.sisu.model.PressureRegulatorOneModel;
 import fi.stardex.sisu.model.updateModels.HighPressureSectionUpdateModel;
 import fi.stardex.sisu.persistence.orm.ISADetection;
@@ -29,6 +30,8 @@ import static fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer.getInjector
 public class ISADetectionController {
 
     private static final int DEFAULT_PRESSURE_TIME = 20;
+    @FXML
+    private Label testVoltage;
 
     @FXML
     private Label errorLabel;
@@ -101,6 +104,10 @@ public class ISADetectionController {
 
     private PressureRegulatorOneModel pressureRegulatorOneModel;
 
+    private InjectorTestModel injectorTestModel;
+
+    private double ISA_trigger;
+
     public static List<ISAResult> getIsaResult() {
         return ISA_RESULT;
     }
@@ -165,6 +172,10 @@ public class ISADetectionController {
         this.voltAmpereProfileApplyButton = voltAmpereProfileApplyButton;
     }
 
+    public void setInjectorTestModel(InjectorTestModel injectorTestModel) {
+        this.injectorTestModel = injectorTestModel;
+    }
+
     public enum ISAResultState {
         VALID, INVALID, OFF
     }
@@ -203,7 +214,6 @@ public class ISADetectionController {
                     ", isa_char=" + isa_char +
                     '}';
         }
-
     }
 
     private enum ISAState {
@@ -218,7 +228,6 @@ public class ISADetectionController {
     static {
 
         resetISAResult();
-
     }
 
     @PostConstruct
@@ -230,16 +239,13 @@ public class ISADetectionController {
                 .setupAdjustingTimeline()
                 .setupMeasurementTimeline()
                 .setupStopISAButtonActionListener();
-
     }
 
     private ISADetectionController setupPressureTimeline() {
 
         pressureTimeline = new Timeline(new KeyFrame(Duration.seconds(1), event -> preparePressure()));
         pressureTimeline.setCycleCount(Animation.INDEFINITE);
-
         return this;
-
     }
 
     private ISADetectionController setupGapTimeline() {
@@ -250,21 +256,16 @@ public class ISADetectionController {
             injectorSectionController.getInjectorSectionStartToggleButton().setSelected(true);
             adjustingTimeline.play();
         });
-
         return this;
-
     }
 
     private ISADetectionController setupAdjustingTimeline() {
 
         adjustingTimeline = new Timeline(new KeyFrame(Duration.seconds(1)));
         adjustingTimeline.setCycleCount(10);
-
         adjustingTimeline.setOnFinished(event -> startMeasurement());
 
-
         return this;
-
     }
 
     private ISADetectionController setupMeasurementTimeline() {
@@ -275,7 +276,6 @@ public class ISADetectionController {
         measurementTimeline.setOnFinished(event -> checkFlow());
 
         return this;
-
     }
 
     private void setupStopISAButtonActionListener() {
@@ -297,9 +297,8 @@ public class ISADetectionController {
                     break;
 
             }
-
+            currentIndex = ISADetection.ISA_CHARS_NUMBER - 1;
         });
-
     }
 
     public void work() {
@@ -307,6 +306,16 @@ public class ISADetectionController {
         initISAStage();
 
         resetISAResult();
+
+        Double nominalFlow = injectorTestModel.injectorTestProperty().get().getNominalFlow();
+        Double flowRange = injectorTestModel.injectorTestProperty().get().getFlowRange();
+        if (nominalFlow == null) {
+            nominalFlow = 0.0;
+        }
+        if (flowRange == null) {
+            flowRange = 0.0;
+        }
+        ISA_trigger = nominalFlow * (1 + (flowRange / 100));
 
         if (injectorSectionController.getActiveLedToggleButtonsList().isEmpty())
             changeISAState(ISAState.NO_ACTIVE_LEDS);
@@ -332,9 +341,7 @@ public class ISADetectionController {
             shiftVoltage = isaDetection.getShiftVoltage();
             mask = isaDetection.getMaskType().getMask();
             nextVoltage(currentIndex);
-
         }
-
     }
 
     private void initISAStage() {
@@ -345,11 +352,8 @@ public class ISADetectionController {
             isaStage.setScene(new Scene(isaParent));
             isaStage.initModality(Modality.WINDOW_MODAL);
             isaStage.initOwner(rootParent.getScene().getWindow());
-
         }
-
         isaStage.show();
-
     }
 
     private void nextVoltage(int index) {
@@ -368,10 +372,10 @@ public class ISADetectionController {
             return;
         }
 
+        testVoltage.setText("Test " + Integer.toString(voltage + shiftVoltage) + " V");
         boostUSpinner.getValueFactory().setValue(voltage + shiftVoltage);
         voltAmpereProfileApplyButton.fire();
         pressureTimeline.play();
-
     }
 
     private void preparePressure() {
@@ -387,7 +391,6 @@ public class ISADetectionController {
             pressureTimeline.stop();
             currentPressureTime = DEFAULT_PRESSURE_TIME;
         }
-
     }
 
     private void finish() {
@@ -395,8 +398,8 @@ public class ISADetectionController {
         changeISAState(ISAState.FINISHED);
         boostUSpinner.getValueFactory().setValue(getInjector().getVoltAmpereProfile().getBoostU());
         voltAmpereProfileApplyButton.fire();
+        currentIndex = ISADetection.ISA_CHARS_NUMBER - 1;
         stopISAButton.fire();
-
     }
 
     private boolean isPressureReady() {
@@ -411,24 +414,23 @@ public class ISADetectionController {
 
         resetButton.fire();
         measurementTimeline.play();
-
     }
 
     private void checkFlow() {
 
-        if (led1Active && convertDataToDouble(delivery1TextField.getText()) == 0) {
+        if (led1Active && convertDataToDouble(delivery1TextField.getText()) <= ISA_trigger) {
             setISA(ISA_RESULT.get(0));
             led1Active = false;
         }
-        if (led2Active && convertDataToDouble(delivery2TextField.getText()) == 0) {
+        if (led2Active && convertDataToDouble(delivery2TextField.getText()) <= ISA_trigger) {
             led2Active = false;
             setISA(ISA_RESULT.get(1));
         }
-        if (led3Active && convertDataToDouble(delivery3TextField.getText()) == 0) {
+        if (led3Active && convertDataToDouble(delivery3TextField.getText()) <= ISA_trigger) {
             led3Active = false;
             setISA(ISA_RESULT.get(2));
         }
-        if (led4Active && convertDataToDouble(delivery4TextField.getText()) == 0) {
+        if (led4Active && convertDataToDouble(delivery4TextField.getText()) <= ISA_trigger) {
             led4Active = false;
             setISA(ISA_RESULT.get(3));
         }
@@ -437,14 +439,12 @@ public class ISADetectionController {
             nextVoltage(--currentIndex);
         else
             finish();
-
     }
 
     private void setISA(ISAResult isaResult) {
 
         isaResult.setIsaResultState(ISAResultState.VALID);
         isaResult.setIsa_char(mask.charAt(currentIndex));
-
     }
 
     private void changeISAState(ISAState isaState) {
@@ -466,9 +466,7 @@ public class ISADetectionController {
                 errorLabel.setText("Pressure is not dialed. Coding is not possible.");
                 progressIndicator.setVisible(false);
                 break;
-
         }
-
     }
 
     private static void resetISAResult() {
@@ -479,7 +477,5 @@ public class ISADetectionController {
         ISA_RESULT.add(new ISAResult(ISAResultState.OFF));
         ISA_RESULT.add(new ISAResult(ISAResultState.OFF));
         ISA_RESULT.add(new ISAResult(ISAResultState.OFF));
-
     }
-
 }

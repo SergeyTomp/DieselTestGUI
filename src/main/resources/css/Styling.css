@@ -9,7 +9,15 @@
     -fx-faint-focus-color: transparent;
 }
 
-
+.pane {
+    -fx-background-image: url("../img/blue.jpg");
+    -fx-background-color: #0086b3;
+    -fx-background-repeat: repeat;
+    -fx-border-color: #3b3b3b;
+    -fx-border-width: 3px 0 0 0;
+    -fx-padding: 0;
+    -fx-spacing: 8;
+}
 
 /***************
 *spinner

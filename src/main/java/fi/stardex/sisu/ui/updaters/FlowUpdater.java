@@ -76,6 +76,8 @@ public abstract class FlowUpdater {
 
     protected List<Label> allFlowLabels = new ArrayList<>();
 
+    protected List<Label> deliveryFlowLabels = new ArrayList<>();
+
     protected TextField delivery1TextField;
 
     protected TextField delivery2TextField;
@@ -93,6 +95,8 @@ public abstract class FlowUpdater {
     protected TextField backFlow4TextField;
 
     protected List<TextField> allFlowTextFields = new ArrayList<>();
+
+    protected List<TextField> deliveryTextFields = new ArrayList<>();
 
     protected ComboBox<String> deliveryFlowComboBox;
 
@@ -173,6 +177,15 @@ public abstract class FlowUpdater {
         allFlowLabels.add(temperature2BackFlow3Label);
         allFlowLabels.add(temperature2BackFlow4Label);
 
+        deliveryFlowLabels.add(temperature1Delivery1Label);
+        deliveryFlowLabels.add(temperature1Delivery2Label);
+        deliveryFlowLabels.add(temperature1Delivery3Label);
+        deliveryFlowLabels.add(temperature1Delivery4Label);
+        deliveryFlowLabels.add(temperature2Delivery1Label);
+        deliveryFlowLabels.add(temperature2Delivery2Label);
+        deliveryFlowLabels.add(temperature2Delivery3Label);
+        deliveryFlowLabels.add(temperature2Delivery4Label);
+
         allFlowTextFields.add(delivery1TextField);
         allFlowTextFields.add(delivery2TextField);
         allFlowTextFields.add(delivery3TextField);
@@ -181,6 +194,12 @@ public abstract class FlowUpdater {
         allFlowTextFields.add(backFlow2TextField);
         allFlowTextFields.add(backFlow3TextField);
         allFlowTextFields.add(backFlow4TextField);
+
+        deliveryTextFields.add(delivery1TextField);
+        deliveryTextFields.add(delivery2TextField);
+        deliveryTextFields.add(delivery3TextField);
+        deliveryTextFields.add(delivery4TextField);
+
 
     }
 
@@ -363,6 +382,12 @@ public abstract class FlowUpdater {
         allFlowLabels.forEach(label -> label.setText(null));
         allFlowTextFields.forEach(textField -> textField.setText(null));
 
+    }
+
+    protected void setAllDeliveyLabelsAndFieldsToNull(){
+
+        deliveryFlowLabels.forEach(label -> label.setText(null));
+        deliveryTextFields.forEach(label -> label.setText(null));
     }
 
     private void setTempLabels(Label label1, Label label2, Label label3, Label label4, String value) {
