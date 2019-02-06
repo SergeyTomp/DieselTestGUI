@@ -1,11 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.Tab?>
-<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.*?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
-
 <TabPane fx:id="tabPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="210.0" prefWidth="930.0" stylesheets="@../../../css/Styling.css" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.additional.TabSectionController">
     <tabs>
 
@@ -43,6 +41,9 @@
             </GridPane>
          </content>
         </Tab>
+      <Tab fx:id="tabPiezoRepair" text="%h4.tab.repair">
+          <fx:include fx:id="piezoRepair" source="tabs/PiezoRepair.fxml"/>
+      </Tab>
 
     </tabs>
 </TabPane>

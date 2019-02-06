@@ -16,6 +16,8 @@ import javax.annotation.PostConstruct;
 
 public class TabSectionController {
 
+    @FXML private Tab tabPiezoRepair;
+
     @FXML private GridPane settingsGridPane;
 
     @FXML private Tab tabDelay;
@@ -64,6 +66,8 @@ public class TabSectionController {
 
     @FXML private InfoController infoController;
 
+    @FXML private PiezoRepairController piezoRepairController;
+
     private I18N i18N;
 
     public RLCController getRlCController() {
@@ -92,6 +96,10 @@ public class TabSectionController {
 
     public InfoController getInfoController() {
         return infoController;
+    }
+
+    public PiezoRepairController getPiezoRepairController() {
+        return piezoRepairController;
     }
 
     public void setI18N(I18N i18N) {

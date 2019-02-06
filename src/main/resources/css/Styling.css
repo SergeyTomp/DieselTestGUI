@@ -9,6 +9,11 @@
     -fx-faint-focus-color: transparent;
 }
 
+.root-layout *.main{
+    -fx-border-color: #3b3b3b;
+    -fx-border-width: 0 3px 0 0;
+}
+
 .pane {
     -fx-background-image: url("../img/blue.jpg");
     -fx-background-color: #0086b3;
@@ -154,6 +159,11 @@
 
 .regulator-spinner-selected *.text-field {
     -fx-border-color: -selected-spinner-border-color;
+}
+
+.repair-spinner *.text-field{
+    -fx-font-size: 22pt;
+    -fx-alignment: CENTER
 }
 
 /***************

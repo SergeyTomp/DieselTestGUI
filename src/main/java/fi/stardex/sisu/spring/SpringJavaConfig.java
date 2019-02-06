@@ -881,4 +881,9 @@ public class SpringJavaConfig {
     public FlowUnitsModel pumpBackFlowUnitsModel() {
         return new FlowUnitsModel();
     }
+
+    @Bean
+    public PiezoRepairModel piezoRepairModel() {
+        return new PiezoRepairModel();
+    }
 }

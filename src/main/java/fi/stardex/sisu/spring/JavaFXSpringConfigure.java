@@ -834,6 +834,17 @@ public class JavaFXSpringConfigure extends ViewLoader{
     }
 
     @Bean
+    @Autowired
+    public PiezoRepairController piezoRepairController(TabSectionController tabSectionController,
+                                                       PiezoRepairModel piezoRepairModel,
+                                                       ModbusRegisterProcessor ultimaModbusWriter){
+        PiezoRepairController piezoRepairController = tabSectionController.getPiezoRepairController();
+        piezoRepairController.setPiezoRepairModel(piezoRepairModel);
+        piezoRepairController.setUltimaModbusWriter(ultimaModbusWriter);
+        return piezoRepairController;
+    }
+
+    @Bean
     public ViewHolder dimasGuiEdition(){
             return loadView("/fxml/sections/Additional/tabs/settings/DimasGuiEdition.fxml");
     }

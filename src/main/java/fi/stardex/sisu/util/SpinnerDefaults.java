@@ -88,4 +88,15 @@ public class SpinnerDefaults {
     public static final double DUTY_CYCLE_REG_3_SPINNER_MAX = 100;
     public static final double DUTY_CYCLE_REG_3_SPINNER_INIT = 0;
     public static final double DUTY_CYCLE_REG_3_SPINNER_STEP = 0.01;
+
+    public static final double REPAIR_VOLTAGE_LOW_MIN = 11.0f;
+    public static final double REPAIR_VOLTAGE_LOW_MAX = 29.5f;
+    public static final double REPAIR_VOLTAGE_LOW_INIT = 11.0f;
+    public static final double REPAIR_VOLTAGE_LOW_STEP = 0.5f;
+
+    public static final double REPAIR_VOLTAGE_HIGH_MIN = 30.0f;
+    public static final double REPAIR_VOLTAGE_HIGH_MAX = 160.0f;
+    public static final double REPAIR_VOLTAGE_HIGH_INIT = 30.0f;
+    public static final double REPAIR_VOLTAGE_HIGH_STEP = 0.5f;
+
 }

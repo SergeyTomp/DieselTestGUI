@@ -131,7 +131,12 @@ public enum ModbusMapUltima implements ModbusMap {
     PressureReg3_I_Fact(REGISTER_INPUT, 4114, 2, true),
 
     // тахометр
-    Tachometer(REGISTER_HOLDING, 44, 1, true);
+    Tachometer(REGISTER_HOLDING, 44, 1, true),
+
+    // ремонт пьезо сименс
+    HoldingPulseMode(DISCRETE_COIL, 11, 1, false),
+    PulseFrontSlump(DISCRETE_COIL, 40, 1, false),
+    BoardNumber(REGISTER_HOLDING, 40, 1, false);
 
     private final RegisterType type;
     private final int ref;

@@ -12,7 +12,7 @@
     <rowConstraints>
         <RowConstraints maxHeight="1.7976931348623157E308" vgrow="SOMETIMES" />
     </rowConstraints>
-    <GridPane fx:id="mainSectionGridPane" maxHeight="1.7976931348623157E308" maxWidth="300.0" minHeight="690.0" minWidth="300.0" prefHeight="690.0" prefWidth="300.0">
+    <GridPane fx:id="mainSectionGridPane" maxHeight="1.7976931348623157E308" maxWidth="300.0" minHeight="690.0" minWidth="300.0" prefHeight="690.0" prefWidth="300.0" styleClass="main" stylesheets="@../css/Styling.css">
         <columnConstraints>
             <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
         </columnConstraints>
