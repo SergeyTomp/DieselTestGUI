@@ -136,7 +136,8 @@ public enum ModbusMapUltima implements ModbusMap {
     // ремонт пьезо сименс
     HoldingPulseMode(DISCRETE_COIL, 11, 1, false),
     PulseFrontSlump(DISCRETE_COIL, 40, 1, false),
-    BoardNumber(REGISTER_HOLDING, 40, 1, false);
+    BoardNumber(REGISTER_HOLDING, 40, 1, false),
+    CurrentLimit(REGISTER_HOLDING, 16, 1, false);
 
     private final RegisterType type;
     private final int ref;

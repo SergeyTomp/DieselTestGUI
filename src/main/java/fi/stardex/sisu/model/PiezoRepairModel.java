@@ -11,6 +11,8 @@ public class PiezoRepairModel {
 
     private BooleanProperty startMeasure = new SimpleBooleanProperty();
 
+    private DoubleProperty currentValue = new SimpleDoubleProperty();
+
     public ObjectProperty<VoltageRange> voltageRangeObjectProperty() {
         return voltageRangeObjectProperty;
     }
@@ -21,5 +23,9 @@ public class PiezoRepairModel {
 
     public BooleanProperty startMeasureProperty() {
         return startMeasure;
+    }
+
+    public DoubleProperty currentValueProperty() {
+        return currentValue;
     }
 }

@@ -23,6 +23,7 @@ import static fi.stardex.sisu.util.enums.VoltageRange.LOW;
 
 public class PiezoRepairController {
 
+    @FXML private  Spinner<Double> currentSpinner;
     @FXML private Label output;
     @FXML private Label outputValue;
     @FXML private Label volt;
@@ -42,6 +43,7 @@ public class PiezoRepairController {
     private VoltageProgressBar adjustingTime;
     private boolean isSwitchRange;
     private boolean incorrectInput;
+    private static final float ONE_AMPERE_MULTIPLY = 93.07f;
 
     public void setPiezoRepairModel(PiezoRepairModel piezoRepairModel) {
         this.piezoRepairModel = piezoRepairModel;
@@ -55,7 +57,7 @@ public class PiezoRepairController {
     public void init() {
 
         startStopButtonStyleClass = startStopButton.getStyleClass();
-        setupSpinner();
+        setupSpinners();
         setupListeners();
         initToggleGroup();
         setupTimeLines();
@@ -77,13 +79,14 @@ public class PiezoRepairController {
         voltageAdjustment.setProgress(1);
     }
 
-    private void setupSpinner() {
+    private void setupSpinners() {
 
-//        setLowVoltageSpinnerRange();
         setSpinnerRangeConstants(LOW);
         SpinnerManager.setupDoubleSpinner(voltageSpinner);
         LOW.setLastValue(LOW.getMin());
         HIGH.setLastValue(HIGH.getMin());
+        currentSpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0, 20, 0, 0.1));
+        SpinnerManager.setupDoubleSpinner(currentSpinner);
     }
 
     private void initToggleGroup(){
@@ -112,12 +115,12 @@ public class PiezoRepairController {
 
             if (newValue) {
                 startStopButtonStyleClass.add("stopButtonLight");
-                disableNodes(true, lowVoltageButton, highVoltageButton, voltageSpinner);
+                disableNodes(true, lowVoltageButton, highVoltageButton, voltageSpinner, currentSpinner);
                 front(range);
             }
             else {
                 startStopButtonStyleClass.add("startButton");
-                disableNodes(false, lowVoltageButton, highVoltageButton, voltageSpinner);
+                disableNodes(false, lowVoltageButton, highVoltageButton, voltageSpinner, currentSpinner);
                 slump(range);
             }
             piezoRepairModel.startMeasureProperty().setValue(newValue);
@@ -187,6 +190,11 @@ public class PiezoRepairController {
                 voltageSpinner.getValueFactory().setValue(piezoRepairModel.voltageRangeObjectProperty().get().getLastValue());
             }
         });
+
+        currentSpinner.valueProperty().addListener((observable, oldValue, newValue) ->{
+
+            piezoRepairModel.currentValueProperty().setValue(newValue);
+        });
     }
 
     private void switchRange(VoltageRange range) {
@@ -220,6 +228,7 @@ public class PiezoRepairController {
     private void front(VoltageRange range){
 
         ultimaModbusWriter.add(HoldingPulseMode, true);
+        ultimaModbusWriter.add(CurrentLimit, (int)(currentSpinner.getValue() * ONE_AMPERE_MULTIPLY));
         ultimaModbusWriter.add(BoardNumber, 1);
         if (range == LOW) {
             ultimaModbusWriter.add(StartOnBatteryUOne, true);
