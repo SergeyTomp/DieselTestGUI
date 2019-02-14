@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
-<GridPane xmlns="http://javafx.com/javafx/8.0.172-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.pumps.main.TestSpeedController">
+
+<GridPane fx:id="panelGridPane" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.pumps.main.TestSpeedController">
    <columnConstraints>
       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
    </columnConstraints>
@@ -14,7 +21,7 @@
       <RowConstraints minHeight="10.0" percentHeight="60.0" vgrow="SOMETIMES" />
    </rowConstraints>
    <children>
-      <VBox alignment="TOP_CENTER" focusTraversable="true" prefHeight="200.0" prefWidth="100.0" GridPane.rowIndex="1">
+      <VBox fx:id="panelVBox" alignment="TOP_CENTER" focusTraversable="true" prefHeight="200.0" prefWidth="100.0" GridPane.rowIndex="1">
          <children>
             <GridPane focusTraversable="true">
                <columnConstraints>
@@ -36,7 +43,7 @@
                         <Insets right="20.0" />
                      </GridPane.margin>
                   </ProgressBar>
-                  <Label stylesheets="@../../../css/Styling.css" text="%main.adjusting.label">
+                  <Label fx:id="labelAjustingTime" stylesheets="@../../../css/Styling.css" text="%main.adjusting.label">
                      <padding>
                         <Insets right="10.0" />
                      </padding>
@@ -60,10 +67,13 @@
       </VBox>
       <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0">
          <children>
-            <Label stylesheets="@../../../css/Styling.css" text="%main.timingSpeed.label">
+            <Label fx:id="timerSpeedLabel" stylesheets="@../../../css/Styling.css" text="%main.timingSpeed.label">
                <HBox.margin>
                   <Insets left="10.0" />
                </HBox.margin>
+               <font>
+                  <Font size="11.0" />
+               </font>
             </Label>
             <ComboBox fx:id="speedComboBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="27.0" prefWidth="90.0" styleClass="combo-box-speed" stylesheets="@../../../css/Styling.css">
                <HBox.margin>

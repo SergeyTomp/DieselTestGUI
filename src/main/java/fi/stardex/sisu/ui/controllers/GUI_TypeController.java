@@ -2,6 +2,9 @@ package fi.stardex.sisu.ui.controllers;
 
 import fi.stardex.sisu.model.ManufacturerPumpModel;
 import fi.stardex.sisu.states.DimasGUIEditionState;
+import fi.stardex.sisu.states.PumpsStartButtonState;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.ComboBox;
@@ -62,6 +65,8 @@ public class GUI_TypeController {
 
     private ManufacturerPumpModel manufacturerPumpModel;
 
+    private PumpsStartButtonState pumpsStartButtonState;
+
     public ComboBox<GUIType> getGui_typeComboBox() {
         return gui_typeComboBox;
     }
@@ -69,65 +74,53 @@ public class GUI_TypeController {
     public void setManufacturerPumpModel(ManufacturerPumpModel manufacturerPumpModel) {
         this.manufacturerPumpModel = manufacturerPumpModel;
     }
-
     public void setRootPreferences(Preferences rootPreferences) {
         this.rootPreferences = rootPreferences;
     }
-
     public void setMainSection(Parent mainSection) {
         this.mainSection = mainSection;
     }
-
     public void setCRSection(Parent crSection) {
         this.crSection = crSection;
     }
-
     public void setUISSection(Parent uisSection) {
         this.uisSection = uisSection;
     }
-
     public void setTabSection(Parent tabSection) {
         this.tabSection = tabSection;
     }
-
     public void setMainSectionGridPane(GridPane mainSectionGridPane) {
         this.mainSectionGridPane = mainSectionGridPane;
     }
-
     public void setAdditionalSectionGridPane(GridPane additionalSectionGridPane) {
         this.additionalSectionGridPane = additionalSectionGridPane;
     }
-
     public void setSettingsGridPaneCR(GridPane settingsGridPaneCR) {
         this.settingsGridPaneCR = settingsGridPaneCR;
     }
-
     public void setSettingsGridPanePumps(GridPane settingsGridPanePumps) {
         this.settingsGridPanePumps = settingsGridPanePumps;
     }
-
     public void setMainSectionPumps(Parent mainSectionPumps) {
         this.mainSectionPumps = mainSectionPumps;
     }
-
     public void setPumpSection(Parent pumpSection) {
         this.pumpSection = pumpSection;
     }
-
     public void setTabSectionPumps(Parent tabSectionPumps) {
         this.tabSectionPumps = tabSectionPumps;
     }
-
     public void setSettings(Parent settings) {
         this.settings = settings;
     }
-
     public void setConnection(Parent connection) {
         this.connection = connection;
     }
-
     public void setDimasGUIEditionState(DimasGUIEditionState dimasGUIEditionState) {
         this.dimasGUIEditionState = dimasGUIEditionState;
+    }
+    public void setPumpsStartButtonState(PumpsStartButtonState pumpsStartButtonState) {
+        this.pumpsStartButtonState = pumpsStartButtonState;
     }
 
     @PostConstruct
@@ -157,7 +150,9 @@ public class GUI_TypeController {
 
         gui_typeComboBox.getSelectionModel().select(currentGUIType);
         gui_typeComboBox.visibleProperty().bind(dimasGUIEditionState.isDimasGuiEditionProperty().not());
-
+        pumpsStartButtonState.startButtonProperty().addListener((observableValue, oldValue, newValue) -> {
+            gui_typeComboBox.setDisable(newValue);
+        });
     }
 
     private void changeToCRInj() {

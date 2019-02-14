@@ -2,17 +2,17 @@ package fi.stardex.sisu.ui.controllers.pumps.flow;
 
 import fi.stardex.sisu.combobox_values.Dimension;
 import fi.stardex.sisu.model.*;
-import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.persistence.orm.pump.PumpTest;
 import fi.stardex.sisu.ui.controllers.additional.BeakerController;
 import fi.stardex.sisu.util.InputController;
 import fi.stardex.sisu.util.enums.BeakerType;
-import fi.stardex.sisu.util.enums.Measurement;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.rescalers.Rescaler;
 import javafx.application.Platform;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.MapChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
@@ -30,15 +30,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
-
 import java.util.Optional;
-import java.util.function.Consumer;
 
 import static fi.stardex.sisu.util.FlowUnitObtainer.*;
-import static fi.stardex.sisu.util.FlowUnitObtainer.createBackFlowUnitBinding;
-import static fi.stardex.sisu.util.converters.DataConverter.convertDataToDouble;
-import static fi.stardex.sisu.util.converters.DataConverter.convertDataToFloat;
-import static fi.stardex.sisu.util.converters.DataConverter.round;
+import static fi.stardex.sisu.util.converters.DataConverter.*;
 import static fi.stardex.sisu.util.enums.BeakerType.DELIVERY;
 
 public class PumpBeakerController {
@@ -75,6 +70,7 @@ public class PumpBeakerController {
     private float currentMaxLevel;
     private double[] currentFlowLevels;
     private ObjectProperty<String> rangeLabelProperty = new SimpleObjectProperty<>();
+    private StringBuilder convertedValue = new StringBuilder();
 
     private FlowRangeModel flowRangeModel;
     private FlowUnitsModel flowUnitsModel;
@@ -83,6 +79,7 @@ public class PumpBeakerController {
     private PumpFlowTemperaturesModel pumpFlowTemperaturesModel;
     private PumpTestModel pumpTestModel;
     private FlowViewModel flowViewModel;
+    private PumpReportModel pumpReportModel;
 
     private I18N i18N;
     private static final Logger logger = LoggerFactory.getLogger(BeakerController.class);
@@ -95,6 +92,7 @@ public class PumpBeakerController {
     public static final String MILLILITRE_PER_MINUTE = "ml/min";
     public static final String LITRE_PER_HOUR = "l/h";
     private static final int TEXT_FIELD_MAX_LENGTH = 7;
+    protected static final String DEGREES_CELSIUS = " \u2103";
 
     public void setRescaler(Rescaler rescaler) {
         this.rescaler = rescaler;
@@ -123,13 +121,14 @@ public class PumpBeakerController {
     public void setFlowViewModel(FlowViewModel flowViewModel) {
         this.flowViewModel = flowViewModel;
     }
-
     public void setFlowRangeModel(FlowRangeModel flowRangeModel) {
         this.flowRangeModel = flowRangeModel;
     }
-
     public void setFlowUnitsModel(FlowUnitsModel flowUnitsModel) {
         this.flowUnitsModel = flowUnitsModel;
+    }
+    public void setPumpReportModel(PumpReportModel pumpReportModel) {
+        this.pumpReportModel = pumpReportModel;
     }
 
     @PostConstruct
@@ -171,11 +170,7 @@ public class PumpBeakerController {
         imageViewBottom.fitWidthProperty().bind(((StackPane) beakerPane.getParent()).widthProperty());
         imageViewCenter.fitWidthProperty().bind(((StackPane) beakerPane.getParent()).widthProperty());
 
-        ((StackPane) beakerPane.getParent()).heightProperty().addListener((observable, oldValue, newValue) -> {
-            setHalfFuelLevel((rectangleBeaker.getHeight() / 2) * (rescaler.getMapOfLevels().get(name) / currentMaxLevel));
-            lineLeft.setEndY(newValue.doubleValue());
-            lineRight.setEndY(newValue.doubleValue());
-        });
+        beakerStackPane.heightProperty().addListener(new BeakerHeightListener());
 
         ((StackPane) beakerPane.getParent()).widthProperty().addListener((observable, oldValue, newValue) -> {
             AnchorPane.setLeftAnchor(textTop, arcTickTop.getCenterX() + arcTickTop.getRadiusX() - textTop.getWrappingWidth() / 2);
@@ -188,65 +183,46 @@ public class PumpBeakerController {
     private void setupRescaler() {
 
         rescaler.getMapOfLevels().put(name, 0f);
-        rescaler.getObservableMapOfLevels().addListener((MapChangeListener<String, Float>) change -> {
-
-            currentMaxLevel = rescaler.getMapOfLevels().values().stream().max(Float::compare).get();
-            Platform.runLater(() -> setLevel((rectangleBeaker.getHeight() / 2) * (rescaler.getMapOfLevels().get(name) / currentMaxLevel)));
-        });
+        rescaler.getObservableMapOfLevels().addListener(new MapOfLevelsListener());
     }
 
+    /** # 1 listens for flowField value changes, set fuel level in corresponding beaker and put new value into Rescaler's MapOfLevels
+     * # 2 listens for rangeLabelProperty and set top and bottom limits arcs with text labels upon UoM changes
+     * ## 3, 4, 5 listens for pumpTestProperty, flowViewModel, flowComboBox and set flowRangeLabel text upon
+     * - pumpTestProperty -> pumpTest choice
+     * - flowViewModel -> LIMIT or PLUS_OR_MINUS choice
+     * - flowComboBox -> UoM changes
+     * # 6 listens for textField changes and set values into PumpReportModel for reports generation
+     * (this is necessary to have values in the report in case manual input, not only in automatic measurements mode)*/
     private void setupListeners() {
-
+        // #1
+        flowTextField.textProperty().addListener(new FlowFieldListener());
+        // #2
         rangeLabelProperty.addListener((observable, oldValue, newValue) -> showBeakerLevels(newValue));
-        flowTextField.textProperty().addListener((observable, oldValue, newValue) -> {
-
-            if ((flowRangeLabel.getText().isEmpty())) {
-
-                if (newValue == null || newValue.equals("") || newValue.equals("0.0") || newValue.equals("0")) {
-                    rescaler.getMapOfLevels().put(name, 0f);
-                    makeLevelEmpty();
-                    return;
-                }
-
-                if (!newValue.matches(REGEX)) {
-                    rescaler.getMapOfLevels().put(name, 0f);
-                    return;
-                }
-                float currentVal = round(convertDataToFloat(newValue));
-                rescaler.getMapOfLevels().put(name, currentVal);
-            } else if (newValue != null) {
-
-                if (newValue.equals("") || newValue.equals("0.0") || newValue.equals("0")) {
-                    makeLevelEmpty();
-                    return;
-                }
-                if (!newValue.matches(REGEX)) {
-                    return;
-                }
-                setNewLevel(newValue);
-            } else {
-                makeLevelEmpty();
-            }
+        // #3
+        pumpTestModel.pumpTestProperty().addListener((observable, oldValue, newValue) ->{
+            setFlowLabels(newValue, flowViewModel.flowViewProperty().get());
+            flowTextField.setText("");
         });
-
-        pumpTestModel.pumpTestProperty().addListener((observable, oldValue, newValue) ->
-                setFlowLabels(newValue, flowViewModel.flowViewProperty().get()));
-
+        // #4
         flowViewModel.flowViewProperty().addListener((observable, oldValue, newValue) ->
                 setFlowLabels(pumpTestModel.pumpTestProperty().get(), newValue));
-
+        // #5
         flowComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
                 setFlowLabels(pumpTestModel.pumpTestProperty().get(), flowViewModel.flowViewProperty().get()));
+
+        pumpFlowValuesModel.flowProperty().addListener((observableValue, oldValue, newValue) -> showOnChosenFlowUnit(newValue));
+        pumpFlowTemperaturesModel.temperature1FlowProperty().addListener((observableValue, oldValue, newValue) -> showTemperature(newValue, temperature1Flow));
+        pumpFlowTemperaturesModel.temperature2FlowProperty().addListener((observableValue, oldValue, newValue) -> showTemperature(newValue, temperature2Flow));
+        // #6
+        flowTextField.textProperty().addListener((observable, oldValue, newValue) -> pumpReportModel.setFlowValues(newValue, beakerType));
     }
 
     private void setupBindings(){
 
         flowUnitsModel.flowUnitsProperty().bind(flowComboBox.getSelectionModel().selectedItemProperty());
         flowRangeModel.flowRangeProperty().bind(flowRangeLabel.textProperty());
-        temperature1Flow.textProperty().bind(pumpFlowTemperaturesModel.temperature1FlowProperty());
-        temperature2Flow.textProperty().bind(pumpFlowTemperaturesModel.temperature2FlowProperty());
         rangeLabelProperty.bind(flowRangeLabel.textProperty());
-        pumpFlowValuesModel.flowProperty().bind(flowTextField.textProperty());
     }
 
     private void setupFlowComboBox() {
@@ -278,7 +254,6 @@ public class PumpBeakerController {
     }
 
     private void setHalfFuelLevel(double level) {
-
         rectangleFuel.setHeight(level);
         AnchorPane.setBottomAnchor(ellipseTopFuel, level - ELLIPSE_TOP_FUEL_DEVIATION);
     }
@@ -302,27 +277,19 @@ public class PumpBeakerController {
 
             case DELIVERY:
 
-//                if(maxDirectFlow.isPresent()){
-//                    maxFlow = maxDirectFlow.get();
-//                }
-//                if(minDirectFlow.isPresent()){
-//                    minFlow = minDirectFlow.get();
-//                }
                 maxFlow = maxDirectFlow.orElse(0d);
                 minFlow = minDirectFlow.orElse(0d);
                 break;
             case BACKFLOW:
 
-//                if(maxBackFlow.isPresent()){
-//                    maxFlow = maxBackFlow.get();
-//                }
-//                if(minBackFlow.isPresent()){
-//                    minFlow = minBackFlow.get();
-//                }
                 maxFlow = maxBackFlow.orElse(0d);
                 minFlow = minBackFlow.orElse(0d);
-
                 break;
+        }
+
+        if(minFlow == 0d && maxFlow == 0d){
+            setLevelsToNull();
+            return;
         }
 
         if(minFlow != 0 && maxFlow == 0){
@@ -332,12 +299,21 @@ public class PumpBeakerController {
         switch (dimension) {
 
             case LIMIT:
-                calculateLIMIT(minFlow, maxFlow, beakerType, flowRangeLabel);
+                calculateLIMIT(minFlow, maxFlow, flowRangeLabel);
                 break;
             case PLUS_OR_MINUS:
-                calculatePLUS_OR_MINUS(minFlow, maxFlow, beakerType, flowRangeLabel);
+                calculatePLUS_OR_MINUS(minFlow, maxFlow, flowRangeLabel);
                 break;
         }
+    }
+
+    private void showOnChosenFlowUnit(String value) {
+
+        if (value != null) {
+            double coefficient = getCoefficient();
+            double convertedValue = round(convertDataToDouble(value) * coefficient);
+            changeFlow(String.valueOf(convertedValue));
+        }else changeFlow(null);
     }
 
     public void changeFlow(String value) {
@@ -350,25 +326,36 @@ public class PumpBeakerController {
             flowTextField.setText(value);
     }
 
+    private double getCoefficient(){
+        return (beakerType == DELIVERY) ? getPumpDeliveryCoefficient() : getPumpBackFlowCoefficient();
+    }
+
     private void setLevelsToNull() {
 
         flowRangeLabel.setText("");
         currentFlowLevels = null;
     }
 
-    private void calculateLIMIT(double minFlow, double maxFlow,  BeakerType beakerType, Label flowLabel) {
+    private void showTemperature(String temperature, Label textLabel) {
+
+        String s = convertedValue.append(round(convertDataToFloat(temperature))).append(DEGREES_CELSIUS).toString();
+        textLabel.setText(s);
+        convertedValue.setLength(0);
+    }
+
+    private void calculateLIMIT(double minFlow, double maxFlow,  Label flowLabel) {
 
         double[] result;
-        double coefficient = (beakerType == DELIVERY) ? getPumpDeliveryCoefficient() : getPumpBackFlowCoefficient();
+        double coefficient = getCoefficient();
         result = getRange(minFlow, maxFlow, coefficient);
         currentFlowLevels = result;
         flowLabel.setText(String.format("%.1f - %.1f", result[0], result[1]));
     }
 
-    private void calculatePLUS_OR_MINUS(double minFlow, double maxFlow, BeakerType beakerType, Label flowLabel) {
+    private void calculatePLUS_OR_MINUS(double minFlow, double maxFlow, Label flowLabel) {
 
         double[] result = new double[2];
-        double coefficient = (beakerType == DELIVERY) ? getPumpDeliveryCoefficient() : getPumpBackFlowCoefficient();
+        double coefficient = getCoefficient();
         result[0] = round(((maxFlow + minFlow) / 2) * coefficient);
         result[1] = round(((maxFlow - minFlow) / 2) * coefficient);
         currentFlowLevels = getRange(minFlow, maxFlow, coefficient);
@@ -485,5 +472,86 @@ public class PumpBeakerController {
     private void setArc(Arc arc, double value){
         AnchorPane.setBottomAnchor(arc, rectangleBeaker.getHeight() * value - ARC_DEVIATION);
         arc.setOpacity(1d);
+    }
+
+
+
+    /** Listens for corresponding beaker height changes and set level in corresponding beaker
+     * either in relation with other beakers levels in the same beaker set in case corresponding range label is empty
+     * or in accordance with not empty flow value in the flow text field*/
+    private class BeakerHeightListener implements ChangeListener<Number> {
+
+        @Override
+        public void changed(ObservableValue<? extends Number> observableValue, Number oldValue, Number newValue) {
+
+            if (flowRangeLabel.getText().isEmpty()) {
+
+                setHalfFuelLevel((rectangleBeaker.getHeight() / 2) * (rescaler.getMapOfLevels().get(name) / currentMaxLevel));
+            }
+            else {
+                if(flowTextField.getText() != null && !flowTextField.getText().isEmpty()){
+
+                    setHalfFuelLevel(rectangleFuel.getHeight() * (newValue.floatValue() / oldValue.floatValue()));
+                }
+                showBeakerLevels(flowRangeLabel.getText());
+            }
+            lineLeft.setEndY(newValue.doubleValue());
+            lineRight.setEndY(newValue.doubleValue());
+        }
+    }
+    /** Listens for FlowField value changes,
+     * set fuel level in corresponding beaker and put new value into Rescaler's MapOfLevels*/
+    private class FlowFieldListener implements ChangeListener<String> {
+
+        @Override
+        public void changed(ObservableValue<? extends String> observableValue, String oldValue, String newValue) {
+
+
+            if ((flowRangeLabel.getText().isEmpty())) {
+
+                if (newValue == null || newValue.equals("") || newValue.equals("0.0") || newValue.equals("0")) {
+                    rescaler.getObservableMapOfLevels().put(name, 0f);
+                    makeLevelEmpty();
+                    return;
+                }
+
+                if (!newValue.matches(REGEX)) {
+                    rescaler.getObservableMapOfLevels().put(name, 0f);
+                    return;
+                }
+                float currentVal = round(convertDataToFloat(newValue));
+                rescaler.getObservableMapOfLevels().put(name, currentVal);
+                setLevel(rectangleBeaker.getHeight() / 2);
+
+            } else if (newValue != null) {
+
+                if (newValue.equals("") || newValue.equals("0.0") || newValue.equals("0")) {
+                    makeLevelEmpty();
+                    return;
+                }
+                if (!newValue.matches(REGEX)) {
+                    return;
+                }
+                setNewLevel(newValue);
+            } else {
+                makeLevelEmpty();
+            }
+        }
+    }
+    /** Listens for Rescaler's MapOfLevels changes and set level in corresponding beaker
+     * in relation with other beakers levels in the same beaker set
+     * in case corresponding range label is empty
+     * Double.isNaN check is used to avoid color artifacts on fuel cylinder elements in case value.isNaN
+     * CURRENTLY RESCALER IS NOT REALLY USED HERE AS IN INJECTORS, IMPLEMENTED FOR POSSIBLE FUTURE DEVELOPMENT NEEDS ONLY !!!*/
+    private class MapOfLevelsListener implements MapChangeListener<String, Float>{
+
+        @Override
+        public void onChanged(Change<? extends String, ? extends Float> change) {
+            currentMaxLevel = rescaler.getMapOfLevels().values().stream().max(Float::compare).get();
+            if (flowRangeLabel.getText().isEmpty()) {
+                double value = (rectangleBeaker.getHeight() / 2) * (rescaler.getMapOfLevels().get(name) / currentMaxLevel);
+                Platform.runLater(() -> setLevel(Double.isNaN(value) ? 0f : value));
+            }
+        }
     }
 }

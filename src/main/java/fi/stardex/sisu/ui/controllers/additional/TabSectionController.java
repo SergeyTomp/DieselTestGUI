@@ -129,7 +129,9 @@ public class TabSectionController {
     @PostConstruct
     private void init(){
         bindingI18N();
+        tabPane.getTabs().remove(tabPiezoRepair);
     }
+
 
     private void bindingI18N() {
         tabDelay.textProperty().bind(i18N.createStringBinding("additional.delay"));

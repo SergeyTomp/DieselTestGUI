@@ -5,10 +5,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<AnchorPane prefHeight="400.0" prefWidth="600.0"
-            xmlns="http://javafx.com/javafx/8.0.121"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="fi.stardex.sisu.ui.controllers.pumps.flow.PumpFlowController">
+<AnchorPane prefHeight="400.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.pumps.flow.PumpFlowController">
    <children>
 
       <GridPane AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
@@ -16,9 +13,9 @@
           <fx:include fx:id="pumpBackflow" source="PumpBeaker.fxml" GridPane.columnIndex="1" />
           <fx:include fx:id="pumpFlowTextArea" source="PumpFlowTextArea.fxml" GridPane.columnIndex="2" />
         <columnConstraints>
-          <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="230.0" />
-          <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="230.0" />
-            <ColumnConstraints fillWidth="false" hgrow="SOMETIMES" minWidth="10.0" />
+          <ColumnConstraints hgrow="ALWAYS" maxWidth="500.0" minWidth="280.0" />
+          <ColumnConstraints hgrow="ALWAYS" maxWidth="500.0" minWidth="280.0" />
+            <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" />
         </columnConstraints>
         <rowConstraints>
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />

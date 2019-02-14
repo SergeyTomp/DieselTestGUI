@@ -11,6 +11,7 @@ import fi.stardex.sisu.connect.ModbusConnect;
 import fi.stardex.sisu.devices.Device;
 import fi.stardex.sisu.devices.Devices;
 import fi.stardex.sisu.measurement.Measurements;
+import fi.stardex.sisu.measurement.PumpMeasurementManager;
 import fi.stardex.sisu.model.*;
 import fi.stardex.sisu.model.updateModels.HighPressureSectionUpdateModel;
 import fi.stardex.sisu.pdf.PDFService;
@@ -73,6 +74,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.prefs.Preferences;
 
 import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.FirmwareVersion;
@@ -172,7 +174,8 @@ public class SpringJavaConfig {
 
     @Bean
     @Autowired
-    public RegisterProvider flowRegisterProvider(ModbusConnect flowModbusConnect, ConnectionController connectionController,
+    public RegisterProvider flowRegisterProvider(ModbusConnect flowModbusConnect,
+                                                 ConnectionController connectionController,
                                                  FirmwareVersion<FlowVersions> flowFirmwareVersion) {
         return new RegisterProvider(flowModbusConnect) {
             @Override
@@ -273,7 +276,8 @@ public class SpringJavaConfig {
 
     @Bean
     @Autowired
-    public ModbusRegisterProcessor flowModbusWriter(List<Updater> updatersList, RegisterProvider flowRegisterProvider,
+    public ModbusRegisterProcessor flowModbusWriter(List<Updater> updatersList,
+                                                    RegisterProvider flowRegisterProvider,
                                                     FirmwareVersion<FlowVersions> flowFirmwareVersion) {
         return new ModbusRegisterProcessor(flowRegisterProvider, ModbusMapFlow.values()) {
 
@@ -333,10 +337,12 @@ public class SpringJavaConfig {
                         FlowVersions version = flowFirmwareVersion.getVersions();
                         switch (version) {
                             case MASTER:
-                                updaters.stream().filter(updater -> updater instanceof FlowMasterUpdater).forEach(Platform::runLater);
+                                updaters.stream().filter(updater -> updater instanceof FlowMasterUpdater
+                                        || updater instanceof PumpFlowUpdater).forEach(Platform::runLater);
                                 break;
                             case STREAM:
-                                updaters.stream().filter(updater -> updater instanceof FlowStreamUpdater).forEach(Platform::runLater);
+                                updaters.stream().filter(updater -> updater instanceof FlowStreamUpdater
+                                        || updater instanceof PumpFlowUpdater).forEach(Platform::runLater);
                                 break;
                             case STAND_FM:
                                 updaters.stream().filter(updater -> updater instanceof FlowMasterUpdater
@@ -456,6 +462,30 @@ public class SpringJavaConfig {
 
     @Bean
     @Autowired
+    public PumpFlowUpdater pumpFlowUpdater(PumpFlowValuesModel pumpDeliveryFlowValuesModel,
+                                           PumpFlowValuesModel pumpBackFlowValuesModel,
+                                           PumpFlowTemperaturesModel pumpDeliveryFlowTemperaturesModel,
+                                           PumpFlowTemperaturesModel pumpBackFlowTemperaturesModel,
+                                           FirmwareVersion<FlowVersions> flowFirmwareVersion,
+                                           InstantFlowState instantFlowState,
+                                           PumpHighPressureSectionPwrState pumpHighPressureSectionPwrState,
+                                           FlowRangeModel pumpDeliveryFlowRangeModel,
+                                           FlowRangeModel pumpBackFlowRangeModel) {
+        PumpFlowUpdater pumpFlowUpdater = new PumpFlowUpdater();
+        pumpFlowUpdater.setPumpDeliveryFlowValuesModel(pumpDeliveryFlowValuesModel);
+        pumpFlowUpdater.setPumpBackFlowValuesModel(pumpBackFlowValuesModel);
+        pumpFlowUpdater.setPumpDeliveryFlowTemperaturesModel(pumpDeliveryFlowTemperaturesModel);
+        pumpFlowUpdater.setPumpBackFlowTemperaturesModel(pumpBackFlowTemperaturesModel);
+        pumpFlowUpdater.setFlowFirmwareVersion(flowFirmwareVersion);
+        pumpFlowUpdater.setInstantFlowState(instantFlowState);
+        pumpFlowUpdater.setPumpHighPressureSectionPwrState(pumpHighPressureSectionPwrState);
+        pumpFlowUpdater.setPumpDeliveryFlowRangeModel(pumpDeliveryFlowRangeModel);
+        pumpFlowUpdater.setPumpBackFlowRangeModel(pumpBackFlowRangeModel);
+        return pumpFlowUpdater;
+    }
+
+    @Bean
+    @Autowired
     public TestBenchSectionUpdater testBenchSectionUpdater(TestBenchSectionController testBenchSectionController,
                                                            FirmwareVersion<FlowVersions> flowFirmwareVersion) {
         return new TestBenchSectionUpdater(testBenchSectionController, flowFirmwareVersion);
@@ -509,6 +539,16 @@ public class SpringJavaConfig {
 
     @Bean
     public Rescaler backFlowRescaler() {
+        return new BackFlowRescaler();
+    }
+
+    @Bean
+    public Rescaler pumpDeliveryRescaler() {
+        return new DeliveryRescaler();
+    }
+
+    @Bean
+    public Rescaler pumpBackFlowRescaler() {
         return new BackFlowRescaler();
     }
 
@@ -646,6 +686,28 @@ public class SpringJavaConfig {
         return pdfService;
     }
 
+    @Bean
+    @Autowired
+    public PumpMeasurementManager pumpMeasurementManager(PumpTestListModel pumpTestListModel,
+                                                         PumpsStartButtonState pumpsStartButtonState,
+                                                         PumpTestModel pumpTestModel,
+                                                         PressureRegulatorOneModel pressureRegulatorOneModel,
+                                                         TargetRpmModel targetRpmModel,
+                                                         ModbusRegisterProcessor flowModbusWriter,
+                                                         PumpReportModel pumpReportModel,
+                                                         PumpTestModeModel pumpTestModeModel) {
+        PumpMeasurementManager pumpMeasurementManager = new PumpMeasurementManager();
+        pumpMeasurementManager.setPumpsStartButtonState(pumpsStartButtonState);
+        pumpMeasurementManager.setPumpTestListModel(pumpTestListModel);
+        pumpMeasurementManager.setPumpTestModel(pumpTestModel);
+        pumpMeasurementManager.setPressureRegulatorOneModel(pressureRegulatorOneModel);
+        pumpMeasurementManager.setTargetRpmModel(targetRpmModel);
+        pumpMeasurementManager.setFlowModbusWriter(flowModbusWriter);
+        pumpMeasurementManager.setPumpReportModel(pumpReportModel);
+        pumpMeasurementManager.setPumpTestModeModel(pumpTestModeModel);
+        return pumpMeasurementManager;
+    }
+
     // --------------------------------------State-----------------------------------------------
 
     @Bean
@@ -676,6 +738,16 @@ public class SpringJavaConfig {
     @Bean
     public HighPressureSectionPwrState highPressureSectionPwrState() {
         return new HighPressureSectionPwrState();
+    }
+
+    @Bean
+    public PumpHighPressureSectionPwrState pumpHighPressureSectionPwrState() {
+        return new PumpHighPressureSectionPwrState();
+    }
+
+    @Bean
+    public PumpsStartButtonState pumpsStartButtonState() {
+        return new PumpsStartButtonState();
     }
 
     // --------------------------------------Model-----------------------------------------------
@@ -763,6 +835,27 @@ public class SpringJavaConfig {
                                            FlowViewModel flowViewModel) {
         return new FlowReportModel(flowViewModel, flowValuesModel, deliveryFlowRangeModel,
                 deliveryFlowUnitsModel, backFlowRangeModel, backFlowUnitsModel);
+    }
+
+    @Bean
+    @Autowired
+    public PumpReportModel pumpReportModel(FlowRangeModel pumpDeliveryFlowRangeModel,
+                                           FlowRangeModel pumpBackFlowRangeModel,
+                                           FlowUnitsModel pumpDeliveryFlowUnitsModel,
+                                           FlowUnitsModel pumpBackFlowUnitsModel,
+                                           FlowViewModel flowViewModel,
+                                           PumpTestModel pumpTestModel,
+                                           PumpModel pumpModel) {
+
+        PumpReportModel pumpReportModel = new PumpReportModel();
+        pumpReportModel.setDeliveryFlowRangeModel(pumpDeliveryFlowRangeModel);
+        pumpReportModel.setBackFlowRangeModel(pumpBackFlowRangeModel);
+        pumpReportModel.setDeliveryFlowUnitsModel(pumpDeliveryFlowUnitsModel);
+        pumpReportModel.setBackFlowUnitsModel(pumpBackFlowUnitsModel);
+        pumpReportModel.setFlowViewModel(flowViewModel);
+        pumpReportModel.setPumpTestModel(pumpTestModel);
+        pumpReportModel.setPumpModel(pumpModel);
+        return pumpReportModel;
     }
 
     @Bean
@@ -885,5 +978,15 @@ public class SpringJavaConfig {
     @Bean
     public PiezoRepairModel piezoRepairModel() {
         return new PiezoRepairModel();
+    }
+
+    @Bean
+    public TargetRpmModel targetRpmModel() {
+        return new TargetRpmModel();
+    }
+
+    @Bean
+    public PumpTestSpeedModel pumpTestSpeedModel() {
+        return new PumpTestSpeedModel();
     }
 }

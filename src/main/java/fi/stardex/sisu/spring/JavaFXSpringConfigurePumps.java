@@ -1,7 +1,11 @@
 package fi.stardex.sisu.spring;
 
 import fi.stardex.sisu.model.*;
+import fi.stardex.sisu.model.updateModels.HighPressureSectionUpdateModel;
+import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.CustomPumpState;
+import fi.stardex.sisu.states.PumpHighPressureSectionPwrState;
+import fi.stardex.sisu.states.PumpsStartButtonState;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.pumps.PumpInfoController;
 import fi.stardex.sisu.ui.controllers.pumps.PumpReportController;
@@ -57,10 +61,14 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
     @Autowired
     public PumpsOEMListController pumpsOEMListController(MainSectionPumpsController mainSectionPumpsController,
                                                          ManufacturerPumpModel manufacturerPumpModel,
-                                                         PumpModel pumpModel) {
+                                                         PumpModel pumpModel,
+                                                         PumpReportModel pumpReportModel,
+                                                         PumpsStartButtonState pumpsStartButtonState) {
         PumpsOEMListController pumpsOEMListController = mainSectionPumpsController.getPumpsOEMListController();
         pumpsOEMListController.setManufacturerPumpModel(manufacturerPumpModel);
         pumpsOEMListController.setPumpModel(pumpModel);
+        pumpsOEMListController.setPumpReportModel(pumpReportModel);
+        pumpsOEMListController.setPumpsStartButtonState(pumpsStartButtonState);
         return pumpsOEMListController;
     }
 
@@ -71,37 +79,56 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
                                                                PumpModel pumpModel,
                                                                CustomPumpState customPumpState,
                                                                PumpTestModel pumpTestModel,
-                                                               PumpTestListModel pumpTestListModel) {
+                                                               PumpTestListModel pumpTestListModel,
+                                                               PumpReportModel pumpReportModel,
+                                                               PumpsStartButtonState pumpsStartButtonState) {
         PumpsModelsListController pumpsModelsListController = mainSectionPumpsController.getPumpsModelsListController();
         pumpsModelsListController.setManufacturerPumpModel(manufacturerPumpModel);
         pumpsModelsListController.setPumpModel(pumpModel);
         pumpsModelsListController.setCustomPumpState(customPumpState);
         pumpsModelsListController.setPumpTestModel(pumpTestModel);
         pumpsModelsListController.setPumpTestListModel(pumpTestListModel);
+        pumpsModelsListController.setPumpReportModel(pumpReportModel);
+        pumpsModelsListController.setI18N(i18N);
+        pumpsModelsListController.setPumpsStartButtonState(pumpsStartButtonState);
         return pumpsModelsListController;
     }
 
     @Bean
     @Autowired
-    public StoreResetPrintController storeResetPrintController(MainSectionPumpsController mainSectionPumpsController) {
-        return mainSectionPumpsController.getStoreResetPrintController();
+    public StoreResetPrintController storeResetPrintController(MainSectionPumpsController mainSectionPumpsController,
+                                                               ModbusRegisterProcessor flowModbusWriter,
+                                                               PumpReportModel pumpReportModel,
+                                                               PumpsStartButtonState pumpsStartButtonState,
+                                                               PumpTestModeModel pumpTestModeModel) {
+        StoreResetPrintController storeResetPrintController = mainSectionPumpsController.getStoreResetPrintController();
+        storeResetPrintController.setFlowModbusWriter(flowModbusWriter);
+        storeResetPrintController.setPumpReportModel(pumpReportModel);
+        storeResetPrintController.setPumpsStartButtonState(pumpsStartButtonState);
+        storeResetPrintController.setPumpTestModeModel(pumpTestModeModel);
+        return storeResetPrintController;
     }
 
     @Bean
     @Autowired
     public TestModeController testModeController(MainSectionPumpsController mainSectionPumpsController,
-                                                 PumpTestModeModel pumpTestModeModel) {
+                                                 PumpTestModeModel pumpTestModeModel,
+                                                 PumpsStartButtonState pumpsStartButtonState) {
         TestModeController testModeController = mainSectionPumpsController.getTestModeController();
         testModeController.setPumpTestModeModel(pumpTestModeModel);
+        testModeController.setI18N(i18N);
+        testModeController.setPumpsStartButtonState(pumpsStartButtonState);
         return testModeController;
     }
 
     @Bean
     @Autowired
     public PumpFieldController pumpFieldController(MainSectionPumpsController mainSectionPumpsController,
-                                                   PumpModel pumpModel) {
+                                                   PumpModel pumpModel,
+                                                   PumpsStartButtonState pumpsStartButtonState) {
         PumpFieldController pumpFieldController = mainSectionPumpsController.getPumpFieldController();
         pumpFieldController.setPumpModel(pumpModel);
+        pumpFieldController.setPumpsStartButtonState(pumpsStartButtonState);
         return pumpFieldController;
     }
 
@@ -111,12 +138,14 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
                                                          PumpTestModel pumpTestModel,
                                                          PumpTestListModel pumpTestListModel,
                                                          PumpTestModeModel pumpTestModeModel,
-                                                         AutoTestListLastChangeModel autoTestListLastChangeModel) {
+                                                         AutoTestListLastChangeModel autoTestListLastChangeModel,
+                                                         PumpsStartButtonState pumpsStartButtonState) {
         PumpTestListController pumpTestListController = mainSectionPumpsController.getPumpTestListController();
         pumpTestListController.setPumpTestModel(pumpTestModel);
         pumpTestListController.setPumpTestListModel(pumpTestListModel);
         pumpTestListController.setPumpTestModeModel(pumpTestModeModel);
         pumpTestListController.setAutoTestListLastChangeModel(autoTestListLastChangeModel);
+        pumpTestListController.setPumpsStartButtonState(pumpsStartButtonState);
         return pumpTestListController;
     }
 
@@ -124,16 +153,26 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
     @Autowired
     public TestSpeedController testSpeedController(MainSectionPumpsController mainSectionPumpsController,
                                                    PumpTestModel pumpTestModel,
-                                                   PumpTimeProgressModel pumpTimeProgressModel) {
+                                                   PumpTimeProgressModel pumpTimeProgressModel,
+                                                   PumpTestSpeedModel pumpTestSpeedModel,
+                                                   PumpsStartButtonState pumpsStartButtonState,
+                                                   PumpTestModeModel pumpTestModeModel) {
         TestSpeedController testSpeedController = mainSectionPumpsController.getTestSpeedController();
         testSpeedController.setPumpTestModel(pumpTestModel);
         testSpeedController.setPumpTimeProgressModel(pumpTimeProgressModel);
+        testSpeedController.setI18N(i18N);
+        testSpeedController.setPumpTestSpeedModel(pumpTestSpeedModel);
+        testSpeedController.setPumpsStartButtonState(pumpsStartButtonState);
+        testSpeedController.setPumpTestModeModel(pumpTestModeModel);
         return testSpeedController;
     }
 
     @Bean
     @Autowired
-    public StartButtonController startButtonController(MainSectionPumpsController mainSectionPumpsController) {
+    public StartButtonController startButtonController(MainSectionPumpsController mainSectionPumpsController,
+                                                       PumpsStartButtonState pumpsStartButtonState) {
+        StartButtonController startButtonController = mainSectionPumpsController.getStartButtonController();
+        startButtonController.setPumpsStartButtonState(pumpsStartButtonState);
         return mainSectionPumpsController.getStartButtonController();
     }
 
@@ -154,17 +193,18 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
     @Bean
     @Autowired
     public PumpBeakerController pumpDeliveryController(PumpFlowController pumpFlowController,
-                                                       Rescaler deliveryRescaler,
+                                                       Rescaler pumpDeliveryRescaler,
                                                        FlowUnitsModel pumpDeliveryFlowUnitsModel,
                                                        FlowRangeModel pumpDeliveryFlowRangeModel,
                                                        PumpFlowValuesModel pumpDeliveryFlowValuesModel,
                                                        PumpFlowTemperaturesModel pumpDeliveryFlowTemperaturesModel,
                                                        PumpTestModel pumpTestModel,
-                                                       FlowViewModel flowViewModel) {
+                                                       FlowViewModel flowViewModel,
+                                                       PumpReportModel pumpReportModel) {
         PumpBeakerController pumpDeliveryController = pumpFlowController.getPumpDeliveryController();
         pumpDeliveryController.setI18N(i18N);
         pumpDeliveryController.setBeakerType(BeakerType.DELIVERY);
-        pumpDeliveryController.setRescaler(deliveryRescaler);
+        pumpDeliveryController.setRescaler(pumpDeliveryRescaler);
         pumpDeliveryController.setPumpFlowValuesModel(pumpDeliveryFlowValuesModel);
         pumpDeliveryController.setPumpFlowTemperaturesModel(pumpDeliveryFlowTemperaturesModel);
         pumpDeliveryController.setPumpTestModel(pumpTestModel);
@@ -172,23 +212,25 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
         pumpDeliveryController.setName("PumpDelivery");
         pumpDeliveryController.setFlowRangeModel(pumpDeliveryFlowRangeModel);
         pumpDeliveryController.setFlowUnitsModel(pumpDeliveryFlowUnitsModel);
+        pumpDeliveryController.setPumpReportModel(pumpReportModel);
         return pumpDeliveryController;
     }
 
     @Bean
     @Autowired
     public PumpBeakerController pumpBackflowController(PumpFlowController pumpFlowController,
-                                                       Rescaler backFlowRescaler,
+                                                       Rescaler pumpBackFlowRescaler,
                                                        FlowUnitsModel pumpBackFlowUnitsModel,
                                                        FlowRangeModel pumpBackFlowRangeModel,
                                                        PumpFlowValuesModel pumpBackFlowValuesModel,
                                                        PumpFlowTemperaturesModel pumpBackFlowTemperaturesModel,
                                                        PumpTestModel pumpTestModel,
-                                                       FlowViewModel flowViewModel) {
+                                                       FlowViewModel flowViewModel,
+                                                       PumpReportModel pumpReportModel) {
         PumpBeakerController pumpBackflowController = pumpFlowController.getPumpBackflowController();
         pumpBackflowController.setI18N(i18N);
         pumpBackflowController.setBeakerType(BeakerType.BACKFLOW);
-        pumpBackflowController.setRescaler(backFlowRescaler);
+        pumpBackflowController.setRescaler(pumpBackFlowRescaler);
         pumpBackflowController.setPumpFlowValuesModel(pumpBackFlowValuesModel);
         pumpBackflowController.setPumpFlowTemperaturesModel(pumpBackFlowTemperaturesModel);
         pumpBackflowController.setPumpTestModel(pumpTestModel);
@@ -196,6 +238,7 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
         pumpBackflowController.setName("PumpBackFlow");
         pumpBackflowController.setFlowUnitsModel(pumpBackFlowUnitsModel);
         pumpBackflowController.setFlowRangeModel(pumpBackFlowRangeModel);
+        pumpBackflowController.setPumpReportModel(pumpReportModel);
         return pumpBackflowController;
     }
 
@@ -216,8 +259,15 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
 
     @Bean
     @Autowired
-    public PumpReportController pumpReportController(PumpTabSectionController pumpTabSectionController) {
-        return pumpTabSectionController.getPumpReportController();
+    public PumpReportController pumpReportController(PumpTabSectionController pumpTabSectionController,
+                                                     I18N i18N,
+                                                     PumpReportModel pumpReportModel,
+                                                     PumpsStartButtonState pumpsStartButtonState) {
+        PumpReportController pumpReportController = pumpTabSectionController.getPumpReportController();
+        pumpReportController.setI18N(i18N);
+        pumpReportController.setPumpReportModel(pumpReportModel);
+        pumpReportController.setPumpsStartButtonState(pumpsStartButtonState);
+        return pumpReportController;
     }
 
     @Bean
@@ -233,38 +283,74 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
 
     @Bean
     @Autowired
-    public PumpRegulatorSectionOneController pumpRegulatorSectionOneController(PumpHighPressureSectionController pumpHighPressureSectionController) {
+    public PumpRegulatorSectionOneController pumpRegulatorSectionOneController(PumpHighPressureSectionController pumpHighPressureSectionController,
+                                                                               PumpHighPressureSectionPwrState pumpHighPressureSectionPwrState,
+                                                                               PressureSensorModel pressureSensorModel,
+                                                                               ModbusRegisterProcessor ultimaModbusWriter,
+                                                                               HighPressureSectionUpdateModel highPressureSectionUpdateModel,
+                                                                               PressureRegulatorOneModel pressureRegulatorOneModel,
+                                                                               RegulationModesModel regulationModesModel,
+                                                                               PumpTestModel pumpTestModel) {
         PumpRegulatorSectionOneController pumpRegulatorSectionOneController = pumpHighPressureSectionController.getPumpRegulatorSectionOneController();
         pumpRegulatorSectionOneController.setI18N(i18N);
+        pumpRegulatorSectionOneController.setPumpHighPressureSectionPwrState(pumpHighPressureSectionPwrState);
+        pumpRegulatorSectionOneController.setPressureSensorModel(pressureSensorModel);
+        pumpRegulatorSectionOneController.setUltimaModbusWriter(ultimaModbusWriter);
+        pumpRegulatorSectionOneController.setHighPressureSectionUpdateModel(highPressureSectionUpdateModel);
+        pumpRegulatorSectionOneController.setPressureRegulatorOneModel(pressureRegulatorOneModel);
+        pumpRegulatorSectionOneController.setRegulationModesModel(regulationModesModel);
+        pumpRegulatorSectionOneController.setPumpTestModel(pumpTestModel);
         return pumpRegulatorSectionOneController;
     }
 
     @Bean
     @Autowired
-    public PumpRegulatorSectionTwoController pumpRegulatorSectionTwoController(PumpHighPressureSectionController pumpHighPressureSectionController) {
+    public PumpRegulatorSectionTwoController pumpRegulatorSectionTwoController(PumpHighPressureSectionController pumpHighPressureSectionController,
+                                                                               PumpHighPressureSectionPwrState pumpHighPressureSectionPwrState,
+                                                                               ModbusRegisterProcessor ultimaModbusWriter,
+                                                                               HighPressureSectionUpdateModel highPressureSectionUpdateModel,
+                                                                               RegulationModesModel regulationModesModel) {
         PumpRegulatorSectionTwoController pumpRegulatorSectionTwoController = pumpHighPressureSectionController.getPumpRegulatorSectionTwoController();
         pumpRegulatorSectionTwoController.setI18N(i18N);
+        pumpRegulatorSectionTwoController.setHighPressureSectionPwrState(pumpHighPressureSectionPwrState);
+        pumpRegulatorSectionTwoController.setUltimaModbusWriter(ultimaModbusWriter);
+        pumpRegulatorSectionTwoController.setHighPressureSectionUpdateModel(highPressureSectionUpdateModel);
+        pumpRegulatorSectionTwoController.setRegulationModesModel(regulationModesModel);
         return pumpRegulatorSectionTwoController;
     }
 
     @Bean
     @Autowired
-    public PumpRegulatorSectionThreeController pumpRegulatorSectionThreeController(PumpHighPressureSectionController pumpHighPressureSectionController) {
+    public PumpRegulatorSectionThreeController pumpRegulatorSectionThreeController(PumpHighPressureSectionController pumpHighPressureSectionController,
+                                                                                   PumpHighPressureSectionPwrState pumpHighPressureSectionPwrState,
+                                                                                   ModbusRegisterProcessor ultimaModbusWriter,
+                                                                                   HighPressureSectionUpdateModel highPressureSectionUpdateModel,
+                                                                                   RegulationModesModel regulationModesModel) {
         PumpRegulatorSectionThreeController pumpRegulatorSectionThreeController = pumpHighPressureSectionController.getPumpRegulatorSectionThreeController();
         pumpRegulatorSectionThreeController.setI18N(i18N);
+        pumpRegulatorSectionThreeController.setHighPressureSectionPwrState(pumpHighPressureSectionPwrState);
+        pumpRegulatorSectionThreeController.setUltimaModbusWriter(ultimaModbusWriter);
+        pumpRegulatorSectionThreeController.setHighPressureSectionUpdateModel(highPressureSectionUpdateModel);
+        pumpRegulatorSectionThreeController.setRegulationModesModel(regulationModesModel);
         return pumpRegulatorSectionThreeController;
     }
 
     @Bean
     @Autowired
-    public PumpHighPressureSectionLcdController pumpHighPressureSectionLcdController(PumpHighPressureSectionController pumpHighPressureSectionController) {
-        return pumpHighPressureSectionController.getPumpHighPressureSectionLcdController();
+    public PumpHighPressureSectionLcdController pumpHighPressureSectionLcdController(PumpHighPressureSectionController pumpHighPressureSectionController,
+                                                                                     HighPressureSectionUpdateModel highPressureSectionUpdateModel) {
+        PumpHighPressureSectionLcdController pumpHighPressureSectionLcdController = pumpHighPressureSectionController.getPumpHighPressureSectionLcdController();
+        pumpHighPressureSectionLcdController.setHighPressureSectionUpdateModel(highPressureSectionUpdateModel);
+        return pumpHighPressureSectionLcdController;
     }
 
     @Bean
     @Autowired
-    public PumpHighPressureSectionPwrController pumpHighPressureSectionPwrController(PumpHighPressureSectionController pumpHighPressureSectionController) {
-        return pumpHighPressureSectionController.getPumpHighPressureSectionPwrController();
+    public PumpHighPressureSectionPwrController pumpHighPressureSectionPwrController(PumpHighPressureSectionController pumpHighPressureSectionController,
+                                                                                     PumpHighPressureSectionPwrState pumpHighPressureSectionPwrState) {
+        PumpHighPressureSectionPwrController pumpHighPressureSectionPwrController = pumpHighPressureSectionController.getPumpHighPressureSectionPwrController();
+        pumpHighPressureSectionPwrController.setPumpHighPressureSectionPwrState(pumpHighPressureSectionPwrState);
+        return pumpHighPressureSectionPwrController;
     }
 
 }

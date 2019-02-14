@@ -111,6 +111,10 @@ public class PumpTest {
         return maxBackFlow;
     }
 
+    public PumpTestName getPumpTestName() {
+        return pumpTestName;
+    }
+
     @Override
     public String toString() {
         return pumpTestName.toString();

@@ -86,7 +86,9 @@ public class JavaFXSpringConfigure extends ViewLoader{
         return loadView("/fxml/GUI_Type.fxml");
     }
 
-    // Depends on нужен для инициализации листенера в бине pumpsOEMListController
+    // Depends on нужен для инициализации листенера в бине pumpsOEMListController,
+    // чтобы GUI_TypeController инстанцировался только после этого,
+    // иначе при входе в режиме Pump не всегда появляется список ОЕМ пока не переключиться в инжекторы и вернуться обратно
     @Bean
     @Autowired
     @DependsOn({"pumpsOEMListController", "checkAndInitializeBD"})
@@ -100,7 +102,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                  ViewHolder pumpTabSection,
                                                  ViewHolder settings,
                                                  ViewHolder connection,
-                                                 ManufacturerPumpModel manufacturerPumpModel) {
+                                                 ManufacturerPumpModel manufacturerPumpModel,
+                                                 PumpsStartButtonState pumpsStartButtonState) {
         GUI_TypeController gui_typeController = rootLayoutController.getGui_typeController();
         gui_typeController.setRootPreferences(rootPreferences);
         gui_typeController.setMainSection(mainSection().getView());
@@ -118,6 +121,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         gui_typeController.setConnection(connection.getView());
         gui_typeController.setDimasGUIEditionState(dimasGUIEditionState);
         gui_typeController.setManufacturerPumpModel(manufacturerPumpModel);
+        gui_typeController.setPumpsStartButtonState(pumpsStartButtonState);
         return gui_typeController;
     }
 
@@ -191,7 +195,9 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                                  @Lazy ModbusRegisterProcessor standModbusWriter,
                                                                  DimasGUIEditionState dimasGUIEditionState,
                                                                  FirmwareVersion<FlowVersions> flowFirmwareVersion,
-                                                                 FirmwareVersion<StandVersions> standFirmwareVersion) {
+                                                                 FirmwareVersion<StandVersions> standFirmwareVersion,
+                                                                 PumpTestModel pumpTestModel,
+                                                                 TargetRpmModel targetRpmModel) {
         TestBenchSectionController testBenchSectionController = rootLayoutController.getTestBenchSectionController();
         testBenchSectionController.setFlowModbusWriter(flowModbusWriter);
         testBenchSectionController.setStandModbusWriter(standModbusWriter);
@@ -199,6 +205,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
         testBenchSectionController.setDimasGUIEditionState(dimasGUIEditionState);
         testBenchSectionController.setFlowFirmwareVersion(flowFirmwareVersion);
         testBenchSectionController.setStandFirmwareVersion(standFirmwareVersion);
+        testBenchSectionController.setPumpTestModel(pumpTestModel);
+        testBenchSectionController.setTargetRpmModel(targetRpmModel);
         return testBenchSectionController;
     }
 

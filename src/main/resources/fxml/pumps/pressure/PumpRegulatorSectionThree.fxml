@@ -43,8 +43,8 @@
                   <RowConstraints minHeight="10.0" prefHeight="30.0" valignment="TOP" vgrow="SOMETIMES" />
                </rowConstraints>
                <children>
-                  <Spinner fx:id="currentSpinner" maxHeight="30.0" maxWidth="90.0" minHeight="30.0" minWidth="90.0" prefHeight="30.0" prefWidth="90.0" GridPane.rowIndex="2" />
-                  <Spinner fx:id="dutySpinner" maxHeight="30.0" maxWidth="90.0" minHeight="30.0" minWidth="90.0" prefHeight="30.0" prefWidth="90.0" GridPane.rowIndex="4" />
+                  <Spinner fx:id="currentSpinner" editable="true" maxHeight="30.0" maxWidth="90.0" minHeight="30.0" minWidth="90.0" prefHeight="30.0" prefWidth="90.0" GridPane.rowIndex="2" />
+                  <Spinner fx:id="dutySpinner" editable="true" maxHeight="30.0" maxWidth="90.0" minHeight="30.0" minWidth="90.0" prefHeight="30.0" prefWidth="90.0" GridPane.rowIndex="4" />
                   <Label fx:id="currentLabel" text="%highPressure.label.amp" GridPane.rowIndex="1" />
                   <Label fx:id="dutyLabel" text="%highPressure.label.cycle" GridPane.rowIndex="3" />
                </children>

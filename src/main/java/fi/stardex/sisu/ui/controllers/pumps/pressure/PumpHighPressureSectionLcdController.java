@@ -1,6 +1,7 @@
 package fi.stardex.sisu.ui.controllers.pumps.pressure;
 
 import eu.hansolo.enzo.lcd.Lcd;
+import fi.stardex.sisu.model.updateModels.HighPressureSectionUpdateModel;
 import fi.stardex.sisu.util.GaugeCreator;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -16,6 +17,12 @@ public class PumpHighPressureSectionLcdController {
     private Lcd pressureLcd;
     private StackPane rootStackPane;
 
+    private HighPressureSectionUpdateModel highPressureSectionUpdateModel;
+
+    public void setHighPressureSectionUpdateModel(HighPressureSectionUpdateModel highPressureSectionUpdateModel) {
+        this.highPressureSectionUpdateModel = highPressureSectionUpdateModel;
+    }
+
     public StackPane getLcdStackPane() {
         return lcdStackPane;
     }
@@ -23,9 +30,11 @@ public class PumpHighPressureSectionLcdController {
     @PostConstruct
     public void init(){
 
-        lcdStackPane.getChildren().add(0, GaugeCreator.createLcd("bar"));
+        pressureLcd = GaugeCreator.createLcd("bar");
+        lcdStackPane.getChildren().add(0, pressureLcd);
         rootStackPane = (StackPane) lcdStackPane.getParent().getParent();
         rootStackPane.widthProperty().addListener(new StackPaneWidthListener(rootStackPane, lcdStackPane));
+        pressureLcd.valueProperty().bind(highPressureSectionUpdateModel.lcdPressureProperty());
     }
 
     private class StackPaneWidthListener implements ChangeListener<Number> {

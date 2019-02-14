@@ -48,9 +48,9 @@ public enum ModbusMapFlow implements ModbusMap {
     Channel9Temperature1(REGISTER_INPUT, 124, 2, true),
     Channel9Temperature2(REGISTER_INPUT, 126, 2, true),
 
-    Channel10Level(REGISTER_INPUT, 114, 2, true),
-    Channel10Temperature1(REGISTER_INPUT, 124, 2, true),
-    Channel10Temperature2(REGISTER_INPUT, 126, 2, true);
+    Channel10Level(REGISTER_INPUT, 128, 2, true),
+    Channel10Temperature1(REGISTER_INPUT, 138, 2, true),
+    Channel10Temperature2(REGISTER_INPUT, 140, 2, true);
 
     private final RegisterType type;
     private final int ref;

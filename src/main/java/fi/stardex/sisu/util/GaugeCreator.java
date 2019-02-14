@@ -44,7 +44,10 @@ public class GaugeCreator {
         return pressureLcd;
     }
 
-    public static Gauge createPumpGauge() {
+    public static Gauge createPumpGauge(double maxValue) {
+
+        double greenLimit = maxValue * 0.6;
+        double yellowLimit = maxValue * 0.8;
 
         return GaugeBuilder
                 .create()
@@ -56,7 +59,7 @@ public class GaugeCreator {
                 .maxValue(2)
                 .valueVisible(true)
                 .sectionsVisible(true)
-                .sections(new Section(0, 1.5, Color.GREEN), new Section(1.5, 2, Color.YELLOW))
+                .sections(new Section(0, greenLimit, Color.GREEN), new Section(greenLimit, yellowLimit, Color.YELLOW), new Section(yellowLimit, maxValue, Color.RED))
                 .animated(true)
                 .animationDuration(500)
                 .build();

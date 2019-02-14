@@ -1,10 +1,12 @@
 package fi.stardex.sisu.model;
 
 import fi.stardex.sisu.model.AutoTestListLastChangeModel.PumpTestWrapper;
+import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.persistence.orm.pump.PumpTest;
 import fi.stardex.sisu.persistence.repos.pump.PumpTestRepository;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.control.MultipleSelectionModel;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -19,13 +21,20 @@ public class PumpTestListModel {
     private PumpTestRepository pumpTestRepository;
     private PumpModel pumpModel;
     private AutoTestListLastChangeModel autoTestListLastChangeModel;
+    private MultipleSelectionModel<PumpTestWrapper> testsSelectionModel;
 
     public ObservableList<PumpTestWrapper> getPumpTestObservableList() {
         return pumpTestObservableList;
     }
+    public MultipleSelectionModel<PumpTestWrapper> getTestsSelectionModel() {
+        return testsSelectionModel;
+    }
 
     public void setAutoTestListLastChangeModel(AutoTestListLastChangeModel autoTestListLastChangeModel) {
         this.autoTestListLastChangeModel = autoTestListLastChangeModel;
+    }
+    public void setTestsSelectionModel(MultipleSelectionModel<PumpTestWrapper> testsSelectionModel) {
+        this.testsSelectionModel = testsSelectionModel;
     }
 
     public PumpTestListModel(PumpTestRepository pumpTestRepository, PumpModel pumpModel) {

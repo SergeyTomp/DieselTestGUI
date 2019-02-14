@@ -5,14 +5,13 @@ import fi.stardex.sisu.model.AutoTestListLastChangeModel.PumpTestWrapper;
 import fi.stardex.sisu.model.PumpTestListModel;
 import fi.stardex.sisu.model.PumpTestModeModel;
 import fi.stardex.sisu.model.PumpTestModel;
+import fi.stardex.sisu.states.PumpsStartButtonState;
 import fi.stardex.sisu.util.enums.Move;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 import javafx.scene.control.cell.CheckBoxListCell;
-import javafx.util.Callback;
 
 import javax.annotation.PostConstruct;
 import java.util.Collections;
@@ -34,7 +33,7 @@ public class PumpTestListController {
     private PumpTestListModel pumpTestListModel;
     private PumpTestModeModel pumpTestModeModel;
     private AutoTestListLastChangeModel autoTestListLastChangeModel;
-
+    private PumpsStartButtonState pumpsStartButtonState;
 
     public void setPumpTestModel(PumpTestModel pumpTestModel) {
         this.pumpTestModel = pumpTestModel;
@@ -48,9 +47,21 @@ public class PumpTestListController {
     public void setAutoTestListLastChangeModel(AutoTestListLastChangeModel autoTestListLastChangeModel) {
         this.autoTestListLastChangeModel = autoTestListLastChangeModel;
     }
+    public void setPumpsStartButtonState(PumpsStartButtonState pumpsStartButtonState) {
+        this.pumpsStartButtonState = pumpsStartButtonState;
+    }
 
     @PostConstruct
     public void init() {
+
+        setupMoveButtonEventHandlers();
+        setupListeners();
+        pumpTestListModel.setTestsSelectionModel(testListView.getSelectionModel());
+        pumpTestListModel.getTestsSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) ->
+                testListView.scrollTo(testListView.getSelectionModel().getSelectedIndex()));
+    }
+
+    private void setupListeners() {
 
         pumpTestListModel.getPumpTestObservableList().addListener((ListChangeListener<PumpTestWrapper>) change -> {
             if (!change.getList().isEmpty()) {
@@ -108,7 +119,23 @@ public class PumpTestListController {
             testListView.scrollTo(0);
 
         });
-        setupMoveButtonEventHandlers();
+        pumpsStartButtonState.startButtonProperty().addListener((observableValue, oldValue, newValue) -> {
+
+            testListView.setDisable(newValue);
+            showUpDownButtons(!newValue);
+        });
+
+        pumpTestModeModel.testModeProperty().addListener((observableValue, oldValue, newValue) -> {
+
+            switch (newValue) {
+                case AUTO:
+                    showUpDownButtons(true);
+                    break;
+                case TESTPLAN:
+                    showUpDownButtons(false);
+                    break;
+            }
+        });
     }
 
     private void setTestMode() {
@@ -118,12 +145,7 @@ public class PumpTestListController {
         switch (test) {
 
             case AUTO:
-                testListView.setCellFactory(CheckBoxListCell.forListView(new Callback<PumpTestWrapper, ObservableValue<Boolean>>() {
-                    @Override
-                    public ObservableValue<Boolean> call(PumpTestWrapper pumpTestWrapper) {
-                        return pumpTestWrapper.isIncludedProperty();
-                    }
-                }));
+                testListView.setCellFactory(CheckBoxListCell.forListView(PumpTestWrapper::isIncludedProperty));
                 break;
             case TESTPLAN:
                 testListView.setCellFactory(null);
