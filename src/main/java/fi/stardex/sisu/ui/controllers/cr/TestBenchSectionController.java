@@ -1,10 +1,12 @@
 package fi.stardex.sisu.ui.controllers.cr;
 
 import eu.hansolo.enzo.lcd.Lcd;
+import fi.stardex.sisu.model.CurrentRpmModel;
 import fi.stardex.sisu.model.PumpTestModel;
 import fi.stardex.sisu.model.TargetRpmModel;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.DimasGUIEditionState;
+import fi.stardex.sisu.states.TestBenchSectionPwrState;
 import fi.stardex.sisu.util.GaugeCreator;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.spinners.SpinnerManager;
@@ -23,8 +25,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
-
-import java.util.Optional;
 
 import static fi.stardex.sisu.registers.stand.ModbusMapStand.*;
 import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions;
@@ -88,6 +88,10 @@ public class TestBenchSectionController {
     private PumpTestModel pumpTestModel;
 
     private TargetRpmModel targetRpmModel;
+
+    private CurrentRpmModel currentRpmModel;
+
+    private TestBenchSectionPwrState testBenchSectionPwrState;
 
     private static final String PUMP_BUTTON_ON = "pump-button-on";
 
@@ -156,10 +160,10 @@ public class TestBenchSectionController {
     public boolean isOn() {
         return pumpState == StatePump.ON;
     }
-
     private boolean isAuto() {
         return pumpState == StatePump.AUTO_ON || pumpState == StatePump.AUTO_OFF;
     }
+
     public void setFlowModbusWriter(ModbusRegisterProcessor flowModbusWriter) {
         this.flowModbusWriter = flowModbusWriter;
     }
@@ -186,6 +190,12 @@ public class TestBenchSectionController {
     }
     public void setTargetRpmModel(TargetRpmModel targetRpmModel) {
         this.targetRpmModel = targetRpmModel;
+    }
+    public void setTestBenchSectionPwrState(TestBenchSectionPwrState testBenchSectionPwrState) {
+        this.testBenchSectionPwrState = testBenchSectionPwrState;
+    }
+    public void setCurrentRpmModel(CurrentRpmModel currentRpmModel) {
+        this.currentRpmModel = currentRpmModel;
     }
 
     public enum StatePump {
@@ -305,6 +315,7 @@ public class TestBenchSectionController {
 
         lcdStackPane.getChildren().add(currentRPMLcd);
 
+        currentRpmModel.currentRPMProperty().bind(currentRPMLcd.valueProperty());
     }
 
     private void setupRotationDirectionToggleButton() {
@@ -360,6 +371,9 @@ public class TestBenchSectionController {
                 setPumpAuto(newValue);
 
         });
+
+        testBenchStartToggleButton.selectedProperty().bindBidirectional(testBenchSectionPwrState.isPowerButtonOnProperty());
+        testBenchSectionPwrState.isPowerButtonDisabledProperty().bind(testBenchStartToggleButton.disableProperty());
 
     }
 

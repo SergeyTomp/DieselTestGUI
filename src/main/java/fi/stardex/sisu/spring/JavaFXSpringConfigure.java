@@ -197,7 +197,9 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                                  FirmwareVersion<FlowVersions> flowFirmwareVersion,
                                                                  FirmwareVersion<StandVersions> standFirmwareVersion,
                                                                  PumpTestModel pumpTestModel,
-                                                                 TargetRpmModel targetRpmModel) {
+                                                                 TargetRpmModel targetRpmModel,
+                                                                 TestBenchSectionPwrState testBenchSectionPwrState,
+                                                                 CurrentRpmModel currentRpmModel) {
         TestBenchSectionController testBenchSectionController = rootLayoutController.getTestBenchSectionController();
         testBenchSectionController.setFlowModbusWriter(flowModbusWriter);
         testBenchSectionController.setStandModbusWriter(standModbusWriter);
@@ -207,6 +209,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
         testBenchSectionController.setStandFirmwareVersion(standFirmwareVersion);
         testBenchSectionController.setPumpTestModel(pumpTestModel);
         testBenchSectionController.setTargetRpmModel(targetRpmModel);
+        testBenchSectionController.setTestBenchSectionPwrState(testBenchSectionPwrState);
+        testBenchSectionController.setCurrentRpmModel(currentRpmModel);
         return testBenchSectionController;
     }
 

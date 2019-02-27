@@ -4,10 +4,15 @@ import fi.stardex.sisu.model.AutoTestListLastChangeModel.PumpTestWrapper;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.persistence.orm.pump.PumpTest;
 import fi.stardex.sisu.persistence.repos.pump.PumpTestRepository;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.MultipleSelectionModel;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -21,20 +26,21 @@ public class PumpTestListModel {
     private PumpTestRepository pumpTestRepository;
     private PumpModel pumpModel;
     private AutoTestListLastChangeModel autoTestListLastChangeModel;
-    private MultipleSelectionModel<PumpTestWrapper> testsSelectionModel;
+    private IntegerProperty selectedTestIndex = new SimpleIntegerProperty();
 
+    public void setSelectedTestIndex(int selectedTestIndex) {
+        this.selectedTestIndex.set(selectedTestIndex);
+    }
+
+    public IntegerProperty selectedTestIndexProperty() {
+        return selectedTestIndex;
+    }
     public ObservableList<PumpTestWrapper> getPumpTestObservableList() {
         return pumpTestObservableList;
-    }
-    public MultipleSelectionModel<PumpTestWrapper> getTestsSelectionModel() {
-        return testsSelectionModel;
     }
 
     public void setAutoTestListLastChangeModel(AutoTestListLastChangeModel autoTestListLastChangeModel) {
         this.autoTestListLastChangeModel = autoTestListLastChangeModel;
-    }
-    public void setTestsSelectionModel(MultipleSelectionModel<PumpTestWrapper> testsSelectionModel) {
-        this.testsSelectionModel = testsSelectionModel;
     }
 
     public PumpTestListModel(PumpTestRepository pumpTestRepository, PumpModel pumpModel) {

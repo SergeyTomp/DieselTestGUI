@@ -1,6 +1,8 @@
 package fi.stardex.sisu.ui.controllers.pumps.pressure;
 
 import eu.hansolo.medusa.Gauge;
+import fi.stardex.sisu.model.PumpModel;
+import fi.stardex.sisu.model.PumpTestModel;
 import fi.stardex.sisu.model.RegulationModesModel;
 import fi.stardex.sisu.model.updateModels.HighPressureSectionUpdateModel;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
@@ -8,6 +10,7 @@ import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.PumpHighPressureSectionPwrState;
 import fi.stardex.sisu.util.GaugeCreator;
 import fi.stardex.sisu.util.enums.RegActive;
+import fi.stardex.sisu.util.enums.pump.PumpPressureControl;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.listeners.TwoSpinnerStyleChangeListener;
 import fi.stardex.sisu.util.spinners.SpinnerManager;
@@ -25,12 +28,13 @@ import javafx.scene.layout.VBox;
 
 import javax.annotation.PostConstruct;
 
+import java.util.Optional;
+
 import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.*;
-import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.PressureReg2_ON;
 import static fi.stardex.sisu.util.SpinnerDefaults.*;
-import static fi.stardex.sisu.util.SpinnerDefaults.DUTY_CYCLE_REG_2_SPINNER_STEP;
 import static fi.stardex.sisu.util.enums.RegActive.CURRENT;
 import static fi.stardex.sisu.util.enums.RegActive.DUTY;
+import static fi.stardex.sisu.util.enums.RegActive.NO_REGULATION;
 
 public class PumpRegulatorSectionThreeController {
 
@@ -49,6 +53,8 @@ public class PumpRegulatorSectionThreeController {
     private ModbusRegisterProcessor ultimaModbusWriter;
     private HighPressureSectionUpdateModel highPressureSectionUpdateModel;
     private RegulationModesModel regulationModesModel;
+    private PumpModel pumpModel;
+    private PumpTestModel pumpTestModel;
     private final String GREEN_STYLE_CLASS = "regulator-spinner-selected";
 
     public void setHighPressureSectionPwrState(PumpHighPressureSectionPwrState pumpHighPressureSectionPwrState) {
@@ -63,7 +69,12 @@ public class PumpRegulatorSectionThreeController {
     public void setRegulationModesModel(RegulationModesModel regulationModesModel) {
         this.regulationModesModel = regulationModesModel;
     }
-
+    public void setPumpModel(PumpModel pumpModel) {
+        this.pumpModel = pumpModel;
+    }
+    public void setPumpTestModel(PumpTestModel pumpTestModel) {
+        this.pumpTestModel = pumpTestModel;
+    }
     public void setI18N(I18N i18N) {
         this.i18N = i18N;
     }
@@ -76,6 +87,7 @@ public class PumpRegulatorSectionThreeController {
         bindingI18N();
         setupSpinners();
         addListeners();
+        addRegulatorDependentListeners();
     }
 
     private void bindingI18N() {
@@ -136,7 +148,43 @@ public class PumpRegulatorSectionThreeController {
         highPressureSectionUpdateModel.current_3Property().addListener((observableValue, oldValue, newValue) -> currentSpinner.getValueFactory().setValue((Double) newValue));
         highPressureSectionUpdateModel.duty_3Property().addListener((observableValue, oldValue, newValue) -> dutySpinner.getValueFactory().setValue((Double)newValue));
 
-        gauge.valueProperty().bind(currentSpinner.valueProperty());
+        gauge.valueProperty().bind(highPressureSectionUpdateModel.gauge_3PropertyProperty());
+    }
+
+    private void addRegulatorDependentListeners(){
+
+        pumpModel.pumpProperty().addListener((observableValue, oldValue, newValue) -> Optional.ofNullable(newValue).ifPresent(pump -> {
+
+            boolean isRailAndPump = pump.getPumpPressureControl().isRail_and_Pump();
+
+            rootStackPane.setDisable(!isRailAndPump);
+            currentSpinner.getStyleClass().add(1, "");
+            dutySpinner.getStyleClass().set(1, "");
+            regulationModesModel.regulatorThreeModeProperty().setValue(NO_REGULATION);
+
+            if(isRailAndPump) {
+
+                regulationModesModel.regulatorThreeModeProperty().setValue(CURRENT);
+                currentSpinner.getStyleClass().set(1, GREEN_STYLE_CLASS);
+            }
+        }));
+
+        pumpTestModel.pumpTestProperty().addListener((observableValue, oldTest, newTest) -> {
+
+            currentSpinner.getValueFactory().setValue(0d);
+            regToggleButton.setSelected(false);
+
+            Optional.ofNullable(newTest).ifPresent(test ->
+                Optional.ofNullable(test.getRegulatorCurrent()).ifPresent(current -> {
+
+                    boolean isRailAndPump = pumpModel.pumpProperty().get().getPumpPressureControl().isRail_and_Pump();
+
+                    if (isRailAndPump) {
+                        currentSpinner.getValueFactory().setValue(current);
+                        regToggleButton.setSelected(true);
+                    }
+                }));
+        });
     }
 
     private class TwoSpinnerArrowClickHandler implements EventHandler<MouseEvent> {

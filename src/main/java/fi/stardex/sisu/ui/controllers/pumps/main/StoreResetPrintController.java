@@ -26,20 +26,6 @@ public class StoreResetPrintController {
     private PumpsStartButtonState pumpsStartButtonState;
     private PumpTestModeModel pumpTestModeModel;
 
-
-    public Button getPrintButton() {
-        return printButton;
-    }
-    public Button getStoreButton() {
-        return storeButton;
-    }
-    public Button getResetButton() {
-        return resetButton;
-    }
-    public HBox getStorePrintResetHBox() {
-        return storePrintResetHBox;
-    }
-
     public void setFlowModbusWriter(ModbusRegisterProcessor flowModbusWriter) {
         this.flowModbusWriter = flowModbusWriter;
     }
@@ -70,7 +56,7 @@ public class StoreResetPrintController {
 
             if (newValue) {
 
-                disableNodes(true, printButton, storeButton, resetButton);
+                disableNodes(pumpTestModeModel.testModeProperty().get() == AUTO, printButton, storeButton, resetButton);
             }
             else if(pumpTestModeModel.testModeProperty().get() == AUTO){
                 disableNodes(false, printButton);

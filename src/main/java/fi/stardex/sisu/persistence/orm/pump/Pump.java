@@ -88,6 +88,10 @@ public class Pump {
         return manufacturerPump;
     }
 
+    public PumpPressureControl getPumpPressureControl() {
+        return pumpPressureControl;
+    }
+
     public boolean isCustom() {
         return custom;
     }

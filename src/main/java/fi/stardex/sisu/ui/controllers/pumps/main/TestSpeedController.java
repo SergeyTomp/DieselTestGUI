@@ -34,6 +34,8 @@ public class TestSpeedController {
 
     private int initialAdjustingTime;
     private int initialMeasurementTime;
+    private int originalAdjustingTime;
+    private int originalMeasurementTime;
 
     private PumpTestModel pumpTestModel;
     private PumpTimeProgressModel pumpTimeProgressModel;
@@ -64,17 +66,23 @@ public class TestSpeedController {
     @PostConstruct
     private void init() {
 
-        speedComboBox.getItems().setAll(NORM, DOUBLE, HALF);
+        speedComboBox.getItems().setAll(NORM, PRECISE, FAST);
+        setupListeners();
         speedComboBox.getSelectionModel().selectFirst();
-        speedComboBox.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
+        bindingI18N();
+    }
 
-            initialAdjustingTime = (int)(initialAdjustingTime * newValue.getMultiplier());
-            initialMeasurementTime = (int)(initialMeasurementTime * newValue.getMultiplier());
-            pumpTestSpeedModel.testSpeedProperty().setValue(newValue);
+    private void setupListeners() {
+
+        pumpsStartButtonState.startButtonProperty().addListener((observableValue, oldValue, newValue) -> {
+            speedComboBox.setDisable(newValue);
+            if (!newValue) {
+
+                pumpTimeProgressModel.adjustingTimeProperty().setValue(initialAdjustingTime);
+                pumpTimeProgressModel.measurementTimeProperty().setValue(initialMeasurementTime);
+            }
 
         });
-
-        pumpsStartButtonState.startButtonProperty().addListener((observableValue, oldValue, newValue) -> speedComboBox.setDisable(newValue));
         pumpTestModeModel.testModeProperty().addListener((observableValue, oldValue, newValue) -> {
 
             if (newValue == TESTPLAN) {
@@ -85,37 +93,51 @@ public class TestSpeedController {
 
         });
 
+        speedComboBox.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
+
+            pumpTestSpeedModel.testSpeedProperty().setValue(newValue);
+            initialAdjustingTime = (int)(originalAdjustingTime * newValue.getMultiplier());
+            initialMeasurementTime = (int)(originalMeasurementTime * newValue.getMultiplier());
+            pumpTimeProgressModel.adjustingTimeProperty().setValue(initialAdjustingTime);
+            pumpTimeProgressModel.measurementTimeProperty().setValue(initialMeasurementTime);
+
+        });
+
         pumpTestModel.pumpTestProperty().addListener((observable, oldValue, newValue) -> {
 
             if(newValue != null){
 
-                initialAdjustingTime = newValue.getAdjustingTime();
+                double multiplier = pumpTestSpeedModel.testSpeedProperty().get().getMultiplier();
 
-                adjustingText.setText(String.valueOf(initialAdjustingTime));
+                originalAdjustingTime = newValue.getAdjustingTime();
 
-                adjustingTimeProgressBar.setProgress(initialAdjustingTime == 0 ? 0 : 1);
+                initialAdjustingTime = (int)(originalAdjustingTime * multiplier);
 
-                Optional.ofNullable(newValue.getMeasuringTime()).ifPresentOrElse(initialMeasurementTime -> {
+                adjustingTimeProgressBar.setProgress(originalAdjustingTime == 0 ? 0 : 1);
+
+                pumpTimeProgressModel.adjustingTimeProperty().setValue(initialAdjustingTime);
+
+                Optional.ofNullable(newValue.getMeasuringTime()).ifPresentOrElse(initialTime -> {
 
                     showMeasurementTime(true);
 
-                    this.initialMeasurementTime = initialMeasurementTime;
+                    originalMeasurementTime = initialTime;
 
-                    measuringText.setText(String.valueOf(initialMeasurementTime));
+                    initialMeasurementTime = (int)(initialTime * multiplier);
 
-                    measuringTimeProgressBar.setProgress(this.initialMeasurementTime == 0 ? 0 : 1);
+                    measuringTimeProgressBar.setProgress(originalMeasurementTime == 0 ? 0 : 1);
+
+                    pumpTimeProgressModel.measurementTimeProperty().setValue(initialMeasurementTime);
 
                 }, () -> showMeasurementTime(false));
             }
             else{
-                adjustingText.setText(String.valueOf(0));
 
                 adjustingTimeProgressBar.setProgress(0);
 
                 showMeasurementTime(false);
             }
         });
-
         pumpTimeProgressModel.adjustingTimeProperty().addListener((observable, oldValue, newValue) -> {
 
             adjustingTimeProgressBar.setProgress(newValue.floatValue() / initialAdjustingTime);
@@ -124,12 +146,9 @@ public class TestSpeedController {
 
         pumpTimeProgressModel.measurementTimeProperty().addListener((observable, oldValue, newValue) -> {
 
-            measuringTimeProgressBar.setProgress(newValue.floatValue() / initialAdjustingTime);
+            measuringTimeProgressBar.setProgress(newValue.floatValue() / initialMeasurementTime);
             measuringText.setText(String.valueOf(newValue));
         });
-
-        bindingI18N();
-
     }
 
     private void showMeasurementTime(boolean show) {
@@ -137,6 +156,7 @@ public class TestSpeedController {
         labelMeasuringTime.setVisible(show);
         measuringTimeProgressBar.setVisible(show);
         measuringText.setVisible(show);
+        pumpTimeProgressModel.measurementTimeEnabledProperty().setValue(show);
 
     }
 

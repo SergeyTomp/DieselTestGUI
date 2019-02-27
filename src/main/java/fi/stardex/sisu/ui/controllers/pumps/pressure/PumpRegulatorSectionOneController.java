@@ -1,10 +1,7 @@
 package fi.stardex.sisu.ui.controllers.pumps.pressure;
 
 import eu.hansolo.medusa.Gauge;
-import fi.stardex.sisu.model.PressureRegulatorOneModel;
-import fi.stardex.sisu.model.PressureSensorModel;
-import fi.stardex.sisu.model.PumpTestModel;
-import fi.stardex.sisu.model.RegulationModesModel;
+import fi.stardex.sisu.model.*;
 import fi.stardex.sisu.model.updateModels.HighPressureSectionUpdateModel;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
@@ -55,7 +52,7 @@ public class PumpRegulatorSectionOneController {
     private PressureSensorModel pressureSensorModel;
     private ModbusRegisterProcessor ultimaModbusWriter;
     private HighPressureSectionUpdateModel highPressureSectionUpdateModel;
-    private PressureRegulatorOneModel pressureRegulatorOneModel;
+    private PumpPressureRegulatorModel pumpPressureRegulatorModel;
     private RegulationModesModel regulationModesModel;
     private PumpTestModel pumpTestModel;
     private final String GREEN_STYLE_CLASS = "regulator-spinner-selected";
@@ -75,14 +72,14 @@ public class PumpRegulatorSectionOneController {
     public void setHighPressureSectionUpdateModel(HighPressureSectionUpdateModel highPressureSectionUpdateModel) {
         this.highPressureSectionUpdateModel = highPressureSectionUpdateModel;
     }
-    public void setPressureRegulatorOneModel(PressureRegulatorOneModel pressureRegulatorOneModel) {
-        this.pressureRegulatorOneModel = pressureRegulatorOneModel;
-    }
     public void setRegulationModesModel(RegulationModesModel regulationModesModel) {
         this.regulationModesModel = regulationModesModel;
     }
     public void setPumpTestModel(PumpTestModel pumpTestModel) {
         this.pumpTestModel = pumpTestModel;
+    }
+    public void setPumpPressureRegulatorModel(PumpPressureRegulatorModel pumpPressureRegulatorModel) {
+        this.pumpPressureRegulatorModel = pumpPressureRegulatorModel;
     }
 
     @PostConstruct
@@ -162,7 +159,7 @@ public class PumpRegulatorSectionOneController {
 
         /** слушаем изменения значений в спиннерах и отправляем уставки спиннеров */
         pressSpinner.valueProperty().addListener(new ParameterChangeListener(PRESSURE));
-        pressureRegulatorOneModel.pressureRegOneProperty().bind(pressSpinner.valueProperty());
+        pumpPressureRegulatorModel.pressureRegProperty().bind(pressSpinner.valueProperty());
         currentSpinner.valueProperty().addListener(new ParameterChangeListener(CURRENT));
         dutySpinner.valueProperty().addListener(new ParameterChangeListener(DUTY));
 
@@ -175,7 +172,7 @@ public class PumpRegulatorSectionOneController {
         /**слушаем изменения в модели данных, полученных из прошивки (значения полей в модели данных изменяются только для "наблюдающих" спиннеров)*/
         highPressureSectionUpdateModel.current_1Property().addListener((observableValue, oldValue, newValue) -> currentSpinner.getValueFactory().setValue((Double) newValue));
         highPressureSectionUpdateModel.duty_1Property().addListener((observableValue, oldValue, newValue) -> dutySpinner.getValueFactory().setValue((Double)newValue));
-        gauge.valueProperty().bind(currentSpinner.valueProperty());
+        gauge.valueProperty().bind(highPressureSectionUpdateModel.gauge_1PropertyProperty());
 
         /**слушаем изменения в модели выбранного теста*/
         pumpTestModel.pumpTestProperty().addListener((observableValue, oldValue, newValue) -> {

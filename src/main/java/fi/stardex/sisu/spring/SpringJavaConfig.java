@@ -45,6 +45,7 @@ import fi.stardex.sisu.ui.controllers.additional.tabs.settings.ConnectionControl
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.cr.TestBenchSectionController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
+import fi.stardex.sisu.ui.controllers.pumps.main.PumpTestListController;
 import fi.stardex.sisu.ui.updaters.*;
 import fi.stardex.sisu.util.DelayCalculator;
 import fi.stardex.sisu.util.DesktopFiles;
@@ -74,7 +75,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.prefs.Preferences;
 
 import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.FirmwareVersion;
@@ -691,20 +691,32 @@ public class SpringJavaConfig {
     public PumpMeasurementManager pumpMeasurementManager(PumpTestListModel pumpTestListModel,
                                                          PumpsStartButtonState pumpsStartButtonState,
                                                          PumpTestModel pumpTestModel,
-                                                         PressureRegulatorOneModel pressureRegulatorOneModel,
                                                          TargetRpmModel targetRpmModel,
                                                          ModbusRegisterProcessor flowModbusWriter,
                                                          PumpReportModel pumpReportModel,
-                                                         PumpTestModeModel pumpTestModeModel) {
+                                                         PumpTestModeModel pumpTestModeModel,
+                                                         TestBenchSectionPwrState testBenchSectionPwrState,
+                                                         CurrentRpmModel currentRpmModel,
+                                                         PumpHighPressureSectionPwrState pumpHighPressureSectionPwrState,
+                                                         HighPressureSectionUpdateModel highPressureSectionUpdateModel,
+                                                         PumpTimeProgressModel pumpTimeProgressModel,
+                                                         PumpPressureRegulatorModel pumpPressureRegulatorModel,
+                                                         PumpTestListController pumpTestListController) {
         PumpMeasurementManager pumpMeasurementManager = new PumpMeasurementManager();
         pumpMeasurementManager.setPumpsStartButtonState(pumpsStartButtonState);
         pumpMeasurementManager.setPumpTestListModel(pumpTestListModel);
         pumpMeasurementManager.setPumpTestModel(pumpTestModel);
-        pumpMeasurementManager.setPressureRegulatorOneModel(pressureRegulatorOneModel);
         pumpMeasurementManager.setTargetRpmModel(targetRpmModel);
         pumpMeasurementManager.setFlowModbusWriter(flowModbusWriter);
         pumpMeasurementManager.setPumpReportModel(pumpReportModel);
         pumpMeasurementManager.setPumpTestModeModel(pumpTestModeModel);
+        pumpMeasurementManager.setTestBenchSectionPwrState(testBenchSectionPwrState);
+        pumpMeasurementManager.setCurrentRpmModel(currentRpmModel);
+        pumpMeasurementManager.setPumpHighPressureSectionPwrState(pumpHighPressureSectionPwrState);
+        pumpMeasurementManager.setHighPressureSectionUpdateModel(highPressureSectionUpdateModel);
+        pumpMeasurementManager.setPumpTimeProgressModel(pumpTimeProgressModel);
+        pumpMeasurementManager.setPumpPressureRegulatorModel(pumpPressureRegulatorModel);
+        pumpMeasurementManager.setTestListView(pumpTestListController.getTestListView());
         return pumpMeasurementManager;
     }
 
@@ -989,4 +1001,25 @@ public class SpringJavaConfig {
     public PumpTestSpeedModel pumpTestSpeedModel() {
         return new PumpTestSpeedModel();
     }
+
+    @Bean
+    public TestBenchSectionPwrState testBenchSectionPwrState() {
+        return new TestBenchSectionPwrState();
+    }
+
+    @Bean
+    public CurrentRpmModel currentRpmModel() {
+        return new CurrentRpmModel();
+    }
+
+    @Bean
+    public PumpPressureRegulatorModel pumpPressureRegulatorModel() {
+        return new PumpPressureRegulatorModel();
+    }
+
+//    @Bean
+//    @Autowired
+//    public FxListSelection pumpTestListSelectionModel(PumpTestListController pumpTestListController) {
+//        return new ListSelection(pumpTestListController.getTestListView().getSelectionModel());
+//    }
 }

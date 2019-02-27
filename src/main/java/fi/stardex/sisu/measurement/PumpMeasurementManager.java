@@ -1,18 +1,23 @@
 package fi.stardex.sisu.measurement;
 
 import fi.stardex.sisu.model.*;
+import fi.stardex.sisu.model.updateModels.HighPressureSectionUpdateModel;
 import fi.stardex.sisu.registers.flow.ModbusMapFlow;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
+import fi.stardex.sisu.states.PumpHighPressureSectionPwrState;
 import fi.stardex.sisu.states.PumpsStartButtonState;
+import fi.stardex.sisu.states.TestBenchSectionPwrState;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.scene.control.MultipleSelectionModel;
+import javafx.beans.property.IntegerProperty;
+import javafx.scene.control.ListView;
 import javafx.util.Duration;
 
 import javax.annotation.PostConstruct;
 
 import static fi.stardex.sisu.util.enums.Tests.TestType.AUTO;
+import static fi.stardex.sisu.util.enums.Tests.TestType.TESTPLAN;
 
 public class PumpMeasurementManager {
 
@@ -26,12 +31,19 @@ public class PumpMeasurementManager {
     private PumpTestListModel pumpTestListModel;
     private PumpsStartButtonState pumpsStartButtonState;
     private PumpTestModel pumpTestModel;
-    private PressureRegulatorOneModel pressureRegulatorOneModel;
     private TargetRpmModel targetRpmModel;
     private ModbusRegisterProcessor flowModbusWriter;
     private PumpReportModel pumpReportModel;
     private PumpTestModeModel pumpTestModeModel;
-    private MultipleSelectionModel<AutoTestListLastChangeModel.PumpTestWrapper> testListSelectionModel;
+    private TestBenchSectionPwrState testBenchSectionPwrState;
+    private CurrentRpmModel currentRpmModel;
+    private PumpHighPressureSectionPwrState pumpHighPressureSectionPwrState;
+    private HighPressureSectionUpdateModel highPressureSectionUpdateModel;
+    private PumpTimeProgressModel pumpTimeProgressModel;
+    private IntegerProperty adjustingTimeProperty;
+    private IntegerProperty measuringTimeProperty;
+    private PumpPressureRegulatorModel pumpPressureRegulatorModel;
+    private ListView<AutoTestListLastChangeModel.PumpTestWrapper> testListView;
 
     public void setPumpTestListModel(PumpTestListModel pumpTestListModel) {
         this.pumpTestListModel = pumpTestListModel;
@@ -41,9 +53,6 @@ public class PumpMeasurementManager {
     }
     public void setPumpTestModel(PumpTestModel pumpTestModel) {
         this.pumpTestModel = pumpTestModel;
-    }
-    public void setPressureRegulatorOneModel(PressureRegulatorOneModel pressureRegulatorOneModel) {
-        this.pressureRegulatorOneModel = pressureRegulatorOneModel;
     }
     public void setTargetRpmModel(TargetRpmModel targetRpmModel) {
         this.targetRpmModel = targetRpmModel;
@@ -57,20 +66,39 @@ public class PumpMeasurementManager {
     public void setPumpTestModeModel(PumpTestModeModel pumpTestModeModel) {
         this.pumpTestModeModel = pumpTestModeModel;
     }
+    public void setTestBenchSectionPwrState(TestBenchSectionPwrState testBenchSectionPwrState) {
+        this.testBenchSectionPwrState = testBenchSectionPwrState;
+    }
+    public void setCurrentRpmModel(CurrentRpmModel currentRpmModel) {
+        this.currentRpmModel = currentRpmModel;
+    }
+    public void setPumpHighPressureSectionPwrState(PumpHighPressureSectionPwrState pumpHighPressureSectionPwrState) {
+        this.pumpHighPressureSectionPwrState = pumpHighPressureSectionPwrState;
+    }
+    public void setHighPressureSectionUpdateModel(HighPressureSectionUpdateModel highPressureSectionUpdateModel) {
+        this.highPressureSectionUpdateModel = highPressureSectionUpdateModel;
+    }
+    public void setPumpTimeProgressModel(PumpTimeProgressModel pumpTimeProgressModel) {
+        this.pumpTimeProgressModel = pumpTimeProgressModel;
+    }
+    public void setPumpPressureRegulatorModel(PumpPressureRegulatorModel pumpPressureRegulatorModel) {
+        this.pumpPressureRegulatorModel = pumpPressureRegulatorModel;
+    }
+    public void setTestListView(ListView<AutoTestListLastChangeModel.PumpTestWrapper> testListView) {
+        this.testListView = testListView;
+    }
 
     @PostConstruct
     public void init() {
 
-        pumpsStartButtonState.startButtonProperty().addListener((observableValue, oldValue, newValue) -> {
+        adjustingTimeProperty = pumpTimeProgressModel.adjustingTimeProperty();
+        measuringTimeProperty = pumpTimeProgressModel.measurementTimeProperty();
 
-            if (pumpTestModeModel.testModeProperty().get() == AUTO) {
+        setupTimeLines();
+        setupListeners();
+    }
 
-                if (newValue)
-                    startMeasurements();
-                else
-                    stopMeasurements();
-            }
-        });
+    private void setupTimeLines() {
 
         motorPreparationTimeline = new Timeline(new KeyFrame(Duration.millis(500), event -> motorPreparation()));
         motorPreparationTimeline.setCycleCount(Animation.INDEFINITE);
@@ -85,15 +113,34 @@ public class PumpMeasurementManager {
         measurementTimeline.setCycleCount(Animation.INDEFINITE);
 
         autoResetTimeline = new Timeline(new KeyFrame(Duration.seconds(6), event -> resetFlowData()));
+    }
 
-        testListSelectionModel = pumpTestListModel.getTestsSelectionModel();
+    private void setupListeners() {
+
+        pumpsStartButtonState.startButtonProperty().addListener((observableValue, oldValue, newValue) -> {
+
+            if (newValue)
+                startMeasurements();
+            else
+                stopMeasurements();
+        });
+
+        testListView.getSelectionModel().selectedIndexProperty().addListener((observableValue, oldValue, newValue) -> {
+
+            if (pumpsStartButtonState.startButtonProperty().get() && pumpTestModeModel.testModeProperty().get() == TESTPLAN) {
+                start();
+            }
+        });
     }
 
     private void startMeasurements() {
 
         resetFlowData();
         pumpReportModel.clearResults();
-        includedAutoTestsLength = (int)pumpTestListModel.getPumpTestObservableList().stream().filter(t -> t.isIncludedProperty().get()).count();
+        if (pumpTestModeModel.testModeProperty().get() == AUTO) {
+
+            includedAutoTestsLength = (int)pumpTestListModel.getPumpTestObservableList().stream().filter(t -> t.isIncludedProperty().get()).count();
+        }
 
         start();
     }
@@ -101,54 +148,91 @@ public class PumpMeasurementManager {
     private void stopMeasurements() {
 
         stopTimers();
-
         resetFlowData();
+        pumpHighPressureSectionPwrState.powerButtonProperty().setValue(false);
     }
 
     public void start(){
 
+        if (testBenchSectionPwrState.isPowerButtonDisabledProperty().get())
+            startPressure();
+        else
+            startMotor();
     }
 
     private void startMotor() {
 
-
+        testBenchSectionPwrState.isPowerButtonOnProperty().setValue(true);
         motorPreparationTimeline.play();
     }
 
     private void startPressure() {
 
-
+        pumpHighPressureSectionPwrState.powerButtonProperty().setValue(true);
         pressurePreparationTimeline.play();
     }
 
     private void motorPreparation() {
 
+        if (isSectionReady(targetRpmModel.targetRPMProperty().getValue().doubleValue(), currentRpmModel.currentRPMProperty().getValue(), 0.1)) {
+
+            motorPreparationTimeline.stop();
+            startPressure();
+        }
     }
 
     private void pressurePreparation() {
 
+        int targetValue = pumpPressureRegulatorModel.pressureRegProperty().get();
+        int lcdValue = highPressureSectionUpdateModel.lcdPressureProperty().get();
+
+        if(isSectionReady(targetValue, lcdValue, 0.2) || targetValue == 0){
+            pressurePreparationTimeline.stop();
+            resetFlowData();
+
+            if (pumpTestModeModel.testModeProperty().get() != TESTPLAN) {
+                adjustingTimeline.play();
+            }
+            autoResetTimeline.play();
+        }
     }
 
-    private void playResetTimeLine() {
+    private boolean isSectionReady(double targetValue, double lcdValue, double margin) {
 
-    }
-
-    private boolean isSectionReady(double currentValue, double lcdValue, double margin) {
-
-        return Math.abs((currentValue - lcdValue) / currentValue) < margin;
+        return Math.abs((targetValue - lcdValue) / targetValue) < margin;
     }
 
     private void tickAdjustingTime() {
 
+        if (tick(adjustingTimeProperty) == 0) {
+
+            adjustingTimeline.stop();
+
+            if (pumpTimeProgressModel.measurementTimeEnabledProperty().get()) {
+                measurementTimeline.play();
+                autoResetTimeline.play();
+            }
+            else{
+                pumpReportModel.storeResult();
+                runNextTest();
+            }
+        }
     }
 
     private void tickMeasurementTime() {
 
+        if (tick(measuringTimeProperty) == 0) {
+
+            measurementTimeline.stop();
+            pumpReportModel.storeResult();
+            runNextTest();
+        }
     }
 
     private void selectNextTest(int testIndex) {
 
-        testListSelectionModel.select(++testIndex);
+        testListView.getSelectionModel().select(++testIndex);
+        testListView.scrollTo(testIndex);
     }
 
     private void stopTimers() {
@@ -161,23 +245,35 @@ public class PumpMeasurementManager {
 
     public void runNextTest() {
 
-        int selectedTestIndex = testListSelectionModel.getSelectedIndex();
+        if (pumpTestModeModel.testModeProperty().get() == AUTO) {
 
-        if (selectedTestIndex < includedAutoTestsLength - 1) {
+            int selectedTestIndex = testListView.getSelectionModel().getSelectedIndex();
 
+            if (selectedTestIndex < includedAutoTestsLength - 1) {
 
-            selectNextTest(selectedTestIndex);
-            start();
+                selectNextTest(selectedTestIndex);
+                start();
+            }
+            else{
+
+                pumpsStartButtonState.startButtonProperty().setValue(false);
+            }
         }
-        else{
-
-            pumpsStartButtonState.startButtonProperty().setValue(false);
-        }
-
     }
 
     private void resetFlowData() {
 
         flowModbusWriter.add(ModbusMapFlow.StartMeasurementCycle, true);
+    }
+
+    public int tick(IntegerProperty timeProperty) {
+
+        int time = timeProperty.get();
+
+        if (time > 0) {
+
+            timeProperty.setValue(--time);
+        }
+        return time;
     }
 }

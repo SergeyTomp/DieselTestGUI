@@ -1,11 +1,12 @@
 package fi.stardex.sisu.ui.controllers.pumps.main;
 
+import fi.stardex.sisu.model.PumpTestListModel;
+import fi.stardex.sisu.model.PumpTestModeModel;
 import fi.stardex.sisu.states.PumpsStartButtonState;
+import fi.stardex.sisu.util.enums.Tests;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.HBox;
@@ -19,9 +20,17 @@ public class StartButtonController {
     private boolean startLight;
 
     private PumpsStartButtonState pumpsStartButtonState;
+    private PumpTestListModel pumpTestListModel;
+    private PumpTestModeModel pumpTestModeModel;
 
     public void setPumpsStartButtonState(PumpsStartButtonState pumpsStartButtonState) {
         this.pumpsStartButtonState = pumpsStartButtonState;
+    }
+    public void setPumpTestListModel(PumpTestListModel pumpTestListModel) {
+        this.pumpTestListModel = pumpTestListModel;
+    }
+    public void setPumpTestModeModel(PumpTestModeModel pumpTestModeModel) {
+        this.pumpTestModeModel = pumpTestModeModel;
     }
 
     public ToggleButton getStartToggleButton() {
@@ -35,12 +44,16 @@ public class StartButtonController {
     public void init() {
 
         pumpsStartButtonState.startButtonProperty().bindBidirectional(startToggleButton.selectedProperty());
-//        startToggleButton.selectedProperty().addListener((observableValue, oldValue, newValue) -> {
-//
-//            pumpsStartButtonState.startButtonProperty().setValue(newValue);
-//        });
-
         initStartToggleButtonBlinking();
+
+        pumpTestListModel.selectedTestIndexProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.intValue() != 0 && pumpTestModeModel.testModeProperty().get() == Tests.TestType.AUTO && !pumpsStartButtonState.startButtonProperty().get()) {
+                startToggleButton.setDisable(true);
+            }
+            else{
+                startToggleButton.setDisable(false);
+            }
+        });
     }
 
     private void initStartToggleButtonBlinking() {

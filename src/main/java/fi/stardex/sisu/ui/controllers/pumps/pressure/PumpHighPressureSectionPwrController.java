@@ -16,7 +16,6 @@ public class PumpHighPressureSectionPwrController {
     public StackPane getPwrButtonStackPane() {
         return pwrButtonStackPane;
     }
-
     public ToggleButton getPwrButtonToggleButton() {
         return pwrButtonToggleButton;
     }
@@ -28,6 +27,6 @@ public class PumpHighPressureSectionPwrController {
     @PostConstruct
     public void init() {
 
-        pumpHighPressureSectionPwrState.powerButtonProperty().bind(pwrButtonToggleButton.selectedProperty());
+        pumpHighPressureSectionPwrState.powerButtonProperty().bindBidirectional(pwrButtonToggleButton.selectedProperty());
     }
 }

@@ -50,15 +50,17 @@ public class PumpTestListController {
     public void setPumpsStartButtonState(PumpsStartButtonState pumpsStartButtonState) {
         this.pumpsStartButtonState = pumpsStartButtonState;
     }
+    public ListView<PumpTestWrapper> getTestListView() {
+        return testListView;
+    }
+
+
 
     @PostConstruct
     public void init() {
 
         setupMoveButtonEventHandlers();
         setupListeners();
-        pumpTestListModel.setTestsSelectionModel(testListView.getSelectionModel());
-        pumpTestListModel.getTestsSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) ->
-                testListView.scrollTo(testListView.getSelectionModel().getSelectedIndex()));
     }
 
     private void setupListeners() {
@@ -79,7 +81,11 @@ public class PumpTestListController {
             if(isFocusMoved) return;
             Optional.ofNullable(newValue).ifPresent(value -> {
                 pumpTestModel.pumpTestProperty().setValue(value.getPumpTest());
-                showUpDownButtons(newValue.isIncludedProperty().get());
+                pumpTestListModel.setSelectedTestIndex(testListView.getSelectionModel().getSelectedIndex());
+                if(!pumpsStartButtonState.startButtonProperty().get()){
+
+                    showUpDownButtons(newValue.isIncludedProperty().get());
+                }
             });
             enableUpDownButtons(testListView.getSelectionModel().getSelectedIndex());
         });
@@ -121,7 +127,7 @@ public class PumpTestListController {
         });
         pumpsStartButtonState.startButtonProperty().addListener((observableValue, oldValue, newValue) -> {
 
-            testListView.setDisable(newValue);
+            testListView.setDisable(newValue && pumpTestModeModel.testModeProperty().get() == TestType.AUTO);
             showUpDownButtons(!newValue);
         });
 

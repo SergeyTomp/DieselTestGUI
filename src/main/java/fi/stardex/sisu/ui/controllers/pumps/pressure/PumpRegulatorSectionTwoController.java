@@ -1,14 +1,16 @@
 package fi.stardex.sisu.ui.controllers.pumps.pressure;
 
 import eu.hansolo.medusa.Gauge;
+import fi.stardex.sisu.model.PumpModel;
+import fi.stardex.sisu.model.PumpTestModel;
 import fi.stardex.sisu.model.RegulationModesModel;
 import fi.stardex.sisu.model.updateModels.HighPressureSectionUpdateModel;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.PumpHighPressureSectionPwrState;
-import fi.stardex.sisu.ui.controllers.cr.HighPressureSectionTwoController;
 import fi.stardex.sisu.util.GaugeCreator;
 import fi.stardex.sisu.util.enums.RegActive;
+import fi.stardex.sisu.util.enums.pump.PumpPressureControl;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.listeners.TwoSpinnerStyleChangeListener;
 import fi.stardex.sisu.util.spinners.SpinnerManager;
@@ -26,6 +28,8 @@ import javafx.scene.layout.VBox;
 
 import javax.annotation.PostConstruct;
 
+import java.util.Optional;
+
 import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.*;
 import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.PressureReg2_DutyMode;
 import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.PressureReg2_I_Mode;
@@ -33,6 +37,7 @@ import static fi.stardex.sisu.util.SpinnerDefaults.*;
 import static fi.stardex.sisu.util.SpinnerDefaults.DUTY_CYCLE_REG_2_SPINNER_STEP;
 import static fi.stardex.sisu.util.enums.RegActive.CURRENT;
 import static fi.stardex.sisu.util.enums.RegActive.DUTY;
+import static fi.stardex.sisu.util.enums.RegActive.NO_REGULATION;
 
 public class PumpRegulatorSectionTwoController {
 
@@ -51,6 +56,8 @@ public class PumpRegulatorSectionTwoController {
     private ModbusRegisterProcessor ultimaModbusWriter;
     private HighPressureSectionUpdateModel highPressureSectionUpdateModel;
     private RegulationModesModel regulationModesModel;
+    private PumpModel pumpModel;
+    private PumpTestModel pumpTestModel;
     private final String GREEN_STYLE_CLASS = "regulator-spinner-selected";
 
     public void setHighPressureSectionPwrState(PumpHighPressureSectionPwrState pumpHighPressureSectionPwrState) {
@@ -65,6 +72,12 @@ public class PumpRegulatorSectionTwoController {
     public void setRegulationModesModel(RegulationModesModel regulationModesModel) {
         this.regulationModesModel = regulationModesModel;
     }
+    public void setPumpModel(PumpModel pumpModel) {
+        this.pumpModel = pumpModel;
+    }
+    public void setPumpTestModel(PumpTestModel pumpTestModel) {
+        this.pumpTestModel = pumpTestModel;
+    }
     public void setI18N(I18N i18N) {
         this.i18N = i18N;
     }
@@ -77,6 +90,7 @@ public class PumpRegulatorSectionTwoController {
         bindingI18N();
         setupSpinners();
         addListeners();
+        addRegulatorDependentListeners();
     }
 
     private void bindingI18N() {
@@ -119,7 +133,7 @@ public class PumpRegulatorSectionTwoController {
         currentSpinner.focusedProperty().addListener(new TwoSpinnerFocusListener(CURRENT, PressureReg2_I_Mode, true));
         dutySpinner.focusedProperty().addListener(new TwoSpinnerFocusListener(DUTY, PressureReg2_DutyMode, false));
 
-        /**изменение цвета рамки спиннера на зелёный при переходе в спиннер другого рекгулятора*/
+        /**изменение цвета рамки спиннера на зелёный при переходе в спиннер другого регулятора*/
         currentSpinner.focusedProperty().addListener(new TwoSpinnerStyleChangeListener(currentSpinner, dutySpinner, CURRENT));
         dutySpinner.focusedProperty().addListener(new TwoSpinnerStyleChangeListener(currentSpinner, dutySpinner, DUTY));
 
@@ -137,7 +151,43 @@ public class PumpRegulatorSectionTwoController {
         highPressureSectionUpdateModel.current_2Property().addListener((observableValue, oldValue, newValue) -> currentSpinner.getValueFactory().setValue((Double) newValue));
         highPressureSectionUpdateModel.duty_2Property().addListener((observableValue, oldValue, newValue) -> dutySpinner.getValueFactory().setValue((Double)newValue));
 
-        gauge.valueProperty().bind(currentSpinner.valueProperty());
+        gauge.valueProperty().bind(highPressureSectionUpdateModel.gauge_2PropertyProperty());
+
+    }
+
+    private void addRegulatorDependentListeners() {
+
+        pumpModel.pumpProperty().addListener((observableValue, oldValue, newValue) -> Optional.ofNullable(newValue).ifPresent(pump -> {
+
+            boolean isRailAndPump = pump.getPumpPressureControl().isRail_and_Pump();
+
+            rootStackPane.setDisable(isRailAndPump);
+            regToggleButton.setSelected(isRailAndPump);
+            currentSpinner.getStyleClass().set(1, "");
+            dutySpinner.getStyleClass().set(1, "");
+            regulationModesModel.regulatorTwoModeProperty().setValue(NO_REGULATION);
+
+            if(!isRailAndPump) {
+
+                regulationModesModel.regulatorTwoModeProperty().setValue(CURRENT);
+                currentSpinner.getStyleClass().add(1, GREEN_STYLE_CLASS);
+            }
+        }));
+
+        pumpTestModel.pumpTestProperty().addListener((observableValue, oldTest, newTest) -> {
+
+            currentSpinner.getValueFactory().setValue(0d);
+            Optional.ofNullable(newTest).ifPresent(test ->
+                Optional.ofNullable(test.getRegulatorCurrent()).ifPresent(current -> {
+
+                    boolean isRailAndPump = pumpModel.pumpProperty().get().getPumpPressureControl().isRail_and_Pump();
+
+                    if (!isRailAndPump) {
+                        currentSpinner.getValueFactory().setValue(current);
+                        regToggleButton.setSelected(true);
+                    }
+                }));
+        });
     }
 
     private class TwoSpinnerArrowClickHandler implements EventHandler<MouseEvent> {
@@ -261,11 +311,16 @@ public class PumpRegulatorSectionTwoController {
         switch (regulationModesModel.regulatorTwoModeProperty().get()){
             case CURRENT:
                 double current = currentSpinner.getValue();
+                ultimaModbusWriter.add(Reg1_To_Reg2_Mirror, false);
                 ultimaModbusWriter.add(PressureReg2_I_Task, current);
                 break;
             case DUTY:
                 double duty = dutySpinner.getValue();
+                ultimaModbusWriter.add(Reg1_To_Reg2_Mirror, false);
                 ultimaModbusWriter.add(PressureReg2_DutyTask, duty);
+                break;
+            case NO_REGULATION:
+                ultimaModbusWriter.add(Reg1_To_Reg2_Mirror, true);
                 break;
             default:ultimaModbusWriter.add(PressureReg2_ON, false);
         }

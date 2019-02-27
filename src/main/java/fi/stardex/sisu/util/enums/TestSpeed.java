@@ -3,8 +3,8 @@ package fi.stardex.sisu.util.enums;
 public enum TestSpeed {
 
     NORM (1, "Normal"),
-    DOUBLE (2, "Double"),
-    HALF (0.5, "Half");
+    PRECISE(2, "Precise"),
+    FAST(0.5, "Fast");
 
     double multiplier;
     private String text;

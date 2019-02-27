@@ -780,8 +780,8 @@ label
 
 .button-power:disabled{
 
-    -fx-background-image: url("../img/powerbutton-off.png");
-    -fx-opacity: 1;
+    /*-fx-background-image: url("../img/powerbutton-off.png");*/
+    -fx-opacity: 0.8;
 }
 
 .button-power-orange{
