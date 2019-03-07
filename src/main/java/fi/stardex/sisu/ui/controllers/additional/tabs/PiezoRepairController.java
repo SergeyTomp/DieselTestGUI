@@ -1,5 +1,6 @@
 package fi.stardex.sisu.ui.controllers.additional.tabs;
 
+import fi.stardex.sisu.charts.PiezoRepairTask;
 import fi.stardex.sisu.model.PiezoRepairModel;
 import fi.stardex.sisu.model.updateModels.PiezoRepairUpdateModel;
 import fi.stardex.sisu.registers.ModbusMap;
@@ -9,6 +10,8 @@ import fi.stardex.sisu.util.spinners.SpinnerManager;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -17,8 +20,12 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
+import org.springframework.beans.factory.annotation.Lookup;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import javax.annotation.PostConstruct;
+
+import java.util.Timer;
 
 import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.*;
 import static fi.stardex.sisu.util.enums.VoltageRange.HIGH;
@@ -41,6 +48,8 @@ public class PiezoRepairController {
 
     private Image darkBulb;
     private Image lightBulb;
+    private Timer timer;
+    private IntegerProperty touchLevel = new SimpleIntegerProperty();
 
     private ObservableList<String> startStopButtonStyleClass;
     private PiezoRepairModel piezoRepairModel;
@@ -62,6 +71,12 @@ public class PiezoRepairController {
 
     public void setUltimaModbusWriter(ModbusRegisterProcessor ultimaModbusWriter) {
         this.ultimaModbusWriter = ultimaModbusWriter;
+    }
+
+    @Lookup
+    @Qualifier("piesoRepairTask")
+    public PiezoRepairTask getPiezoRepairTask() {
+        return null;
     }
 
     @PostConstruct
@@ -131,11 +146,13 @@ public class PiezoRepairController {
                 startStopButtonStyleClass.add("stopButtonLight");
                 disableNodes(true, lowVoltageButton, highVoltageButton, voltageSpinner, currentSpinner);
                 front(range);
+//                startTouchControl();
             }
             else {
                 startStopButtonStyleClass.add("startButton");
                 disableNodes(false, lowVoltageButton, highVoltageButton, voltageSpinner, currentSpinner);
                 slump(range);
+//                stopTouchControl();
             }
             piezoRepairModel.startMeasureProperty().setValue(newValue);
         });
@@ -216,6 +233,16 @@ public class PiezoRepairController {
                 bulbImage.setImage(darkBulb);
             }
         });
+
+//        touchLevel.addListener((observableValue, oldValue, newValue) -> {
+
+//            if (newValue != null && newValue.intValue() > 50) {
+//                bulbImage.setImage(lightBulb);
+//            }else {
+//                bulbImage.setImage(darkBulb);
+//            }
+//        });
+//
     }
 
     private void switchRange(VoltageRange range) {
@@ -280,6 +307,20 @@ public class PiezoRepairController {
 //            voltageAdjustment.setVisible(false);  // возможно voltageAdjustment потом совсем убрать
             disableNodes(false, startStopButton, voltageSpinner, lowVoltageButton, highVoltageButton);
         }
+    }
+
+    private void startTouchControl() {
+
+        timer = new Timer();
+        PiezoRepairTask piezoRepairTask = getPiezoRepairTask();
+        piezoRepairTask.touchLevelProperty().addListener((observableValue, oldValue, newValue) -> touchLevel.setValue(newValue));
+        timer.schedule(piezoRepairTask, 0, 100);
+    }
+
+    private void stopTouchControl(){
+
+        timer.cancel();
+        timer.purge();
     }
 
     private class VoltageProgressBar {

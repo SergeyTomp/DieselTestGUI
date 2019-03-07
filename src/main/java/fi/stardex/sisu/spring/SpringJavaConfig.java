@@ -1,10 +1,7 @@
 package fi.stardex.sisu.spring;
 
 import fi.stardex.sisu.annotations.Module;
-import fi.stardex.sisu.charts.ChartTaskFour;
-import fi.stardex.sisu.charts.ChartTaskOne;
-import fi.stardex.sisu.charts.ChartTaskThree;
-import fi.stardex.sisu.charts.ChartTaskTwo;
+import fi.stardex.sisu.charts.*;
 import fi.stardex.sisu.connect.ConnectProcessor;
 import fi.stardex.sisu.connect.InetAddressWrapper;
 import fi.stardex.sisu.connect.ModbusConnect;
@@ -526,6 +523,13 @@ public class SpringJavaConfig {
     @Scope("prototype")
     public ChartTaskFour chartTaskFour() {
         return new ChartTaskFour();
+    }
+
+    @Bean
+    @Qualifier("piesoRepairTask")
+    @Scope("prototype")
+    public PiezoRepairTask piezoRepairTask() {
+        return new PiezoRepairTask();
     }
 
     @Bean
