@@ -30,7 +30,7 @@ public class PressureSensorController {
     @PostConstruct
     public void init(){
 
-        pressureSensorComboBox.setItems(FXCollections.observableArrayList(1500, 1800, 2000, 2200, 2400));
+        pressureSensorComboBox.setItems(FXCollections.observableArrayList(1500, 1800, 2000, 2200, 2400, 2700));
 
         pressureSensorModel.pressureSensorProperty().bind(pressureSensorComboBox.valueProperty());
 

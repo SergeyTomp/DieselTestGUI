@@ -1,6 +1,7 @@
 package fi.stardex.sisu.ui.controllers.additional.tabs;
 
 import fi.stardex.sisu.model.PiezoRepairModel;
+import fi.stardex.sisu.model.updateModels.PiezoRepairUpdateModel;
 import fi.stardex.sisu.registers.ModbusMap;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.util.enums.VoltageRange;
@@ -12,6 +13,8 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
@@ -23,7 +26,8 @@ import static fi.stardex.sisu.util.enums.VoltageRange.LOW;
 
 public class PiezoRepairController {
 
-    @FXML private  Spinner<Double> currentSpinner;
+    @FXML private ImageView bulbImage;
+    @FXML private Spinner<Double> currentSpinner;
     @FXML private Label output;
     @FXML private Label outputValue;
     @FXML private Label volt;
@@ -35,8 +39,12 @@ public class PiezoRepairController {
     @FXML private ProgressBar voltageAdjustment;
     @FXML private Text adjustingText;
 
+    private Image darkBulb;
+    private Image lightBulb;
+
     private ObservableList<String> startStopButtonStyleClass;
     private PiezoRepairModel piezoRepairModel;
+    private PiezoRepairUpdateModel piezoRepairUpdateModel;
     private ModbusRegisterProcessor ultimaModbusWriter;
     private Timeline pulseStartTimeLine;
     private Timeline progressTimeLine;
@@ -47,6 +55,9 @@ public class PiezoRepairController {
 
     public void setPiezoRepairModel(PiezoRepairModel piezoRepairModel) {
         this.piezoRepairModel = piezoRepairModel;
+    }
+    public void setPiezoRepairUpdateModel(PiezoRepairUpdateModel piezoRepairUpdateModel) {
+        this.piezoRepairUpdateModel = piezoRepairUpdateModel;
     }
 
     public void setUltimaModbusWriter(ModbusRegisterProcessor ultimaModbusWriter) {
@@ -65,6 +76,9 @@ public class PiezoRepairController {
         output.setText("Output ");
         outputValue.setText(String.valueOf(LOW.getMin()));
         volt.setText(" V");
+        darkBulb = new Image(getClass().getResourceAsStream("/img/pump_button-off.png"));
+        lightBulb = new Image(getClass().getResourceAsStream("/img/pump_button-on.png"));
+        bulbImage.setImage(darkBulb);
     }
 
     private void setupTimeLines(){
@@ -191,9 +205,16 @@ public class PiezoRepairController {
             }
         });
 
-        currentSpinner.valueProperty().addListener((observable, oldValue, newValue) ->{
+        currentSpinner.valueProperty().addListener((observable, oldValue, newValue) ->
+                piezoRepairModel.currentValueProperty().setValue(newValue));
 
-            piezoRepairModel.currentValueProperty().setValue(newValue);
+        piezoRepairUpdateModel.touchLevelProperty().addListener((observableValue, oldValue, newValue) -> {
+
+            if (newValue != null && newValue.intValue() > 50) {
+                bulbImage.setImage(lightBulb);
+            }else {
+                bulbImage.setImage(darkBulb);
+            }
         });
     }
 

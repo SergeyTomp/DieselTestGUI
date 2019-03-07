@@ -14,6 +14,7 @@ import fi.stardex.sisu.measurement.Measurements;
 import fi.stardex.sisu.measurement.PumpMeasurementManager;
 import fi.stardex.sisu.model.*;
 import fi.stardex.sisu.model.updateModels.HighPressureSectionUpdateModel;
+import fi.stardex.sisu.model.updateModels.PiezoRepairUpdateModel;
 import fi.stardex.sisu.pdf.PDFService;
 import fi.stardex.sisu.persistence.CheckAndInitializeBD;
 import fi.stardex.sisu.persistence.orm.CSVSUpdater;
@@ -1015,6 +1016,11 @@ public class SpringJavaConfig {
     @Bean
     public PumpPressureRegulatorModel pumpPressureRegulatorModel() {
         return new PumpPressureRegulatorModel();
+    }
+
+    @Bean
+    public PiezoRepairUpdateModel piezoRepairUpdateModel() {
+        return new PiezoRepairUpdateModel();
     }
 
 //    @Bean

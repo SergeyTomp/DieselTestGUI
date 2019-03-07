@@ -580,13 +580,21 @@ public class MainSectionController {
 
             case AUTO:
                 testListView.setCellFactory(CheckBoxListCell.forListView(InjectorTest::includedProperty));
-                testListViewItems.setAll(getInjectorTests());
+                List<InjectorTest> injectorTests = getInjectorTests().
+                        stream().
+                        filter(injectorTest -> !injectorTest.getTestName().toString().equals("ISA Detection")).
+                        collect(Collectors.toList());
+                testListViewItems.setAll(injectorTests);
                 testListViewItems.sort((Comparator.comparingInt(injectorTest -> injectorTest.getTestName().getId())));
                 Platform.runLater(this::pointToFirstTest);
                 break;
             case TESTPLAN:
                 testListView.setCellFactory(null);
-                testListViewItems.setAll(getInjectorTests());
+                injectorTests = getInjectorTests().
+                        stream().
+                        filter(injectorTest -> !injectorTest.getTestName().toString().equals("ISA Detection")).
+                        collect(Collectors.toList());
+                testListViewItems.setAll(injectorTests);
                 testListViewItems.sort((Comparator.comparingInt(injectorTest -> injectorTest.getTestName().getId())));
                 Platform.runLater(this::pointToFirstTest);
                 break;

@@ -5,6 +5,7 @@ import fi.stardex.sisu.devices.Devices;
 import fi.stardex.sisu.measurement.Measurements;
 import fi.stardex.sisu.model.*;
 import fi.stardex.sisu.model.updateModels.HighPressureSectionUpdateModel;
+import fi.stardex.sisu.model.updateModels.PiezoRepairUpdateModel;
 import fi.stardex.sisu.pdf.PDFService;
 import fi.stardex.sisu.persistence.orm.Manufacturer;
 import fi.stardex.sisu.persistence.repos.ISADetectionRepository;
@@ -849,10 +850,12 @@ public class JavaFXSpringConfigure extends ViewLoader{
     @Autowired
     public PiezoRepairController piezoRepairController(TabSectionController tabSectionController,
                                                        PiezoRepairModel piezoRepairModel,
-                                                       ModbusRegisterProcessor ultimaModbusWriter){
+                                                       ModbusRegisterProcessor ultimaModbusWriter,
+                                                       PiezoRepairUpdateModel piezoRepairUpdateModel){
         PiezoRepairController piezoRepairController = tabSectionController.getPiezoRepairController();
         piezoRepairController.setPiezoRepairModel(piezoRepairModel);
         piezoRepairController.setUltimaModbusWriter(ultimaModbusWriter);
+        piezoRepairController.setPiezoRepairUpdateModel(piezoRepairUpdateModel);
         return piezoRepairController;
     }
 
