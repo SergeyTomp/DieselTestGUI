@@ -1,13 +1,12 @@
 package fi.stardex.sisu.ui.controllers.cr;
 
 import eu.hansolo.enzo.lcd.Lcd;
-import fi.stardex.sisu.model.CurrentRpmModel;
-import fi.stardex.sisu.model.PumpTestModel;
-import fi.stardex.sisu.model.TargetRpmModel;
+import fi.stardex.sisu.model.*;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.DimasGUIEditionState;
 import fi.stardex.sisu.states.TestBenchSectionPwrState;
 import fi.stardex.sisu.util.GaugeCreator;
+import fi.stardex.sisu.util.enums.pump.PumpRotation;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.spinners.SpinnerManager;
 import fi.stardex.sisu.version.FirmwareVersion;
@@ -90,6 +89,10 @@ public class TestBenchSectionController {
     private TargetRpmModel targetRpmModel;
 
     private CurrentRpmModel currentRpmModel;
+
+    private PumpModel pumpModel;
+
+    private GUI_TypeModel gui_typeModel;
 
     private TestBenchSectionPwrState testBenchSectionPwrState;
 
@@ -198,6 +201,14 @@ public class TestBenchSectionController {
         this.currentRpmModel = currentRpmModel;
     }
 
+    public void setPumpModel(PumpModel pumpModel) {
+        this.pumpModel = pumpModel;
+    }
+
+    public void setGui_typeModel(GUI_TypeModel gui_typeModel) {
+        this.gui_typeModel = gui_typeModel;
+    }
+
     public enum StatePump {
 
         ON("PUMP\n ON", true, PUMP_BUTTON_ON),
@@ -256,6 +267,8 @@ public class TestBenchSectionController {
 
         setupTestListener();
 
+        setupGuiTypeListener();
+
     }
 
     private void bindingI18N() {
@@ -264,6 +277,15 @@ public class TestBenchSectionController {
         labelPressure1.textProperty().bind(i18N.createStringBinding("bench.label.pressure1"));
         labelRPM.textProperty().bind(i18N.createStringBinding("bench.label.rpm"));
         fuelLevelLabel.textProperty().bind(i18N.createStringBinding("bench.label.fuelLevel"));
+    }
+
+    private void setupGuiTypeListener() {
+
+        gui_typeModel.guiTypeProperty().addListener((observableValue, oldValue, newValue) -> {
+
+            leftDirectionRotationToggleButton.setSelected(false);
+            rightDirectionRotationToggleButton.setSelected(false);
+        });
     }
 
     private void setupTestListener() {
@@ -333,6 +355,16 @@ public class TestBenchSectionController {
                     standModbusWriter.add(RotationDirection, newValue.getUserData());
             }
 
+        });
+        pumpModel.pumpProperty().addListener((observableValue, oldPump, newPump) -> {
+            if (newPump != null) {
+
+                if (newPump.getPumpRotation() == PumpRotation.RIGHT) {
+                    rightDirectionRotationToggleButton.setSelected(true);
+                }else {
+                    leftDirectionRotationToggleButton.setSelected(true);
+                }
+            }
         });
 
     }

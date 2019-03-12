@@ -4,14 +4,22 @@ import fi.stardex.sisu.model.*;
 import fi.stardex.sisu.model.updateModels.HighPressureSectionUpdateModel;
 import fi.stardex.sisu.registers.flow.ModbusMapFlow;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
-import fi.stardex.sisu.states.PumpHighPressureSectionPwrState;
 import fi.stardex.sisu.states.PumpsStartButtonState;
 import fi.stardex.sisu.states.TestBenchSectionPwrState;
+import fi.stardex.sisu.ui.controllers.cr.TestBenchSectionController;
+import fi.stardex.sisu.ui.controllers.pumps.CalibrationTestErrorController;
+import fi.stardex.sisu.ui.controllers.pumps.SCVCalibrationController;
+import fi.stardex.sisu.ui.controllers.pumps.main.StartButtonController;
+import fi.stardex.sisu.ui.controllers.pumps.pressure.PumpHighPressureSectionPwrController;
+import fi.stardex.sisu.ui.controllers.pumps.pressure.PumpRegulatorSectionTwoController;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
 import javafx.scene.control.ListView;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.ToggleButton;
 import javafx.util.Duration;
 
 import javax.annotation.PostConstruct;
@@ -27,6 +35,10 @@ public class PumpMeasurementManager {
     private Timeline measurementTimeline;
     private Timeline autoResetTimeline;
     private int includedAutoTestsLength;
+    private ToggleButton startButton;
+    private ToggleButton highPressureSectionPwrButton;
+    private Spinner<Double> regulatorTwoCurrentSpinner;
+    private ToggleButton testBenchPwrButton;
 
     private PumpTestListModel pumpTestListModel;
     private PumpsStartButtonState pumpsStartButtonState;
@@ -37,13 +49,21 @@ public class PumpMeasurementManager {
     private PumpTestModeModel pumpTestModeModel;
     private TestBenchSectionPwrState testBenchSectionPwrState;
     private CurrentRpmModel currentRpmModel;
-    private PumpHighPressureSectionPwrState pumpHighPressureSectionPwrState;
     private HighPressureSectionUpdateModel highPressureSectionUpdateModel;
     private PumpTimeProgressModel pumpTimeProgressModel;
+    private SCVCalibrationModel scvCalibrationModel;
     private IntegerProperty adjustingTimeProperty;
     private IntegerProperty measuringTimeProperty;
     private PumpPressureRegulatorModel pumpPressureRegulatorModel;
+    private PumpModel pumpModel;
     private ListView<AutoTestListLastChangeModel.PumpTestWrapper> testListView;
+    private SCVCalibrationController scvCalibrationController;
+    private PumpRegulatorSectionTwoController pumpRegulatorSectionTwoController;
+    private CalibrationTestErrorController calibrationTestErrorController;
+    private StartButtonController startButtonController;
+    private PumpHighPressureSectionPwrController pumpHighPressureSectionPwrController;
+    private TestBenchSectionController testBenchSectionController;
+
 
     public void setPumpTestListModel(PumpTestListModel pumpTestListModel) {
         this.pumpTestListModel = pumpTestListModel;
@@ -72,9 +92,6 @@ public class PumpMeasurementManager {
     public void setCurrentRpmModel(CurrentRpmModel currentRpmModel) {
         this.currentRpmModel = currentRpmModel;
     }
-    public void setPumpHighPressureSectionPwrState(PumpHighPressureSectionPwrState pumpHighPressureSectionPwrState) {
-        this.pumpHighPressureSectionPwrState = pumpHighPressureSectionPwrState;
-    }
     public void setHighPressureSectionUpdateModel(HighPressureSectionUpdateModel highPressureSectionUpdateModel) {
         this.highPressureSectionUpdateModel = highPressureSectionUpdateModel;
     }
@@ -87,15 +104,51 @@ public class PumpMeasurementManager {
     public void setTestListView(ListView<AutoTestListLastChangeModel.PumpTestWrapper> testListView) {
         this.testListView = testListView;
     }
+    public void setScvCalibrationModel(SCVCalibrationModel scvCalibrationModel) {
+        this.scvCalibrationModel = scvCalibrationModel;
+    }
+    public void setScvCalibrationController(SCVCalibrationController scvCalibrationController) {
+        this.scvCalibrationController = scvCalibrationController;
+    }
+    public void setPumpRegulatorSectionTwoController(PumpRegulatorSectionTwoController pumpRegulatorSectionTwoController) {
+        this.pumpRegulatorSectionTwoController = pumpRegulatorSectionTwoController;
+    }
+    public void setCalibrationTestErrorController(CalibrationTestErrorController calibrationTestErrorController) {
+        this.calibrationTestErrorController = calibrationTestErrorController;
+    }
+
+    public void setPumpModel(PumpModel pumpModel) {
+        this.pumpModel = pumpModel;
+    }
+
+    public void setStartButtonController(StartButtonController startButtonController) {
+        this.startButtonController = startButtonController;
+    }
+
+    public void setPumpHighPressureSectionPwrController(PumpHighPressureSectionPwrController pumpHighPressureSectionPwrController) {
+        this.pumpHighPressureSectionPwrController = pumpHighPressureSectionPwrController;
+    }
+
+    public void setTestBenchSectionController(TestBenchSectionController testBenchSectionController) {
+        this.testBenchSectionController = testBenchSectionController;
+    }
 
     @PostConstruct
     public void init() {
 
         adjustingTimeProperty = pumpTimeProgressModel.adjustingTimeProperty();
         measuringTimeProperty = pumpTimeProgressModel.measurementTimeProperty();
-
+        setupReferences();
         setupTimeLines();
         setupListeners();
+    }
+
+    private void setupReferences() {
+
+        startButton = startButtonController.getStartToggleButton();
+        highPressureSectionPwrButton = pumpHighPressureSectionPwrController.getPwrButtonToggleButton();
+        regulatorTwoCurrentSpinner = pumpRegulatorSectionTwoController.getCurrentSpinner();
+        testBenchPwrButton = testBenchSectionController.getTestBenchStartToggleButton();
     }
 
     private void setupTimeLines() {
@@ -131,25 +184,53 @@ public class PumpMeasurementManager {
                 start();
             }
         });
+
+        scvCalibrationModel.isFinishedProperty().addListener((observableValue, oldValue, newValue) -> {
+
+            if (newValue) {
+                if (pumpTestModeModel.testModeProperty().get() == AUTO) {
+                    runNextTest();
+                }else{
+                    startButton.setSelected(false);
+                }
+            }
+        });
+
+        pumpModel.pumpProperty().addListener((observableValue, oldValue, newValue) -> scvCalibrationController.clearScvCalibrationResults());
     }
 
     private void startMeasurements() {
 
         resetFlowData();
-        pumpReportModel.clearResults();
         if (pumpTestModeModel.testModeProperty().get() == AUTO) {
 
             includedAutoTestsLength = (int)pumpTestListModel.getPumpTestObservableList().stream().filter(t -> t.isIncludedProperty().get()).count();
-        }
 
-        start();
+            testListView.getSelectionModel().clearSelection();
+            runNextTest();
+        }else{
+
+            String testName = pumpTestModel.pumpTestProperty().get().getPumpTestName().toString();
+            if (testName.equals("SCV Calibration")) {
+                runScvCalibrationTest();
+            }
+            else if (testName.equals("Calibration test")) {
+                if (scvCalibrationModel.isSuccessfulProperty().get()) {
+                    runCalibrationTest();
+                }else{
+                    calibrationTestErrorController.initErrorStage();
+                    Platform.runLater(()-> startButton.setSelected(false));
+                }
+            }
+            else{ start(); }
+        }
     }
 
     private void stopMeasurements() {
 
         stopTimers();
         resetFlowData();
-        pumpHighPressureSectionPwrState.powerButtonProperty().setValue(false);
+        highPressureSectionPwrButton.setSelected(false);
     }
 
     public void start(){
@@ -162,13 +243,13 @@ public class PumpMeasurementManager {
 
     private void startMotor() {
 
-        testBenchSectionPwrState.isPowerButtonOnProperty().setValue(true);
+        testBenchPwrButton.setSelected(true);
         motorPreparationTimeline.play();
     }
 
     private void startPressure() {
 
-        pumpHighPressureSectionPwrState.powerButtonProperty().setValue(true);
+        highPressureSectionPwrButton.setSelected(true);
         pressurePreparationTimeline.play();
     }
 
@@ -252,13 +333,47 @@ public class PumpMeasurementManager {
             if (selectedTestIndex < includedAutoTestsLength - 1) {
 
                 selectNextTest(selectedTestIndex);
-                start();
+                String testName = pumpTestModel.pumpTestProperty().get().getPumpTestName().toString();
+
+                if (testName.equals("SCV Calibration")) {
+                    runScvCalibrationTest();
+                }
+                else if (testName.equals("Calibration test")) {
+
+                    if (scvCalibrationModel.isSuccessfulProperty().get()) {
+                        runCalibrationTest();
+                    }else{
+                        calibrationTestErrorController.initErrorStage();
+                        runNextTest();
+                    }
+//                    selectedTestIndex = testListView.getSelectionModel().getSelectedIndex();
+//                    if(selectedTestIndex < includedAutoTestsLength - 1){
+//                        calibrationTestErrorController.initErrorStage();
+//                        selectNextTest(selectedTestIndex);
+//                        start();
+//                    }
+//                    else {
+//                        Platform.runLater(()-> startButton.setSelected(false));
+//                    }
+                } else {
+                    start();
+                }
             }
             else{
-
-                pumpsStartButtonState.startButtonProperty().setValue(false);
+                Platform.runLater(()-> startButton.setSelected(false));
             }
         }
+    }
+
+    private void runScvCalibrationTest() {
+        scvCalibrationController.work();
+    }
+
+    private void runCalibrationTest() {
+
+        double initialCurrent = pumpTestModel.pumpTestProperty().get().getCalibrationIoffset() + scvCalibrationModel.initialCurrentProperty().get();
+        regulatorTwoCurrentSpinner.getValueFactory().setValue(initialCurrent);
+        start();
     }
 
     private void resetFlowData() {

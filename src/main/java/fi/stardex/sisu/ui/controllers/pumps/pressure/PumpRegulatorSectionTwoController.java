@@ -60,6 +60,10 @@ public class PumpRegulatorSectionTwoController {
     private PumpTestModel pumpTestModel;
     private final String GREEN_STYLE_CLASS = "regulator-spinner-selected";
 
+    public Spinner<Double> getCurrentSpinner() {
+        return currentSpinner;
+    }
+
     public void setHighPressureSectionPwrState(PumpHighPressureSectionPwrState pumpHighPressureSectionPwrState) {
         this.pumpHighPressureSectionPwrState = pumpHighPressureSectionPwrState;
     }

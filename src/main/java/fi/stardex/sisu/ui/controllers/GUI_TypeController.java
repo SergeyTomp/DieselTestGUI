@@ -1,5 +1,6 @@
 package fi.stardex.sisu.ui.controllers;
 
+import fi.stardex.sisu.model.GUI_TypeModel;
 import fi.stardex.sisu.model.ManufacturerPumpModel;
 import fi.stardex.sisu.states.DimasGUIEditionState;
 import fi.stardex.sisu.states.PumpsStartButtonState;
@@ -65,6 +66,8 @@ public class GUI_TypeController {
 
     private ManufacturerPumpModel manufacturerPumpModel;
 
+    private GUI_TypeModel gui_typeModel;
+
     private PumpsStartButtonState pumpsStartButtonState;
 
     public ComboBox<GUIType> getGui_typeComboBox() {
@@ -122,6 +125,9 @@ public class GUI_TypeController {
     public void setPumpsStartButtonState(PumpsStartButtonState pumpsStartButtonState) {
         this.pumpsStartButtonState = pumpsStartButtonState;
     }
+    public void setGui_typeModel(GUI_TypeModel gui_typeModel) {
+        this.gui_typeModel = gui_typeModel;
+    }
 
     @PostConstruct
     private void init() {
@@ -129,6 +135,10 @@ public class GUI_TypeController {
         gui_typeComboBox.getItems().addAll(GUIType.values());
 
         gui_typeComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
+
+            if (newValue != null) {
+                gui_typeModel.guiTypeProperty().setValue(newValue);
+            }
 
             switch (newValue) {
                 case CR_Inj:

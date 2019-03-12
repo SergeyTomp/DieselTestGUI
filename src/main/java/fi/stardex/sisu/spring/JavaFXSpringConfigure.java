@@ -36,7 +36,11 @@ import fi.stardex.sisu.ui.controllers.additional.tabs.settings.SettingsControlle
 import fi.stardex.sisu.ui.controllers.cr.*;
 import fi.stardex.sisu.ui.controllers.dialogs.*;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
+import fi.stardex.sisu.ui.controllers.pumps.CalibrationTestErrorController;
 import fi.stardex.sisu.ui.controllers.pumps.PumpTabSectionController;
+import fi.stardex.sisu.ui.controllers.pumps.SCVCalibrationController;
+import fi.stardex.sisu.ui.controllers.pumps.pressure.PumpHighPressureSectionPwrController;
+import fi.stardex.sisu.ui.controllers.pumps.pressure.PumpRegulatorSectionTwoController;
 import fi.stardex.sisu.ui.controllers.uis.RootLayoutController;
 import fi.stardex.sisu.util.DelayCalculator;
 import fi.stardex.sisu.util.enums.BeakerType;
@@ -104,7 +108,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                  ViewHolder settings,
                                                  ViewHolder connection,
                                                  ManufacturerPumpModel manufacturerPumpModel,
-                                                 PumpsStartButtonState pumpsStartButtonState) {
+                                                 PumpsStartButtonState pumpsStartButtonState,
+                                                 GUI_TypeModel gui_typeModel) {
         GUI_TypeController gui_typeController = rootLayoutController.getGui_typeController();
         gui_typeController.setRootPreferences(rootPreferences);
         gui_typeController.setMainSection(mainSection().getView());
@@ -123,6 +128,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         gui_typeController.setDimasGUIEditionState(dimasGUIEditionState);
         gui_typeController.setManufacturerPumpModel(manufacturerPumpModel);
         gui_typeController.setPumpsStartButtonState(pumpsStartButtonState);
+        gui_typeController.setGui_typeModel(gui_typeModel);
         return gui_typeController;
     }
 
@@ -200,7 +206,9 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                                  PumpTestModel pumpTestModel,
                                                                  TargetRpmModel targetRpmModel,
                                                                  TestBenchSectionPwrState testBenchSectionPwrState,
-                                                                 CurrentRpmModel currentRpmModel) {
+                                                                 CurrentRpmModel currentRpmModel,
+                                                                 PumpModel pumpModel,
+                                                                 GUI_TypeModel gui_typeModel) {
         TestBenchSectionController testBenchSectionController = rootLayoutController.getTestBenchSectionController();
         testBenchSectionController.setFlowModbusWriter(flowModbusWriter);
         testBenchSectionController.setStandModbusWriter(standModbusWriter);
@@ -212,6 +220,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
         testBenchSectionController.setTargetRpmModel(targetRpmModel);
         testBenchSectionController.setTestBenchSectionPwrState(testBenchSectionPwrState);
         testBenchSectionController.setCurrentRpmModel(currentRpmModel);
+        testBenchSectionController.setPumpModel(pumpModel);
+        testBenchSectionController.setGui_typeModel(gui_typeModel);
         return testBenchSectionController;
     }
 
@@ -1015,5 +1025,61 @@ public class JavaFXSpringConfigure extends ViewLoader{
         FirmwareDialogController firmwareDialogController = (FirmwareDialogController)firmwareDialog().getController();
         firmwareDialogController.setI18N(i18N);
         return firmwareDialogController;
+    }
+
+    @Bean
+    public ViewHolder scvCalibration() {
+        return loadView("/fxml/pumps/SCVCalibration.fxml");
+    }
+
+    @Bean
+    @Autowired
+    public SCVCalibrationController scvCalibrationController(ViewHolder scvCalibration,
+                                                             @Lazy ViewHolder rootLayout,
+                                                             PumpTestModel pumpTestModel,
+                                                             ModbusRegisterProcessor flowModbusWriter,
+                                                             HighPressureSectionUpdateModel highPressureSectionUpdateModel,
+                                                             PumpPressureRegulatorModel pumpPressureRegulatorModel,
+                                                             PumpRegulatorSectionTwoController pumpRegulatorSectionTwoController,
+                                                             SCVCalibrationModel scvCalibrationModel,
+                                                             PumpModel pumpModel,
+                                                             PumpReportModel pumpReportModel,
+                                                             PumpHighPressureSectionPwrController pumpHighPressureSectionPwrController,
+                                                             TargetRpmModel targetRpmModel,
+                                                             CurrentRpmModel currentRpmModel,
+                                                             TestBenchSectionController testBenchSectionController) {
+        SCVCalibrationController scvCalibrationController = (SCVCalibrationController)scvCalibration.getController();
+        scvCalibrationController.setScvParent(scvCalibration.getView());
+        scvCalibrationController.setRootParent(rootLayout.getView());
+        scvCalibrationController.setPumpTestModel(pumpTestModel);
+        scvCalibrationController.setFlowModbusWriter(flowModbusWriter);
+        scvCalibrationController.setHighPressureSectionUpdateModel(highPressureSectionUpdateModel);
+        scvCalibrationController.setPumpPressureRegulatorModel(pumpPressureRegulatorModel);
+        scvCalibrationController.setPumpRegulatorSectionTwoController(pumpRegulatorSectionTwoController);
+        scvCalibrationController.setScvCalibrationModel(scvCalibrationModel);
+        scvCalibrationController.setPumpModel(pumpModel);
+        scvCalibrationController.setPumpReportModel(pumpReportModel);
+        scvCalibrationController.setPumpHighPressureSectionPwrController(pumpHighPressureSectionPwrController);
+        scvCalibrationController.setTargetRpmModel(targetRpmModel);
+        scvCalibrationController.setCurrentRpmModel(currentRpmModel);
+        scvCalibrationController.setTestBenchSectionController(testBenchSectionController);
+        scvCalibrationController.setI18N(i18N);
+        return scvCalibrationController;
+    }
+
+    @Bean
+    public ViewHolder calibrationTestError() {
+        return loadView("/fxml/pumps/CalibrationTestError.fxml");
+    }
+
+    @Bean
+    @Autowired
+    public CalibrationTestErrorController calibrationTestErrorController(ViewHolder calibrationTestError,
+                                                                         @Lazy ViewHolder rootLayout) {
+        CalibrationTestErrorController calibrationTestErrorController = (CalibrationTestErrorController)calibrationTestError.getController();
+        calibrationTestErrorController.setI18N(i18N);
+        calibrationTestErrorController.setErrorParent(calibrationTestError.getView());
+        calibrationTestErrorController.setRootParent(rootLayout.getView());
+        return calibrationTestErrorController;
     }
 }

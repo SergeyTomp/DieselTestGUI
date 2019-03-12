@@ -31,6 +31,7 @@ import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.*;
 import fi.stardex.sisu.ui.Enabler;
+import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.GUI_TypeController;
 import fi.stardex.sisu.ui.controllers.ISADetectionController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.CodingController;
@@ -43,7 +44,12 @@ import fi.stardex.sisu.ui.controllers.additional.tabs.settings.ConnectionControl
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.cr.TestBenchSectionController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
+import fi.stardex.sisu.ui.controllers.pumps.CalibrationTestErrorController;
+import fi.stardex.sisu.ui.controllers.pumps.SCVCalibrationController;
 import fi.stardex.sisu.ui.controllers.pumps.main.PumpTestListController;
+import fi.stardex.sisu.ui.controllers.pumps.main.StartButtonController;
+import fi.stardex.sisu.ui.controllers.pumps.pressure.PumpHighPressureSectionPwrController;
+import fi.stardex.sisu.ui.controllers.pumps.pressure.PumpRegulatorSectionTwoController;
 import fi.stardex.sisu.ui.updaters.*;
 import fi.stardex.sisu.util.DelayCalculator;
 import fi.stardex.sisu.util.DesktopFiles;
@@ -702,11 +708,18 @@ public class SpringJavaConfig {
                                                          PumpTestModeModel pumpTestModeModel,
                                                          TestBenchSectionPwrState testBenchSectionPwrState,
                                                          CurrentRpmModel currentRpmModel,
-                                                         PumpHighPressureSectionPwrState pumpHighPressureSectionPwrState,
                                                          HighPressureSectionUpdateModel highPressureSectionUpdateModel,
                                                          PumpTimeProgressModel pumpTimeProgressModel,
                                                          PumpPressureRegulatorModel pumpPressureRegulatorModel,
-                                                         PumpTestListController pumpTestListController) {
+                                                         PumpTestListController pumpTestListController,
+                                                         SCVCalibrationModel scvCalibrationModel,
+                                                         SCVCalibrationController scvCalibrationController,
+                                                         PumpRegulatorSectionTwoController pumpRegulatorSectionTwoController,
+                                                         CalibrationTestErrorController calibrationTestErrorController,
+                                                         PumpModel pumpModel,
+                                                         StartButtonController startButtonController,
+                                                         PumpHighPressureSectionPwrController pumpHighPressureSectionPwrController,
+                                                         TestBenchSectionController testBenchSectionController) {
         PumpMeasurementManager pumpMeasurementManager = new PumpMeasurementManager();
         pumpMeasurementManager.setPumpsStartButtonState(pumpsStartButtonState);
         pumpMeasurementManager.setPumpTestListModel(pumpTestListModel);
@@ -717,11 +730,18 @@ public class SpringJavaConfig {
         pumpMeasurementManager.setPumpTestModeModel(pumpTestModeModel);
         pumpMeasurementManager.setTestBenchSectionPwrState(testBenchSectionPwrState);
         pumpMeasurementManager.setCurrentRpmModel(currentRpmModel);
-        pumpMeasurementManager.setPumpHighPressureSectionPwrState(pumpHighPressureSectionPwrState);
         pumpMeasurementManager.setHighPressureSectionUpdateModel(highPressureSectionUpdateModel);
         pumpMeasurementManager.setPumpTimeProgressModel(pumpTimeProgressModel);
         pumpMeasurementManager.setPumpPressureRegulatorModel(pumpPressureRegulatorModel);
         pumpMeasurementManager.setTestListView(pumpTestListController.getTestListView());
+        pumpMeasurementManager.setScvCalibrationModel(scvCalibrationModel);
+        pumpMeasurementManager.setScvCalibrationController(scvCalibrationController);
+        pumpMeasurementManager.setPumpRegulatorSectionTwoController(pumpRegulatorSectionTwoController);
+        pumpMeasurementManager.setCalibrationTestErrorController(calibrationTestErrorController);
+        pumpMeasurementManager.setPumpModel(pumpModel);
+        pumpMeasurementManager.setStartButtonController(startButtonController);
+        pumpMeasurementManager.setPumpHighPressureSectionPwrController(pumpHighPressureSectionPwrController);
+        pumpMeasurementManager.setTestBenchSectionController(testBenchSectionController);
         return pumpMeasurementManager;
     }
 
@@ -1025,6 +1045,16 @@ public class SpringJavaConfig {
     @Bean
     public PiezoRepairUpdateModel piezoRepairUpdateModel() {
         return new PiezoRepairUpdateModel();
+    }
+
+    @Bean
+    public SCVCalibrationModel scvCalibrationModel() {
+        return new SCVCalibrationModel();
+    }
+
+    @Bean
+    public GUI_TypeModel gui_typeModel() {
+        return new GUI_TypeModel();
     }
 
 //    @Bean

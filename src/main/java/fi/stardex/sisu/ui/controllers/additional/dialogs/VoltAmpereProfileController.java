@@ -245,7 +245,8 @@ public class VoltAmpereProfileController {
     private void setupPiezoCoilToggleGroupListener() {
 
         injectorSectionController.getPiezoCoilToggleGroup().selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue == injectorSectionController.getPiezoRadioButton()) {
+            if (newValue == injectorSectionController.getPiezoRadioButton()
+                    || newValue == injectorSectionController.getPiezoDelphiRadioButton()) {
                 boostUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(BOOST_U_SPINNER_MIN,
                         BOOST_U_SPINNER_MAX_PIEZO,
                         BOOST_U_SPINNER_INIT,

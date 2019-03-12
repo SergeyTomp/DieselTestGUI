@@ -96,6 +96,10 @@ public class Pump {
         return custom;
     }
 
+    public PumpRegulatorType getPumpRegulatorType() {
+        return pumpRegulatorType;
+    }
+
     @Override
     public String toString() {
         return pumpCode;

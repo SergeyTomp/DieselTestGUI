@@ -115,6 +115,18 @@ public class PumpTest {
         return pumpTestName;
     }
 
+    public Double getCalibrationMinI() {
+        return calibrationMinI;
+    }
+
+    public Double getCalibrationMaxI() {
+        return calibrationMaxI;
+    }
+
+    public Double getCalibrationIoffset() {
+        return calibrationIoffset;
+    }
+
     @Override
     public String toString() {
         return pumpTestName.toString();
