@@ -42,6 +42,7 @@ import fi.stardex.sisu.ui.controllers.pumps.SCVCalibrationController;
 import fi.stardex.sisu.ui.controllers.pumps.pressure.PumpHighPressureSectionPwrController;
 import fi.stardex.sisu.ui.controllers.pumps.pressure.PumpRegulatorSectionTwoController;
 import fi.stardex.sisu.ui.controllers.uis.RootLayoutController;
+import fi.stardex.sisu.model.updateModels.InjectorSectionUpdateModel;
 import fi.stardex.sisu.util.DelayCalculator;
 import fi.stardex.sisu.util.enums.BeakerType;
 import fi.stardex.sisu.util.i18n.I18N;
@@ -321,7 +322,9 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                                InjectorTypeModel injectorTypeModel,
                                                                BoostUModel boostUModel,
                                                                BoostUadjustmentState boostUadjustmentState,
-                                                               Devices devices) {
+                                                               Devices devices,
+                                                               CoilOnePulseParametersModel coilOnePulseParametersModel,
+                                                               InjectorSectionUpdateModel injectorSectionUpdateModel) {
         InjectorSectionController injectorSectionController = crSectionController().getInjectorSectionController();
         injectorSectionController.setEnabler(enabler);
         injectorSectionController.setUltimaModbusWriter(ultimaModbusWriter);
@@ -333,6 +336,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
         injectorSectionController.setBoostUModel(boostUModel);
         injectorSectionController.setBoostUadjustmentState(boostUadjustmentState);
         injectorSectionController.setDevices(devices);
+        injectorSectionController.setCoilOnePulseParametersModel(coilOnePulseParametersModel);
+        injectorSectionController.setInjectorSectionUpdateModel(injectorSectionUpdateModel);
         return injectorSectionController;
     }
 
@@ -595,12 +600,17 @@ public class JavaFXSpringConfigure extends ViewLoader{
 
     @Bean
     @Autowired
-    public VoltageController voltageController(TabSectionController tabSectionController, InjectorSectionController injectorSectionController) {
+    public VoltageController voltageController(TabSectionController tabSectionController,
+                                               InjectorTypeModel injectorTypeModel,
+                                               CoilOnePulseParametersModel coilOnePulseParametersModel,
+                                               InjectorSectionUpdateModel injectorSectionUpdateModel) {
         VoltageController voltageController = tabSectionController.getVoltageController();
         voltageController.setVoltAmpereProfileDialog(voltAmpereProfileDialog());
         voltageController.setParentController(tabSectionController);
-        voltageController.setInjectorSectionController(injectorSectionController);
         voltageController.setI18N(i18N);
+        voltageController.setInjectorTypeModel(injectorTypeModel);
+        voltageController.setCoilOnePulseParametersModel(coilOnePulseParametersModel);
+        voltageController.setInjectorSectionUpdateModel(injectorSectionUpdateModel);
         return voltageController;
     }
 

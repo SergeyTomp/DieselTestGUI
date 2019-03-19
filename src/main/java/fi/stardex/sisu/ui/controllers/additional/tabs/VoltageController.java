@@ -1,9 +1,12 @@
 package fi.stardex.sisu.ui.controllers.additional.tabs;
 
+import fi.stardex.sisu.model.CoilOnePulseParametersModel;
+import fi.stardex.sisu.model.InjectorTypeModel;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.additional.TabSectionController;
 import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
-import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
+import fi.stardex.sisu.model.updateModels.InjectorSectionUpdateModel;
+import fi.stardex.sisu.util.enums.InjectorType;
 import fi.stardex.sisu.util.i18n.I18N;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -101,7 +104,11 @@ public class VoltageController {
 
     private VoltAmpereProfileController voltAmpereProfileController;
 
-    private InjectorSectionController injectorSectionController;
+    private InjectorTypeModel injectorTypeModel;
+
+    private CoilOnePulseParametersModel coilOnePulseParametersModel;
+
+    private InjectorSectionUpdateModel injectorSectionUpdateModel;
 
     private ObservableList<XYChart.Data<Double, Double>> data1;
 
@@ -175,8 +182,16 @@ public class VoltageController {
         this.tabSectionController = tabSectionController;
     }
 
-    public void setInjectorSectionController(InjectorSectionController injectorSectionController) {
-        this.injectorSectionController = injectorSectionController;
+    public void setInjectorTypeModel(InjectorTypeModel injectorTypeModel) {
+        this.injectorTypeModel = injectorTypeModel;
+    }
+
+    public void setCoilOnePulseParametersModel(CoilOnePulseParametersModel coilOnePulseParametersModel) {
+        this.coilOnePulseParametersModel = coilOnePulseParametersModel;
+    }
+
+    public void setInjectorSectionUpdateModel(InjectorSectionUpdateModel injectorSectionUpdateModel) {
+        this.injectorSectionUpdateModel = injectorSectionUpdateModel;
     }
 
     public void setI18N(I18N i18N) {
@@ -234,7 +249,33 @@ public class VoltageController {
         batteryU.setText(Integer.toString(BATTERY_U_SPINNER_INIT));         // batteryUSpinner initial value
         negativeU.setText(Integer.toString(NEGATIVE_U_SPINNER_INIT));       // negativeUSpinner initial value
 
-        width.textProperty().addListener(new LabelListener(width, injectorSectionController.getWidthCurrentSignalSpinner()));
+        setupLabelListeners();
+        setupUpdaterListeners();
+
+    }
+
+    private void setupUpdaterListeners() {
+
+        injectorSectionUpdateModel.boost_UProperty().addListener((observableValue, oldValue, newValue) -> voltage.setText(newValue));
+        injectorSectionUpdateModel.first_WProperty().addListener((observableValue, oldValue, newValue) -> firstWidth.setText(newValue));
+        injectorSectionUpdateModel.first_IProperty().addListener((observableValue, oldValue, newValue) -> firstCurrent.setText(newValue));
+        injectorSectionUpdateModel.second_IProperty().addListener((observableValue, oldValue, newValue) -> secondCurrent.setText(newValue));
+        injectorSectionUpdateModel.boost_IProperty().addListener((observableValue, oldValue, newValue) -> boostI.setText(newValue));
+        injectorSectionUpdateModel.battery_UProperty().addListener((observableValue, oldValue, newValue) -> batteryU.setText(newValue));
+        injectorSectionUpdateModel.negative_UProperty().addListener((observableValue, oldValue, newValue) -> negativeU.setText(newValue));
+    }
+
+    private void setupLabelListeners() {
+
+
+        width.textProperty().addListener((observableValue, oldValue, newValue) -> {
+
+            if (convertDataToDouble(newValue) != coilOnePulseParametersModel.widthProperty().get()) {
+                width.setStyle(RED_COLOR_STYLE);
+            }
+        });
+
+//        width.textProperty().addListener(new LabelListener(width, injectorSectionController.getWidthCurrentSignalSpinner()));
         voltage.textProperty().addListener(new LabelListener(voltage, voltAmpereProfileController.getBoostUSpinner()));
         firstWidth.textProperty().addListener(new LabelListener(firstWidth, voltAmpereProfileController.getFirstWSpinner()));
         firstCurrent.textProperty().addListener(new LabelListener(firstCurrent, voltAmpereProfileController.getFirstISpinner()));
@@ -242,7 +283,6 @@ public class VoltageController {
         boostI.textProperty().addListener(new LabelListener(boostI, voltAmpereProfileController.getBoostISpinner()));
         batteryU.textProperty().addListener(new LabelListener(batteryU, voltAmpereProfileController.getBatteryUSpinner()));
         negativeU.textProperty().addListener(new LabelListener(negativeU, voltAmpereProfileController.getNegativeUSpinner()));
-
     }
 
 
@@ -286,16 +326,17 @@ public class VoltageController {
 
     private void setupXYAxisResizable() {
 
-        injectorSectionController.getPiezoCoilToggleGroup().selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
+        injectorTypeModel.injectorTypeProperty().addListener((observableValue, oldValue, newValue) -> {
 
-            if (newValue == injectorSectionController.getCoilRadioButton())
+            if (newValue == InjectorType.COIL) {
                 yAxis.setUpperBound(25);
-            else
+            }else{
                 yAxis.setUpperBound(15);
+            }
         });
 
-        injectorSectionController.getWidthCurrentSignalSpinner().valueProperty().addListener((observable, oldValue, newValue) ->
-                xAxis.setUpperBound(newValue == 0 ? 0 : newValue * 1.2));
+        coilOnePulseParametersModel.widthProperty().addListener((observableValue, oldValue, newValue) ->
+                xAxis.setUpperBound(newValue.doubleValue() == 0 ? 0 : newValue.doubleValue() * 1.2));
     }
 
     private class LabelListener implements ChangeListener<String> {

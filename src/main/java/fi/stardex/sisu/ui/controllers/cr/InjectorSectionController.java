@@ -4,6 +4,7 @@ import fi.stardex.sisu.charts.TimerTasksManager;
 import fi.stardex.sisu.combobox_values.InjectorChannel;
 import fi.stardex.sisu.devices.Device;
 import fi.stardex.sisu.devices.Devices;
+import fi.stardex.sisu.model.CoilOnePulseParametersModel;
 import fi.stardex.sisu.model.InjConfigurationModel;
 import fi.stardex.sisu.model.InjectorTypeModel;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
@@ -12,6 +13,7 @@ import fi.stardex.sisu.states.BoostUModel;
 import fi.stardex.sisu.states.BoostUadjustmentState;
 import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.ui.controllers.additional.tabs.DelayController;
+import fi.stardex.sisu.model.updateModels.InjectorSectionUpdateModel;
 import fi.stardex.sisu.util.enums.InjectorType;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.spinners.SpinnerManager;
@@ -118,6 +120,10 @@ public class InjectorSectionController {
     private InjectorTypeModel injectorTypeModel;
 
     private BoostUModel boostU_model;
+
+    private InjectorSectionUpdateModel injectorSectionUpdateModel;
+
+    private CoilOnePulseParametersModel coilOnePulseParametersModel;
 
     private BoostUadjustmentState boostUadjustmentState;
 
@@ -234,6 +240,14 @@ public class InjectorSectionController {
         this.boostU_model = boostU_model;
     }
 
+    public void setCoilOnePulseParametersModel(CoilOnePulseParametersModel coilOnePulseParametersModel) {
+        this.coilOnePulseParametersModel = coilOnePulseParametersModel;
+    }
+
+    public void setInjectorSectionUpdateModel(InjectorSectionUpdateModel injectorSectionUpdateModel) {
+        this.injectorSectionUpdateModel = injectorSectionUpdateModel;
+    }
+
     public void setBoostUadjustmentState(BoostUadjustmentState boostUadjustmentState) {
         this.boostUadjustmentState = boostUadjustmentState;
     }
@@ -246,37 +260,14 @@ public class InjectorSectionController {
     private void init() {
 
         bindingI18N();
-
         setupLedControllers();
-
         setupInjectorConfigComboBox();
-
         setupSpinners();
+        setupListeners();
+        setupTimelines();
+    }
 
-        boostU_model.boostUProperty().addListener(new BoostU_ChangeListener());
-
-        injectorTypeModel.injectorTypeProperty().setValue(InjectorType.COIL);
-
-        ledParametersChangeListener = new LedParametersChangeListener();
-
-        new PowerButtonChangeListener();
-
-        piezoCoilToggleGroup.selectedToggleProperty().addListener((observableValue, oldValue, newValue) -> {
-            if (newValue == piezoDelphiRadioButton){
-                injectorTypeModel.injectorTypeProperty().setValue(InjectorType.PIEZO_DELPHI);
-            }
-            else if(newValue == coilRadioButton){
-                injectorTypeModel.injectorTypeProperty().setValue(InjectorType.COIL);
-            }
-            else if(newValue == piezoRadioButton){
-                injectorTypeModel.injectorTypeProperty().setValue(InjectorType.PIEZO);
-            }
-        });
-
-        led1StackPane.widthProperty().addListener(new StackPaneWidthListener(led1AnchorPane));
-        led2StackPane.widthProperty().addListener(new StackPaneWidthListener(led2AnchorPane));
-        led3StackPane.widthProperty().addListener(new StackPaneWidthListener(led3AnchorPane));
-        led4StackPane.widthProperty().addListener(new StackPaneWidthListener(led4AnchorPane));
+    private void setupTimelines() {
 
         timeLinesList = new ArrayList<>();
         keyFramesList = new ArrayList<>();
@@ -303,6 +294,44 @@ public class InjectorSectionController {
                 }
             });
         }
+    }
+
+    private void setupListeners() {
+
+        boostU_model.boostUProperty().addListener(new BoostU_ChangeListener());
+
+        injectorTypeModel.injectorTypeProperty().setValue(InjectorType.COIL);
+
+        ledParametersChangeListener = new LedParametersChangeListener();
+
+        new PowerButtonChangeListener();
+
+        piezoCoilToggleGroup.selectedToggleProperty().addListener((observableValue, oldValue, newValue) -> {
+            if (newValue == piezoDelphiRadioButton){
+                injectorTypeModel.injectorTypeProperty().setValue(InjectorType.PIEZO_DELPHI);
+            }
+            else if(newValue == coilRadioButton){
+                injectorTypeModel.injectorTypeProperty().setValue(InjectorType.COIL);
+            }
+            else if(newValue == piezoRadioButton){
+                injectorTypeModel.injectorTypeProperty().setValue(InjectorType.PIEZO);
+            }
+        });
+
+        led1StackPane.widthProperty().addListener(new StackPaneWidthListener(led1AnchorPane));
+        led2StackPane.widthProperty().addListener(new StackPaneWidthListener(led2AnchorPane));
+        led3StackPane.widthProperty().addListener(new StackPaneWidthListener(led3AnchorPane));
+        led4StackPane.widthProperty().addListener(new StackPaneWidthListener(led4AnchorPane));
+
+        widthCurrentSignalSpinner.valueProperty().addListener((observableValue, oldValue, newValue) -> coilOnePulseParametersModel.widthProperty().setValue(newValue));
+        freqCurrentSignalSpinner.valueProperty().addListener((observableValue, oldValue, newValue) -> coilOnePulseParametersModel.periodProperty().setValue(newValue));
+
+        injectorSectionUpdateModel.injectorErrorProperty().addListener((observableValue, oldValue, newValue) -> {
+
+            if (newValue) {
+                ultimaModbusWriter.add(Inj_Process_Global_Error, false);
+            }
+        });
     }
 
     private void bindingI18N() {

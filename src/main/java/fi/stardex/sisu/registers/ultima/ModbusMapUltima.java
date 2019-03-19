@@ -141,7 +141,10 @@ public enum ModbusMapUltima implements ModbusMap {
     TouchDetection(REGISTER_INPUT, 4098, 2, true),
 
     // режим зеркалирования регулятора 1 на регулятор 2 (только для насосов)
-    Reg1_To_Reg2_Mirror(DISCRETE_COIL, 9000, 1, false);
+    Reg1_To_Reg2_Mirror(DISCRETE_COIL, 9000, 1, false),
+
+    // обработка флага короткого замыкания инжектора
+    Inj_Process_Global_Error(DISCRETE_COIL, 7, 1, true);
 
     private final RegisterType type;
     private final int ref;

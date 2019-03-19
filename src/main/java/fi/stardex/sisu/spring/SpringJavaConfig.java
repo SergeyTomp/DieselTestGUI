@@ -11,6 +11,7 @@ import fi.stardex.sisu.measurement.Measurements;
 import fi.stardex.sisu.measurement.PumpMeasurementManager;
 import fi.stardex.sisu.model.*;
 import fi.stardex.sisu.model.updateModels.HighPressureSectionUpdateModel;
+import fi.stardex.sisu.model.updateModels.InjectorSectionUpdateModel;
 import fi.stardex.sisu.model.updateModels.PiezoRepairUpdateModel;
 import fi.stardex.sisu.pdf.PDFService;
 import fi.stardex.sisu.persistence.CheckAndInitializeBD;
@@ -31,7 +32,6 @@ import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.*;
 import fi.stardex.sisu.ui.Enabler;
-import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.GUI_TypeController;
 import fi.stardex.sisu.ui.controllers.ISADetectionController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.CodingController;
@@ -439,9 +439,8 @@ public class SpringJavaConfig {
     }
 
     @Bean
-    @Autowired
-    public InjectorSectionUpdater injectorSectionUpdater(VoltageController voltageController) {
-        return new InjectorSectionUpdater(voltageController);
+    public InjectorSectionUpdateModel injectorSectionUpdateModel() {
+        return new InjectorSectionUpdateModel();
     }
 
     @Bean
@@ -1055,6 +1054,11 @@ public class SpringJavaConfig {
     @Bean
     public GUI_TypeModel gui_typeModel() {
         return new GUI_TypeModel();
+    }
+
+    @Bean
+    public CoilOnePulseParametersModel coilOnePulseParametersModel() {
+        return new CoilOnePulseParametersModel();
     }
 
 //    @Bean
