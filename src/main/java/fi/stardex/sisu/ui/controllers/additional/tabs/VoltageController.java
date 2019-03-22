@@ -1,13 +1,15 @@
 package fi.stardex.sisu.ui.controllers.additional.tabs;
 
-import fi.stardex.sisu.model.CoilOnePulseParametersModel;
-import fi.stardex.sisu.model.InjectorTypeModel;
+import fi.stardex.sisu.model.*;
+import fi.stardex.sisu.model.updateModels.InjectorSectionUpdateModel;
+import fi.stardex.sisu.states.BoostUModel;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.additional.TabSectionController;
 import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
-import fi.stardex.sisu.model.updateModels.InjectorSectionUpdateModel;
 import fi.stardex.sisu.util.enums.InjectorType;
 import fi.stardex.sisu.util.i18n.I18N;
+import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.value.ChangeListener;
@@ -21,12 +23,14 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.Spinner;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 import static fi.stardex.sisu.util.SpinnerDefaults.*;
 import static fi.stardex.sisu.util.converters.DataConverter.convertDataToDouble;
@@ -34,61 +38,42 @@ import static fi.stardex.sisu.util.converters.DataConverter.convertDataToInt;
 
 public class VoltageController {
 
+    @FXML private Label coil1Label;
+    @FXML private Label coil2Label;
+    @FXML private Label firstW2Label;
+    @FXML private Label firstI2Label;
+    @FXML private Label secondI2Label;
+    @FXML private Label boostI2Label;
     @FXML private Label labelVoltage;
-
     @FXML private Label labelVoltageUOM;
-
     @FXML private Label labelFirstWidth;
-
     @FXML private Label labelFirstWidthUOM;
-
     @FXML private Label labelCurrent1;
-
     @FXML private Label labelCurrent1UOM;
-
     @FXML private Label labelCurrent2;
-
     @FXML private Label labelCurrent2UOM;
-
     @FXML private Label labelWidth;
-
     @FXML private Label labelWidthUOM;
-
     @FXML private Label labelBoostI;
-
     @FXML private Label labelBoostIUOM;
-
     @FXML private Label labelBatteryU;
-
     @FXML private Label labelBatteryUUOM;
-
     @FXML private Label labelNegativeU;
-
     @FXML private Label labelNegativeUUOM;
-
     @FXML private Label boostI;
-
     @FXML private Label batteryU;
-
     @FXML private Label negativeU;
-
     @FXML private LineChart<Double, Double> lineChart;
-
     @FXML private NumberAxis xAxis;
-
     @FXML private NumberAxis yAxis;
-
     @FXML private Label width;
-
     @FXML private Label voltage;
-
     @FXML private Label firstWidth;
-
     @FXML private Label firstCurrent;
-
     @FXML private Label secondCurrent;
-
     @FXML private Button pulseSettingsButton;
+
+    private List<XYChart.Data<Double, Double>> emptyPointsList = new ArrayList<>(Collections.singletonList(new XYChart.Data<>(0d,0d)));
 
     private I18N i18N;
 
@@ -108,7 +93,15 @@ public class VoltageController {
 
     private CoilOnePulseParametersModel coilOnePulseParametersModel;
 
+    private CoilTwoPulseParametersModel coilTwoPulseParametersModel;
+
     private InjectorSectionUpdateModel injectorSectionUpdateModel;
+
+    private BoostUModel boostUModel;
+
+    private InjectorModel injectorModel;
+
+    private InjectorTestModel injectorTestModel;
 
     private ObservableList<XYChart.Data<Double, Double>> data1;
 
@@ -142,32 +135,8 @@ public class VoltageController {
         return width;
     }
 
-    public Label getBoostI() {
-        return boostI;
-    }
-
-    public Label getBatteryU() {
-        return batteryU;
-    }
-
-    public Label getNegativeU() {
-        return negativeU;
-    }
-
     public Label getVoltage() {
         return voltage;
-    }
-
-    public Label getFirstWidth() {
-        return firstWidth;
-    }
-
-    public Label getFirstCurrent() {
-        return firstCurrent;
-    }
-
-    public Label getSecondCurrent() {
-        return secondCurrent;
     }
 
     public ObjectProperty<Boolean> isTabVoltageShowingProperty() {
@@ -190,8 +159,24 @@ public class VoltageController {
         this.coilOnePulseParametersModel = coilOnePulseParametersModel;
     }
 
+    public void setCoilTwoPulseParametersModel(CoilTwoPulseParametersModel coilTwoPulseParametersModel) {
+        this.coilTwoPulseParametersModel = coilTwoPulseParametersModel;
+    }
+
     public void setInjectorSectionUpdateModel(InjectorSectionUpdateModel injectorSectionUpdateModel) {
         this.injectorSectionUpdateModel = injectorSectionUpdateModel;
+    }
+
+    public void setBoostUModel(BoostUModel boostUModel) {
+        this.boostUModel = boostUModel;
+    }
+
+    public void setInjectorModel(InjectorModel injectorModel) {
+        this.injectorModel = injectorModel;
+    }
+
+    public void setInjectorTestModel(InjectorTestModel injectorTestModel) {
+        this.injectorTestModel = injectorTestModel;
     }
 
     public void setI18N(I18N i18N) {
@@ -210,6 +195,8 @@ public class VoltageController {
         configLineChartData();
 
         setupXYAxisResizable();
+
+        setupModelsListeners();
 
         bindingI18N();
 
@@ -238,6 +225,15 @@ public class VoltageController {
 
     }
 
+    private void clearCharts() {
+
+        lineChart.getData().forEach(s -> {
+
+            s.getData().clear();
+            s.getData().addAll(emptyPointsList);
+        });
+    }
+
     private void setupVAPLabels() {
 
         width.setText(Integer.toString(WIDTH_CURRENT_SIGNAL_SPINNER_INIT)); // widthCurrentSignal initial value
@@ -248,6 +244,11 @@ public class VoltageController {
         boostI.setText(Double.toString(BOOST_I_SPINNER_INIT));              // boostISpinner initial value
         batteryU.setText(Integer.toString(BATTERY_U_SPINNER_INIT));         // batteryUSpinner initial value
         negativeU.setText(Integer.toString(NEGATIVE_U_SPINNER_INIT));       // negativeUSpinner initial value
+
+        firstW2Label.setText(Integer.toString(0));                        // firstW2Spinner initial value
+        firstI2Label.setText(Double.toString(0));                         // firstI2Spinner initial value
+        secondI2Label.setText(Double.toString(0));                        // secondI2Spinner initial value
+        boostI2Label.setText(Double.toString(0));                         // boostI2Spinner initial value
 
         setupLabelListeners();
         setupUpdaterListeners();
@@ -263,6 +264,11 @@ public class VoltageController {
         injectorSectionUpdateModel.boost_IProperty().addListener((observableValue, oldValue, newValue) -> boostI.setText(newValue));
         injectorSectionUpdateModel.battery_UProperty().addListener((observableValue, oldValue, newValue) -> batteryU.setText(newValue));
         injectorSectionUpdateModel.negative_UProperty().addListener((observableValue, oldValue, newValue) -> negativeU.setText(newValue));
+
+        injectorSectionUpdateModel.first_I2Property().addListener((observableValue, oldValue, newValue) -> firstI2Label.setText(newValue));
+        injectorSectionUpdateModel.second_I2Property().addListener((observableValue, oldValue, newValue) -> secondI2Label.setText(newValue));
+        injectorSectionUpdateModel.boost_I2Property().addListener((observableValue, oldValue, newValue) -> boostI2Label.setText(newValue));
+        injectorSectionUpdateModel.first_W2Property().addListener((observableValue, oldValue, newValue) -> firstW2Label.setText(newValue));
     }
 
     private void setupLabelListeners() {
@@ -275,14 +281,37 @@ public class VoltageController {
             }
         });
 
-//        width.textProperty().addListener(new LabelListener(width, injectorSectionController.getWidthCurrentSignalSpinner()));
-        voltage.textProperty().addListener(new LabelListener(voltage, voltAmpereProfileController.getBoostUSpinner()));
-        firstWidth.textProperty().addListener(new LabelListener(firstWidth, voltAmpereProfileController.getFirstWSpinner()));
-        firstCurrent.textProperty().addListener(new LabelListener(firstCurrent, voltAmpereProfileController.getFirstISpinner()));
-        secondCurrent.textProperty().addListener(new LabelListener(secondCurrent, voltAmpereProfileController.getSecondISpinner()));
-        boostI.textProperty().addListener(new LabelListener(boostI, voltAmpereProfileController.getBoostISpinner()));
-        batteryU.textProperty().addListener(new LabelListener(batteryU, voltAmpereProfileController.getBatteryUSpinner()));
-        negativeU.textProperty().addListener(new LabelListener(negativeU, voltAmpereProfileController.getNegativeUSpinner()));
+
+//        width.textProperty().addListener(new VoltageLabelListener(width, coilOnePulseParametersModel.widthProperty().get()));
+        voltage.textProperty().addListener(new VoltageLabelListener(voltage, boostUModel.boostUProperty()));
+        firstWidth.textProperty().addListener(new VoltageLabelListener(firstWidth, boostUModel.firstWProperty()));
+        firstCurrent.textProperty().addListener(new VoltageLabelListener(firstCurrent, boostUModel.firstIProperty()));
+        secondCurrent.textProperty().addListener(new VoltageLabelListener(secondCurrent, boostUModel.secondIProperty()));
+        boostI.textProperty().addListener(new VoltageLabelListener(boostI, boostUModel.boostIProperty()));
+        batteryU.textProperty().addListener(new VoltageLabelListener(batteryU, boostUModel.batteryUProperty()));
+        negativeU.textProperty().addListener(new VoltageLabelListener(negativeU, boostUModel.negativeUProperty()));
+        firstW2Label.textProperty().addListener(new VoltageLabelListener(firstW2Label, boostUModel.firstW2Property()));
+        firstI2Label.textProperty().addListener(new VoltageLabelListener(firstI2Label, boostUModel.firstI2Property()));
+        secondI2Label.textProperty().addListener(new VoltageLabelListener(secondI2Label, boostUModel.secondI2Property()));
+        boostI2Label.textProperty().addListener(new VoltageLabelListener(boostI2Label, boostUModel.boostI2Property()));
+
+        boostUModel.boostUProperty().addListener(new VapModelListener(voltage));
+        boostUModel.firstWProperty().addListener(new VapModelListener(firstWidth));
+        boostUModel.firstIProperty().addListener(new VapModelListener(firstCurrent));
+        boostUModel.secondIProperty().addListener(new VapModelListener(secondCurrent));
+        boostUModel.boostIProperty().addListener(new VapModelListener(boostI));
+        boostUModel.batteryUProperty().addListener(new VapModelListener(batteryU));
+        boostUModel.negativeUProperty().addListener(new VapModelListener(negativeU));
+        boostUModel.firstW2Property().addListener(new VapModelListener(firstW2Label));
+        boostUModel.firstI2Property().addListener(new VapModelListener(firstI2Label));
+        boostUModel.secondI2Property().addListener(new VapModelListener(secondI2Label));
+        boostUModel.boostI2Property().addListener(new VapModelListener(boostI2Label));
+    }
+
+    private void setupModelsListeners() {
+
+        injectorModel.injectorProperty().addListener((observableValue, oldValue, newValue) -> clearCharts());
+        injectorTestModel.injectorTestProperty().addListener((observableValue, oldValue, newValue) -> clearCharts());
     }
 
 
@@ -335,47 +364,101 @@ public class VoltageController {
             }
         });
 
-        coilOnePulseParametersModel.widthProperty().addListener((observableValue, oldValue, newValue) ->
-                xAxis.setUpperBound(newValue.doubleValue() == 0 ? 0 : newValue.doubleValue() * 1.2));
+        injectorTestModel.injectorTestProperty().addListener((observableValue, oldValue, newValue) -> correctChartXaxis());
+
+        coilOnePulseParametersModel.widthProperty().addListener((observableValue, oldValue, newValue) ->{
+
+            if (injectorTestModel.isTestIsChanging()) { return; }
+            correctChartXaxis();
+        });
+
+        coilTwoPulseParametersModel.width_2Property().addListener((observableValue, oldValue, newValue) ->{
+            if (injectorTestModel.isTestIsChanging()) { return; }
+            correctChartXaxis();
+        });
+
+        coilTwoPulseParametersModel.shiftProperty().addListener((observableValue, oldValue, newValue) -> {
+            if (injectorTestModel.isTestIsChanging()) { return; }
+            correctChartXaxis();
+        });
     }
 
-    private class LabelListener implements ChangeListener<String> {
+    private void correctChartXaxis() {
 
-        private Label label;
+        double w1 = coilOnePulseParametersModel.widthProperty().get();
+        double w2 = coilTwoPulseParametersModel.width_2Property().get() + coilTwoPulseParametersModel.shiftProperty().get();
+        xAxis.setUpperBound(w1 == 0 ? 0 : w1 > w2 ? w1 * 1.2 : w2 * 1.2);
+    }
 
-        private Spinner<? extends Number> spinner;
+    private class VapModelListener implements ChangeListener<Number>{
 
-        LabelListener(Label label, Spinner<? extends Number> spinner) {
+        private Label valueLabel;
 
-            this.label = label;
-            this.spinner = spinner;
-
+        public VapModelListener(Label valueLabel) {
+            this.valueLabel = valueLabel;
         }
 
         @Override
-        public void changed(ObservableValue<? extends String> observable, String oldValue, String newValue) {
+        public void changed(ObservableValue<? extends Number> observableValue, Number oldValue, Number newValue) {
 
-            Number spinnerValue = spinner.getValue();
-            if (spinnerValue instanceof Double) {
-                if ((Double) spinnerValue != convertDataToDouble(newValue))
-                    setStyle(RED_COLOR_STYLE);
-                else
-                    setStyle(null);
-            } else if (spinnerValue instanceof Integer) {
-                if ((Integer) spinnerValue != convertDataToInt(newValue))
-                    setStyle(RED_COLOR_STYLE);
-                else
-                    setStyle(null);
+            if (newValue instanceof Double) {
+
+                setStyle(newValue.doubleValue() == convertDataToDouble(valueLabel.getText()));
+            } else if (newValue instanceof Integer) {
+
+                setStyle(newValue.intValue() == convertDataToInt(valueLabel.getText()));
             }
+        }
+        private void setStyle(boolean equal) {
 
+            if(equal) valueLabel.setStyle(null);
+            else valueLabel.setStyle(RED_COLOR_STYLE);
+        }
+    }
+
+
+    private class VoltageLabelListener implements ChangeListener<String>{
+
+        private Label label;
+
+        private DoubleProperty doubleValue;
+
+        private IntegerProperty intValue;
+
+        public VoltageLabelListener(Label label, DoubleProperty value) {
+            this.label = label;
+            this.doubleValue = value;
         }
 
-        // TODO FIXME Temporarily deactivated coloring of spinner text, define if it is really necessary
+        public VoltageLabelListener(Label label, IntegerProperty value) {
+            this.label = label;
+            this.intValue = value;
+        }
+
+        @Override
+        public void changed(ObservableValue<? extends String> observableValue, String oldValue, String newValue) {
+
+            if (doubleValue != null) {
+
+                if (convertDataToDouble(newValue) != doubleValue.get()) {
+                    setStyle(RED_COLOR_STYLE);
+                }else{
+                    setStyle(null);
+                }
+
+            } else if (intValue != null) {
+
+                if (convertDataToInt(newValue) != intValue.get()) {
+                    setStyle(RED_COLOR_STYLE);
+                }else{
+                    setStyle(null);
+                }
+            }
+        }
+
         private void setStyle(String style) {
 
-//            spinner.getEditor().setStyle(style);
             label.setStyle(style);
-
         }
     }
 
@@ -399,5 +482,7 @@ public class VoltageController {
         labelBoostIUOM.textProperty().bind(i18N.createStringBinding("h4.voltage.label.ampere"));
         labelBatteryUUOM.textProperty().bind(i18N.createStringBinding("h4.voltage.label.volt"));
         labelNegativeUUOM.textProperty().bind(i18N.createStringBinding("h4.voltage.label.volt"));
+        coil1Label.textProperty().bind(i18N.createStringBinding("voapProfile.label.coil1"));
+        coil2Label.textProperty().bind(i18N.createStringBinding("voapProfile.label.coil2"));
     }
 }

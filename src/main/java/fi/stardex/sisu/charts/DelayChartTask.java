@@ -79,6 +79,11 @@ public class DelayChartTask extends ChartTask {
     }
 
     @Override
+    protected int getFirmwareWidth() {
+        return 0;
+    }
+
+    @Override
     protected ObservableList<XYChart.Data<Double, Double>> getData() {
         return delayController.getDelayData();
     }

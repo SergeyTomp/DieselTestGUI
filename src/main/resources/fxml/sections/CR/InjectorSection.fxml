@@ -14,36 +14,37 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 
-<HBox fx:id="rootHBox" alignment="CENTER" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="130.0" minWidth="500.0" stylesheets="@../../../css/Styling.css" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.cr.InjectorSectionController">
+<HBox fx:id="rootHBox" alignment="CENTER_LEFT" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="130.0" minWidth="500.0" stylesheets="@../../../css/Styling.css" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.cr.InjectorSectionController">
     <children>
-        <GridPane alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="130.0" minWidth="150.0">
+        <GridPane alignment="CENTER_LEFT" minHeight="130.0" HBox.hgrow="ALWAYS">
             <children>
-                <Label fx:id="widthLabel" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="20.0" minWidth="40.0" text="%injSection.label.width" GridPane.columnIndex="0" GridPane.halignment="LEFT" GridPane.rowIndex="0">
+                <Label fx:id="widthLabel" minWidth="40.0" text="%injSection.label.width" GridPane.columnIndex="0" GridPane.halignment="LEFT" GridPane.rowIndex="0">
                     <GridPane.margin>
                         <Insets left="2.0" />
                     </GridPane.margin>
                     <padding>
                         <Insets left="10.0" />
                     </padding></Label>
-                <Label fx:id="freqLabel" minWidth="30.0" text="%injSection.label.freq" GridPane.columnIndex="0" GridPane.halignment="LEFT" GridPane.rowIndex="1">
+                <Label fx:id="freqLabel" minWidth="40.0" text="%injSection.label.freq" GridPane.columnIndex="0" GridPane.halignment="LEFT" GridPane.rowIndex="1">
                     <GridPane.margin>
                         <Insets left="2.0" />
                     </GridPane.margin>
                     <padding>
                         <Insets left="10.0" />
                     </padding></Label>
-                <Spinner fx:id="widthCurrentSignalSpinner" editable="true" maxHeight="30.0" maxWidth="90.0" minHeight="30.0" minWidth="90.0" prefHeight="30.0" prefWidth="90.0" stylesheets="@../../../css/Styling.css" GridPane.columnIndex="1" GridPane.halignment="LEFT">
+                <Spinner fx:id="widthCurrentSignalSpinner" editable="true" maxHeight="30.0" maxWidth="90.0" minHeight="30.0" minWidth="90.0" prefHeight="30.0" prefWidth="90.0" stylesheets="@../../../css/Styling.css" GridPane.columnIndex="1" GridPane.halignment="CENTER">
                     <GridPane.margin>
-                        <Insets left="20.0" />
+                        <Insets />
                     </GridPane.margin></Spinner>
-                <Spinner fx:id="freqCurrentSignalSpinner" editable="true" maxHeight="30.0" maxWidth="90.0" minHeight="30.0" minWidth="90.0" prefHeight="30.0" prefWidth="90.0" stylesheets="@../../../css/Styling.css" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="1">
+                <Spinner fx:id="freqCurrentSignalSpinner" editable="true" maxHeight="30.0" maxWidth="90.0" minHeight="30.0" minWidth="90.0" prefHeight="30.0" prefWidth="90.0" stylesheets="@../../../css/Styling.css" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1">
                     <GridPane.margin>
-                        <Insets left="20.0" />
+                        <Insets />
                     </GridPane.margin></Spinner>
+            <Label fx:id="coil1Label" text="%voapProfile.label.coil1" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.valignment="TOP" />
             </children>
             <columnConstraints>
-                <ColumnConstraints halignment="LEFT" maxWidth="1.7976931348623157E308" minWidth="60.0" />
-                <ColumnConstraints halignment="RIGHT" hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="100.0" />
+                <ColumnConstraints fillWidth="false" halignment="LEFT" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="90.0" />
+                <ColumnConstraints hgrow="ALWAYS" maxWidth="200.0" minWidth="90.0" />
             </columnConstraints>
             <rowConstraints>
                 <RowConstraints maxHeight="65.0" minHeight="50.0" percentHeight="50.0" prefHeight="65.0" vgrow="SOMETIMES" />
@@ -53,9 +54,44 @@
                 <Insets />
             </HBox.margin>
         </GridPane>
-        <GridPane alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="130.0" minWidth="50.0" HBox.hgrow="ALWAYS">
+      <GridPane alignment="CENTER_LEFT" minHeight="130.0" HBox.hgrow="ALWAYS">
+        <columnConstraints>
+          <ColumnConstraints fillWidth="false" halignment="LEFT" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="90.0" />
+          <ColumnConstraints hgrow="ALWAYS" maxWidth="200.0" minWidth="90.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <Spinner fx:id="width2CurrentSignalSpinner" editable="true" maxHeight="30.0" maxWidth="90.0" minHeight="30.0" minWidth="90.0" prefHeight="30.0" prefWidth="90.0" stylesheets="@../../../css/Styling.css" GridPane.columnIndex="1" GridPane.halignment="CENTER">
+               <GridPane.margin>
+                  <Insets />
+               </GridPane.margin></Spinner>
+            <Spinner fx:id="offset2CurrentSignalSpinner" editable="true" maxHeight="30.0" maxWidth="90.0" minHeight="30.0" minWidth="90.0" prefHeight="30.0" prefWidth="90.0" stylesheets="@../../../css/Styling.css" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1">
+               <GridPane.margin>
+                  <Insets />
+               </GridPane.margin></Spinner>
+            <Label fx:id="width2Label" minWidth="40.0" text="%injSection.label.width" GridPane.halignment="LEFT">
+               <GridPane.margin>
+                  <Insets left="2.0" />
+               </GridPane.margin>
+               <padding>
+                  <Insets left="10.0" />
+               </padding></Label>
+            <Label fx:id="offsetLabel" minWidth="40.0" text="%injSection.label.offset" GridPane.halignment="LEFT" GridPane.rowIndex="1">
+               <GridPane.margin>
+                  <Insets left="2.0" />
+               </GridPane.margin>
+               <padding>
+                  <Insets left="10.0" />
+               </padding></Label>
+            <Label fx:id="coil2Label" text="%voapProfile.label.coil2" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.valignment="TOP" />
+         </children>
+      </GridPane>
+        <GridPane alignment="CENTER_LEFT" minHeight="130.0" HBox.hgrow="ALWAYS">
             <children>
-                <RadioButton fx:id="piezoRadioButton" minHeight="-Infinity" minWidth="50.0" mnemonicParsing="false" styleClass="radioButton" stylesheets="@../../../css/Styling.css" text="%injSection.radio.piezo" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" GridPane.vgrow="ALWAYS">
+                <RadioButton fx:id="piezoRadioButton" minWidth="50.0" mnemonicParsing="false" styleClass="radioButton" stylesheets="@../../../css/Styling.css" text="%injSection.radio.piezo" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" GridPane.vgrow="ALWAYS">
                     <GridPane.margin>
                         <Insets bottom="2.0" left="5.0" right="2.0" top="2.0" />
                     </GridPane.margin>
@@ -63,20 +99,19 @@
                         <ToggleGroup fx:id="piezoCoilToggleGroup" />
                     </toggleGroup>
                 </RadioButton>
-                <RadioButton fx:id="coilRadioButton" minHeight="-Infinity" minWidth="50.0" mnemonicParsing="false" selected="true" styleClass="radioButton" stylesheets="@../../../css/Styling.css" text="%injSection.radio.coil" toggleGroup="$piezoCoilToggleGroup" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
+                <RadioButton fx:id="coilRadioButton" minWidth="50.0" mnemonicParsing="false" selected="true" styleClass="radioButton" stylesheets="@../../../css/Styling.css" text="%injSection.radio.coil" toggleGroup="$piezoCoilToggleGroup" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
                     <GridPane.margin>
                         <Insets bottom="2.0" left="5.0" right="2.0" top="2.0" />
                     </GridPane.margin>
                 </RadioButton>
-                <RadioButton fx:id="piezoDelphiRadioButton" minHeight="-Infinity" minWidth="50.0" mnemonicParsing="false" styleClass="radioButton" stylesheets="@../../../css/Styling.css" text="%injSection.radio.piezoDelphi" toggleGroup="$piezoCoilToggleGroup" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="ALWAYS">
+                <RadioButton fx:id="piezoDelphiRadioButton" minWidth="50.0" mnemonicParsing="false" styleClass="radioButton" stylesheets="@../../../css/Styling.css" text="%injSection.radio.piezoDelphi" toggleGroup="$piezoCoilToggleGroup" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="ALWAYS">
                     <GridPane.margin>
                         <Insets bottom="2.0" left="5.0" right="2.0" top="2.0" />
                     </GridPane.margin>
                 </RadioButton>
             </children>
             <columnConstraints>
-                <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="1.7976931348623157E308" />
-                <ColumnConstraints halignment="LEFT" hgrow="ALWAYS" minWidth="50.0" prefWidth="100.0" />
+                <ColumnConstraints fillWidth="false" halignment="LEFT" hgrow="ALWAYS" maxWidth="200.0" minWidth="90.0" />
             </columnConstraints>
             <rowConstraints>
                 <RowConstraints maxHeight="43.0" minHeight="33.0" percentHeight="33.0" prefHeight="43.0" valignment="CENTER" vgrow="SOMETIMES" />
@@ -84,7 +119,7 @@
                 <RowConstraints maxHeight="43.0" minHeight="33.0" percentHeight="33.0" prefHeight="43.0" valignment="CENTER" vgrow="SOMETIMES" />
             </rowConstraints>
         </GridPane>
-        <GridPane fx:id="gridLedBeaker" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minWidth="350.0" prefWidth="350.0" HBox.hgrow="ALWAYS">
+        <GridPane fx:id="gridLedBeaker" alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="400.0" HBox.hgrow="ALWAYS">
             <children>
                 <ToggleButton fx:id="injectorSectionStartToggleButton" minHeight="90.0" minWidth="50.0" mnemonicParsing="false" prefWidth="50.0" styleClass="switcher" stylesheets="@../../../css/Styling.css" GridPane.columnIndex="4" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                     <GridPane.margin>
@@ -92,36 +127,36 @@
                     </GridPane.margin>
                 </ToggleButton>
                 <Label fx:id="statusBoostULabelText" alignment="TOP_RIGHT" styleClass="label-progress" stylesheets="@../../../css/Styling.css" text="%injSection.label.adjustingBoostU" visible="false" GridPane.columnSpan="3" GridPane.halignment="RIGHT" GridPane.valignment="TOP" />
-                <StackPane fx:id="led1StackPane" prefWidth="112.0" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                <StackPane fx:id="led1StackPane" prefWidth="100.0" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                     <children>
-                        <AnchorPane fx:id="led1AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="80.0" prefWidth="80.0">
+                        <AnchorPane fx:id="led1AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="90.0" prefWidth="90.0">
                             <children>
                                 <ToggleButton fx:id="led1ToggleButton" mnemonicParsing="false" styleClass="led" stylesheets="@../../../css/Styling.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                             </children>
                         </AnchorPane>
                     </children>
                 </StackPane>
-                <StackPane fx:id="led2StackPane" prefWidth="112.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                <StackPane fx:id="led2StackPane" prefWidth="100.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                     <children>
-                        <AnchorPane fx:id="led2AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="80.0" prefWidth="80.0">
+                        <AnchorPane fx:id="led2AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="90.0" prefWidth="90.0">
                             <children>
                                 <ToggleButton fx:id="led2ToggleButton" mnemonicParsing="false" styleClass="led" stylesheets="@../../../css/Styling.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                             </children>
                         </AnchorPane>
                     </children>
                 </StackPane>
-                <StackPane fx:id="led3StackPane" prefWidth="112.0" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                <StackPane fx:id="led3StackPane" prefWidth="100.0" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                     <children>
-                        <AnchorPane fx:id="led3AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="80.0" prefWidth="80.0">
+                        <AnchorPane fx:id="led3AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="90.0" prefWidth="90.0">
                             <children>
                                 <ToggleButton fx:id="led3ToggleButton" mnemonicParsing="false" styleClass="led" stylesheets="@../../../css/Styling.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                             </children>
                         </AnchorPane>
                     </children>
                 </StackPane>
-                <StackPane fx:id="led4StackPane" prefWidth="112.0" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                <StackPane fx:id="led4StackPane" prefWidth="100.0" GridPane.columnIndex="3" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                     <children>
-                        <AnchorPane fx:id="led4AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="80.0" prefWidth="80.0">
+                        <AnchorPane fx:id="led4AnchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="90.0" prefWidth="90.0">
                             <children>
                                 <ToggleButton fx:id="led4ToggleButton" mnemonicParsing="false" styleClass="led" stylesheets="@../../../css/Styling.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
                             </children>
@@ -134,9 +169,9 @@
             <columnConstraints>
                 <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="60.0" />
                 <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="60.0" />
+                <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="80.0" />
                 <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="60.0" />
-                <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="60.0" />
-                <ColumnConstraints fillWidth="false" halignment="RIGHT" hgrow="ALWAYS" maxWidth="67.0" minWidth="42.0" prefWidth="61.0" />
+                <ColumnConstraints fillWidth="false" halignment="RIGHT" hgrow="ALWAYS" maxWidth="70.0" minWidth="-Infinity" prefWidth="70.0" />
                 <ColumnConstraints />
             </columnConstraints>
             <rowConstraints>

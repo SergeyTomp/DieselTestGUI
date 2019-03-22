@@ -5,17 +5,17 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
-public class CoilOnePulseParametersModel {
+public class CoilTwoPulseParametersModel {
 
-    private IntegerProperty width = new SimpleIntegerProperty();
-    private DoubleProperty period = new SimpleDoubleProperty();
+    private IntegerProperty width_2 = new SimpleIntegerProperty();
+    private DoubleProperty shift = new SimpleDoubleProperty();
     private boolean valueFactorySetting;
 
-    public IntegerProperty widthProperty() {
-        return width;
+    public IntegerProperty width_2Property() {
+        return width_2;
     }
-    public DoubleProperty periodProperty() {
-        return period;
+    public DoubleProperty shiftProperty() {
+        return shift;
     }
 
     public boolean isValueFactorySetting() {

@@ -42,69 +42,77 @@
                     <children>
                         <GridPane minHeight="-Infinity" prefHeight="170.0" prefWidth="136.0" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                             <children>
-                                <Label fx:id="labelVoltage" text="%h4.voltage.label.voltage" GridPane.columnIndex="0" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                                <Label fx:id="labelVoltage" text="%h4.voltage.label.voltage" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                                     <GridPane.margin>
                                         <Insets bottom="2.0" left="4.0" right="6.0" top="2.0" />
                                     </GridPane.margin>
                                 </Label>
-                                <Label fx:id="labelFirstWidth" text="%h4.voltage.label.first" GridPane.columnIndex="0" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                                <Label fx:id="labelFirstWidth" text="%h4.voltage.label.first" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                                     <GridPane.margin>
                                         <Insets bottom="2.0" left="4.0" right="6.0" top="2.0" />
                                     </GridPane.margin>
                                 </Label>
-                                <Label fx:id="labelCurrent1" text="%h4.voltage.label.I1" GridPane.columnIndex="0" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                                <Label fx:id="labelCurrent1" text="%h4.voltage.label.I1" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                                     <GridPane.margin>
                                         <Insets bottom="2.0" left="4.0" right="6.0" top="2.0" />
                                     </GridPane.margin>
                                 </Label>
-                                <Label fx:id="labelCurrent2" text="%h4.voltage.label.I2" GridPane.columnIndex="0" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                                <Label fx:id="labelCurrent2" text="%h4.voltage.label.I2" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="5" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                                     <GridPane.margin>
                                         <Insets bottom="2.0" left="4.0" right="6.0" top="2.0" />
                                     </GridPane.margin>
                                 </Label>
-                        <Label fx:id="voltage" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                        <Label fx:id="firstWidth" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                        <Label fx:id="firstCurrent" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                        <Label fx:id="secondCurrent" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                        <Label fx:id="labelWidth" text="%h4.voltage.label.width" visible="false" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                        <Label fx:id="voltage" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                        <Label fx:id="firstWidth" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                        <Label fx:id="firstCurrent" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                        <Label fx:id="secondCurrent" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                        <Label fx:id="labelWidth" text="%h4.voltage.label.width" visible="false" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                            <GridPane.margin>
                               <Insets bottom="2.0" left="4.0" right="6.0" top="2.0" />
                            </GridPane.margin>
                         </Label>
-                        <Label fx:id="width" text="Label" visible="false" GridPane.columnIndex="1" />
-                        <Label fx:id="labelBoostI" text="%h4.voltage.label.currentBoost" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="5" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                        <Label fx:id="width" text="Label" visible="false" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <Label fx:id="labelBoostI" text="%h4.voltage.label.currentBoost" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="6" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                            <GridPane.margin>
                               <Insets bottom="2.0" left="4.0" right="6.0" top="2.0" />
                            </GridPane.margin>
                         </Label>
-                        <Label fx:id="labelBatteryU" text="%h4.voltage.label.voltageHold" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="6" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                        <Label fx:id="labelBatteryU" text="%h4.voltage.label.voltageHold" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="7" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                            <GridPane.margin>
                               <Insets bottom="2.0" left="4.0" right="6.0" top="2.0" />
                            </GridPane.margin>
                         </Label>
-                        <Label fx:id="labelNegativeU" text="%h4.voltage.label.firstNegativeVoltage" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="7" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                        <Label fx:id="labelNegativeU" text="%h4.voltage.label.firstNegativeVoltage" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="8" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                            <GridPane.margin>
                               <Insets bottom="2.0" left="4.0" right="6.0" top="2.0" />
                            </GridPane.margin>
                         </Label>
-                        <Label fx:id="boostI" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-                        <Label fx:id="batteryU" GridPane.columnIndex="1" GridPane.rowIndex="6" />
-                        <Label fx:id="negativeU" GridPane.columnIndex="1" GridPane.rowIndex="7" />
-                        <Label fx:id="labelWidthUOM" text="%h4.voltage.label.us" visible="false" GridPane.columnIndex="2" />
-                        <Label fx:id="labelVoltageUOM" text="%h4.voltage.label.volt" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-                        <Label fx:id="labelFirstWidthUOM" text="%h4.voltage.label.ampere" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-                        <Label fx:id="labelCurrent1UOM" text="%h4.voltage.label.ampere" GridPane.columnIndex="2" GridPane.rowIndex="3" />
-                        <Label fx:id="labelCurrent2UOM" text="%h4.voltage.label.volt" GridPane.columnIndex="2" GridPane.rowIndex="4" />
-                        <Label fx:id="labelBoostIUOM" text="%h4.voltage.label.ampere" GridPane.columnIndex="2" GridPane.rowIndex="5" />
-                        <Label fx:id="labelBatteryUUOM" text="%h4.voltage.label.volt" GridPane.columnIndex="2" GridPane.rowIndex="6" />
-                        <Label fx:id="labelNegativeUUOM" text="%h4.voltage.label.volt" GridPane.columnIndex="2" GridPane.rowIndex="7" />
+                        <Label fx:id="boostI" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+                        <Label fx:id="batteryU" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+                        <Label fx:id="negativeU" GridPane.columnIndex="1" GridPane.rowIndex="8" />
+                        <Label fx:id="labelWidthUOM" text="%h4.voltage.label.us" visible="false" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                        <Label fx:id="labelVoltageUOM" text="%h4.voltage.label.volt" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+                        <Label fx:id="labelFirstWidthUOM" text="%h4.voltage.label.ampere" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+                        <Label fx:id="labelCurrent1UOM" text="%h4.voltage.label.ampere" GridPane.columnIndex="3" GridPane.rowIndex="4" />
+                        <Label fx:id="labelCurrent2UOM" text="%h4.voltage.label.volt" GridPane.columnIndex="3" GridPane.rowIndex="5" />
+                        <Label fx:id="labelBoostIUOM" text="%h4.voltage.label.ampere" GridPane.columnIndex="3" GridPane.rowIndex="6" />
+                        <Label fx:id="labelBatteryUUOM" text="%h4.voltage.label.volt" GridPane.columnIndex="3" GridPane.rowIndex="7" />
+                        <Label fx:id="labelNegativeUUOM" text="%h4.voltage.label.volt" GridPane.columnIndex="3" GridPane.rowIndex="8" />
+                        <Label fx:id="coil1Label" text="Coil 1" GridPane.columnIndex="1" />
+                        <Label fx:id="coil2Label" text="Coil 2" GridPane.columnIndex="2" />
+                        <Label fx:id="firstW2Label" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+                        <Label fx:id="firstI2Label" GridPane.columnIndex="2" GridPane.rowIndex="4" />
+                        <Label fx:id="secondI2Label" GridPane.columnIndex="2" GridPane.rowIndex="5" />
+                        <Label fx:id="boostI2Label" GridPane.columnIndex="2" GridPane.rowIndex="6" />
                             </children>
                             <columnConstraints>
                                 <ColumnConstraints halignment="RIGHT" hgrow="ALWAYS" maxWidth="100.0" minWidth="100.0" prefWidth="100.0" />
-                                <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="70.0" minWidth="10.0" prefWidth="70.0" />
+                                <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="60.0" minWidth="10.0" prefWidth="60.0" />
+                        <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="60.0" minWidth="10.0" prefWidth="60.0" />
                                 <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="60.0" minWidth="10.0" prefWidth="60.0" />
                             </columnConstraints>
                             <rowConstraints>
+                        <RowConstraints minHeight="-Infinity" prefHeight="20.0" vgrow="SOMETIMES" />
                         <RowConstraints minHeight="-Infinity" prefHeight="20.0" vgrow="SOMETIMES" />
                                 <RowConstraints minHeight="-Infinity" prefHeight="20.0" vgrow="SOMETIMES" />
                                 <RowConstraints minHeight="-Infinity" prefHeight="20.0" vgrow="SOMETIMES" />

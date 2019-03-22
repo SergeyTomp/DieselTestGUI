@@ -220,22 +220,22 @@ public class Enabler {
 
         if (injectorType == null) {
             disableRadioButtons(piezoCoilToggleGroup, false);
-            setGaugesToNull();
+//            setGaugesToNull();
             return this;
         }
 
         switch (injectorType) {
             case "coil":
                 selectInjectorTypeRadioButton(coilRadioButton);
-                setupGauges(0, 2, "Inductance", "\u03BCH", "\u03A9", 500d, 3d, "COIL");
+//                setupGauges(0, 2, "Inductance", "\u03BCH", "\u03A9", 500d, 3d, "COIL");
                 break;
             case "piezo":
                 selectInjectorTypeRadioButton(piezoRadioButton);
-                setupGauges(1, 0, "Capacitance", "\u03BCF", "k\u03A9", 10d, 2000d, "PIEZO");
+//                setupGauges(1, 0, "Capacitance", "\u03BCF", "k\u03A9", 10d, 2000d, "PIEZO");
                 break;
             case "piezoDelphi":
                 selectInjectorTypeRadioButton(piezoDelphiRadioButton);
-                setupGauges(1, 0, "Capacitance", "\u03BCF", "k\u03A9", 20d, 2000d, "PIEZO");
+//                setupGauges(1, 0, "Capacitance", "\u03BCF", "k\u03A9", 20d, 2000d, "PIEZO");
                 break;
         }
 
@@ -305,8 +305,9 @@ public class Enabler {
         }
 
         disableNode(isStarted || mainSectionStartToggleButton.isSelected(), gui_typeComboBox);
+        disableNode(isStarted, pulseSettingsButton);
 
-        disableNode(isStarted, ledBeaker1, ledBeaker2, ledBeaker3, ledBeaker4, pulseSettingsButton, widthCurrentSignalSpinner, freqCurrentSignalSpinner);
+//        disableNode(isStarted, ledBeaker1, ledBeaker2, ledBeaker3, ledBeaker4, pulseSettingsButton, widthCurrentSignalSpinner, freqCurrentSignalSpinner);
 
         return this;
 

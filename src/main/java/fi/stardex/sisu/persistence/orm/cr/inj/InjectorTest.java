@@ -66,6 +66,12 @@ public class InjectorTest implements ChangeListener<Boolean> {
     @Column(name = "is_custom")
     private Boolean isCustom;
 
+    @Column(name = "total_pulse_time2")
+    private Integer totalPulseTime2;
+
+    @Column(name = "shift")
+    private Integer shift;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "volt_ampere_profile")
     @NotFound
@@ -99,7 +105,7 @@ public class InjectorTest implements ChangeListener<Boolean> {
 
     public InjectorTest(Injector injector, TestName testName, Integer motorSpeed, Integer settedPressure,
                         Integer adjustingTime, Integer measurementTime, Integer injectionRate,
-                        Integer totalPulseTime, Double nominalFlow, Double flowRange) {
+                        Integer totalPulseTime, Double nominalFlow, Double flowRange, Integer totalPulseTime2, Integer shift) {
 
         super();
         this.injector = injector;
@@ -113,7 +119,8 @@ public class InjectorTest implements ChangeListener<Boolean> {
         this.nominalFlow = nominalFlow;
         this.flowRange = flowRange;
         this.isCustom = true;
-
+        this.totalPulseTime2 = totalPulseTime2;
+        this.shift = shift;
     }
 
     public static ObservableList<InjectorTest> getListOfNonIncludedTests() {
@@ -186,6 +193,14 @@ public class InjectorTest implements ChangeListener<Boolean> {
 
     public TestName getTestName() {
         return testName;
+    }
+
+    public Integer getTotalPulseTime2() {
+        return totalPulseTime2;
+    }
+
+    public Integer getShift() {
+        return shift;
     }
 
     @Override

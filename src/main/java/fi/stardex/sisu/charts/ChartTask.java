@@ -1,17 +1,22 @@
 package fi.stardex.sisu.charts;
 
 import fi.stardex.sisu.combobox_values.InjectorChannel;
+import fi.stardex.sisu.model.CoilTwoPulseParametersModel;
 import fi.stardex.sisu.model.InjConfigurationModel;
+import fi.stardex.sisu.model.InjectorTypeModel;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
+import fi.stardex.sisu.states.BoostUModel;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
+import fi.stardex.sisu.util.enums.InjectorType;
 import fi.stardex.sisu.util.filters.FilterInputChartData;
 import fi.stardex.sisu.version.FirmwareVersion;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.Toggle;
 import net.wimpi.modbus.ModbusException;
 import org.slf4j.Logger;
@@ -58,9 +63,20 @@ public abstract class ChartTask extends TimerTask {
 
     protected abstract ModbusMapUltima getCurrentGraph();
 
+    @Autowired
+    private BoostUModel boostUModel;
+
+    @Autowired
+    protected CoilTwoPulseParametersModel coilTwoPulseParametersModel;
+
+    @Autowired
+    private InjectorTypeModel injectorTypeModel;
+
     protected abstract ModbusMapUltima getCurrentGraphFrameNum();
 
     protected abstract ModbusMapUltima getCurrentGraphUpdate();
+
+    protected abstract int getFirmwareWidth();
 
     protected abstract ObservableList<XYChart.Data<Double, Double>> getData();
 
@@ -103,7 +119,7 @@ public abstract class ChartTask extends TimerTask {
 
         List<XYChart.Data<Double, Double>> piezoDelphiNegativePoints = new ArrayList<>();
 
-        if (injectorSectionController.getPiezoDelphiRadioButton().isSelected()) {
+        if (injectorTypeModel.injectorTypeProperty().get() == InjectorType.PIEZO_DELPHI) {
 
             for (double aData : data) {
                 pointsList.add(new XYChart.Data<>(xValue, aData / CURRENT_COEF));
@@ -121,7 +137,7 @@ public abstract class ChartTask extends TimerTask {
             }
 
         }
-        if (injectorSectionController.getPiezoRadioButton().isSelected()) {
+        if (injectorTypeModel.injectorTypeProperty().get() == InjectorType.PIEZO) {
 
             double xOffset = 0;
 
@@ -133,7 +149,7 @@ public abstract class ChartTask extends TimerTask {
                     break;
             }
 
-        } else if (injectorSectionController.getPiezoDelphiRadioButton().isSelected()) {
+        } else if (injectorTypeModel.injectorTypeProperty().get() == InjectorType.PIEZO_DELPHI) {
 
             int i = 0;
 
@@ -161,7 +177,7 @@ public abstract class ChartTask extends TimerTask {
 
         updateOSC = voltageController.isTabVoltageShowingProperty().get();
 
-        if (injectorSectionController.getActiveLedToggleButtonsList().size() == 0)
+        if (injectorSectionController.getArrayNumbersOfActiveLedToggleButtons().size() == 0)
             return;
 
         if(injConfigurationModel.injConfigurationProperty().get() == InjectorChannel.SINGLE_CHANNEL){
@@ -174,23 +190,33 @@ public abstract class ChartTask extends TimerTask {
 //            List<Integer> activeLedControllerNumbers = injectorSectionController.fillArrayNumbersOfActiveLedToggleButtons();
 //            if (!activeLedControllerNumbers.contains(getChartNumber()))
 //                return;
-            if(!injectorSectionController.getArrayNumbersOfActiveLedToggleButtons().contains(getChartNumber())) return;
+
+            if (!injectorSectionController.getArrayNumbersOfActiveLedToggleButtons().contains(getChartNumber())) {
+
+                if (!boostUModel.isDoubleCoilProperty().get()) {
+
+//                    Platform.runLater(() -> addDataToChart(new double[2000], ChartTask.this.getData()));
+                    return;
+                } else if (getChartNumber() == 3 || getChartNumber() == 4) {
+                    return;
+                }
+            }
         }
 
         int n;
 
-        firmwareWidth = convertDataToInt(ModbusMapUltima.WidthBoardOne.getLastValue().toString());
+        firmwareWidth = getFirmwareWidth();
 
-        Toggle selectedToggle = injectorSectionController.getPiezoCoilToggleGroup().getSelectedToggle();
+        InjectorType injectorType = injectorTypeModel.injectorTypeProperty().get();
 
         int offset;
 
-        if (selectedToggle == injectorSectionController.getCoilRadioButton()) {
+        if (injectorType == InjectorType.COIL) {
 
             offset = 200;
             n = (int) ((firmwareWidth + offset) / X_VALUE_OFFSET);
 
-        } else if (selectedToggle == injectorSectionController.getPiezoRadioButton())
+        } else if (injectorType == InjectorType.PIEZO)
 
             n = (int) ((firmwareWidth) / X_VALUE_OFFSET);
 
@@ -243,7 +269,7 @@ public abstract class ChartTask extends TimerTask {
 
         } catch (ClassCastException e) {
 
-            logger.error("Cast Exception: ");
+            logger.error("Cast Exception: ChartTask " + getChartNumber());
             return;
 
         }

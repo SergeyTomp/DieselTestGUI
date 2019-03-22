@@ -129,7 +129,7 @@ public class TabSectionController {
     @PostConstruct
     private void init(){
         bindingI18N();
-        tabPane.getTabs().remove(tabPiezoRepair);
+//        tabPane.getTabs().remove(tabPiezoRepair);
     }
 
 

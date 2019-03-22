@@ -439,8 +439,11 @@ public class SpringJavaConfig {
     }
 
     @Bean
-    public InjectorSectionUpdateModel injectorSectionUpdateModel() {
-        return new InjectorSectionUpdateModel();
+    @Autowired
+    public InjectorSectionUpdateModel injectorSectionUpdateModel(BoostUModel boostUModel) {
+        InjectorSectionUpdateModel injectorSectionUpdateModel = new InjectorSectionUpdateModel();
+        injectorSectionUpdateModel.setBoostUModel(boostUModel);
+        return injectorSectionUpdateModel;
     }
 
     @Bean
@@ -818,7 +821,7 @@ public class SpringJavaConfig {
     }
 
     @Bean
-    public BoostUModel boostU_state() {
+    public BoostUModel boostUModel() {
         return new BoostUModel();
     }
 
@@ -1059,6 +1062,21 @@ public class SpringJavaConfig {
     @Bean
     public CoilOnePulseParametersModel coilOnePulseParametersModel() {
         return new CoilOnePulseParametersModel();
+    }
+
+    @Bean
+    public CoilTwoPulseParametersModel coilTwoPulseParametersModel() {
+        return new CoilTwoPulseParametersModel();
+    }
+
+    @Bean
+    public InjectorModel injectorModel() {
+        return new InjectorModel();
+    }
+
+    @Bean
+    public VoltAmpereProfileModel voltAmpereProfileModel() {
+        return new VoltAmpereProfileModel();
     }
 
 //    @Bean

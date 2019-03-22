@@ -7,9 +7,17 @@ import javafx.beans.property.SimpleObjectProperty;
 public class InjectorTestModel {
 
     private final ObjectProperty<InjectorTest> injectorTestProperty = new SimpleObjectProperty<>();
+    private boolean testIsChanging;
 
     public ObjectProperty<InjectorTest> injectorTestProperty() {
         return injectorTestProperty;
     }
 
+    public boolean isTestIsChanging() {
+        return testIsChanging;
+    }
+
+    public void setTestIsChanging(boolean testIsChanging) {
+        this.testIsChanging = testIsChanging;
+    }
 }

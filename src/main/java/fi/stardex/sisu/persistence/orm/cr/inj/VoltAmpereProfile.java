@@ -46,6 +46,21 @@ public class VoltAmpereProfile {
     @Column(name = "boost_disable")
     private Boolean boostDisable;
 
+    @Column(name = "boost_i2")
+    private Double boostI2;
+
+    @Column(name = "first_i2")
+    private Double firstI2;
+
+    @Column(name = "first_w2")
+    private Integer firstW2;
+
+    @Column(name = "second_i2")
+    private Double secondI2;
+
+    @Column(name = "is_double_coil")
+    private Boolean isDoubleCoil;
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "voltAmpereProfile")
     private List<Injector> injectors = new LinkedList<>();
 
@@ -108,13 +123,34 @@ public class VoltAmpereProfile {
         return boostDisable;
     }
 
+    public Double getBoostI2() {
+        return boostI2;
+    }
+
+    public Double getFirstI2() {
+        return firstI2;
+    }
+
+    public Integer getFirstW2() {
+        return firstW2;
+    }
+
+    public Double getSecondI2() {
+        return secondI2;
+    }
+
+    public Boolean isDoubleCoil() {
+        return isDoubleCoil;
+    }
+
     public VoltAmpereProfile() {
     }
 
     public VoltAmpereProfile(String profileName, InjectorType injectorType,
                              Boolean isCustom, Integer boostU, Integer batteryU,
                              Double boostI, Double firstI, Integer firstW,
-                             Double secondI, Integer negativeU, Boolean boostDisable) {
+                             Double secondI, Integer negativeU, Boolean boostDisable,
+                             Double boostI2, Double firstI2, Integer firstW2, Double secondI2, Boolean isDoubleCoil) {
 
         this.profileName = profileName;
         this.injectorType = injectorType;
@@ -127,7 +163,11 @@ public class VoltAmpereProfile {
         this.secondI = secondI;
         this.negativeU = negativeU;
         this.boostDisable = boostDisable;
-
+        this.boostI2 = boostI2;
+        this.firstI2 = firstI2;
+        this.firstW2 = firstW2;
+        this.secondI2 = secondI2;
+        this.isDoubleCoil = isDoubleCoil;
     }
 
     @Override

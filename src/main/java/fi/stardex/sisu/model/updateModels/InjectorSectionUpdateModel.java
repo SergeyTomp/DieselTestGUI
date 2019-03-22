@@ -2,11 +2,15 @@ package fi.stardex.sisu.model.updateModels;
 
 import fi.stardex.sisu.annotations.Module;
 import fi.stardex.sisu.devices.Device;
+import fi.stardex.sisu.states.BoostUModel;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
 import fi.stardex.sisu.ui.updaters.Updater;
 import javafx.beans.property.*;
 
 import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.*;
+import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.BoostIBoardTwo;
+import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.FirstIBoardTwo;
+import static fi.stardex.sisu.util.SpinnerDefaults.*;
 import static fi.stardex.sisu.util.converters.DataConverter.convertDataToFloat;
 import static fi.stardex.sisu.util.converters.DataConverter.convertDataToInt;
 import static fi.stardex.sisu.util.converters.DataConverter.round;
@@ -14,15 +18,23 @@ import static fi.stardex.sisu.util.converters.DataConverter.round;
 @Module(value = Device.ULTIMA)
 public class InjectorSectionUpdateModel implements Updater {
 
-    private StringProperty width = new SimpleStringProperty();
-    private StringProperty boost_U = new SimpleStringProperty();
-    private StringProperty first_W = new SimpleStringProperty();
-    private StringProperty first_I = new SimpleStringProperty();
-    private StringProperty second_I = new SimpleStringProperty();
-    private StringProperty boost_I = new SimpleStringProperty();
-    private StringProperty battery_U = new SimpleStringProperty();
-    private StringProperty negative_U = new SimpleStringProperty();
+    private StringProperty battery_U = new SimpleStringProperty(String.valueOf(BATTERY_U_SPINNER_INIT));
+    private StringProperty boost_U = new SimpleStringProperty(String.valueOf(BOOST_U_SPINNER_INIT));
+    private StringProperty negative_U = new SimpleStringProperty(String.valueOf(NEGATIVE_U_SPINNER_INIT));
+    private StringProperty width = new SimpleStringProperty(String.valueOf(WIDTH_CURRENT_SIGNAL_SPINNER_INIT));
+    private StringProperty first_W = new SimpleStringProperty(String.valueOf(FIRST_W_SPINNER_INIT));
+    private StringProperty first_I = new SimpleStringProperty(String.valueOf(FIRST_I_SPINNER_INIT));
+    private StringProperty second_I = new SimpleStringProperty(String.valueOf(SECOND_I_SPINNER_INIT));
+    private StringProperty boost_I = new SimpleStringProperty(String.valueOf(BOOST_I_SPINNER_INIT));
+    private StringProperty first_W2 = new SimpleStringProperty(String.valueOf(0));
+    private StringProperty first_I2 = new SimpleStringProperty(String.valueOf(0));
+    private StringProperty second_I2 = new SimpleStringProperty(String.valueOf(0));
+    private StringProperty boost_I2 = new SimpleStringProperty(String.valueOf(0));
+    private StringProperty width2 = new SimpleStringProperty(String.valueOf(0));
+    private StringProperty offset = new SimpleStringProperty(String.valueOf(0));
     private BooleanProperty injectorError = new SimpleBooleanProperty();
+
+    private BoostUModel boostUModel;
 
     private static final float ONE_AMPERE_MULTIPLY = 93.07f;
 
@@ -53,7 +65,28 @@ public class InjectorSectionUpdateModel implements Updater {
     public BooleanProperty injectorErrorProperty() {
         return injectorError;
     }
+    public StringProperty first_W2Property() {
+        return first_W2;
+    }
+    public StringProperty first_I2Property() {
+        return first_I2;
+    }
+    public StringProperty second_I2Property() {
+        return second_I2;
+    }
+    public StringProperty boost_I2Property() {
+        return boost_I2;
+    }
+    public StringProperty width2Property() {
+        return width2;
+    }
+    public StringProperty offsetProperty() {
+        return offset;
+    }
 
+    public void setBoostUModel(BoostUModel boostUModel) {
+        this.boostUModel = boostUModel;
+    }
 
     @Override
     public void update() {
@@ -95,6 +128,43 @@ public class InjectorSectionUpdateModel implements Updater {
         }
         if ((value = Inj_Process_Global_Error.getLastValue().toString()) != null) {
             injectorError.setValue(Boolean.parseBoolean(value));
+        }
+//        if ((value = Injectors_Running_En.getLastValue().toString()) != null) {
+//            System.err.println("Injectors_Running_En  " + value);
+//        }
+
+        if (boostUModel.isDoubleCoilProperty().get()) {
+
+            if ((value = FirstWBoardTwo.getLastValue().toString()) != null){
+                first_W2.setValue(value);
+            }
+            if ((value = FirstIBoardTwo.getLastValue().toString()) != null) {
+                convertedValue = round(convertDataToFloat(value) / ONE_AMPERE_MULTIPLY);
+                first_I2.setValue(Float.toString(convertedValue));
+            }
+            if ((value = SecondIBoardTwo.getLastValue().toString()) != null) {
+                convertedValue = round(convertDataToFloat(value) / ONE_AMPERE_MULTIPLY);
+                second_I2.setValue(Float.toString(convertedValue));
+            }
+            if ((value = BoostIBoardTwo.getLastValue().toString()) != null) {
+                convertedValue = round(convertDataToFloat(value) / ONE_AMPERE_MULTIPLY);
+                boost_I2.setValue(Float.toString(convertedValue));
+            }
+            if ((value = WidthBoardTwo.getLastValue().toString()) != null) {
+                width2.setValue(value);
+            }
+            if ((value = SecondCoilShiftTime.getLastValue().toString()) != null) {
+                offset.setValue(value);
+            }
+        }
+        else{
+
+            first_W2.setValue(Float.toString(0f));
+            first_I2.setValue(Float.toString(0f));
+            second_I2.setValue(Float.toString(0f));
+            boost_I2.setValue(Float.toString(0f));
+            width2.setValue(Integer.toString(0));
+            offset.setValue(Integer.toString(0));
         }
     }
 }

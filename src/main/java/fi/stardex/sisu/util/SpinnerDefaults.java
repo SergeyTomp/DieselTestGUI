@@ -88,4 +88,9 @@ public class SpinnerDefaults {
     public static final double DUTY_CYCLE_REG_3_SPINNER_MAX = 100;
     public static final double DUTY_CYCLE_REG_3_SPINNER_INIT = 0;
     public static final double DUTY_CYCLE_REG_3_SPINNER_STEP = 0.01;
+
+    public static final int OFFSET_SPINNER_MIN = 1;
+    public static final int OFFSET_SPINNER_MAX = 2000;
+    public static final int OFFSET_SPINNER_STEP = 1;
+    public static final int OFFSET_SPINNER_INIT = 1;
 }

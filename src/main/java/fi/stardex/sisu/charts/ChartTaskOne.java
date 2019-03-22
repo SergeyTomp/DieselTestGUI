@@ -5,6 +5,7 @@ import javafx.collections.ObservableList;
 import javafx.scene.chart.XYChart;
 
 import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.*;
+import static fi.stardex.sisu.util.converters.DataConverter.convertDataToInt;
 
 public class ChartTaskOne extends ChartTask {
 
@@ -21,6 +22,11 @@ public class ChartTaskOne extends ChartTask {
     @Override
     protected ModbusMapUltima getCurrentGraphUpdate() {
         return Current_graph1_update;
+    }
+
+    @Override
+    protected int getFirmwareWidth() {
+        return convertDataToInt(WidthBoardOne.getLastValue().toString());
     }
 
     @Override

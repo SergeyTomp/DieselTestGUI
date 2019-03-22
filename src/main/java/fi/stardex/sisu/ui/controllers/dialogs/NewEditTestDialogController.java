@@ -92,7 +92,8 @@ public class NewEditTestDialogController {
     private void createAndSave() {
         InjectorTest injectorTest = new InjectorTest(getInjector(), testComboBox.getSelectionModel().getSelectedItem(),
                 Integer.valueOf(rpmTF.getText()), Integer.valueOf(barTF.getText()), Integer.valueOf(adjTimeTF.getText()), Integer.valueOf(measureTimeTF.getText()),
-                Integer.valueOf(freqTF.getText()), Integer.valueOf(widthTF.getText()), Double.valueOf(nominalTF.getText()), Double.valueOf(flowRangeTF.getText()));
+                Integer.valueOf(freqTF.getText()), Integer.valueOf(widthTF.getText()), Double.valueOf(nominalTF.getText()), Double.valueOf(flowRangeTF.getText()),
+                0, 0);
 
         injectorTestRepository.save(injectorTest);
         testListView.getItems().add(injectorTest);

@@ -141,8 +141,6 @@ public class JavaFXSpringConfigure extends ViewLoader{
     @Bean
     @Autowired
     public MainSectionController mainSectionController(@Lazy Enabler enabler,
-                                                       VoltAmpereProfileController voltAmpereProfileController,
-                                                       InjectorSectionController injectorSectionController,
                                                        InjectorsRepository injectorsRepository,
                                                        InjectorTestRepository injectorTestRepository,
                                                        @Lazy ModbusRegisterProcessor flowModbusWriter,
@@ -150,23 +148,19 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                        TestBenchSectionController testBenchSectionController,
                                                        InfoController infoController,
                                                        DelayController delayController,
-                                                       BoostUModel boostUModel,
                                                        BoostUadjustmentState boostUadjustmentState,
                                                        CodingReportModel codingReportModel,
                                                        DelayReportModel delayReportModel,
                                                        RLC_ReportModel rlc_reportModel,
                                                        FlowReportModel flowReportModel,
-                                                       InjectorTestModel injectorTestModel) {
+                                                       InjectorTestModel injectorTestModel,
+                                                       VoltAmpereProfileModel voltAmpereProfileModel,
+                                                       InjectorModel injectorModel) {
         MainSectionController mainSectionController = (MainSectionController) mainSection().getController();
         mainSectionController.setEnabler(enabler);
         mainSectionController.setManufacturerMenuDialog(manufacturerMenuDialog());
         mainSectionController.setNewEditInjectorDialog(newEditInjectorDialog());
         mainSectionController.setNewEditTestDialog(newEditTestDialog());
-        mainSectionController.setVoltAmpereProfileController(voltAmpereProfileController);
-        mainSectionController.setWidthCurrentSignalSpinner(injectorSectionController.getWidthCurrentSignalSpinner());
-        mainSectionController.setFreqCurrentSignalSpinner(injectorSectionController.getFreqCurrentSignalSpinner());
-        mainSectionController.setInjectorSectionStartToggleButton(injectorSectionController.getInjectorSectionStartToggleButton());
-        mainSectionController.setInjectorSectionFirstLedToggleButton(injectorSectionController.getLed1ToggleButton());
         mainSectionController.setInjectorsRepository(injectorsRepository);
         mainSectionController.setInjectorTestRepository(injectorTestRepository);
         mainSectionController.setFlowModbusWriter(flowModbusWriter);
@@ -176,13 +170,14 @@ public class JavaFXSpringConfigure extends ViewLoader{
         mainSectionController.setTargetRPMSpinner(testBenchSectionController.getTargetRPMSpinner());
         mainSectionController.setDelayController(delayController);
         mainSectionController.setPrintDialogPanel(printDialogPanel());
-        mainSectionController.setBoostUModel(boostUModel);
         mainSectionController.setBoostUadjustmentState(boostUadjustmentState);
         mainSectionController.setDelayReportModel(delayReportModel);
         mainSectionController.setRlc_reportModel(rlc_reportModel);
         mainSectionController.setCodingReportModel(codingReportModel);
         mainSectionController.setFlowReportModel(flowReportModel);
         mainSectionController.setInjectorTestModel(injectorTestModel);
+        mainSectionController.setVoltAmpereProfileModel(voltAmpereProfileModel);
+        mainSectionController.setInjectorModel(injectorModel);
         return mainSectionController;
     }
 
@@ -324,7 +319,10 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                                BoostUadjustmentState boostUadjustmentState,
                                                                Devices devices,
                                                                CoilOnePulseParametersModel coilOnePulseParametersModel,
-                                                               InjectorSectionUpdateModel injectorSectionUpdateModel) {
+                                                               InjectorSectionUpdateModel injectorSectionUpdateModel,
+                                                               CoilTwoPulseParametersModel coilTwoPulseParametersModel,
+                                                               InjectorModel injectorModel,
+                                                               InjectorTestModel injectorTestModel) {
         InjectorSectionController injectorSectionController = crSectionController().getInjectorSectionController();
         injectorSectionController.setEnabler(enabler);
         injectorSectionController.setUltimaModbusWriter(ultimaModbusWriter);
@@ -338,6 +336,9 @@ public class JavaFXSpringConfigure extends ViewLoader{
         injectorSectionController.setDevices(devices);
         injectorSectionController.setCoilOnePulseParametersModel(coilOnePulseParametersModel);
         injectorSectionController.setInjectorSectionUpdateModel(injectorSectionUpdateModel);
+        injectorSectionController.setCoilTwoPulseParametersModel(coilTwoPulseParametersModel);
+        injectorSectionController.setInjectorModel(injectorModel);
+        injectorSectionController.setInjectorTestModel(injectorTestModel);
         return injectorSectionController;
     }
 
@@ -603,7 +604,11 @@ public class JavaFXSpringConfigure extends ViewLoader{
     public VoltageController voltageController(TabSectionController tabSectionController,
                                                InjectorTypeModel injectorTypeModel,
                                                CoilOnePulseParametersModel coilOnePulseParametersModel,
-                                               InjectorSectionUpdateModel injectorSectionUpdateModel) {
+                                               InjectorSectionUpdateModel injectorSectionUpdateModel,
+                                               BoostUModel boostUModel,
+                                               InjectorTestModel injectorTestModel,
+                                               InjectorModel injectorModel,
+                                               CoilTwoPulseParametersModel coilTwoPulseParametersModel) {
         VoltageController voltageController = tabSectionController.getVoltageController();
         voltageController.setVoltAmpereProfileDialog(voltAmpereProfileDialog());
         voltageController.setParentController(tabSectionController);
@@ -611,6 +616,10 @@ public class JavaFXSpringConfigure extends ViewLoader{
         voltageController.setInjectorTypeModel(injectorTypeModel);
         voltageController.setCoilOnePulseParametersModel(coilOnePulseParametersModel);
         voltageController.setInjectorSectionUpdateModel(injectorSectionUpdateModel);
+        voltageController.setBoostUModel(boostUModel);
+        voltageController.setInjectorTestModel(injectorTestModel);
+        voltageController.setInjectorModel(injectorModel);
+        voltageController.setCoilTwoPulseParametersModel(coilTwoPulseParametersModel);
         return voltageController;
     }
 
@@ -661,14 +670,25 @@ public class JavaFXSpringConfigure extends ViewLoader{
     @Bean
     @Autowired
     public VoltAmpereProfileController voltAmpereProfileController(ModbusRegisterProcessor ultimaModbusWriter,
-                                                                   InjectorSectionController injectorSectionController,
-                                                                   VoltageController voltageController) {
+                                                                   BoostUModel boostUModel,
+                                                                   CoilTwoPulseParametersModel coilTwoPulseParametersModel,
+                                                                   CoilOnePulseParametersModel coilOnePulseParametersModel,
+                                                                   VoltAmpereProfileModel voltAmpereProfileModel,
+                                                                   InjectorTestModel injectorTestModel,
+                                                                   InjectorSectionUpdateModel injectorSectionUpdateModel,
+                                                                   InjectorModel injectorModel,
+                                                                   InjectorTypeModel injectorTypeModel) {
         VoltAmpereProfileController voltAmpereProfileController = (VoltAmpereProfileController) voltAmpereProfileDialog().getController();
         voltAmpereProfileController.setUltimaModbusWriter(ultimaModbusWriter);
-        voltAmpereProfileController.setInjectorSectionController(injectorSectionController);
-        voltAmpereProfileController.setWidthSpinner(injectorSectionController.getWidthCurrentSignalSpinner());
-        voltAmpereProfileController.setVoltageController(voltageController);
         voltAmpereProfileController.setI18N(i18N);
+        voltAmpereProfileController.setBoostUModel(boostUModel);
+        voltAmpereProfileController.setCoilTwoPulseParametersModel(coilTwoPulseParametersModel);
+        voltAmpereProfileController.setCoilOnePulseParametersModel(coilOnePulseParametersModel);
+        voltAmpereProfileController.setVoltAmpereProfileModel(voltAmpereProfileModel);
+        voltAmpereProfileController.setInjectorTestModel(injectorTestModel);
+        voltAmpereProfileController.setInjectorSectionUpdateModel(injectorSectionUpdateModel);
+        voltAmpereProfileController.setInjectorModel(injectorModel);
+        voltAmpereProfileController.setInjectorTypeModel(injectorTypeModel);
         return voltAmpereProfileController;
     }
 
@@ -853,7 +873,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                        TabSectionController tabSectionController,
                                        InjConfigurationModel injConfigurationModel,
                                        InjectorTypeModel injectorTypeModel,
-                                       RLC_ReportModel rlc_reportModel) {
+                                       RLC_ReportModel rlc_reportModel,
+                                       VoltAmpereProfileModel voltAmpereProfileModel) {
         RLCController RLCController = tabSectionController.getRlCController();
         RLCController.setInjectorSectionController(injectorSectionController);
         RLCController.setUltimaModbusWriter(ultimaModbusWriter);
@@ -862,6 +883,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         RLCController.setInjConfigurationModel(injConfigurationModel);
         RLCController.setInjectorTypeModel(injectorTypeModel);
         RLCController.setRlc_reportModel(rlc_reportModel);
+        RLCController.setVoltAmpereProfileModel(voltAmpereProfileModel);
         return RLCController;
 
     }
@@ -976,11 +998,13 @@ public class JavaFXSpringConfigure extends ViewLoader{
     public InjConfigurationController injConfigurationController(InjConfigurationModel injConfigurationModel,
                                                                  Preferences preferences,
                                                                  InjectorTypeModel injectorTypeModel,
-                                                                 SettingsController settingsController){
+                                                                 SettingsController settingsController,
+                                                                 BoostUModel boostUModel){
         InjConfigurationController injConfigurationController = settingsController.getInjConfigurationController();
         injConfigurationController.setInjConfigurationModel(injConfigurationModel);
         injConfigurationController.setRootPrefs(preferences);
         injConfigurationController.setInjectorTypeModel(injectorTypeModel);
+        injConfigurationController.setBoostUModel(boostUModel);
         return injConfigurationController;
     }
 

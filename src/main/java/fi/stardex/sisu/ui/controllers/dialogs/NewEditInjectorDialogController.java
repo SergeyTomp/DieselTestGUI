@@ -32,6 +32,14 @@ import static fi.stardex.sisu.util.obtainers.CurrentManufacturerObtainer.getManu
 public class NewEditInjectorDialogController {
 
     @FXML
+    private Label firstW2Label;
+    @FXML
+    private Label boostI2Label;
+    @FXML
+    private Label firstI2Label;
+    @FXML
+    private Label secondI2Label;
+    @FXML
     private GridPane rootGridPane;
     @FXML
     private TextField injectorCodeTF;
@@ -223,6 +231,10 @@ public class NewEditInjectorDialogController {
             batteryUvalue.setText("");
             secondIvalue.setText("");
             negativeUvalue.setText("");
+            boostI2Label.setText("");
+            firstW2Label.setText("");
+            firstI2Label.setText("");
+            secondI2Label.setText("");
         } else {
             boostUvalue.setText(newValue.getBoostU().toString());
             boostEnableValue.setText(newValue.getBoostDisable().toString());
@@ -232,6 +244,18 @@ public class NewEditInjectorDialogController {
             batteryUvalue.setText(newValue.getBatteryU().toString());
             secondIvalue.setText(newValue.getSecondI().toString());
             negativeUvalue.setText(newValue.getNegativeU().toString());
+
+            if (newValue.isDoubleCoil()) {
+                boostI2Label.setText(newValue.getBoostI2().toString());
+                firstW2Label.setText(newValue.getFirstW2().toString());
+                firstI2Label.setText(newValue.getFirstI2().toString());
+                secondI2Label.setText(newValue.getSecondI2().toString());
+            }else{
+                boostI2Label.setText("");
+                firstW2Label.setText("");
+                firstI2Label.setText("");
+                secondI2Label.setText("");
+            }
         }
     }
 
@@ -329,7 +353,7 @@ public class NewEditInjectorDialogController {
             NewEditVOAPDialogController controller = (NewEditVOAPDialogController) newEditVOAPDialog.getController();
             if (newVOAPStage == null) {
                 newVOAPStage = new Stage();
-                newVOAPStage.setScene(new Scene(newEditVOAPDialog.getView(), 600, 400));
+                newVOAPStage.setScene(new Scene(newEditVOAPDialog.getView()));
                 newVOAPStage.setResizable(false);
                 newVOAPStage.initModality(Modality.APPLICATION_MODAL);
                 controller.setStage(newVOAPStage);

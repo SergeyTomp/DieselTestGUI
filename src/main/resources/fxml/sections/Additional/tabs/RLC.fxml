@@ -21,7 +21,7 @@
     <children>
         <TabPane fx:id="measurementTabPane" tabClosingPolicy="UNAVAILABLE">
             <tabs>
-                <Tab fx:id="tabCoilOne" text="COIL">
+                <Tab fx:id="tabCoilOne" text="COIL 1">
                     <GridPane>
                         <columnConstraints>
                             <ColumnConstraints halignment="CENTER" percentWidth="100.0" />
@@ -53,23 +53,35 @@
                     </GridPane>
                 </Tab>
                 <Tab fx:id="tabCoilTwo" text="COIL 2">
-                    <GridPane>
-                        <columnConstraints>
-                            <ColumnConstraints percentWidth="20.0" />
-                            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" percentWidth="30.0" prefWidth="100.0" />
-                            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" percentWidth="30.0" prefWidth="100.0" />
-                            <ColumnConstraints percentWidth="20.0" />
-                        </columnConstraints>
-                        <rowConstraints>
-                            <RowConstraints valignment="TOP" />
-                            <RowConstraints percentHeight="85.0" valignment="TOP" />
-                        </rowConstraints>
-                        <children>
-                            <ProgressIndicator fx:id="progressIndicatorDoubleCoil" maxHeight="60" maxWidth="60" prefHeight="50" prefWidth="50" visible="false" GridPane.columnIndex="1" GridPane.columnSpan="2" />
-                            <StackPane fx:id="parameter3StackPane" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP" />
-                            <StackPane fx:id="parameter4StackPane" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP" />
-                        </children>
-                    </GridPane>
+               <GridPane>
+                  <columnConstraints>
+                     <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" minWidth="10.0" />
+                  </columnConstraints>
+                  <rowConstraints>
+                     <RowConstraints percentHeight="15.0" />
+                     <RowConstraints percentHeight="85.0" vgrow="SOMETIMES" />
+                  </rowConstraints>
+                  <children>
+                          <GridPane GridPane.rowIndex="1">
+                              <columnConstraints>
+                                  <ColumnConstraints percentWidth="20.0" />
+                                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" percentWidth="30.0" prefWidth="100.0" />
+                                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" percentWidth="30.0" prefWidth="100.0" />
+                                  <ColumnConstraints percentWidth="20.0" />
+                              </columnConstraints>
+                              <rowConstraints>
+                                  <RowConstraints valignment="TOP" />
+                                  <RowConstraints fillHeight="false" percentHeight="90.0" valignment="TOP" vgrow="ALWAYS" />
+                              </rowConstraints>
+                              <children>
+                                  <ProgressIndicator fx:id="progressIndicatorDoubleCoil" maxHeight="60" maxWidth="60" prefHeight="50" prefWidth="50" visible="false" GridPane.columnIndex="1" GridPane.columnSpan="2" />
+                                  <StackPane fx:id="parameter3StackPane" alignment="TOP_CENTER" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP" />
+                                  <StackPane fx:id="parameter4StackPane" alignment="TOP_CENTER" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="TOP" />
+                              </children>
+                          </GridPane>
+                     <Label fx:id="attentionLabel2" styleClass="labelAttention" text="Available for Stardex Ultima only" />
+                  </children>
+               </GridPane>
                 </Tab>
             </tabs>
         </TabPane>

@@ -46,8 +46,8 @@ public enum ModbusMapUltima implements ModbusMap {
     Capacitance_result_piezo(REGISTER_INPUT, 4204, 2, false),
     Resistance_result_piezo(REGISTER_INPUT, 4206, 2, false),
 
-    Injectors_Running_En(DISCRETE_COIL, 42, 1, false),
-
+    Injectors_Running_En(DISCRETE_COIL, 42, 1, true),
+    Double_Coil_Mode_En(DISCRETE_COIL, 45, 1, false),
 
     // Слепок параметров импульсов на форсунки
     Injector_type(REGISTER_HOLDING, 43, 1, false),
@@ -72,10 +72,10 @@ public enum ModbusMapUltima implements ModbusMap {
     SecondIBoardOne(REGISTER_HOLDING, 3, 1, true),      // secondISpinner
     FirstWBoardOne(REGISTER_HOLDING, 4, 1, true),       // firstWSpinner
     WidthBoardOne(REGISTER_HOLDING, 5, 1, true),        // widthCurrentSignal
-    BoostIBoardTwo(REGISTER_HOLDING, 21, 1, false),
-    FirstIBoardTwo(REGISTER_HOLDING, 22, 1, false),
-    SecondIBoardTwo(REGISTER_HOLDING, 23, 1, false),
-    FirstWBoardTwo(REGISTER_HOLDING, 24, 1, false),
+    BoostIBoardTwo(REGISTER_HOLDING, 21, 1, true),
+    FirstIBoardTwo(REGISTER_HOLDING, 22, 1, true),
+    SecondIBoardTwo(REGISTER_HOLDING, 23, 1, true),
+    FirstWBoardTwo(REGISTER_HOLDING, 24, 1, true),
     WidthBoardTwo(REGISTER_HOLDING, 25, 1, true),
     BoostIBoardThree(REGISTER_HOLDING, 1001, 1, false),
     FirstIBoardThree(REGISTER_HOLDING, 1002, 1, false),
@@ -91,6 +91,8 @@ public enum ModbusMapUltima implements ModbusMap {
     StartOnBatteryUTwo(DISCRETE_COIL, 22, 1, false),        // Boost_U enabled - true disabled - false
     StartOnBatteryUThree(DISCRETE_COIL, 1002, 1, false),    // Boost_U enabled - true disabled - false
     StartOnBatteryUFour(DISCRETE_COIL, 1022, 1, false),     // Boost_U enabled - true disabled - false
+    SecondCoilShiftEnable(DISCRETE_COIL, 23, 1, false),
+    SecondCoilShiftTime(REGISTER_HOLDING, 29, 1, true),
 
     // регистры регуляторов
     // секция регулятора 1

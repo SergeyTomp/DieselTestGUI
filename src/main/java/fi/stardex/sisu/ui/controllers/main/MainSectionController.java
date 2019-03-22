@@ -29,7 +29,6 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -50,7 +49,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -63,13 +61,10 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import static fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest.getChangedInjectorTest;
 import static fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest.getListOfNonIncludedTests;
-import static fi.stardex.sisu.util.SpinnerDefaults.*;
-import static fi.stardex.sisu.util.converters.DataConverter.round;
 import static fi.stardex.sisu.util.enums.Measurement.DELIVERY;
 import static fi.stardex.sisu.util.enums.Measurement.VISUAL;
-import static fi.stardex.sisu.util.enums.Move.*;
+import static fi.stardex.sisu.util.enums.Move.DOWN;
 import static fi.stardex.sisu.util.enums.Move.UP;
 import static fi.stardex.sisu.util.enums.Tests.*;
 import static fi.stardex.sisu.util.enums.Tests.TestType.*;
@@ -83,7 +78,6 @@ import static fi.stardex.sisu.util.obtainers.CurrentManufacturerObtainer.setManu
 public class MainSectionController {
 
     private static Logger logger = LoggerFactory.getLogger(MainSectionController.class);
-
 
     @FXML
     private TextField injectorNumberTextField;
@@ -216,16 +210,6 @@ public class MainSectionController {
 
     private ViewHolder printDialogPanel;
 
-    private VoltAmpereProfileController voltAmpereProfileController;
-
-    private Spinner<Integer> widthCurrentSignalSpinner;
-
-    private Spinner<Double> freqCurrentSignalSpinner;
-
-    private ToggleButton injectorSectionStartToggleButton;
-
-    private ToggleButton injectorSectionFirstLedToggleButton;
-
     private Spinner<Integer> targetRPMSpinner;
 
     private InfoController infoController;
@@ -233,6 +217,8 @@ public class MainSectionController {
     private DelayController delayController;
 
     private DelayReportModel delayReportModel;
+
+    private VoltAmpereProfileModel voltAmpereProfileModel;
 
     private RLC_ReportModel rlc_reportModel;
 
@@ -262,7 +248,7 @@ public class MainSectionController {
 
     private Stage printStage;
 
-    private BoostUModel boostU_model;
+    private InjectorModel injectorModel;
 
     private BoostUadjustmentState boostUadjustmentState;
 
@@ -344,14 +330,6 @@ public class MainSectionController {
         return codingTestRadioButton;
     }
 
-    public RadioButton getAutoTestRadioButton() {
-        return autoTestRadioButton;
-    }
-
-    public RadioButton getTestPlanTestRadioButton() {
-        return testPlanTestRadioButton;
-    }
-
     public ListView<InjectorTest> getTestListView() {
         return testListView;
     }
@@ -380,24 +358,8 @@ public class MainSectionController {
         this.printDialogPanel = printDialogPanel;
     }
 
-    public void setWidthCurrentSignalSpinner(Spinner<Integer> widthCurrentSignalSpinner) {
-        this.widthCurrentSignalSpinner = widthCurrentSignalSpinner;
-    }
-
     public void setTargetRPMSpinner(Spinner<Integer> targetRPMSpinner) {
         this.targetRPMSpinner = targetRPMSpinner;
-    }
-
-    public void setFreqCurrentSignalSpinner(Spinner<Double> freqCurrentSignalSpinner) {
-        this.freqCurrentSignalSpinner = freqCurrentSignalSpinner;
-    }
-
-    public void setInjectorSectionStartToggleButton(ToggleButton injectorSectionStartToggleButton) {
-        this.injectorSectionStartToggleButton = injectorSectionStartToggleButton;
-    }
-
-    public void setInjectorSectionFirstLedToggleButton(ToggleButton injectorSectionFirstLedToggleButton) {
-        this.injectorSectionFirstLedToggleButton = injectorSectionFirstLedToggleButton;
     }
 
     public void setInjectorsRepository(InjectorsRepository injectorsRepository) {
@@ -428,10 +390,6 @@ public class MainSectionController {
         this.delayController = delayController;
     }
 
-    public void setVoltAmpereProfileController(VoltAmpereProfileController voltAmpereProfileController) {
-        this.voltAmpereProfileController = voltAmpereProfileController;
-    }
-
     public void setDelayReportModel(DelayReportModel delayReportModel) {
         this.delayReportModel = delayReportModel;
     }
@@ -448,16 +406,20 @@ public class MainSectionController {
         this.i18N = i18N;
     }
 
-    public void setBoostUModel(BoostUModel boostU_model) {
-        this.boostU_model = boostU_model;
-    }
-
     public void setBoostUadjustmentState(BoostUadjustmentState boostUadjustmentState) {
         this.boostUadjustmentState = boostUadjustmentState;
     }
 
     public void setInjectorTestModel(InjectorTestModel injectorTestModel) {
         this.injectorTestModel = injectorTestModel;
+    }
+
+    public void setVoltAmpereProfileModel(VoltAmpereProfileModel voltAmpereProfileModel) {
+        this.voltAmpereProfileModel = voltAmpereProfileModel;
+    }
+
+    public void setInjectorModel(InjectorModel injectorModel) {
+        this.injectorModel = injectorModel;
     }
 
     @PostConstruct
@@ -728,7 +690,7 @@ public class MainSectionController {
             NewEditInjectorDialogController controller = (NewEditInjectorDialogController) newEditInjectorDialog.getController();
             if (modelDialogStage == null) {
                 modelDialogStage = new Stage();
-                modelDialogStage.setScene(new Scene(newEditInjectorDialog.getView(), 600, 400));
+                modelDialogStage.setScene(new Scene(newEditInjectorDialog.getView()));
                 modelDialogStage.setResizable(false);
                 modelDialogStage.initModality(Modality.APPLICATION_MODAL);
                 controller.setStage(modelDialogStage);
@@ -805,35 +767,6 @@ public class MainSectionController {
 
         resetButton.setOnAction(event -> flowModbusWriter.add(ModbusMapFlow.StartMeasurementCycle, true));
         return this;
-    }
-
-    private void setDefaultSpinnerValueFactories(boolean isDefault) {
-
-        if (isDefault) {
-
-            widthCurrentSignalSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(
-                    WIDTH_CURRENT_SIGNAL_SPINNER_MIN,
-                    WIDTH_CURRENT_SIGNAL_SPINNER_MAX,
-                    WIDTH_CURRENT_SIGNAL_SPINNER_INIT,
-                    WIDTH_CURRENT_SIGNAL_SPINNER_STEP));
-            freqCurrentSignalSpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(
-                    FREQ_CURRENT_SIGNAL_SPINNER_MIN,
-                    FREQ_CURRENT_SIGNAL_SPINNER_MAX,
-                    FREQ_CURRENT_SIGNAL_SPINNER_INIT,
-                    FREQ_CURRENT_SIGNAL_SPINNER_STEP));
-        } else {
-
-            widthCurrentSignalSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 0));
-            freqCurrentSignalSpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(0d, 0d));
-        }
-    }
-
-    private void setInjectorTypeValues(Integer freq, Integer firstW, Integer width, Integer motorSpeed) {
-
-        freqCurrentSignalSpinner.getValueFactory().setValue((freq != null) ? 1000d / freq : 0);
-        voltAmpereProfileController.getFirstWSpinner().getValueFactory().setValue(firstW);
-        widthCurrentSignalSpinner.getValueFactory().setValue(width);
-        targetRPMSpinner.getValueFactory().setValue(motorSpeed);
     }
 
     private void setProgress(String ratio) {
@@ -957,45 +890,34 @@ public class MainSectionController {
             if (newValue == null) {
                 setInjector(null);
                 setInjectorTests(null);
-                enabler.showInjectorTests(false).selectInjectorType(null).showNode(false, codingTestRadioButton);
-                injectorSectionFirstLedToggleButton.setSelected(false);
+                injectorModel.injectorProperty().setValue(null);
+                injectorTestModel.injectorTestProperty().setValue(null);
+                enabler.showInjectorTests(false).
+                        selectInjectorType(null).
+                        showNode(false, codingTestRadioButton);
+                voltAmpereProfileModel.voltAmpereProfileProperty().setValue(null);
                 testListViewItems.clear();
                 return;
             }
-                injectorSectionFirstLedToggleButton.setSelected(true);
 
             Injector injector = (Injector) newValue;
+            injectorModel.injectorProperty().setValue(injector);
+            injectorModel.setInjectorIsChanging(true); // for listener of width changes in the VoltAmpereProfileController blocking
             currentVoltAmpereProfile = injectorsRepository.findByInjectorCode(injector.getInjectorCode()).getVoltAmpereProfile();
             injector.setVoltAmpereProfile(currentVoltAmpereProfile);
             setInjector(injector);
 
             fetchTestsFromRepository();
 
-            if (!checkInjectorForCoding(getInjector().getCodetype()) && codingTestRadioButton.isSelected())
+            if (!checkInjectorForCoding(getInjector().getCodetype()) && codingTestRadioButton.isSelected()) {
                 autoTestRadioButton.setSelected(true);
-
+            }
             enabler
                     .showInjectorTests(true)
                     .selectInjectorType(currentVoltAmpereProfile.getInjectorType().getInjectorType())
                     .showNode(checkInjectorForCoding(injector.getCodetype()), codingTestRadioButton);
 
-            Double firstI = currentVoltAmpereProfile.getFirstI();
-            Double secondI = currentVoltAmpereProfile.getSecondI();
-            Double boostI = currentVoltAmpereProfile.getBoostI();
-            Integer boostU = currentVoltAmpereProfile.getBoostU();
-            boostU_model.boostUProperty().setValue(boostU);
-
-            firstI = (boostI - firstI >= 0.5) ? firstI : boostI - 0.5;
-            secondI = (firstI - secondI >= 0.5) ? secondI : firstI - 0.5;
-
-            voltAmpereProfileController.getBoostUSpinner().getValueFactory().setValue(boostU);
-            voltAmpereProfileController.getFirstWSpinner().getValueFactory().setValue(currentVoltAmpereProfile.getFirstW());
-            voltAmpereProfileController.getFirstISpinner().getValueFactory().setValue((firstI * 100 % 10 != 0) ? round(firstI) : firstI);
-            voltAmpereProfileController.getSecondISpinner().getValueFactory().setValue((secondI * 100 % 10 != 0) ? round(secondI) : secondI);
-            voltAmpereProfileController.getBoostISpinner().getValueFactory().setValue((boostI * 100 % 10 != 0) ? round(boostI) : boostI);
-            voltAmpereProfileController.getBatteryUSpinner().getValueFactory().setValue(currentVoltAmpereProfile.getBatteryU());
-            voltAmpereProfileController.getNegativeUSpinner().getValueFactory().setValue(currentVoltAmpereProfile.getNegativeU());
-            voltAmpereProfileController.getEnableBoostToggleButton().setSelected(currentVoltAmpereProfile.getBoostDisable());
+            voltAmpereProfileModel.voltAmpereProfileProperty().setValue(currentVoltAmpereProfile);
 
             String manufacturerName = injector.getManufacturer().getManufacturerName();
             switch (manufacturerName) {
@@ -1021,7 +943,7 @@ public class MainSectionController {
                     infoController.changeToDefault();
                     break;
             }
-            voltAmpereProfileController.getApplyButton().fire();
+            injectorModel.setInjectorIsChanging(false);
         });
         return this;
     }
@@ -1033,13 +955,13 @@ public class MainSectionController {
             if (isFocusMoved)
                 return;
 
-            injectorTestModel.injectorTestProperty().set(newValue);
-
             if (newValue == null) {
-                setDefaultSpinnerValueFactories(true);
-                enabler.disableNode(false, widthCurrentSignalSpinner, freqCurrentSignalSpinner, injectorSectionStartToggleButton);
                 return;
             }
+
+            injectorTestModel.setTestIsChanging(true);  // for listener of width changes in the VoltAmpereProfileController blocking
+            injectorTestModel.injectorTestProperty().set(newValue);
+
 
             if (autoTestRadioButton.isSelected()) {
 
@@ -1049,7 +971,6 @@ public class MainSectionController {
 
             } else if (testPlanTestRadioButton.isSelected() && startToggleButton.isSelected()) {
 
-//                measurements.switchOffSections();
                 measurements.switchOffInjectorSection();
                 measurements.start();
             }
@@ -1071,23 +992,17 @@ public class MainSectionController {
             switch (measurementType) {
 
                 case NO:
-                    setDefaultSpinnerValueFactories(false);
                     targetRPMSpinner.getValueFactory().setValue(motorSpeed);
-                    enabler.disableNode(true, widthCurrentSignalSpinner, freqCurrentSignalSpinner, injectorSectionStartToggleButton);
                     delayController.getSaveDelayButton().setDisable(true);
                     break;
                 default:
-                    setDefaultSpinnerValueFactories(true);
-                    enabler.disableNode(false, widthCurrentSignalSpinner, freqCurrentSignalSpinner, injectorSectionStartToggleButton);
-                    Integer freq = newValue.getInjectionRate();
-                    Integer width = newValue.getTotalPulseTime();
-                    Integer firstW = currentVoltAmpereProfile.getFirstW();
-                    firstW = (width - firstW >= MAX_DELTA_WIDTH_TO_FIRST_WIDTH) ? firstW : width - MAX_DELTA_WIDTH_TO_FIRST_WIDTH;
-                    setInjectorTypeValues(freq, firstW, width, motorSpeed);
+                    targetRPMSpinner.getValueFactory().setValue(motorSpeed);
                     delayController.setInjectorTestName(newValue.getTestName().toString());
                     delayController.getSaveDelayButton().setDisable(false);
                     break;
             }
+
+            injectorTestModel.setTestIsChanging(false);
         });
         return this;
     }

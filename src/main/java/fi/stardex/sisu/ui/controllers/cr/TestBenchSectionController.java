@@ -305,7 +305,7 @@ public class TestBenchSectionController {
 
         flowFirmwareVersion.versionProperty().addListener((observableValue, oldValue, newValue) -> {
 
-            if (newValue == STAND_FM || newValue == STAND_FM_4_CH)
+            if (newValue == STAND_FM || newValue == STAND_FM_4_CH || standFirmwareVersion.versionProperty().get() == STAND)
                 testBenchStartToggleButton.setDisable(false);
             else
                 testBenchStartToggleButton.setDisable(true);
@@ -318,7 +318,7 @@ public class TestBenchSectionController {
 
         standFirmwareVersion.versionProperty().addListener((observableValue, oldValue, newValue) -> {
 
-            if (newValue == STAND)
+            if (newValue == STAND || flowFirmwareVersion.versionProperty().get() == STAND_FM || flowFirmwareVersion.versionProperty().get() == STAND_FM_4_CH)
                 testBenchStartToggleButton.setDisable(false);
             else
                 testBenchStartToggleButton.setDisable(true);
