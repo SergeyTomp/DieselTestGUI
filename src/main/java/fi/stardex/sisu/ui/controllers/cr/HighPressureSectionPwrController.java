@@ -29,7 +29,6 @@ public class HighPressureSectionPwrController {
 
     @PostConstruct
     public void init(){
-        highPressureSectionPwrState.powerButtonProperty().addListener((observableValue, oldValue, neValue) -> pwrButtonToggleButton.setSelected(neValue));
         highPressureSectionPwrState.powerButtonProperty().bindBidirectional(pwrButtonToggleButton.selectedProperty());
     }
 }
