@@ -46,7 +46,7 @@ public class FlowMasterUpdater extends FlowUpdater implements Updater {
 //            setAllLabelsAndFieldsToNull();
 //            return;
         }else if(isNotInstantFlow()){
-            allFlowLabels.forEach(textField -> textField.setText(null));
+//            allFlowLabels.forEach(textField -> textField.setText(null));
             return;
         }
 

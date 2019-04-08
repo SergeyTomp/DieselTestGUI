@@ -64,25 +64,7 @@ public class Enabler {
 
     private ToggleButton injectorSectionStartToggleButton;
 
-    private Spinner<Integer> widthCurrentSignalSpinner;
-
-    private Spinner<Double> freqCurrentSignalSpinner;
-
     private ToggleGroup piezoCoilToggleGroup;
-
-    private RadioButton coilRadioButton;
-
-    private RadioButton piezoRadioButton;
-
-    private RadioButton piezoDelphiRadioButton;
-
-    private ToggleButton ledBeaker1;
-
-    private ToggleButton ledBeaker2;
-
-    private ToggleButton ledBeaker3;
-
-    private ToggleButton ledBeaker4;
 
     private Button storeRLCButton;
 
@@ -144,16 +126,7 @@ public class Enabler {
         injectorsVBox = mainSectionController.getInjectorsVBox();
 
         injectorSectionStartToggleButton = injectorSectionController.getInjectorSectionStartToggleButton();
-        widthCurrentSignalSpinner = injectorSectionController.getWidthCurrentSignalSpinner();
-        freqCurrentSignalSpinner = injectorSectionController.getFreqCurrentSignalSpinner();
-        coilRadioButton = injectorSectionController.getCoilRadioButton();
-        piezoRadioButton = injectorSectionController.getPiezoRadioButton();
-        piezoDelphiRadioButton = injectorSectionController.getPiezoDelphiRadioButton();
         piezoCoilToggleGroup = injectorSectionController.getPiezoCoilToggleGroup();
-        ledBeaker1 = injectorSectionController.getLed1ToggleButton();
-        ledBeaker2 = injectorSectionController.getLed2ToggleButton();
-        ledBeaker3 = injectorSectionController.getLed3ToggleButton();
-        ledBeaker4 = injectorSectionController.getLed4ToggleButton();
 
         storeRLCButton = rlcController.getStoreButton();
         measureButton = rlcController.getMeasureButton();
@@ -216,39 +189,35 @@ public class Enabler {
 
     }
 
-    public Enabler selectInjectorType(String injectorType) {
-
-        if (injectorType == null) {
-            disableRadioButtons(piezoCoilToggleGroup, false);
-//            setGaugesToNull();
-            return this;
-        }
-
-        switch (injectorType) {
-            case "coil":
-                selectInjectorTypeRadioButton(coilRadioButton);
-//                setupGauges(0, 2, "Inductance", "\u03BCH", "\u03A9", 500d, 3d, "COIL");
-                break;
-            case "piezo":
-                selectInjectorTypeRadioButton(piezoRadioButton);
-//                setupGauges(1, 0, "Capacitance", "\u03BCF", "k\u03A9", 10d, 2000d, "PIEZO");
-                break;
-            case "piezoDelphi":
-                selectInjectorTypeRadioButton(piezoDelphiRadioButton);
-//                setupGauges(1, 0, "Capacitance", "\u03BCF", "k\u03A9", 20d, 2000d, "PIEZO");
-                break;
-        }
-
-        return this;
-
-    }
-
-    private void selectInjectorTypeRadioButton(RadioButton target) {
-
-        disableRadioButtons(piezoCoilToggleGroup, false);
-        target.setSelected(true);
-        disableRadioButtons(piezoCoilToggleGroup, true);
-    }
+//    public Enabler selectInjectorType(String injectorType) {
+//
+//        if (injectorType == null) {
+//            disableRadioButtons(piezoCoilToggleGroup, false);
+//            return this;
+//        }
+//
+//        switch (injectorType) {
+//            case "coil":
+//                selectInjectorTypeRadioButton(coilRadioButton);
+//                break;
+//            case "piezo":
+//                selectInjectorTypeRadioButton(piezoRadioButton);
+//                break;
+//            case "piezoDelphi":
+//                selectInjectorTypeRadioButton(piezoDelphiRadioButton);
+//                break;
+//        }
+//
+//        return this;
+//
+//    }
+//
+//    private void selectInjectorTypeRadioButton(RadioButton target) {
+//
+//        disableRadioButtons(piezoCoilToggleGroup, false);
+//        target.setSelected(true);
+//        disableRadioButtons(piezoCoilToggleGroup, true);
+//    }
 
     public Enabler selectTestType() {
 

@@ -871,9 +871,11 @@ public class SpringJavaConfig {
                                            BackFlowUnitsModel backFlowUnitsModel,
                                            DeliveryFlowRangeModel deliveryFlowRangeModel,
                                            DeliveryFlowUnitsModel deliveryFlowUnitsModel,
-                                           FlowViewModel flowViewModel) {
+                                           FlowViewModel flowViewModel,
+                                           InjectorControllersState injectorControllersState,
+                                           InjectorTestModel injectorTestModel) {
         return new FlowReportModel(flowViewModel, flowValuesModel, deliveryFlowRangeModel,
-                deliveryFlowUnitsModel, backFlowRangeModel, backFlowUnitsModel);
+                deliveryFlowUnitsModel, backFlowRangeModel, backFlowUnitsModel, injectorControllersState, injectorTestModel);
     }
 
     @Bean
@@ -1077,6 +1079,11 @@ public class SpringJavaConfig {
     @Bean
     public VoltAmpereProfileModel voltAmpereProfileModel() {
         return new VoltAmpereProfileModel();
+    }
+
+    @Bean
+    public InjectorControllersState injectorControllersState() {
+        return new InjectorControllersState();
     }
 
 //    @Bean

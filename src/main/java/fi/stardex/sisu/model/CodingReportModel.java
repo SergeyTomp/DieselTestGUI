@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.IntStream;
 
 public class CodingReportModel {
 
@@ -17,10 +18,9 @@ public class CodingReportModel {
         return resultObservableMap;
     }
 
-    public void storeResult(int  ledNumber, String code){
+    public void storeResult(List<String> codes) {
 
-        String channel = ((Integer)(ledNumber + 1)).toString();
-        resultObservableMap.put(channel, new CodingResult(channel, code));
+        IntStream.rangeClosed(0, codes.size() - 1).forEach(i -> resultObservableMap.put(Integer.toString(i + 1), new CodingResult(Integer.toString(i + 1), codes.get(i))));
     }
 
     public void clearResults(){

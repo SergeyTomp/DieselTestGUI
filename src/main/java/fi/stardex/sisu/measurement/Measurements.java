@@ -8,6 +8,7 @@ import fi.stardex.sisu.coding.delphi.c3i.DelphiC3ICoding;
 import fi.stardex.sisu.coding.delphi.c3i.DelphiC3ICodingDataStorage;
 import fi.stardex.sisu.coding.denso.DensoCoding;
 import fi.stardex.sisu.coding.denso.DensoCodingDataStorage;
+import fi.stardex.sisu.coding.siemens.SiemensCoding;
 import fi.stardex.sisu.model.CodingReportModel;
 import fi.stardex.sisu.model.FlowReportModel;
 import fi.stardex.sisu.model.PressureRegulatorOneModel;
@@ -200,7 +201,7 @@ public class Measurements implements ChangeListener<Boolean> {
 
         resetButton.fire();
         enabler.startTest(true);
-        flowReportModel.clearResults();
+//        flowReportModel.clearResults();
 
         switch (getTestType()) {
             case AUTO:
@@ -268,6 +269,9 @@ public class Measurements implements ChangeListener<Boolean> {
             case "Bosch":
                 setCodingResults(BoschCoding.calculate(flowReportModel.getResultObservableMap()));
                 break;
+            case "Siemens":
+                setCodingResults(SiemensCoding.calculate(flowReportModel.getResultObservableMap()));
+                break;
             case "Denso":
                 setCodingResults(DensoCoding.calculate());
                 break;
@@ -282,7 +286,7 @@ public class Measurements implements ChangeListener<Boolean> {
 
     private void setCodingResults(List<String> codeResult) {
 
-        codeResult.stream().filter(c -> !c.equals("")).forEach(code -> codingReportModel.storeResult((codeResult.indexOf(code)), code));
+        codingReportModel.storeResult(codeResult);
     }
 
     public void switchOffSections() {
@@ -483,7 +487,7 @@ public class Measurements implements ChangeListener<Boolean> {
 
             TestName testName = injectorTest.getTestName();
 
-            flowReportModel.storeResult(injectorTest);
+            flowReportModel.storeResult();
 
             if (getTestType() == CODING) {
 

@@ -231,6 +231,8 @@ public class PumpMeasurementManager {
         stopTimers();
         resetFlowData();
         highPressureSectionPwrButton.setSelected(false);
+        testBenchPwrButton.setSelected(false);
+        flowModbusWriter.add(ModbusMapFlow.StopMeasurementCycle, true);
     }
 
     public void start(){

@@ -490,10 +490,7 @@ public class MainSectionController {
 
     private MainSectionController setupStoreButton() {
 
-        storeButton.setOnAction((event) -> {
-            if (startToggleButton.isSelected())
-                flowReportModel.storeResult(testsSelectionModel.getSelectedItem());
-        });
+        storeButton.setOnAction((event) -> flowReportModel.storeResult());
         return this;
     }
 
@@ -521,7 +518,11 @@ public class MainSectionController {
             if (newValue != null) {
 
                 setInjectorTests(newValue);
-                setTests();
+
+                if (!checkInjectorForCoding(getInjector().getCodetype()) && codingTestRadioButton.isSelected()) {
+
+                    autoTestRadioButton.setSelected(true);
+                }else{ setTests(); }
             }
         });
         Thread t = new Thread(task);
@@ -893,7 +894,7 @@ public class MainSectionController {
                 injectorModel.injectorProperty().setValue(null);
                 injectorTestModel.injectorTestProperty().setValue(null);
                 enabler.showInjectorTests(false).
-                        selectInjectorType(null).
+//                        selectInjectorType(null).
                         showNode(false, codingTestRadioButton);
                 voltAmpereProfileModel.voltAmpereProfileProperty().setValue(null);
                 testListViewItems.clear();
@@ -906,15 +907,9 @@ public class MainSectionController {
             currentVoltAmpereProfile = injectorsRepository.findByInjectorCode(injector.getInjectorCode()).getVoltAmpereProfile();
             injector.setVoltAmpereProfile(currentVoltAmpereProfile);
             setInjector(injector);
-
             fetchTestsFromRepository();
-
-            if (!checkInjectorForCoding(getInjector().getCodetype()) && codingTestRadioButton.isSelected()) {
-                autoTestRadioButton.setSelected(true);
-            }
             enabler
                     .showInjectorTests(true)
-                    .selectInjectorType(currentVoltAmpereProfile.getInjectorType().getInjectorType())
                     .showNode(checkInjectorForCoding(injector.getCodetype()), codingTestRadioButton);
 
             voltAmpereProfileModel.voltAmpereProfileProperty().setValue(currentVoltAmpereProfile);
@@ -1109,7 +1104,7 @@ public class MainSectionController {
 
             testListView.getItems().sort((o1, o2) -> Boolean.compare(o2.includedProperty().get(), o1.includedProperty().get()));
             int includedQty = (int)testListView.getItems().stream().filter(t -> t.includedProperty().get()).count();
-            testListView.getItems().subList(0, includedQty).sort(Comparator.comparingInt(injectorTest -> injectorTest.getId()));
+            testListView.getItems().subList(0, includedQty).sort(Comparator.comparingInt(InjectorTest::getId));
             testListView.scrollTo(0);
         });
     }
@@ -1130,10 +1125,9 @@ public class MainSectionController {
 
         String manufacturerName = getManufacturer().getManufacturerName();
 
-        if (manufacturerName.equals("Bosch") || manufacturerName.equals("Denso") || manufacturerName.equals("Delphi"))
+        if (manufacturerName.equals("Bosch") || manufacturerName.equals("Denso") || manufacturerName.equals("Delphi") || manufacturerName.equals("Siemens"))
             return codetype != 0;
-        else
-            return false;
+        else return false;
     }
 
     private class PrintButtonEventHandler implements EventHandler<ActionEvent> {

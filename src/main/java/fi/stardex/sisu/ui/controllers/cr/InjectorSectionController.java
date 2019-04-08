@@ -9,6 +9,7 @@ import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.BoostUModel;
 import fi.stardex.sisu.states.BoostUadjustmentState;
+import fi.stardex.sisu.states.InjectorControllersState;
 import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.ui.controllers.additional.tabs.DelayController;
 import fi.stardex.sisu.model.updateModels.InjectorSectionUpdateModel;
@@ -112,7 +113,11 @@ public class InjectorSectionController {
 
     private InjectorTestModel injectorTestModel;
 
+    private VoltAmpereProfileModel voltAmpereProfileModel;
+
     private BoostUadjustmentState boostUadjustmentState;
+
+    private InjectorControllersState injectorControllersState;
 
     private DelayController delayController;
 
@@ -211,6 +216,7 @@ public class InjectorSectionController {
             if (s.isSelected()) activeLedToggleButtonsList.add(s);
         }
         activeLedToggleButtonsList.sort(Comparator.comparingInt(InjectorSectionController.this::getNumber));
+        injectorControllersState.activeLedToggleButtonsListProperty().setValue(new ArrayList<>(activeLedToggleButtonsList));
         return activeLedToggleButtonsList;
     }
 
@@ -247,8 +253,16 @@ public class InjectorSectionController {
         this.injectorTestModel = injectorTestModel;
     }
 
+    public void setVoltAmpereProfileModel(VoltAmpereProfileModel voltAmpereProfileModel) {
+        this.voltAmpereProfileModel = voltAmpereProfileModel;
+    }
+
     public void setBoostUadjustmentState(BoostUadjustmentState boostUadjustmentState) {
         this.boostUadjustmentState = boostUadjustmentState;
+    }
+
+    public void setInjectorControllersState(InjectorControllersState injectorControllersState) {
+        this.injectorControllersState = injectorControllersState;
     }
 
     public void setDevices(Devices devices) {
@@ -415,6 +429,26 @@ public class InjectorSectionController {
                 boolean isDoubleCoil = boostUModel.isDoubleCoilProperty().get();
                 ultimaModbusWriter.add(Double_Coil_Mode_En, isDoubleCoil);
                 ultimaModbusWriter.add(SecondCoilShiftEnable, isDoubleCoil);
+            }
+        });
+
+        voltAmpereProfileModel.voltAmpereProfileProperty().addListener((observableValue, oldValue, newValue) -> {
+
+            if (newValue == null) {
+                disableRadioButtons(piezoCoilToggleGroup, false);
+            }else{
+                String injectorType = newValue.getInjectorType().getInjectorType();
+                switch (injectorType) {
+                    case "coil":
+                        selectInjectorTypeRadioButton(coilRadioButton);
+                        break;
+                    case "piezo":
+                        selectInjectorTypeRadioButton(piezoRadioButton);
+                        break;
+                    case "piezoDelphi":
+                        selectInjectorTypeRadioButton(piezoDelphiRadioButton);
+                        break;
+                }
             }
         });
     }
@@ -863,5 +897,20 @@ public class InjectorSectionController {
             node.setSelected(select);
         }
 
+    }
+
+    private void disableRadioButtons(ToggleGroup targetToggleGroup, boolean disable) {
+
+
+        targetToggleGroup.getToggles().stream()
+                .filter(radioButton -> !radioButton.isSelected())
+                .forEach(radioButton -> ((Node) radioButton).setDisable(disable));
+    }
+
+    private void selectInjectorTypeRadioButton(RadioButton target) {
+
+        disableRadioButtons(piezoCoilToggleGroup, false);
+        target.setSelected(true);
+        disableRadioButtons(piezoCoilToggleGroup, true);
     }
 }

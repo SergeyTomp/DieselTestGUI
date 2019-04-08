@@ -3,6 +3,10 @@ package fi.stardex.sisu.model;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 //TODO this model is currently auxiliary, use it as separate during FlowController model-concept implementation
 public class FlowValuesModel {
 
@@ -54,4 +58,13 @@ public class FlowValuesModel {
         return backFlow4Property;
     }
 
+    public List<StringProperty> getDeliveryList() {
+        return new ArrayList<>(Arrays.asList(
+                delivery1Property(), delivery2Property(), delivery3Property(), delivery4Property()));
+    }
+
+    public List<StringProperty> getBackFlowList() {
+        return new ArrayList<>(Arrays.asList(
+                backFlow1Property(), backFlow2Property(), backFlow3Property(), backFlow4Property()));
+    }
 }

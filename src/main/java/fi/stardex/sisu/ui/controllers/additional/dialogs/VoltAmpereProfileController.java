@@ -198,6 +198,8 @@ public class VoltAmpereProfileController {
 
             if (newValue != null) {
 
+                setBoostUSpinnerValueFactory();
+
                 double firstI = newValue.getFirstI();
                 double secondI = newValue.getSecondI();
                 double boostI = newValue.getBoostI();
@@ -359,22 +361,45 @@ public class VoltAmpereProfileController {
 
         injectorTypeModel.injectorTypeProperty().addListener((observableValue, oldValue, newValue) -> {
 
-            if (newValue == InjectorType.PIEZO || newValue == InjectorType.PIEZO_DELPHI) {
-                boostUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(BOOST_U_SPINNER_MIN,
-                        BOOST_U_SPINNER_MAX_PIEZO,
-                        BOOST_U_SPINNER_INIT,
-                        BATTERY_U_SPINNER_STEP));
-            }else{
+            if (voltAmpereProfileModel.voltAmpereProfileProperty().get() == null) {
 
-                if (convertDataToInt(injectorSectionUpdateModel.boost_UProperty().get()) > BOOST_U_SPINNER_MAX)
-                    ultimaModbusWriter.add(ModbusMapUltima.Boost_U, BOOST_U_SPINNER_INIT);
-                boostUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(BOOST_U_SPINNER_MIN,
-                        BOOST_U_SPINNER_MAX,
-                        BOOST_U_SPINNER_INIT,
-                        BOOST_U_SPINNER_STEP));
+                if (newValue == InjectorType.PIEZO || newValue == InjectorType.PIEZO_DELPHI) {
+                    boostUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(BOOST_U_SPINNER_MIN,
+                            BOOST_U_SPINNER_MAX_PIEZO,
+                            BOOST_U_SPINNER_INIT,
+                            BATTERY_U_SPINNER_STEP));
+                }else{
+
+                    if (convertDataToInt(injectorSectionUpdateModel.boost_UProperty().get()) > BOOST_U_SPINNER_MAX)
+                        ultimaModbusWriter.add(ModbusMapUltima.Boost_U, BOOST_U_SPINNER_INIT);
+                    boostUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(BOOST_U_SPINNER_MIN,
+                            BOOST_U_SPINNER_MAX,
+                            BOOST_U_SPINNER_INIT,
+                            BOOST_U_SPINNER_STEP));
+                }
             }
         });
+    }
 
+    private void setBoostUSpinnerValueFactory() {
+
+        String injectorType = voltAmpereProfileModel.voltAmpereProfileProperty().get().getInjectorType().getInjectorType();
+
+        if (injectorType.equals("piezo") || injectorType.equals("piezoDelphi")) {
+            boostUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(BOOST_U_SPINNER_MIN,
+                    BOOST_U_SPINNER_MAX_PIEZO,
+                    BOOST_U_SPINNER_INIT,
+                    BATTERY_U_SPINNER_STEP));
+        }else{
+
+            if (convertDataToInt(injectorSectionUpdateModel.boost_UProperty().get()) > BOOST_U_SPINNER_MAX){
+                ultimaModbusWriter.add(ModbusMapUltima.Boost_U, BOOST_U_SPINNER_INIT);
+            }
+            boostUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(BOOST_U_SPINNER_MIN,
+                    BOOST_U_SPINNER_MAX,
+                    BOOST_U_SPINNER_INIT,
+                    BOOST_U_SPINNER_STEP));
+        }
     }
 
     private void setupApplyButton() {

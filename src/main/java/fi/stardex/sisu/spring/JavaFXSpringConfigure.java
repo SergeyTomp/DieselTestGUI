@@ -322,7 +322,9 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                                InjectorSectionUpdateModel injectorSectionUpdateModel,
                                                                CoilTwoPulseParametersModel coilTwoPulseParametersModel,
                                                                InjectorModel injectorModel,
-                                                               InjectorTestModel injectorTestModel) {
+                                                               InjectorTestModel injectorTestModel,
+                                                               VoltAmpereProfileModel voltAmpereProfileModel,
+                                                               InjectorControllersState injectorControllersState) {
         InjectorSectionController injectorSectionController = crSectionController().getInjectorSectionController();
         injectorSectionController.setEnabler(enabler);
         injectorSectionController.setUltimaModbusWriter(ultimaModbusWriter);
@@ -339,6 +341,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
         injectorSectionController.setCoilTwoPulseParametersModel(coilTwoPulseParametersModel);
         injectorSectionController.setInjectorModel(injectorModel);
         injectorSectionController.setInjectorTestModel(injectorTestModel);
+        injectorSectionController.setVoltAmpereProfileModel(voltAmpereProfileModel);
+        injectorSectionController.setInjectorControllersState(injectorControllersState);
         return injectorSectionController;
     }
 

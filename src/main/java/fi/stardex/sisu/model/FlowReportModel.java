@@ -3,6 +3,7 @@ package fi.stardex.sisu.model;
 import fi.stardex.sisu.combobox_values.Dimension;
 import fi.stardex.sisu.pdf.Result;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
+import fi.stardex.sisu.states.InjectorControllersState;
 import fi.stardex.sisu.util.enums.Measurement;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
@@ -24,13 +25,17 @@ public class FlowReportModel {
     private FlowViewModel flowViewModel;
     private BooleanProperty resultMapChanged = new SimpleBooleanProperty();
     private ObservableMap<InjectorTest, FlowResult> resultObservableMap = FXCollections.observableMap(new LinkedHashMap<>());
+    private InjectorControllersState injectorControllersState;
+    private InjectorTestModel injectorTestModel;
 
     public FlowReportModel(FlowViewModel flowViewModel,
                            FlowValuesModel flowValuesModel,
                            DeliveryFlowRangeModel deliveryFlowRangeModel,
                            DeliveryFlowUnitsModel deliveryFlowUnitsModel,
                            BackFlowRangeModel backFlowRangeModel,
-                           BackFlowUnitsModel backFlowUnitsModel) {
+                           BackFlowUnitsModel backFlowUnitsModel,
+                           InjectorControllersState injectorControllersState,
+                           InjectorTestModel injectorTestModel) {
 
         this.flowViewModel = flowViewModel;
         this.flowValuesModel = flowValuesModel;
@@ -38,6 +43,8 @@ public class FlowReportModel {
         this.deliveryFlowUnitsModel = deliveryFlowUnitsModel;
         this.backFlowRangeModel = backFlowRangeModel;
         this.backFlowUnitsModel = backFlowUnitsModel;
+        this.injectorControllersState = injectorControllersState;
+        this.injectorTestModel = injectorTestModel;
 
     }
 
@@ -58,31 +65,34 @@ public class FlowReportModel {
         resultMapChanged.setValue(true);
     }
 
-    public void storeResult(InjectorTest injectorTest){
+    public void storeResult(){
 
+        InjectorTest injectorTest = injectorTestModel.injectorTestProperty().get();
         Measurement measurement = injectorTest.getTestName().getMeasurement();
-        switch (measurement){
+        String nominalFlow = null;
+
+        switch (measurement) {
+
             case DELIVERY:
-                resultObservableMap.put(injectorTest, new FlowResult(
-                    injectorTest,
-                    getNominalFlow(deliveryFlowRangeModel.deliveryFlowRangeProperty().get(), deliveryFlowUnitsModel.deliveryFlowUnitsProperty().get()),
-                    getFlow(flowValuesModel.delivery1Property().get()),
-                    getFlow(flowValuesModel.delivery2Property().get()),
-                    getFlow(flowValuesModel.delivery3Property().get()),
-                    getFlow(flowValuesModel.delivery4Property().get()),
-                    flowViewModel.flowViewProperty().get()));
+                nominalFlow = getNominalFlow(deliveryFlowRangeModel.deliveryFlowRangeProperty().get(), deliveryFlowUnitsModel.deliveryFlowUnitsProperty().get());
                 break;
             case BACK_FLOW:
-                resultObservableMap.put(injectorTest, new FlowResult(
-                    injectorTest,
-                    getNominalFlow(backFlowRangeModel.backFlowRangeProperty().get(), backFlowUnitsModel.backFlowUnitsProperty().get()),
-                    getFlow(flowValuesModel.backFlow1Property().get()),
-                    getFlow(flowValuesModel.backFlow2Property().get()),
-                    getFlow(flowValuesModel.backFlow3Property().get()),
-                    getFlow(flowValuesModel.backFlow4Property().get()),
-                    flowViewModel.flowViewProperty().get()));
+                nominalFlow = getNominalFlow(backFlowRangeModel.backFlowRangeProperty().get(), backFlowUnitsModel.backFlowUnitsProperty().get());
                 break;
+            case NO:
+            case VISUAL:
+                return;
         }
+
+        Dimension dimension = flowViewModel.flowViewProperty().get();
+
+        if (!resultObservableMap.containsKey(injectorTest)) {
+
+            resultObservableMap.put(injectorTest, new FlowResult(injectorTest, nominalFlow,"-", "-", "-","-"));
+        }
+
+        resultObservableMap.get(injectorTest).setParameters(injectorTest, dimension, nominalFlow);
+
         resultMapChanged.setValue(true);
     }
 
@@ -93,10 +103,6 @@ public class FlowReportModel {
 
     private String getNominalFlow(String range, String flowUnit) {
         return range + " " + flowUnit;
-    }
-
-    private String getFlow(String flow) {
-        return (flow == null || flow.isEmpty()) ? "-" : flow;
     }
 
     public class FlowResult implements Result{
@@ -216,8 +222,7 @@ public class FlowReportModel {
                    String flow1,
                    String flow2,
                    String flow3,
-                   String flow4,
-                   Dimension dimension) {
+                   String flow4) {
 
             this.injectorTest = new SimpleObjectProperty<>(injectorTest);
             this.flowType = new SimpleStringProperty(injectorTest.getTestName().getMeasurement().name());
@@ -226,9 +231,6 @@ public class FlowReportModel {
             this.flow2 = new SimpleStringProperty(flow2);
             this.flow3 = new SimpleStringProperty(flow3);
             this.flow4 = new SimpleStringProperty(flow4);
-
-            setupDoubleFlowValues(injectorTest.getTestName().getMeasurement());
-            extractFromNominalFlow(nominalFlow, dimension);
         }
 
         private void setupDoubleFlowValues(Measurement measurement) {
@@ -272,6 +274,36 @@ public class FlowReportModel {
             }
             acceptableFlowRangeLeft = flowRangeLeft - flowRangeLeft * 0.03;
             acceptableFlowRangeRight = flowRangeRight + flowRangeRight * 0.03;
+        }
+
+        private void setParameters(InjectorTest injectorTest, Dimension dimension, String nominalFlow) {
+
+            Measurement measurement = injectorTest.getTestName().getMeasurement();
+            List<StringProperty> newFlowsList = new ArrayList<>();
+            switch (measurement) {
+                case DELIVERY:
+                    newFlowsList.addAll(flowValuesModel.getDeliveryList());
+                    break;
+                case BACK_FLOW:
+                    newFlowsList.addAll(flowValuesModel.getBackFlowList());
+            }
+            List<String> actualFlowsList = getValueColumns();
+
+            injectorControllersState.activeLedToggleButtonsListProperty().get().stream()
+                    .map(toggleButton -> (Integer.parseInt(toggleButton.getText()) - 1))
+                    .forEach(i -> actualFlowsList.set(i, newFlowsList.get(i).get()));
+
+            this.flow1.setValue(getFlow(actualFlowsList.get(0)));
+            this.flow2.setValue(getFlow(actualFlowsList.get(1)));
+            this.flow3.setValue(getFlow(actualFlowsList.get(2)));
+            this.flow4.setValue(getFlow(actualFlowsList.get(3)));
+
+            setupDoubleFlowValues(injectorTest.getTestName().getMeasurement());
+            extractFromNominalFlow(nominalFlow, dimension);
+        }
+
+        private String getFlow(String flow) {
+            return (flow == null || flow.isEmpty()) ? "-" : flow;
         }
 
         @Override

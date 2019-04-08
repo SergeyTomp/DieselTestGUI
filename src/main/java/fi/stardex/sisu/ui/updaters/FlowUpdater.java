@@ -440,7 +440,8 @@ public abstract class FlowUpdater {
     }
 
     protected boolean isNotInstantFlow() {
-        return !isInstantFlowStateProperty.get() && !injectorSectionPowerSwitch.isSelected();
+        return !isInstantFlowStateProperty.get();
+//        return !isInstantFlowStateProperty.get() && !injectorSectionPowerSwitch.isSelected();
     }
 
     protected boolean isNotMeasuring() {

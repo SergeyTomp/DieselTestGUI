@@ -10,7 +10,6 @@ import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.PumpHighPressureSectionPwrState;
 import fi.stardex.sisu.util.GaugeCreator;
 import fi.stardex.sisu.util.enums.RegActive;
-import fi.stardex.sisu.util.enums.pump.PumpPressureControl;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.listeners.TwoSpinnerStyleChangeListener;
 import fi.stardex.sisu.util.spinners.SpinnerManager;
@@ -27,17 +26,11 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 import javax.annotation.PostConstruct;
-
 import java.util.Optional;
 
 import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.*;
-import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.PressureReg2_DutyMode;
-import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.PressureReg2_I_Mode;
 import static fi.stardex.sisu.util.SpinnerDefaults.*;
-import static fi.stardex.sisu.util.SpinnerDefaults.DUTY_CYCLE_REG_2_SPINNER_STEP;
-import static fi.stardex.sisu.util.enums.RegActive.CURRENT;
-import static fi.stardex.sisu.util.enums.RegActive.DUTY;
-import static fi.stardex.sisu.util.enums.RegActive.NO_REGULATION;
+import static fi.stardex.sisu.util.enums.RegActive.*;
 
 public class PumpRegulatorSectionTwoController {
 
@@ -315,16 +308,16 @@ public class PumpRegulatorSectionTwoController {
         switch (regulationModesModel.regulatorTwoModeProperty().get()){
             case CURRENT:
                 double current = currentSpinner.getValue();
-                ultimaModbusWriter.add(Reg1_To_Reg2_Mirror, false);
+//                ultimaModbusWriter.add(Reg1_To_Reg2_Mirror, false);
                 ultimaModbusWriter.add(PressureReg2_I_Task, current);
                 break;
             case DUTY:
                 double duty = dutySpinner.getValue();
-                ultimaModbusWriter.add(Reg1_To_Reg2_Mirror, false);
+//                ultimaModbusWriter.add(Reg1_To_Reg2_Mirror, false);
                 ultimaModbusWriter.add(PressureReg2_DutyTask, duty);
                 break;
             case NO_REGULATION:
-                ultimaModbusWriter.add(Reg1_To_Reg2_Mirror, true);
+//                ultimaModbusWriter.add(Reg1_To_Reg2_Mirror, true);
                 break;
             default:ultimaModbusWriter.add(PressureReg2_ON, false);
         }
