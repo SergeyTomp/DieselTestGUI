@@ -5,9 +5,11 @@ import fi.stardex.sisu.combobox_values.InjectorChannel;
 import fi.stardex.sisu.devices.Device;
 import fi.stardex.sisu.devices.Devices;
 import fi.stardex.sisu.model.*;
+import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
+import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
-import fi.stardex.sisu.states.BoostUModel;
+import fi.stardex.sisu.states.VoltAmpereProfileDialogModel;
 import fi.stardex.sisu.states.BoostUadjustmentState;
 import fi.stardex.sisu.states.InjectorControllersState;
 import fi.stardex.sisu.ui.Enabler;
@@ -45,6 +47,7 @@ import java.util.*;
 
 import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.*;
 import static fi.stardex.sisu.util.SpinnerDefaults.*;
+import static fi.stardex.sisu.util.converters.DataConverter.convertDataToInt;
 
 public class InjectorSectionController {
 
@@ -101,7 +104,7 @@ public class InjectorSectionController {
 
     private InjectorTypeModel injectorTypeModel;
 
-    private BoostUModel boostUModel;
+    private VoltAmpereProfileDialogModel voltAmpereProfileDialogModel;
 
     private InjectorSectionUpdateModel injectorSectionUpdateModel;
 
@@ -112,8 +115,6 @@ public class InjectorSectionController {
     private InjectorModel injectorModel;
 
     private InjectorTestModel injectorTestModel;
-
-    private VoltAmpereProfileModel voltAmpereProfileModel;
 
     private BoostUadjustmentState boostUadjustmentState;
 
@@ -229,8 +230,8 @@ public class InjectorSectionController {
         this.i18N = i18N;
     }
 
-    public void setBoostUModel(BoostUModel boostU_model) {
-        this.boostUModel = boostU_model;
+    public void setVoltAmpereProfileDialogModel(VoltAmpereProfileDialogModel voltAmpereProfileDialogModel) {
+        this.voltAmpereProfileDialogModel = voltAmpereProfileDialogModel;
     }
 
     public void setCoilOnePulseParametersModel(CoilOnePulseParametersModel coilOnePulseParametersModel) {
@@ -251,10 +252,6 @@ public class InjectorSectionController {
 
     public void setInjectorTestModel(InjectorTestModel injectorTestModel) {
         this.injectorTestModel = injectorTestModel;
-    }
-
-    public void setVoltAmpereProfileModel(VoltAmpereProfileModel voltAmpereProfileModel) {
-        this.voltAmpereProfileModel = voltAmpereProfileModel;
     }
 
     public void setBoostUadjustmentState(BoostUadjustmentState boostUadjustmentState) {
@@ -312,7 +309,7 @@ public class InjectorSectionController {
 
     private void setupListeners() {
 
-        boostUModel.boostUProperty().addListener(new BoostU_ChangeListener());
+        injectorModel.injectorProperty().addListener(new BoostUChangeListener());
 
         injectorTypeModel.injectorTypeProperty().setValue(InjectorType.COIL);
 
@@ -372,7 +369,8 @@ public class InjectorSectionController {
 
             if (newValue == null) {
                 setDefaultSpinnerValueFactories(true);
-                disableNode(false, widthCurrentSignalSpinner, freqCurrentSignalSpinner, injectorSectionStartToggleButton, width2CurrentSignalSpinner, offset2CurrentSignalSpinner);
+                disableNode(false, widthCurrentSignalSpinner, freqCurrentSignalSpinner, injectorSectionStartToggleButton, led1ToggleButton, led2ToggleButton, led3ToggleButton, led4ToggleButton);
+                disableNode(true, width2CurrentSignalSpinner, offset2CurrentSignalSpinner);
                 return;
             }
             Measurement measurementType = newValue.getTestName().getMeasurement();
@@ -386,14 +384,14 @@ public class InjectorSectionController {
                 default:
                     setDefaultSpinnerValueFactories(true);
                     disableNode(false, widthCurrentSignalSpinner, freqCurrentSignalSpinner, injectorSectionStartToggleButton);
-                    disableNode(!boostUModel.isDoubleCoilProperty().get(), width2CurrentSignalSpinner, offset2CurrentSignalSpinner);
+                    disableNode(!newValue.getVoltAmpereProfile().isDoubleCoil(), width2CurrentSignalSpinner, offset2CurrentSignalSpinner);
                     Integer freq = newValue.getInjectionRate();
                     Integer width = newValue.getTotalPulseTime();
 
                     freqCurrentSignalSpinner.getValueFactory().setValue((freq != null) ? 1000d / freq : 0);
                     widthCurrentSignalSpinner.getValueFactory().setValue(width);
 
-                    if (boostUModel.isDoubleCoilProperty().get()) {
+                    if (newValue.getVoltAmpereProfile().isDoubleCoil()) {
                         Integer width2 = newValue.getTotalPulseTime2();
                         Integer offset = newValue.getShift();
                         width2CurrentSignalSpinner.getValueFactory().setValue(width2);
@@ -401,14 +399,21 @@ public class InjectorSectionController {
                     }
                     break;
             }
+
+            boolean isDoubleCoil = newValue.getVoltAmpereProfile().isDoubleCoil();
+            selectButton(false, led2ToggleButton, led3ToggleButton, led4ToggleButton);
+            disableNode (isDoubleCoil, led2ToggleButton, led3ToggleButton, led4ToggleButton);
+            ultimaModbusWriter.add(Double_Coil_Mode_En, isDoubleCoil);
+            ultimaModbusWriter.add(SecondCoilShiftEnable, isDoubleCoil);
+
         });
 
         injectorModel.injectorProperty().addListener((observableValue, oldValue, newValue) -> {
 
-            coilOnePulseParametersModel.widthProperty().setValue(0);
-            coilOnePulseParametersModel.periodProperty().setValue(0);
-            coilTwoPulseParametersModel.width_2Property().setValue(0);
-            coilTwoPulseParametersModel.shiftProperty().setValue(0);
+//            coilOnePulseParametersModel.widthProperty().setValue(0);
+//            coilOnePulseParametersModel.periodProperty().setValue(0);
+//            coilTwoPulseParametersModel.width_2Property().setValue(0);
+//            coilTwoPulseParametersModel.shiftProperty().setValue(0);
 
             if (newValue == null) {
                 led1ToggleButton.setSelected(false);
@@ -418,26 +423,13 @@ public class InjectorSectionController {
             }
         });
 
-        boostUModel.isDoubleCoilProperty().addListener((observableValue, oldValue, newValue) -> {
-
-            if (newValue == null) {
-                disableNode(false, led1ToggleButton, led2ToggleButton, led3ToggleButton, led4ToggleButton);
-            }
-            else{
-                selectButton(false, led2ToggleButton, led3ToggleButton, led4ToggleButton);
-                disableNode (newValue, led2ToggleButton, led3ToggleButton, led4ToggleButton);
-                boolean isDoubleCoil = boostUModel.isDoubleCoilProperty().get();
-                ultimaModbusWriter.add(Double_Coil_Mode_En, isDoubleCoil);
-                ultimaModbusWriter.add(SecondCoilShiftEnable, isDoubleCoil);
-            }
-        });
-
-        voltAmpereProfileModel.voltAmpereProfileProperty().addListener((observableValue, oldValue, newValue) -> {
+        injectorModel.injectorProperty().addListener((observableValue, oldValue, newValue) -> {
 
             if (newValue == null) {
                 disableRadioButtons(piezoCoilToggleGroup, false);
-            }else{
-                String injectorType = newValue.getInjectorType().getInjectorType();
+            }
+            else{
+                String injectorType = newValue.getVoltAmpereProfile().getInjectorType().getInjectorType();
                 switch (injectorType) {
                     case "coil":
                         selectInjectorTypeRadioButton(coilRadioButton);
@@ -513,15 +505,14 @@ public class InjectorSectionController {
                 FREQ_CURRENT_SIGNAL_SPINNER_INIT,
                 FREQ_CURRENT_SIGNAL_SPINNER_STEP));
 
-        width2CurrentSignalSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(WIDTH_CURRENT_SIGNAL_SPINNER_MIN,
-                WIDTH_CURRENT_SIGNAL_SPINNER_MAX,
-                WIDTH_CURRENT_SIGNAL_SPINNER_INIT,
-                WIDTH_CURRENT_SIGNAL_SPINNER_STEP));
 
-        offset2CurrentSignalSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(OFFSET_SPINNER_MIN,
-                OFFSET_SPINNER_MAX,
-                OFFSET_SPINNER_INIT,
-                OFFSET_SPINNER_STEP));
+        width2CurrentSignalSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 0));
+        offset2CurrentSignalSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 0));
+
+        coilOnePulseParametersModel.widthProperty().setValue(WIDTH_CURRENT_SIGNAL_SPINNER_INIT);
+        coilOnePulseParametersModel.periodProperty().setValue(FREQ_CURRENT_SIGNAL_SPINNER_INIT);
+        coilTwoPulseParametersModel.width_2Property().setValue(0);
+        coilTwoPulseParametersModel.shiftProperty().setValue(0);
 
         freqCurrentSignalSpinner.setEditable(true);
         widthCurrentSignalSpinner.setEditable(true);
@@ -532,6 +523,8 @@ public class InjectorSectionController {
         SpinnerManager.setupIntegerSpinner(widthCurrentSignalSpinner);
         SpinnerManager.setupIntegerSpinner(width2CurrentSignalSpinner);
         SpinnerManager.setupIntegerSpinner(offset2CurrentSignalSpinner);
+
+        disableNode(true, width2CurrentSignalSpinner, offset2CurrentSignalSpinner);
     }
 
     private class LedParametersChangeListener implements ChangeListener<Object> {
@@ -666,7 +659,7 @@ public class InjectorSectionController {
                 ledParametersChangeListener.switchOffAll();
                 timerTasksManager.stop();
                 enabler.disableVAP(false);
-                if (!boostUModel.isDoubleCoilProperty().get()) {
+                if (!voltAmpereProfileDialogModel.isDoubleCoilProperty().get()) {
                     disableNode(false, led2ToggleButton, led3ToggleButton, led4ToggleButton);
                 }
             }
@@ -771,6 +764,7 @@ public class InjectorSectionController {
 
         coilOnePulseParametersModel.setValueFactorySetting(true);  // for listener of width changes in VoltAmpereProfileController blocking
         coilTwoPulseParametersModel.setValueFactorySetting(true);  // for listener of width changes in VoltAmpereProfileController blocking
+        InjectorTest injectorTest = injectorTestModel.injectorTestProperty().get();
 
         if (isDefault) {
 
@@ -785,7 +779,7 @@ public class InjectorSectionController {
                         FREQ_CURRENT_SIGNAL_SPINNER_INIT,
                         FREQ_CURRENT_SIGNAL_SPINNER_STEP));
 
-                if (boostUModel.isDoubleCoilProperty().get()) {
+                if (injectorTest != null && injectorTest.getVoltAmpereProfile().isDoubleCoil()) {
                     width2CurrentSignalSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(WIDTH_CURRENT_SIGNAL_SPINNER_MIN,
                             WIDTH_CURRENT_SIGNAL_SPINNER_MAX,
                             WIDTH_CURRENT_SIGNAL_SPINNER_INIT,
@@ -794,6 +788,10 @@ public class InjectorSectionController {
                             OFFSET_SPINNER_MAX,
                             OFFSET_SPINNER_INIT,
                             OFFSET_SPINNER_STEP));
+                }
+                else {
+                width2CurrentSignalSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 0));
+                offset2CurrentSignalSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 0));
             }
         } else {
 
@@ -806,21 +804,23 @@ public class InjectorSectionController {
         coilTwoPulseParametersModel.setValueFactorySetting(false);
     }
 
-    private class BoostU_ChangeListener extends Service<Void> implements ChangeListener<Number> {
+    private class BoostUChangeListener extends Service<Void> implements ChangeListener<Injector>{
 
         private double timeOut = 0d; // TimeOut seconds
         private double adjBoostInitValue;
         private boolean adjBoostBreak;
 
         @Override
-        public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+        public void changed(ObservableValue<? extends Injector> observableValue, Injector oldInjector, Injector newInjector) {
 
-            if (devices.isConnected(Device.ULTIMA)) {
-                if (oldValue.intValue() - newValue.intValue() >= 20d) {
+            if (newInjector != null && devices.isConnected(Device.ULTIMA)) {
 
-                    adjBoostInitValue = oldValue.intValue();
+                int firmwareBoostU = convertDataToInt(injectorSectionUpdateModel.boost_UProperty().get());
+                if (firmwareBoostU - newInjector.getVoltAmpereProfile().getBoostU() >= 20d) {
+
+                    adjBoostInitValue = firmwareBoostU;
                     adjBoostBreak = false;
-                    timeOut = (oldValue.intValue() - newValue.intValue()); // calculated timeOut
+                    timeOut = (firmwareBoostU - newInjector.getVoltAmpereProfile().getBoostU()); // calculated timeOut
 
                     setStartStopValues(true);
 
@@ -828,10 +828,11 @@ public class InjectorSectionController {
 
                     statusBoostULabel.textProperty().bind(this.messageProperty());
                 } else {
-                    if (!(adjBoostInitValue - newValue.intValue() >= 20d))
+                    if (!(adjBoostInitValue - newInjector.getVoltAmpereProfile().getBoostU() >= 20d))
                         adjBoostBreak = true;
                 }
             }
+
         }
 
         @Override

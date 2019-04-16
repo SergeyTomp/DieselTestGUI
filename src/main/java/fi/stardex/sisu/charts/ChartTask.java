@@ -3,11 +3,12 @@ package fi.stardex.sisu.charts;
 import fi.stardex.sisu.combobox_values.InjectorChannel;
 import fi.stardex.sisu.model.CoilTwoPulseParametersModel;
 import fi.stardex.sisu.model.InjConfigurationModel;
+import fi.stardex.sisu.model.InjectorModel;
 import fi.stardex.sisu.model.InjectorTypeModel;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
-import fi.stardex.sisu.states.BoostUModel;
+import fi.stardex.sisu.states.VoltAmpereProfileDialogModel;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.util.enums.InjectorType;
@@ -16,8 +17,6 @@ import fi.stardex.sisu.version.FirmwareVersion;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.Toggle;
 import net.wimpi.modbus.ModbusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,7 +28,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.TimerTask;
 
-import static fi.stardex.sisu.util.converters.DataConverter.convertDataToInt;
 import static fi.stardex.sisu.version.UltimaFirmwareVersion.UltimaVersions;
 import static fi.stardex.sisu.version.UltimaFirmwareVersion.UltimaVersions.WITHOUT_F;
 
@@ -64,13 +62,16 @@ public abstract class ChartTask extends TimerTask {
     protected abstract ModbusMapUltima getCurrentGraph();
 
     @Autowired
-    private BoostUModel boostUModel;
+    private VoltAmpereProfileDialogModel voltAmpereProfileDialogModel;
 
     @Autowired
     protected CoilTwoPulseParametersModel coilTwoPulseParametersModel;
 
     @Autowired
     private InjectorTypeModel injectorTypeModel;
+
+    @Autowired
+    private InjectorModel injectorModel;
 
     protected abstract ModbusMapUltima getCurrentGraphFrameNum();
 
@@ -193,9 +194,8 @@ public abstract class ChartTask extends TimerTask {
 
             if (!injectorSectionController.getArrayNumbersOfActiveLedToggleButtons().contains(getChartNumber())) {
 
-                if (!boostUModel.isDoubleCoilProperty().get()) {
+                if (!voltAmpereProfileDialogModel.isDoubleCoilProperty().get()) {
 
-//                    Platform.runLater(() -> addDataToChart(new double[2000], ChartTask.this.getData()));
                     return;
                 } else if (getChartNumber() == 3 || getChartNumber() == 4) {
                     return;

@@ -72,7 +72,7 @@ public class InjectorTest implements ChangeListener<Boolean> {
     @Column(name = "shift")
     private Integer shift;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "volt_ampere_profile")
     @NotFound
     private VoltAmpereProfile voltAmpereProfile;
@@ -201,6 +201,10 @@ public class InjectorTest implements ChangeListener<Boolean> {
 
     public Integer getShift() {
         return shift;
+    }
+
+    public void setVoltAmpereProfile(VoltAmpereProfile voltAmpereProfile) {
+        this.voltAmpereProfile = voltAmpereProfile;
     }
 
     @Override

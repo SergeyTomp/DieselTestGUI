@@ -11,11 +11,9 @@ import fi.stardex.sisu.persistence.repos.cr.InjectorTestRepository;
 import fi.stardex.sisu.persistence.repos.cr.InjectorsRepository;
 import fi.stardex.sisu.registers.flow.ModbusMapFlow;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
-import fi.stardex.sisu.states.BoostUModel;
 import fi.stardex.sisu.states.BoostUadjustmentState;
 import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.ui.ViewHolder;
-import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.DelayController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.info.InfoController;
 import fi.stardex.sisu.ui.controllers.dialogs.ManufacturerMenuDialogController;
@@ -218,8 +216,6 @@ public class MainSectionController {
 
     private DelayReportModel delayReportModel;
 
-    private VoltAmpereProfileModel voltAmpereProfileModel;
-
     private RLC_ReportModel rlc_reportModel;
 
     private CodingReportModel codingReportModel;
@@ -228,7 +224,7 @@ public class MainSectionController {
 
     private InjectorTestRepository injectorTestRepository;
 
-    private VoltAmpereProfile currentVoltAmpereProfile;
+    private VoltAmpereProfile dafaultVoltAmpereProfile;
 
     private Stage manufacturerDialogStage;
 
@@ -414,10 +410,6 @@ public class MainSectionController {
         this.injectorTestModel = injectorTestModel;
     }
 
-    public void setVoltAmpereProfileModel(VoltAmpereProfileModel voltAmpereProfileModel) {
-        this.voltAmpereProfileModel = voltAmpereProfileModel;
-    }
-
     public void setInjectorModel(InjectorModel injectorModel) {
         this.injectorModel = injectorModel;
     }
@@ -508,7 +500,7 @@ public class MainSectionController {
         Task<List<InjectorTest>> task = new Task<>() {
             @Override
             protected List<InjectorTest> call() {
-                return injectorTestRepository.findAllByInjector(getInjector());
+                return injectorTestRepository.findAllByInjector(injectorModel.injectorProperty().get());
             }
         };
 
@@ -517,9 +509,12 @@ public class MainSectionController {
 
             if (newValue != null) {
 
+                Injector injector = injectorModel.injectorProperty().get();
+                VoltAmpereProfile defaultVAP = injector.getVoltAmpereProfile();
+                newValue.stream().filter(t -> t.getVoltAmpereProfile() == null).forEach(t -> t.setVoltAmpereProfile(defaultVAP));
                 setInjectorTests(newValue);
 
-                if (!checkInjectorForCoding(getInjector().getCodetype()) && codingTestRadioButton.isSelected()) {
+                if (!checkInjectorForCoding(injector.getCodetype()) && codingTestRadioButton.isSelected()) {
 
                     autoTestRadioButton.setSelected(true);
                 }else{ setTests(); }
@@ -880,6 +875,8 @@ public class MainSectionController {
 
         modelListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 
+
+
             returnToDefaultTestListAuto();
             resetButton.fire();
             delayReportModel.clearResults();
@@ -894,25 +891,23 @@ public class MainSectionController {
                 injectorModel.injectorProperty().setValue(null);
                 injectorTestModel.injectorTestProperty().setValue(null);
                 enabler.showInjectorTests(false).
-//                        selectInjectorType(null).
                         showNode(false, codingTestRadioButton);
-                voltAmpereProfileModel.voltAmpereProfileProperty().setValue(null);
                 testListViewItems.clear();
                 return;
             }
 
             Injector injector = (Injector) newValue;
-            injectorModel.injectorProperty().setValue(injector);
+
+            dafaultVoltAmpereProfile = injectorsRepository.findByInjectorCode(injector.getInjectorCode()).getVoltAmpereProfile();
             injectorModel.setInjectorIsChanging(true); // for listener of width changes in the VoltAmpereProfileController blocking
-            currentVoltAmpereProfile = injectorsRepository.findByInjectorCode(injector.getInjectorCode()).getVoltAmpereProfile();
-            injector.setVoltAmpereProfile(currentVoltAmpereProfile);
+            injector.setVoltAmpereProfile(dafaultVoltAmpereProfile);
+            injectorModel.injectorProperty().setValue(injector);
             setInjector(injector);
+
             fetchTestsFromRepository();
             enabler
                     .showInjectorTests(true)
                     .showNode(checkInjectorForCoding(injector.getCodetype()), codingTestRadioButton);
-
-            voltAmpereProfileModel.voltAmpereProfileProperty().setValue(currentVoltAmpereProfile);
 
             String manufacturerName = injector.getManufacturer().getManufacturerName();
             switch (manufacturerName) {

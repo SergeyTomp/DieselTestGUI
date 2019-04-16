@@ -2,7 +2,7 @@ package fi.stardex.sisu.ui.controllers.additional.tabs;
 
 import fi.stardex.sisu.model.*;
 import fi.stardex.sisu.model.updateModels.InjectorSectionUpdateModel;
-import fi.stardex.sisu.states.BoostUModel;
+import fi.stardex.sisu.states.VoltAmpereProfileDialogModel;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.additional.TabSectionController;
 import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
@@ -97,7 +97,7 @@ public class VoltageController {
 
     private InjectorSectionUpdateModel injectorSectionUpdateModel;
 
-    private BoostUModel boostUModel;
+    private VoltAmpereProfileDialogModel voltAmpereProfileDialogModel;
 
     private InjectorModel injectorModel;
 
@@ -167,8 +167,8 @@ public class VoltageController {
         this.injectorSectionUpdateModel = injectorSectionUpdateModel;
     }
 
-    public void setBoostUModel(BoostUModel boostUModel) {
-        this.boostUModel = boostUModel;
+    public void setVoltAmpereProfileDialogModel(VoltAmpereProfileDialogModel voltAmpereProfileDialogModel) {
+        this.voltAmpereProfileDialogModel = voltAmpereProfileDialogModel;
     }
 
     public void setInjectorModel(InjectorModel injectorModel) {
@@ -283,29 +283,29 @@ public class VoltageController {
 
 
 //        width.textProperty().addListener(new VoltageLabelListener(width, coilOnePulseParametersModel.widthProperty().get()));
-        voltage.textProperty().addListener(new VoltageLabelListener(voltage, boostUModel.boostUProperty()));
-        firstWidth.textProperty().addListener(new VoltageLabelListener(firstWidth, boostUModel.firstWProperty()));
-        firstCurrent.textProperty().addListener(new VoltageLabelListener(firstCurrent, boostUModel.firstIProperty()));
-        secondCurrent.textProperty().addListener(new VoltageLabelListener(secondCurrent, boostUModel.secondIProperty()));
-        boostI.textProperty().addListener(new VoltageLabelListener(boostI, boostUModel.boostIProperty()));
-        batteryU.textProperty().addListener(new VoltageLabelListener(batteryU, boostUModel.batteryUProperty()));
-        negativeU.textProperty().addListener(new VoltageLabelListener(negativeU, boostUModel.negativeUProperty()));
-        firstW2Label.textProperty().addListener(new VoltageLabelListener(firstW2Label, boostUModel.firstW2Property()));
-        firstI2Label.textProperty().addListener(new VoltageLabelListener(firstI2Label, boostUModel.firstI2Property()));
-        secondI2Label.textProperty().addListener(new VoltageLabelListener(secondI2Label, boostUModel.secondI2Property()));
-        boostI2Label.textProperty().addListener(new VoltageLabelListener(boostI2Label, boostUModel.boostI2Property()));
+        voltage.textProperty().addListener(new VoltageLabelListener(voltage, voltAmpereProfileDialogModel.boostUProperty()));
+        firstWidth.textProperty().addListener(new VoltageLabelListener(firstWidth, voltAmpereProfileDialogModel.firstWProperty()));
+        firstCurrent.textProperty().addListener(new VoltageLabelListener(firstCurrent, voltAmpereProfileDialogModel.firstIProperty()));
+        secondCurrent.textProperty().addListener(new VoltageLabelListener(secondCurrent, voltAmpereProfileDialogModel.secondIProperty()));
+        boostI.textProperty().addListener(new VoltageLabelListener(boostI, voltAmpereProfileDialogModel.boostIProperty()));
+        batteryU.textProperty().addListener(new VoltageLabelListener(batteryU, voltAmpereProfileDialogModel.batteryUProperty()));
+        negativeU.textProperty().addListener(new VoltageLabelListener(negativeU, voltAmpereProfileDialogModel.negativeUProperty()));
+        firstW2Label.textProperty().addListener(new VoltageLabelListener(firstW2Label, voltAmpereProfileDialogModel.firstW2Property()));
+        firstI2Label.textProperty().addListener(new VoltageLabelListener(firstI2Label, voltAmpereProfileDialogModel.firstI2Property()));
+        secondI2Label.textProperty().addListener(new VoltageLabelListener(secondI2Label, voltAmpereProfileDialogModel.secondI2Property()));
+        boostI2Label.textProperty().addListener(new VoltageLabelListener(boostI2Label, voltAmpereProfileDialogModel.boostI2Property()));
 
-        boostUModel.boostUProperty().addListener(new VapModelListener(voltage));
-        boostUModel.firstWProperty().addListener(new VapModelListener(firstWidth));
-        boostUModel.firstIProperty().addListener(new VapModelListener(firstCurrent));
-        boostUModel.secondIProperty().addListener(new VapModelListener(secondCurrent));
-        boostUModel.boostIProperty().addListener(new VapModelListener(boostI));
-        boostUModel.batteryUProperty().addListener(new VapModelListener(batteryU));
-        boostUModel.negativeUProperty().addListener(new VapModelListener(negativeU));
-        boostUModel.firstW2Property().addListener(new VapModelListener(firstW2Label));
-        boostUModel.firstI2Property().addListener(new VapModelListener(firstI2Label));
-        boostUModel.secondI2Property().addListener(new VapModelListener(secondI2Label));
-        boostUModel.boostI2Property().addListener(new VapModelListener(boostI2Label));
+        voltAmpereProfileDialogModel.boostUProperty().addListener(new VapModelListener(voltage));
+        voltAmpereProfileDialogModel.firstWProperty().addListener(new VapModelListener(firstWidth));
+        voltAmpereProfileDialogModel.firstIProperty().addListener(new VapModelListener(firstCurrent));
+        voltAmpereProfileDialogModel.secondIProperty().addListener(new VapModelListener(secondCurrent));
+        voltAmpereProfileDialogModel.boostIProperty().addListener(new VapModelListener(boostI));
+        voltAmpereProfileDialogModel.batteryUProperty().addListener(new VapModelListener(batteryU));
+        voltAmpereProfileDialogModel.negativeUProperty().addListener(new VapModelListener(negativeU));
+        voltAmpereProfileDialogModel.firstW2Property().addListener(new VapModelListener(firstW2Label));
+        voltAmpereProfileDialogModel.firstI2Property().addListener(new VapModelListener(firstI2Label));
+        voltAmpereProfileDialogModel.secondI2Property().addListener(new VapModelListener(secondI2Label));
+        voltAmpereProfileDialogModel.boostI2Property().addListener(new VapModelListener(boostI2Label));
     }
 
     private void setupModelsListeners() {

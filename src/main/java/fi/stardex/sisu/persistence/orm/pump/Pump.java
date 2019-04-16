@@ -1,5 +1,7 @@
 package fi.stardex.sisu.persistence.orm.pump;
 
+import fi.stardex.sisu.persistence.orm.Manufacturer;
+import fi.stardex.sisu.persistence.orm.interfaces.Model;
 import fi.stardex.sisu.util.enums.pump.PumpPressureControl;
 import fi.stardex.sisu.util.enums.pump.PumpRegulatorConfig;
 import fi.stardex.sisu.util.enums.pump.PumpRegulatorType;
@@ -11,7 +13,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "pump")
-public class Pump {
+public class Pump implements Model {
 
     @Id
     @Column(name = "pump_code")
@@ -105,4 +107,8 @@ public class Pump {
         return pumpCode;
     }
 
+    @Override
+    public Manufacturer getManufacturer() {
+        return null;
+    }
 }

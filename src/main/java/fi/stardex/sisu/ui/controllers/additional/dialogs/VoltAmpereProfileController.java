@@ -2,9 +2,10 @@ package fi.stardex.sisu.ui.controllers.additional.dialogs;
 
 import fi.stardex.sisu.model.*;
 import fi.stardex.sisu.model.updateModels.InjectorSectionUpdateModel;
+import fi.stardex.sisu.persistence.orm.cr.inj.VoltAmpereProfile;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
-import fi.stardex.sisu.states.BoostUModel;
+import fi.stardex.sisu.states.VoltAmpereProfileDialogModel;
 import fi.stardex.sisu.util.enums.InjectorType;
 import fi.stardex.sisu.util.enums.Measurement;
 import fi.stardex.sisu.util.i18n.I18N;
@@ -73,16 +74,16 @@ public class VoltAmpereProfileController {
     private static final float ONE_AMPERE_MULTIPLY = 93.07f;
     private ModbusRegisterProcessor ultimaModbusWriter;
     private Stage stage;
-    private BoostUModel boostUModel;
+    private VoltAmpereProfileDialogModel voltAmpereProfileDialogModel;
     private List<Spinner> listOfVAPSpinners = new ArrayList<>();
     private CoilOnePulseParametersModel coilOnePulseParametersModel;
     private CoilTwoPulseParametersModel coilTwoPulseParametersModel;
-    private VoltAmpereProfileModel voltAmpereProfileModel;
     private InjectorTestModel injectorTestModel;
     private InjectorSectionUpdateModel injectorSectionUpdateModel;
     private InjectorModel injectorModel;
     private InjectorTypeModel injectorTypeModel;
     private CoilPulseCalculator coilPulseCalculator;
+    private VoltAmpereProfile currentVAP;
 
     private Logger logger = LoggerFactory.getLogger(VoltAmpereProfileController.class);
 
@@ -110,8 +111,8 @@ public class VoltAmpereProfileController {
         this.i18N = i18N;
     }
 
-    public void setBoostUModel(BoostUModel boostUModel) {
-        this.boostUModel = boostUModel;
+    public void setVoltAmpereProfileDialogModel(VoltAmpereProfileDialogModel voltAmpereProfileDialogModel) {
+        this.voltAmpereProfileDialogModel = voltAmpereProfileDialogModel;
     }
 
     public void setCoilOnePulseParametersModel(CoilOnePulseParametersModel coilOnePulseParametersModel) {
@@ -120,10 +121,6 @@ public class VoltAmpereProfileController {
 
     public void setCoilTwoPulseParametersModel(CoilTwoPulseParametersModel coilTwoPulseParametersModel) {
         this.coilTwoPulseParametersModel = coilTwoPulseParametersModel;
-    }
-
-    public void setVoltAmpereProfileModel(VoltAmpereProfileModel voltAmpereProfileModel) {
-        this.voltAmpereProfileModel = voltAmpereProfileModel;
     }
 
     public void setInjectorTestModel(InjectorTestModel injectorTestModel) {
@@ -140,6 +137,12 @@ public class VoltAmpereProfileController {
 
     public void setInjectorTypeModel(InjectorTypeModel injectorTypeModel) {
         this.injectorTypeModel = injectorTypeModel;
+    }
+
+    private enum Invocator {
+        TEST,
+        SPINNER,
+        DIALOG
     }
 
     // FIXME: при изменении значения в спиннере которое равно значению с прошивки красным перестают гореть оба значения, хотя значение спиннера еще не было подтверждено нажатием Apply
@@ -160,8 +163,6 @@ public class VoltAmpereProfileController {
 
         setupSpinnerStyleWhenValueChangedListener();
 
-        setupVapModelListener();
-
         setupTestModelListener();
 
         bindingI18N();
@@ -174,93 +175,97 @@ public class VoltAmpereProfileController {
 
             if (newValue != null && newValue.getTestName().getMeasurement() != Measurement.NO) {
 
-                int firstW = voltAmpereProfileModel.voltAmpereProfileProperty().get().getFirstW();
+                currentVAP = newValue.getVoltAmpereProfile();
+
+                int firstW = currentVAP.getFirstW();
                 Integer width = newValue.getTotalPulseTime();
                 firstW = (width - firstW >= MAX_DELTA_WIDTH_TO_FIRST_WIDTH) ? firstW : width - MAX_DELTA_WIDTH_TO_FIRST_WIDTH;
                 firstWSpinner.getValueFactory().setValue(firstW);
 
-                if (voltAmpereProfileModel.voltAmpereProfileProperty().get().isDoubleCoil()) {
+                if (currentVAP.isDoubleCoil()) {
 
-                    firstW = voltAmpereProfileModel.voltAmpereProfileProperty().get().getFirstW2();
+                    firstW = currentVAP.getFirstW2();
                     width = newValue.getTotalPulseTime2();
                     firstW = (width - firstW >= MAX_DELTA_WIDTH_TO_FIRST_WIDTH) ? firstW : width - MAX_DELTA_WIDTH_TO_FIRST_WIDTH;
                     firstW2Spinner.getValueFactory().setValue(firstW);
                 }
-                saveDataToBoostUModel("TestModelListener");
-                sendVAPRegisters("TestModelListener");
+
+                setValuesToVapSpinners();
+                sendVAPRegisters(Invocator.TEST);
+            }
+            else if(newValue == null){
+
+                currentVAP = null;
+                setInitialsToVapSpinners();
             }
         });
     }
 
-    private void setupVapModelListener() {
+    private void setValuesToVapSpinners() {
 
-        voltAmpereProfileModel.voltAmpereProfileProperty().addListener((observableValue, oldValue, newValue) -> {
+        setBoostUSpinnerValueFactory();
 
-            if (newValue != null) {
+        double firstI = currentVAP.getFirstI();
+        double secondI = currentVAP.getSecondI();
+        double boostI = currentVAP.getBoostI();
 
-                setBoostUSpinnerValueFactory();
+        firstI = boostI - firstI >= 0.5 ? firstI : boostI - 0.5;
+        secondI = firstI - secondI  >= 0.5 ? secondI : firstI - 0.5;
 
-                double firstI = newValue.getFirstI();
-                double secondI = newValue.getSecondI();
-                double boostI = newValue.getBoostI();
+        boostUSpinner.getValueFactory().setValue(currentVAP.getBoostU());
+        batteryUSpinner.getValueFactory().setValue(currentVAP.getBatteryU());
 
-                firstI = boostI - firstI >= 0.5 ? firstI : boostI - 0.5;
-                secondI = firstI - secondI  >= 0.5 ? secondI : firstI - 0.5;
+        boostISpinner.getValueFactory().setValue((boostI * 100 % 10 != 0) ? round(boostI) : boostI);
+        firstISpinner.getValueFactory().setValue((firstI * 100 % 10 != 0) ? round(firstI) : firstI);
+        secondISpinner.getValueFactory().setValue((secondI * 100 % 10 != 0) ? round(secondI) : secondI);
+        firstWSpinner.getValueFactory().setValue(currentVAP.getFirstW());
+        negativeUSpinner.getValueFactory().setValue(currentVAP.getNegativeU());
+        voltAmpereProfileDialogModel.isDoubleCoilProperty().setValue(currentVAP.isDoubleCoil());
+        voltAmpereProfileDialogModel.boostDisableProperty().setValue(currentVAP.getBoostDisable());
+        enableBoostToggleButton.setSelected(currentVAP.getBoostDisable());
 
-                boostUSpinner.getValueFactory().setValue(newValue.getBoostU());
-                batteryUSpinner.getValueFactory().setValue(newValue.getBatteryU());
+        Boolean isDoubleCoil = currentVAP.isDoubleCoil();
 
-                boostISpinner.getValueFactory().setValue((boostI * 100 % 10 != 0) ? round(boostI) : boostI);
-                firstISpinner.getValueFactory().setValue((firstI * 100 % 10 != 0) ? round(firstI) : firstI);
-                secondISpinner.getValueFactory().setValue((secondI * 100 % 10 != 0) ? round(secondI) : secondI);
-                firstWSpinner.getValueFactory().setValue(newValue.getFirstW());
-                negativeUSpinner.getValueFactory().setValue(newValue.getNegativeU());
-                boostUModel.isDoubleCoilProperty().setValue(newValue.isDoubleCoil());
-                boostUModel.boostDisableProperty().setValue(newValue.getBoostDisable());
-                enableBoostToggleButton.setSelected(newValue.getBoostDisable());
+        activateCoil2Spinners(isDoubleCoil);
 
-                Boolean isDoubleCoil = newValue.isDoubleCoil();
+        if (isDoubleCoil) {
 
-                activateCoil2Spinners(isDoubleCoil);
+            firstI = currentVAP.getFirstI2();
+            secondI = currentVAP.getSecondI2();
+            boostI = currentVAP.getBoostI2();
 
-                if (isDoubleCoil) {
-
-                    firstI = newValue.getFirstI2();
-                    secondI = newValue.getSecondI2();
-                    boostI = newValue.getBoostI2();
-
-                    firstI = boostI - firstI >= 0.5 ? firstI : boostI - 0.5;
-                    secondI = firstI - secondI  >= 0.5 ? secondI : firstI - 0.5;
-                    firstW2Spinner.getValueFactory().setValue(newValue.getFirstW2());
-                    firstI2Spinner.getValueFactory().setValue((firstI * 100 % 10 != 0) ? round(firstI) : firstI);
-                    secondI2Spinner.getValueFactory().setValue((secondI * 100 % 10 != 0) ? round(secondI) : secondI);
-                    boostI2Spinner.getValueFactory().setValue((boostI * 100 % 10 != 0) ? round(boostI) : boostI);
-                }
-            }
-            else{
-
-                boostUSpinner.getValueFactory().setValue(BOOST_U_SPINNER_INIT);
-                batteryUSpinner.getValueFactory().setValue(BATTERY_U_SPINNER_INIT);
-                boostISpinner.getValueFactory().setValue(BOOST_I_SPINNER_INIT);
-                firstISpinner.getValueFactory().setValue(FIRST_I_SPINNER_INIT);
-                secondISpinner.getValueFactory().setValue(SECOND_I_SPINNER_INIT);
-                firstWSpinner.getValueFactory().setValue(FIRST_W_SPINNER_INIT);
-                negativeUSpinner.getValueFactory().setValue(NEGATIVE_U_SPINNER_INIT);
-
-                enableBoostToggleButton.setSelected(false);
-                activateCoil2Spinners(false);
-                firstW2Spinner.getValueFactory().setValue(FIRST_W_SPINNER_INIT);
-                firstI2Spinner.getValueFactory().setValue(FIRST_I_SPINNER_INIT);
-                secondI2Spinner.getValueFactory().setValue(SECOND_I_SPINNER_INIT);
-                boostI2Spinner.getValueFactory().setValue(BOOST_I_SPINNER_INIT);
-                boostUModel.isDoubleCoilProperty().setValue(false);
-                boostUModel.boostDisableProperty().setValue(false);
-            }
-            saveDataToBoostUModel("VapModelListener");
-//            applyButton.fire();
-        });
+            firstI = boostI - firstI >= 0.5 ? firstI : boostI - 0.5;
+            secondI = firstI - secondI  >= 0.5 ? secondI : firstI - 0.5;
+            firstW2Spinner.getValueFactory().setValue(currentVAP.getFirstW2());
+            firstI2Spinner.getValueFactory().setValue((firstI * 100 % 10 != 0) ? round(firstI) : firstI);
+            secondI2Spinner.getValueFactory().setValue((secondI * 100 % 10 != 0) ? round(secondI) : secondI);
+            boostI2Spinner.getValueFactory().setValue((boostI * 100 % 10 != 0) ? round(boostI) : boostI);
+        }
+        saveDataToVapDialogModel(Invocator.TEST);
     }
 
+    private void setInitialsToVapSpinners() {
+
+        boostUSpinner.getValueFactory().setValue(BOOST_U_SPINNER_INIT);
+        batteryUSpinner.getValueFactory().setValue(BATTERY_U_SPINNER_INIT);
+        boostISpinner.getValueFactory().setValue(BOOST_I_SPINNER_INIT);
+        firstISpinner.getValueFactory().setValue(FIRST_I_SPINNER_INIT);
+        secondISpinner.getValueFactory().setValue(SECOND_I_SPINNER_INIT);
+        firstWSpinner.getValueFactory().setValue(FIRST_W_SPINNER_INIT);
+        negativeUSpinner.getValueFactory().setValue(NEGATIVE_U_SPINNER_INIT);
+
+        enableBoostToggleButton.setSelected(false);
+        activateCoil2Spinners(false);
+        firstW2Spinner.getValueFactory().setValue(FIRST_W_SPINNER_INIT);
+        firstI2Spinner.getValueFactory().setValue(FIRST_I_SPINNER_INIT);
+        secondI2Spinner.getValueFactory().setValue(SECOND_I_SPINNER_INIT);
+        boostI2Spinner.getValueFactory().setValue(BOOST_I_SPINNER_INIT);
+        voltAmpereProfileDialogModel.isDoubleCoilProperty().setValue(false);
+        voltAmpereProfileDialogModel.boostDisableProperty().setValue(false);
+
+        saveDataToVapDialogModel(Invocator.TEST);
+    }
+    
     private void setupEnableBoostToggleButton() {
 
         enableBoostToggleButton.setSelected(true);
@@ -305,22 +310,7 @@ public class VoltAmpereProfileController {
                 BOOST_U_SPINNER_INIT,
                 BOOST_U_SPINNER_STEP));
 
-        firstW2Spinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(FIRST_W_SPINNER_MIN,
-                FIRST_W_SPINNER_MAX,
-                FIRST_W_SPINNER_INIT,
-                FIRST_W_SPINNER_STEP));
-        boostI2Spinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(BOOST_I_SPINNER_MIN,
-                BOOST_I_SPINNER_MAX,
-                BOOST_I_SPINNER_INIT,
-                BOOST_I_SPINNER_STEP));
-        firstI2Spinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(FIRST_I_SPINNER_MIN,
-                FIRST_I_SPINNER_MAX,
-                FIRST_I_SPINNER_INIT,
-                FIRST_I_SPINNER_STEP));
-        secondI2Spinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(SECOND_I_SPINNER_MIN,
-                SECOND_I_SPINNER_MAX,
-                SECOND_I_SPINNER_INIT,
-                SECOND_I_SPINNER_STEP));
+        activateCoil2Spinners(false);
 
 //        SpinnerManager.setupIntegerSpinner(widthCurrentSignal);
         SpinnerManager.setupIntegerSpinner(firstWSpinner);
@@ -361,7 +351,7 @@ public class VoltAmpereProfileController {
 
         injectorTypeModel.injectorTypeProperty().addListener((observableValue, oldValue, newValue) -> {
 
-            if (voltAmpereProfileModel.voltAmpereProfileProperty().get() == null) {
+            if (currentVAP == null) {
 
                 if (newValue == InjectorType.PIEZO || newValue == InjectorType.PIEZO_DELPHI) {
                     boostUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(BOOST_U_SPINNER_MIN,
@@ -383,7 +373,7 @@ public class VoltAmpereProfileController {
 
     private void setBoostUSpinnerValueFactory() {
 
-        String injectorType = voltAmpereProfileModel.voltAmpereProfileProperty().get().getInjectorType().getInjectorType();
+        String injectorType = currentVAP.getInjectorType().getInjectorType();
 
         if (injectorType.equals("piezo") || injectorType.equals("piezoDelphi")) {
             boostUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(BOOST_U_SPINNER_MIN,
@@ -406,8 +396,8 @@ public class VoltAmpereProfileController {
 
         applyButton.setOnAction(event -> {
             listOfVAPSpinners.forEach(e -> e.increment(0));
-            saveDataToBoostUModel("ApplyButton");
-            sendVAPRegisters("ApplyButton");
+            saveDataToVapDialogModel(Invocator.DIALOG);
+            sendVAPRegisters(Invocator.DIALOG);
             if (stage != null)
                 stage.close();
         });
@@ -436,8 +426,6 @@ public class VoltAmpereProfileController {
 
     private void setupWidthCurrentSignalListener() {
 
-
-
         coilOnePulseParametersModel.widthProperty().addListener((observable, oldValue, newValue) -> {
 
             if (coilOnePulseParametersModel.isValueFactorySetting() ||
@@ -447,7 +435,7 @@ public class VoltAmpereProfileController {
             }
             if ((newValue.intValue() >= WIDTH_CURRENT_SIGNAL_SPINNER_MIN) &&
                     (newValue.intValue() <= WIDTH_CURRENT_SIGNAL_SPINNER_MAX)) {
-                sendVAPRegisters("coilOnePulseParametersModel");
+                sendVAPRegisters(Invocator.SPINNER);
             }
         });
 
@@ -458,10 +446,10 @@ public class VoltAmpereProfileController {
                     injectorModel.isInjectorIsChanging()) {
                 return;
             }
-            if (voltAmpereProfileModel.voltAmpereProfileProperty().get().isDoubleCoil()) {
+            if (currentVAP.isDoubleCoil()) {
                 if ((newValue.intValue() >= WIDTH_CURRENT_SIGNAL_SPINNER_MIN) &&
                         (newValue.intValue() <= WIDTH_CURRENT_SIGNAL_SPINNER_MAX)) {
-                    sendVAPRegisters("coilTwoPulseParametersModel");
+                    sendVAPRegisters(Invocator.SPINNER);
                 }
             }
         });
@@ -502,19 +490,19 @@ public class VoltAmpereProfileController {
         }
     }
 
-    private void saveDataToBoostUModel(String who) {
+    private void saveDataToVapDialogModel(Invocator who) {
 
-        boostUModel.boostUProperty().setValue(boostUSpinner.getValue());
-        boostUModel.batteryUProperty().setValue(batteryUSpinner.getValue());
-        boostUModel.negativeUProperty().setValue(negativeUSpinner.getValue());
-        boostUModel.firstWProperty().setValue(firstWSpinner.getValue());
-        boostUModel.firstIProperty().setValue(firstISpinner.getValue());
-        boostUModel.secondIProperty().setValue(secondISpinner.getValue());
-        boostUModel.boostIProperty().setValue(boostISpinner.getValue());
-        boostUModel.firstW2Property().setValue(firstW2Spinner.getValue());
-        boostUModel.firstI2Property().setValue(firstI2Spinner.getValue());
-        boostUModel.secondI2Property().setValue(secondI2Spinner.getValue());
-        boostUModel.boostI2Property().setValue(boostI2Spinner.getValue());
+        voltAmpereProfileDialogModel.boostUProperty().setValue(boostUSpinner.getValue());
+        voltAmpereProfileDialogModel.batteryUProperty().setValue(batteryUSpinner.getValue());
+        voltAmpereProfileDialogModel.negativeUProperty().setValue(negativeUSpinner.getValue());
+        voltAmpereProfileDialogModel.firstWProperty().setValue(firstWSpinner.getValue());
+        voltAmpereProfileDialogModel.firstIProperty().setValue(firstISpinner.getValue());
+        voltAmpereProfileDialogModel.secondIProperty().setValue(secondISpinner.getValue());
+        voltAmpereProfileDialogModel.boostIProperty().setValue(boostISpinner.getValue());
+        voltAmpereProfileDialogModel.firstW2Property().setValue(firstW2Spinner.getValue());
+        voltAmpereProfileDialogModel.firstI2Property().setValue(firstI2Spinner.getValue());
+        voltAmpereProfileDialogModel.secondI2Property().setValue(secondI2Spinner.getValue());
+        voltAmpereProfileDialogModel.boostI2Property().setValue(boostI2Spinner.getValue());
     }
 
     private void setupSpinnerStyleWhenValueChangedListener() {
@@ -542,7 +530,7 @@ public class VoltAmpereProfileController {
         }
     }
 
-    private void sendVAPRegisters(String who) {
+    private void sendVAPRegisters(Invocator who) {
 
 //        System.err.println(who);
 //        System.err.println("sendVAPRegisters");
@@ -552,12 +540,21 @@ public class VoltAmpereProfileController {
         double firstIValue = firstISpinner.getValue();
         double secondIValue = secondISpinner.getValue();
         int firstWValue = firstWSpinner.getValue();
-        int widthValue = coilOnePulseParametersModel.widthProperty().get();
+        int widthValue;
+        switch (who) {
+            case TEST:
+                widthValue = injectorTestModel.injectorTestProperty().get().getTotalPulseTime();
+                break;
+            case SPINNER:
+                widthValue = coilOnePulseParametersModel.widthProperty().get();
+                break;
+            default:
+                widthValue = coilOnePulseParametersModel.widthProperty().get();
+        }
         double boostI2Value = boostI2Spinner.getValue();
         double firstI2Value = firstI2Spinner.getValue();
         double secondI2Value = secondI2Spinner.getValue();
         int firstW2Value = firstW2Spinner.getValue();
-        int width2Value = coilTwoPulseParametersModel.width_2Property().get();
         boolean boostToggleButtonSelected = enableBoostToggleButton.isSelected();
 
         firstIValue = (boostIValue - firstIValue >= 0.5) ? firstIValue : boostIValue - 0.5;
@@ -565,13 +562,6 @@ public class VoltAmpereProfileController {
         if ((widthValue - firstWValue <= MAX_DELTA_WIDTH_TO_FIRST_WIDTH)) {
             firstWValue = widthValue - MAX_DELTA_WIDTH_TO_FIRST_WIDTH;
             secondIValue = firstIValue - 0.6d;
-        }
-
-        firstI2Value = (boostI2Value - firstI2Value >= 0.5) ? firstI2Value : boostI2Value - 0.5;
-        secondI2Value = (firstI2Value - secondI2Value >= 0.5) ? secondI2Value : firstI2Value - 0.5;
-        if ((width2Value - firstW2Value <= MAX_DELTA_WIDTH_TO_FIRST_WIDTH)) {
-            firstW2Value = width2Value - MAX_DELTA_WIDTH_TO_FIRST_WIDTH;
-            secondI2Value = firstI2Value - 0.6d;
         }
 
         ultimaModbusWriter.add(Boost_U, boostUSpinner.getValue());
@@ -598,7 +588,26 @@ public class VoltAmpereProfileController {
 //        System.err.println();
 
 
-        if (voltAmpereProfileModel.voltAmpereProfileProperty().get().isDoubleCoil()) {
+        if (currentVAP != null && currentVAP.isDoubleCoil()) {
+
+            int width2Value;
+            switch (who) {
+                case TEST:
+                    width2Value = injectorTestModel.injectorTestProperty().get().getTotalPulseTime2();
+                    break;
+                case SPINNER:
+                    width2Value = coilTwoPulseParametersModel.width_2Property().get();
+                    break;
+                default:
+                    width2Value = coilTwoPulseParametersModel.width_2Property().get();
+            }
+
+            firstI2Value = (boostI2Value - firstI2Value >= 0.5) ? firstI2Value : boostI2Value - 0.5;
+            secondI2Value = (firstI2Value - secondI2Value >= 0.5) ? secondI2Value : firstI2Value - 0.5;
+            if ((width2Value - firstW2Value <= MAX_DELTA_WIDTH_TO_FIRST_WIDTH)) {
+                firstW2Value = width2Value - MAX_DELTA_WIDTH_TO_FIRST_WIDTH;
+                secondI2Value = firstI2Value - 0.6d;
+            }
 
             ultimaModbusWriter.add(BoostIBoardTwo, (int) (boostI2Value * ONE_AMPERE_MULTIPLY));
             ultimaModbusWriter.add(FirstIBoardTwo, (int) (firstI2Value * ONE_AMPERE_MULTIPLY));
@@ -697,17 +706,17 @@ public class VoltAmpereProfileController {
 
         public CoilPulseCalculator(CoilOnePulseParametersModel coilOnePulseParametersModel,
                                    CoilTwoPulseParametersModel coilTwoPulseParametersModel,
-                                   BoostUModel boostUModel) {
-            this.i1_coil1_Property = boostUModel.firstIProperty();
-            this.i2_coil1_Property = boostUModel.secondIProperty();
-            this.i1_coil2_Property = boostUModel.firstI2Property();
-            this.i2_coil2_Property = boostUModel.secondI2Property();
-            this.boostI_coil1_Property = boostUModel.boostIProperty();
-            this.boostI_coil2_Property = boostUModel.boostI2Property();
+                                   VoltAmpereProfileDialogModel voltAmpereProfileDialogModel) {
+            this.i1_coil1_Property = voltAmpereProfileDialogModel.firstIProperty();
+            this.i2_coil1_Property = voltAmpereProfileDialogModel.secondIProperty();
+            this.i1_coil2_Property = voltAmpereProfileDialogModel.firstI2Property();
+            this.i2_coil2_Property = voltAmpereProfileDialogModel.secondI2Property();
+            this.boostI_coil1_Property = voltAmpereProfileDialogModel.boostIProperty();
+            this.boostI_coil2_Property = voltAmpereProfileDialogModel.boostI2Property();
             this.pulseWidthCoil1_Property = coilOnePulseParametersModel.widthProperty();
             this.pulseWidthCoil2_Property = coilTwoPulseParametersModel.width_2Property();
-            this.widthCurrent1_coil1_Property = boostUModel.firstWProperty();
-            this.widthCurrent1_coil2_Property = boostUModel.firstW2Property();
+            this.widthCurrent1_coil1_Property = voltAmpereProfileDialogModel.firstWProperty();
+            this.widthCurrent1_coil2_Property = voltAmpereProfileDialogModel.firstW2Property();
         }
 
         double getI1_coil1() {

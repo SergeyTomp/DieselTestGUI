@@ -54,7 +54,7 @@ public class PumpMeasurementManager {
     private SCVCalibrationModel scvCalibrationModel;
     private IntegerProperty adjustingTimeProperty;
     private IntegerProperty measuringTimeProperty;
-    private PumpPressureRegulatorModel pumpPressureRegulatorModel;
+    private PumpPressureRegulatorOneModel pumpPressureRegulatorOneModel;
     private PumpModel pumpModel;
     private ListView<AutoTestListLastChangeModel.PumpTestWrapper> testListView;
     private SCVCalibrationController scvCalibrationController;
@@ -98,8 +98,8 @@ public class PumpMeasurementManager {
     public void setPumpTimeProgressModel(PumpTimeProgressModel pumpTimeProgressModel) {
         this.pumpTimeProgressModel = pumpTimeProgressModel;
     }
-    public void setPumpPressureRegulatorModel(PumpPressureRegulatorModel pumpPressureRegulatorModel) {
-        this.pumpPressureRegulatorModel = pumpPressureRegulatorModel;
+    public void setPumpPressureRegulatorOneModel(PumpPressureRegulatorOneModel pumpPressureRegulatorOneModel) {
+        this.pumpPressureRegulatorOneModel = pumpPressureRegulatorOneModel;
     }
     public void setTestListView(ListView<AutoTestListLastChangeModel.PumpTestWrapper> testListView) {
         this.testListView = testListView;
@@ -266,7 +266,7 @@ public class PumpMeasurementManager {
 
     private void pressurePreparation() {
 
-        int targetValue = pumpPressureRegulatorModel.pressureRegProperty().get();
+        int targetValue = pumpPressureRegulatorOneModel.pressureRegProperty().get();
         int lcdValue = highPressureSectionUpdateModel.lcdPressureProperty().get();
 
         if(isSectionReady(targetValue, lcdValue, 0.2) || targetValue == 0){

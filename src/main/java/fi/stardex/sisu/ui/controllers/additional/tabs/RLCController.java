@@ -2,13 +2,11 @@ package fi.stardex.sisu.ui.controllers.additional.tabs;
 
 import eu.hansolo.medusa.Gauge;
 import fi.stardex.sisu.combobox_values.InjectorChannel;
-import fi.stardex.sisu.model.InjConfigurationModel;
-import fi.stardex.sisu.model.InjectorTypeModel;
-import fi.stardex.sisu.model.RLC_ReportModel;
-import fi.stardex.sisu.model.VoltAmpereProfileModel;
+import fi.stardex.sisu.model.*;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
+import fi.stardex.sisu.states.InjectorControllersState;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.util.GaugeCreator;
 import fi.stardex.sisu.util.enums.InjectorType;
@@ -56,10 +54,10 @@ public class RLCController {
     private Button storeButton;
 
     private InjectorTypeModel injectorTypeModel;
-    private InjectorSectionController injectorSectionController;
     private InjConfigurationModel injConfigurationModel;
     private RLC_ReportModel rlc_reportModel;
-    private VoltAmpereProfileModel voltAmpereProfileModel;
+    private InjectorControllersState injectorControllersState;
+    private InjectorModel injectorModel;
     private ModbusRegisterProcessor ultimaModbusWriter;
     private RegisterProvider ultimaRegisterProvider;
     private I18N i18N;
@@ -104,10 +102,6 @@ public class RLCController {
         return measurementTabPane;
     }
 
-    public void setInjectorSectionController(InjectorSectionController injectorSectionController) {
-        this.injectorSectionController = injectorSectionController;
-    }
-
     public void setUltimaModbusWriter(ModbusRegisterProcessor ultimaModbusWriter) {
         this.ultimaModbusWriter = ultimaModbusWriter;
     }
@@ -132,8 +126,12 @@ public class RLCController {
         this.rlc_reportModel = rlc_reportModel;
     }
 
-    public void setVoltAmpereProfileModel(VoltAmpereProfileModel voltAmpereProfileModel) {
-        this.voltAmpereProfileModel = voltAmpereProfileModel;
+    public void setInjectorControllersState(InjectorControllersState injectorControllersState) {
+        this.injectorControllersState = injectorControllersState;
+    }
+
+    public void setInjectorModel(InjectorModel injectorModel) {
+        this.injectorModel = injectorModel;
     }
 
     public Gauge getParameter1Gauge() {
@@ -169,7 +167,7 @@ public class RLCController {
         });
         storeButton.setOnAction(event -> {
             rlc_reportModel.storeResult(unitsGauge1, unitsGauge2, titleGauge1, titleGauge2, ledNumber, resultGauge1, resultGauge2);
-            if (voltAmpereProfileModel.voltAmpereProfileProperty().get().isDoubleCoil()) {
+            if (injectorModel.injectorProperty().get().getVoltAmpereProfile().isDoubleCoil()) {
                 rlc_reportModel.storeResult(unitsGauge3, unitsGauge4, titleGauge3, titleGauge4, 2, resultGauge3, resultGauge4);
             }
         });
@@ -184,8 +182,9 @@ public class RLCController {
 
     private void setupVAPModelListener() {
 
-        voltAmpereProfileModel.voltAmpereProfileProperty().addListener((observableValue, oldValue, newValue) ->
-                Optional.ofNullable(newValue).ifPresentOrElse(p -> setupGauges(p.getInjectorType().getInjectorType()), () -> setupGauges(null)));
+        injectorModel.injectorProperty().addListener((observableValue, oldValue, newValue) -> {
+            Optional.ofNullable(newValue).ifPresentOrElse(injector -> setupGauges(injector.getVoltAmpereProfile().getInjectorType().getInjectorType()), () -> setupGauges(null));
+        });
     }
 
     private void setupGauges(String injectorType) {
@@ -264,13 +263,15 @@ public class RLCController {
         parameter4Gauge.setMaxValue(gauge2MaxValue);
 
         measurementTabPane.getSelectionModel().select(0);
-        tabCoilTwo.setDisable(!voltAmpereProfileModel.voltAmpereProfileProperty().get().isDoubleCoil());
+//        tabCoilTwo.setDisable(!voltAmpereProfileModel.voltAmpereProfileProperty().get().isDoubleCoil());
+        tabCoilTwo.setDisable(!injectorModel.injectorProperty().get().getVoltAmpereProfile().isDoubleCoil());
+
     }
 
     private void measure() {
         logger.warn("Measure Button Pressed");
-        activeLedToggleButtonsList = injectorSectionController.getActiveLedToggleButtonsList();
-        Boolean isDoubleCoil = voltAmpereProfileModel.voltAmpereProfileProperty().get().isDoubleCoil();
+        activeLedToggleButtonsList = injectorControllersState.activeLedToggleButtonsListProperty().get();
+        Boolean isDoubleCoil = injectorModel.injectorProperty().get().getVoltAmpereProfile().isDoubleCoil();
         ToggleButton ledController = singleSelected();
         Double parameter1;
         Double parameter2;

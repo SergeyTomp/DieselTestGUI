@@ -5,7 +5,7 @@ import javafx.beans.property.*;
 import static fi.stardex.sisu.util.SpinnerDefaults.*;
 
 //TODO FIXME to convert it into VOAP_model
-public class BoostUModel {
+public class VoltAmpereProfileDialogModel {
 
     private IntegerProperty boostUProperty = new SimpleIntegerProperty(BOOST_U_SPINNER_INIT);
     private IntegerProperty batteryU = new SimpleIntegerProperty(BATTERY_U_SPINNER_INIT);

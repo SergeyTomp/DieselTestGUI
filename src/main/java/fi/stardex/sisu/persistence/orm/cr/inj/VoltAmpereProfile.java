@@ -64,6 +64,9 @@ public class VoltAmpereProfile {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "voltAmpereProfile")
     private List<Injector> injectors = new LinkedList<>();
 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "voltAmpereProfile")
+    private List<InjectorTest> injectorTests = new LinkedList<>();
+
     @PostPersist
     private void onPostPersist() {
         EntityUpdates.getMapOfEntityUpdates().put(this.getClass().getSimpleName(), true);

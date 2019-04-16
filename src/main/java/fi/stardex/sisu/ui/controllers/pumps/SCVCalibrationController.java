@@ -41,7 +41,7 @@ public class SCVCalibrationController {
     private PumpModel pumpModel;
     private ModbusRegisterProcessor flowModbusWriter;
     private HighPressureSectionUpdateModel highPressureSectionUpdateModel;
-    private PumpPressureRegulatorModel pumpPressureRegulatorModel;
+    private PumpPressureRegulatorOneModel pumpPressureRegulatorOneModel;
     private PumpRegulatorSectionTwoController pumpRegulatorSectionTwoController;
     private PumpHighPressureSectionPwrController pumpHighPressureSectionPwrController;
     private TestBenchSectionController testBenchSectionController;
@@ -109,8 +109,8 @@ public class SCVCalibrationController {
         this.highPressureSectionUpdateModel = highPressureSectionUpdateModel;
     }
 
-    public void setPumpPressureRegulatorModel(PumpPressureRegulatorModel pumpPressureRegulatorModel) {
-        this.pumpPressureRegulatorModel = pumpPressureRegulatorModel;
+    public void setPumpPressureRegulatorOneModel(PumpPressureRegulatorOneModel pumpPressureRegulatorOneModel) {
+        this.pumpPressureRegulatorOneModel = pumpPressureRegulatorOneModel;
     }
 
     public void setPumpRegulatorSectionTwoController(PumpRegulatorSectionTwoController pumpRegulatorSectionTwoController) {
@@ -280,7 +280,7 @@ public class SCVCalibrationController {
 
     private void preparePressure() {
 
-        if (isSectionReady(pumpPressureRegulatorModel.pressureRegProperty().get(), highPressureSectionUpdateModel.lcdPressureProperty().get(), 0.2)) {
+        if (isSectionReady(pumpPressureRegulatorOneModel.pressureRegProperty().get(), highPressureSectionUpdateModel.lcdPressureProperty().get(), 0.2)) {
             pressurePreparationTimeline.stop();
             currentPressureTime = DEFAULT_WAITING_TIME;
             testLabel.setText(testText.get());

@@ -2,8 +2,7 @@ package fi.stardex.sisu.model.updateModels;
 
 import fi.stardex.sisu.annotations.Module;
 import fi.stardex.sisu.devices.Device;
-import fi.stardex.sisu.states.BoostUModel;
-import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
+import fi.stardex.sisu.states.VoltAmpereProfileDialogModel;
 import fi.stardex.sisu.ui.updaters.Updater;
 import javafx.beans.property.*;
 
@@ -34,7 +33,7 @@ public class InjectorSectionUpdateModel implements Updater {
     private StringProperty offset = new SimpleStringProperty(String.valueOf(0));
     private BooleanProperty injectorError = new SimpleBooleanProperty();
 
-    private BoostUModel boostUModel;
+    private VoltAmpereProfileDialogModel voltAmpereProfileDialogModel;
 
     private static final float ONE_AMPERE_MULTIPLY = 93.07f;
 
@@ -84,8 +83,8 @@ public class InjectorSectionUpdateModel implements Updater {
         return offset;
     }
 
-    public void setBoostUModel(BoostUModel boostUModel) {
-        this.boostUModel = boostUModel;
+    public void setVoltAmpereProfileDialogModel(VoltAmpereProfileDialogModel voltAmpereProfileDialogModel) {
+        this.voltAmpereProfileDialogModel = voltAmpereProfileDialogModel;
     }
 
     @Override
@@ -133,7 +132,7 @@ public class InjectorSectionUpdateModel implements Updater {
 //            System.err.println("Injectors_Running_En  " + value);
 //        }
 
-        if (boostUModel.isDoubleCoilProperty().get()) {
+        if (voltAmpereProfileDialogModel.isDoubleCoilProperty().get()) {
 
             if ((value = FirstWBoardTwo.getLastValue().toString()) != null){
                 first_W2.setValue(value);

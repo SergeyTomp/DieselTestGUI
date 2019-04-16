@@ -10,7 +10,6 @@ import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.PumpHighPressureSectionPwrState;
 import fi.stardex.sisu.util.GaugeCreator;
 import fi.stardex.sisu.util.enums.RegActive;
-import fi.stardex.sisu.util.enums.pump.PumpPressureControl;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.listeners.TwoSpinnerStyleChangeListener;
 import fi.stardex.sisu.util.spinners.SpinnerManager;
@@ -27,14 +26,11 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 import javax.annotation.PostConstruct;
-
 import java.util.Optional;
 
 import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.*;
 import static fi.stardex.sisu.util.SpinnerDefaults.*;
-import static fi.stardex.sisu.util.enums.RegActive.CURRENT;
-import static fi.stardex.sisu.util.enums.RegActive.DUTY;
-import static fi.stardex.sisu.util.enums.RegActive.NO_REGULATION;
+import static fi.stardex.sisu.util.enums.RegActive.*;
 
 public class PumpRegulatorSectionThreeController {
 
@@ -153,12 +149,11 @@ public class PumpRegulatorSectionThreeController {
 
     private void addRegulatorDependentListeners(){
 
-        pumpModel.pumpProperty().addListener((observableValue, oldValue, newValue) -> Optional.ofNullable(newValue).ifPresent(pump -> {
+        pumpModel.pumpProperty().addListener((observableValue, oldValue, newValue) -> Optional.ofNullable(newValue).ifPresentOrElse(pump -> {
 
             boolean isRailAndPump = pump.getPumpPressureControl().isRail_and_Pump();
 
-            rootStackPane.setDisable(!isRailAndPump);
-            currentSpinner.getStyleClass().add(1, "");
+            currentSpinner.getStyleClass().set(1, "");
             dutySpinner.getStyleClass().set(1, "");
             regulationModesModel.regulatorThreeModeProperty().setValue(NO_REGULATION);
 
@@ -167,6 +162,11 @@ public class PumpRegulatorSectionThreeController {
                 regulationModesModel.regulatorThreeModeProperty().setValue(CURRENT);
                 currentSpinner.getStyleClass().set(1, GREEN_STYLE_CLASS);
             }
+        }, () -> {
+            regToggleButton.setSelected(false);
+            currentSpinner.getStyleClass().set(1, GREEN_STYLE_CLASS);
+            dutySpinner.getStyleClass().set(1, "");
+            regulationModesModel.regulatorTwoModeProperty().setValue(CURRENT);
         }));
 
         pumpTestModel.pumpTestProperty().addListener((observableValue, oldTest, newTest) -> {
@@ -174,7 +174,8 @@ public class PumpRegulatorSectionThreeController {
             currentSpinner.getValueFactory().setValue(0d);
             regToggleButton.setSelected(false);
 
-            Optional.ofNullable(newTest).ifPresent(test ->
+            Optional.ofNullable(newTest).ifPresentOrElse(test ->
+
                 Optional.ofNullable(test.getRegulatorCurrent()).ifPresent(current -> {
 
                     boolean isRailAndPump = pumpModel.pumpProperty().get().getPumpPressureControl().isRail_and_Pump();
@@ -183,7 +184,10 @@ public class PumpRegulatorSectionThreeController {
                         currentSpinner.getValueFactory().setValue(current);
                         regToggleButton.setSelected(true);
                     }
-                }));
+                }), () -> {
+                currentSpinner.getValueFactory().setValue(0d);
+                regToggleButton.setSelected(false);
+            });
         });
     }
 
@@ -202,7 +206,7 @@ public class PumpRegulatorSectionThreeController {
 
         @Override
         public void handle(MouseEvent event) {
-            regulationModesModel.regulatorTwoModeProperty().setValue(activeParam);
+            regulationModesModel.regulatorThreeModeProperty().setValue(activeParam);
             if (pumpHighPressureSectionPwrState.powerButtonProperty().get() && regToggleButton.isSelected()) {
                 ultimaModbusWriter.add(mapParam, mapParam_ON);
             }
@@ -226,7 +230,7 @@ public class PumpRegulatorSectionThreeController {
         public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
 
             if (newValue) {
-                regulationModesModel.regulatorTwoModeProperty().setValue(activeParam);
+                regulationModesModel.regulatorThreeModeProperty().setValue(activeParam);
                 if(pumpHighPressureSectionPwrState.powerButtonProperty().get() && regToggleButton.isSelected()){
                     ultimaModbusWriter.add(mapParam, mapParam_ON);
                 }
@@ -257,9 +261,9 @@ public class PumpRegulatorSectionThreeController {
 
             if((pumpHighPressureSectionPwrState.powerButtonProperty().get()
                     && regToggleButton.isSelected()
-                    && regActive == regulationModesModel.regulatorTwoModeProperty().get())){
+                    && regActive == regulationModesModel.regulatorThreeModeProperty().get())){
 
-                switch (regulationModesModel.regulatorTwoModeProperty().get()){
+                switch (regulationModesModel.regulatorThreeModeProperty().get()){
                     case CURRENT:
                         ultimaModbusWriter.add(PressureReg3_I_Task, newValue);
                         System.err.println("current2 " + newValue);
@@ -305,7 +309,7 @@ public class PumpRegulatorSectionThreeController {
 
     private void regulator_ON (){
         ultimaModbusWriter.add(PressureReg3_ON, true);
-        switch (regulationModesModel.regulatorTwoModeProperty().get()){
+        switch (regulationModesModel.regulatorThreeModeProperty().get()){
             case CURRENT:
                 double current = currentSpinner.getValue();
                 ultimaModbusWriter.add(PressureReg3_I_Task, current);

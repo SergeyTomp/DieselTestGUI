@@ -1,6 +1,7 @@
 package fi.stardex.sisu.model;
 
 import fi.stardex.sisu.combobox_values.Dimension;
+import fi.stardex.sisu.pdf.Result;
 import fi.stardex.sisu.persistence.orm.pump.PumpTest;
 import fi.stardex.sisu.util.enums.BeakerType;
 import fi.stardex.sisu.util.enums.Measurement;
@@ -55,6 +56,8 @@ public class PumpReportModel {
     public void setPumpModel(PumpModel pumpModel) {
         this.pumpModel = pumpModel;
     }
+
+
 
     /** Metod invoked from PumpBeakerController upon flowTextField changes.
     * It set values into this.deliveryValue and this.backFlowValue for reports generation.
@@ -125,7 +128,7 @@ public class PumpReportModel {
         return range == null || range.isEmpty() ? "-" : range;
     }
 
-    public class PumpFlowResult {
+    public class PumpFlowResult  implements Result {
 
         private final ObjectProperty<PumpTest> pumpTest;
         private final StringProperty rotatesPerMinute;
@@ -199,6 +202,14 @@ public class PumpReportModel {
                 default:
                     return 0;
             }
+        }
+
+        public double getDelivery_double() {
+            return deliveryFlow.get().equals("-") ? 0d : convertDataToDouble(deliveryFlow.get());
+        }
+
+        public double getBackFlow_double() {
+            return backFlow.get().equals("-") ? 0d : convertDataToDouble(backFlow.get());
         }
 
         public ObjectProperty<PumpTest> pumpTestProperty() {
@@ -321,6 +332,34 @@ public class PumpReportModel {
                 limits[1] = rightLimit;
                 return limits;
             }
+        }
+
+        @Override
+        public String getMainColumn() {
+            return pumpTest.getName();
+        }
+
+        @Override
+        public String getSubColumn1() {
+            return rotatesPerMinute.get();
+        }
+
+        @Override
+        public String getSubColumn2() {
+            return standPressure.get();
+        }
+
+        public String getSubColumn3() {
+            return scvCurrent.get();
+        }
+
+        public String getSubColumn4() {
+            return psvCurrent.get();
+        }
+
+        @Override
+        public List<String> getValueColumns() {
+            return null;
         }
     }
 }

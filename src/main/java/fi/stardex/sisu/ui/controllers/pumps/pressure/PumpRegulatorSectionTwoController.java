@@ -2,6 +2,7 @@ package fi.stardex.sisu.ui.controllers.pumps.pressure;
 
 import eu.hansolo.medusa.Gauge;
 import fi.stardex.sisu.model.PumpModel;
+import fi.stardex.sisu.model.PumpPressureRegulatorOneModel;
 import fi.stardex.sisu.model.PumpTestModel;
 import fi.stardex.sisu.model.RegulationModesModel;
 import fi.stardex.sisu.model.updateModels.HighPressureSectionUpdateModel;
@@ -51,6 +52,7 @@ public class PumpRegulatorSectionTwoController {
     private RegulationModesModel regulationModesModel;
     private PumpModel pumpModel;
     private PumpTestModel pumpTestModel;
+    private PumpPressureRegulatorOneModel pumpPressureRegulatorOneModel;
     private final String GREEN_STYLE_CLASS = "regulator-spinner-selected";
 
     public Spinner<Double> getCurrentSpinner() {
@@ -75,6 +77,11 @@ public class PumpRegulatorSectionTwoController {
     public void setPumpTestModel(PumpTestModel pumpTestModel) {
         this.pumpTestModel = pumpTestModel;
     }
+
+    public void setPumpPressureRegulatorOneModel(PumpPressureRegulatorOneModel pumpPressureRegulatorOneModel) {
+        this.pumpPressureRegulatorOneModel = pumpPressureRegulatorOneModel;
+    }
+
     public void setI18N(I18N i18N) {
         this.i18N = i18N;
     }
@@ -154,27 +161,33 @@ public class PumpRegulatorSectionTwoController {
 
     private void addRegulatorDependentListeners() {
 
-        pumpModel.pumpProperty().addListener((observableValue, oldValue, newValue) -> Optional.ofNullable(newValue).ifPresent(pump -> {
+        pumpModel.pumpProperty().addListener((observableValue, oldValue, newValue) -> Optional.ofNullable(newValue).ifPresentOrElse(pump -> {
 
             boolean isRailAndPump = pump.getPumpPressureControl().isRail_and_Pump();
 
-            rootStackPane.setDisable(isRailAndPump);
-            regToggleButton.setSelected(isRailAndPump);
-            currentSpinner.getStyleClass().set(1, "");
-            dutySpinner.getStyleClass().set(1, "");
-            regulationModesModel.regulatorTwoModeProperty().setValue(NO_REGULATION);
+            bridgeModeSwitch(isRailAndPump);
 
-            if(!isRailAndPump) {
-
-                regulationModesModel.regulatorTwoModeProperty().setValue(CURRENT);
-                currentSpinner.getStyleClass().add(1, GREEN_STYLE_CLASS);
+            if (isRailAndPump) {
+                regulationModesModel.regulatorTwoModeProperty().setValue(NO_REGULATION);
+                currentSpinner.getStyleClass().set(1, "");
+                dutySpinner.getStyleClass().set(1, "");
             }
+            else {
+                regulationModesModel.regulatorTwoModeProperty().setValue(CURRENT);
+                currentSpinner.getStyleClass().set(1, GREEN_STYLE_CLASS);
+            }
+        }, () -> {
+            bridgeModeSwitch(false);
+            currentSpinner.getStyleClass().set(1, GREEN_STYLE_CLASS);
+            dutySpinner.getStyleClass().set(1, "");
+            regulationModesModel.regulatorTwoModeProperty().setValue(CURRENT);
         }));
 
         pumpTestModel.pumpTestProperty().addListener((observableValue, oldTest, newTest) -> {
 
             currentSpinner.getValueFactory().setValue(0d);
-            Optional.ofNullable(newTest).ifPresent(test ->
+            Optional.ofNullable(newTest).ifPresentOrElse(test ->
+
                 Optional.ofNullable(test.getRegulatorCurrent()).ifPresent(current -> {
 
                     boolean isRailAndPump = pumpModel.pumpProperty().get().getPumpPressureControl().isRail_and_Pump();
@@ -183,7 +196,10 @@ public class PumpRegulatorSectionTwoController {
                         currentSpinner.getValueFactory().setValue(current);
                         regToggleButton.setSelected(true);
                     }
-                }));
+                }), () -> {
+                currentSpinner.getValueFactory().setValue(0d);
+                regToggleButton.setSelected(false);
+            });
         });
     }
 
@@ -308,18 +324,29 @@ public class PumpRegulatorSectionTwoController {
         switch (regulationModesModel.regulatorTwoModeProperty().get()){
             case CURRENT:
                 double current = currentSpinner.getValue();
-//                ultimaModbusWriter.add(Reg1_To_Reg2_Mirror, false);
                 ultimaModbusWriter.add(PressureReg2_I_Task, current);
                 break;
             case DUTY:
                 double duty = dutySpinner.getValue();
-//                ultimaModbusWriter.add(Reg1_To_Reg2_Mirror, false);
                 ultimaModbusWriter.add(PressureReg2_DutyTask, duty);
                 break;
             case NO_REGULATION:
-//                ultimaModbusWriter.add(Reg1_To_Reg2_Mirror, true);
                 break;
             default:ultimaModbusWriter.add(PressureReg2_ON, false);
+        }
+    }
+
+    private void bridgeModeSwitch(boolean active) {
+
+        ultimaModbusWriter.add(PressureReg2_DutyMode, !active); //duty mode is active when channel duty mode register is set false
+        ultimaModbusWriter.add(Reg1_To_Reg2_Mirror, active);
+        regToggleButton.setSelected(active);
+        rootStackPane.setDisable(active);
+
+        if (active) {
+            pumpPressureRegulatorOneModel.switchButtonProperty().bindBidirectional(regToggleButton.selectedProperty());
+        }else {
+            pumpPressureRegulatorOneModel.switchButtonProperty().unbindBidirectional(regToggleButton.selectedProperty());
         }
     }
 }

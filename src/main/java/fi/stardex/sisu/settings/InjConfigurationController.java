@@ -3,7 +3,7 @@ package fi.stardex.sisu.settings;
 import fi.stardex.sisu.combobox_values.InjectorChannel;
 import fi.stardex.sisu.model.InjConfigurationModel;
 import fi.stardex.sisu.model.InjectorTypeModel;
-import fi.stardex.sisu.states.BoostUModel;
+import fi.stardex.sisu.states.VoltAmpereProfileDialogModel;
 import fi.stardex.sisu.util.enums.InjectorType;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -22,7 +22,7 @@ public class InjConfigurationController {
 
     private InjConfigurationModel injConfigurationModel;
 
-    private BoostUModel boostUModel;
+    private VoltAmpereProfileDialogModel voltAmpereProfileDialogModel;
 
     private Preferences rootPrefs;
 
@@ -42,8 +42,8 @@ public class InjConfigurationController {
         this.injectorTypeModel = injectorTypeModel;
     }
 
-    public void setBoostUModel(BoostUModel boostUModel) {
-        this.boostUModel = boostUModel;
+    public void setVoltAmpereProfileDialogModel(VoltAmpereProfileDialogModel voltAmpereProfileDialogModel) {
+        this.voltAmpereProfileDialogModel = voltAmpereProfileDialogModel;
     }
 
     @PostConstruct
@@ -70,7 +70,7 @@ public class InjConfigurationController {
             }
         });
 
-        boostUModel.isDoubleCoilProperty().addListener((observableValue, oldValue, newValue) -> {
+        voltAmpereProfileDialogModel.isDoubleCoilProperty().addListener((observableValue, oldValue, newValue) -> {
 
             if (newValue) {
                 selectChannelMode(MULTI_CHANNEL);

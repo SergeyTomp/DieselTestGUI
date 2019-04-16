@@ -440,9 +440,9 @@ public class SpringJavaConfig {
 
     @Bean
     @Autowired
-    public InjectorSectionUpdateModel injectorSectionUpdateModel(BoostUModel boostUModel) {
+    public InjectorSectionUpdateModel injectorSectionUpdateModel(VoltAmpereProfileDialogModel voltAmpereProfileDialogModel) {
         InjectorSectionUpdateModel injectorSectionUpdateModel = new InjectorSectionUpdateModel();
-        injectorSectionUpdateModel.setBoostUModel(boostUModel);
+        injectorSectionUpdateModel.setVoltAmpereProfileDialogModel(voltAmpereProfileDialogModel);
         return injectorSectionUpdateModel;
     }
 
@@ -686,7 +686,8 @@ public class SpringJavaConfig {
                                  DelayReportModel delayReportModel,
                                  RLC_ReportModel rlc_reportModel,
                                  CodingReportModel codingReportModel,
-                                 FlowReportModel flowReportModel) {
+                                 FlowReportModel flowReportModel,
+                                 PumpReportModel pumpReportModel) {
         PDFService pdfService = new PDFService();
         pdfService.setI18N(i18N);
         pdfService.setDesktopFiles(desktopFiles);
@@ -696,6 +697,7 @@ public class SpringJavaConfig {
         pdfService.setRlc_reportModel(rlc_reportModel);
         pdfService.setCodingReportModel(codingReportModel);
         pdfService.setFlowReportModel(flowReportModel);
+        pdfService.setPumpReportModel(pumpReportModel);
         return pdfService;
     }
 
@@ -712,7 +714,7 @@ public class SpringJavaConfig {
                                                          CurrentRpmModel currentRpmModel,
                                                          HighPressureSectionUpdateModel highPressureSectionUpdateModel,
                                                          PumpTimeProgressModel pumpTimeProgressModel,
-                                                         PumpPressureRegulatorModel pumpPressureRegulatorModel,
+                                                         PumpPressureRegulatorOneModel pumpPressureRegulatorOneModel,
                                                          PumpTestListController pumpTestListController,
                                                          SCVCalibrationModel scvCalibrationModel,
                                                          SCVCalibrationController scvCalibrationController,
@@ -734,7 +736,7 @@ public class SpringJavaConfig {
         pumpMeasurementManager.setCurrentRpmModel(currentRpmModel);
         pumpMeasurementManager.setHighPressureSectionUpdateModel(highPressureSectionUpdateModel);
         pumpMeasurementManager.setPumpTimeProgressModel(pumpTimeProgressModel);
-        pumpMeasurementManager.setPumpPressureRegulatorModel(pumpPressureRegulatorModel);
+        pumpMeasurementManager.setPumpPressureRegulatorOneModel(pumpPressureRegulatorOneModel);
         pumpMeasurementManager.setTestListView(pumpTestListController.getTestListView());
         pumpMeasurementManager.setScvCalibrationModel(scvCalibrationModel);
         pumpMeasurementManager.setScvCalibrationController(scvCalibrationController);
@@ -821,8 +823,8 @@ public class SpringJavaConfig {
     }
 
     @Bean
-    public BoostUModel boostUModel() {
-        return new BoostUModel();
+    public VoltAmpereProfileDialogModel voltAmpereProfileDialogModel() {
+        return new VoltAmpereProfileDialogModel();
     }
 
     @Bean
@@ -1042,8 +1044,8 @@ public class SpringJavaConfig {
     }
 
     @Bean
-    public PumpPressureRegulatorModel pumpPressureRegulatorModel() {
-        return new PumpPressureRegulatorModel();
+    public PumpPressureRegulatorOneModel pumpPressureRegulatorOneModel() {
+        return new PumpPressureRegulatorOneModel();
     }
 
     @Bean
@@ -1074,11 +1076,6 @@ public class SpringJavaConfig {
     @Bean
     public InjectorModel injectorModel() {
         return new InjectorModel();
-    }
-
-    @Bean
-    public VoltAmpereProfileModel voltAmpereProfileModel() {
-        return new VoltAmpereProfileModel();
     }
 
     @Bean

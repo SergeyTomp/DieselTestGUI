@@ -52,7 +52,7 @@ public class PumpRegulatorSectionOneController {
     private PressureSensorModel pressureSensorModel;
     private ModbusRegisterProcessor ultimaModbusWriter;
     private HighPressureSectionUpdateModel highPressureSectionUpdateModel;
-    private PumpPressureRegulatorModel pumpPressureRegulatorModel;
+    private PumpPressureRegulatorOneModel pumpPressureRegulatorOneModel;
     private RegulationModesModel regulationModesModel;
     private PumpTestModel pumpTestModel;
     private final String GREEN_STYLE_CLASS = "regulator-spinner-selected";
@@ -78,8 +78,8 @@ public class PumpRegulatorSectionOneController {
     public void setPumpTestModel(PumpTestModel pumpTestModel) {
         this.pumpTestModel = pumpTestModel;
     }
-    public void setPumpPressureRegulatorModel(PumpPressureRegulatorModel pumpPressureRegulatorModel) {
-        this.pumpPressureRegulatorModel = pumpPressureRegulatorModel;
+    public void setPumpPressureRegulatorOneModel(PumpPressureRegulatorOneModel pumpPressureRegulatorOneModel) {
+        this.pumpPressureRegulatorOneModel = pumpPressureRegulatorOneModel;
     }
 
     @PostConstruct
@@ -159,7 +159,7 @@ public class PumpRegulatorSectionOneController {
 
         /** слушаем изменения значений в спиннерах и отправляем уставки спиннеров */
         pressSpinner.valueProperty().addListener(new ParameterChangeListener(PRESSURE));
-        pumpPressureRegulatorModel.pressureRegProperty().bind(pressSpinner.valueProperty());
+        pumpPressureRegulatorOneModel.pressureRegProperty().bind(pressSpinner.valueProperty());
         currentSpinner.valueProperty().addListener(new ParameterChangeListener(CURRENT));
         dutySpinner.valueProperty().addListener(new ParameterChangeListener(DUTY));
 
@@ -297,6 +297,7 @@ public class PumpRegulatorSectionOneController {
 
         @Override
         public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+            pumpPressureRegulatorOneModel.switchButtonProperty().setValue(newValue);
             if(pumpHighPressureSectionPwrState.powerButtonProperty().get()){
                 if(newValue){
                     regulator_ON();
