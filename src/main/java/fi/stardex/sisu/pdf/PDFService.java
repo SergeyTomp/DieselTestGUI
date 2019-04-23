@@ -9,7 +9,6 @@ import fi.stardex.sisu.model.PumpReportModel.PumpFlowResult;
 import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
 import fi.stardex.sisu.persistence.orm.interfaces.Model;
 import fi.stardex.sisu.persistence.orm.pump.Pump;
-import fi.stardex.sisu.ui.controllers.additional.tabs.report.RLC_ReportController;
 import fi.stardex.sisu.ui.controllers.dialogs.PrintDialogPanelController;
 import fi.stardex.sisu.util.DesktopFiles;
 import fi.stardex.sisu.util.enums.Measurement;
@@ -40,7 +39,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
-import java.text.DateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -50,7 +48,6 @@ import java.util.List;
 import java.util.Objects;
 
 import static fi.stardex.sisu.company.CompanyDetails.*;
-import static fi.stardex.sisu.util.converters.DataConverter.convertDataToDouble;
 
 
 public class PDFService {
@@ -118,7 +115,6 @@ public class PDFService {
     private List<PumpFlowResult> pumpFlowResultsList;
     private List<Result> codingResultsList;
     private DesktopFiles desktopFiles;
-    private RLC_ReportController rlc_reportController;
     private DelayReportModel delayReportModel;
     private RLC_ReportModel rlc_reportModel;
     private CodingReportModel codingReportModel;
@@ -133,9 +129,6 @@ public class PDFService {
         this.languageModel = languageModel;
     }
 
-    public void setRlc_reportController(RLC_ReportController rlc_reportController) {
-        this.rlc_reportController = rlc_reportController;
-    }
 
     public void setDelayReportModel(DelayReportModel delayReportModel) {
         this.delayReportModel = delayReportModel;
@@ -202,11 +195,17 @@ public class PDFService {
     public void printInjectorCoding(Customer customer, Injector injector) throws IOException {
         makePDF(customer, CurrentInjectorObtainer.getInjector(), ResultPrintMode.CODING, true, false);
     }
+    public void printPump(Customer customer, Pump pump) throws IOException {
+        makePDF(customer, pump, ResultPrintMode.PUMPS, true, false);
+    }
     public void printAndPDFInjector(Customer customer, Injector injector) throws IOException {
         makePDF(customer, injector, ResultPrintMode.INJECTORS, true, true);
     }
     public void printAndPDFInjectorCoding(Customer customer, Injector injector) throws IOException {
         makePDF(customer, injector, ResultPrintMode.CODING, true, true);
+    }
+    public void printAndPDFPump(Customer customer, Pump pump) throws IOException {
+        makePDF(customer, pump, ResultPrintMode.PUMPS, true, true);
     }
 
     private enum ResultPrintMode {
@@ -230,18 +229,16 @@ public class PDFService {
 
         drawHeaderPage(document, currentPage);
 
+        drawCustomerAndInjectorData(customer, model);
+
         if (resultMode == ResultPrintMode.INJECTORS) {
-            Injector injector = CurrentInjectorObtainer.getInjector();
-            drawCustomerAndInjectorData(customer, model);
             float startTable = drawTable(document, rlcResultsList, new MeasurementHeader(), START_TABLE);
-            startTable = drawInjectorFlowTable(document, injector, new FlowHeader(), startTable);
+            startTable = drawFlowTable(document, new FlowHeader(), startTable, flowResultsList);
             drawTable(document, delayResultsList, new DelayHeader(), startTable);
         } else if (resultMode == ResultPrintMode.CODING) {
-            drawCustomerAndInjectorData(customer, model);
             drawTable(document, codingResultsList, new CodingHeader(), START_TABLE);
         } else if (resultMode == ResultPrintMode.PUMPS) {
-            drawCustomerAndInjectorData(customer, model);
-            drawPumpFlowTable(document, model, new PumpHeader(), START_TABLE);
+            drawFlowTable(document, new PumpHeader(), START_TABLE, pumpFlowResultsList);
         }
         finish(printPDF, savePDF);
     }
@@ -261,28 +258,29 @@ public class PDFService {
         return yStart;
     }
 
-    private float drawInjectorFlowTable(PDDocument document, Injector injector, Header header, float yStart) throws IOException {
-        if (flowResultsList != null && !flowResultsList.isEmpty()) {
+    private float drawFlowTable(PDDocument document, Header header, float yStart, List result) throws IOException  {
+
+        if (result != null && !result.isEmpty()) {
             BaseTable baseTable = createTable(document, yStart);
             drawHeader(header, baseTable);
-            drawFlowData(baseTable, injector);
-            float newStartY = baseTable.draw() - CELL_HEIGHT;
-            checkForNewPage(baseTable);
-            return newStartY;
-        }
-        return yStart;
-    }
 
-    /** In development, possibly to replaced with unified method drawModelFlowTable for both Injector and Pump*/
-    private float drawPumpFlowTable(PDDocument document, Model model, Header header, float yStart) throws IOException {
-
-        if (pumpFlowResultsList != null && !pumpFlowResultsList.isEmpty()) {
-            BaseTable baseTable = createTable(document, yStart);
-            drawHeader(header, baseTable);
-            drawPumpFlowData(baseTable, model);
-            float newStartY = baseTable.draw() - CELL_HEIGHT;
-            checkForNewPage(baseTable);
-            return newStartY;
+            try {
+                if (header instanceof FlowHeader) {
+                    drawInjectorFlowData(baseTable);
+                }else if(header instanceof PumpHeader){
+                    drawPumpFlowData(baseTable);
+                }
+                else {
+                    logger.error("Unknown header class, impossible to define FlowTable type");
+                    throw new RuntimeException("Unknown header class, impossible to define FlowTable type");
+                }
+                float newStartY = baseTable.draw() - CELL_HEIGHT;
+                checkForNewPage(baseTable);
+                return newStartY;
+            } catch (RuntimeException e) {
+                e.printStackTrace();
+                return yStart;
+            }
         }
         return yStart;
     }
@@ -335,7 +333,7 @@ public class PDFService {
         setCellSettings(baseTable);
     }
 
-    private void drawFlowData(BaseTable baseTable, Injector injector) {
+    private void drawInjectorFlowData(BaseTable baseTable) {
 
         for (FlowResult result: flowResultsList) {
             Row<PDPage> row = baseTable.createRow(CELL_HEIGHT);
@@ -357,8 +355,7 @@ public class PDFService {
             setCellSettings(baseTable);
         }
     }
-    /** In development, possibly to replaced with unified method drawFlowData for both Injector and Pump */
-    private void drawPumpFlowData(BaseTable baseTable, Model model) {
+    private void drawPumpFlowData(BaseTable baseTable) {
 
         String nominal;
         double flow;
@@ -458,7 +455,7 @@ public class PDFService {
         }
 
         if (model instanceof Pump) {
-            manufacturer = model.getManufacturer().toString();
+            manufacturer = ((Pump) model).getManufacturerPump().toString();
             infoLine = pumpInfoTitle.getValue();
         }
         /*
@@ -666,6 +663,10 @@ public class PDFService {
         /** Change color if data out of borders : 5% - in borders - yellow, out of borders - red*/
         Color cellColor = Color.WHITE;
 
+        if (nominalRight == 0 && nominalLeft == 0) {
+            return cellColor;
+        }
+
         if(Double.compare(flow, nominalRight) == 0 || flow > nominalRight || Double.compare(flow, nominalLeft) == 0 || flow < nominalLeft){
             cellColor = Color.ORANGE;
         }
@@ -809,15 +810,15 @@ public class PDFService {
         @Override
         public List<HeaderCell> getHeaderCells() {
             return new ArrayList<>(Arrays.asList(
-                new HeaderCell(15, testName.get()),
-                new HeaderCell(12, "RPM"),
-                new HeaderCell(12, "Bar"),
-                new HeaderCell(12, "SCV"),
-                new HeaderCell(12, "PCV"),
-                new HeaderCell(24, deliveryLH.get()),
-                new HeaderCell(22, delivery.get()),
-                new HeaderCell(24, deliveryLH.get()),
-                new HeaderCell(22, backFlow.get())));
+                new HeaderCell(18, testName.get()),
+                new HeaderCell(8, "RPM"),
+                new HeaderCell(8, "Bar"),
+                new HeaderCell(8, "SCV"),
+                new HeaderCell(8, "PCV"),
+                new HeaderCell(14, deliveryLH.get()),
+                new HeaderCell(11, delivery.get()),
+                new HeaderCell(14, deliveryLH.get()),
+                new HeaderCell(11, backFlow.get())));
         }
     }
 

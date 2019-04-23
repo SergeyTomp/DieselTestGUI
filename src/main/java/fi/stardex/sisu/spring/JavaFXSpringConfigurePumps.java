@@ -100,12 +100,14 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
                                                                ModbusRegisterProcessor flowModbusWriter,
                                                                PumpReportModel pumpReportModel,
                                                                PumpsStartButtonState pumpsStartButtonState,
-                                                               PumpTestModeModel pumpTestModeModel) {
+                                                               PumpTestModeModel pumpTestModeModel,
+                                                               ViewHolder printDialogPanel) {
         StoreResetPrintController storeResetPrintController = mainSectionPumpsController.getStoreResetPrintController();
         storeResetPrintController.setFlowModbusWriter(flowModbusWriter);
         storeResetPrintController.setPumpReportModel(pumpReportModel);
         storeResetPrintController.setPumpsStartButtonState(pumpsStartButtonState);
         storeResetPrintController.setPumpTestModeModel(pumpTestModeModel);
+        storeResetPrintController.setPrintDialogPanel(printDialogPanel);
         return storeResetPrintController;
     }
 

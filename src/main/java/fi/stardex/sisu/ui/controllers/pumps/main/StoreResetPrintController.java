@@ -5,10 +5,17 @@ import fi.stardex.sisu.model.PumpTestModeModel;
 import fi.stardex.sisu.registers.flow.ModbusMapFlow;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.PumpsStartButtonState;
+import fi.stardex.sisu.ui.ViewHolder;
+import fi.stardex.sisu.ui.controllers.dialogs.PrintDialogPanelController;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
+import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.HBox;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 
 import javax.annotation.PostConstruct;
 
@@ -25,6 +32,8 @@ public class StoreResetPrintController {
     private PumpReportModel pumpReportModel;
     private PumpsStartButtonState pumpsStartButtonState;
     private PumpTestModeModel pumpTestModeModel;
+    private Stage printStage;
+    private ViewHolder printDialogPanel;
 
     public void setFlowModbusWriter(ModbusRegisterProcessor flowModbusWriter) {
         this.flowModbusWriter = flowModbusWriter;
@@ -37,6 +46,9 @@ public class StoreResetPrintController {
     }
     public void setPumpTestModeModel(PumpTestModeModel pumpTestModeModel) {
         this.pumpTestModeModel = pumpTestModeModel;
+    }
+    public void setPrintDialogPanel(ViewHolder printDialogPanel) {
+        this.printDialogPanel = printDialogPanel;
     }
 
     @PostConstruct
@@ -65,10 +77,34 @@ public class StoreResetPrintController {
                 disableNodes(false, printButton, storeButton, resetButton);
             }
         });
+        printButton.setOnAction(new PrintButtonEventHandler());
     }
 
     private void disableNodes(boolean disable, Node... nodes) {
         for (Node node : nodes)
             node.setDisable(disable);
+    }
+
+    private class PrintButtonEventHandler implements EventHandler<ActionEvent> {
+        @Override
+        public void handle(ActionEvent event) {
+
+            if (printStage == null) {
+                printStage = new Stage();
+                printStage.setTitle("PDF export");
+                printStage.setResizable(false);
+                printStage.initModality(Modality.APPLICATION_MODAL);
+                ((PrintDialogPanelController) printDialogPanel.getController()).setStage(printStage);
+            }
+            /* Check is necessary due to possibility of dialog window invocation from different controllers.
+                In this case we need to avoid repeated set of printDialogPanel as root of another new scene -
+                IllegalArgumentException: .... is already set as root of another scene. */
+            if (printDialogPanel.getView().getScene() == null) {
+                printStage.setScene(new Scene(printDialogPanel.getView()));
+            }else{
+                printStage.setScene(printDialogPanel.getView().getScene());
+            }
+            printStage.show();
+        }
     }
 }

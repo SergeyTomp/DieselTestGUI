@@ -1,8 +1,11 @@
 package fi.stardex.sisu.ui.controllers.dialogs;
 
+import fi.stardex.sisu.model.GUI_TypeModel;
+import fi.stardex.sisu.model.PumpModel;
 import fi.stardex.sisu.pdf.Customer;
 import fi.stardex.sisu.pdf.ExceptionalConsumer;
 import fi.stardex.sisu.pdf.PDFService;
+import fi.stardex.sisu.ui.controllers.GUI_TypeController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
 import fi.stardex.sisu.util.EmptyObjectDefaultChecker;
 import fi.stardex.sisu.util.i18n.I18N;
@@ -129,6 +132,10 @@ public class PrintDialogPanelController{
 
     private I18N i18N;
 
+    private GUI_TypeModel gui_typeModel;
+
+    private PumpModel pumpModel;
+
     public void setPdfService(PDFService pdfService) {
         this.pdfService = pdfService;
     }
@@ -144,6 +151,14 @@ public class PrintDialogPanelController{
 
     public void setI18N(I18N i18N) {
         this.i18N = i18N;
+    }
+
+    public void setGui_typeModel(GUI_TypeModel gui_typeModel) {
+        this.gui_typeModel = gui_typeModel;
+    }
+
+    public void setPumpModel(PumpModel pumpModel) {
+        this.pumpModel = pumpModel;
     }
 
     @PostConstruct
@@ -177,31 +192,37 @@ public class PrintDialogPanelController{
     @FXML
     public void saveToPdf() {
         pdfOrPrint(customer -> pdfService.makePDFForInjector(customer, CurrentInjectorObtainer.getInjector()),
-                customer -> pdfService.makePDFForInjectorCoding(customer, CurrentInjectorObtainer.getInjector()));
+                customer -> pdfService.makePDFForInjectorCoding(customer, CurrentInjectorObtainer.getInjector()),
+                customer -> pdfService.makePDFForPump(customer, pumpModel.pumpProperty().get()));
     }
 
     @FXML
     public void onPrint() {
         pdfOrPrint(customer -> pdfService.printInjector(customer, CurrentInjectorObtainer.getInjector()),
-                customer -> pdfService.printInjectorCoding(customer, CurrentInjectorObtainer.getInjector()));
+                customer -> pdfService.printInjectorCoding(customer, CurrentInjectorObtainer.getInjector()),
+                customer -> pdfService.printPump(customer, pumpModel.pumpProperty().get()));
     }
 
     @FXML
     public void onPDFAndPrint() {
         pdfOrPrint(customer -> pdfService.printAndPDFInjector(customer, CurrentInjectorObtainer.getInjector()),
-                customer -> pdfService.printAndPDFInjectorCoding(customer, CurrentInjectorObtainer.getInjector()));
+                customer -> pdfService.printAndPDFInjectorCoding(customer, CurrentInjectorObtainer.getInjector()),
+                customer -> pdfService.printAndPDFPump(customer, pumpModel.pumpProperty().get()));
     }
 
     private void pdfOrPrint(ExceptionalConsumer<Customer, IOException> processInjector,
-                            ExceptionalConsumer<Customer, IOException> processInjectorCoding){
+                            ExceptionalConsumer<Customer, IOException> processInjectorCoding,
+                            ExceptionalConsumer<Customer, IOException> processPump){
         Customer customer = prepareDocument();
         try {
-            if (CurrentInjectorObtainer.getInjector() != null) {
-                if (mainSectionController.getCodingTestRadioButton().isSelected()) {
-                    processInjectorCoding.accept(customer);
-                } else {
-                    processInjector.accept(customer);
-                }
+            if (gui_typeModel.guiTypeProperty().get() == GUI_TypeController.GUIType.CR_Inj && CurrentInjectorObtainer.getInjector() != null) {
+                    if (mainSectionController.getCodingTestRadioButton().isSelected()) {
+                        processInjectorCoding.accept(customer);
+                    } else {
+                        processInjector.accept(customer);
+                    }
+            }else if (gui_typeModel.guiTypeProperty().get() == GUI_TypeController.GUIType.CR_Pump && pumpModel.pumpProperty().get() != null) {
+                processPump.accept(customer);
             }
 
         } catch (IOException e) {
@@ -209,7 +230,6 @@ public class PrintDialogPanelController{
         } finally {
             frameStage.hide();
         }
-
     }
     private Customer prepareDocument(){
         try {

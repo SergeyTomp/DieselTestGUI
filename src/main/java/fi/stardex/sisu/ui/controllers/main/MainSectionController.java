@@ -66,7 +66,6 @@ import static fi.stardex.sisu.util.enums.Move.DOWN;
 import static fi.stardex.sisu.util.enums.Move.UP;
 import static fi.stardex.sisu.util.enums.Tests.*;
 import static fi.stardex.sisu.util.enums.Tests.TestType.*;
-import static fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer.getInjector;
 import static fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer.setInjector;
 import static fi.stardex.sisu.util.obtainers.CurrentInjectorTestsObtainer.getInjectorTests;
 import static fi.stardex.sisu.util.obtainers.CurrentInjectorTestsObtainer.setInjectorTests;
@@ -1132,11 +1131,17 @@ public class MainSectionController {
             if (printStage == null) {
                 printStage = new Stage();
                 printStage.setTitle("PDF export");
-                printStage.setScene(new Scene(printDialogPanel.getView()));
                 printStage.setResizable(false);
                 printStage.initModality(Modality.APPLICATION_MODAL);
-                printStage.show();
                 ((PrintDialogPanelController) printDialogPanel.getController()).setStage(printStage);
+            }
+            /* Check is necessary due to possibility of dialog window invocation from different controllers.
+                In this case we need to avoid repeated set of printDialogPanel as root of another new scene -
+                IllegalArgumentException: .... is already set as root of another scene. */
+            if (printDialogPanel.getView().getScene() == null) {
+                printStage.setScene(new Scene(printDialogPanel.getView()));
+            }else{
+                printStage.setScene(printDialogPanel.getView().getScene());
             }
             printStage.show();
         }

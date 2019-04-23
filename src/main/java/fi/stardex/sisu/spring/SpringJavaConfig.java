@@ -39,7 +39,6 @@ import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.RLCController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.report.FlowReportController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.report.RLC_ReportController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.settings.ConnectionController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.cr.TestBenchSectionController;
@@ -682,7 +681,6 @@ public class SpringJavaConfig {
     public PDFService pdfService(I18N i18N,
                                  DesktopFiles desktopFiles,
                                  LanguageModel languageModel,
-                                 RLC_ReportController rlc_reportController,
                                  DelayReportModel delayReportModel,
                                  RLC_ReportModel rlc_reportModel,
                                  CodingReportModel codingReportModel,
@@ -691,7 +689,6 @@ public class SpringJavaConfig {
         PDFService pdfService = new PDFService();
         pdfService.setI18N(i18N);
         pdfService.setDesktopFiles(desktopFiles);
-        pdfService.setRlc_reportController(rlc_reportController);
         pdfService.setLanguageModel(languageModel);
         pdfService.setDelayReportModel(delayReportModel);
         pdfService.setRlc_reportModel(rlc_reportModel);

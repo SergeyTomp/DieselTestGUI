@@ -820,11 +820,15 @@ public class JavaFXSpringConfigure extends ViewLoader{
     @Autowired
     public PrintDialogPanelController newPrintDialogPanelController(MainSectionController mainSectionController,
                                                                     PDFService pdfService,
-                                                                    I18N i18N){
+                                                                    I18N i18N,
+                                                                    GUI_TypeModel gui_typeModel,
+                                                                    PumpModel pumpModel){
         PrintDialogPanelController printDialogPanelController = (PrintDialogPanelController) printDialogPanel().getController();
         printDialogPanelController.setMainSectionController(mainSectionController);
         printDialogPanelController.setPdfService(pdfService);
         printDialogPanelController.setI18N(i18N);
+        printDialogPanelController.setGui_typeModel(gui_typeModel);
+        printDialogPanelController.setPumpModel(pumpModel);
         return printDialogPanelController;
     }
 

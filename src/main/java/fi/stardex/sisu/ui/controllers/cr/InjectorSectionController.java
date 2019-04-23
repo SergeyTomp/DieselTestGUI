@@ -399,13 +399,6 @@ public class InjectorSectionController {
                     }
                     break;
             }
-
-            boolean isDoubleCoil = newValue.getVoltAmpereProfile().isDoubleCoil();
-            selectButton(false, led2ToggleButton, led3ToggleButton, led4ToggleButton);
-            disableNode (isDoubleCoil, led2ToggleButton, led3ToggleButton, led4ToggleButton);
-            ultimaModbusWriter.add(Double_Coil_Mode_En, isDoubleCoil);
-            ultimaModbusWriter.add(SecondCoilShiftEnable, isDoubleCoil);
-
         });
 
         injectorModel.injectorProperty().addListener((observableValue, oldValue, newValue) -> {
@@ -417,9 +410,18 @@ public class InjectorSectionController {
 
             if (newValue == null) {
                 led1ToggleButton.setSelected(false);
-            }else{
+                selectButton(false, led1ToggleButton, led2ToggleButton, led3ToggleButton, led4ToggleButton);
+                disableNode (false, led1ToggleButton, led2ToggleButton, led3ToggleButton, led4ToggleButton);
+                ultimaModbusWriter.add(Double_Coil_Mode_En, false);
+                ultimaModbusWriter.add(SecondCoilShiftEnable, false);
 
+            }else{
+                boolean isDoubleCoil = newValue.getVoltAmpereProfile().isDoubleCoil();
                 led1ToggleButton.setSelected(true);
+                selectButton(false, led2ToggleButton, led3ToggleButton, led4ToggleButton);
+                disableNode (newValue.getVoltAmpereProfile().isDoubleCoil(), led2ToggleButton, led3ToggleButton, led4ToggleButton);
+                ultimaModbusWriter.add(Double_Coil_Mode_En, isDoubleCoil);
+                ultimaModbusWriter.add(SecondCoilShiftEnable, isDoubleCoil);
             }
         });
 
