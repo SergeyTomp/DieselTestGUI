@@ -339,19 +339,22 @@ public class HighPressureSectionOneController {
     }
 
     private void regulator_ON(){
-        ultimaModbusWriter.add(PressureReg1_ON, true);
+
         switch(regulationModesModel.regulatorOneModeProperty().get()){
             case PRESSURE:
                 double press1 = calcTargetPress(pressSpinner.getValue());
                 ultimaModbusWriter.add(PressureReg1_PressTask, press1);
+                ultimaModbusWriter.add(PressureReg1_ON, true);
                 break;
             case CURRENT:
                 double current1 = currentSpinner.getValue();
                 ultimaModbusWriter.add(PressureReg1_I_Task, current1);
+                ultimaModbusWriter.add(PressureReg1_ON, true);
                 break;
             case DUTY:
                 double duty1 = dutySpinner.getValue();
                 ultimaModbusWriter.add(PressureReg1_DutyTask, duty1);
+                ultimaModbusWriter.add(PressureReg1_ON, true);
                 break;
             default:ultimaModbusWriter.add(PressureReg1_ON, false);
         }
@@ -359,13 +362,13 @@ public class HighPressureSectionOneController {
 
     /** метод запускается при выборе режимов тест и авто */
     private void regulator1pressModeON(Integer targetPress){
-        if (regulationModesModel.regulatorOneModeProperty().get() != PRESSURE){
+//        if (regulationModesModel.regulatorOneModeProperty().get() != PRESSURE){
             regulationModesModel.regulatorOneModeProperty().setValue(PRESSURE);
             ultimaModbusWriter.add(PressureReg1_PressMode, true);   //вкл.режим давления
             ultimaModbusWriter.add(PressureReg1_I_Mode, false);     //откл.режим тока
-        }
+//        }
         pressSpinner.getValueFactory().setValue(targetPress);
-        ultimaModbusWriter.add(PressureReg1_PressTask, calcTargetPress(targetPress));
+//        ultimaModbusWriter.add(PressureReg1_PressTask, calcTargetPress(targetPress));
         regToggleButton.setSelected(true);
     }
 
@@ -378,6 +381,4 @@ public class HighPressureSectionOneController {
     private double calcTargetPress(Integer target){
         return target.doubleValue() / pressureSensorModel.pressureSensorProperty().get();
     }
-
-
 }

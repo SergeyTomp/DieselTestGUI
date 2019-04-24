@@ -6,9 +6,9 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.text.Font?>
 
-<StackPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.additional.tabs.report.FlowReportController">
+<StackPane xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.additional.tabs.report.FlowReportController">
     <children>
-        <TableView fx:id="flowTableView">
+        <TableView fx:id="flowTableView" prefHeight="400.0">
             <columns>
                 <TableColumn fx:id="flowTestNameColumn" prefWidth="150.0" text="%h4.report.table.label.testName" />
                 <TableColumn fx:id="flowTypeColumn" prefWidth="150.0" text="%h4.report.table.label.delRec" />
