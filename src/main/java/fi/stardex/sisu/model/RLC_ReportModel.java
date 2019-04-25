@@ -34,8 +34,8 @@ public class RLC_ReportModel {
 
         if(resultObservableMap.isEmpty()){
 
-            resultObservableMap.put(titleGauge1, new RlcResult(titleGauge1, (unitsGauge1.equals("\u03BCH") ? "mkH" : "mkF")));
-            resultObservableMap.put(titleGauge2, new RlcResult(titleGauge2, (unitsGauge2.equals("\u03A9") ? "Om" : "kOm")));
+            resultObservableMap.put(titleGauge1, new RlcResult(titleGauge1, (unitsGauge1.equals("\u03BCH") ? "uH" : "uF")));
+            resultObservableMap.put(titleGauge2, new RlcResult(titleGauge2, (unitsGauge2.equals("\u03A9") ? "Ohm" : "kOhm")));
         }
         resultObservableMap.get(titleGauge1).setParameterValue(ledNumber, parameter1.toString());
         resultObservableMap.get(titleGauge2).setParameterValue(ledNumber, parameter2.toString());

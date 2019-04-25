@@ -241,15 +241,16 @@ public class HighPressureSectionTwoController {
     }
 
     private void regulator_ON (){
-        ultimaModbusWriter.add(PressureReg2_ON, true);
         switch (regulationModesModel.regulatorTwoModeProperty().get()){
             case CURRENT:
                 double current2 = currentSpinner.getValue();
                 ultimaModbusWriter.add(PressureReg2_I_Task, current2);
+                ultimaModbusWriter.add(PressureReg2_ON, true);
                 break;
             case DUTY:
                 double duty2 = dutySpinner.getValue();
                 ultimaModbusWriter.add(PressureReg2_DutyTask, duty2);
+                ultimaModbusWriter.add(PressureReg2_ON, true);
                 break;
             default:ultimaModbusWriter.add(PressureReg2_ON, false);
         }

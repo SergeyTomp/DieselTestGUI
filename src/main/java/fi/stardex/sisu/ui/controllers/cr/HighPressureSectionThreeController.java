@@ -243,15 +243,16 @@ public class HighPressureSectionThreeController {
     }
 
     private void regulator_ON (){
-        ultimaModbusWriter.add(PressureReg3_ON, true);
         switch (regulationModesModel.regulatorThreeModeProperty().get()){
             case CURRENT:
                 double current = currentSpinner.getValue();
                 ultimaModbusWriter.add(PressureReg3_I_Task, current);
+                ultimaModbusWriter.add(PressureReg3_ON, true);
                 break;
             case DUTY:
                 double duty = dutySpinner.getValue();
                 ultimaModbusWriter.add(PressureReg3_DutyTask, duty);
+                ultimaModbusWriter.add(PressureReg3_ON, true);
                 break;
             default:ultimaModbusWriter.add(PressureReg3_ON, false);
         }

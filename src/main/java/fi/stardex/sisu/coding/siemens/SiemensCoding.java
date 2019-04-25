@@ -88,7 +88,7 @@ public class SiemensCoding {
             double delta = (nominalFlow - value) / 2;
             double deltaLimitAbs = (nominalFlow * (flowRange * 0.5 / 100));
             double flowRangeAbs = nominalFlow * (flowRange / 100);
-            value = ((value >= (nominalFlow - flowRangeAbs)) && (value <= (nominalFlow + flowRangeAbs))) ? delta : delta < 0 ? deltaLimitAbs : - deltaLimitAbs;
+            value = ((value >= (nominalFlow - flowRangeAbs)) && (value <= (nominalFlow + flowRangeAbs))) ? - delta : delta < 0 ? deltaLimitAbs : - deltaLimitAbs;
             value = (value / flowRangeAbs) * 15;
 
             return (int) Math.round(value);

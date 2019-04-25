@@ -166,10 +166,25 @@ public class RLCController {
             new Thread(this::measure).start();
         });
         storeButton.setOnAction(event -> {
+
             rlc_reportModel.storeResult(unitsGauge1, unitsGauge2, titleGauge1, titleGauge2, ledNumber, resultGauge1, resultGauge2);
+            resultGauge1 = 0;
+            resultGauge2 = 0;
+
             if (injectorModel.injectorProperty().get().getVoltAmpereProfile().isDoubleCoil()) {
                 rlc_reportModel.storeResult(unitsGauge3, unitsGauge4, titleGauge3, titleGauge4, 2, resultGauge3, resultGauge4);
+                resultGauge3 = 0;
+                resultGauge4 = 0;
             }
+        });
+
+        injectorModel.injectorProperty().addListener((observableValue, oldValue, newValue) -> {
+            parameter1Gauge.valueProperty().setValue(0);
+            parameter2Gauge.valueProperty().setValue(0);
+            parameter3Gauge.valueProperty().setValue(0);
+            parameter3Gauge.valueProperty().setValue(0);
+            storeButton.setDisable(true);
+
         });
         setupVAPModelListener();
     }
@@ -240,7 +255,7 @@ public class RLCController {
     private void activateGauges(int gauge1Decimals, int gauge2Decimals, String gauge1Title, String gauge1Unit, String gauge2Unit,
                                 double gauge1MaxValue, double gauge2MaxValue) {
 
-        disableNode(false, storeButton, measureButton);
+        disableNode(false, measureButton);
 
         parameter1Gauge.setDecimals(gauge1Decimals);
         parameter1Gauge.setTitle(gauge1Title);
@@ -270,6 +285,7 @@ public class RLCController {
 
     private void measure() {
         logger.warn("Measure Button Pressed");
+
         activeLedToggleButtonsList = injectorControllersState.activeLedToggleButtonsListProperty().get();
         Boolean isDoubleCoil = injectorModel.injectorProperty().get().getVoltAmpereProfile().isDoubleCoil();
         ToggleButton ledController = singleSelected();
@@ -285,10 +301,7 @@ public class RLCController {
             unitsGauge2 = parameter2Gauge.getUnit();
 
             ledNumber = getNumber(ledController);
-            Platform.runLater(() -> {
-                progressIndicator.setVisible(true);
-                progressIndicatorDoubleCoil.setVisible(true);
-            });
+            Platform.runLater(() -> progressIndicator.setVisible(true));
             try {
                 int injectorModbusChannel = injConfigurationModel.injConfigurationProperty().get() == InjectorChannel.SINGLE_CHANNEL ? 1 : getNumber(ledController);
                 ultimaModbusWriter.add(ModbusMapUltima.RLC_measure_channel_num, injectorModbusChannel);
@@ -336,6 +349,7 @@ public class RLCController {
                 unitsGauge4 = parameter4Gauge.getUnit();
 
                 try {
+                    Platform.runLater(() -> progressIndicatorDoubleCoil.setVisible(true));
                     ultimaModbusWriter.add(ModbusMapUltima.RLC_measure_channel_num, 2);
                     ultimaModbusWriter.add(ModbusMapUltima.RLC_measure_request, true);
                     boolean ready;
@@ -364,6 +378,7 @@ public class RLCController {
                     e.printStackTrace();
                 }
             }
+
         } else {
             Platform.runLater(() -> measureButton.setDisable(false));
         }
@@ -372,21 +387,21 @@ public class RLCController {
     private void setCoilOneData(Double parameter1, Double parameter2) {
         parameter1Gauge.setValue(parameter1);
         parameter2Gauge.setValue(parameter2);
-        measureButton.setDisable(false);
+        disableNode(false, storeButton, measureButton);
         logger.warn("Measure Button Ready (Enabled)");
     }
 
     private void setCoilTwoData(Double parameter1, Double parameter2) {
         parameter3Gauge.setValue(parameter1);
         parameter4Gauge.setValue(parameter2);
-        measureButton.setDisable(false);
+        disableNode(false, storeButton, measureButton);
         logger.warn("Measure Button Ready (Enabled)");
     }
 
     private void setPiezoData(Double parameter1, Double parameter2) {
         parameter1Gauge.setValue(parameter1);
         parameter2Gauge.setValue(parameter2);
-        measureButton.setDisable(false);
+        disableNode(false, storeButton, measureButton);
         logger.warn("Measure Button Ready (Enabled)");
     }
 

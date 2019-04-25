@@ -320,15 +320,16 @@ public class PumpRegulatorSectionTwoController {
     }
 
     private void regulator_ON (){
-        ultimaModbusWriter.add(PressureReg2_ON, true);
         switch (regulationModesModel.regulatorTwoModeProperty().get()){
             case CURRENT:
                 double current = currentSpinner.getValue();
                 ultimaModbusWriter.add(PressureReg2_I_Task, current);
+                ultimaModbusWriter.add(PressureReg2_ON, true);
                 break;
             case DUTY:
                 double duty = dutySpinner.getValue();
                 ultimaModbusWriter.add(PressureReg2_DutyTask, duty);
+                ultimaModbusWriter.add(PressureReg2_ON, true);
                 break;
             case NO_REGULATION:
                 break;
