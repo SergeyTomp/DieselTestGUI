@@ -1,20 +1,17 @@
 package fi.stardex.sisu.ui;
 
-import eu.hansolo.medusa.Gauge;
 import fi.stardex.sisu.model.FlowReportModel;
 import fi.stardex.sisu.model.FlowReportModel.FlowResult;
 import fi.stardex.sisu.persistence.orm.Manufacturer;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.persistence.orm.interfaces.Model;
 import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.RLCController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.report.FlowReportController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
 import fi.stardex.sisu.util.enums.Tests.TestType;
 import fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer;
-import javafx.collections.ObservableList;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxListCell;
@@ -23,9 +20,6 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 
 import javax.annotation.PostConstruct;
-
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static fi.stardex.sisu.ui.controllers.GUI_TypeController.GUIType;
 import static fi.stardex.sisu.util.enums.Tests.TestType.AUTO;
@@ -66,23 +60,9 @@ public class Enabler {
 
     private ToggleGroup piezoCoilToggleGroup;
 
-    private Button storeRLCButton;
-
     private Button storeButton;
 
     private Button resetButton;
-
-    private Button measureButton;
-
-    private Gauge parameter1Gauge;
-
-    private Gauge parameter2Gauge;
-
-    private Tab tabCoilOne;
-
-    private Tab tabCoilTwo;
-
-    private TabPane measurementTabPane;
 
     private Button pulseSettingsButton;
 
@@ -102,7 +82,6 @@ public class Enabler {
 
     public Enabler(MainSectionController mainSectionController,
                    InjectorSectionController injectorSectionController,
-                   RLCController rlcController,
                    VoltageController voltageController,
                    FlowController flowController,
                    FlowReportController flowReportController,
@@ -127,14 +106,6 @@ public class Enabler {
 
         injectorSectionStartToggleButton = injectorSectionController.getInjectorSectionStartToggleButton();
         piezoCoilToggleGroup = injectorSectionController.getPiezoCoilToggleGroup();
-
-        storeRLCButton = rlcController.getStoreButton();
-        measureButton = rlcController.getMeasureButton();
-        parameter1Gauge = rlcController.getParameter1Gauge();
-        parameter2Gauge = rlcController.getParameter2Gauge();
-        tabCoilOne = rlcController.getTabCoilOne();
-        tabCoilTwo = rlcController.getTabCoilTwo();
-        measurementTabPane = rlcController.getMeasurementTabPane();
 
         pulseSettingsButton = voltageController.getPulseSettingsButton();
 
@@ -336,44 +307,6 @@ public class Enabler {
         backFlowComboBox.getSelectionModel().selectFirst();
         showNode(!isCoding, backFlowComboBox);
         showNode(isCoding, ml_Min_BackFlowLabel);
-
-    }
-
-    private void setGaugesToNull() {
-
-        disableNode(true, storeRLCButton, measureButton);
-
-        parameter1Gauge.setDecimals(1);
-        parameter1Gauge.setTitle("");
-        parameter1Gauge.setUnit("");
-        parameter1Gauge.setValue(0d);
-        parameter1Gauge.setMaxValue(500d);
-
-        parameter2Gauge.setDecimals(1);
-        parameter2Gauge.setTitle("");
-        parameter2Gauge.setUnit("");
-        parameter2Gauge.setValue(0d);
-        parameter2Gauge.setMaxValue(3d);
-
-    }
-
-    private void setupGauges(int gauge1Decimals, int gauge2Decimals, String gauge1Title, String gauge1Unit, String gauge2Unit,
-                             double gauge1MaxValue, double gauge2MaxValue, String tabCoilOneText) {
-
-        disableNode(false, storeRLCButton, measureButton);
-
-        parameter1Gauge.setDecimals(gauge1Decimals);
-        parameter1Gauge.setTitle(gauge1Title);
-        parameter1Gauge.setUnit(gauge1Unit);
-        parameter1Gauge.setMaxValue(gauge1MaxValue);
-
-        parameter2Gauge.setDecimals(gauge2Decimals);
-        parameter2Gauge.setTitle("Resistance");
-        parameter2Gauge.setUnit(gauge2Unit);
-        parameter2Gauge.setMaxValue(gauge2MaxValue);
-
-        tabCoilOne.setText(tabCoilOneText);
-        measurementTabPane.getTabs().remove(tabCoilTwo);
 
     }
 

@@ -590,7 +590,6 @@ public class SpringJavaConfig {
     @Autowired
     public Enabler enabler(MainSectionController mainSectionController,
                            InjectorSectionController injectorSectionController,
-                           RLCController rlcController,
                            VoltageController voltageController,
                            FlowController flowController,
                            FlowReportController flowReportController,
@@ -598,7 +597,6 @@ public class SpringJavaConfig {
                            FlowReportModel flowReportModel) {
         return new Enabler(mainSectionController,
                 injectorSectionController,
-                rlcController,
                 voltageController,
                 flowController, flowReportController,
                 gui_typeController.getGui_typeComboBox(),

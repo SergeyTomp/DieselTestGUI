@@ -2,12 +2,14 @@ package fi.stardex.sisu.ui.controllers.additional.tabs;
 
 import eu.hansolo.medusa.Gauge;
 import fi.stardex.sisu.combobox_values.InjectorChannel;
-import fi.stardex.sisu.model.*;
+import fi.stardex.sisu.model.InjConfigurationModel;
+import fi.stardex.sisu.model.InjectorModel;
+import fi.stardex.sisu.model.InjectorTypeModel;
+import fi.stardex.sisu.model.RLC_ReportModel;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.InjectorControllersState;
-import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.util.GaugeCreator;
 import fi.stardex.sisu.util.enums.InjectorType;
 import fi.stardex.sisu.util.i18n.I18N;
@@ -82,26 +84,6 @@ public class RLCController {
     private  int resultGauge3;
     private double resultGauge4;
 
-    public Button getMeasureButton() {
-        return measureButton;
-    }
-
-    public Button getStoreButton() {
-        return storeButton;
-    }
-
-    public Tab getTabCoilOne() {
-        return tabCoilOne;
-    }
-
-    public Tab getTabCoilTwo() {
-        return tabCoilTwo;
-    }
-
-    public TabPane getMeasurementTabPane() {
-        return measurementTabPane;
-    }
-
     public void setUltimaModbusWriter(ModbusRegisterProcessor ultimaModbusWriter) {
         this.ultimaModbusWriter = ultimaModbusWriter;
     }
@@ -134,14 +116,6 @@ public class RLCController {
         this.injectorModel = injectorModel;
     }
 
-    public Gauge getParameter1Gauge() {
-        return parameter1Gauge;
-    }
-
-    public Gauge getParameter2Gauge() {
-        return parameter2Gauge;
-    }
-
     private List<ToggleButton> activeLedToggleButtonsList;
 
     @PostConstruct
@@ -158,48 +132,42 @@ public class RLCController {
         parameter2StackPane.getChildren().add(parameter2Gauge);
         parameter3StackPane.getChildren().add(parameter3Gauge);
         parameter4StackPane.getChildren().add(parameter4Gauge);
-//        measurementTabPane.getTabs().remove(tabCoilTwo);
         attentionLabel.setVisible(false);  //for this GUI this label is not used
         attentionLabel2.setVisible(false);  //for this GUI this label is not used
-        measureButton.setOnAction(event -> {
-            measureButton.setDisable(true);
-            new Thread(this::measure).start();
-        });
+        tabCoilTwo.setDisable(true);
+
+        setupButtonsListeners();
+        setupModelsListeners();
+    }
+
+    private void setupButtonsListeners() {
+
+        measureButton.setOnAction(event -> new Thread(this::measure).start());
         storeButton.setOnAction(event -> {
 
             rlc_reportModel.storeResult(unitsGauge1, unitsGauge2, titleGauge1, titleGauge2, ledNumber, resultGauge1, resultGauge2);
-            resultGauge1 = 0;
-            resultGauge2 = 0;
-
             if (injectorModel.injectorProperty().get().getVoltAmpereProfile().isDoubleCoil()) {
                 rlc_reportModel.storeResult(unitsGauge3, unitsGauge4, titleGauge3, titleGauge4, 2, resultGauge3, resultGauge4);
-                resultGauge3 = 0;
-                resultGauge4 = 0;
             }
         });
+    }
+
+    private void setupModelsListeners() {
 
         injectorModel.injectorProperty().addListener((observableValue, oldValue, newValue) -> {
-            parameter1Gauge.valueProperty().setValue(0);
-            parameter2Gauge.valueProperty().setValue(0);
-            parameter3Gauge.valueProperty().setValue(0);
-            parameter3Gauge.valueProperty().setValue(0);
-            storeButton.setDisable(true);
 
+            Optional.ofNullable(newValue).ifPresentOrElse(injector -> setupGauges(injector.getVoltAmpereProfile().getInjectorType().getInjectorType()), () -> setupGauges(null));
+            storeButton.setDisable(true);
         });
-        setupVAPModelListener();
+
+        injectorControllersState.activeLedToggleButtonsListProperty().addListener((observableValue, oldValue, newValue) ->
+                measureButton.setDisable(newValue.isEmpty() || injectorModel.injectorProperty().get() == null));
     }
 
     private void bindingI18N() {
 
         storeButton.textProperty().bind(i18N.createStringBinding("rlc.store.button"));
         measureButton.textProperty().bind(i18N.createStringBinding("rlc.measure.button"));
-    }
-
-    private void setupVAPModelListener() {
-
-        injectorModel.injectorProperty().addListener((observableValue, oldValue, newValue) -> {
-            Optional.ofNullable(newValue).ifPresentOrElse(injector -> setupGauges(injector.getVoltAmpereProfile().getInjectorType().getInjectorType()), () -> setupGauges(null));
-        });
     }
 
     private void setupGauges(String injectorType) {
@@ -225,31 +193,31 @@ public class RLCController {
     }
 
     private void deactivateGauges() {
-        disableNode(true, storeButton, measureButton);
 
         parameter1Gauge.setDecimals(1);
         parameter1Gauge.setTitle("");
         parameter1Gauge.setUnit("");
-        parameter1Gauge.setValue(0d);
         parameter1Gauge.setMaxValue(500d);
 
         parameter2Gauge.setDecimals(1);
         parameter2Gauge.setTitle("");
         parameter2Gauge.setUnit("");
-        parameter2Gauge.setValue(0d);
         parameter2Gauge.setMaxValue(3d);
 
         parameter3Gauge.setDecimals(1);
         parameter3Gauge.setTitle("");
         parameter3Gauge.setUnit("");
-        parameter3Gauge.setValue(0d);
         parameter3Gauge.setMaxValue(500d);
 
         parameter4Gauge.setDecimals(1);
         parameter4Gauge.setTitle("");
         parameter4Gauge.setUnit("");
-        parameter4Gauge.setValue(0d);
         parameter4Gauge.setMaxValue(3d);
+
+        clearGauges();
+        disableNode(true, storeButton, measureButton);
+        measurementTabPane.getSelectionModel().select(0);
+        tabCoilTwo.setDisable(true);
     }
 
     private void activateGauges(int gauge1Decimals, int gauge2Decimals, String gauge1Title, String gauge1Unit, String gauge2Unit,
@@ -278,9 +246,19 @@ public class RLCController {
         parameter4Gauge.setMaxValue(gauge2MaxValue);
 
         measurementTabPane.getSelectionModel().select(0);
-//        tabCoilTwo.setDisable(!voltAmpereProfileModel.voltAmpereProfileProperty().get().isDoubleCoil());
         tabCoilTwo.setDisable(!injectorModel.injectorProperty().get().getVoltAmpereProfile().isDoubleCoil());
+        clearGauges();
+    }
 
+    private void clearGauges() {
+        parameter1Gauge.valueProperty().setValue(0d);
+        parameter2Gauge.valueProperty().setValue(0d);
+        parameter3Gauge.valueProperty().setValue(0d);
+        parameter3Gauge.valueProperty().setValue(0d);
+        resultGauge1 = 0;
+        resultGauge2 = 0;
+        resultGauge3 = 0;
+        resultGauge4 = 0;
     }
 
     private void measure() {
@@ -293,8 +271,10 @@ public class RLCController {
         Double parameter2;
         Double parameter3;
         Double parameter4;
+
         if (ledController != null) {
 
+            disableNode(true, storeButton, measureButton);
             titleGauge1 = parameter1Gauge.getTitle();
             titleGauge2 = parameter2Gauge.getTitle();
             unitsGauge1 = parameter1Gauge.getUnit();
@@ -374,35 +354,29 @@ public class RLCController {
                     Platform.runLater(() -> RLCController.this.setCoilTwoData(parameter3, parameter4));
                     resultGauge3 = (int) Math.round(parameter3);
                     resultGauge4 = (double) Math.round(parameter4 * 100) / 100;
+                    logger.warn("Parameter 3: {}    Parameter 4: {}", parameter3, parameter4);
                 } catch (RuntimeException e) {
                     e.printStackTrace();
                 }
             }
-
-        } else {
-            Platform.runLater(() -> measureButton.setDisable(false));
+            disableNode(false, storeButton, measureButton);
+            logger.warn("Measure & Store Buttons Ready (Enabled)");
         }
     }
 
     private void setCoilOneData(Double parameter1, Double parameter2) {
         parameter1Gauge.setValue(parameter1);
         parameter2Gauge.setValue(parameter2);
-        disableNode(false, storeButton, measureButton);
-        logger.warn("Measure Button Ready (Enabled)");
     }
 
     private void setCoilTwoData(Double parameter1, Double parameter2) {
         parameter3Gauge.setValue(parameter1);
         parameter4Gauge.setValue(parameter2);
-        disableNode(false, storeButton, measureButton);
-        logger.warn("Measure Button Ready (Enabled)");
     }
 
     private void setPiezoData(Double parameter1, Double parameter2) {
         parameter1Gauge.setValue(parameter1);
         parameter2Gauge.setValue(parameter2);
-        disableNode(false, storeButton, measureButton);
-        logger.warn("Measure Button Ready (Enabled)");
     }
 
     private ToggleButton singleSelected() {
@@ -419,6 +393,5 @@ public class RLCController {
     private void disableNode(boolean disable, Node... nodes) {
         for (Node node : nodes)
             node.setDisable(disable);
-
     }
 }
