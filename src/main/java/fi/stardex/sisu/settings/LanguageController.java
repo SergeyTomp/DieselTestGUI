@@ -36,7 +36,7 @@ public class LanguageController {
     @PostConstruct
     public void init(){
 
-        languagesConfigComboBox.setItems(FXCollections.observableArrayList(Locales.RUSSIAN, Locales.ENGLISH, Locales.KOREAN));
+        languagesConfigComboBox.setItems(FXCollections.observableArrayList(Locales.values()));
 
         languageModel.languageProperty().bind(languagesConfigComboBox.valueProperty());
 

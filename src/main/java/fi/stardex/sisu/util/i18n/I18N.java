@@ -30,7 +30,6 @@ public class I18N {
         locale = new SimpleObjectProperty<>(Locales.getLocale(rootPrefs.get("Language", Locales.ENGLISH.name())));
     }
 
-
     public Locale getLocale() {
         return locale.get();
     }
@@ -50,12 +49,6 @@ public class I18N {
     }
 
     public StringBinding createStringBinding(final String key) {
-        return Bindings.createStringBinding(new Callable<String>() {
-            @Override
-            public String call() throws Exception {
-                return I18N.this.get(key);
-            }
-        }, locale);
+        return Bindings.createStringBinding(() -> I18N.this.get(key), locale);
     }
-
 }

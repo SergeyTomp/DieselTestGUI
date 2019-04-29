@@ -79,7 +79,7 @@ public class HighPressureSectionThreeController {
     private void bindingI18N() {
         currentLabel.textProperty().bind(i18N.createStringBinding("highPressure.label.amp"));
         dutyLabel.textProperty().bind(i18N.createStringBinding("highPressure.label.cycle"));
-        regLabel.textProperty().bind(i18N.createStringBinding("highPressure.label.reg2.name"));
+        regLabel.textProperty().bind(i18N.createStringBinding("highPressure.label.reg3.name"));
     }
 
     private void setupSpinners(){

@@ -8,7 +8,8 @@ import java.util.Locale;
 public enum Locales {
     ENGLISH(new Locale("en","English")),
     RUSSIAN(new Locale("ru","Russian")),
-    KOREAN(new Locale("kor", "Korean"));
+    KOREAN(new Locale("kor", "Korean")),
+    ROMANIAN(new Locale("ro", "Romania"));
 
     private static final Logger logger = LoggerFactory.getLogger(Locales.class);
 
