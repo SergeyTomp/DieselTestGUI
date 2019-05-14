@@ -1,7 +1,9 @@
 package fi.stardex.sisu.coding.bosch;
 
 import fi.stardex.sisu.model.FlowReportModel.FlowResult;
+import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
+import fi.stardex.sisu.persistence.orm.cr.inj.TestName;
 import fi.stardex.sisu.ui.controllers.ISADetectionController;
 import fi.stardex.sisu.ui.controllers.ISADetectionController.ISAResult;
 import javafx.collections.ObservableMap;
@@ -11,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static fi.stardex.sisu.coding.bosch.BitFields.*;
 import static fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer.getInjector;
 
 public class BoschCoding {
@@ -18,21 +21,22 @@ public class BoschCoding {
     private static final Logger logger = LoggerFactory.getLogger(BoschCoding.class);
 
     private static final String MASK = "ABCDEFGHIKLMNOPRSTUVWXYZ12345678";
-
     private static final String NO_CODING = "NO_CODING";
-
-    private static final Map<String, Integer> CODE_FIELD_SIZE = new HashMap<>() {{
-        put("Emission Point", 7);
-        put("Idle", 5);
-        put("Maximum Load", 7);
-        put("Pre-injection", 5);
-        put("Pre-injection 2", 5);
-        put("Check Sum", 4);
-    }};
+    private final static int CHANNELS_QTY = 4;
+    private static int injectorCoefficient;
+    private static double valueDivider;
+    private static int injectorIntCodeType;
+    private static CodeTypes injectorCodeType;
+    private static Random randomFlow = new Random();
 
     public static List<String> calculate(ObservableMap<InjectorTest, FlowResult> mapOfFlowTestResults) {
 
         Map<InjectorTest, List<Double>> temp = new HashMap<>();
+        Injector injector = getInjector();
+        injectorCodeType = CodeTypes.getCodeType(injector.getCodetype());
+        injectorCoefficient = injector.getCoefficient();
+        valueDivider = injectorCodeType.divider(injectorCoefficient);
+        injectorIntCodeType = injectorCodeType.getCodeType();
 
         for (Map.Entry<InjectorTest, FlowResult> entry : mapOfFlowTestResults.entrySet()) {
 
@@ -44,6 +48,39 @@ public class BoschCoding {
                     flowTestResult.getFlow3_double(),
                     flowTestResult.getFlow4_double()));
 
+        }
+
+        /**Remove unnecessary fake results generation upon real tests activation for codeType == 0 */
+        if (injectorCodeType == CodeTypes.ZERO) {
+
+            if (temp.keySet().stream().noneMatch(k -> k.getTestName().toString().equals(IDLE.toString()))) {
+
+                InjectorTest idleTest = new InjectorTest(new TestName(IDLE.toString()), 1d, 100d);
+                temp.put(idleTest, Arrays.asList(1d, 1d, 1d, 1d));
+            }
+
+            if (temp.keySet().stream().noneMatch(k -> k.getTestName().toString().equals(PRE_INJ_2.toString()))) {
+
+                InjectorTest preInjection2Test = new InjectorTest(new TestName(PRE_INJ_2.toString()), 1d, 100d);
+                temp.put(preInjection2Test, Arrays.asList(1d, 1d, 1d, 1d));
+            }
+
+            switch (injectorCoefficient) {
+                case 0:
+
+                    InjectorTest reserveTest = new InjectorTest(new TestName(RESERVE.toString()), 1d, 100d);
+                    InjectorTest restTest = new InjectorTest(new TestName(REST.toString()), 1d, 100d);
+                    temp.put(reserveTest, Arrays.asList(1d, 1d, 1d, 1d));
+                    temp.put(restTest, Arrays.asList(1d, 1d, 1d, 1d));
+                    break;
+                default:
+
+                    InjectorTest preInjection3Test = new InjectorTest(new TestName(PRE_INJ_3.toString()), 1d, 100d);
+                    InjectorTest kemTest = new InjectorTest(new TestName(KEM.toString()), 1d, 100d);
+
+                    temp.put(preInjection3Test, getRandomFlowsList());
+                    temp.put(kemTest, getRandomFlowsList());
+            }
         }
 
         Map<String, List<Integer>> preparedMap = convert(temp);
@@ -58,9 +95,10 @@ public class BoschCoding {
 
         for (Map.Entry<InjectorTest, List<Double>> entry : mapToConvert.entrySet()) {
 
-            Double flowRange = entry.getKey().getFlowRange();
+            double flowRange = entry.getKey().getFlowRange();
+            double nominalFlow = entry.getKey().getNominalFlow();
 
-            List<Integer> convertedList = entry.getValue().stream().map(value -> convertToInt(value, entry.getKey().getNominalFlow(), flowRange)).collect(Collectors.toList());
+            List<Integer> convertedList = entry.getValue().stream().map(value -> convertToInt(value, nominalFlow, flowRange)).collect(Collectors.toList());
 
             convertedMap.put(entry.getKey().toString(), convertedList);
 
@@ -93,18 +131,7 @@ public class BoschCoding {
             /** Deviation from central point calculation without limitation*/
 //            value = nominalFlow - value;
 
-            int coefficient = getInjector().getCoefficient();
-            switch (coefficient) {
-                case 0:
-                    return (int) (value / 0.1);
-                case 1:
-                    return (int) (value / 0.15);
-                case 2:
-                    return (int) (value / 0.25);
-                default:
-                    logger.debug("Invalid bosch coding coefficient: " + coefficient + ", used 0 instead");
-                    return (int) (value / 0.1);
-            }
+            return (int) (value / valueDivider);
         }
     }
 
@@ -113,7 +140,7 @@ public class BoschCoding {
         List<Integer> resultCheckSum = new ArrayList<>();
         List <Integer> injectorFlows = new ArrayList<>();
 
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < CHANNELS_QTY; i++) {
 
             int value = 0;
             injectorFlows.clear();
@@ -133,7 +160,7 @@ public class BoschCoding {
             value += injectorFlows.stream().filter(element -> element != -99).reduce(Integer::sum).orElse(0);
 
             if (value != -99) {
-                value += getInjector().getCoefficient();
+                value += injectorCoefficient;
                 value = (value & 15) + ((value & 240) >> 4) + 1 & 15;
             }
             resultCheckSum.add(value);
@@ -154,7 +181,14 @@ public class BoschCoding {
                 int value = entry.getValue().get(i);
 
                 if (value != -99) {
-                    value = value < 0 ? value + (int) Math.pow(2d, CODE_FIELD_SIZE.get(entry.getKey())) : value;
+
+                    int fieldSize = Arrays
+                            .stream(BitFields.values())
+                            .filter(v -> v.toString().equals(entry.getKey()))
+                            .findFirst()
+                            .orElseThrow()
+                            .fieldLength(injectorIntCodeType, injectorCoefficient);
+                    value = value < 0 ? value + (int) Math.pow(2d, fieldSize) : value;
                     entry.getValue().set(i, value);
                 }
             }
@@ -165,65 +199,89 @@ public class BoschCoding {
 
         List<String> codeResult = new ArrayList<>();
 
-        CodeTypes codeTypes = CodeTypes.getCodeType(getInjector().getCodetype());
-
-        for (int i = 0; i < 4; i++) {
+        for (int i = 0; i < CHANNELS_QTY; i++) {
 
             StringBuilder resultString = new StringBuilder();
 
-            Integer checkSum = preparedMap.get("Check Sum").get(i);
+            int checkSum = preparedMap.get(CHECK_SUM.toString()).get(i);
 
-            Integer emissionPointValue = preparedMap.get("Emission Point").get(i);
-            resultString.append(emissionPointValue != -99 ? completeBinaryWithZeroes(emissionPointValue, CODE_FIELD_SIZE.get("Emission Point")) : "");
+            int emissionPointValue = preparedMap.get(EMISSION_POINT.toString()).get(i);
+            resultString.append(emissionPointValue != -99 ? completeBinaryWithZeroes(emissionPointValue, EMISSION_POINT.fieldLength(injectorIntCodeType, injectorCoefficient)) : "");
 
-            Integer idleValue = preparedMap.get("Idle").get(i);
-            resultString.append(idleValue != -99 ? completeBinaryWithZeroes(idleValue, CODE_FIELD_SIZE.get("Idle")) : "");
+            int idleValue = preparedMap.get(IDLE.toString()).get(i);
+            resultString.append(idleValue != -99 ? completeBinaryWithZeroes(idleValue, IDLE.fieldLength(injectorIntCodeType, injectorCoefficient)) : "");
 
-            Integer maximumLoadValue = preparedMap.get("Maximum Load").get(i);
-            resultString.append(maximumLoadValue != -99 ? completeBinaryWithZeroes(maximumLoadValue, CODE_FIELD_SIZE.get("Maximum Load")) : "");
+            int maximumLoadValue = preparedMap.get(MAX_LOAD.toString()).get(i);
+            resultString.append(maximumLoadValue != -99 ? completeBinaryWithZeroes(maximumLoadValue, MAX_LOAD.fieldLength(injectorIntCodeType, injectorCoefficient)) : "");
 
-            Integer preInjectionValue = preparedMap.get("Pre-injection").get(i);
-            resultString.append(preInjectionValue != -99 ? completeBinaryWithZeroes(preInjectionValue, CODE_FIELD_SIZE.get("Pre-injection")) : "");
+            int preInjectionValue = preparedMap.get(PRE_INJ.toString()).get(i);
+            resultString.append(preInjectionValue != -99 ? completeBinaryWithZeroes(preInjectionValue, PRE_INJ.fieldLength(injectorIntCodeType, injectorCoefficient)) : "");
 
-            switch (codeTypes) {
+            switch (injectorCodeType) {
 
                 case ONE:
                 case FIVE:
                     if (checkSum != -99)
                         resultString
-                                .append(completeBinaryWithZeroes(checkSum, CODE_FIELD_SIZE.get("Check Sum")))
-                                .append(completeBinaryWithZeroes(getInjector().getCoefficient(), 2));
+                                .append(completeBinaryWithZeroes(checkSum, CHECK_SUM.fieldLength(injectorIntCodeType, injectorCoefficient)))
+                                .append(completeBinaryWithZeroes(injectorCoefficient, 2));
                     break;
                 case THREE:
                     if (checkSum != -99)
                         resultString
-                                .append(completeBinaryWithZeroes(checkSum, CODE_FIELD_SIZE.get("Check Sum")))
-                                .append(completeBinaryWithZeroes(getInjector().getCoefficient(), 2))
+                                .append(completeBinaryWithZeroes(checkSum, CHECK_SUM.fieldLength(injectorIntCodeType, injectorCoefficient)))
+                                .append(completeBinaryWithZeroes(injectorCoefficient, 2))
                                 .append("00");
                     break;
                 case TWO:
-                    if (preparedMap.containsKey("Pre-injection 2")) {
-                        Integer preInjection2 = preparedMap.get("Pre-injection 2").get(i);
+                    if (preparedMap.containsKey(PRE_INJ_2.toString())) {
+                        int preInjection2 = preparedMap.get(PRE_INJ_2.toString()).get(i);
                         if (checkSum != -99)
                             resultString
-                                    .append(completeBinaryWithZeroes(checkSum, CODE_FIELD_SIZE.get("Check Sum")))
-                                    .append(completeBinaryWithZeroes(getInjector().getCoefficient(), 2));
+                                    .append(completeBinaryWithZeroes(checkSum, CHECK_SUM.fieldLength(injectorIntCodeType, injectorCoefficient)))
+                                    .append(completeBinaryWithZeroes(injectorCoefficient, 2));
                         if (preInjection2 != -99)
                             resultString
-                                    .append(completeBinaryWithZeroes(preInjection2, CODE_FIELD_SIZE.get("Pre-injection 2")));
+                                    .append(completeBinaryWithZeroes(preInjection2, PRE_INJ_2.fieldLength(injectorIntCodeType, injectorCoefficient)));
                     }
                     break;
                 case FOUR:
-                    if (preparedMap.containsKey("Pre-injection 2")) {
-                        Integer preInjection2 = preparedMap.get("Pre-injection 2").get(i);
+                    if (preparedMap.containsKey(PRE_INJ_2.toString())) {
+                        int preInjection2 = preparedMap.get(PRE_INJ_2.toString()).get(i);
                         if (preInjection2 != -99)
                             resultString
-                                    .append(completeBinaryWithZeroes(preInjection2, CODE_FIELD_SIZE.get("Pre-injection 2")))
-                                    .append(completeBinaryWithZeroes(getInjector().getCoefficient(), 2))
-                                    .append("0").append(completeBinaryWithZeroes(checkSum, CODE_FIELD_SIZE.get("Check Sum")));
+                                    .append(completeBinaryWithZeroes(preInjection2, PRE_INJ_2.fieldLength(injectorIntCodeType, injectorCoefficient)))
+                                    .append(completeBinaryWithZeroes(injectorCoefficient, 2))
+                                    .append("0").append(completeBinaryWithZeroes(checkSum, CHECK_SUM.fieldLength(injectorIntCodeType, injectorCoefficient)));
                     }
                     break;
+                case ZERO:
+                    int preInjection2 = preparedMap.get(PRE_INJ_2.toString()).get(i);
 
+                    if (checkSum != -99)
+                        resultString
+                                .append(completeBinaryWithZeroes(checkSum, CHECK_SUM.fieldLength(injectorIntCodeType, injectorCoefficient)))
+                                .append(completeBinaryWithZeroes(injectorCoefficient, 2));
+
+                    if (preInjection2 != -99)
+                        resultString.append(completeBinaryWithZeroes(preInjection2, PRE_INJ_2.fieldLength(injectorIntCodeType, injectorCoefficient)));
+
+                    switch (injectorCoefficient) {
+                        case 0:
+                            int reserve = preparedMap.get(RESERVE.toString()).get(i);
+                            int rest = preparedMap.get(REST.toString()).get(i);
+                            resultString
+                                    .append(completeBinaryWithZeroes(reserve, RESERVE.fieldLength(injectorIntCodeType, injectorCoefficient)))
+                                    .append(completeBinaryWithZeroes(rest, REST.fieldLength(injectorIntCodeType, injectorCoefficient)));
+                            break;
+                        default:
+                            int kem = preparedMap.get(KEM.toString()).get(i);
+                            int preInjection3 = preparedMap.get(PRE_INJ_3.toString()).get(i);
+                            resultString
+                                    .append(completeBinaryWithZeroes(kem, KEM.fieldLength(injectorIntCodeType, injectorCoefficient)))
+                                    .append(completeBinaryWithZeroes(preInjection3, PRE_INJ_3.fieldLength(injectorIntCodeType, injectorCoefficient)));
+                    }
+                    break;
             }
 
             codeResult.add(resultString.toString());
@@ -232,7 +290,7 @@ public class BoschCoding {
 
         }
 
-        return getCode(codeResult, codeTypes);
+        return getCode(codeResult);
 
     }
 
@@ -260,16 +318,20 @@ public class BoschCoding {
         return result.toString();
     }
 
-    private static List<String> getCode(List<String> codeResult, CodeTypes codeTypes) {
+    private static List<String> getCode(List<String> codeResult) {
 
         List<String> resultList = new ArrayList<>();
 
-        switch (codeTypes) {
-            case ONE: case TWO:
-                codeResult.forEach(result -> resultList.add(result.contains(NO_CODING) ? "Coding impossible" : prepareStringResult(result, codeTypes, false)));
+        switch (injectorCodeType) {
+
+            case ONE:
+            case TWO:
+            case ZERO:
+                codeResult.forEach(result -> resultList.add(result.contains(NO_CODING) ? "Coding impossible" : prepareStringResult(result, injectorCodeType, false)));
                 break;
-            case THREE: case FOUR:
-                codeResult.forEach(result -> resultList.add(result.contains(NO_CODING) ? "Coding impossible" : prepareStringResult(result, codeTypes, true)));
+            case THREE:
+            case FOUR:
+                codeResult.forEach(result -> resultList.add(result.contains(NO_CODING) ? "Coding impossible" : prepareStringResult(result, injectorCodeType, true)));
                 break;
             case FIVE:
                 List<ISAResult> isaResult = ISADetectionController.getIsaResult();
@@ -282,7 +344,7 @@ public class BoschCoding {
                                 resultList.add("Injector is out of parameters. ISA detection impossible.");
                                 break;
                             case VALID:
-                                resultList.add(prepareStringResult(codeResult.get(i), codeTypes, false) + isaResult.get(i).getIsa_char());
+                                resultList.add(prepareStringResult(codeResult.get(i), injectorCodeType, false) + isaResult.get(i).getIsa_char());
                                 break;
                             case OFF:
                                 resultList.add("");
@@ -303,11 +365,13 @@ public class BoschCoding {
 
         StringBuilder result = new StringBuilder();
 
-        if (!binaryResult.isEmpty() && (codeType.getSize() == binaryResult.length())) {
+        int codeSize = codeType.codeSize(injectorCoefficient);
+        int codeStep = CodeTypes.codeStep(codeSize);
+        if (!binaryResult.isEmpty() && (codeSize == binaryResult.length())) {
 
-            for (int j = 0; j < codeType.getSize(); j += codeType.getStep()) {
+            for (int j = 0; j < codeSize; j += codeStep) {
 
-                String binaryLine = binaryResult.substring(j, j + codeType.getStep());
+                String binaryLine = binaryResult.substring(j, j + codeStep);
 
                 int decimal = Integer.parseInt(binaryLine, 2);
 
@@ -324,48 +388,139 @@ public class BoschCoding {
             return result.toString().toUpperCase();
         else
             return result.toString();
-
     }
 
+    private static List<Double> getRandomFlowsList() {
+
+        List<Double> randomFlows = new ArrayList<>();
+        for (int i = 0; i < 4; i++) {
+            randomFlows.add((randomFlow.nextInt(3) - 1) * 0.25);
+        }
+        return randomFlows;
+    }
 }
 
 enum CodeTypes {
 
-    ONE(1, 5, 30),
-    TWO(2, 5, 35),
-    THREE(3, 4, 32),
-    FOUR(4, 4, 36),
-    FIVE(5, 5, 30);
+    //As a reminder:
+    //CodeType(int codeType, int step, int size)
+    //ZERO(0, 5, 45)
+    //ONE(1, 5, 30)
+    //TWO(2, 5, 35)
+    //THREE(3, 4, 32)
+    //FOUR(4, 4, 36)
+    //FIVE(5, 5, 30)
+    ZERO(0) {
+        @Override final double divider(int k_coeff) { return k_coeff == 0 ? 0.1 : 0.25; }
+        @Override final int codeSize(int k_coeff) {
+            int codeType = getCodeType();
+            int length = commonPart(k_coeff) + PRE_INJ_2.fieldLength(codeType, k_coeff);
+            if (k_coeff == 0) {
+                length = length + RESERVE.fieldLength(codeType, k_coeff) + REST.fieldLength(codeType, k_coeff);
+            }
+            else length = length + PRE_INJ_3.fieldLength(codeType, k_coeff) + KEM.fieldLength(codeType, k_coeff);
+            return length;
+        }
+    },
+    ONE(1) {
+        @Override final double divider(int k_coeff) { return getDivider(k_coeff); }
+        @Override final int codeSize(int k_coeff) { return commonPart(k_coeff); }
+    },
+    TWO(2) {
+        @Override final double divider(int k_coeff) { return getDivider(k_coeff); }
+        @Override final int codeSize(int k_coeff) { return commonPart(k_coeff) + PRE_INJ_2.fieldLength(getCodeType(), k_coeff); }
+    },
+    THREE(3) {
+        @Override final double divider(int k_coeff) { return getDivider(k_coeff); }
+        @Override final int codeSize(int k_coeff) { return commonPart(k_coeff) + 2; }
+    },
+    FOUR(4) {
+        @Override final double divider(int k_coeff) { return getDivider(k_coeff); }
+        @Override final int codeSize(int k_coeff) { return commonPart(k_coeff) + PRE_INJ_2.fieldLength(getCodeType(), k_coeff) + 1; }
+    },
+    FIVE(5) {
+        @Override final double divider(int k_coeff) { return getDivider(k_coeff); }
+        @Override final int codeSize(int k_coeff) { return commonPart(k_coeff); }
+    };
 
-    private final Integer codeType;
-    private final Integer step;
-    private final Integer size;
+    private final int codeType;
 
-    CodeTypes(Integer codeType, Integer step, Integer size) {
+    CodeTypes(int codeType) {
 
         this.codeType = codeType;
-        this.step = step;
-        this.size = size;
-
     }
 
-    public static CodeTypes getCodeType(Integer codeType) {
+    public static CodeTypes getCodeType(int codeType) {
 
         for (CodeTypes codeTypes : values()) {
-            if (codeTypes.codeType.equals(codeType))
+            if (codeTypes.codeType == codeType)
                 return codeTypes;
         }
-
         return ONE;
-
     }
 
-    public Integer getStep() {
-        return step;
+    abstract double divider(int k_coeff);
+
+    private static int commonPart(int k_coeff) {
+        return
+                EMISSION_POINT.fieldLength(0, k_coeff)
+                + IDLE.fieldLength(0, k_coeff)
+                + MAX_LOAD.fieldLength(0, k_coeff)
+                + PRE_INJ.fieldLength(0, k_coeff)
+                + CHECK_SUM.fieldLength(0, k_coeff)
+                + 2;
     }
 
-    public Integer getSize() {
-        return size;
+    abstract int codeSize(int k_coeff);
+
+    public static int codeStep(int codeSize) {
+        return codeSize % 5 == 0 ? 5 : 4;
     }
 
+    public final int getCodeType() {
+        return codeType;
+    }
+
+    public final double getDivider(int k_coeff) {
+        switch (k_coeff) {
+            case 0:
+                return 0.1;
+            case 1:
+                return 0.15;
+            case 2:
+                return 0.25;
+            case 3:
+                return 0.5;
+            default:
+                return 0.1;
+        }
+    }
 }
+
+enum BitFields{
+
+    EMISSION_POINT ("Emission Point") {final int fieldLength(int codeType, int k){return 7;}},
+    IDLE ("Idle"){int fieldLength(final int codeType, int k){return 5;}},
+    MAX_LOAD ("Maximum Load"){final int fieldLength(int codeType, int k){return 7;}},
+    PRE_INJ ("Pre-injection") {final int fieldLength(int codeType, int k){return 5;}},
+    PRE_INJ_2 ("Pre-injection 2") {final int fieldLength(int codeType, int k){return codeType != 0 ? 5 : k != 0 ? 4 : 6;}},
+    PRE_INJ_3 ("Pre-injection 3") {final int fieldLength(int codeType, int k){return 4;}},
+    KEM ("Kem") {int fieldLength(final int codeType, int k){return 7;}},
+    RESERVE ("Reserve"){final int fieldLength(int codeType, int k){return 7;}},
+    REST ("Rest"){final int fieldLength(int codeType, int k){return 2;}},
+    CHECK_SUM ("Check Sum") {final int fieldLength(int codeType, int k){return 4;}};
+
+    private final String testName;
+
+    BitFields(String testName) {
+        this.testName = testName;
+    }
+
+    abstract int fieldLength(int codeType, int k);
+
+    @Override
+    public String toString() {
+        return testName;
+    }
+}
+

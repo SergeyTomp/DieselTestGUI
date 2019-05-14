@@ -60,6 +60,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest.getListOfNonIncludedTests;
+import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.UIS_to_CR_pulseControlSwitch;
 import static fi.stardex.sisu.util.enums.Measurement.DELIVERY;
 import static fi.stardex.sisu.util.enums.Measurement.VISUAL;
 import static fi.stardex.sisu.util.enums.Move.DOWN;
@@ -819,6 +820,7 @@ public class MainSectionController {
 
         manufacturerListView.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) -> {
 
+            flowModbusWriter.add(UIS_to_CR_pulseControlSwitch, 0);
             resetButton.fire();
             enabler.disableNode(newValue == null, injectorsVBox);
             setManufacturer(newValue);
@@ -1120,7 +1122,7 @@ public class MainSectionController {
         String manufacturerName = getManufacturer().getManufacturerName();
 
         if (manufacturerName.equals("Bosch") || manufacturerName.equals("Denso") || manufacturerName.equals("Delphi") || manufacturerName.equals("Siemens"))
-            return codetype != 0;
+            return codetype != -1;
         else return false;
     }
 

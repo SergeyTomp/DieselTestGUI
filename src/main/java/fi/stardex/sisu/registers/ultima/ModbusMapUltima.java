@@ -147,7 +147,9 @@ public enum ModbusMapUltima implements ModbusMap {
     Reg1_To_Reg3_Mirror(DISCRETE_COIL, 103, 1, false),
 
     // обработка флага короткого замыкания инжектора
-    Inj_Process_Global_Error(DISCRETE_COIL, 7, 1, true);
+    Inj_Process_Global_Error(DISCRETE_COIL, 7, 1, true),
+    // переключение типа управления импульсами, 0 - CR, 1 - UIS
+    UIS_to_CR_pulseControlSwitch(REGISTER_HOLDING, 157, 1, false);
 
     private final RegisterType type;
     private final int ref;

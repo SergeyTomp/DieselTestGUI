@@ -16,6 +16,25 @@ public class FlowUnitObtainer {
 //
 //    public static final String MILLILITRE_PER_1000RPM = "ml/1000str";
 
+    enum ConverterUOM{
+
+        INJECTOR (1d) {@Override double convert(String uom) { return uom.equals(MILLILITRE_PER_MINUTE) ? getBaseCoeff() : getBaseCoeff() * 0.06; }},
+        PUMP (16.67) {@Override double convert(String uom) { return uom.equals(MILLILITRE_PER_MINUTE) ? getBaseCoeff() : getBaseCoeff() * 0.06; }};
+
+        private final double baseCoeff;
+
+        ConverterUOM(double baseCoeff) {
+
+            this.baseCoeff = baseCoeff;
+        }
+
+        double getBaseCoeff() {
+            return baseCoeff;
+        }
+
+        abstract double convert(String uom);
+    }
+
     private static double deliveryCoefficient;
 
     private static double backFlowCoefficient;
@@ -52,7 +71,8 @@ public class FlowUnitObtainer {
 
         deliveryProperty.bind(comboBox.getSelectionModel().selectedItemProperty());
         deliveryProperty.addListener((observable, oldValue, newValue) -> {
-            deliveryCoefficient = calcCoefficient(newValue);
+//            deliveryCoefficient = calcCoefficient(newValue);
+            deliveryCoefficient = ConverterUOM.INJECTOR.convert(newValue);
         });
     }
 
@@ -60,7 +80,8 @@ public class FlowUnitObtainer {
 
         backFlowProperty.bind(comboBox.getSelectionModel().selectedItemProperty());
         backFlowProperty.addListener((observable, oldValue, newValue) -> {
-            backFlowCoefficient = calcCoefficient(newValue);
+//            backFlowCoefficient = calcCoefficient(newValue);
+            backFlowCoefficient = ConverterUOM.INJECTOR.convert(newValue);
         });
     }
 
@@ -68,7 +89,8 @@ public class FlowUnitObtainer {
 
         pumpDeliveryProperty.bind(comboBox.getSelectionModel().selectedItemProperty());
         pumpDeliveryProperty.addListener((observable, oldValue, newValue) -> {
-            pumpDeliveryCoefficient = calcCoefficient(newValue);
+//            pumpDeliveryCoefficient = calcCoefficient(newValue);
+            pumpDeliveryCoefficient = ConverterUOM.PUMP.convert(newValue);
         });
     }
 
@@ -76,9 +98,9 @@ public class FlowUnitObtainer {
 
         pumpBackFlowProperty.bind(comboBox.getSelectionModel().selectedItemProperty());
         pumpBackFlowProperty.addListener((observable, oldValue, newValue) -> {
-            pumpBackFlowCoefficient = calcCoefficient(newValue);
+//            pumpBackFlowCoefficient = calcCoefficient(newValue);
+            pumpBackFlowCoefficient = ConverterUOM.PUMP.convert(newValue);
         });
-
     }
 
     private static double calcCoefficient(String value){

@@ -34,6 +34,15 @@ public class TestName {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "testName", cascade = CascadeType.ALL)
     private List<InjectorTest> injectorTests = new LinkedList<>();
 
+    /** Delete both constructors below upon all real tests activation for codeType == 0 */
+    public TestName() {
+
+    }
+
+    public TestName(String testName) {
+        this.testName = testName;
+    }
+
     public Measurement getMeasurement() {
         return measurement;
     }

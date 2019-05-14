@@ -123,6 +123,13 @@ public class InjectorTest implements ChangeListener<Boolean> {
         this.shift = shift;
     }
 
+    /**Delete this constructor upon all real tests activation for codeType == 0  */
+    public InjectorTest(TestName testName, Double nominalFlow, Double flowRange) {
+        this.testName = testName;
+        this.nominalFlow = nominalFlow;
+        this.flowRange = flowRange;
+    }
+
     public static ObservableList<InjectorTest> getListOfNonIncludedTests() {
         return listOfNonIncludedTests;
     }
