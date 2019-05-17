@@ -198,6 +198,8 @@ public class MainSectionController {
 
     private ModbusRegisterProcessor flowModbusWriter;
 
+    private ModbusRegisterProcessor ultimaModbusWriter;
+
     private Enabler enabler;
 
     private ViewHolder manufacturerMenuDialog;
@@ -412,6 +414,10 @@ public class MainSectionController {
 
     public void setInjectorModel(InjectorModel injectorModel) {
         this.injectorModel = injectorModel;
+    }
+
+    public void setUltimaModbusWriter(ModbusRegisterProcessor ultimaModbusWriter) {
+        this.ultimaModbusWriter = ultimaModbusWriter;
     }
 
     @PostConstruct
@@ -820,7 +826,7 @@ public class MainSectionController {
 
         manufacturerListView.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) -> {
 
-            flowModbusWriter.add(UIS_to_CR_pulseControlSwitch, 0);
+            ultimaModbusWriter.add(UIS_to_CR_pulseControlSwitch, 0);
             resetButton.fire();
             enabler.disableNode(newValue == null, injectorsVBox);
             setManufacturer(newValue);

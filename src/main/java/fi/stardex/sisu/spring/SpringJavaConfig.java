@@ -881,7 +881,6 @@ public class SpringJavaConfig {
                                            FlowRangeModel pumpBackFlowRangeModel,
                                            FlowUnitsModel pumpDeliveryFlowUnitsModel,
                                            FlowUnitsModel pumpBackFlowUnitsModel,
-                                           FlowViewModel flowViewModel,
                                            PumpTestModel pumpTestModel,
                                            PumpModel pumpModel) {
 
@@ -890,7 +889,6 @@ public class SpringJavaConfig {
         pumpReportModel.setBackFlowRangeModel(pumpBackFlowRangeModel);
         pumpReportModel.setDeliveryFlowUnitsModel(pumpDeliveryFlowUnitsModel);
         pumpReportModel.setBackFlowUnitsModel(pumpBackFlowUnitsModel);
-        pumpReportModel.setFlowViewModel(flowViewModel);
         pumpReportModel.setPumpTestModel(pumpTestModel);
         pumpReportModel.setPumpModel(pumpModel);
         return pumpReportModel;

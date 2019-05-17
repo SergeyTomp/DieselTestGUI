@@ -1,6 +1,5 @@
 package fi.stardex.sisu.model;
 
-import fi.stardex.sisu.combobox_values.Dimension;
 import fi.stardex.sisu.pdf.Result;
 import fi.stardex.sisu.persistence.orm.pump.PumpTest;
 import fi.stardex.sisu.util.enums.BeakerType;
@@ -27,11 +26,9 @@ public class PumpReportModel {
     private FlowRangeModel backFlowRangeModel;
     private FlowUnitsModel deliveryFlowUnitsModel;
     private FlowUnitsModel backFlowUnitsModel;
-    private FlowViewModel flowViewModel;
     private PumpTestModel pumpTestModel;
     private PumpModel pumpModel;
     private ObservableMap<PumpTest, PumpFlowResult> resultObservableMap = FXCollections.observableMap(new LinkedHashMap<>());
-    private BooleanProperty resultMapChanged = new SimpleBooleanProperty();
     private StringProperty deliveryValue = new SimpleStringProperty();
     private StringProperty backFlowValue = new SimpleStringProperty();
 
@@ -47,17 +44,12 @@ public class PumpReportModel {
     public void setBackFlowUnitsModel(FlowUnitsModel backFlowUnitsModel) {
         this.backFlowUnitsModel = backFlowUnitsModel;
     }
-    public void setFlowViewModel(FlowViewModel flowViewModel) {
-        this.flowViewModel = flowViewModel;
-    }
     public void setPumpTestModel(PumpTestModel pumpTestModel) {
         this.pumpTestModel = pumpTestModel;
     }
     public void setPumpModel(PumpModel pumpModel) {
         this.pumpModel = pumpModel;
     }
-
-
 
     /** Metod invoked from PumpBeakerController upon flowTextField changes.
     * It set values into this.deliveryValue and this.backFlowValue for reports generation.
@@ -83,11 +75,16 @@ public class PumpReportModel {
         String feedPressure = String.valueOf(pumpModel.pumpProperty().get().getFeedPressure());
         String regulatorCurrent = String.valueOf(Optional.ofNullable(pumpTestModel.pumpTestProperty().get().getRegulatorCurrent()).orElse(0d));
         String pcvCurrent = String.valueOf(Optional.ofNullable(pumpTestModel.pumpTestProperty().get().getPcvCurrent()).orElse(0));
-        String deliveryRange = getRange(deliveryFlowRangeModel.flowRangeProperty().get());
         String delivery = getFlow(deliveryValue.get());
-        String backFlowRange = getRange(backFlowRangeModel.flowRangeProperty().get());
         String backFlow = getFlow(backFlowValue.get());
-        Dimension dimension = flowViewModel.flowViewProperty().get();
+        String deliveryRangeLabelText = deliveryFlowRangeModel.flowRangeLabelProperty().get() + " " + " " + deliveryFlowUnitsModel.flowUnitsProperty().get();
+        String backFlowRangeLabelText = backFlowRangeModel.flowRangeLabelProperty().get() + " " + " " + backFlowUnitsModel.flowUnitsProperty().get();
+        double deliveryLowLimit = deliveryFlowRangeModel.getScaledLowLimit();
+        double deliveryTopLimit = deliveryFlowRangeModel.getScaledTopLimit();
+        double backFlowLowLimit = backFlowRangeModel.getScaledLowLimit();
+        double backFlowTopLimit = backFlowRangeModel.getScaledTopLimit();
+        boolean noDeliveryTopLimit = deliveryFlowRangeModel.isNoTopLimit();
+        boolean noBackFlowTopLimit = backFlowRangeModel.isNoTopLimit();
 
         resultObservableMap.put(pumpTest, new PumpFlowResult(
                 pumpTest,
@@ -95,11 +92,16 @@ public class PumpReportModel {
                 feedPressure,
                 regulatorCurrent,
                 pcvCurrent,
-                deliveryRange,
                 delivery,
-                backFlowRange,
                 backFlow,
-                dimension));
+                deliveryRangeLabelText,
+                backFlowRangeLabelText,
+                deliveryLowLimit,
+                backFlowLowLimit,
+                deliveryTopLimit,
+                backFlowTopLimit,
+                noDeliveryTopLimit,
+                noBackFlowTopLimit));
     }
 
     public void deleteResult(PumpTest pumpTest){
@@ -124,10 +126,6 @@ public class PumpReportModel {
         return (flow == null || flow.isEmpty()) || convertDataToDouble(flow) == 0d ? "-" : flow;
     }
 
-    private String getRange(String range) {
-        return range == null || range.isEmpty() ? "-" : range;
-    }
-
     public class PumpFlowResult  implements Result {
 
         private final ObjectProperty<PumpTest> pumpTest;
@@ -135,16 +133,12 @@ public class PumpReportModel {
         private final StringProperty standPressure;
         private final StringProperty scvCurrent;
         private final StringProperty psvCurrent;
-        private final StringProperty nominalDeliveryFlow;
-        private final StringProperty nominalBackFlow;
         private final StringProperty deliveryFlow;
         private final StringProperty backFlow;
         private ObjectProperty<TestPassed> testPassed;
+        private final StringProperty deliveryFlowLabelText;
+        private final StringProperty backFlowLabelText;
 
-        private int rotatesPerMinute_int;
-        private int standPressure_int;
-        private double scvCurrent_double;
-        private double psvCurrent_double;
         private double deliveryFlow_double;
         private double backFlow_double;
         private double deliveryFlowRangeLeft;
@@ -228,10 +222,10 @@ public class PumpReportModel {
             return psvCurrent;
         }
         public StringProperty nominalDeliveryFlowProperty() {
-            return nominalDeliveryFlow;
+            return deliveryFlowLabelText;
         }
         public StringProperty nominalBackFlowProperty() {
-            return nominalBackFlow;
+            return backFlowLabelText;
         }
         public StringProperty deliveryFlowProperty() {
             return deliveryFlow;
@@ -248,37 +242,39 @@ public class PumpReportModel {
                        String standPressure,
                        String scvCurrent,
                        String psvCurrent,
-                       String nominalDeliveryFlow,
                        String deliveryFlow,
-                       String nominalBackFlow,
                        String backFlow,
-                       Dimension dimension) {
+                       String deliveryFlowLabelText,
+                       String backFlowLabelText,
+                       double deliveryLowLimit,
+                       double backFlowLowLimit,
+                       double deliveryTopLimit,
+                       double backFlowTopLimit,
+                       boolean noDeliveryTopLimit,
+                       boolean noBackFlowTopLimit) {
 
             this.pumpTest = new SimpleObjectProperty<>(pumpTest);
             this.rotatesPerMinute = new SimpleStringProperty(rotatesPerMinute);
             this.standPressure = new SimpleStringProperty(standPressure);
             this.scvCurrent = new SimpleStringProperty(scvCurrent);
             this.psvCurrent = new SimpleStringProperty(psvCurrent);
-            this.nominalDeliveryFlow = new SimpleStringProperty(getNominalFlow(nominalDeliveryFlow, deliveryFlowUnitsModel.flowUnitsProperty().get()));
-            this.nominalBackFlow = new SimpleStringProperty(getNominalFlow(nominalBackFlow, backFlowUnitsModel.flowUnitsProperty().get()));
             this.deliveryFlow = new SimpleStringProperty(deliveryFlow);
             this.backFlow = new SimpleStringProperty(backFlow);
             this.testPassed = new SimpleObjectProperty<>(PASSED);
+            this.deliveryFlowLabelText = new SimpleStringProperty(deliveryFlowLabelText);
+            this.backFlowLabelText = new SimpleStringProperty(backFlowLabelText);
 
             deliveryFlow_double = deliveryFlow.equals("-") ? -99d : convertDataToDouble(deliveryFlow) / getDeliveryCoefficient();
             backFlow_double = backFlow.equals("-") ? -99d : convertDataToDouble(backFlow) / getBackFlowCoefficient();
 
-            double[] limits = extractFromNominalFlow((this.nominalDeliveryFlow).get(), dimension);
-            deliveryFlowRangeLeft = limits[0];
-            deliveryFlowRangeRight = limits[1];
-            acceptableDeliveryFlowRangeLeft = limits[0] - limits[0] * 0.03;
-            acceptableDeliveryFlowRangeRight = limits[1] + limits[1] * 0.03;
-
-            limits = extractFromNominalFlow((this.nominalBackFlow).get(), dimension);
-            backFlowRangeLeft = limits[0];
-            backFlowRangeRight = limits[1];
-            acceptableBackFlowRangeLeft = limits[0] - limits[0] * 0.03;
-            acceptableBackFlowRangeRight = limits[1] + limits[1] * 0.03;
+            deliveryFlowRangeLeft = deliveryLowLimit;
+            deliveryFlowRangeRight = !noDeliveryTopLimit ? deliveryTopLimit : deliveryTopLimit * 1000;
+            backFlowRangeLeft = backFlowLowLimit;
+            backFlowRangeRight = !noBackFlowTopLimit ? backFlowTopLimit : backFlowTopLimit * 1000;
+            acceptableDeliveryFlowRangeLeft = deliveryFlowRangeLeft - deliveryFlowRangeLeft * 0.03;
+            acceptableDeliveryFlowRangeRight = deliveryFlowRangeRight + deliveryFlowRangeRight * 0.03;
+            acceptableBackFlowRangeLeft = backFlowRangeLeft - backFlowRangeLeft * 0.03;
+            acceptableBackFlowRangeRight = backFlowRangeRight + backFlowRangeRight * 0.03;
 
             if (!checkTestPassed()) {
                 testPassed.setValue(FAIL);
@@ -296,42 +292,6 @@ public class PumpReportModel {
                     || backFlow_double >= acceptableBackFlowRangeLeft && backFlow_double <= acceptableBackFlowRangeRight
                     || acceptableBackFlowRangeLeft == 0 && acceptableBackFlowRangeRight == 0;
             return (deliveryPassed && backFlowPassed);
-        }
-
-        private String getNominalFlow(String range, String flowUnit) {
-            return range + " " + flowUnit;
-        }
-
-            private double[] extractFromNominalFlow(String nominalFlow, Dimension dimension) {
-
-            String[] stringValues;
-            double[] limits = new double[2];
-            double leftLimit = 0;
-            double rightLimit = 0;
-
-            if(nominalFlow.isEmpty() || nominalFlow.startsWith("-")){
-                return limits;
-            }
-            else{
-                switch (dimension) {
-
-                    case LIMIT:
-                        stringValues = nominalFlow.split(" - ");
-                        stringValues[1] = stringValues[1].substring(0, stringValues[1].indexOf(" "));
-                        leftLimit = convertDataToDouble(stringValues[0]);
-                        rightLimit = convertDataToDouble(stringValues[1]);
-                        break;
-                    case PLUS_OR_MINUS:
-                        stringValues = nominalFlow.split(" \u00B1 ");
-                        stringValues[1] = stringValues[1].substring(0, stringValues[1].indexOf(" "));
-                        leftLimit = convertDataToDouble(stringValues[0]) - convertDataToDouble(stringValues[1]);
-                        rightLimit = convertDataToDouble(stringValues[0]) + convertDataToDouble(stringValues[1]);
-                        break;
-                }
-                limits[0] = leftLimit;
-                limits[1] = rightLimit;
-                return limits;
-            }
         }
 
         @Override
