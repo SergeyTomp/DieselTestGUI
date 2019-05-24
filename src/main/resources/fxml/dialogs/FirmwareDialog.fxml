@@ -26,6 +26,9 @@
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
             <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
@@ -44,12 +47,12 @@
                   <Insets right="10.0" />
                </GridPane.margin>
             </Label>
-            <Label text="InjectorCPU:" GridPane.rowIndex="3">
+            <Label text="InjectorCPU_1:" GridPane.rowIndex="3">
                <GridPane.margin>
                   <Insets right="10.0" />
                </GridPane.margin>
             </Label>
-            <Label text="InjMeasuringCPU (RLC):" GridPane.rowIndex="4">
+            <Label text="RLC_MeasuringCPU:" GridPane.rowIndex="7">
                <GridPane.margin>
                   <Insets right="10.0" />
                </GridPane.margin>
@@ -74,9 +77,24 @@
                   <Insets left="10.0" />
                </GridPane.margin>
             </Label>
-            <Label fx:id="injMeasuringCPUVersionLabel" GridPane.columnIndex="1" GridPane.rowIndex="4">
+            <Label fx:id="injMeasuringCPUVersionLabel" GridPane.columnIndex="1" GridPane.rowIndex="7">
                <GridPane.margin>
                   <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label text="InjectorCPU_2:" GridPane.rowIndex="4">
+               <GridPane.margin>
+                  <Insets right="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label text="InjectorCPU_3:" GridPane.rowIndex="5">
+               <GridPane.margin>
+                  <Insets right="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label text="InjectorCPU_4:" GridPane.rowIndex="6">
+               <GridPane.margin>
+                  <Insets right="10.0" />
                </GridPane.margin>
             </Label>
          </children>

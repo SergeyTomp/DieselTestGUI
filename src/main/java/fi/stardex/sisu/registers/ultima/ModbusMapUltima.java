@@ -149,7 +149,26 @@ public enum ModbusMapUltima implements ModbusMap {
     // обработка флага короткого замыкания инжектора
     Inj_Process_Global_Error(DISCRETE_COIL, 7, 1, true),
     // переключение типа управления импульсами, 0 - CR, 1 - UIS
-    UIS_to_CR_pulseControlSwitch(REGISTER_HOLDING, 157, 1, false);
+    UIS_to_CR_pulseControlSwitch(REGISTER_HOLDING, 157, 1, false),
+
+    // Отображение версий прошивок
+    Version_controllable(REGISTER_HOLDING, 116, 1, true),
+    Main_version_0(REGISTER_INPUT, 118, 1, true),
+    Main_version_1(REGISTER_INPUT, 119, 1, true),
+    MeasureCPU_version_0(REGISTER_INPUT, 8606, 1, true),
+    MeasureCPU_version_1(REGISTER_INPUT, 8607, 1, true),
+    PowerCPU_version_0(REGISTER_INPUT, 8608, 1, true),
+    PowerCPU_version_1(REGISTER_INPUT, 8609, 1, true),
+    InjectorCPU_1_version_0(REGISTER_HOLDING, 14, 1, true),
+    InjectorCPU_1_version_1(REGISTER_HOLDING, 15, 1, true),
+    InjectorCPU_2_version_0(REGISTER_HOLDING, 34, 1, true),
+    InjectorCPU_2_version_1(REGISTER_HOLDING, 35, 1, true),
+    InjectorCPU_3_version_0(REGISTER_HOLDING, 1014, 1, true),
+    InjectorCPU_3_version_1(REGISTER_HOLDING, 1015, 1, true),
+    InjectorCPU_4_version_0(REGISTER_HOLDING, 1034, 1, true),
+    InjectorCPU_4_version_1(REGISTER_HOLDING, 1035, 1, true),
+    RLC_MeasureCPU_version_0(REGISTER_INPUT, 4208, 1, true),
+    RLC_MeasureCPU_version_1(REGISTER_INPUT, 4209, 1, true);
 
     private final RegisterType type;
     private final int ref;
