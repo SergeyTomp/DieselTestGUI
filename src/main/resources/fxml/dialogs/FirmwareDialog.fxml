@@ -57,27 +57,27 @@
                   <Insets right="10.0" />
                </GridPane.margin>
             </Label>
-            <Label fx:id="mainCPUVersionLabel" GridPane.columnIndex="1">
+            <Label fx:id="mainCPUVersionLabel" text="-" GridPane.columnIndex="1">
                <GridPane.margin>
                   <Insets left="10.0" />
                </GridPane.margin>
             </Label>
-            <Label fx:id="MeasuringCPUVersionLabel" GridPane.columnIndex="1" GridPane.rowIndex="1">
+            <Label fx:id="MeasuringCPUVersionLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="1">
                <GridPane.margin>
                   <Insets left="10.0" />
                </GridPane.margin>
             </Label>
-            <Label fx:id="powerCPUVersionLabel" GridPane.columnIndex="1" GridPane.rowIndex="2">
+            <Label fx:id="powerCPUVersionLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="2">
                <GridPane.margin>
                   <Insets left="10.0" />
                </GridPane.margin>
             </Label>
-            <Label fx:id="injectorCPUVersionLabel" GridPane.columnIndex="1" GridPane.rowIndex="3">
+            <Label fx:id="injector1CPUVersionLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="3">
                <GridPane.margin>
                   <Insets left="10.0" />
                </GridPane.margin>
             </Label>
-            <Label fx:id="injMeasuringCPUVersionLabel" GridPane.columnIndex="1" GridPane.rowIndex="7">
+            <Label fx:id="injMeasuringCPUVersionLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="7">
                <GridPane.margin>
                   <Insets left="10.0" />
                </GridPane.margin>
@@ -97,6 +97,18 @@
                   <Insets right="10.0" />
                </GridPane.margin>
             </Label>
+            <Label fx:id="injector2CPUVersionLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="4">
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin></Label>
+            <Label fx:id="injector3CPUVersionLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="5">
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin></Label>
+            <Label fx:id="injector4CPUVersionLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="6">
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin></Label>
          </children>
       </GridPane>
       <StackPane prefHeight="40.0" prefWidth="600.0">
@@ -111,14 +123,25 @@
         </columnConstraints>
         <rowConstraints>
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <Label text="FM Stream:">
+            <Label fx:id="fmStreamLabel" text="FM Stream:">
                <GridPane.margin>
                   <Insets right="10.0" />
                </GridPane.margin>
             </Label>
-            <Label fx:id="fmStreamVersionLabel" GridPane.columnIndex="1">
+            <Label fx:id="fmStreamVersionLabel" text="-" GridPane.columnIndex="1">
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="standFmLabel" text="Stand_FM:" GridPane.rowIndex="1">
+               <GridPane.margin>
+                  <Insets right="10.0" />
+               </GridPane.margin>
+            </Label>
+            <Label fx:id="standFmVersionLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="1">
                <GridPane.margin>
                   <Insets left="10.0" />
                </GridPane.margin>
@@ -150,12 +173,12 @@
                   <Insets right="10.0" />
                </GridPane.margin>
             </Label>
-            <Label fx:id="benchVersionLabel" GridPane.columnIndex="1">
+            <Label fx:id="benchVersionLabel" text="-" GridPane.columnIndex="1">
                <GridPane.margin>
                   <Insets left="10.0" />
                </GridPane.margin>
             </Label>
-            <Label fx:id="benchV2VersionLabel" GridPane.columnIndex="1" GridPane.rowIndex="1">
+            <Label fx:id="benchV2VersionLabel" text="-" GridPane.columnIndex="1" GridPane.rowIndex="1">
                <GridPane.margin>
                   <Insets left="10.0" />
                </GridPane.margin>
@@ -164,7 +187,7 @@
       </GridPane>
         <Button fx:id="okButton" mnemonicParsing="false" text="OK">
             <VBox.margin>
-                <Insets right="20.0" top="10.0" />
+                <Insets bottom="10.0" right="20.0" top="5.0" />
             </VBox.margin>
         </Button>
     </children>

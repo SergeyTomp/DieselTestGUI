@@ -1,6 +1,7 @@
 package fi.stardex.sisu.spring;
 
 import fi.stardex.sisu.charts.TimerTasksManager;
+import fi.stardex.sisu.connect.ModbusConnect;
 import fi.stardex.sisu.devices.Devices;
 import fi.stardex.sisu.measurement.Measurements;
 import fi.stardex.sisu.model.*;
@@ -1059,8 +1060,18 @@ public class JavaFXSpringConfigure extends ViewLoader{
 
     @Bean
     @Autowired
-    public FirmwareDialogController firmwareDialogController(I18N i18N){
-        FirmwareDialogController firmwareDialogController = (FirmwareDialogController)firmwareDialog().getController();
+    public FirmwareDialogController firmwareDialogController(I18N i18N,
+                                                             RegisterProvider ultimaRegisterProvider,
+                                                             ModbusConnect ultimaModbusConnect,
+                                                             ModbusConnect flowModbusConnect,
+                                                             ModbusConnect standModbusConnect,
+                                                             ViewHolder firmwareDialog){
+        FirmwareDialogController firmwareDialogController = (FirmwareDialogController)firmwareDialog.getController();
+        firmwareDialogController.setUltimaRegisterProvider(ultimaRegisterProvider);
+        firmwareDialogController.setUltimaModbusConnect(ultimaModbusConnect);
+        firmwareDialogController.setFlowModbusConnect(flowModbusConnect);
+        firmwareDialogController.setStandModbusConnect(standModbusConnect);
+        firmwareDialogController.setFirmwareDialog(firmwareDialog);
         firmwareDialogController.setI18N(i18N);
         return firmwareDialogController;
     }

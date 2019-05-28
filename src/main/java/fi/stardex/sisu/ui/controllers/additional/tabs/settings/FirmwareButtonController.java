@@ -18,9 +18,7 @@ public class FirmwareButtonController {
 
     @FXML private Button firmwareButton;
 
-    private Stage firmwareStage;
     private ViewHolder firmwareWindow;
-    private final StringProperty windowTitle = new SimpleStringProperty();
 
     private I18N i18N;
 
@@ -39,17 +37,6 @@ public class FirmwareButtonController {
     }
 
     private void setButtonListener(){
-        firmwareButton.setOnAction(actionEvent -> {
-            if(firmwareStage == null){
-                firmwareStage = new Stage();
-                firmwareStage.setTitle(windowTitle.get());
-                firmwareStage.setScene(new Scene(firmwareWindow.getView()));
-                firmwareStage.setResizable(false);
-                firmwareStage.initModality(Modality.APPLICATION_MODAL);
-                firmwareStage.initStyle(StageStyle.UTILITY);
-                ((FirmwareDialogController) firmwareWindow.getController()).setWindowStage(firmwareStage);
-            }
-            firmwareStage.show();
-        });
+        firmwareButton.setOnAction(actionEvent -> ((FirmwareDialogController) firmwareWindow.getController()).showInfo());
     }
 }
