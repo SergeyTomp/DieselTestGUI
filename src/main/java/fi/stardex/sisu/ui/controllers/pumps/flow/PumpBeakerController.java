@@ -325,7 +325,7 @@ public class PumpBeakerController {
 
         if (value != null) {
             double coefficient = getCoefficient();
-            double convertedValue = round(convertDataToDouble(value) * coefficient);
+            double convertedValue = round(convertDataToDouble(value) * coefficient * 0.06);
             changeFlow(String.valueOf(convertedValue));
         }else changeFlow(null);
     }
