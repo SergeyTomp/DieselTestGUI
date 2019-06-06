@@ -6,9 +6,10 @@ import fi.stardex.sisu.devices.Devices;
 import fi.stardex.sisu.measurement.Measurements;
 import fi.stardex.sisu.model.*;
 import fi.stardex.sisu.model.updateModels.HighPressureSectionUpdateModel;
+import fi.stardex.sisu.model.updateModels.InjectorSectionUpdateModel;
 import fi.stardex.sisu.model.updateModels.PiezoRepairUpdateModel;
 import fi.stardex.sisu.pdf.PDFService;
-import fi.stardex.sisu.persistence.orm.Manufacturer;
+import fi.stardex.sisu.persistence.repos.HEUI.ManufacturerHeuiRepository;
 import fi.stardex.sisu.persistence.repos.ISADetectionRepository;
 import fi.stardex.sisu.persistence.repos.InjectorTypeRepository;
 import fi.stardex.sisu.persistence.repos.ManufacturerRepository;
@@ -17,7 +18,6 @@ import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.settings.*;
 import fi.stardex.sisu.states.*;
-import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.GUI_TypeController;
 import fi.stardex.sisu.ui.controllers.ISADetectionController;
@@ -43,7 +43,6 @@ import fi.stardex.sisu.ui.controllers.pumps.SCVCalibrationController;
 import fi.stardex.sisu.ui.controllers.pumps.pressure.PumpHighPressureSectionPwrController;
 import fi.stardex.sisu.ui.controllers.pumps.pressure.PumpRegulatorSectionTwoController;
 import fi.stardex.sisu.ui.controllers.uis.RootLayoutController;
-import fi.stardex.sisu.model.updateModels.InjectorSectionUpdateModel;
 import fi.stardex.sisu.util.DelayCalculator;
 import fi.stardex.sisu.util.enums.BeakerType;
 import fi.stardex.sisu.util.i18n.I18N;
@@ -51,7 +50,6 @@ import fi.stardex.sisu.util.rescalers.Rescaler;
 import fi.stardex.sisu.util.wrappers.StatusBarWrapper;
 import fi.stardex.sisu.version.FirmwareVersion;
 import javafx.embed.swing.JFXPanel;
-import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -98,7 +96,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
     // иначе при входе в режиме Pump не всегда появляется список ОЕМ пока не переключиться в инжекторы и вернуться обратно
     @Bean
     @Autowired
-    @DependsOn({"pumpsOEMListController", "checkAndInitializeBD"})
+    @DependsOn({"pumpsOEMListController", "checkAndInitializeBD", "mainSectionController"})
     public GUI_TypeController gui_typeController(Preferences rootPreferences,
                                                  RootLayoutController rootLayoutController,
                                                  TabSectionController tabSectionController,
@@ -111,7 +109,12 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                  ViewHolder connection,
                                                  ManufacturerPumpModel manufacturerPumpModel,
                                                  PumpsStartButtonState pumpsStartButtonState,
-                                                 GUI_TypeModel gui_typeModel) {
+                                                 GUI_TypeModel gui_typeModel,
+                                                 ProducerRepositoryModel producerRepositoryModel,
+                                                 ManufacturerRepository manufacturerRepository,
+                                                 ManufacturerHeuiRepository manufactureHeuiRepository,
+                                                 MainSectionModel mainSectionModel,
+                                                 InjectorSectionPwrState injectorSectionPwrState) {
         GUI_TypeController gui_typeController = rootLayoutController.getGui_typeController();
         gui_typeController.setRootPreferences(rootPreferences);
         gui_typeController.setMainSection(mainSection().getView());
@@ -131,6 +134,11 @@ public class JavaFXSpringConfigure extends ViewLoader{
         gui_typeController.setManufacturerPumpModel(manufacturerPumpModel);
         gui_typeController.setPumpsStartButtonState(pumpsStartButtonState);
         gui_typeController.setGui_typeModel(gui_typeModel);
+        gui_typeController.setProducerRepositoryModel(producerRepositoryModel);
+        gui_typeController.setManufacturerRepository(manufacturerRepository);
+        gui_typeController.setManufactureHeuiRepository(manufactureHeuiRepository);
+        gui_typeController.setMainSectionModel(mainSectionModel);
+        gui_typeController.setInjectorSectionPwrState(injectorSectionPwrState);
         return gui_typeController;
     }
 
@@ -141,8 +149,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
 
     @Bean
     @Autowired
-    public MainSectionController mainSectionController(@Lazy Enabler enabler,
-                                                       InjectorsRepository injectorsRepository,
+    public MainSectionController mainSectionController(InjectorsRepository injectorsRepository,
                                                        InjectorTestRepository injectorTestRepository,
                                                        @Lazy ModbusRegisterProcessor flowModbusWriter,
                                                        @Lazy Measurements measurements,
@@ -156,10 +163,15 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                        FlowReportModel flowReportModel,
                                                        InjectorTestModel injectorTestModel,
                                                        InjectorModel injectorModel,
-                                                       ModbusRegisterProcessor ultimaModbusWriter) {
+                                                       ModbusRegisterProcessor ultimaModbusWriter,
+                                                       ManufacturerRepository manufacturerRepository,
+                                                       ManufacturerHeuiRepository manufacturerHeuiRepository,
+                                                       GUI_TypeModel gui_typeModel,
+                                                       ProducerRepositoryModel producerRepositoryModel,
+                                                       ManufacturerMenuDialogModel manufacturerMenuDialogModel,
+                                                       MainSectionModel mainSection_model,
+                                                       InjectorSectionPwrState injectorSectionPwrState) {
         MainSectionController mainSectionController = (MainSectionController) mainSection().getController();
-        mainSectionController.setEnabler(enabler);
-        mainSectionController.setManufacturerMenuDialog(manufacturerMenuDialog());
         mainSectionController.setNewEditInjectorDialog(newEditInjectorDialog());
         mainSectionController.setNewEditTestDialog(newEditTestDialog());
         mainSectionController.setInjectorsRepository(injectorsRepository);
@@ -179,6 +191,13 @@ public class JavaFXSpringConfigure extends ViewLoader{
         mainSectionController.setInjectorTestModel(injectorTestModel);
         mainSectionController.setInjectorModel(injectorModel);
         mainSectionController.setUltimaModbusWriter(ultimaModbusWriter);
+        mainSectionController.setManufacturerRepository(manufacturerRepository);
+        mainSectionController.setGui_typeModel(gui_typeModel);
+        mainSectionController.setProducerRepositoryModel(producerRepositoryModel);
+        mainSectionController.setManufacturerHeuiRepository(manufacturerHeuiRepository);
+        mainSectionController.setManufacturerMenuDialogModel(manufacturerMenuDialogModel);
+        mainSectionController.setMainSectionModel(mainSection_model);
+        mainSectionController.setInjectorSectionPwrState(injectorSectionPwrState);
         return mainSectionController;
     }
 
@@ -310,8 +329,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
 
     @Bean
     @Autowired
-    public InjectorSectionController injectorSectionController(@Lazy Enabler enabler,
-                                                               @Lazy ModbusRegisterProcessor ultimaModbusWriter,
+    public InjectorSectionController injectorSectionController(@Lazy ModbusRegisterProcessor ultimaModbusWriter,
                                                                TimerTasksManager timerTasksManager,
                                                                DelayController delayController,
                                                                InjConfigurationModel injConfigurationModel,
@@ -324,9 +342,10 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                                CoilTwoPulseParametersModel coilTwoPulseParametersModel,
                                                                InjectorModel injectorModel,
                                                                InjectorTestModel injectorTestModel,
-                                                               InjectorControllersState injectorControllersState) {
+                                                               InjectorControllersState injectorControllersState,
+                                                               GUI_TypeModel gui_typeModel,
+                                                               InjectorSectionPwrState injectorSectionPwrState) {
         InjectorSectionController injectorSectionController = crSectionController().getInjectorSectionController();
-        injectorSectionController.setEnabler(enabler);
         injectorSectionController.setUltimaModbusWriter(ultimaModbusWriter);
         injectorSectionController.setTimerTasksManager(timerTasksManager);
         injectorSectionController.setDelayController(delayController);
@@ -342,6 +361,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
         injectorSectionController.setInjectorModel(injectorModel);
         injectorSectionController.setInjectorTestModel(injectorTestModel);
         injectorSectionController.setInjectorControllersState(injectorControllersState);
+        injectorSectionController.setGui_typeModel(gui_typeModel);
+        injectorSectionController.setInjectorSectionPwrState(injectorSectionPwrState);
         return injectorSectionController;
     }
 
@@ -443,7 +464,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                          DeliveryFlowUnitsModel deliveryFlowUnitsModel,
                                          DeliveryFlowRangeModel deliveryFlowRangeModel,
                                          BackFlowUnitsModel backFlowUnitsModel,
-                                         BackFlowRangeModel backFlowRangeModel) {
+                                         BackFlowRangeModel backFlowRangeModel,
+                                         MainSectionModel mainSectionModel) {
         FlowController flowController = tabSectionController.getFlowController();
         flowController.setI18N(i18N);
         flowController.setFlowValuesModel(flowValuesModel);
@@ -451,6 +473,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         flowController.setDeliveryFlowRangeModel(deliveryFlowRangeModel);
         flowController.setBackFlowUnitsModel(backFlowUnitsModel);
         flowController.setBackFlowRangeModel(backFlowRangeModel);
+        flowController.setMainSectionModel(mainSectionModel);
         return flowController;
     }
 
@@ -467,14 +490,14 @@ public class JavaFXSpringConfigure extends ViewLoader{
     @Autowired
     public FlowReportController flowReportController(ReportController reportController,
                                                      I18N i18N,
-                                                     @Lazy Enabler enabler,
                                                      MainSectionController mainSectionController,
-                                                     FlowReportModel flowReportModel) {
+                                                     FlowReportModel flowReportModel,
+                                                     MainSectionModel mainSectionModel) {
         FlowReportController flowReportController = reportController.getFlowReportController();
         flowReportController.setI18N(i18N);
-        flowReportController.setEnabler(enabler);
         flowReportController.setMainSectionStartToggleButton(mainSectionController.getStartToggleButton());
         flowReportController.setFlowReportModel(flowReportModel);
+        flowReportController.setMainSectionModel(mainSectionModel);
         return flowReportController;
     }
 
@@ -611,7 +634,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                VoltAmpereProfileDialogModel voltAmpereProfileDialogModel,
                                                InjectorTestModel injectorTestModel,
                                                InjectorModel injectorModel,
-                                               CoilTwoPulseParametersModel coilTwoPulseParametersModel) {
+                                               CoilTwoPulseParametersModel coilTwoPulseParametersModel,
+                                               InjectorSectionPwrState injectorSectionPwrState) {
         VoltageController voltageController = tabSectionController.getVoltageController();
         voltageController.setVoltAmpereProfileDialog(voltAmpereProfileDialog());
         voltageController.setParentController(tabSectionController);
@@ -623,6 +647,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         voltageController.setInjectorTestModel(injectorTestModel);
         voltageController.setInjectorModel(injectorModel);
         voltageController.setCoilTwoPulseParametersModel(coilTwoPulseParametersModel);
+        voltageController.setInjectorSectionPwrState(injectorSectionPwrState);
         return voltageController;
     }
 
@@ -790,11 +815,19 @@ public class JavaFXSpringConfigure extends ViewLoader{
 
     @Bean
     @Autowired
-    public ManufacturerMenuDialogController manufacturerMenuDialogController(ListView<Manufacturer> manufacturerList,
-                                                                             ManufacturerRepository manufacturerRepository) {
+    public ManufacturerMenuDialogController manufacturerMenuDialogController(ManufacturerRepository manufacturerRepository,
+                                                                             ManufacturerHeuiRepository manufacturerHeuiRepository,
+                                                                             GUI_TypeModel gui_typeModel,
+                                                                             ManufacturerMenuDialogModel manufacturerMenuDialogModel,
+                                                                             MainSectionModel mainSectionModel,
+                                                                             ViewHolder manufacturerMenuDialog) {
         ManufacturerMenuDialogController manufacturerMenuDialogController = (ManufacturerMenuDialogController) manufacturerMenuDialog().getController();
-        manufacturerMenuDialogController.setManufacturerList(manufacturerList);
         manufacturerMenuDialogController.setManufacturerRepository(manufacturerRepository);
+        manufacturerMenuDialogController.setManufacturerHeuiRepository(manufacturerHeuiRepository);
+        manufacturerMenuDialogController.setGui_typeModel(gui_typeModel);
+        manufacturerMenuDialogController.setManufacturerMenuDialogModel(manufacturerMenuDialogModel);
+        manufacturerMenuDialogController.setMainSectionModel(mainSectionModel);
+        manufacturerMenuDialogController.setManufacturerMenuDialog(manufacturerMenuDialog);
         return manufacturerMenuDialogController;
     }
 
@@ -845,13 +878,15 @@ public class JavaFXSpringConfigure extends ViewLoader{
     public NewEditInjectorDialogController newEditInjectorDialogController(InjectorTypeRepository injectorTypeRepository,
                                                                            InjectorTestRepository injectorTestRepository,
                                                                            VoltAmpereProfileRepository voltAmpereProfileRepository,
-                                                                           InjectorsRepository injectorsRepository) {
+                                                                           InjectorsRepository injectorsRepository,
+                                                                           GUI_TypeModel gui_typeModel) {
         NewEditInjectorDialogController newEditInjectorDialogController = (NewEditInjectorDialogController) newEditInjectorDialog().getController();
         newEditInjectorDialogController.setInjectorTypeRepository(injectorTypeRepository);
         newEditInjectorDialogController.setInjectorTestRepository(injectorTestRepository);
         newEditInjectorDialogController.setVoltAmpereProfileRepository(voltAmpereProfileRepository);
         newEditInjectorDialogController.setInjectorsRepository(injectorsRepository);
         newEditInjectorDialogController.setNewEditVOAPDialog(newEditVOAPDialog());
+        newEditInjectorDialogController.setGui_typeModel(gui_typeModel);
         return newEditInjectorDialogController;
     }
 

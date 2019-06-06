@@ -11,10 +11,8 @@ import fi.stardex.sisu.ui.controllers.additional.tabs.report.FlowReportControlle
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
 import fi.stardex.sisu.util.enums.Tests.TestType;
-import fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer;
 import javafx.scene.Node;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -22,8 +20,6 @@ import javafx.scene.layout.VBox;
 import javax.annotation.PostConstruct;
 
 import static fi.stardex.sisu.ui.controllers.GUI_TypeController.GUIType;
-import static fi.stardex.sisu.util.enums.Tests.TestType.AUTO;
-import static fi.stardex.sisu.util.enums.Tests.TestType.CODING;
 import static fi.stardex.sisu.util.enums.Tests.getTestType;
 
 public class Enabler {
@@ -131,8 +127,8 @@ public class Enabler {
 
     private void initAutoTest() {
 
-        testListView.setCellFactory(CheckBoxListCell.forListView(InjectorTest::includedProperty));
-        showButtons(true, false);
+//        testListView.setCellFactory(CheckBoxListCell.forListView(InjectorTest::includedProperty));
+//        showButtons(true, false);
 
     }
 
@@ -142,19 +138,19 @@ public class Enabler {
 
         switch (testType) {
             case AUTO:
-                disableNode(!isStarted && testListView.getSelectionModel().getSelectedIndex() != 0, mainSectionStartToggleButton);
-                disableNode(isStarted, speedComboBox, testListView);
-                showNode(!isStarted, moveUpButton, moveDownButton);
+//                disableNode(!isStarted && testListView.getSelectionModel().getSelectedIndex() != 0, mainSectionStartToggleButton);
+//                disableNode(isStarted, speedComboBox, testListView);
+//                showNode(!isStarted, moveUpButton, moveDownButton);
                 break;
         }
 
-        disableNode(isStarted || injectorSectionStartToggleButton.isSelected(), gui_typeComboBox);
+//        disableNode(isStarted || injectorSectionStartToggleButton.isSelected(), gui_typeComboBox);
 
-        disableRadioButtons(testsToggleGroup, isStarted);
-
-        disableRadioButtons(baseTypeToggleGroup, isStarted);
-
-        disableNode(isStarted, manufacturerListView, modelListView);
+//        disableRadioButtons(testsToggleGroup, isStarted);
+//
+//        disableRadioButtons(baseTypeToggleGroup, isStarted);
+//
+//        disableNode(isStarted, manufacturerListView, modelListView);
 
         return this;
 
@@ -197,25 +193,25 @@ public class Enabler {
         switch (test) {
 
             case AUTO:
-                disableNode(false, testListView);
-                showButtons(true, false);
-                showNode(true, timingGridPane);
-                showDefaultFlowUnit(false);
-                showFlowReport(true);
+//                disableNode(false, testListView);
+//                showButtons(true, false);
+//                showNode(true, timingGridPane);
+//                showDefaultFlowUnit(false);
+//                showFlowReport(true);
                 break;
             case TESTPLAN:
-                disableNode(false, testListView);
-                showButtons(false, true);
-                showNode(false, timingGridPane);
-                showDefaultFlowUnit(false);
-                showFlowReport(true);   // to switch off report table in TESTPLAN mode set false
+//                disableNode(false, testListView);
+//                showButtons(false, true);
+//                showNode(false, timingGridPane);
+//                showDefaultFlowUnit(false);
+//                showFlowReport(true);   // to switch off report table in TESTPLAN mode set false
                 break;
             case CODING:
-                disableNode(true, testListView);
-                showButtons(false, true);
-                showNode(true, timingGridPane);
-                showDefaultFlowUnit(true);
-                showFlowReport(true);   // to switch off report table in CODING mode set false
+//                disableNode(true, testListView);
+//                showButtons(false, true);
+//                showNode(true, timingGridPane);
+//                showDefaultFlowUnit(true);
+//                showFlowReport(true);   // to switch off report table in CODING mode set false
                 break;
 
         }
@@ -226,46 +222,44 @@ public class Enabler {
 
     private void showFlowReport(boolean isTestAuto) {
 
-        showNode(!isTestAuto, flowReportAttentionLabel);
-
-        showNode(isTestAuto, flowTableView);
-
-        flowReportModel.clearResults();
+//        showNode(!isTestAuto, flowReportAttentionLabel);
+//
+//        showNode(isTestAuto, flowTableView);
+//
+//        flowReportModel.clearResults();
 
     }
 
     public Enabler disableVAP(boolean isStarted) {
 
-        if (CurrentInjectorObtainer.getInjector() == null) {
+//        if (CurrentInjectorObtainer.getInjector() == null) {
+//
+//            disableRadioButtons(piezoCoilToggleGroup, isStarted);
+//
+//            disableNode(isStarted, injectorsVBox);
+//
+//        }
 
-            disableRadioButtons(piezoCoilToggleGroup, isStarted);
-
-            disableNode(isStarted, injectorsVBox);
-
-        }
-
-        disableNode(isStarted || mainSectionStartToggleButton.isSelected(), gui_typeComboBox);
-        disableNode(isStarted, pulseSettingsButton);
-
-//        disableNode(isStarted, ledBeaker1, ledBeaker2, ledBeaker3, ledBeaker4, pulseSettingsButton, widthCurrentSignalSpinner, freqCurrentSignalSpinner);
+//        disableNode(isStarted || mainSectionStartToggleButton.isSelected(), gui_typeComboBox);
+//        disableNode(isStarted, pulseSettingsButton);
 
         return this;
 
     }
 
     public Enabler enableUpDownButtons(int selectedIndex, int includedTestsSize) {
-
-        if (selectedIndex == 0 && selectedIndex == includedTestsSize - 1)
-            disableNode(true, moveUpButton, moveDownButton);
-        else if (selectedIndex == 0) {
-            disableNode(true, moveUpButton);
-            disableNode(false, moveDownButton);
-        } else if ((selectedIndex > 0) && (selectedIndex <= includedTestsSize - 2))
-            disableNode(false, moveUpButton, moveDownButton);
-        else {
-            disableNode(false, moveUpButton);
-            disableNode(true, moveDownButton);
-        }
+//
+//        if (selectedIndex == 0 && selectedIndex == includedTestsSize - 1)
+//            disableNode(true, moveUpButton, moveDownButton);
+//        else if (selectedIndex == 0) {
+//            disableNode(true, moveUpButton);
+//            disableNode(false, moveDownButton);
+//        } else if ((selectedIndex > 0) && (selectedIndex <= includedTestsSize - 2))
+//            disableNode(false, moveUpButton, moveDownButton);
+//        else {
+//            disableNode(false, moveUpButton);
+//            disableNode(true, moveDownButton);
+//        }
 
         return this;
 
@@ -273,9 +267,9 @@ public class Enabler {
 
     public Enabler showButtons(boolean showUpDown, boolean showStoreReset) {
 
-        showNode(showUpDown, moveUpButton, moveDownButton);
-
-        showNode(showStoreReset, storeButton, resetButton);
+//        showNode(showUpDown, moveUpButton, moveDownButton);
+//
+//        showNode(showStoreReset, storeButton, resetButton);
 
         return this;
 
@@ -291,8 +285,8 @@ public class Enabler {
 
     public Enabler showInjectorTests(boolean show) {
 
-        showNode(show && (getTestType() == AUTO || getTestType() == CODING), timingGridPane);
-        showNode(show, injectorTestsVBox, startStackPane);
+//        showNode(show && (getTestType() == AUTO || getTestType() == CODING), timingGridPane);
+//        showNode(show, injectorTestsVBox, startStackPane);
 
         return this;
 
@@ -300,13 +294,13 @@ public class Enabler {
 
     private void showDefaultFlowUnit(boolean isCoding) {
 
-        deliveryFlowComboBox.getSelectionModel().selectFirst();
-        showNode(!isCoding, deliveryFlowComboBox);
-        showNode(isCoding, ml_Min_DeliveryLabel);
-
-        backFlowComboBox.getSelectionModel().selectFirst();
-        showNode(!isCoding, backFlowComboBox);
-        showNode(isCoding, ml_Min_BackFlowLabel);
+//        deliveryFlowComboBox.getSelectionModel().selectFirst();
+//        showNode(!isCoding, deliveryFlowComboBox);
+//        showNode(isCoding, ml_Min_DeliveryLabel);
+//
+//        backFlowComboBox.getSelectionModel().selectFirst();
+//        showNode(!isCoding, backFlowComboBox);
+//        showNode(isCoding, ml_Min_BackFlowLabel);
 
     }
 
@@ -322,12 +316,12 @@ public class Enabler {
 
     }
 
-    public static void setVisible(boolean visible, Node... nodes){
-        for (Node node: nodes) {
-            if (node instanceof Toggle && !visible) {
-                ((Toggle)node).setSelected(false);
-            }
-            node.setVisible(visible);
-        }
-    }
+//    public static void setVisible(boolean visible, Node... nodes){
+//        for (Node node: nodes) {
+//            if (node instanceof Toggle && !visible) {
+//                ((Toggle)node).setSelected(false);
+//            }
+//            node.setVisible(visible);
+//        }
+//    }
 }

@@ -1,5 +1,6 @@
 package fi.stardex.sisu.persistence.orm;
 
+
 import fi.stardex.sisu.persistence.Producer;
 import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
 
@@ -8,7 +9,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Entity
-public class Manufacturer implements Producer {
+@Table(name = "manufacturer_heui")
+public class ManufacturerHEUI  implements Producer {
 
     @Id
     @Column(name = "manufacturer_name")
@@ -56,23 +58,5 @@ public class Manufacturer implements Producer {
     @Override
     public void setCustom(boolean custom) {
         isCustom = custom;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof Manufacturer)) return false;
-
-        Manufacturer that = (Manufacturer) o;
-
-        if (!getManufacturerName().equals(that.getManufacturerName())) return false;
-        return isCustom.equals(that.isCustom);
-    }
-
-    @Override
-    public int hashCode() {
-        int result = getManufacturerName().hashCode();
-        result = 31 * result + isCustom.hashCode();
-        return result;
     }
 }

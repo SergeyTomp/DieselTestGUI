@@ -7,6 +7,7 @@ import fi.stardex.sisu.util.i18n.I18N;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -121,6 +122,7 @@ public class FlowController {
     private BackFlowUnitsModel backFlowUnitsModel;
     private DeliveryFlowRangeModel deliveryFlowRangeModel;
     private DeliveryFlowUnitsModel deliveryFlowUnitsModel;
+    private MainSectionModel mainSectionModel;
 
     private static final int TEXT_FIELD_MAX_LENGTH = 7;
 
@@ -332,6 +334,10 @@ public class FlowController {
         this.deliveryFlowUnitsModel = deliveryFlowUnitsModel;
     }
 
+    public void setMainSectionModel(MainSectionModel mainSectionModel) {
+        this.mainSectionModel = mainSectionModel;
+    }
+
     @PostConstruct
     private void init() {
 
@@ -364,6 +370,8 @@ public class FlowController {
         deliveryFlowRangeModel.deliveryFlowRangeProperty().bind(deliveryRangeLabel.textProperty());
         backFlowUnitsModel.backFlowUnitsProperty().bind(backFlowComboBox.valueProperty());
         backFlowRangeModel.backFlowRangeProperty().bind(backFlowRangeLabel.textProperty());
+
+        setupTestModeListener();
     }
 
     private void setupDeliveryFlowComboBox() {
@@ -422,6 +430,40 @@ public class FlowController {
             beakerController.changeFlow(value);
         else
             beakerController.getTextField().setText(value);
+
+    }
+
+    private void setupTestModeListener() {
+
+        mainSectionModel.testTypeProperty().addListener((observableValue, oldValue, newValue) -> {
+
+            switch (newValue) {
+                case AUTO:
+                case TESTPLAN:
+                    showDefaultFlowUnit(false);
+                    break;
+                case CODING:
+                    showDefaultFlowUnit(true);
+                    break;
+            }
+        });
+    }
+
+    private void showDefaultFlowUnit(boolean isCoding) {
+
+        deliveryFlowComboBox.getSelectionModel().selectFirst();
+        showNode(!isCoding, deliveryFlowComboBox);
+        showNode(isCoding, ml_Min_DeliveryLabel);
+
+        backFlowComboBox.getSelectionModel().selectFirst();
+        showNode(!isCoding, backFlowComboBox);
+        showNode(isCoding, ml_Min_BackFlowLabel);
+
+    }
+
+    public void showNode(boolean show, Node... nodes) {
+        for (Node node : nodes)
+            node.setVisible(show);
 
     }
 

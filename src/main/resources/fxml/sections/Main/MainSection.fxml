@@ -13,7 +13,6 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
@@ -206,10 +205,6 @@
       </GridPane>
       <StackPane fx:id="startStackPane" visible="false" GridPane.rowIndex="3">
          <children>
-            <Pane fx:id="coverPane" maxHeight="55.0" maxWidth="170.0" minHeight="-Infinity" minWidth="-Infinity" opacity="0.9" styleClass="pane" stylesheets="@../../../css/Styling.css" visible="false">
-               <StackPane.margin>
-                  <Insets bottom="2.0" right="2.0" />
-               </StackPane.margin></Pane>
             <ToggleButton fx:id="startToggleButton" mnemonicParsing="false" prefHeight="55.0" prefWidth="173.0" styleClass="startButton" stylesheets="@../../../css/Styling.css" />
          </children>
       </StackPane>

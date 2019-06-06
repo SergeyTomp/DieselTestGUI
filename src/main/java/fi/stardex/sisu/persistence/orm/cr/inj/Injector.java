@@ -1,5 +1,6 @@
 package fi.stardex.sisu.persistence.orm.cr.inj;
 
+import fi.stardex.sisu.persistence.Producer;
 import fi.stardex.sisu.persistence.orm.EntityUpdates;
 import fi.stardex.sisu.persistence.orm.Manufacturer;
 import fi.stardex.sisu.persistence.orm.interfaces.Model;
@@ -35,6 +36,9 @@ public class Injector implements Model {
 
     @Column(name = "is_custom")
     private Boolean isCustom;
+
+    @Column(name = "is_heui")
+    private Boolean isHeui;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "injector", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<InjectorTest> injectorTests = new LinkedList<>();
@@ -99,6 +103,14 @@ public class Injector implements Model {
 
     public void setVoltAmpereProfile(VoltAmpereProfile voltAmpereProfile) {
         this.voltAmpereProfile = voltAmpereProfile;
+    }
+
+    public void setHeui(Boolean heui) {
+        isHeui = heui;
+    }
+
+    public Boolean isHeui() {
+        return isHeui;
     }
 
     @Override

@@ -2,14 +2,15 @@ package fi.stardex.sisu.ui.controllers.additional.tabs.report;
 
 import fi.stardex.sisu.model.FlowReportModel;
 import fi.stardex.sisu.model.FlowReportModel.FlowResult;
+import fi.stardex.sisu.model.MainSectionModel;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
-import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.util.i18n.I18N;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.util.Callback;
 
@@ -51,9 +52,9 @@ public class FlowReportController {
 
     private I18N i18N;
 
-    private Enabler enabler;
-
     private ToggleButton mainSectionStartToggleButton;
+
+    private MainSectionModel mainSectionModel;
 
     private static final String CELL_COLOR_DEFAULT = "-fx-text-fill: #bf8248;";
 
@@ -73,10 +74,6 @@ public class FlowReportController {
         this.i18N = i18N;
     }
 
-    public void setEnabler(Enabler enabler) {
-        this.enabler = enabler;
-    }
-
     public void setMainSectionStartToggleButton(ToggleButton mainSectionStartToggleButton) {
         this.mainSectionStartToggleButton = mainSectionStartToggleButton;
     }
@@ -89,11 +86,16 @@ public class FlowReportController {
         return flowReportAttentionLabel;
     }
 
+    public void setMainSectionModel(MainSectionModel mainSectionModel) {
+        this.mainSectionModel = mainSectionModel;
+    }
+
     @PostConstruct
     private void init() {
         setupTableColumns();
         bindingI18N();
         setupResultChangeListener();
+        setupTestModeListener();
     }
 
     private void setupTableColumns() {
@@ -130,6 +132,26 @@ public class FlowReportController {
             }
         });
     }
+
+    private void setupTestModeListener() {
+
+        mainSectionModel.testTypeProperty().addListener((observableValue, oldValue, newValue) -> {
+
+            switch (newValue) {
+                case AUTO:
+                    showFlowReport(true);
+                    break;
+                case TESTPLAN:
+                    showFlowReport(true);   // to switch off report table in TESTPLAN mode set false
+                    break;
+                case CODING:
+                    showFlowReport(true);   // to switch off report table in CODING mode set false
+                    break;
+            }
+        });
+    }
+
+
 
     private void setCellFactory(TableColumn<FlowResult, String> column) {
 
@@ -207,7 +229,7 @@ public class FlowReportController {
 
             deleteButton.setStyle("-textFont-color: #1f1f2e");
 
-            enabler.showNode(false, deleteButton);
+            showNode(false, deleteButton);
 
             deleteButton.visibleProperty().bind(mainSectionStartToggleButton.selectedProperty().not());
 
@@ -224,6 +246,19 @@ public class FlowReportController {
             else
                 setGraphic(deleteButton);
         }
+    }
+
+    private void showFlowReport(boolean isTestAuto) { //could be false if some cases in setupTestModeListener() defined as false
+
+        showNode(!isTestAuto, flowReportAttentionLabel);
+        showNode(isTestAuto, flowTableView);
+        flowReportModel.clearResults();
+    }
+
+    private void showNode(boolean show, Node... nodes) {
+        for (Node node : nodes)
+            node.setVisible(show);
+
     }
     private void bindingI18N() {
 

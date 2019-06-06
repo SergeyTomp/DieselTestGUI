@@ -1,11 +1,14 @@
 package fi.stardex.sisu.ui.controllers;
 
 import fi.stardex.sisu.model.GUI_TypeModel;
+import fi.stardex.sisu.model.MainSectionModel;
 import fi.stardex.sisu.model.ManufacturerPumpModel;
+import fi.stardex.sisu.model.ProducerRepositoryModel;
+import fi.stardex.sisu.persistence.repos.HEUI.ManufacturerHeuiRepository;
+import fi.stardex.sisu.persistence.repos.ManufacturerRepository;
 import fi.stardex.sisu.states.DimasGUIEditionState;
+import fi.stardex.sisu.states.InjectorSectionPwrState;
 import fi.stardex.sisu.states.PumpsStartButtonState;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.ComboBox;
@@ -21,8 +24,7 @@ public class GUI_TypeController {
     private final Logger logger = LoggerFactory.getLogger(GUI_TypeController.class);
 
     public enum GUIType {
-        CR_Inj
-        , CR_Pump, UIS
+        CR_Inj, CR_Pump, UIS, HEUI
     }
 
     @FXML
@@ -69,6 +71,16 @@ public class GUI_TypeController {
     private GUI_TypeModel gui_typeModel;
 
     private PumpsStartButtonState pumpsStartButtonState;
+
+    private ProducerRepositoryModel producerRepositoryModel;
+
+    private MainSectionModel mainSectionModel;
+
+    private InjectorSectionPwrState injectorSectionPwrState;
+
+    private ManufacturerRepository manufacturerRepository;
+
+    private ManufacturerHeuiRepository manufactureHeuiRepository;
 
     public ComboBox<GUIType> getGui_typeComboBox() {
         return gui_typeComboBox;
@@ -129,6 +141,26 @@ public class GUI_TypeController {
         this.gui_typeModel = gui_typeModel;
     }
 
+    public void setProducerRepositoryModel(ProducerRepositoryModel producerRepositoryModel) {
+        this.producerRepositoryModel = producerRepositoryModel;
+    }
+
+    public void setManufacturerRepository(ManufacturerRepository manufacturerRepository) {
+        this.manufacturerRepository = manufacturerRepository;
+    }
+
+    public void setManufactureHeuiRepository(ManufacturerHeuiRepository manufactureHeuiRepository) {
+        this.manufactureHeuiRepository = manufactureHeuiRepository;
+    }
+
+    public void setMainSectionModel(MainSectionModel mainSectionModel) {
+        this.mainSectionModel = mainSectionModel;
+    }
+
+    public void setInjectorSectionPwrState(InjectorSectionPwrState injectorSectionPwrState) {
+        this.injectorSectionPwrState = injectorSectionPwrState;
+    }
+
     @PostConstruct
     private void init() {
 
@@ -137,32 +169,35 @@ public class GUI_TypeController {
         gui_typeComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
 
             if (newValue != null) {
+
+                switch (newValue) {
+                    case CR_Inj:
+                        changeToCRInj();
+                        producerRepositoryModel.getProducerRepositoryProperty().setValue(manufacturerRepository);
+                        break;
+                    case CR_Pump:
+                        changeToCRPump();
+                        break;
+                    case UIS:
+                        changeToUIS();
+                        break;
+                    case HEUI:
+                        changeToHEUI();
+                        producerRepositoryModel.getProducerRepositoryProperty().setValue(manufactureHeuiRepository);
+                        break;
+                }
                 gui_typeModel.guiTypeProperty().setValue(newValue);
+                rootPreferences.put("GUI_Type", newValue.toString());
             }
-
-            switch (newValue) {
-                case CR_Inj:
-                    changeToCRInj();
-                    break;
-                case CR_Pump:
-                    changeToCRPump();
-                    break;
-                case UIS:
-                    changeToUIS();
-                    break;
-            }
-
-            rootPreferences.put("GUI_Type", newValue.toString());
-
         });
 
         GUIType currentGUIType = GUIType.valueOf(rootPreferences.get("GUI_Type", GUIType.CR_Inj.toString()));
 
         gui_typeComboBox.getSelectionModel().select(currentGUIType);
         gui_typeComboBox.visibleProperty().bind(dimasGUIEditionState.isDimasGuiEditionProperty().not());
-        pumpsStartButtonState.startButtonProperty().addListener((observableValue, oldValue, newValue) -> {
-            gui_typeComboBox.setDisable(newValue);
-        });
+        pumpsStartButtonState.startButtonProperty().addListener((observableValue, oldValue, newValue) -> gui_typeComboBox.setDisable(newValue));
+        mainSectionModel.startButtonProperty().addListener((observableValue, oldValue, newValue) -> gui_typeComboBox.setDisable(isStarted()));
+        injectorSectionPwrState.powerButtonProperty().addListener((observableValue, oldValue, newValue) -> gui_typeComboBox.setDisable(isStarted()));
     }
 
     private void changeToCRInj() {
@@ -213,6 +248,11 @@ public class GUI_TypeController {
         logger.info("Changed to CrPump");
 
     }
+
+    private void changeToHEUI() {
+
+        changeToCRInj();
+    }
     //TODO do not forget to hide/show DIMASCheckBox after implementation
     private void changeToUIS() {
 
@@ -234,4 +274,7 @@ public class GUI_TypeController {
 
     }
 
+    private boolean isStarted() {
+        return mainSectionModel.startButtonProperty().get() || injectorSectionPwrState.powerButtonProperty().get();
+    }
 }

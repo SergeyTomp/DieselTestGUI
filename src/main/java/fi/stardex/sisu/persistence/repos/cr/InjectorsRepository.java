@@ -12,6 +12,8 @@ public interface InjectorsRepository extends CrudRepository<Injector, String> {
 
     List<Injector> findByManufacturerAndIsCustom(Manufacturer manufacturer, boolean isCustom);
 
+    List<Injector> findByManufacturerAndIsCustomAndIsHeui(Manufacturer manufacturer, boolean isCustom, boolean isHeui);
+
     VoltAmpereProfileProjection findByInjectorCode(String injectorCode);
 
     @EntityGraph(value = "Injector.allLazy", type = EntityGraph.EntityGraphType.LOAD)

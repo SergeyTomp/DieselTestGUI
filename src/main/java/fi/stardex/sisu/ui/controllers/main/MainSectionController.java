@@ -2,27 +2,32 @@ package fi.stardex.sisu.ui.controllers.main;
 
 import fi.stardex.sisu.measurement.Measurements;
 import fi.stardex.sisu.model.*;
+import fi.stardex.sisu.persistence.Producer;
 import fi.stardex.sisu.persistence.orm.Manufacturer;
+import fi.stardex.sisu.persistence.orm.ManufacturerHEUI;
 import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.persistence.orm.cr.inj.VoltAmpereProfile;
 import fi.stardex.sisu.persistence.orm.interfaces.Model;
+import fi.stardex.sisu.persistence.repos.HEUI.ManufacturerHeuiRepository;
+import fi.stardex.sisu.persistence.repos.ManufacturerRepository;
 import fi.stardex.sisu.persistence.repos.cr.InjectorTestRepository;
 import fi.stardex.sisu.persistence.repos.cr.InjectorsRepository;
 import fi.stardex.sisu.registers.flow.ModbusMapFlow;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.BoostUadjustmentState;
-import fi.stardex.sisu.ui.Enabler;
+import fi.stardex.sisu.states.InjectorSectionPwrState;
 import fi.stardex.sisu.ui.ViewHolder;
+import fi.stardex.sisu.ui.controllers.GUI_TypeController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.DelayController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.info.InfoController;
-import fi.stardex.sisu.ui.controllers.dialogs.ManufacturerMenuDialogController;
 import fi.stardex.sisu.ui.controllers.dialogs.NewEditInjectorDialogController;
 import fi.stardex.sisu.ui.controllers.dialogs.NewEditTestDialogController;
 import fi.stardex.sisu.ui.controllers.dialogs.PrintDialogPanelController;
 import fi.stardex.sisu.util.enums.Measurement;
 import fi.stardex.sisu.util.enums.Move;
 import fi.stardex.sisu.util.i18n.I18N;
+import fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -35,13 +40,13 @@ import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -58,9 +63,13 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import static fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest.getListOfNonIncludedTests;
 import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.UIS_to_CR_pulseControlSwitch;
+import static fi.stardex.sisu.ui.controllers.dialogs.ManufacturerMenuDialogController.State;
+import static fi.stardex.sisu.ui.controllers.dialogs.ManufacturerMenuDialogController.State.DELETE;
+import static fi.stardex.sisu.ui.controllers.dialogs.ManufacturerMenuDialogController.State.NEW;
 import static fi.stardex.sisu.util.enums.Measurement.DELIVERY;
 import static fi.stardex.sisu.util.enums.Measurement.VISUAL;
 import static fi.stardex.sisu.util.enums.Move.DOWN;
@@ -77,98 +86,65 @@ public class MainSectionController {
 
     private static Logger logger = LoggerFactory.getLogger(MainSectionController.class);
 
-    @FXML
-    private TextField injectorNumberTextField;
+    @FXML private TextField injectorNumberTextField;
 
-    @FXML
-    private VBox injectorTestsVBox;
+    @FXML private VBox injectorTestsVBox;
 
-    @FXML
-    private GridPane timingGridPane;
+    @FXML private GridPane timingGridPane;
 
-    @FXML
-    private StackPane startStackPane;
+    @FXML private StackPane startStackPane;
 
-    @FXML
-    private Pane coverPane;
+    @FXML private Button moveUpButton;
 
-    @FXML
-    private Button moveUpButton;
+    @FXML private Button moveDownButton;
 
-    @FXML
-    private Button moveDownButton;
+    @FXML private Label timingSpeedLabel;
 
-    @FXML
-    private Label timingSpeedLabel;
+    @FXML private ToggleButton startToggleButton;
 
-    @FXML
-    private ToggleButton startToggleButton;
+    @FXML private ProgressBar adjustingTimeProgressBar;
 
-    @FXML
-    private ProgressBar adjustingTimeProgressBar;
+    @FXML private ProgressBar measuringTimeProgressBar;
 
-    @FXML
-    private ProgressBar measuringTimeProgressBar;
+    @FXML private Text adjustingText;
 
-    @FXML
-    private Text adjustingText;
+    @FXML private Text measuringText;
 
-    @FXML
-    private Text measuringText;
+    @FXML private Label labelAdjustTime;
 
-    @FXML
-    private Label labelAdjustTime;
+    @FXML private Label labelMeasureTime;
 
-    @FXML
-    private Label labelMeasureTime;
+    @FXML private Button storeButton;
 
-    @FXML
-    private Button storeButton;
+    @FXML private Button resetButton;
 
-    @FXML
-    private Button resetButton;
+    @FXML private Button printButton;
 
-    @FXML
-    private Button printButton;
+    @FXML private ToggleGroup testsToggleGroup;
 
-    @FXML
-    private ToggleGroup testsToggleGroup;
+    @FXML private RadioButton testPlanTestRadioButton;
 
-    @FXML
-    private RadioButton testPlanTestRadioButton;
+    @FXML private RadioButton autoTestRadioButton;
 
-    @FXML
-    private RadioButton autoTestRadioButton;
+    @FXML private RadioButton codingTestRadioButton;
 
-    @FXML
-    private RadioButton codingTestRadioButton;
+    @FXML private ToggleGroup baseTypeToggleGroup;
 
-    @FXML
-    private ToggleGroup baseTypeToggleGroup;
+    @FXML private RadioButton defaultRadioButton;
 
-    @FXML
-    private RadioButton defaultRadioButton;
+    @FXML private RadioButton customRadioButton;
 
-    @FXML
-    private RadioButton customRadioButton;
+    @FXML private ListView<Manufacturer> manufacturerListView;
 
-    @FXML
-    private ListView<Manufacturer> manufacturerListView;
+    @FXML private TextField searchModelTextField;
 
-    @FXML
-    private TextField searchModelTextField;
+    @FXML private ListView<Model> modelListView;
 
-    @FXML
-    private ListView<Model> modelListView;
+    @FXML private ListView<InjectorTest> testListView;
 
-    @FXML
-    private ListView<InjectorTest> testListView;
+    @FXML private ComboBox<String> speedComboBox;
 
-    @FXML
-    private ComboBox<String> speedComboBox;
-
-    @FXML
-    private VBox injectorsVBox;
+    @FXML private VBox injectorsVBox;
 
     private MultipleSelectionModel<InjectorTest> testsSelectionModel;
 
@@ -200,10 +176,6 @@ public class MainSectionController {
 
     private ModbusRegisterProcessor ultimaModbusWriter;
 
-    private Enabler enabler;
-
-    private ViewHolder manufacturerMenuDialog;
-
     private ViewHolder newEditInjectorDialog;
 
     private ViewHolder newEditTestDialog;
@@ -228,8 +200,6 @@ public class MainSectionController {
 
     private VoltAmpereProfile dafaultVoltAmpereProfile;
 
-    private Stage manufacturerDialogStage;
-
     private Stage modelDialogStage;
 
     private Stage testDialogStage;
@@ -251,6 +221,20 @@ public class MainSectionController {
     private BoostUadjustmentState boostUadjustmentState;
 
     private InjectorTestModel injectorTestModel;
+
+    private ManufacturerRepository manufacturerRepository;
+
+    private ManufacturerHeuiRepository manufacturerHeuiRepository;
+
+    private GUI_TypeModel gui_typeModel;
+
+    private ProducerRepositoryModel producerRepositoryModel;
+
+    private ManufacturerMenuDialogModel manufacturerMenuDialogModel;
+
+    private MainSectionModel mainSectionModel;
+
+    private InjectorSectionPwrState injectorSectionPwrState;
 
     public ToggleGroup getTestsToggleGroup() {
         return testsToggleGroup;
@@ -336,14 +320,6 @@ public class MainSectionController {
         return injectorsVBox;
     }
 
-    public void setEnabler(Enabler enabler) {
-        this.enabler = enabler;
-    }
-
-    public void setManufacturerMenuDialog(ViewHolder manufacturerMenuDialog) {
-        this.manufacturerMenuDialog = manufacturerMenuDialog;
-    }
-
     public void setNewEditInjectorDialog(ViewHolder newEditInjectorDialog) {
         this.newEditInjectorDialog = newEditInjectorDialog;
     }
@@ -420,6 +396,34 @@ public class MainSectionController {
         this.ultimaModbusWriter = ultimaModbusWriter;
     }
 
+    public void setManufacturerRepository(ManufacturerRepository manufacturerRepository) {
+        this.manufacturerRepository = manufacturerRepository;
+    }
+
+    public void setManufacturerHeuiRepository(ManufacturerHeuiRepository manufacturerHeuiRepository) {
+        this.manufacturerHeuiRepository = manufacturerHeuiRepository;
+    }
+
+    public void setGui_typeModel(GUI_TypeModel gui_typeModel) {
+        this.gui_typeModel = gui_typeModel;
+    }
+
+    public void setProducerRepositoryModel(ProducerRepositoryModel producerRepositoryModel) {
+        this.producerRepositoryModel = producerRepositoryModel;
+    }
+
+    public void setManufacturerMenuDialogModel(ManufacturerMenuDialogModel manufacturerMenuDialogModel) {
+        this.manufacturerMenuDialogModel = manufacturerMenuDialogModel;
+    }
+
+    public void setMainSectionModel(MainSectionModel mainSectionModel) {
+        this.mainSectionModel = mainSectionModel;
+    }
+
+    public void setInjectorSectionPwrState(InjectorSectionPwrState injectorSectionPwrState) {
+        this.injectorSectionPwrState = injectorSectionPwrState;
+    }
+
     @PostConstruct
     private void init() {
 
@@ -433,7 +437,6 @@ public class MainSectionController {
                 .initModelContextMenu()
                 .initTestContextMenu()
                 .setupSpeedComboBox()
-                .initStartToggleButtonBlinking()
                 .setupManufacturerListViewListener()
                 .setupSearchModelTextFieldListener()
                 .setupBaseTypeToggleGroupListener()
@@ -443,18 +446,87 @@ public class MainSectionController {
                 .setupMoveButtonEventHandlers()
                 .setupTestListAutoChangeListenerNew();
 
+        setupGUI_typeModelListener();
+        setupManufacturerMenuDialogModelListener();
+        setupManufacturerListListener();
+        setupInjectorSectionPwrButtonListener();
+        setupStartButtonListener();
         printButton.setOnAction(new PrintButtonEventHandler());
+        boostUadjustmentState.boostUadjustmentStateProperty().addListener((observable, oldValue, newValue) -> disableNode(newValue, startToggleButton));
 
-        //TODO FIXME: switch from overlaying by Node to ToogleButton.setDisable() method after Enabler refactoring
-        boostUadjustmentState.boostUadjustmentStateProperty().addListener((observable, oldValue, newValue) -> {
+        testListView.setCellFactory(CheckBoxListCell.forListView(InjectorTest::includedProperty));
+        showButtons(true, false);
+    }
 
-            coverPane.setVisible(newValue);
-            if (newValue) {
-                coverPane.toFront();
-            } else {
-                coverPane.toBack();
+    private void setHEUIManufacturerListView() {
+
+        Iterable<ManufacturerHEUI> manufacturers = manufacturerHeuiRepository.findAll();
+        setManufacturersListView(manufacturers);
+    }
+
+    private void setCRManufacturerListView() {
+
+        Iterable<Manufacturer> manufacturers = manufacturerRepository.findAll();
+        setManufacturersListView(manufacturers);
+    }
+
+    private void setManufacturersListView(Iterable<? extends Producer> manufacturers) {
+
+        List<Manufacturer> listOfManufacturers = new ArrayList<>();
+        StreamSupport.stream(manufacturers.spliterator(), false).map(this::convert).forEach(listOfManufacturers::add);
+        manufacturerListView.getItems().setAll(listOfManufacturers);
+        manufacturerListView.refresh();
+    }
+
+    private Manufacturer convert(Producer producer) {
+
+        Manufacturer p = new Manufacturer();
+        p.setManufacturerName(producer.getManufacturerName());
+        p.setCustom(producer.isCustom());
+        return p;
+    }
+
+    private void setupGUI_typeModelListener() {
+
+        gui_typeModel.guiTypeProperty().addListener((observableValue, oldValue, newValue) -> {
+
+            manufacturerListView.getSelectionModel().clearSelection();
+            baseTypeToggleGroup.selectToggle(defaultRadioButton);
+            if (newValue == GUI_TypeController.GUIType.HEUI) {
+                setHEUIManufacturerListView();
+            } else if (newValue == GUI_TypeController.GUIType.CR_Inj) {
+                setCRManufacturerListView();
             }
         });
+    }
+
+    private void setupManufacturerMenuDialogModelListener() {
+
+        manufacturerMenuDialogModel.doneProperty().addListener((observable, oldValue, newValue) -> {
+//        manufacturerMenuDialogModel.customManufacturerProperty().addListener((observableValue, oldValue, newValue) -> {
+//            Iterable<Manufacturer> manufacturers = null;
+
+            switch (gui_typeModel.guiTypeProperty().get()) {
+                case CR_Inj:
+                    setCRManufacturerListView();
+                    break;
+                case HEUI:
+                    setHEUIManufacturerListView();
+            }
+//            Iterable<Manufacturer> manufacturers = manufacturerRepository.findAll();
+//            setManufacturersListView(manufacturers);
+            manufacturerListView.getSelectionModel().select(manufacturerMenuDialogModel.customManufacturerProperty().get());
+            mainSectionModel.makeOrDelProducerProperty().setValue(null);
+        });
+    }
+
+    private void setupManufacturerListListener() {
+
+        manufacturerListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
+                mainSectionModel.manufacturerObjectProperty().setValue(newValue));
+
+        manufacturerListView.getItems().addListener((ListChangeListener<Manufacturer>) change ->
+                mainSectionModel.getManufacturerObservableList().setAll(manufacturerListView.getItems()));
     }
 
     private MainSectionController makeReferenceToInternalObjects() {
@@ -494,7 +566,12 @@ public class MainSectionController {
 
     private void setFilteredItems(Manufacturer manufacturer) {
 
-        List<Injector> modelsByManufacturers = injectorsRepository.findByManufacturerAndIsCustom(manufacturer, customRadioButton.isSelected());
+//        List<Injector> modelsByManufacturers = injectorsRepository.findByManufacturerAndIsCustom(manufacturer, customRadioButton.isSelected());
+        List<Injector> modelsByManufacturers = injectorsRepository.findByManufacturerAndIsCustomAndIsHeui(
+                manufacturer,
+                customRadioButton.isSelected(),
+                gui_typeModel.guiTypeProperty().get() == GUI_TypeController.GUIType.HEUI);
+
         ObservableList<Model> injectors = FXCollections.observableArrayList(modelsByManufacturers);
         filteredModelList = new FilteredList<>(injectors, model -> true);
         modelListView.setItems(filteredModelList);
@@ -578,9 +655,9 @@ public class MainSectionController {
 
         ContextMenu manufacturerMenu = new ContextMenu();
         MenuItem newManufacturer = new MenuItem("New");
-        newManufacturer.setOnAction(new ManufacturerMenuEventHandler("New manufacturer", ManufacturerMenuDialogController::setNew));
+        newManufacturer.setOnAction(new ManufacturerMenuEventHandler(NEW));
         MenuItem deleteManufacturer = new MenuItem("Delete");
-        deleteManufacturer.setOnAction(new ManufacturerMenuEventHandler("Delete manufacturer", ManufacturerMenuDialogController::setDelete));
+        deleteManufacturer.setOnAction(new ManufacturerMenuEventHandler(DELETE));
 
         manufacturerListView.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             if (event.getButton() == MouseButton.SECONDARY) {
@@ -655,26 +732,15 @@ public class MainSectionController {
 
     private class ManufacturerMenuEventHandler implements EventHandler<ActionEvent> {
 
-        private String title;
-        private Consumer<ManufacturerMenuDialogController> dialogType;
+        private State state;
 
-        public ManufacturerMenuEventHandler(String title, Consumer<ManufacturerMenuDialogController> dialogType) {
-            this.title = title;
-            this.dialogType = dialogType;
+        public ManufacturerMenuEventHandler(State state) {
+            this.state = state;
         }
 
         @Override
         public void handle(ActionEvent event) {
-            if (manufacturerDialogStage == null) {
-                manufacturerDialogStage = new Stage();
-                manufacturerDialogStage.setScene(new Scene(manufacturerMenuDialog.getView(), 200, 130));
-                manufacturerDialogStage.setResizable(false);
-                manufacturerDialogStage.initModality(Modality.APPLICATION_MODAL);
-                ((ManufacturerMenuDialogController) manufacturerMenuDialog.getController()).setStage(manufacturerDialogStage);
-            }
-            manufacturerDialogStage.setTitle(title);
-            dialogType.accept((ManufacturerMenuDialogController) manufacturerMenuDialog.getController());
-            manufacturerDialogStage.show();
+            mainSectionModel.makeOrDelProducerProperty().setValue(state);
         }
     }
 
@@ -792,43 +858,13 @@ public class MainSectionController {
         }
     }
 
-    private MainSectionController initStartToggleButtonBlinking() {
-
-        Timeline startButtonTimeline = new Timeline(new KeyFrame(Duration.millis(400), event -> startBlinking()));
-        startButtonTimeline.setCycleCount(Animation.INDEFINITE);
-
-        startToggleButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue)
-                startButtonTimeline.play();
-            else {
-                startButtonTimeline.stop();
-                startToggleButtonStyleClass.clear();
-                startToggleButtonStyleClass.add("startButton");
-            }
-        });
-        return this;
-    }
-
-    private void startBlinking() {
-
-        startToggleButtonStyleClass.clear();
-
-        if (startLight) {
-            startToggleButtonStyleClass.add("stopButtonDark");
-            startLight = false;
-        } else {
-            startToggleButtonStyleClass.add("stopButtonLight");
-            startLight = true;
-        }
-    }
-
     private MainSectionController setupManufacturerListViewListener() {
 
         manufacturerListView.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) -> {
 
             ultimaModbusWriter.add(UIS_to_CR_pulseControlSwitch, 0);
             resetButton.fire();
-            enabler.disableNode(newValue == null, injectorsVBox);
+            disableNode(newValue == null, injectorsVBox);
             setManufacturer(newValue);
             infoController.changeToDefault();
 
@@ -837,7 +873,7 @@ public class MainSectionController {
             flowReportModel.clearResults();
             codingReportModel.clearResults();
 
-            if (newValue.isCustom()) {
+            if (newValue != null && newValue.isCustom()) {
                 defaultRadioButton.setDisable(true);
                 customRadioButton.setSelected(true);
             } else
@@ -896,9 +932,11 @@ public class MainSectionController {
                 setInjector(null);
                 setInjectorTests(null);
                 injectorModel.injectorProperty().setValue(null);
+                mainSectionModel.injectorProperty().setValue(null);     // in future replace above line
                 injectorTestModel.injectorTestProperty().setValue(null);
-                enabler.showInjectorTests(false).
-                        showNode(false, codingTestRadioButton);
+                mainSectionModel.injectorTestProperty().setValue(null); // in future replace above line
+                showInjectorTests(false);
+                showNode(false, codingTestRadioButton);
                 testListViewItems.clear();
                 return;
             }
@@ -906,15 +944,16 @@ public class MainSectionController {
             Injector injector = (Injector) newValue;
 
             dafaultVoltAmpereProfile = injectorsRepository.findByInjectorCode(injector.getInjectorCode()).getVoltAmpereProfile();
-            injectorModel.setInjectorIsChanging(true); // for listener of width changes in the VoltAmpereProfileController blocking
+            injectorModel.setInjectorIsChanging(true);              // for listener of width changes in the VoltAmpereProfileController blocking
+            mainSectionModel.setInjectorIsChanging(true);           // in future replace above line
             injector.setVoltAmpereProfile(dafaultVoltAmpereProfile);
             injectorModel.injectorProperty().setValue(injector);
+            mainSectionModel.injectorProperty().setValue(injector); // in future replace above line
             setInjector(injector);
 
             fetchTestsFromRepository();
-            enabler
-                    .showInjectorTests(true)
-                    .showNode(checkInjectorForCoding(injector.getCodetype()), codingTestRadioButton);
+            showInjectorTests(true);
+            showNode(checkInjectorForCoding(injector.getCodetype()), codingTestRadioButton);
 
             String manufacturerName = injector.getManufacturer().getManufacturerName();
             switch (manufacturerName) {
@@ -941,6 +980,7 @@ public class MainSectionController {
                     break;
             }
             injectorModel.setInjectorIsChanging(false);
+            mainSectionModel.setInjectorIsChanging(false);  // in future replace above line
         });
         return this;
     }
@@ -957,14 +997,21 @@ public class MainSectionController {
             }
 
             injectorTestModel.setTestIsChanging(true);  // for listener of width changes in the VoltAmpereProfileController blocking
+            mainSectionModel.setTestIsChanging(true);   // in future replace above line
             injectorTestModel.injectorTestProperty().set(newValue);
-
+            mainSectionModel.injectorTestProperty().set(newValue);  // in future replace above line
 
             if (autoTestRadioButton.isSelected()) {
 
-                enabler.showButtons(newValue.isIncluded() && !startToggleButton.isSelected(), false)
-                        .enableUpDownButtons(testsSelectionModel.getSelectedIndex(), testListViewItems.size() - getListOfNonIncludedTests().size())
-                        .disableNode((!startToggleButton.isSelected()) && ((testsSelectionModel.getSelectedIndex() != 0) || !newValue.isIncluded()), startToggleButton);
+                boolean startButtonNotSelected = !startToggleButton.isSelected();
+                boolean notFirstTestSelected = testsSelectionModel.getSelectedIndex() != 0;
+                boolean testNotIncluded = !newValue.isIncluded();
+                boolean boostUadjustmentRunning = boostUadjustmentState.boostUadjustmentStateProperty().get();
+
+                showButtons(!testNotIncluded && startButtonNotSelected, false);
+                enableUpDownButtons(testsSelectionModel.getSelectedIndex(), testListViewItems.size() - getListOfNonIncludedTests().size());
+
+                disableNode(((startButtonNotSelected) && ((notFirstTestSelected) || testNotIncluded)) || boostUadjustmentRunning, startToggleButton);
 
             } else if (testPlanTestRadioButton.isSelected() && startToggleButton.isSelected()) {
 
@@ -1000,6 +1047,7 @@ public class MainSectionController {
             }
 
             injectorTestModel.setTestIsChanging(false);
+            mainSectionModel.setTestIsChanging(false);  // in future replace above line
         });
         return this;
     }
@@ -1010,16 +1058,90 @@ public class MainSectionController {
 
             if (newValue == autoTestRadioButton) {
                 setTestType(AUTO);
+                mainSectionModel.testTypeProperty().setValue(AUTO);
                 setTests();
             } else {
                 setTestType(newValue == testPlanTestRadioButton ? TESTPLAN : CODING);
+                mainSectionModel.testTypeProperty().setValue(newValue == testPlanTestRadioButton ? TESTPLAN : CODING);
                 returnToDefaultTestListAuto();
                 setTests();
-                enabler.disableNode(false, startToggleButton);
+                disableNode(boostUadjustmentState.boostUadjustmentStateProperty().get(), startToggleButton);
             }
-            enabler.selectTestType();
+//            enabler.selectTestType();
+            switch (mainSectionModel.testTypeProperty().get()) {
+                case AUTO:
+                    disableNode(false, testListView);
+                    showButtons(true, false);
+                    showNode(true, timingGridPane);
+                    break;
+                case TESTPLAN:
+                    disableNode(false, testListView);
+                    showButtons(false, true);
+                    showNode(false, timingGridPane);
+                    break;
+                case CODING:
+                    disableNode(true, testListView);
+                    showButtons(false, true);
+                    showNode(true, timingGridPane);
+                    break;
+            }
         });
         return this;
+    }
+
+    private void setupInjectorSectionPwrButtonListener() {
+
+        injectorSectionPwrState.powerButtonProperty().addListener((observableValue, oldValue, newValue) -> {
+            if (CurrentInjectorObtainer.getInjector() == null) {
+                disableNode(newValue, injectorsVBox);
+            }
+            disableNode(isStarted(), injectorsVBox, manufacturerListView);
+        });
+    }
+
+    private void setupStartButtonListener() {
+
+        mainSectionModel.startButtonProperty().bind(startToggleButton.selectedProperty());
+
+        Timeline startButtonTimeline = new Timeline(new KeyFrame(Duration.millis(400), event -> startBlinking()));
+        startButtonTimeline.setCycleCount(Animation.INDEFINITE);
+
+        startToggleButton.selectedProperty().addListener((observableValue, oldValue, newValue) -> {
+
+            if (newValue)
+                startButtonTimeline.play();
+            else {
+                startButtonTimeline.stop();
+                startToggleButtonStyleClass.clear();
+                startToggleButtonStyleClass.add("startButton");
+            }
+
+            if (mainSectionModel.testTypeProperty().get() == AUTO) {
+
+                boolean startButtonNotSelected = !newValue;
+                boolean notFirstTestSelected = testListView.getSelectionModel().getSelectedIndex() != 0;
+
+                disableNode(startButtonNotSelected && notFirstTestSelected, startToggleButton);
+                disableNode(newValue, speedComboBox, testListView);
+                showNode(!newValue, moveUpButton, moveDownButton);
+            }
+            disableRadioButtons(testsToggleGroup, newValue);
+            disableRadioButtons(baseTypeToggleGroup, newValue);
+            disableNode(newValue, manufacturerListView, injectorsVBox);
+        });
+    }
+
+    private void startBlinking() {
+
+        startToggleButtonStyleClass.clear();
+
+        if (startLight) {
+            startToggleButtonStyleClass.add("stopButtonDark");
+            startLight = false;
+        } else {
+            startToggleButtonStyleClass.add("stopButtonLight");
+            startLight = true;
+        }
     }
 
     private MainSectionController setupMoveButtonEventHandlers() {
@@ -1044,16 +1166,16 @@ public class MainSectionController {
                 Collections.swap(testListViewItems, selectedTestIndex, selectedTestIndex - 1);
                 testsSelectionModel.select(selectedTestIndex - 1);
                 testListView.scrollTo(testsSelectionModel.getSelectedIndex());
-                enabler.enableUpDownButtons(testsSelectionModel.getSelectedIndex(), testListViewItems.size() - getListOfNonIncludedTests().size());
+                enableUpDownButtons(testsSelectionModel.getSelectedIndex(), testListViewItems.size() - getListOfNonIncludedTests().size());
                 break;
             case DOWN:
                 Collections.swap(testListViewItems, selectedTestIndex, selectedTestIndex + 1);
                 testsSelectionModel.select(selectedTestIndex + 1);
                 testListView.scrollTo(testsSelectionModel.getSelectedIndex());
-                enabler.enableUpDownButtons(testsSelectionModel.getSelectedIndex(), testListViewItems.size() - getListOfNonIncludedTests().size());
+                enableUpDownButtons(testsSelectionModel.getSelectedIndex(), testListViewItems.size() - getListOfNonIncludedTests().size());
                 break;
         }
-        enabler.disableNode(testsSelectionModel.getSelectedIndex() != 0, startToggleButton);
+        disableNode(testsSelectionModel.getSelectedIndex() != 0, startToggleButton);
         isFocusMoved = false;
     }
 
@@ -1153,5 +1275,52 @@ public class MainSectionController {
             }
             printStage.show();
         }
+    }
+
+    private boolean isStarted() {
+        return mainSectionModel.startButtonProperty().get() || injectorSectionPwrState.powerButtonProperty().get();
+    }
+
+    private void showInjectorTests(boolean show) {
+
+        TestType testType = mainSectionModel.testTypeProperty().get();
+        showNode(show && (testType == AUTO || testType == CODING), timingGridPane);
+        showNode(show, injectorTestsVBox, startStackPane);
+    }
+
+    private  void enableUpDownButtons(int selectedIndex, int includedTestsSize){
+
+        if (selectedIndex == 0 && selectedIndex == includedTestsSize - 1)
+            disableNode(true, moveUpButton, moveDownButton);
+        else if (selectedIndex == 0) {
+            disableNode(true, moveUpButton);
+            disableNode(false, moveDownButton);
+        } else if ((selectedIndex > 0) && (selectedIndex <= includedTestsSize - 2))
+            disableNode(false, moveUpButton, moveDownButton);
+        else {
+            disableNode(false, moveUpButton);
+            disableNode(true, moveDownButton);
+        }
+    }
+
+    private void showButtons(boolean showUpDown, boolean showStoreReset){
+        showNode(showUpDown, moveUpButton, moveDownButton);
+        showNode(showStoreReset, storeButton, resetButton);
+    }
+
+    private void disableNode(boolean disable, Node... nodes) {
+        for (Node node : nodes)
+            node.setDisable(disable);
+    }
+
+    private void showNode(boolean show, Node... nodes) {
+        for (Node node : nodes)
+            node.setVisible(show);
+    }
+
+    private void disableRadioButtons(ToggleGroup targetToggleGroup, boolean disable) {
+        targetToggleGroup.getToggles().stream()
+                .filter(radioButton -> !radioButton.isSelected())
+                .forEach(radioButton -> ((Node) radioButton).setDisable(disable));
     }
 }

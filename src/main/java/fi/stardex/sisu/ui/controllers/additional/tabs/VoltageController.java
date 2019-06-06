@@ -2,6 +2,7 @@ package fi.stardex.sisu.ui.controllers.additional.tabs;
 
 import fi.stardex.sisu.model.*;
 import fi.stardex.sisu.model.updateModels.InjectorSectionUpdateModel;
+import fi.stardex.sisu.states.InjectorSectionPwrState;
 import fi.stardex.sisu.states.VoltAmpereProfileDialogModel;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.additional.TabSectionController;
@@ -72,6 +73,8 @@ public class VoltageController {
     @FXML private Label firstCurrent;
     @FXML private Label secondCurrent;
     @FXML private Button pulseSettingsButton;
+
+    private InjectorSectionPwrState injectorSectionPwrState;
 
     private List<XYChart.Data<Double, Double>> emptyPointsList = new ArrayList<>(Collections.singletonList(new XYChart.Data<>(0d,0d)));
 
@@ -177,6 +180,10 @@ public class VoltageController {
 
     public void setInjectorTestModel(InjectorTestModel injectorTestModel) {
         this.injectorTestModel = injectorTestModel;
+    }
+
+    public void setInjectorSectionPwrState(InjectorSectionPwrState injectorSectionPwrState) {
+        this.injectorSectionPwrState = injectorSectionPwrState;
     }
 
     public void setI18N(I18N i18N) {
@@ -312,6 +319,7 @@ public class VoltageController {
 
         injectorModel.injectorProperty().addListener((observableValue, oldValue, newValue) -> clearCharts());
         injectorTestModel.injectorTestProperty().addListener((observableValue, oldValue, newValue) -> clearCharts());
+        pulseSettingsButton.disableProperty().bind(injectorSectionPwrState.powerButtonProperty());
     }
 
 

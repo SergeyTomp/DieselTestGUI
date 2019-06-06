@@ -1,5 +1,6 @@
 package fi.stardex.sisu.ui.controllers.dialogs;
 
+import fi.stardex.sisu.model.GUI_TypeModel;
 import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorType;
@@ -10,6 +11,7 @@ import fi.stardex.sisu.persistence.repos.cr.InjectorTestRepository;
 import fi.stardex.sisu.persistence.repos.cr.InjectorsRepository;
 import fi.stardex.sisu.persistence.repos.cr.VoltAmpereProfileRepository;
 import fi.stardex.sisu.ui.ViewHolder;
+import fi.stardex.sisu.ui.controllers.GUI_TypeController;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -101,6 +103,8 @@ public class NewEditInjectorDialogController {
 
     private ViewHolder newEditVOAPDialog;
 
+    private GUI_TypeModel gui_typeModel;
+
     public void setInjectorTypeRepository(InjectorTypeRepository injectorTypeRepository) {
         this.injectorTypeRepository = injectorTypeRepository;
     }
@@ -121,6 +125,10 @@ public class NewEditInjectorDialogController {
 
     public void setStage(Stage stage) {
         this.stage = stage;
+    }
+
+    public void setGui_typeModel(GUI_TypeModel gui_typeModel) {
+        this.gui_typeModel = gui_typeModel;
     }
 
     @PostConstruct
@@ -191,6 +199,9 @@ public class NewEditInjectorDialogController {
         noUniqueLabel.setVisible(false);
         Injector newInj = new Injector(injectorCodeTF.getText(), getManufacturer(),
                 voapListView.getSelectionModel().getSelectedItem(), true, 0);
+        if (gui_typeModel.guiTypeProperty().get() == GUI_TypeController.GUIType.HEUI) {
+            newInj.setHeui(true);
+        }
 
         injectorsRepository.save(newInj);
         modelListView.getItems().add(newInj);

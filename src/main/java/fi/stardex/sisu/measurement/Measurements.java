@@ -18,9 +18,7 @@ import fi.stardex.sisu.persistence.orm.cr.inj.TestName;
 import fi.stardex.sisu.registers.flow.ModbusMapFlow;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.HighPressureSectionPwrState;
-import fi.stardex.sisu.ui.Enabler;
 import fi.stardex.sisu.ui.controllers.ISADetectionController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.CodingController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.cr.TestBenchSectionController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
@@ -54,8 +52,6 @@ public class Measurements implements ChangeListener<Boolean> {
     private ObservableList<InjectorTest> testListViewItems;
 
     private MultipleSelectionModel<InjectorTest> testsSelectionModel;
-
-    private Enabler enabler;
 
     private Button resetButton;
 
@@ -93,14 +89,6 @@ public class Measurements implements ChangeListener<Boolean> {
 
     private MainSectionController mainSectionController;
 
-    private TextField injectorCode1TextField;
-
-    private TextField injectorCode2TextField;
-
-    private TextField injectorCode3TextField;
-
-    private TextField injectorCode4TextField;
-
     private int includedAutoTestsLength;
 
     private ISADetectionController isaDetectionController;
@@ -126,8 +114,6 @@ public class Measurements implements ChangeListener<Boolean> {
     public Measurements(MainSectionController mainSectionController,
                         TestBenchSectionController testBenchSectionController,
                         InjectorSectionController injectorSectionController,
-                        Enabler enabler,
-                        CodingController codingController,
                         ISADetectionController isaDetectionController,
                         CodingReportModel codingReportModel,
                         FlowReportModel flowReportModel,
@@ -135,7 +121,6 @@ public class Measurements implements ChangeListener<Boolean> {
                         PressureRegulatorOneModel pressureRegulatorOneModel,
                         HighPressureSectionUpdateModel highPressureSectionUpdateModel) {
 
-        this.enabler = enabler;
         this.flowReportModel = flowReportModel;
         this.mainSectionController = mainSectionController;
         this.codingReportModel = codingReportModel;
@@ -158,12 +143,6 @@ public class Measurements implements ChangeListener<Boolean> {
         this.injectorSectionController = injectorSectionController;
         injectorSectionStartToggleButton = injectorSectionController.getInjectorSectionStartToggleButton();
         widthCurrentSignalSpinner = injectorSectionController.getWidthCurrentSignalSpinner();
-
-        injectorCode1TextField = codingController.getInjectorCode1TextField();
-        injectorCode2TextField = codingController.getInjectorCode2TextField();
-        injectorCode3TextField = codingController.getInjectorCode3TextField();
-        injectorCode4TextField = codingController.getInjectorCode4TextField();
-
         this.isaDetectionController = isaDetectionController;
     }
 
@@ -200,8 +179,6 @@ public class Measurements implements ChangeListener<Boolean> {
     private void startMeasurements() {
 
         resetButton.fire();
-        enabler.startTest(true);
-//        flowReportModel.clearResults();
 
         switch (getTestType()) {
             case AUTO:
@@ -253,7 +230,6 @@ public class Measurements implements ChangeListener<Boolean> {
             codingComplete = false;
         }
 
-        enabler.startTest(false);
         resetButton.fire();
     }
 
@@ -289,7 +265,7 @@ public class Measurements implements ChangeListener<Boolean> {
         codingReportModel.storeResult(codeResult);
     }
 
-    public void switchOffSections() {
+    private void switchOffSections() {
 
         injectorSectionStartToggleButton.setSelected(false);
         highPressureSectionPwrState.powerButtonProperty().setValue(false);

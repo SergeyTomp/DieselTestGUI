@@ -5,19 +5,21 @@ import fi.stardex.sisu.combobox_values.InjectorChannel;
 import fi.stardex.sisu.devices.Device;
 import fi.stardex.sisu.devices.Devices;
 import fi.stardex.sisu.model.*;
+import fi.stardex.sisu.model.updateModels.InjectorSectionUpdateModel;
 import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
-import fi.stardex.sisu.states.VoltAmpereProfileDialogModel;
 import fi.stardex.sisu.states.BoostUadjustmentState;
 import fi.stardex.sisu.states.InjectorControllersState;
-import fi.stardex.sisu.ui.Enabler;
+import fi.stardex.sisu.states.InjectorSectionPwrState;
+import fi.stardex.sisu.states.VoltAmpereProfileDialogModel;
+import fi.stardex.sisu.ui.controllers.GUI_TypeController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.DelayController;
-import fi.stardex.sisu.model.updateModels.InjectorSectionUpdateModel;
 import fi.stardex.sisu.util.enums.InjectorType;
 import fi.stardex.sisu.util.enums.Measurement;
 import fi.stardex.sisu.util.i18n.I18N;
+import fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer;
 import fi.stardex.sisu.util.spinners.SpinnerManager;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -92,8 +94,6 @@ public class InjectorSectionController {
 
     private I18N i18N;
 
-    private Enabler enabler;
-
     private Devices devices;
 
     private Logger logger = LoggerFactory.getLogger(InjectorSectionController.class);
@@ -120,6 +120,8 @@ public class InjectorSectionController {
 
     private InjectorControllersState injectorControllersState;
 
+    private InjectorSectionPwrState injectorSectionPwrState;
+
     private DelayController delayController;
 
     private ModbusRegisterProcessor ultimaModbusWriter;
@@ -137,6 +139,8 @@ public class InjectorSectionController {
     private List<Timeline> timeLinesList;
 
     private List<KeyFrame> keyFramesList;
+
+    private GUI_TypeModel gui_typeModel;
 
     public Spinner<Integer> getWidthCurrentSignalSpinner() {
         return widthCurrentSignalSpinner;
@@ -187,10 +191,6 @@ public class InjectorSectionController {
         return arrayNumbersOfActiveLedToggleButtons;
     }
 
-    public void setEnabler(Enabler enabler) {
-        this.enabler = enabler;
-    }
-
     public void setUltimaModbusWriter(ModbusRegisterProcessor ultimaModbusWriter) {
         this.ultimaModbusWriter = ultimaModbusWriter;
     }
@@ -221,7 +221,7 @@ public class InjectorSectionController {
         return activeLedToggleButtonsList;
     }
 
-    public void fillArrayNumbersOfActiveLedToggleButtons() {
+    private void fillArrayNumbersOfActiveLedToggleButtons() {
         arrayNumbersOfActiveLedToggleButtons.clear();
         getActiveLedToggleButtonsList().forEach(e -> arrayNumbersOfActiveLedToggleButtons.add(getNumber(e)));
     }
@@ -264,6 +264,14 @@ public class InjectorSectionController {
 
     public void setDevices(Devices devices) {
         this.devices = devices;
+    }
+
+    public void setGui_typeModel(GUI_TypeModel gui_typeModel) {
+        this.gui_typeModel = gui_typeModel;
+    }
+
+    public void setInjectorSectionPwrState(InjectorSectionPwrState injectorSectionPwrState) {
+        this.injectorSectionPwrState = injectorSectionPwrState;
     }
 
     @PostConstruct
@@ -314,6 +322,8 @@ public class InjectorSectionController {
         injectorTypeModel.injectorTypeProperty().setValue(InjectorType.COIL);
 
         ledParametersChangeListener = new LedParametersChangeListener();
+
+        injectorSectionPwrState.powerButtonProperty().bind(injectorSectionStartToggleButton.selectedProperty());
 
         new PowerButtonChangeListener();
 
@@ -383,7 +393,8 @@ public class InjectorSectionController {
                     break;
                 default:
                     setDefaultSpinnerValueFactories(true);
-                    disableNode(false, widthCurrentSignalSpinner, freqCurrentSignalSpinner, injectorSectionStartToggleButton);
+                    disableNode(false, widthCurrentSignalSpinner, freqCurrentSignalSpinner);
+                    disableNode(boostUadjustmentState.boostUadjustmentStateProperty().get(), injectorSectionStartToggleButton);
                     disableNode(!newValue.getVoltAmpereProfile().isDoubleCoil(), width2CurrentSignalSpinner, offset2CurrentSignalSpinner);
                     Integer freq = newValue.getInjectionRate();
                     Integer width = newValue.getTotalPulseTime();
@@ -445,6 +456,10 @@ public class InjectorSectionController {
                 }
             }
         });
+
+        gui_typeModel.guiTypeProperty().addListener((observableValue, oldValue, newValue) -> showNode(
+                newValue != GUI_TypeController.GUIType.HEUI,
+                width2CurrentSignalSpinner, offset2CurrentSignalSpinner, coil2Label, width2Label, offsetLabel));
     }
 
     private void bindingI18N() {
@@ -561,7 +576,7 @@ public class InjectorSectionController {
                     disableNode(true, led2ToggleButton, led3ToggleButton, led4ToggleButton);
                     led1ToggleButton.setSelected(true);
                 } else {
-                    enabler.disableNode(false, led2ToggleButton, led3ToggleButton, led4ToggleButton);
+                    disableNode(false, led2ToggleButton, led3ToggleButton, led4ToggleButton);
                     sendLedRegisters();
                 }
             } else if (newValue instanceof Boolean) {
@@ -642,7 +657,8 @@ public class InjectorSectionController {
 
             if (newValue) {
                 fillArrayNumbersOfActiveLedToggleButtons();
-                enabler.disableVAP(true);
+//                enabler.disableVAP(true);
+                disableRadioButtons(piezoCoilToggleGroup, CurrentInjectorObtainer.getInjector() == null);
                 disableNode(true, led2ToggleButton, led3ToggleButton, led4ToggleButton);
                 ledToggleButtons.forEach(l -> {if(l.isSelected()){ledBlinkStart(l);}});
                 ledParametersChangeListener.sendLedRegisters();
@@ -660,7 +676,8 @@ public class InjectorSectionController {
                 ultimaModbusWriter.add(Injectors_Running_En, false);
                 ledParametersChangeListener.switchOffAll();
                 timerTasksManager.stop();
-                enabler.disableVAP(false);
+                disableRadioButtons(piezoCoilToggleGroup, false);
+//                enabler.disableVAP(false);
                 if (!voltAmpereProfileDialogModel.isDoubleCoilProperty().get()) {
                     disableNode(false, led2ToggleButton, led3ToggleButton, led4ToggleButton);
                 }
@@ -825,6 +842,7 @@ public class InjectorSectionController {
                     timeOut = (firmwareBoostU - newInjector.getVoltAmpereProfile().getBoostU()); // calculated timeOut
 
                     setStartStopValues(true);
+                    injectorSectionStartToggleButton.setDisable(true);
 
                     this.restart();
 
@@ -874,7 +892,11 @@ public class InjectorSectionController {
                 @Override
                 protected void done() {
 
-                    Platform.runLater(() -> setStartStopValues(false));
+                    Platform.runLater(() -> {
+                        setStartStopValues(false);
+                        Optional.ofNullable(injectorTestModel.injectorTestProperty().get())
+                                .ifPresent(t -> injectorSectionStartToggleButton.setDisable(t.getTestName().getMeasurement() == Measurement.NO));
+                    });
                 }
             };
         }
@@ -883,7 +905,6 @@ public class InjectorSectionController {
     private void setStartStopValues(boolean started){
 
         boostUadjustmentState.boostUadjustmentStateProperty().set(started);
-        injectorSectionStartToggleButton.setDisable(started);
         switcherProgressBar.setVisible(started);
         statusBoostULabel.setVisible(started);
         statusBoostULabelText.setVisible(started);
@@ -916,4 +937,11 @@ public class InjectorSectionController {
         target.setSelected(true);
         disableRadioButtons(piezoCoilToggleGroup, true);
     }
+
+    private void showNode(boolean showNode, Node... nodes) {
+        for (Node node: nodes) {
+            node.setVisible(showNode);
+        }
+    }
+
 }

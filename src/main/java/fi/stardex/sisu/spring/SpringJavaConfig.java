@@ -16,7 +16,7 @@ import fi.stardex.sisu.model.updateModels.PiezoRepairUpdateModel;
 import fi.stardex.sisu.pdf.PDFService;
 import fi.stardex.sisu.persistence.CheckAndInitializeBD;
 import fi.stardex.sisu.persistence.orm.CSVSUpdater;
-import fi.stardex.sisu.persistence.orm.Manufacturer;
+import fi.stardex.sisu.persistence.repos.HEUI.ManufacturerHeuiRepository;
 import fi.stardex.sisu.persistence.repos.ManufacturerRepository;
 import fi.stardex.sisu.persistence.repos.cr.InjectorTestRepository;
 import fi.stardex.sisu.persistence.repos.cr.InjectorsRepository;
@@ -31,14 +31,9 @@ import fi.stardex.sisu.registers.stand.ModbusMapStand;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.*;
-import fi.stardex.sisu.ui.Enabler;
-import fi.stardex.sisu.ui.controllers.GUI_TypeController;
 import fi.stardex.sisu.ui.controllers.ISADetectionController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.CodingController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.RLCController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.report.FlowReportController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.settings.ConnectionController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.cr.TestBenchSectionController;
@@ -64,9 +59,6 @@ import fi.stardex.sisu.version.StandFirmwareVersion;
 import fi.stardex.sisu.version.UltimaFirmwareVersion;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
-import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -74,7 +66,6 @@ import org.springframework.context.annotation.*;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import javax.sql.DataSource;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -570,38 +561,39 @@ public class SpringJavaConfig {
         return new CheckAndInitializeBD(manufacturerRepository, dataSource);
     }
 
-    @Bean
-    @DependsOn("checkAndInitializeBD")
-    @Autowired
-    public ListView<Manufacturer> manufacturerList(ManufacturerRepository manufacturerRepository, MainSectionController mainSectionController) {
-        Iterable<Manufacturer> manufacturers = manufacturerRepository.findAll();
-        List<Manufacturer> listOfManufacturers = new ArrayList<>();
-        manufacturers.forEach(listOfManufacturers::add);
+//    @Bean
+//    @DependsOn("checkAndInitializeBD")
+//    @Autowired
+//    public ListView<Manufacturer> manufacturerList(ManufacturerRepository manufacturerRepository,
+//                                                   MainSectionController mainSectionController) {
+//        Iterable<Manufacturer> manufacturers = manufacturerRepository.findAll();
+//        List<Manufacturer> listOfManufacturers = new ArrayList<>();
+//        manufacturers.forEach(listOfManufacturers::add);
 
-        ObservableList<Manufacturer> observableList = FXCollections.observableList(listOfManufacturers);
-        ListView<Manufacturer> manufacturerList = mainSectionController.getManufacturerListView();
-        manufacturerList.setItems(observableList);
+//        ObservableList<Manufacturer> observableList = FXCollections.observableList(listOfManufacturers);
+//        ListView<Manufacturer> manufacturerList = mainSectionController.getManufacturerListView();
+//        manufacturerList.setItems(observableList);
+//
+//        return manufacturerList;
+//    }
 
-        return manufacturerList;
-    }
-
-    @Bean
-    @Lazy
-    @Autowired
-    public Enabler enabler(MainSectionController mainSectionController,
-                           InjectorSectionController injectorSectionController,
-                           VoltageController voltageController,
-                           FlowController flowController,
-                           FlowReportController flowReportController,
-                           GUI_TypeController gui_typeController,
-                           FlowReportModel flowReportModel) {
-        return new Enabler(mainSectionController,
-                injectorSectionController,
-                voltageController,
-                flowController, flowReportController,
-                gui_typeController.getGui_typeComboBox(),
-                flowReportModel);
-    }
+//    @Bean
+//    @Lazy
+//    @Autowired
+//    public Enabler enabler(MainSectionController mainSectionController,
+//                           InjectorSectionController injectorSectionController,
+//                           VoltageController voltageController,
+//                           FlowController flowController,
+//                           FlowReportController flowReportController,
+//                           GUI_TypeController gui_typeController,
+//                           FlowReportModel flowReportModel) {
+//        return new Enabler(mainSectionController,
+//                injectorSectionController,
+//                voltageController,
+//                flowController, flowReportController,
+//                gui_typeController.getGui_typeComboBox(),
+//                flowReportModel);
+//    }
 
     @Bean
     @Autowired
@@ -616,8 +608,9 @@ public class SpringJavaConfig {
     public CSVSUpdater csvsUpdater(ManufacturerRepository manufacturerRepository,
                                    VoltAmpereProfileRepository voltAmpereProfileRepository,
                                    InjectorsRepository injectorsRepository,
-                                   InjectorTestRepository injectorTestRepository) {
-        return new CSVSUpdater(manufacturerRepository, voltAmpereProfileRepository, injectorsRepository, injectorTestRepository);
+                                   InjectorTestRepository injectorTestRepository,
+                                   ManufacturerHeuiRepository manufacturerHeuiRepository) {
+        return new CSVSUpdater(manufacturerRepository, voltAmpereProfileRepository, injectorsRepository, injectorTestRepository, manufacturerHeuiRepository);
     }
 
     @Bean
@@ -640,8 +633,6 @@ public class SpringJavaConfig {
     public Measurements measurements(MainSectionController mainSectionController,
                                      TestBenchSectionController testBenchSectionController,
                                      InjectorSectionController injectorSectionController,
-                                     Enabler enabler,
-                                     CodingController codingController,
                                      ISADetectionController isaDetectionController,
                                      CodingReportModel codingReportModel,
                                      FlowReportModel flowReportModel,
@@ -649,7 +640,7 @@ public class SpringJavaConfig {
                                      PressureRegulatorOneModel pressureRegulatorOneModel,
                                      HighPressureSectionUpdateModel highPressureSectionUpdateModel) {
         return new Measurements(mainSectionController, testBenchSectionController,
-                injectorSectionController, enabler, codingController,
+                injectorSectionController,
                 isaDetectionController, codingReportModel, flowReportModel,
                 highPressureSectionPwrState,
                 pressureRegulatorOneModel,
@@ -784,6 +775,11 @@ public class SpringJavaConfig {
     @Bean
     public PumpsStartButtonState pumpsStartButtonState() {
         return new PumpsStartButtonState();
+    }
+
+    @Bean
+    public InjectorSectionPwrState injectorSectionPwrState() {
+        return new InjectorSectionPwrState();
     }
 
     // --------------------------------------Model-----------------------------------------------
@@ -1074,6 +1070,22 @@ public class SpringJavaConfig {
     @Bean
     public InjectorControllersState injectorControllersState() {
         return new InjectorControllersState();
+    }
+
+    @Bean
+    public ProducerRepositoryModel producerRepositoryModel() {
+        return new ProducerRepositoryModel();
+    }
+
+    @Bean
+    public ManufacturerMenuDialogModel manufacturerMenuDialogModel() {
+        return new ManufacturerMenuDialogModel();
+    }
+
+    @Bean
+    @Autowired
+    public MainSectionModel mainSectionModel(ManufacturerRepository manufacturerRepository) {
+        return new MainSectionModel(manufacturerRepository);
     }
 
 //    @Bean
