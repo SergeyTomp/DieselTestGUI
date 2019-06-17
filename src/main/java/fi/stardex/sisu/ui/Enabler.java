@@ -10,7 +10,6 @@ import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.report.FlowReportController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
-import fi.stardex.sisu.util.enums.Tests.TestType;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
@@ -20,7 +19,6 @@ import javafx.scene.layout.VBox;
 import javax.annotation.PostConstruct;
 
 import static fi.stardex.sisu.ui.controllers.GUI_TypeController.GUIType;
-import static fi.stardex.sisu.util.enums.Tests.getTestType;
 
 public class Enabler {
 
@@ -134,15 +132,15 @@ public class Enabler {
 
     public Enabler startTest(boolean isStarted) {
 
-        TestType testType = getTestType();
-
-        switch (testType) {
-            case AUTO:
+//        TestType testType = getTestType();
+//
+//        switch (testType) {
+//            case AUTO:
 //                disableNode(!isStarted && testListView.getSelectionModel().getSelectedIndex() != 0, mainSectionStartToggleButton);
 //                disableNode(isStarted, speedComboBox, testListView);
 //                showNode(!isStarted, moveUpButton, moveDownButton);
-                break;
-        }
+//                break;
+//        }
 
 //        disableNode(isStarted || injectorSectionStartToggleButton.isSelected(), gui_typeComboBox);
 
@@ -188,33 +186,33 @@ public class Enabler {
 
     public Enabler selectTestType() {
 
-        TestType test = getTestType();
-
-        switch (test) {
-
-            case AUTO:
+//        TestType test = getTestType();
+//
+//        switch (test) {
+//
+//            case AUTO:
 //                disableNode(false, testListView);
 //                showButtons(true, false);
 //                showNode(true, timingGridPane);
 //                showDefaultFlowUnit(false);
 //                showFlowReport(true);
-                break;
-            case TESTPLAN:
+//                break;
+//            case TESTPLAN:
 //                disableNode(false, testListView);
 //                showButtons(false, true);
 //                showNode(false, timingGridPane);
 //                showDefaultFlowUnit(false);
 //                showFlowReport(true);   // to switch off report table in TESTPLAN mode set false
-                break;
-            case CODING:
+//                break;
+//            case CODING:
 //                disableNode(true, testListView);
 //                showButtons(false, true);
 //                showNode(true, timingGridPane);
 //                showDefaultFlowUnit(true);
 //                showFlowReport(true);   // to switch off report table in CODING mode set false
-                break;
+//                break;
 
-        }
+//        }
 
         return this;
 

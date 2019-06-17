@@ -1,6 +1,7 @@
 package fi.stardex.sisu.ui.controllers.dialogs;
 
 import fi.stardex.sisu.model.GUI_TypeModel;
+import fi.stardex.sisu.model.MainSectionModel;
 import fi.stardex.sisu.model.PumpModel;
 import fi.stardex.sisu.pdf.Customer;
 import fi.stardex.sisu.pdf.ExceptionalConsumer;
@@ -8,6 +9,7 @@ import fi.stardex.sisu.pdf.PDFService;
 import fi.stardex.sisu.ui.controllers.GUI_TypeController;
 import fi.stardex.sisu.ui.controllers.main.MainSectionController;
 import fi.stardex.sisu.util.EmptyObjectDefaultChecker;
+import fi.stardex.sisu.util.enums.Tests;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer;
 import fi.stardex.sisu.util.wrappers.DateTimePickerImpl;
@@ -122,7 +124,7 @@ public class PrintDialogPanelController{
 
     private PDFService pdfService;
 
-    private MainSectionController mainSectionController;
+    private MainSectionModel mainSectionModel;
 
     private Stage frameStage;
 
@@ -140,10 +142,6 @@ public class PrintDialogPanelController{
         this.pdfService = pdfService;
     }
 
-    public void setMainSectionController(MainSectionController mainSectionController) {
-        this.mainSectionController = mainSectionController;
-    }
-
     public void  setStage(Stage frameStage){
 
         this.frameStage = frameStage;
@@ -159,6 +157,10 @@ public class PrintDialogPanelController{
 
     public void setPumpModel(PumpModel pumpModel) {
         this.pumpModel = pumpModel;
+    }
+
+    public void setMainSectionModel(MainSectionModel mainSectionModel) {
+        this.mainSectionModel = mainSectionModel;
     }
 
     @PostConstruct
@@ -216,7 +218,7 @@ public class PrintDialogPanelController{
         Customer customer = prepareDocument();
         try {
             if (gui_typeModel.guiTypeProperty().get() == GUI_TypeController.GUIType.CR_Inj && CurrentInjectorObtainer.getInjector() != null) {
-                    if (mainSectionController.getCodingTestRadioButton().isSelected()) {
+                    if (mainSectionModel.testTypeProperty().get() == Tests.TestType.CODING) {
                         processInjectorCoding.accept(customer);
                     } else {
                         processInjector.accept(customer);

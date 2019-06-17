@@ -3,23 +3,16 @@ package fi.stardex.sisu.ui.controllers.pumps.main;
 import fi.stardex.sisu.model.PumpTestModeModel;
 import fi.stardex.sisu.states.PumpsStartButtonState;
 import fi.stardex.sisu.util.i18n.I18N;
-import javafx.beans.InvalidationListener;
-import javafx.beans.Observable;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.GridPane;
-import javafx.scene.layout.HBox;
 
 import javax.annotation.PostConstruct;
 
 import static fi.stardex.sisu.util.enums.Tests.TestType.AUTO;
 import static fi.stardex.sisu.util.enums.Tests.TestType.TESTPLAN;
-import static fi.stardex.sisu.util.enums.Tests.getTestType;
-import static fi.stardex.sisu.util.enums.Tests.setTestType;
 
 public class TestModeController {
 

@@ -11,6 +11,7 @@ import fi.stardex.sisu.coding.denso.DensoCodingDataStorage;
 import fi.stardex.sisu.coding.siemens.SiemensCoding;
 import fi.stardex.sisu.model.CodingReportModel;
 import fi.stardex.sisu.model.FlowReportModel;
+import fi.stardex.sisu.model.MainSectionModel;
 import fi.stardex.sisu.model.PressureRegulatorOneModel;
 import fi.stardex.sisu.model.updateModels.HighPressureSectionUpdateModel;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
@@ -41,7 +42,6 @@ import java.util.stream.Collectors;
 
 import static fi.stardex.sisu.util.enums.Tests.TestType.CODING;
 import static fi.stardex.sisu.util.enums.Tests.TestType.TESTPLAN;
-import static fi.stardex.sisu.util.enums.Tests.getTestType;
 import static fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer.getInjector;
 import static fi.stardex.sisu.util.obtainers.CurrentManufacturerObtainer.getManufacturer;
 
@@ -107,6 +107,8 @@ public class Measurements implements ChangeListener<Boolean> {
 
     private Iterator<Integer> densoCodingPointsIterator;
 
+    private MainSectionModel mainSectionModel;
+
     public void setCodingComplete(boolean codingComplete) {
         this.codingComplete = codingComplete;
     }
@@ -119,7 +121,8 @@ public class Measurements implements ChangeListener<Boolean> {
                         FlowReportModel flowReportModel,
                         HighPressureSectionPwrState highPressureSectionPwrState,
                         PressureRegulatorOneModel pressureRegulatorOneModel,
-                        HighPressureSectionUpdateModel highPressureSectionUpdateModel) {
+                        HighPressureSectionUpdateModel highPressureSectionUpdateModel,
+                        MainSectionModel mainSectionModel) {
 
         this.flowReportModel = flowReportModel;
         this.mainSectionController = mainSectionController;
@@ -144,6 +147,7 @@ public class Measurements implements ChangeListener<Boolean> {
         injectorSectionStartToggleButton = injectorSectionController.getInjectorSectionStartToggleButton();
         widthCurrentSignalSpinner = injectorSectionController.getWidthCurrentSignalSpinner();
         this.isaDetectionController = isaDetectionController;
+        this.mainSectionModel = mainSectionModel;
     }
 
     @PostConstruct
@@ -179,8 +183,9 @@ public class Measurements implements ChangeListener<Boolean> {
     private void startMeasurements() {
 
         resetButton.fire();
+        TestType testType = mainSectionModel.testTypeProperty().get();
 
-        switch (getTestType()) {
+        switch (testType) {
             case AUTO:
                 includedAutoTestsLength = (int) testListViewItems.stream().filter(InjectorTest::isIncluded).count();
                 break;
@@ -217,7 +222,8 @@ public class Measurements implements ChangeListener<Boolean> {
         measuringTime.refreshProgress();
         switchOffSections();
 
-        if (getTestType() == CODING) {
+//        if (getTestType() == CODING) {
+        if (mainSectionModel.testTypeProperty().get() == CODING) {
 
             if (codingComplete)
                 performCoding();
@@ -284,7 +290,9 @@ public class Measurements implements ChangeListener<Boolean> {
         int selectedTestIndex = testsSelectionModel.getSelectedIndex();
         InjectorTest injectorTest = testsSelectionModel.getSelectedItem();
         TestName testName = injectorTest.getTestName();
-        TestType testType = getTestType();
+//        TestType testType = getTestType();
+        TestType testType = mainSectionModel.testTypeProperty().get();
+
         resetButton.fire();
 
         switch (testType) {
@@ -420,7 +428,7 @@ public class Measurements implements ChangeListener<Boolean> {
             resetButton.fire();
             injectorSectionStartToggleButton.setSelected(true);
 
-            if (getTestType() != TESTPLAN) {
+            if (mainSectionModel.testTypeProperty().get() != TESTPLAN) {
                 adjustingTimeline.play();
             }
             playResetTimeLine();
@@ -465,7 +473,7 @@ public class Measurements implements ChangeListener<Boolean> {
 
             flowReportModel.storeResult();
 
-            if (getTestType() == CODING) {
+            if (mainSectionModel.testTypeProperty().get() == CODING) {
 
                 if (isDensoCoding() && testName.getMeasurement() != Measurement.VISUAL) {
                     DensoCodingDataStorage.store(widthCurrentSignalSpinner.getValue(), flowReportModel.getResultObservableMap().get(injectorTest));

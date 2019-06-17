@@ -615,7 +615,7 @@ public class MainSectionController {
 
     private void setTests() {
 
-        TestType test = getTestType();
+        TestType test = mainSectionModel.testTypeProperty().get();
 
         switch (test) {
 
@@ -1057,11 +1057,11 @@ public class MainSectionController {
         testsToggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
 
             if (newValue == autoTestRadioButton) {
-                setTestType(AUTO);
+//                setTestType(AUTO);  // можно удалить, класс Tests больше не используется
                 mainSectionModel.testTypeProperty().setValue(AUTO);
                 setTests();
             } else {
-                setTestType(newValue == testPlanTestRadioButton ? TESTPLAN : CODING);
+//                setTestType(newValue == testPlanTestRadioButton ? TESTPLAN : CODING);   // можно удалить, класс Tests больше не используется
                 mainSectionModel.testTypeProperty().setValue(newValue == testPlanTestRadioButton ? TESTPLAN : CODING);
                 returnToDefaultTestListAuto();
                 setTests();

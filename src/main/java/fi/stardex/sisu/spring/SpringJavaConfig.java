@@ -597,10 +597,10 @@ public class SpringJavaConfig {
 
     @Bean
     @Autowired
-    public FlowResolver flowResolver(MainSectionController mainSectionController,
-                                     FlowController flowController,
-                                     FlowViewModel flowViewModel) {
-        return new FlowResolver(mainSectionController.getTestListView().getSelectionModel(), flowController, flowViewModel);
+    public FlowResolver flowResolver(FlowController flowController,
+                                     FlowViewModel flowViewModel,
+                                     MainSectionModel mainSectionModel) {
+        return new FlowResolver(flowController, flowViewModel, mainSectionModel);
     }
 
     @Bean
@@ -638,13 +638,15 @@ public class SpringJavaConfig {
                                      FlowReportModel flowReportModel,
                                      HighPressureSectionPwrState highPressureSectionPwrState,
                                      PressureRegulatorOneModel pressureRegulatorOneModel,
-                                     HighPressureSectionUpdateModel highPressureSectionUpdateModel) {
+                                     HighPressureSectionUpdateModel highPressureSectionUpdateModel,
+                                     MainSectionModel mainSectionModel) {
         return new Measurements(mainSectionController, testBenchSectionController,
                 injectorSectionController,
                 isaDetectionController, codingReportModel, flowReportModel,
                 highPressureSectionPwrState,
                 pressureRegulatorOneModel,
-                highPressureSectionUpdateModel);
+                highPressureSectionUpdateModel,
+                mainSectionModel);
     }
 
     private List<Updater> addUpdaters(List<Updater> updatersList, Device targetDevice) {

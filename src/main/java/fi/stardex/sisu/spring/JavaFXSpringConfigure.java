@@ -490,12 +490,10 @@ public class JavaFXSpringConfigure extends ViewLoader{
     @Autowired
     public FlowReportController flowReportController(ReportController reportController,
                                                      I18N i18N,
-                                                     MainSectionController mainSectionController,
                                                      FlowReportModel flowReportModel,
                                                      MainSectionModel mainSectionModel) {
         FlowReportController flowReportController = reportController.getFlowReportController();
         flowReportController.setI18N(i18N);
-        flowReportController.setMainSectionStartToggleButton(mainSectionController.getStartToggleButton());
         flowReportController.setFlowReportModel(flowReportModel);
         flowReportController.setMainSectionModel(mainSectionModel);
         return flowReportController;
@@ -854,17 +852,17 @@ public class JavaFXSpringConfigure extends ViewLoader{
 
     @Bean
     @Autowired
-    public PrintDialogPanelController newPrintDialogPanelController(MainSectionController mainSectionController,
-                                                                    PDFService pdfService,
+    public PrintDialogPanelController newPrintDialogPanelController(PDFService pdfService,
                                                                     I18N i18N,
                                                                     GUI_TypeModel gui_typeModel,
-                                                                    PumpModel pumpModel){
+                                                                    PumpModel pumpModel,
+                                                                    MainSectionModel mainSectionModel){
         PrintDialogPanelController printDialogPanelController = (PrintDialogPanelController) printDialogPanel().getController();
-        printDialogPanelController.setMainSectionController(mainSectionController);
         printDialogPanelController.setPdfService(pdfService);
         printDialogPanelController.setI18N(i18N);
         printDialogPanelController.setGui_typeModel(gui_typeModel);
         printDialogPanelController.setPumpModel(pumpModel);
+        printDialogPanelController.setMainSectionModel(mainSectionModel);
         return printDialogPanelController;
     }
 

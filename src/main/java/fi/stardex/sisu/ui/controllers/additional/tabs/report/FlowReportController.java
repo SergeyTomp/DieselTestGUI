@@ -52,8 +52,6 @@ public class FlowReportController {
 
     private I18N i18N;
 
-    private ToggleButton mainSectionStartToggleButton;
-
     private MainSectionModel mainSectionModel;
 
     private static final String CELL_COLOR_DEFAULT = "-fx-text-fill: #bf8248;";
@@ -72,10 +70,6 @@ public class FlowReportController {
 
     public void setI18N(I18N i18N) {
         this.i18N = i18N;
-    }
-
-    public void setMainSectionStartToggleButton(ToggleButton mainSectionStartToggleButton) {
-        this.mainSectionStartToggleButton = mainSectionStartToggleButton;
     }
 
     public TableView<FlowResult> getFlowTableView() {
@@ -231,7 +225,7 @@ public class FlowReportController {
 
             showNode(false, deleteButton);
 
-            deleteButton.visibleProperty().bind(mainSectionStartToggleButton.selectedProperty().not());
+            deleteButton.visibleProperty().bind(mainSectionModel.startButtonProperty().not());
 
             deleteButton.setOnAction(event -> flowReportModel.deleteResult(getTableRow().getTableView().getItems().get(getTableRow().getIndex()).getInjectorTest()));
         }
