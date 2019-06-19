@@ -1,13 +1,12 @@
 package fi.stardex.sisu.charts;
 
 import fi.stardex.sisu.combobox_values.InjectorChannel;
-import fi.stardex.sisu.model.CoilTwoPulseParametersModel;
-import fi.stardex.sisu.model.InjConfigurationModel;
-import fi.stardex.sisu.model.InjectorModel;
-import fi.stardex.sisu.model.InjectorTypeModel;
+import fi.stardex.sisu.model.*;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
+import fi.stardex.sisu.states.InjectorControllersState;
+import fi.stardex.sisu.states.InjectorSectionPwrState;
 import fi.stardex.sisu.states.VoltAmpereProfileDialogModel;
 import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
@@ -51,9 +50,6 @@ public abstract class ChartTask extends TimerTask {
     protected VoltageController voltageController;
 
     @Autowired
-    protected InjectorSectionController injectorSectionController;
-
-    @Autowired
     protected FirmwareVersion<UltimaVersions> ultimaFirmwareVersion;
 
     @Autowired
@@ -72,6 +68,15 @@ public abstract class ChartTask extends TimerTask {
 
     @Autowired
     private InjectorModel injectorModel;
+
+    @Autowired
+    protected InjectorControllersState injectorControllersState;
+
+    @Autowired
+    private InjectorSectionPwrState injectorSectionPwrState;
+
+    @Autowired
+    protected CoilOnePulseParametersModel coilOnePulseParametersModel;
 
     protected abstract ModbusMapUltima getCurrentGraphFrameNum();
 
@@ -178,7 +183,7 @@ public abstract class ChartTask extends TimerTask {
 
         updateOSC = voltageController.isTabVoltageShowingProperty().get();
 
-        if (injectorSectionController.getArrayNumbersOfActiveLedToggleButtons().size() == 0)
+        if (injectorControllersState.getArrayNumbersOfActiveLedToggleButtons().size() == 0)
             return;
 
         if(injConfigurationModel.injConfigurationProperty().get() == InjectorChannel.SINGLE_CHANNEL){
@@ -188,11 +193,7 @@ public abstract class ChartTask extends TimerTask {
 
         } else {
 
-//            List<Integer> activeLedControllerNumbers = injectorSectionController.fillArrayNumbersOfActiveLedToggleButtons();
-//            if (!activeLedControllerNumbers.contains(getChartNumber()))
-//                return;
-
-            if (!injectorSectionController.getArrayNumbersOfActiveLedToggleButtons().contains(getChartNumber())) {
+            if (!injectorControllersState.getArrayNumbersOfActiveLedToggleButtons().contains(getChartNumber())) {
 
                 if (!voltAmpereProfileDialogModel.isDoubleCoilProperty().get()) {
 
@@ -275,7 +276,7 @@ public abstract class ChartTask extends TimerTask {
         }
 
         Platform.runLater(() -> {
-            if(injectorSectionController.getInjectorSectionStartToggleButton().isSelected()){
+            if(injectorSectionPwrState.powerButtonProperty().get()){
                 ChartTask.this.addData(resultDataList, ChartTask.this.getData());
             }
         });

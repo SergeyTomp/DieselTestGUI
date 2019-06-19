@@ -3,6 +3,8 @@ package fi.stardex.sisu.ui.updaters;
 import fi.stardex.sisu.annotations.Module;
 import fi.stardex.sisu.devices.Device;
 import fi.stardex.sisu.model.InjConfigurationModel;
+import fi.stardex.sisu.states.InjectorControllersState;
+import fi.stardex.sisu.states.InjectorSectionPwrState;
 import fi.stardex.sisu.states.InstantFlowState;
 import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
@@ -16,11 +18,19 @@ import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions.MASTER;
 @Module(value = Device.MODBUS_FLOW)
 public class FlowMasterUpdater extends FlowUpdater implements Updater {
 
-    public FlowMasterUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
+    public FlowMasterUpdater(FlowController flowController,
                              FirmwareVersion<FlowVersions> flowFirmwareVersion,
-                             InjConfigurationModel injConfigurationModel, InstantFlowState instantFlowState) {
+                             InjConfigurationModel injConfigurationModel,
+                             InstantFlowState instantFlowState,
+                             InjectorControllersState injectorControllersState,
+                             InjectorSectionPwrState injectorSectionPwrState) {
 
-        super(flowController, injectorSectionController, flowFirmwareVersion, injConfigurationModel, instantFlowState);
+        super(flowController,
+                flowFirmwareVersion,
+                injConfigurationModel,
+                instantFlowState,
+                injectorControllersState,
+                injectorSectionPwrState);
 
     }
 

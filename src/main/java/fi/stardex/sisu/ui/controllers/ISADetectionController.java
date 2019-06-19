@@ -7,6 +7,7 @@ import fi.stardex.sisu.model.PressureRegulatorOneModel;
 import fi.stardex.sisu.model.updateModels.HighPressureSectionUpdateModel;
 import fi.stardex.sisu.persistence.orm.ISADetection;
 import fi.stardex.sisu.persistence.repos.ISADetectionRepository;
+import fi.stardex.sisu.states.InjectorControllersState;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -106,6 +107,8 @@ public class ISADetectionController {
 
     private InjectorTestModel injectorTestModel;
 
+    private InjectorControllersState injectorControllersState;
+
     private double ISA_trigger;
 
     public static List<ISAResult> getIsaResult() {
@@ -174,6 +177,10 @@ public class ISADetectionController {
 
     public void setInjectorTestModel(InjectorTestModel injectorTestModel) {
         this.injectorTestModel = injectorTestModel;
+    }
+
+    public void setInjectorControllersState(InjectorControllersState injectorControllersState) {
+        this.injectorControllersState = injectorControllersState;
     }
 
     public enum ISAResultState {
@@ -317,15 +324,16 @@ public class ISADetectionController {
         }
         ISA_trigger = nominalFlow * (1 + (flowRange / 100));
 
-        if (injectorSectionController.getActiveLedToggleButtonsList().isEmpty())
+        if (injectorControllersState.activeLedToggleButtonsListProperty().get().isEmpty())
             changeISAState(ISAState.NO_ACTIVE_LEDS);
         else {
             changeISAState(ISAState.RUNNING);
-            led1Active = injectorSectionController.getLed1ToggleButton().isSelected();
-            led2Active = injectorSectionController.getLed2ToggleButton().isSelected();
-            led3Active = injectorSectionController.getLed3ToggleButton().isSelected();
-            led4Active = injectorSectionController.getLed4ToggleButton().isSelected();
 
+            led1Active = injectorControllersState.getLedBeaker1ToggleButton().isSelected();
+            led2Active = injectorControllersState.getLedBeaker2ToggleButton().isSelected();
+            led3Active = injectorControllersState.getLedBeaker3ToggleButton().isSelected();
+            led4Active = injectorControllersState.getLedBeaker4ToggleButton().isSelected();
+            
             if (led1Active)
                 ISA_RESULT.get(0).setIsaResultState(ISAResultState.INVALID);
             if (led2Active)

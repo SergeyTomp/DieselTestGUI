@@ -224,6 +224,8 @@ public class InjectorSectionController {
     private void fillArrayNumbersOfActiveLedToggleButtons() {
         arrayNumbersOfActiveLedToggleButtons.clear();
         getActiveLedToggleButtonsList().forEach(e -> arrayNumbersOfActiveLedToggleButtons.add(getNumber(e)));
+        injectorControllersState.getArrayNumbersOfActiveLedToggleButtons().clear();
+        injectorControllersState.getArrayNumbersOfActiveLedToggleButtons().addAll(arrayNumbersOfActiveLedToggleButtons);
     }
 
     public void setI18N(I18N i18N) {
@@ -460,6 +462,11 @@ public class InjectorSectionController {
         gui_typeModel.guiTypeProperty().addListener((observableValue, oldValue, newValue) -> showNode(
                 newValue != GUI_TypeController.GUIType.HEUI,
                 width2CurrentSignalSpinner, offset2CurrentSignalSpinner, coil2Label, width2Label, offsetLabel));
+
+        injectorControllersState.getLedBeaker1ToggleButton().selectedProperty().bind(led1ToggleButton.selectedProperty());
+        injectorControllersState.getLedBeaker2ToggleButton().selectedProperty().bind(led2ToggleButton.selectedProperty());
+        injectorControllersState.getLedBeaker3ToggleButton().selectedProperty().bind(led3ToggleButton.selectedProperty());
+        injectorControllersState.getLedBeaker4ToggleButton().selectedProperty().bind(led4ToggleButton.selectedProperty());
     }
 
     private void bindingI18N() {
@@ -481,6 +488,11 @@ public class InjectorSectionController {
         setNumber(2, led2ToggleButton);
         setNumber(3, led3ToggleButton);
         setNumber(4, led4ToggleButton);
+
+        setNumber(1, injectorControllersState.getLedBeaker1ToggleButton());
+        setNumber(2, injectorControllersState.getLedBeaker2ToggleButton());
+        setNumber(3, injectorControllersState.getLedBeaker3ToggleButton());
+        setNumber(4, injectorControllersState.getLedBeaker4ToggleButton());
 
         setBlinkingStatus(led1ToggleButton, false);
         setBlinkingStatus(led2ToggleButton, false);

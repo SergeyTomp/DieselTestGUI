@@ -439,21 +439,33 @@ public class SpringJavaConfig {
     @Bean
     @Autowired
     public FlowMasterUpdater flowMasterUpdater(FlowController flowController,
-                                               InjectorSectionController injectorSectionController,
                                                FirmwareVersion<FlowVersions> flowFirmwareVersion,
                                                InjConfigurationModel injConfigurationModel,
-                                               InstantFlowState instantFlowState) {
-        return new FlowMasterUpdater(flowController, injectorSectionController, flowFirmwareVersion, injConfigurationModel, instantFlowState);
+                                               InstantFlowState instantFlowState,
+                                               InjectorControllersState injectorControllersState,
+                                               InjectorSectionPwrState injectorSectionPwrState) {
+        return new FlowMasterUpdater(flowController,
+                flowFirmwareVersion,
+                injConfigurationModel,
+                instantFlowState,
+                injectorControllersState,
+                injectorSectionPwrState);
     }
 
     @Bean
     @Autowired
     public FlowStreamUpdater flowStreamUpdater(FlowController flowController,
-                                               InjectorSectionController injectorSectionController,
                                                FirmwareVersion<FlowVersions> flowFirmwareVersion,
                                                InjConfigurationModel injConfigurationModel,
-                                               InstantFlowState instantFlowState) {
-        return new FlowStreamUpdater(flowController, injectorSectionController, flowFirmwareVersion, injConfigurationModel, instantFlowState);
+                                               InstantFlowState instantFlowState,
+                                               InjectorControllersState injectorControllersState,
+                                               InjectorSectionPwrState injectorSectionPwrState) {
+        return new FlowStreamUpdater(flowController,
+                flowFirmwareVersion,
+                injConfigurationModel,
+                instantFlowState,
+                injectorControllersState,
+                injectorSectionPwrState);
     }
 
     @Bean
@@ -639,14 +651,16 @@ public class SpringJavaConfig {
                                      HighPressureSectionPwrState highPressureSectionPwrState,
                                      PressureRegulatorOneModel pressureRegulatorOneModel,
                                      HighPressureSectionUpdateModel highPressureSectionUpdateModel,
-                                     MainSectionModel mainSectionModel) {
+                                     MainSectionModel mainSectionModel,
+                                     InjectorControllersState injectorControllersState) {
         return new Measurements(mainSectionController, testBenchSectionController,
                 injectorSectionController,
                 isaDetectionController, codingReportModel, flowReportModel,
                 highPressureSectionPwrState,
                 pressureRegulatorOneModel,
                 highPressureSectionUpdateModel,
-                mainSectionModel);
+                mainSectionModel,
+                injectorControllersState);
     }
 
     private List<Updater> addUpdaters(List<Updater> updatersList, Device targetDevice) {

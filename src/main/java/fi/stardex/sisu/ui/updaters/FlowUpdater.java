@@ -1,9 +1,10 @@
 package fi.stardex.sisu.ui.updaters;
 
 import fi.stardex.sisu.model.InjConfigurationModel;
+import fi.stardex.sisu.states.InjectorControllersState;
+import fi.stardex.sisu.states.InjectorSectionPwrState;
 import fi.stardex.sisu.states.InstantFlowState;
 import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
-import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.version.FirmwareVersion;
 import fi.stardex.sisu.version.Versions;
 import javafx.beans.property.BooleanProperty;
@@ -114,11 +115,15 @@ public abstract class FlowUpdater {
 
     protected ToggleButton ledBeaker4ToggleButton;
 
-    protected ToggleButton injectorSectionPowerSwitch;
+    protected InjectorSectionPwrState injectorSectionPwrState;
 
-    public FlowUpdater(FlowController flowController, InjectorSectionController injectorSectionController,
+
+    public FlowUpdater(FlowController flowController,
                        FirmwareVersion<FlowVersions> flowFirmwareVersion,
-                       InjConfigurationModel injConfigurationModel, InstantFlowState instantFlowState) {
+                       InjConfigurationModel injConfigurationModel,
+                       InstantFlowState instantFlowState,
+                       InjectorControllersState injectorControllersState,
+                       InjectorSectionPwrState injectorSectionPwrState) {
 
         this.flowController = flowController;
         this.flowFirmwareVersion = flowFirmwareVersion;
@@ -154,11 +159,13 @@ public abstract class FlowUpdater {
 
         this.isInstantFlowStateProperty = instantFlowState.isInstantFlowStateProperty();
         this.injConfigurationModel = injConfigurationModel;
-        ledBeaker1ToggleButton = injectorSectionController.getLed1ToggleButton();
-        ledBeaker2ToggleButton = injectorSectionController.getLed2ToggleButton();
-        ledBeaker3ToggleButton = injectorSectionController.getLed3ToggleButton();
-        ledBeaker4ToggleButton = injectorSectionController.getLed4ToggleButton();
-        injectorSectionPowerSwitch = injectorSectionController.getInjectorSectionStartToggleButton();
+        ledBeaker1ToggleButton = injectorControllersState.getLedBeaker1ToggleButton();
+        ledBeaker2ToggleButton = injectorControllersState.getLedBeaker2ToggleButton();
+        ledBeaker3ToggleButton = injectorControllersState.getLedBeaker3ToggleButton();
+        ledBeaker4ToggleButton = injectorControllersState.getLedBeaker4ToggleButton();
+
+        this.injectorSectionPwrState = injectorSectionPwrState;
+
 
         allFlowLabels.add(temperature1Delivery1Label);
         allFlowLabels.add(temperature1Delivery2Label);
@@ -228,7 +235,8 @@ public abstract class FlowUpdater {
                 setAllLabelsAndFieldsToNull();
         });
 
-        injectorSectionPowerSwitch.selectedProperty().addListener((observable, oldValue, newValue) -> {
+        injectorSectionPwrState.powerButtonProperty().addListener((observable, oldValue, newValue) -> {
+
             if (!newValue && !isInstantFlowStateProperty.get())
                 setAllLabelsAndFieldsToNull();
         });
@@ -442,6 +450,7 @@ public abstract class FlowUpdater {
     protected boolean isNotInstantFlow() {
         return !isInstantFlowStateProperty.get();
 //        return !isInstantFlowStateProperty.get() && !injectorSectionPowerSwitch.isSelected();
+//        return !isInstantFlowStateProperty.get() && !injectorSectionPwrState.powerButtonProperty().get();
     }
 
     protected boolean isNotMeasuring() {

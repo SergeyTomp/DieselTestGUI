@@ -390,7 +390,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                          FlowController flowController,
                                                          HighPressureSectionUpdateModel highPressureSectionUpdateModel,
                                                          PressureRegulatorOneModel pressureRegulatorOneModel,
-                                                         InjectorTestModel injectorTestModel) {
+                                                         InjectorTestModel injectorTestModel,
+                                                         InjectorControllersState injectorControllersState) {
         ISADetectionController isaDetectionController = (ISADetectionController) isaDetection().getController();
         isaDetectionController.setISAParent(isaDetection().getView());
         isaDetectionController.setRootParent(rootLayout.getView());
@@ -408,6 +409,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         isaDetectionController.setHighPressureSectionUpdateModel(highPressureSectionUpdateModel);
         isaDetectionController.setPressureRegulatorOneModel(pressureRegulatorOneModel);
         isaDetectionController.setInjectorTestModel(injectorTestModel);
+        isaDetectionController.setInjectorControllersState(injectorControllersState);
         return isaDetectionController;
     }
 
@@ -524,88 +526,88 @@ public class JavaFXSpringConfigure extends ViewLoader{
     @Bean
     @Autowired
     public BeakerController beakerDelivery1Controller(FlowController flowController,
-                                                      InjectorSectionController injectorSectionController,
-                                                      Rescaler deliveryRescaler) {
+                                                      Rescaler deliveryRescaler,
+                                                      InjectorControllersState injectorControllersState) {
         BeakerController beakerDelivery1Controller = flowController.getBeakerDelivery1Controller();
         setupBeakerController(beakerDelivery1Controller, flowController, flowController.getDelivery1TextField(),
-                injectorSectionController.getLed1ToggleButton(), deliveryRescaler, "Delivery1", BeakerType.DELIVERY);
+                injectorControllersState.getLedBeaker1ToggleButton(), deliveryRescaler, "Delivery1", BeakerType.DELIVERY);
         return beakerDelivery1Controller;
     }
 
     @Bean
     @Autowired
     public BeakerController beakerDelivery2Controller(FlowController flowController,
-                                                      InjectorSectionController injectorSectionController,
-                                                      Rescaler deliveryRescaler) {
+                                                      Rescaler deliveryRescaler,
+                                                      InjectorControllersState injectorControllersState) {
         BeakerController beakerDelivery2Controller = flowController.getBeakerDelivery2Controller();
         setupBeakerController(beakerDelivery2Controller, flowController, flowController.getDelivery2TextField(),
-                injectorSectionController.getLed2ToggleButton(), deliveryRescaler, "Delivery2", BeakerType.DELIVERY);
+                injectorControllersState.getLedBeaker2ToggleButton(), deliveryRescaler, "Delivery2", BeakerType.DELIVERY);
         return beakerDelivery2Controller;
     }
 
     @Bean
     @Autowired
     public BeakerController beakerDelivery3Controller(FlowController flowController,
-                                                      InjectorSectionController injectorSectionController,
-                                                      Rescaler deliveryRescaler) {
+                                                      Rescaler deliveryRescaler,
+                                                      InjectorControllersState injectorControllersState) {
         BeakerController beakerDelivery3Controller = flowController.getBeakerDelivery3Controller();
         setupBeakerController(beakerDelivery3Controller, flowController, flowController.getDelivery3TextField(),
-                injectorSectionController.getLed3ToggleButton(), deliveryRescaler, "Delivery3", BeakerType.DELIVERY);
+                injectorControllersState.getLedBeaker3ToggleButton(), deliveryRescaler, "Delivery3", BeakerType.DELIVERY);
         return beakerDelivery3Controller;
     }
 
     @Bean
     @Autowired
     public BeakerController beakerDelivery4Controller(FlowController flowController,
-                                                      InjectorSectionController injectorSectionController,
-                                                      Rescaler deliveryRescaler) {
+                                                      Rescaler deliveryRescaler,
+                                                      InjectorControllersState injectorControllersState) {
         BeakerController beakerDelivery4Controller = flowController.getBeakerDelivery4Controller();
         setupBeakerController(beakerDelivery4Controller, flowController, flowController.getDelivery4TextField(),
-                injectorSectionController.getLed4ToggleButton(), deliveryRescaler, "Delivery4", BeakerType.DELIVERY);
+                injectorControllersState.getLedBeaker4ToggleButton(), deliveryRescaler, "Delivery4", BeakerType.DELIVERY);
         return beakerDelivery4Controller;
     }
 
     @Bean
     @Autowired
     public BeakerController beakerBackFlow1Controller(FlowController flowController,
-                                                      InjectorSectionController injectorSectionController,
-                                                      Rescaler backFlowRescaler) {
+                                                      Rescaler backFlowRescaler,
+                                                      InjectorControllersState injectorControllersState) {
         BeakerController beakerBackFlow1Controller = flowController.getBeakerBackFlow1Controller();
         setupBeakerController(beakerBackFlow1Controller, flowController, flowController.getBackFlow1TextField(),
-                injectorSectionController.getLed1ToggleButton(), backFlowRescaler, "Backflow1", BeakerType.BACKFLOW);
+                injectorControllersState.getLedBeaker1ToggleButton(), backFlowRescaler, "Backflow1", BeakerType.BACKFLOW);
         return beakerBackFlow1Controller;
     }
 
     @Bean
     @Autowired
     public BeakerController beakerBackFlow2Controller(FlowController flowController,
-                                                      InjectorSectionController injectorSectionController,
-                                                      Rescaler backFlowRescaler) {
+                                                      Rescaler backFlowRescaler,
+                                                      InjectorControllersState injectorControllersState) {
         BeakerController beakerBackFlow2Controller = flowController.getBeakerBackFlow2Controller();
         setupBeakerController(beakerBackFlow2Controller, flowController, flowController.getBackFlow2TextField(),
-                injectorSectionController.getLed2ToggleButton(), backFlowRescaler, "Backflow2", BeakerType.BACKFLOW);
+                injectorControllersState.getLedBeaker2ToggleButton(), backFlowRescaler, "Backflow2", BeakerType.BACKFLOW);
         return beakerBackFlow2Controller;
     }
 
     @Bean
     @Autowired
     public BeakerController beakerBackFlow3Controller(FlowController flowController,
-                                                      InjectorSectionController injectorSectionController,
-                                                      Rescaler backFlowRescaler) {
+                                                      Rescaler backFlowRescaler,
+                                                      InjectorControllersState injectorControllersState) {
         BeakerController beakerBackFlow3Controller = flowController.getBeakerBackFlow3Controller();
         setupBeakerController(beakerBackFlow3Controller, flowController, flowController.getBackFlow3TextField(),
-                injectorSectionController.getLed3ToggleButton(), backFlowRescaler, "Backflow3", BeakerType.BACKFLOW);
+                injectorControllersState.getLedBeaker3ToggleButton(), backFlowRescaler, "Backflow3", BeakerType.BACKFLOW);
         return beakerBackFlow3Controller;
     }
 
     @Bean
     @Autowired
     public BeakerController beakerBackFlow4Controller(FlowController flowController,
-                                                      InjectorSectionController injectorSectionController,
-                                                      Rescaler backFlowRescaler) {
+                                                      Rescaler backFlowRescaler,
+                                                      InjectorControllersState injectorControllersState) {
         BeakerController beakerBackFlow4Controller = flowController.getBeakerBackFlow4Controller();
         setupBeakerController(beakerBackFlow4Controller, flowController, flowController.getBackFlow4TextField(),
-                injectorSectionController.getLed4ToggleButton(), backFlowRescaler, "Backflow4", BeakerType.BACKFLOW);
+                injectorControllersState.getLedBeaker4ToggleButton(), backFlowRescaler, "Backflow4", BeakerType.BACKFLOW);
         return beakerBackFlow4Controller;
     }
 

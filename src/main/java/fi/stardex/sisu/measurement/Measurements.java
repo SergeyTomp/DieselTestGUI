@@ -19,6 +19,7 @@ import fi.stardex.sisu.persistence.orm.cr.inj.TestName;
 import fi.stardex.sisu.registers.flow.ModbusMapFlow;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.HighPressureSectionPwrState;
+import fi.stardex.sisu.states.InjectorControllersState;
 import fi.stardex.sisu.ui.controllers.ISADetectionController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.cr.TestBenchSectionController;
@@ -58,8 +59,6 @@ public class Measurements implements ChangeListener<Boolean> {
     private ToggleButton mainSectionStartToggleButton;
 
     private ToggleButton testBenchStartToggleButton;
-
-    private InjectorSectionController injectorSectionController;
 
     private ToggleButton injectorSectionStartToggleButton;
 
@@ -109,6 +108,8 @@ public class Measurements implements ChangeListener<Boolean> {
 
     private MainSectionModel mainSectionModel;
 
+    private InjectorControllersState injectorControllersState;
+
     public void setCodingComplete(boolean codingComplete) {
         this.codingComplete = codingComplete;
     }
@@ -122,7 +123,8 @@ public class Measurements implements ChangeListener<Boolean> {
                         HighPressureSectionPwrState highPressureSectionPwrState,
                         PressureRegulatorOneModel pressureRegulatorOneModel,
                         HighPressureSectionUpdateModel highPressureSectionUpdateModel,
-                        MainSectionModel mainSectionModel) {
+                        MainSectionModel mainSectionModel,
+                        InjectorControllersState injectorControllersState) {
 
         this.flowReportModel = flowReportModel;
         this.mainSectionController = mainSectionController;
@@ -143,11 +145,11 @@ public class Measurements implements ChangeListener<Boolean> {
         targetRPMSpinner = testBenchSectionController.getTargetRPMSpinner();
         currentRPMLcd = testBenchSectionController.getCurrentRPMLcd();
 
-        this.injectorSectionController = injectorSectionController;
         injectorSectionStartToggleButton = injectorSectionController.getInjectorSectionStartToggleButton();
         widthCurrentSignalSpinner = injectorSectionController.getWidthCurrentSignalSpinner();
         this.isaDetectionController = isaDetectionController;
         this.mainSectionModel = mainSectionModel;
+        this.injectorControllersState = injectorControllersState;
     }
 
     @PostConstruct
@@ -190,7 +192,7 @@ public class Measurements implements ChangeListener<Boolean> {
                 includedAutoTestsLength = (int) testListViewItems.stream().filter(InjectorTest::isIncluded).count();
                 break;
             case CODING:
-                List<Integer> activeLedToggleButtonsList = injectorSectionController.getActiveLedToggleButtonsList()
+                List<Integer> activeLedToggleButtonsList = injectorControllersState.activeLedToggleButtonsListProperty().get()
                         .stream()
                         .mapToInt(toggleButton -> Integer.parseInt(toggleButton.getText()))
                         .boxed()
@@ -222,7 +224,6 @@ public class Measurements implements ChangeListener<Boolean> {
         measuringTime.refreshProgress();
         switchOffSections();
 
-//        if (getTestType() == CODING) {
         if (mainSectionModel.testTypeProperty().get() == CODING) {
 
             if (codingComplete)
@@ -290,7 +291,6 @@ public class Measurements implements ChangeListener<Boolean> {
         int selectedTestIndex = testsSelectionModel.getSelectedIndex();
         InjectorTest injectorTest = testsSelectionModel.getSelectedItem();
         TestName testName = injectorTest.getTestName();
-//        TestType testType = getTestType();
         TestType testType = mainSectionModel.testTypeProperty().get();
 
         resetButton.fire();

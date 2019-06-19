@@ -102,7 +102,7 @@ public class DelayChartTask extends ChartTask {
 
         updateOSC = delayController.isTabDelayShowingProperty().get();
 
-        activeLedToggleButtonsList = injectorSectionController.getActiveLedToggleButtonsList();
+        activeLedToggleButtonsList = injectorControllersState.activeLedToggleButtonsListProperty().get();
 
         ToggleButton ledController = singleSelected();
 
@@ -115,8 +115,8 @@ public class DelayChartTask extends ChartTask {
 
         int addingTime = delayController.getAddingTimeValue();
 
-        int n = (int) ((injectorSectionController.getWidthCurrentSignalSpinner().getValue() + addingTime) / PULSE_LENGTH_STEP) > DELAY_SAMPLE_SIZE - 1 ?
-                DELAY_SAMPLE_SIZE - 1 : (int) ((injectorSectionController.getWidthCurrentSignalSpinner().getValue() + addingTime) / PULSE_LENGTH_STEP);
+        int n = (int) ((coilOnePulseParametersModel.widthProperty().get() + addingTime) / PULSE_LENGTH_STEP) > DELAY_SAMPLE_SIZE - 1 ?
+                DELAY_SAMPLE_SIZE - 1 : (int) ((coilOnePulseParametersModel.widthProperty().get() + addingTime) / PULSE_LENGTH_STEP);
 
         int remainder = n % DELAY_SAMPLE_SIZE;
 
