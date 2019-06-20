@@ -13,8 +13,12 @@ import fi.stardex.sisu.util.spinners.SpinnerManager;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.fxml.FXML;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,6 +86,8 @@ public class VoltAmpereProfileController {
     private InjectorSectionUpdateModel injectorSectionUpdateModel;
     private InjectorModel injectorModel;
     private InjectorTypeModel injectorTypeModel;
+    private VoltageTabModel voltageTabModel;
+    private Parent vapDialogView;
     private CoilPulseCalculator coilPulseCalculator;
     private VoltAmpereProfile currentVAP;
 
@@ -139,6 +145,14 @@ public class VoltAmpereProfileController {
         this.injectorTypeModel = injectorTypeModel;
     }
 
+    public void setVoltageTabModel(VoltageTabModel voltageTabModel) {
+        this.voltageTabModel = voltageTabModel;
+    }
+
+    public void setVapDialogView(Parent vapDialogView) {
+        this.vapDialogView = vapDialogView;
+    }
+
     private enum Invocator {
         TEST,
         SPINNER,
@@ -166,6 +180,8 @@ public class VoltAmpereProfileController {
         setupTestModelListener();
 
         bindingI18N();
+
+        setupVoltageTabListener();
 
     }
 
@@ -199,6 +215,23 @@ public class VoltAmpereProfileController {
                 currentVAP = null;
                 setInitialsToVapSpinners();
             }
+        });
+    }
+
+    private void setupVoltageTabListener() {
+
+        voltageTabModel.getPulseSettingsButton().setOnAction(e -> {
+            if (stage == null) {
+                stage = new Stage();
+                stage.setTitle("Settings");
+                stage.setScene(new Scene(vapDialogView));
+                stage.setResizable(false);
+                stage.initModality(Modality.APPLICATION_MODAL);
+                stage.initStyle(StageStyle.UTILITY);
+                stage.setOnCloseRequest(ev -> cancelButton.fire());
+            }
+            saveValues();
+            stage.show();
         });
     }
 

@@ -6,7 +6,6 @@ import fi.stardex.sisu.states.InjectorSectionPwrState;
 import fi.stardex.sisu.states.VoltAmpereProfileDialogModel;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.additional.TabSectionController;
-import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
 import fi.stardex.sisu.util.enums.InjectorType;
 import fi.stardex.sisu.util.i18n.I18N;
 import javafx.beans.property.DoubleProperty;
@@ -18,15 +17,11 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.Scene;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.stage.Modality;
-import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
@@ -82,15 +77,9 @@ public class VoltageController {
 
     private static final String RED_COLOR_STYLE = "-fx-text-fill: red";
 
-    private ViewHolder voltAmpereProfileDialog;
-
-    private Stage voapStage;
-
     private TabSectionController tabSectionController;
 
     private ObjectProperty<Boolean> isTabVoltageShowing = new SimpleObjectProperty<>();
-
-    private VoltAmpereProfileController voltAmpereProfileController;
 
     private InjectorTypeModel injectorTypeModel;
 
@@ -105,6 +94,8 @@ public class VoltageController {
     private InjectorModel injectorModel;
 
     private InjectorTestModel injectorTestModel;
+
+    private VoltageTabModel voltageTabModel;
 
     private ObservableList<XYChart.Data<Double, Double>> data1;
 
@@ -144,10 +135,6 @@ public class VoltageController {
 
     public ObjectProperty<Boolean> isTabVoltageShowingProperty() {
         return isTabVoltageShowing;
-    }
-
-    public void setVoltAmpereProfileDialog(ViewHolder voltAmpereProfileDialog) {
-        this.voltAmpereProfileDialog = voltAmpereProfileDialog;
     }
 
     public void setParentController(TabSectionController tabSectionController) {
@@ -190,6 +177,10 @@ public class VoltageController {
         this.i18N = i18N;
     }
 
+    public void setVoltageTabModel(VoltageTabModel voltageTabModel) {
+        this.voltageTabModel = voltageTabModel;
+    }
+
     @PostConstruct
     private void init() {
 
@@ -210,25 +201,7 @@ public class VoltageController {
 
     private void setupVoltAmpereProfileDialog() {
 
-        voltAmpereProfileController = (VoltAmpereProfileController) voltAmpereProfileDialog.getController();
-
-        pulseSettingsButton.setOnMouseClicked(event -> {
-
-            if (voapStage == null) {
-                voapStage = new Stage();
-                voapStage.setTitle("Settings");
-                voapStage.setScene(new Scene(voltAmpereProfileDialog.getView()));
-                voapStage.setResizable(false);
-                voapStage.initModality(Modality.APPLICATION_MODAL);
-                voapStage.initStyle(StageStyle.UTILITY);
-                voapStage.setOnCloseRequest(ev -> voltAmpereProfileController.getCancelButton().fire());
-            }
-            voltAmpereProfileController.setStage(voapStage);
-            voltAmpereProfileController.saveValues();
-            voapStage.show();
-
-        });
-
+        pulseSettingsButton.setOnMouseClicked(event -> voltageTabModel.getPulseSettingsButton().fire());
     }
 
     private void clearCharts() {

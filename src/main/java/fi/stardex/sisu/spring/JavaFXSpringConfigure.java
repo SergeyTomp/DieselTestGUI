@@ -635,9 +635,9 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                InjectorTestModel injectorTestModel,
                                                InjectorModel injectorModel,
                                                CoilTwoPulseParametersModel coilTwoPulseParametersModel,
-                                               InjectorSectionPwrState injectorSectionPwrState) {
+                                               InjectorSectionPwrState injectorSectionPwrState,
+                                               VoltageTabModel voltageTabModel) {
         VoltageController voltageController = tabSectionController.getVoltageController();
-        voltageController.setVoltAmpereProfileDialog(voltAmpereProfileDialog());
         voltageController.setParentController(tabSectionController);
         voltageController.setI18N(i18N);
         voltageController.setInjectorTypeModel(injectorTypeModel);
@@ -648,6 +648,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         voltageController.setInjectorModel(injectorModel);
         voltageController.setCoilTwoPulseParametersModel(coilTwoPulseParametersModel);
         voltageController.setInjectorSectionPwrState(injectorSectionPwrState);
+        voltageController.setVoltageTabModel(voltageTabModel);
         return voltageController;
     }
 
@@ -704,7 +705,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                                    InjectorTestModel injectorTestModel,
                                                                    InjectorSectionUpdateModel injectorSectionUpdateModel,
                                                                    InjectorModel injectorModel,
-                                                                   InjectorTypeModel injectorTypeModel) {
+                                                                   InjectorTypeModel injectorTypeModel,
+                                                                   VoltageTabModel voltageTabModel) {
         VoltAmpereProfileController voltAmpereProfileController = (VoltAmpereProfileController) voltAmpereProfileDialog().getController();
         voltAmpereProfileController.setUltimaModbusWriter(ultimaModbusWriter);
         voltAmpereProfileController.setI18N(i18N);
@@ -715,6 +717,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
         voltAmpereProfileController.setInjectorSectionUpdateModel(injectorSectionUpdateModel);
         voltAmpereProfileController.setInjectorModel(injectorModel);
         voltAmpereProfileController.setInjectorTypeModel(injectorTypeModel);
+        voltAmpereProfileController.setVapDialogView(voltAmpereProfileDialog().getView());
+        voltAmpereProfileController.setVoltageTabModel(voltageTabModel);
         return voltAmpereProfileController;
     }
 

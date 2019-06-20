@@ -1104,6 +1104,11 @@ public class SpringJavaConfig {
         return new MainSectionModel(manufacturerRepository);
     }
 
+    @Bean
+    public VoltageTabModel voltageTabModel() {
+        return new VoltageTabModel();
+    }
+
 //    @Bean
 //    @Autowired
 //    public FxListSelection pumpTestListSelectionModel(PumpTestListController pumpTestListController) {
