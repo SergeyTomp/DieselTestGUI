@@ -670,8 +670,7 @@ public class InjectorSectionController {
             if (newValue) {
                 fillArrayNumbersOfActiveLedToggleButtons();
 //                enabler.disableVAP(true);
-                disableRadioButtons(piezoCoilToggleGroup, CurrentInjectorObtainer.getInjector() == null);
-                disableNode(true, led2ToggleButton, led3ToggleButton, led4ToggleButton);
+                disableNode(true, led2ToggleButton, led3ToggleButton, led4ToggleButton, width2CurrentSignalSpinner, offset2CurrentSignalSpinner);
                 ledToggleButtons.forEach(l -> {if(l.isSelected()){ledBlinkStart(l);}});
                 ledParametersChangeListener.sendLedRegisters();
                 ultimaModbusWriter.add(Injectors_Running_En, true);
@@ -680,6 +679,7 @@ public class InjectorSectionController {
                 timerTasksManager.start();
 
             } else {
+                boolean isDoubleCoil = voltAmpereProfileDialogModel.isDoubleCoilProperty().get();
                 ledToggleButtons.forEach(l -> {
                     if(l.isSelected()){
                         ledBlinkStop(l);
@@ -688,13 +688,13 @@ public class InjectorSectionController {
                 ultimaModbusWriter.add(Injectors_Running_En, false);
                 ledParametersChangeListener.switchOffAll();
                 timerTasksManager.stop();
-                disableRadioButtons(piezoCoilToggleGroup, false);
 //                enabler.disableVAP(false);
-                if (!voltAmpereProfileDialogModel.isDoubleCoilProperty().get()) {
-                    disableNode(false, led2ToggleButton, led3ToggleButton, led4ToggleButton);
-                }
+                disableNode(isDoubleCoil, led2ToggleButton, led3ToggleButton, led4ToggleButton);
+                disableNode(!isDoubleCoil, width2CurrentSignalSpinner, offset2CurrentSignalSpinner);
             }
-            disableNode(newValue, led1ToggleButton, widthCurrentSignalSpinner, width2CurrentSignalSpinner, freqCurrentSignalSpinner, offset2CurrentSignalSpinner);
+
+            disableRadioButtons(piezoCoilToggleGroup, CurrentInjectorObtainer.getInjector() != null);
+            disableNode(newValue, led1ToggleButton, widthCurrentSignalSpinner, freqCurrentSignalSpinner);
         }
     }
 
