@@ -171,6 +171,7 @@ public class VoltAmpereProfileController {
 
     private void setupTestModelListener() {
 
+
         injectorTestModel.injectorTestProperty().addListener((observableValue, oldValue, newValue) -> {
 
             if (newValue != null && newValue.getTestName().getMeasurement() != Measurement.NO) {

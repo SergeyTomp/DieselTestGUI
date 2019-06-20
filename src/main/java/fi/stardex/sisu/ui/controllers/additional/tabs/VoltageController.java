@@ -206,7 +206,6 @@ public class VoltageController {
         setupModelsListeners();
 
         bindingI18N();
-
     }
 
     private void setupVoltAmpereProfileDialog() {
