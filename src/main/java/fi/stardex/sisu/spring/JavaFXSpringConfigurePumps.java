@@ -63,12 +63,14 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
                                                          ManufacturerPumpModel manufacturerPumpModel,
                                                          PumpModel pumpModel,
                                                          PumpReportModel pumpReportModel,
-                                                         PumpsStartButtonState pumpsStartButtonState) {
+                                                         PumpsStartButtonState pumpsStartButtonState,
+                                                         GUI_TypeModel gui_typeModel) {
         PumpsOEMListController pumpsOEMListController = mainSectionPumpsController.getPumpsOEMListController();
         pumpsOEMListController.setManufacturerPumpModel(manufacturerPumpModel);
         pumpsOEMListController.setPumpModel(pumpModel);
         pumpsOEMListController.setPumpReportModel(pumpReportModel);
         pumpsOEMListController.setPumpsStartButtonState(pumpsStartButtonState);
+        pumpsOEMListController.setGui_typeModel(gui_typeModel);
         return pumpsOEMListController;
     }
 

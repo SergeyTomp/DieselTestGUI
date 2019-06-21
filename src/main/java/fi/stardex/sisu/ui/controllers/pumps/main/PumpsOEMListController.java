@@ -1,10 +1,10 @@
 package fi.stardex.sisu.ui.controllers.pumps.main;
 
+import fi.stardex.sisu.model.GUI_TypeModel;
 import fi.stardex.sisu.model.ManufacturerPumpModel;
 import fi.stardex.sisu.model.PumpModel;
 import fi.stardex.sisu.model.PumpReportModel;
 import fi.stardex.sisu.persistence.orm.pump.ManufacturerPump;
-import fi.stardex.sisu.states.CustomPumpState;
 import fi.stardex.sisu.states.PumpsStartButtonState;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -22,6 +22,7 @@ public class PumpsOEMListController implements ListChangeListener<ManufacturerPu
     private PumpModel pumpModel;
     private PumpReportModel pumpReportModel;
     private PumpsStartButtonState pumpsStartButtonState;
+    private GUI_TypeModel gui_typeModel;
 
     public void setManufacturerPumpModel(ManufacturerPumpModel manufacturerPumpModel) {
         this.manufacturerPumpModel = manufacturerPumpModel;
@@ -36,12 +37,20 @@ public class PumpsOEMListController implements ListChangeListener<ManufacturerPu
         this.pumpsStartButtonState = pumpsStartButtonState;
     }
 
+    public void setGui_typeModel(GUI_TypeModel gui_typeModel) {
+        this.gui_typeModel = gui_typeModel;
+    }
+
     @PostConstruct
     private void init() {
 
         manufacturerPumpModel.getManufacturerPumpObservableList().addListener(this);
         oemListView.getSelectionModel().selectedItemProperty().addListener(this);
         pumpsStartButtonState.startButtonProperty().addListener((observableValue, oldValue, newValue) -> oemListView.setDisable(newValue));
+        gui_typeModel.guiTypeProperty().addListener((observableValue, oldValue, newValue) -> {
+            oemListView.getSelectionModel().clearSelection();
+            oemListView.getFocusModel().focus(0);
+        });
     }
 
     @Override

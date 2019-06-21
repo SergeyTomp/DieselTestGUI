@@ -153,7 +153,6 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                        InjectorTestRepository injectorTestRepository,
                                                        @Lazy ModbusRegisterProcessor flowModbusWriter,
                                                        @Lazy Measurements measurements,
-                                                       TestBenchSectionController testBenchSectionController,
                                                        InfoController infoController,
                                                        DelayController delayController,
                                                        BoostUadjustmentState boostUadjustmentState,
@@ -180,7 +179,6 @@ public class JavaFXSpringConfigure extends ViewLoader{
         mainSectionController.setI18N(i18N);
         mainSectionController.setMeasurements(measurements);
         mainSectionController.setInfoController(infoController);
-        mainSectionController.setTargetRPMSpinner(testBenchSectionController.getTargetRPMSpinner());
         mainSectionController.setDelayController(delayController);
         mainSectionController.setPrintDialogPanel(printDialogPanel());
         mainSectionController.setBoostUadjustmentState(boostUadjustmentState);
@@ -224,7 +222,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                                  TestBenchSectionPwrState testBenchSectionPwrState,
                                                                  CurrentRpmModel currentRpmModel,
                                                                  PumpModel pumpModel,
-                                                                 GUI_TypeModel gui_typeModel) {
+                                                                 GUI_TypeModel gui_typeModel,
+                                                                 InjectorTestModel injectorTestModel) {
         TestBenchSectionController testBenchSectionController = rootLayoutController.getTestBenchSectionController();
         testBenchSectionController.setFlowModbusWriter(flowModbusWriter);
         testBenchSectionController.setStandModbusWriter(standModbusWriter);
@@ -238,6 +237,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         testBenchSectionController.setCurrentRpmModel(currentRpmModel);
         testBenchSectionController.setPumpModel(pumpModel);
         testBenchSectionController.setGui_typeModel(gui_typeModel);
+        testBenchSectionController.setInjectorTestModel(injectorTestModel);
         return testBenchSectionController;
     }
 

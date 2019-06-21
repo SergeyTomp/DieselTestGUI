@@ -3,4 +3,4 @@
 <?import javafx.scene.control.ListView?>
 
 
-<ListView fx:id="oemListView" maxHeight="1.7976931348623157E308" maxWidth="90.0" prefWidth="90.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.pumps.main.PumpsOEMListController" />
+<ListView fx:id="oemListView" maxHeight="1.7976931348623157E308" maxWidth="90.0" prefWidth="90.0" styleClass="../../../css/Styling.css" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.pumps.main.PumpsOEMListController" />

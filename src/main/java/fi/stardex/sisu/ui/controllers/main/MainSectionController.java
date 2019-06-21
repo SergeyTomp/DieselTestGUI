@@ -182,8 +182,6 @@ public class MainSectionController {
 
     private ViewHolder printDialogPanel;
 
-    private Spinner<Integer> targetRPMSpinner;
-
     private InfoController infoController;
 
     private DelayController delayController;
@@ -330,10 +328,6 @@ public class MainSectionController {
 
     public void setPrintDialogPanel(ViewHolder printDialogPanel) {
         this.printDialogPanel = printDialogPanel;
-    }
-
-    public void setTargetRPMSpinner(Spinner<Integer> targetRPMSpinner) {
-        this.targetRPMSpinner = targetRPMSpinner;
     }
 
     public void setInjectorsRepository(InjectorsRepository injectorsRepository) {
@@ -1031,16 +1025,12 @@ public class MainSectionController {
 
             delayController.clearDelayResults();
 
-            Integer motorSpeed = newValue.getMotorSpeed();
-
             switch (measurementType) {
 
                 case NO:
-                    targetRPMSpinner.getValueFactory().setValue(motorSpeed);
                     delayController.getSaveDelayButton().setDisable(true);
                     break;
                 default:
-                    targetRPMSpinner.getValueFactory().setValue(motorSpeed);
                     delayController.setInjectorTestName(newValue.getTestName().toString());
                     delayController.getSaveDelayButton().setDisable(false);
                     break;

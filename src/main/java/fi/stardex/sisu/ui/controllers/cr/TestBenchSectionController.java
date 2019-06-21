@@ -94,6 +94,8 @@ public class TestBenchSectionController {
 
     private GUI_TypeModel gui_typeModel;
 
+    private InjectorTestModel injectorTestModel;
+
     private TestBenchSectionPwrState testBenchSectionPwrState;
 
     private static final String PUMP_BUTTON_ON = "pump-button-on";
@@ -209,6 +211,10 @@ public class TestBenchSectionController {
         this.gui_typeModel = gui_typeModel;
     }
 
+    public void setInjectorTestModel(InjectorTestModel injectorTestModel) {
+        this.injectorTestModel = injectorTestModel;
+    }
+
     public enum StatePump {
 
         ON("PUMP\n ON", true, PUMP_BUTTON_ON),
@@ -289,7 +295,19 @@ public class TestBenchSectionController {
     }
 
     private void setupTestListener() {
+
         pumpTestModel.pumpTestProperty().addListener((observableValue, oldValue, newValue) -> {
+
+            if (newValue != null) {
+
+                targetRPMSpinner.getValueFactory().setValue(newValue.getMotorSpeed());
+            }
+            else{
+                targetRPMSpinner.getValueFactory().setValue(0);
+            }
+        });
+
+        injectorTestModel.injectorTestProperty().addListener((observableValue, oldValue, newValue) -> {
 
             if (newValue != null) {
 
