@@ -154,7 +154,6 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                        @Lazy ModbusRegisterProcessor flowModbusWriter,
                                                        @Lazy Measurements measurements,
                                                        InfoController infoController,
-                                                       DelayController delayController,
                                                        BoostUadjustmentState boostUadjustmentState,
                                                        CodingReportModel codingReportModel,
                                                        DelayReportModel delayReportModel,
@@ -179,7 +178,6 @@ public class JavaFXSpringConfigure extends ViewLoader{
         mainSectionController.setI18N(i18N);
         mainSectionController.setMeasurements(measurements);
         mainSectionController.setInfoController(infoController);
-        mainSectionController.setDelayController(delayController);
         mainSectionController.setPrintDialogPanel(printDialogPanel());
         mainSectionController.setBoostUadjustmentState(boostUadjustmentState);
         mainSectionController.setDelayReportModel(delayReportModel);
@@ -656,12 +654,14 @@ public class JavaFXSpringConfigure extends ViewLoader{
     @Autowired
     public DelayController delayController(TabSectionController tabSectionController,
                                            DelayCalculator delayCalculator,
-                                           DelayReportModel delayReportModel) {
+                                           DelayReportModel delayReportModel,
+                                           InjectorTestModel injectorTestModel) {
         DelayController delayController = tabSectionController.getDelayController();
         delayController.setDelayCalculator(delayCalculator);
         delayController.setTabSectionController(tabSectionController);
         delayController.setI18N(i18N);
         delayController.setDelayReportModel(delayReportModel);
+        delayController.setInjectorTestModel(injectorTestModel);
          return delayController;
     }
 

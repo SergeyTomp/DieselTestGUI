@@ -1,9 +1,10 @@
 package fi.stardex.sisu.ui.controllers.additional.tabs;
 
 import fi.stardex.sisu.model.DelayReportModel;
+import fi.stardex.sisu.model.InjectorTestModel;
 import fi.stardex.sisu.ui.controllers.additional.TabSectionController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.report.DelayReportController;
 import fi.stardex.sisu.util.DelayCalculator;
+import fi.stardex.sisu.util.enums.Measurement;
 import fi.stardex.sisu.util.i18n.I18N;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -76,6 +77,8 @@ public class DelayController {
 
     private DelayReportModel delayReportModel;
 
+    private InjectorTestModel injectorTestModel;
+
     public int getAddingTimeValue() {
         return Integer.parseInt(addingTime.getText());
     }
@@ -130,6 +133,9 @@ public class DelayController {
         this.channelNumber = channelNumber;
     }
 
+    public void setInjectorTestModel(InjectorTestModel injectorTestModel) {
+        this.injectorTestModel = injectorTestModel;
+    }
 
     @PostConstruct
     private void init() {
@@ -150,6 +156,25 @@ public class DelayController {
                                                                                             SENSITIVITY_SPINNER_STEP));
         
         isTabDelayShowing.bind(tabSectionController.getTabDelay().selectedProperty());
+
+        injectorTestModel.injectorTestProperty().addListener((observableValue, oldValue, newValue) -> {
+
+            clearDelayResults();
+            if (newValue != null) {
+
+                Measurement measurementType = newValue.getTestName().getMeasurement();
+                switch (measurementType) {
+
+                    case NO:
+                        saveDelayButton.setDisable(true);
+                        break;
+                    default:
+                        setInjectorTestName(newValue.getTestName().toString());
+                        saveDelayButton.setDisable(false);
+                        break;
+                }
+            }
+        });
     }
 
     private void setupDelayChart() {

@@ -19,12 +19,10 @@ import fi.stardex.sisu.states.BoostUadjustmentState;
 import fi.stardex.sisu.states.InjectorSectionPwrState;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.GUI_TypeController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.DelayController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.info.InfoController;
 import fi.stardex.sisu.ui.controllers.dialogs.NewEditInjectorDialogController;
 import fi.stardex.sisu.ui.controllers.dialogs.NewEditTestDialogController;
 import fi.stardex.sisu.ui.controllers.dialogs.PrintDialogPanelController;
-import fi.stardex.sisu.util.enums.Measurement;
 import fi.stardex.sisu.util.enums.Move;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer;
@@ -74,7 +72,7 @@ import static fi.stardex.sisu.util.enums.Measurement.DELIVERY;
 import static fi.stardex.sisu.util.enums.Measurement.VISUAL;
 import static fi.stardex.sisu.util.enums.Move.DOWN;
 import static fi.stardex.sisu.util.enums.Move.UP;
-import static fi.stardex.sisu.util.enums.Tests.*;
+import static fi.stardex.sisu.util.enums.Tests.TestType;
 import static fi.stardex.sisu.util.enums.Tests.TestType.*;
 import static fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer.setInjector;
 import static fi.stardex.sisu.util.obtainers.CurrentInjectorTestsObtainer.getInjectorTests;
@@ -183,8 +181,6 @@ public class MainSectionController {
     private ViewHolder printDialogPanel;
 
     private InfoController infoController;
-
-    private DelayController delayController;
 
     private DelayReportModel delayReportModel;
 
@@ -352,10 +348,6 @@ public class MainSectionController {
 
     public void setInfoController(InfoController infoController) {
         this.infoController = infoController;
-    }
-
-    public void setDelayController(DelayController delayController) {
-        this.delayController = delayController;
     }
 
     public void setDelayReportModel(DelayReportModel delayReportModel) {
@@ -912,8 +904,6 @@ public class MainSectionController {
 
         modelListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 
-
-
             returnToDefaultTestListAuto();
             resetButton.fire();
             delayReportModel.clearResults();
@@ -1020,21 +1010,6 @@ public class MainSectionController {
 //            currentMeasuringTime = 5;
 
             setProgress(speedComboBoxSelectionModel.getSelectedItem());
-
-            Measurement measurementType = newValue.getTestName().getMeasurement();
-
-            delayController.clearDelayResults();
-
-            switch (measurementType) {
-
-                case NO:
-                    delayController.getSaveDelayButton().setDisable(true);
-                    break;
-                default:
-                    delayController.setInjectorTestName(newValue.getTestName().toString());
-                    delayController.getSaveDelayButton().setDisable(false);
-                    break;
-            }
 
             injectorTestModel.setTestIsChanging(false);
             mainSectionModel.setTestIsChanging(false);  // in future replace above line
