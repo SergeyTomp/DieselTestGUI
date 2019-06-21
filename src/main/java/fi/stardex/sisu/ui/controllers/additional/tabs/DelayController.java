@@ -125,7 +125,7 @@ public class DelayController {
         this.delayReportModel = delayReportModel;
     }
 
-    public void setInjectorTestName(String injectorTestName) {
+    private void setInjectorTestName(String injectorTestName) {
         this.injectorTestName = injectorTestName;
     }
 
@@ -160,19 +160,22 @@ public class DelayController {
         injectorTestModel.injectorTestProperty().addListener((observableValue, oldValue, newValue) -> {
 
             clearDelayResults();
-            if (newValue != null) {
 
-                Measurement measurementType = newValue.getTestName().getMeasurement();
-                switch (measurementType) {
+            if (newValue == null) {
+                saveDelayButton.setDisable(true);
+                return;
+            }
 
-                    case NO:
-                        saveDelayButton.setDisable(true);
-                        break;
-                    default:
-                        setInjectorTestName(newValue.getTestName().toString());
-                        saveDelayButton.setDisable(false);
-                        break;
-                }
+            Measurement measurementType = newValue.getTestName().getMeasurement();
+            switch (measurementType) {
+
+                case NO:
+                    saveDelayButton.setDisable(true);
+                    break;
+                default:
+                    setInjectorTestName(newValue.getTestName().toString());
+                    saveDelayButton.setDisable(false);
+                    break;
             }
         });
     }
@@ -219,7 +222,7 @@ public class DelayController {
         });
     }
 
-    public void clearDelayResults() {
+    private void clearDelayResults() {
 
         delayCalculator.clearDelayValuesList();
         minimumDelay.setText("");

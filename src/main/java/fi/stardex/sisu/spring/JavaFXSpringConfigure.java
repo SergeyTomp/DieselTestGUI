@@ -153,7 +153,6 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                        InjectorTestRepository injectorTestRepository,
                                                        @Lazy ModbusRegisterProcessor flowModbusWriter,
                                                        @Lazy Measurements measurements,
-                                                       InfoController infoController,
                                                        BoostUadjustmentState boostUadjustmentState,
                                                        CodingReportModel codingReportModel,
                                                        DelayReportModel delayReportModel,
@@ -177,7 +176,6 @@ public class JavaFXSpringConfigure extends ViewLoader{
         mainSectionController.setFlowModbusWriter(flowModbusWriter);
         mainSectionController.setI18N(i18N);
         mainSectionController.setMeasurements(measurements);
-        mainSectionController.setInfoController(infoController);
         mainSectionController.setPrintDialogPanel(printDialogPanel());
         mainSectionController.setBoostUadjustmentState(boostUadjustmentState);
         mainSectionController.setDelayReportModel(delayReportModel);
@@ -725,54 +723,66 @@ public class JavaFXSpringConfigure extends ViewLoader{
     @Bean
     @Autowired
     public BoschController boschController(ViewHolder infoBosch,
-                                           BoschRepository boschRepository){
+                                           BoschRepository boschRepository,
+                                           MainSectionModel mainSectionModel){
         BoschController boschController = (BoschController) infoBosch.getController();
         boschController.setBoschRepository(boschRepository);
+        boschController.setMainSectionModel(mainSectionModel);
         return boschController;
     }
 
     @Bean
     @Autowired
     public SiemensController siemensController(ViewHolder infoSiemens,
-                                               SiemensReferenceRepository siemensReferenceRepository){
+                                               SiemensReferenceRepository siemensReferenceRepository,
+                                               MainSectionModel mainSectionModel){
         SiemensController siemensController = (SiemensController)infoSiemens.getController();
         siemensController.setSiemensReferenceRepository(siemensReferenceRepository);
+        siemensController.setMainSectionModel(mainSectionModel);
         return siemensController;
     }
 
     @Bean
     @Autowired
     public DensoController densoController(ViewHolder infoDenso,
-                                           DensoRepository densoRepository){
+                                           DensoRepository densoRepository,
+                                           MainSectionModel mainSectionModel){
         DensoController densoController = (DensoController)infoDenso.getController();
         densoController.setDensoRepository(densoRepository);
+        densoController.setMainSectionModel(mainSectionModel);
         return densoController;
     }
 
     @Bean
     @Autowired
     public DelphiController delphiController(ViewHolder infoDelphi,
-                                             DelphiRepository delphiRepository){
+                                             DelphiRepository delphiRepository,
+                                             MainSectionModel mainSectionModel){
         DelphiController delphiController = (DelphiController)infoDelphi.getController();
         delphiController.setDelphiRepository(delphiRepository);
+        delphiController.setMainSectionModel(mainSectionModel);
         return delphiController;
     }
 
     @Bean
     @Autowired
     public CaterpillarController caterpillarController(ViewHolder infoCaterpillar,
-                                                       CaterpillarRepository caterpillarRepository){
+                                                       CaterpillarRepository caterpillarRepository,
+                                                       MainSectionModel mainSectionModel){
         CaterpillarController caterpillarController = (CaterpillarController)infoCaterpillar.getController();
         caterpillarController.setCaterpillarRepository(caterpillarRepository);
+        caterpillarController.setMainSectionModel(mainSectionModel);
         return caterpillarController;
     }
 
     @Bean
     @Autowired
     public AZPIController azpiController(ViewHolder infoAZPI,
-                                         AZPIRepository azpiRepository){
+                                         AZPIRepository azpiRepository,
+                                         MainSectionModel mainSectionModel){
         AZPIController azpiController = (AZPIController) infoAZPI.getController();
         azpiController.setAZPIRepository(azpiRepository);
+        azpiController.setMainSectionModel(mainSectionModel);
         return azpiController;
     }
 
@@ -785,7 +795,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                          ViewHolder infoCaterpillar,
                                          ViewHolder infoAZPI,
                                          ViewHolder infoDelphi,
-                                         TabSectionController tabSectionController){
+                                         TabSectionController tabSectionController,
+                                         MainSectionModel mainSectionModel){
         InfoController infoController = tabSectionController.getInfoController();
         infoController.setInfoDefault(infoDefault.getView());
         infoController.setInfoBosch(infoBosch.getView());
@@ -800,6 +811,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         infoController.setDensoController((DensoController)infoDenso.getController());
         infoController.setCaterpillarController((CaterpillarController)infoCaterpillar.getController());
         infoController.setAzpiController((AZPIController)infoAZPI.getController());
+        infoController.setMainSectionModel(mainSectionModel);
         return infoController;
     }
 

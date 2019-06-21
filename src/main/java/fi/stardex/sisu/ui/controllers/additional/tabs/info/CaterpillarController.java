@@ -1,5 +1,6 @@
 package fi.stardex.sisu.ui.controllers.additional.tabs.info;
 
+import fi.stardex.sisu.model.MainSectionModel;
 import fi.stardex.sisu.persistence.repos.cr.BoschRepository;
 import fi.stardex.sisu.persistence.repos.cr.CaterpillarRepository;
 import javafx.beans.property.SimpleStringProperty;
@@ -28,6 +29,7 @@ public class CaterpillarController {
     private CaterpillarRepository caterpillarRepository;
 
     private String NO_INFORMATION = "No information for specified injector.";
+    private MainSectionModel mainSectionModel;
 
     public AnchorPane getRootAnchorPane() {
         return rootAnchorPane;
@@ -35,6 +37,10 @@ public class CaterpillarController {
 
     public void setCaterpillarRepository(CaterpillarRepository caterpillarRepository) {
         this.caterpillarRepository = caterpillarRepository;
+    }
+
+    public void setMainSectionModel(MainSectionModel mainSectionModel) {
+        this.mainSectionModel = mainSectionModel;
     }
 
     @PostConstruct

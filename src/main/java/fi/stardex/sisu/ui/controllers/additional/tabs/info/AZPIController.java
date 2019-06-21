@@ -1,5 +1,6 @@
 package fi.stardex.sisu.ui.controllers.additional.tabs.info;
 
+import fi.stardex.sisu.model.MainSectionModel;
 import fi.stardex.sisu.persistence.repos.cr.AZPIRepository;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -25,13 +26,18 @@ public class AZPIController {
     private AZPIRepository azpiRepository;
 
     private String NO_INFORMATION = "No information for specified injector.";
+    private MainSectionModel mainSectionModel;
+
 
     public AnchorPane getRootAnchorPane() {
         return rootAnchorPane;
     }
 
-    public void setAZPIRepository(AZPIRepository boschRepository) {
+    public void setAZPIRepository(AZPIRepository azpiRepository) {
         this.azpiRepository = azpiRepository;
+    }
+    public void setMainSectionModel(MainSectionModel mainSectionModel) {
+        this.mainSectionModel = mainSectionModel;
     }
 
     @PostConstruct

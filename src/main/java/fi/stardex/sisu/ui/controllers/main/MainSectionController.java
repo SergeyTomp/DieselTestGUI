@@ -19,7 +19,6 @@ import fi.stardex.sisu.states.BoostUadjustmentState;
 import fi.stardex.sisu.states.InjectorSectionPwrState;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.GUI_TypeController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.info.InfoController;
 import fi.stardex.sisu.ui.controllers.dialogs.NewEditInjectorDialogController;
 import fi.stardex.sisu.ui.controllers.dialogs.NewEditTestDialogController;
 import fi.stardex.sisu.ui.controllers.dialogs.PrintDialogPanelController;
@@ -179,8 +178,6 @@ public class MainSectionController {
     private ViewHolder newEditTestDialog;
 
     private ViewHolder printDialogPanel;
-
-    private InfoController infoController;
 
     private DelayReportModel delayReportModel;
 
@@ -344,10 +341,6 @@ public class MainSectionController {
 
     public void setFlowModbusWriter(ModbusRegisterProcessor flowModbusWriter) {
         this.flowModbusWriter = flowModbusWriter;
-    }
-
-    public void setInfoController(InfoController infoController) {
-        this.infoController = infoController;
     }
 
     public void setDelayReportModel(DelayReportModel delayReportModel) {
@@ -720,7 +713,7 @@ public class MainSectionController {
 
         private State state;
 
-        public ManufacturerMenuEventHandler(State state) {
+        ManufacturerMenuEventHandler(State state) {
             this.state = state;
         }
 
@@ -734,7 +727,7 @@ public class MainSectionController {
         private String title;
         private Consumer<NewEditInjectorDialogController> dialogType;
 
-        public ModelMenuEventHandler(String title, Consumer<NewEditInjectorDialogController> dialogType) {
+        ModelMenuEventHandler(String title, Consumer<NewEditInjectorDialogController> dialogType) {
             this.title = title;
             this.dialogType = dialogType;
         }
@@ -761,7 +754,7 @@ public class MainSectionController {
         private String title;
         private Consumer<NewEditTestDialogController> dialogType;
 
-        public TestMenuEventHandler(String title, Consumer<NewEditTestDialogController> dialogType) {
+        TestMenuEventHandler(String title, Consumer<NewEditTestDialogController> dialogType) {
             this.title = title;
             this.dialogType = dialogType;
         }
@@ -852,7 +845,7 @@ public class MainSectionController {
             resetButton.fire();
             disableNode(newValue == null, injectorsVBox);
             setManufacturer(newValue);
-            infoController.changeToDefault();
+            mainSectionModel.manufacturerObjectProperty().setValue(newValue);
 
             delayReportModel.clearResults();
             rlc_reportModel.clearResults();
@@ -931,38 +924,14 @@ public class MainSectionController {
             injectorModel.setInjectorIsChanging(true);              // for listener of width changes in the VoltAmpereProfileController blocking
             mainSectionModel.setInjectorIsChanging(true);           // in future replace above line
             injector.setVoltAmpereProfile(dafaultVoltAmpereProfile);
+            setInjector(injector);
             injectorModel.injectorProperty().setValue(injector);
             mainSectionModel.injectorProperty().setValue(injector); // in future replace above line
-            setInjector(injector);
 
             fetchTestsFromRepository();
             showInjectorTests(true);
             showNode(checkInjectorForCoding(injector.getCodetype()), codingTestRadioButton);
 
-            String manufacturerName = injector.getManufacturer().getManufacturerName();
-            switch (manufacturerName) {
-                case "Bosch":
-                    infoController.changeToBosch();
-                    break;
-                case "Denso":
-                    infoController.changgeToDenso();
-                    break;
-                case "Delphi":
-                    infoController.changeToDelphi();
-                    break;
-                case "Caterpillar":
-                    infoController.changeToCaterpillar();
-                    break;
-                case "Siemens":
-                    infoController.changeToSiemens();
-                    break;
-                case "AZPI":
-                    infoController.changeToAZPI();
-                    break;
-                default:
-                    infoController.changeToDefault();
-                    break;
-            }
             injectorModel.setInjectorIsChanging(false);
             mainSectionModel.setInjectorIsChanging(false);  // in future replace above line
         });

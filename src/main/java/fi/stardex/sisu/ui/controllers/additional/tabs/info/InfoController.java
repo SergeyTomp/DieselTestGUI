@@ -1,5 +1,8 @@
 package fi.stardex.sisu.ui.controllers.additional.tabs.info;
 
+import fi.stardex.sisu.model.MainSectionModel;
+import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
+import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.layout.GridPane;
@@ -25,12 +28,48 @@ public class InfoController {
     private DensoController densoController;
     private CaterpillarController caterpillarController;
     private AZPIController azpiController;
+    private MainSectionModel mainSectionModel;
 
     private Logger logger = LoggerFactory.getLogger(InfoController.class);
 
     @PostConstruct
     private void init(){
+
         changeToDefault();
+        mainSectionModel.manufacturerObjectProperty().addListener((observableValue, oldValue, newValue) -> changeToDefault());
+        mainSectionModel.injectorProperty().addListener((observableValue, oldValue, newValue) -> setInfoPanel(newValue));
+    }
+
+    private void setInfoPanel(Injector injector) {
+
+        if (injector == null) {
+            changeToDefault();
+        }else{
+            String manufacturerName = injector.getManufacturer().getManufacturerName();
+            switch (manufacturerName) {
+                case "Bosch":
+                    changeToBosch();
+                    break;
+                case "Denso":
+                    changgeToDenso();
+                    break;
+                case "Delphi":
+                    changeToDelphi();
+                    break;
+                case "Caterpillar":
+                    changeToCaterpillar();
+                    break;
+                case "Siemens":
+                    changeToSiemens();
+                    break;
+                case "AZPI":
+                    changeToAZPI();
+                    break;
+                default:
+                    changeToDefault();
+                    break;
+            }
+        }
     }
 
     public void setInfoDefault(Parent infoDefault) {
@@ -85,44 +124,48 @@ public class InfoController {
         this.azpiController = azpiController;
     }
 
-    public void changeToDefault(){
+    public void setMainSectionModel(MainSectionModel mainSectionModel) {
+        this.mainSectionModel = mainSectionModel;
+    }
+
+    private void changeToDefault(){
         clearSectionLayout();
         rootInfoGridPane.add(infoDefault, 0, 0);
         logger.info("Change to Default Label");
     }
 
-    public void changeToBosch(){
+    private void changeToBosch(){
         clearSectionLayout();
         rootInfoGridPane.add(infoBosch, 0, 0);
         boschController.switchTo();
     }
 
-    public void changeToSiemens(){
+    private void changeToSiemens(){
         clearSectionLayout();
         rootInfoGridPane.add(infoSiemens, 0, 0);
         siemensController.switchTo();
     }
 
-    public void changgeToDenso(){
+    private void changgeToDenso(){
         clearSectionLayout();
         rootInfoGridPane.add(infoDenso, 0, 0);
         densoController.switchTo();
         logger.info("Change to Denso Panel");
     }
 
-    public void changeToCaterpillar(){
+    private void changeToCaterpillar(){
         clearSectionLayout();
         rootInfoGridPane.add(infoCaterpillar, 0, 0);
         logger.info("Change to Caterpillar Label");
     }
 
-    public void changeToDelphi(){
+    private void changeToDelphi(){
         clearSectionLayout();
         rootInfoGridPane.add(infoDelphi, 0, 0);
         logger.info("Change to Delphi Label");
     }
 
-    public void changeToAZPI(){
+    private void changeToAZPI(){
         clearSectionLayout();
         rootInfoGridPane.add(infoAZPI, 0, 0);
         logger.info("Change to AZPI Label");

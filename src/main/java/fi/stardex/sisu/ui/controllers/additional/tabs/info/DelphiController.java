@@ -1,5 +1,6 @@
 package fi.stardex.sisu.ui.controllers.additional.tabs.info;
 
+import fi.stardex.sisu.model.MainSectionModel;
 import fi.stardex.sisu.persistence.repos.cr.BoschRepository;
 import fi.stardex.sisu.persistence.repos.cr.DelphiRepository;
 import javafx.beans.property.SimpleStringProperty;
@@ -26,6 +27,7 @@ public class DelphiController {
     private TableColumn<InfoTableLine, String> dataColumn;
     private String NO_INFORMATION = "No information for specified injector.";
     private DelphiRepository delphiRepository;
+    private MainSectionModel mainSectionModel;
 
     public AnchorPane getRootAnchorPane() {
         return rootAnchorPane;
@@ -33,6 +35,10 @@ public class DelphiController {
 
     public void setDelphiRepository(DelphiRepository delphiRepository) {
         this.delphiRepository = delphiRepository;
+    }
+
+    public void setMainSectionModel(MainSectionModel mainSectionModel) {
+        this.mainSectionModel = mainSectionModel;
     }
 
     @PostConstruct

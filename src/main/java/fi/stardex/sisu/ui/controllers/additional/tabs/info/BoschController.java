@@ -1,5 +1,6 @@
 package fi.stardex.sisu.ui.controllers.additional.tabs.info;
 
+import fi.stardex.sisu.model.MainSectionModel;
 import fi.stardex.sisu.persistence.orm.bosch_info.Applications;
 import fi.stardex.sisu.persistence.orm.bosch_info.Nozzles;
 import fi.stardex.sisu.persistence.orm.bosch_info.Parameters;
@@ -70,10 +71,14 @@ public class BoschController {
     private String RERIDUAL_AIR_GAP = "Residual air gap :";
     private String EXCESS_LIFT ="Excess lift :";
     private StringBuilder sb;
+    private MainSectionModel mainSectionModel;
     private Logger logger = LoggerFactory.getLogger(BoschController.class);
 
     public void setBoschRepository(BoschRepository boschRepository) {
         this.boschRepository = boschRepository;
+    }
+    public void setMainSectionModel(MainSectionModel mainSectionModel) {
+        this.mainSectionModel = mainSectionModel;
     }
 
     @PostConstruct
@@ -106,9 +111,9 @@ public class BoschController {
     void switchTo(){
         infoSource.clear();
         infoButton.setVisible(false);
-        injectorCode = CurrentInjectorObtainer.getInjector().getInjectorCode();
+        injectorCode = mainSectionModel.injectorProperty().get().getInjectorCode();
 
-        boschRepository.findById(injectorCode).ifPresent(parameters -> fillInformationTab(parameters));
+        boschRepository.findById(injectorCode).ifPresent(this::fillInformationTab);
 
         logger.info("Change to Bosch Label");
     }
@@ -117,7 +122,7 @@ public class BoschController {
         StringProperty parameter;
         StringProperty data;
 
-        public InfoTableLine(String parameter, String data) {
+        InfoTableLine(String parameter, String data) {
             this.parameter = new SimpleStringProperty(parameter);
             this.data = new SimpleStringProperty(data);
         }

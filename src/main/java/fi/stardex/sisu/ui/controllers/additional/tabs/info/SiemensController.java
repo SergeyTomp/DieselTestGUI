@@ -1,5 +1,6 @@
 package fi.stardex.sisu.ui.controllers.additional.tabs.info;
 
+import fi.stardex.sisu.model.MainSectionModel;
 import fi.stardex.sisu.persistence.orm.siemens_info.Cars;
 import fi.stardex.sisu.persistence.orm.siemens_info.Engines;
 import fi.stardex.sisu.persistence.orm.siemens_info.Reference;
@@ -70,6 +71,7 @@ public class SiemensController {
     private String CROSS_REFERENCE = "Cross Reference";
     private String REMARKS = "Remarks";
     private String NO_INFORMATION = "No information for specified injector.";
+    private MainSectionModel mainSectionModel;
 
     private Logger logger = LoggerFactory.getLogger(BoschController.class);
 
@@ -81,6 +83,10 @@ public class SiemensController {
         this.siemensReferenceRepository = siemensReferenceRepository;
     }
 
+    public void setMainSectionModel(MainSectionModel mainSectionModel) {
+        this.mainSectionModel = mainSectionModel;
+    }
+
     @PostConstruct
     private void init(){
         infoSource = FXCollections.observableArrayList();
@@ -88,11 +94,13 @@ public class SiemensController {
         sb = new StringBuilder();
         copyKeyCodeCombination = new KeyCodeCombination(KeyCode.C, KeyCombination.CONTROL_ANY);
 
-        dataColumn.setCellFactory(new Callback<TableColumn<InfoTableLine, String>, TableCell<InfoTableLine, String>>() {
+        dataColumn.setCellFactory(new Callback<>() {
 
-            @Override public TableCell<InfoTableLine, String> call(TableColumn<InfoTableLine, String> param) {
-                TableCell<InfoTableLine, String> tableCell = new TableCell<InfoTableLine, String>() {
-                    @Override protected void updateItem(String item, boolean empty) {
+            @Override
+            public TableCell<InfoTableLine, String> call(TableColumn<InfoTableLine, String> param) {
+                return new TableCell<>() {
+                    @Override
+                    protected void updateItem(String item, boolean empty) {
                         if (item == getItem()) return;
 
                         super.updateItem(item, empty);
@@ -105,15 +113,14 @@ public class SiemensController {
                             Label l = new Label(item);
                             l.setWrapText(true);
                             VBox box = new VBox(l);
-                            l.heightProperty().addListener((observable,oldValue,newValue)-> {
-                                box.setPrefHeight(newValue.doubleValue()+7);
-                                Platform.runLater(()->this.getTableRow().requestLayout());
+                            l.heightProperty().addListener((observable, oldValue, newValue) -> {
+                                box.setPrefHeight(newValue.doubleValue() + 7);
+                                Platform.runLater(() -> this.getTableRow().requestLayout());
                             });
                             super.setGraphic(box);
                         }
                     }
                 };
-                return tableCell;
             }
         });
 
@@ -141,13 +148,9 @@ public class SiemensController {
         infoTableView.setContextMenu(infoContextMenu);
         sparesTableView.setContextMenu(sparesContextMenu);
 
-        infoContextMenu.setOnAction(event -> {
-            copyToClipBoard(infoTableView);
-        });
+        infoContextMenu.setOnAction(event -> copyToClipBoard(infoTableView));
 
-        sparesContextMenu.setOnAction(event -> {
-            copyToClipBoard(sparesTableView);
-        });
+        sparesContextMenu.setOnAction(event -> copyToClipBoard(sparesTableView));
 
         infoTableView.setOnKeyPressed(event -> {
             if (copyKeyCodeCombination.match(event) && event.getSource() instanceof TableView) {
@@ -165,7 +168,7 @@ public class SiemensController {
         infoSource.clear();
         sparesSource.clear();
         sb.setLength(0);
-        String injectorCode = CurrentInjectorObtainer.getInjector().getInjectorCode()
+        String injectorCode = mainSectionModel.injectorProperty().get().getInjectorCode()
                 .replaceAll("-", "").replaceAll(" ", "").trim();
 
         Reference refByInjector = siemensReferenceRepository.findByInjector(injectorCode);
@@ -222,7 +225,7 @@ public class SiemensController {
         StringProperty parameter;
         StringProperty data;
 
-        public InfoTableLine(String parameter, String data) {
+        InfoTableLine(String parameter, String data) {
             this.parameter = new SimpleStringProperty(parameter);
             this.data = new SimpleStringProperty(data);
         }
@@ -233,7 +236,7 @@ public class SiemensController {
         StringProperty orderNumber;
         StringProperty description;
 
-        public SparesTableLine(String category, String orderNumber, String description) {
+        SparesTableLine(String category, String orderNumber, String description) {
             this.category = new SimpleStringProperty(category);
             this.orderNumber = new SimpleStringProperty(orderNumber);
             this.description = new SimpleStringProperty(description);

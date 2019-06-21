@@ -1,5 +1,6 @@
 package fi.stardex.sisu.ui.controllers.additional.tabs.info;
 
+import fi.stardex.sisu.model.MainSectionModel;
 import fi.stardex.sisu.persistence.orm.denso_info.DensoInjectors;
 import fi.stardex.sisu.persistence.repos.cr.DensoRepository;
 import fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer;
@@ -56,6 +57,7 @@ public class DensoController {
     private Set<String> description;
     private Set<String> densoNumber;
     private boolean notEmpty;
+    private MainSectionModel mainSectionModel;
     private Logger logger = LoggerFactory.getLogger(DensoController.class);
 
     public AnchorPane getRootAnchorPane() {
@@ -65,6 +67,9 @@ public class DensoController {
     public void setDensoRepository(DensoRepository densoRepository) {
         this.densoRepository = densoRepository;
     }
+    public void setMainSectionModel(MainSectionModel mainSectionModel) {
+        this.mainSectionModel = mainSectionModel;
+    }
 
     @PostConstruct
     private void init(){
@@ -72,12 +77,7 @@ public class DensoController {
         sb = new StringBuilder();
         infoTableView.getSelectionModel().setCellSelectionEnabled(true);
         parameterColumn.setCellValueFactory(c -> c.getValue().parameter);
-        dataColumn.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<InfoTableLine, String>, ObservableValue<String>>() {
-            @Override
-            public ObservableValue<String> call(TableColumn.CellDataFeatures<InfoTableLine, String> c) {
-                return c.getValue().data;
-            }
-        });
+        dataColumn.setCellValueFactory(c -> c.getValue().data);
         infoTableView.setPlaceholder(new Label(NO_INFORMATION));
         selectedCells = infoTableView.getSelectionModel().getSelectedCells();
         item = new MenuItem("Copy");
@@ -102,7 +102,7 @@ public class DensoController {
         description = new HashSet<>();
         notEmpty = false;
 
-        String injectorCode = CurrentInjectorObtainer.getInjector().getInjectorCode();
+        String injectorCode = mainSectionModel.injectorProperty().get().getInjectorCode();
 
         searchByCode1(injectorCode);
         if(notEmpty){
@@ -111,9 +111,8 @@ public class DensoController {
         else {
             searchByCode2(injectorCode);
             if(notEmpty){
-                Iterator<String> dnit = densoNumber.iterator();
-                while (dnit.hasNext()){
-                    searchByCode1(dnit.next());
+                for (String aDensoNumber : densoNumber) {
+                    searchByCode1(aDensoNumber);
                 }
                 fillTableView();
             }
@@ -202,7 +201,7 @@ public class DensoController {
         StringProperty parameter;
         StringProperty data;
 
-        public InfoTableLine(String parameter, String data) {
+        InfoTableLine(String parameter, String data) {
             this.parameter = new SimpleStringProperty(parameter);
             this.data = new SimpleStringProperty(data);
         }
