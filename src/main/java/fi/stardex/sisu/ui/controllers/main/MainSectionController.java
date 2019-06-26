@@ -49,6 +49,7 @@ import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -226,6 +227,12 @@ public class MainSectionController {
     private MainSectionModel mainSectionModel;
 
     private InjectorSectionPwrState injectorSectionPwrState;
+
+    private boolean oemAlertProcessing;
+
+    private boolean modelAlertProcessing;
+
+    private Alert alert;
 
     public ToggleGroup getTestsToggleGroup() {
         return testsToggleGroup;
@@ -435,6 +442,19 @@ public class MainSectionController {
 
         testListView.setCellFactory(CheckBoxListCell.forListView(InjectorTest::includedProperty));
         showButtons(true, false);
+    }
+
+    private void showAlert() {
+
+        if (alert == null) {
+            alert = new Alert(Alert.AlertType.NONE, "Report results will be lost!", ButtonType.APPLY, ButtonType.CANCEL);
+            alert.initStyle(StageStyle.DECORATED);
+            alert.getDialogPane().getStylesheets().add(getClass().getResource("/css/Styling.css").toExternalForm());
+            alert.getDialogPane().getStyleClass().add("alertDialog");
+            ((Button)alert.getDialogPane().lookupButton(ButtonType.APPLY)).setDefaultButton(false);
+            ((Button)alert.getDialogPane().lookupButton(ButtonType.CANCEL)).setDefaultButton(true);
+        }
+        alert.showAndWait();
     }
 
     private void setHEUIManufacturerListView() {
@@ -841,6 +861,20 @@ public class MainSectionController {
 
         manufacturerListView.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) -> {
 
+            if(oemAlertProcessing) return;
+
+            if (!flowReportModel.getResultObservableMap().isEmpty()) {
+
+                showAlert();
+                if (alert.getResult() != ButtonType.APPLY) {
+
+                    oemAlertProcessing = true;
+                    manufacturerListView.getSelectionModel().select(oldValue);
+                    oemAlertProcessing = false;
+                    return;
+                }
+            }
+
             ultimaModbusWriter.add(UIS_to_CR_pulseControlSwitch, 0);
             resetButton.fire();
             disableNode(newValue == null, injectorsVBox);
@@ -896,6 +930,20 @@ public class MainSectionController {
     private MainSectionController setupModelListViewListener() {
 
         modelListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+
+            if(modelAlertProcessing)return;
+
+            if (!flowReportModel.getResultObservableMap().isEmpty()) {
+
+                showAlert();
+                if (alert.getResult() != ButtonType.APPLY) {
+                    
+                    modelAlertProcessing = true;
+                    modelListView.getSelectionModel().select(oldValue);
+                    modelAlertProcessing = false;
+                    return;
+                }
+            }
 
             returnToDefaultTestListAuto();
             resetButton.fire();

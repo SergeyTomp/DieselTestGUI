@@ -1771,4 +1771,40 @@ label
 
 .pane{
     -fx-background-color:#666666;
+    -fx-border-width:2px;
 }
+
+.alertDialog{
+    -fx-background-color: #666666;
+}
+/**Costumization of The Bar where the buttons are located**/
+
+.alertDialog > *.button-bar > *.container{
+    -fx-background-color: #666666;
+}
+.alertDialog > *.label.content{
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+}
+/**Costumization of DialogPane Header**/
+.alertDialog > *.header-panel{
+    -fx-background-color: #a59c31;
+}
+.alertDialog > *.header-panel *.label{
+    -fx-font-size: 18px;
+    -fx-font-style: italic;
+    -fx-fill: #e6e600;
+}
+/**Costumization of Buttons**/
+/*.myDialog .button{*/
+    /*-fx-background-color:black;*/
+    /*-fx-text-fill:white;*/
+    /*-fx-wrap-text: true;*/
+    /*-fx-effect: dropshadow( three-pass-box, yellow, 10.0, 0.0, 0.0, 0.0);*/
+    /*-fx-cursor:hand;*/
+/*}*/
+/*.myDialog .button:hover{*/
+    /*-fx-background-color:white;*/
+    /*-fx-text-fill:black;*/
+    /*-fx-font-weight:bold;*/
+/*}*/
