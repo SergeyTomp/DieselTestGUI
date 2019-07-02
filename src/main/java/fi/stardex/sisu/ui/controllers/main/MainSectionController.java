@@ -29,6 +29,8 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
@@ -44,6 +46,7 @@ import javafx.scene.control.cell.CheckBoxListCell;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
@@ -233,6 +236,12 @@ public class MainSectionController {
     private boolean modelAlertProcessing;
 
     private Alert alert;
+
+    private StringProperty alertString = new SimpleStringProperty();
+
+    private StringProperty yesButton = new SimpleStringProperty();
+
+    private StringProperty noButton = new SimpleStringProperty();
 
     public ToggleGroup getTestsToggleGroup() {
         return testsToggleGroup;
@@ -447,13 +456,18 @@ public class MainSectionController {
     private void showAlert() {
 
         if (alert == null) {
-            alert = new Alert(Alert.AlertType.NONE, "Report results will be lost!", ButtonType.APPLY, ButtonType.CANCEL);
+            alert = new Alert(Alert.AlertType.NONE, "", ButtonType.YES, ButtonType.NO);
             alert.initStyle(StageStyle.DECORATED);
             alert.getDialogPane().getStylesheets().add(getClass().getResource("/css/Styling.css").toExternalForm());
             alert.getDialogPane().getStyleClass().add("alertDialog");
-            ((Button)alert.getDialogPane().lookupButton(ButtonType.APPLY)).setDefaultButton(false);
-            ((Button)alert.getDialogPane().lookupButton(ButtonType.CANCEL)).setDefaultButton(true);
+            alert.setResizable(true);
+            alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+            ((Button)alert.getDialogPane().lookupButton(ButtonType.YES)).setDefaultButton(false);
+            ((Button)alert.getDialogPane().lookupButton(ButtonType.NO)).setDefaultButton(true);
         }
+        ((Button)alert.getDialogPane().lookupButton(ButtonType.YES)).textProperty().setValue(yesButton.get());
+        ((Button)alert.getDialogPane().lookupButton(ButtonType.NO)).textProperty().setValue(noButton.get());
+        alert.setContentText(alertString.get());
         alert.showAndWait();
     }
 
@@ -554,6 +568,9 @@ public class MainSectionController {
         codingTestRadioButton.textProperty().bind(i18N.createStringBinding("main.coding.radiobutton"));
         defaultRadioButton.textProperty().bind(i18N.createStringBinding("main.defaultRB.radiobutton"));
         customRadioButton.textProperty().bind(i18N.createStringBinding("main.customRB.radiobutton"));
+        alertString.bind(i18N.createStringBinding("alert.oemOrModelChange"));
+        yesButton.bind((i18N.createStringBinding("alert.yesButton")));
+        noButton.bind((i18N.createStringBinding("alert.noButton")));
         return this;
     }
 
@@ -866,7 +883,7 @@ public class MainSectionController {
             if (!flowReportModel.getResultObservableMap().isEmpty()) {
 
                 showAlert();
-                if (alert.getResult() != ButtonType.APPLY) {
+                if (alert.getResult() != ButtonType.YES) {
 
                     oemAlertProcessing = true;
                     manufacturerListView.getSelectionModel().select(oldValue);
@@ -936,7 +953,7 @@ public class MainSectionController {
             if (!flowReportModel.getResultObservableMap().isEmpty()) {
 
                 showAlert();
-                if (alert.getResult() != ButtonType.APPLY) {
+                if (alert.getResult() != ButtonType.YES) {
                     
                     modelAlertProcessing = true;
                     modelListView.getSelectionModel().select(oldValue);

@@ -1084,6 +1084,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         PressureSensorController pressureSensorController = settingsController.getPressureSensorController();
         pressureSensorController.setPressureSensorModel(pressureSensorModel);
         pressureSensorController.setRootPrefs(preferences);
+        pressureSensorController.setI18N(i18N);
         return pressureSensorController;
     }
 
