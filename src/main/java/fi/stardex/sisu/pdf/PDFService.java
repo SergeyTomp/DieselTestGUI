@@ -580,7 +580,7 @@ public class PDFService {
         logger.debug("PDF save");
         File myPath = new File(desktopFiles.getReportsFolderPath()
                 + File.separator +  LocalDate.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-                + File.separator + (customer.getCustomerName().equals(PrintDialogPanelController.UNDERSPACE)? "Customer " : customer.getCustomerName()));
+                + File.separator + (customer.getCustomerName().equals(PrintDialogPanelController.UNDERSPACE)? "Customer" : customer.getCustomerName()));
         if (!myPath.exists()) {
             myPath.mkdirs();
         }

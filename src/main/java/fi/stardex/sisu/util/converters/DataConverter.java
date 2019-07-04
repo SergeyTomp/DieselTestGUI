@@ -8,11 +8,11 @@ public class DataConverter {
     }
 
     public static double convertDataToDouble(String value) {
-        return Double.parseDouble(value);
+        return Double.parseDouble(value.replace(",", "."));
     }
 
     public static float convertDataToFloat(String value) {
-        return Float.parseFloat(value);
+        return Float.parseFloat(value.replace(",", "."));
     }
 
     public static float round(float value) {
