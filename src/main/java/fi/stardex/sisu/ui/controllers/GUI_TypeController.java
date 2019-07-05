@@ -3,9 +3,6 @@ package fi.stardex.sisu.ui.controllers;
 import fi.stardex.sisu.model.GUI_TypeModel;
 import fi.stardex.sisu.model.MainSectionModel;
 import fi.stardex.sisu.model.ManufacturerPumpModel;
-import fi.stardex.sisu.model.ProducerRepositoryModel;
-import fi.stardex.sisu.persistence.repos.HEUI.ManufacturerHeuiRepository;
-import fi.stardex.sisu.persistence.repos.ManufacturerRepository;
 import fi.stardex.sisu.states.DimasGUIEditionState;
 import fi.stardex.sisu.states.InjectorSectionPwrState;
 import fi.stardex.sisu.states.PumpsStartButtonState;
@@ -72,15 +69,9 @@ public class GUI_TypeController {
 
     private PumpsStartButtonState pumpsStartButtonState;
 
-    private ProducerRepositoryModel producerRepositoryModel;
-
     private MainSectionModel mainSectionModel;
 
     private InjectorSectionPwrState injectorSectionPwrState;
-
-    private ManufacturerRepository manufacturerRepository;
-
-    private ManufacturerHeuiRepository manufactureHeuiRepository;
 
     public ComboBox<GUIType> getGui_typeComboBox() {
         return gui_typeComboBox;
@@ -141,18 +132,6 @@ public class GUI_TypeController {
         this.gui_typeModel = gui_typeModel;
     }
 
-    public void setProducerRepositoryModel(ProducerRepositoryModel producerRepositoryModel) {
-        this.producerRepositoryModel = producerRepositoryModel;
-    }
-
-    public void setManufacturerRepository(ManufacturerRepository manufacturerRepository) {
-        this.manufacturerRepository = manufacturerRepository;
-    }
-
-    public void setManufactureHeuiRepository(ManufacturerHeuiRepository manufactureHeuiRepository) {
-        this.manufactureHeuiRepository = manufactureHeuiRepository;
-    }
-
     public void setMainSectionModel(MainSectionModel mainSectionModel) {
         this.mainSectionModel = mainSectionModel;
     }
@@ -173,7 +152,6 @@ public class GUI_TypeController {
                 switch (newValue) {
                     case CR_Inj:
                         changeToCRInj();
-                        producerRepositoryModel.getProducerRepositoryProperty().setValue(manufacturerRepository);
                         break;
                     case CR_Pump:
                         changeToCRPump();
@@ -183,7 +161,6 @@ public class GUI_TypeController {
                         break;
                     case HEUI:
                         changeToHEUI();
-                        producerRepositoryModel.getProducerRepositoryProperty().setValue(manufactureHeuiRepository);
                         break;
                 }
                 gui_typeModel.guiTypeProperty().setValue(newValue);

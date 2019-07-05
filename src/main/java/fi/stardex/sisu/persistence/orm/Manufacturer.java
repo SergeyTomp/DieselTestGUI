@@ -20,6 +20,12 @@ public class Manufacturer implements Producer {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "manufacturer", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Injector> injectors = new LinkedList<>();
 
+    @Column(name = "commonRail")
+    private Boolean commonRail;
+
+    @Column(name = "heui")
+    private Boolean heui;
+
     @PostPersist
     @Override
     public void onPostPersist() {
@@ -58,6 +64,13 @@ public class Manufacturer implements Producer {
         isCustom = custom;
     }
 
+    public void setCommonRail(Boolean commonRail) {
+        this.commonRail = commonRail;
+    }
+    public void setHeui(Boolean heui) {
+        this.heui = heui;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -66,13 +79,17 @@ public class Manufacturer implements Producer {
         Manufacturer that = (Manufacturer) o;
 
         if (!getManufacturerName().equals(that.getManufacturerName())) return false;
-        return isCustom.equals(that.isCustom);
+        if (!isCustom.equals(that.isCustom)) return false;
+        if (!commonRail.equals(that.commonRail)) return false;
+        return heui.equals(that.heui);
     }
 
     @Override
     public int hashCode() {
         int result = getManufacturerName().hashCode();
         result = 31 * result + isCustom.hashCode();
+        result = 31 * result + commonRail.hashCode();
+        result = 31 * result + heui.hashCode();
         return result;
     }
 }

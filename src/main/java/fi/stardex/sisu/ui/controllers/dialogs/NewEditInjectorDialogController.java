@@ -1,6 +1,7 @@
 package fi.stardex.sisu.ui.controllers.dialogs;
 
 import fi.stardex.sisu.model.GUI_TypeModel;
+import fi.stardex.sisu.model.NewEditInjectorDialogModel;
 import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorType;
@@ -105,6 +106,8 @@ public class NewEditInjectorDialogController {
 
     private GUI_TypeModel gui_typeModel;
 
+    private NewEditInjectorDialogModel newEditInjectorDialogModel;
+
     public void setInjectorTypeRepository(InjectorTypeRepository injectorTypeRepository) {
         this.injectorTypeRepository = injectorTypeRepository;
     }
@@ -129,6 +132,10 @@ public class NewEditInjectorDialogController {
 
     public void setGui_typeModel(GUI_TypeModel gui_typeModel) {
         this.gui_typeModel = gui_typeModel;
+    }
+
+    public void setNewEditInjectorDialogModel(NewEditInjectorDialogModel newEditInjectorDialogModel) {
+        this.newEditInjectorDialogModel = newEditInjectorDialogModel;
     }
 
     @PostConstruct
@@ -198,15 +205,15 @@ public class NewEditInjectorDialogController {
 
         noUniqueLabel.setVisible(false);
         Injector newInj = new Injector(injectorCodeTF.getText(), getManufacturer(),
-                voapListView.getSelectionModel().getSelectedItem(), true, 0);
+                voapListView.getSelectionModel().getSelectedItem(), true, -1);
         if (gui_typeModel.guiTypeProperty().get() == GUI_TypeController.GUIType.HEUI) {
             newInj.setHeui(true);
         }
+        else newInj.setHeui(false);
 
         injectorsRepository.save(newInj);
-        modelListView.getItems().add(newInj);
-        modelListView.getSelectionModel().select(newInj);
-        modelListView.scrollTo(newInj);
+        newEditInjectorDialogModel.customInjectorProperty().setValue(newInj);
+        newEditInjectorDialogModel.doneProperty().setValue(new Object());
         stage.close();
     }
 
@@ -216,19 +223,15 @@ public class NewEditInjectorDialogController {
         List<InjectorTest> injectorTests = injectorTestRepository.findAllByInjector(injectorForUpdate);
         injectorTests.clear();
         injectorTests.addAll(new LinkedList<>());
-//        injectorForUpdate.getInjectorTests().clear();
-//        injectorForUpdate.getInjectorTests().addAll(new LinkedList<>());
         injectorsRepository.save(injectorForUpdate);
-
         stage.close();
     }
 
     private void deleteInjector() {
         Injector injector = getInjector();
         injectorsRepository.delete(injector);
-        modelListView.getItems().remove(injector);
-//        getManufacturer().getInjectors().remove(injector);
-
+        newEditInjectorDialogModel.customInjectorProperty().setValue(null);
+        newEditInjectorDialogModel.doneProperty().setValue(new Object());
         stage.close();
     }
 

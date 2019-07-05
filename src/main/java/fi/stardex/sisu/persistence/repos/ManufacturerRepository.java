@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface ManufacturerRepository extends CrudRepository<Manufacturer, String> {
     List<Manufacturer> findByIsCustom(boolean isCustom);
+    List<Manufacturer> findByCommonRail(boolean commonRail);
+    List<Manufacturer> findByHeui(boolean heui);
 }

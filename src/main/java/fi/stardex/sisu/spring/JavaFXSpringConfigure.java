@@ -9,7 +9,6 @@ import fi.stardex.sisu.model.updateModels.HighPressureSectionUpdateModel;
 import fi.stardex.sisu.model.updateModels.InjectorSectionUpdateModel;
 import fi.stardex.sisu.model.updateModels.PiezoRepairUpdateModel;
 import fi.stardex.sisu.pdf.PDFService;
-import fi.stardex.sisu.persistence.repos.HEUI.ManufacturerHeuiRepository;
 import fi.stardex.sisu.persistence.repos.ISADetectionRepository;
 import fi.stardex.sisu.persistence.repos.InjectorTypeRepository;
 import fi.stardex.sisu.persistence.repos.ManufacturerRepository;
@@ -110,9 +109,6 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                  ManufacturerPumpModel manufacturerPumpModel,
                                                  PumpsStartButtonState pumpsStartButtonState,
                                                  GUI_TypeModel gui_typeModel,
-                                                 ProducerRepositoryModel producerRepositoryModel,
-                                                 ManufacturerRepository manufacturerRepository,
-                                                 ManufacturerHeuiRepository manufactureHeuiRepository,
                                                  MainSectionModel mainSectionModel,
                                                  InjectorSectionPwrState injectorSectionPwrState) {
         GUI_TypeController gui_typeController = rootLayoutController.getGui_typeController();
@@ -134,9 +130,6 @@ public class JavaFXSpringConfigure extends ViewLoader{
         gui_typeController.setManufacturerPumpModel(manufacturerPumpModel);
         gui_typeController.setPumpsStartButtonState(pumpsStartButtonState);
         gui_typeController.setGui_typeModel(gui_typeModel);
-        gui_typeController.setProducerRepositoryModel(producerRepositoryModel);
-        gui_typeController.setManufacturerRepository(manufacturerRepository);
-        gui_typeController.setManufactureHeuiRepository(manufactureHeuiRepository);
         gui_typeController.setMainSectionModel(mainSectionModel);
         gui_typeController.setInjectorSectionPwrState(injectorSectionPwrState);
         return gui_typeController;
@@ -162,12 +155,11 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                        InjectorModel injectorModel,
                                                        ModbusRegisterProcessor ultimaModbusWriter,
                                                        ManufacturerRepository manufacturerRepository,
-                                                       ManufacturerHeuiRepository manufacturerHeuiRepository,
                                                        GUI_TypeModel gui_typeModel,
-                                                       ProducerRepositoryModel producerRepositoryModel,
                                                        ManufacturerMenuDialogModel manufacturerMenuDialogModel,
                                                        MainSectionModel mainSection_model,
-                                                       InjectorSectionPwrState injectorSectionPwrState) {
+                                                       InjectorSectionPwrState injectorSectionPwrState,
+                                                       NewEditInjectorDialogModel newEditInjectorDialogModel) {
         MainSectionController mainSectionController = (MainSectionController) mainSection().getController();
         mainSectionController.setNewEditInjectorDialog(newEditInjectorDialog());
         mainSectionController.setNewEditTestDialog(newEditTestDialog());
@@ -187,11 +179,10 @@ public class JavaFXSpringConfigure extends ViewLoader{
         mainSectionController.setUltimaModbusWriter(ultimaModbusWriter);
         mainSectionController.setManufacturerRepository(manufacturerRepository);
         mainSectionController.setGui_typeModel(gui_typeModel);
-        mainSectionController.setProducerRepositoryModel(producerRepositoryModel);
-        mainSectionController.setManufacturerHeuiRepository(manufacturerHeuiRepository);
         mainSectionController.setManufacturerMenuDialogModel(manufacturerMenuDialogModel);
         mainSectionController.setMainSectionModel(mainSection_model);
         mainSectionController.setInjectorSectionPwrState(injectorSectionPwrState);
+        mainSectionController.setNewEditInjectorDialogModel(newEditInjectorDialogModel);
         return mainSectionController;
     }
 
@@ -832,14 +823,12 @@ public class JavaFXSpringConfigure extends ViewLoader{
     @Bean
     @Autowired
     public ManufacturerMenuDialogController manufacturerMenuDialogController(ManufacturerRepository manufacturerRepository,
-                                                                             ManufacturerHeuiRepository manufacturerHeuiRepository,
                                                                              GUI_TypeModel gui_typeModel,
                                                                              ManufacturerMenuDialogModel manufacturerMenuDialogModel,
                                                                              MainSectionModel mainSectionModel,
                                                                              ViewHolder manufacturerMenuDialog) {
         ManufacturerMenuDialogController manufacturerMenuDialogController = (ManufacturerMenuDialogController) manufacturerMenuDialog().getController();
         manufacturerMenuDialogController.setManufacturerRepository(manufacturerRepository);
-        manufacturerMenuDialogController.setManufacturerHeuiRepository(manufacturerHeuiRepository);
         manufacturerMenuDialogController.setGui_typeModel(gui_typeModel);
         manufacturerMenuDialogController.setManufacturerMenuDialogModel(manufacturerMenuDialogModel);
         manufacturerMenuDialogController.setMainSectionModel(mainSectionModel);
@@ -895,7 +884,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                                            InjectorTestRepository injectorTestRepository,
                                                                            VoltAmpereProfileRepository voltAmpereProfileRepository,
                                                                            InjectorsRepository injectorsRepository,
-                                                                           GUI_TypeModel gui_typeModel) {
+                                                                           GUI_TypeModel gui_typeModel,
+                                                                           NewEditInjectorDialogModel newEditInjectorDialogModel) {
         NewEditInjectorDialogController newEditInjectorDialogController = (NewEditInjectorDialogController) newEditInjectorDialog().getController();
         newEditInjectorDialogController.setInjectorTypeRepository(injectorTypeRepository);
         newEditInjectorDialogController.setInjectorTestRepository(injectorTestRepository);
@@ -903,6 +893,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         newEditInjectorDialogController.setInjectorsRepository(injectorsRepository);
         newEditInjectorDialogController.setNewEditVOAPDialog(newEditVOAPDialog());
         newEditInjectorDialogController.setGui_typeModel(gui_typeModel);
+        newEditInjectorDialogController.setNewEditInjectorDialogModel(newEditInjectorDialogModel);
         return newEditInjectorDialogController;
     }
 

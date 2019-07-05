@@ -16,7 +16,6 @@ import fi.stardex.sisu.model.updateModels.PiezoRepairUpdateModel;
 import fi.stardex.sisu.pdf.PDFService;
 import fi.stardex.sisu.persistence.CheckAndInitializeBD;
 import fi.stardex.sisu.persistence.orm.CSVSUpdater;
-import fi.stardex.sisu.persistence.repos.HEUI.ManufacturerHeuiRepository;
 import fi.stardex.sisu.persistence.repos.ManufacturerRepository;
 import fi.stardex.sisu.persistence.repos.cr.InjectorTestRepository;
 import fi.stardex.sisu.persistence.repos.cr.InjectorsRepository;
@@ -32,7 +31,6 @@ import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.*;
 import fi.stardex.sisu.ui.controllers.ISADetectionController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.CodingController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
 import fi.stardex.sisu.ui.controllers.additional.tabs.settings.ConnectionController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
@@ -620,9 +618,8 @@ public class SpringJavaConfig {
     public CSVSUpdater csvsUpdater(ManufacturerRepository manufacturerRepository,
                                    VoltAmpereProfileRepository voltAmpereProfileRepository,
                                    InjectorsRepository injectorsRepository,
-                                   InjectorTestRepository injectorTestRepository,
-                                   ManufacturerHeuiRepository manufacturerHeuiRepository) {
-        return new CSVSUpdater(manufacturerRepository, voltAmpereProfileRepository, injectorsRepository, injectorTestRepository, manufacturerHeuiRepository);
+                                   InjectorTestRepository injectorTestRepository) {
+        return new CSVSUpdater(manufacturerRepository, voltAmpereProfileRepository, injectorsRepository, injectorTestRepository);
     }
 
     @Bean
@@ -1107,6 +1104,11 @@ public class SpringJavaConfig {
     @Bean
     public VoltageTabModel voltageTabModel() {
         return new VoltageTabModel();
+    }
+
+    @Bean
+    public NewEditInjectorDialogModel newEditInjectorDialogModel() {
+        return new NewEditInjectorDialogModel();
     }
 
 //    @Bean

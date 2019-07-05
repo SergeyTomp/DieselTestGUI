@@ -1808,3 +1808,18 @@ label
     /*-fx-text-fill:black;*/
     /*-fx-font-weight:bold;*/
 /*}*/
+
+.context-menu{
+    -fx-background-color:#666666;
+    -fx-text-fill:  #ffff66;
+}
+.menu-item:focused{
+    -fx-background-color: #4b4b4b;
+}
+
+.menu-item .label {
+    -fx-text-fill: #ffff66;
+}
+/*.menu-item:focused .label {*/
+    /*-fx-text-fill: #ffff66;*/
+/*}*/

@@ -3,10 +3,7 @@ package fi.stardex.sisu.ui.controllers.dialogs;
 import fi.stardex.sisu.model.GUI_TypeModel;
 import fi.stardex.sisu.model.MainSectionModel;
 import fi.stardex.sisu.model.ManufacturerMenuDialogModel;
-import fi.stardex.sisu.persistence.Producer;
 import fi.stardex.sisu.persistence.orm.Manufacturer;
-import fi.stardex.sisu.persistence.orm.ManufacturerHEUI;
-import fi.stardex.sisu.persistence.repos.HEUI.ManufacturerHeuiRepository;
 import fi.stardex.sisu.persistence.repos.ManufacturerRepository;
 import fi.stardex.sisu.ui.ViewHolder;
 import javafx.fxml.FXML;
@@ -30,7 +27,6 @@ public class ManufacturerMenuDialogController {
     @FXML private Label notUniqueLabel;
 
     private ManufacturerRepository manufacturerRepository;
-    private ManufacturerHeuiRepository manufacturerHeuiRepository;
     private ManufacturerMenuDialogModel manufacturerMenuDialogModel;
     private GUI_TypeModel gui_typeModel;
     private MainSectionModel mainSectionModel;
@@ -40,11 +36,6 @@ public class ManufacturerMenuDialogController {
     public void setManufacturerRepository(ManufacturerRepository manufacturerRepository) {
         this.manufacturerRepository = manufacturerRepository;
     }
-
-    public void setManufacturerHeuiRepository(ManufacturerHeuiRepository manufacturerHeuiRepository) {
-        this.manufacturerHeuiRepository = manufacturerHeuiRepository;
-    }
-
     public void setGui_typeModel(GUI_TypeModel gui_typeModel) {
         this.gui_typeModel = gui_typeModel;
     }
@@ -104,7 +95,22 @@ public class ManufacturerMenuDialogController {
 
     private void create() {
         Manufacturer newManufacturer = new Manufacturer();
-        newManufacturer.setManufacturerName(nameTF.getText());
+
+        switch (gui_typeModel.guiTypeProperty().get()) {
+            case CR_Inj:
+                newManufacturer.setManufacturerName(nameTF.getText() + "_C");
+                newManufacturer.setCommonRail(true);
+                newManufacturer.setHeui(false);
+                break;
+            case HEUI:
+                newManufacturer.setManufacturerName(nameTF.getText() + "_H");
+                newManufacturer.setCommonRail(false);
+                newManufacturer.setHeui(true);
+                break;
+            default:
+                break;
+        }
+
         newManufacturer.setCustom(true);
 
         if (mainSectionModel.getManufacturerObservableList().contains(newManufacturer)) {
@@ -112,17 +118,7 @@ public class ManufacturerMenuDialogController {
         }
         else {
             notUniqueLabel.setVisible(false);
-            switch (gui_typeModel.guiTypeProperty().get()) {
-                case CR_Inj:
-                    manufacturerRepository.save(newManufacturer);
-                    break;
-                case HEUI:
-                    manufacturerHeuiRepository.save(convert(newManufacturer));
-                    break;
-                default:
-                    break;
-            }
-
+            manufacturerRepository.save(newManufacturer);
             manufacturerMenuDialogModel.customManufacturerProperty().setValue(newManufacturer);
             manufacturerMenuDialogModel.doneProperty().setValue(new Object());
             stage.close();
@@ -132,17 +128,7 @@ public class ManufacturerMenuDialogController {
     private void delete() {
 
         Manufacturer manufacturer = mainSectionModel.manufacturerObjectProperty().get();
-
-        switch (gui_typeModel.guiTypeProperty().get()) {
-            case CR_Inj:
-                manufacturerRepository.delete(manufacturer);
-                break;
-            case HEUI:
-                manufacturerHeuiRepository.delete(convert(manufacturer));
-                break;
-            default:
-                break;
-        }
+        manufacturerRepository.delete(manufacturer);
         manufacturerMenuDialogModel.customManufacturerProperty().setValue(null);
         manufacturerMenuDialogModel.doneProperty().setValue(new Object());
         stage.close();
@@ -165,14 +151,6 @@ public class ManufacturerMenuDialogController {
 
     public void setStage(Stage stage) {
         this.stage = stage;
-    }
-
-    private ManufacturerHEUI convert(Producer producer) {
-
-        ManufacturerHEUI p = new ManufacturerHEUI();
-        p.setManufacturerName(producer.getManufacturerName());
-        p.setCustom(producer.isCustom());
-        return p;
     }
 
     public enum State {

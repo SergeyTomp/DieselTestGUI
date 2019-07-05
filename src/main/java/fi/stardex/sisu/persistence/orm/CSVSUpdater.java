@@ -1,11 +1,9 @@
 package fi.stardex.sisu.persistence.orm;
 
 import fi.stardex.sisu.persistence.CheckAndInitializeBD;
-import fi.stardex.sisu.persistence.Producer;
 import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.persistence.orm.cr.inj.VoltAmpereProfile;
-import fi.stardex.sisu.persistence.repos.HEUI.ManufacturerHeuiRepository;
 import fi.stardex.sisu.persistence.repos.ManufacturerRepository;
 import fi.stardex.sisu.persistence.repos.cr.InjectorTestRepository;
 import fi.stardex.sisu.persistence.repos.cr.InjectorsRepository;
@@ -28,8 +26,6 @@ public class CSVSUpdater {
     private Logger logger = LoggerFactory.getLogger(CheckAndInitializeBD.class);
 
     private ManufacturerRepository manufacturerRepository;
-
-    private ManufacturerHeuiRepository manufacturerHeuiRepository;
 
     private VoltAmpereProfileRepository voltAmpereProfileRepository;
 
@@ -62,9 +58,6 @@ public class CSVSUpdater {
     @Value("${stardex.custom_csvs.manufacturers}")
     private String customManufacturers;
 
-    @Value("${stardex.custom_csvs.manufacturersHeui}")
-    private String customManufacturersHeui;
-
     @Value("${stardex.custom_csvs.voltAmpereProfiles}")
     private String customVOAP;
 
@@ -77,15 +70,12 @@ public class CSVSUpdater {
     public CSVSUpdater(ManufacturerRepository manufacturerRepository,
                        VoltAmpereProfileRepository voltAmpereProfileRepository,
                        InjectorsRepository injectorsRepository,
-                       InjectorTestRepository injectorTestRepository,
-                       ManufacturerHeuiRepository manufacturerHeuiRepository) {
+                       InjectorTestRepository injectorTestRepository) {
 
         this.manufacturerRepository = manufacturerRepository;
         this.voltAmpereProfileRepository = voltAmpereProfileRepository;
         this.injectorsRepository = injectorsRepository;
         this.injectorTestRepository = injectorTestRepository;
-        this.manufacturerHeuiRepository = manufacturerHeuiRepository;
-
     }
 
     @PreDestroy
@@ -108,8 +98,6 @@ public class CSVSUpdater {
                     case "InjectorTest":
                         updateCustomCSV(new File(pathToCSVSDirectory, customInjectorTests), custom_injector_tests_header, injectorTestRepository);
                         break;
-                    case "ManufacturerHEUI":
-                        updateCustomCSV(new File(pathToCSVSDirectory, customManufacturersHeui), custom_manufacturers_header, manufacturerHeuiRepository);
                     default:
                         break;
                 }
@@ -121,29 +109,6 @@ public class CSVSUpdater {
     private void updateCustomCSV(File file, String header, ManufacturerRepository repository) {
 
         List<Manufacturer> customManufacturersList = repository.findByIsCustom(true);
-
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
-            writer.append(header).append(NEW_LINE_SEPARATOR);
-            if (!customManufacturersList.isEmpty()) {
-                customManufacturersList.forEach(manufacturer -> {
-                    try {
-                        writer.append(manufacturer.getManufacturerName()).append(COMMA_DELIMITER)
-                                .append(String.valueOf(manufacturer.isCustom())).append(NEW_LINE_SEPARATOR);
-                    } catch (IOException ex) {
-                        logger.error("IO Exception occured!", ex);
-                    }
-
-                });
-            }
-        } catch (IOException ex) {
-            logger.error("IO Exception occured!", ex);
-        }
-
-    }
-
-    private void updateCustomCSV(File file, String header, ManufacturerHeuiRepository repository) {
-
-        List<Producer> customManufacturersList = repository.findByIsCustom(true);
 
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
             writer.append(header).append(NEW_LINE_SEPARATOR);

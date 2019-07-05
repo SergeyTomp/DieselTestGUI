@@ -2,14 +2,11 @@ package fi.stardex.sisu.ui.controllers.main;
 
 import fi.stardex.sisu.measurement.Measurements;
 import fi.stardex.sisu.model.*;
-import fi.stardex.sisu.persistence.Producer;
 import fi.stardex.sisu.persistence.orm.Manufacturer;
-import fi.stardex.sisu.persistence.orm.ManufacturerHEUI;
 import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.persistence.orm.cr.inj.VoltAmpereProfile;
 import fi.stardex.sisu.persistence.orm.interfaces.Model;
-import fi.stardex.sisu.persistence.repos.HEUI.ManufacturerHeuiRepository;
 import fi.stardex.sisu.persistence.repos.ManufacturerRepository;
 import fi.stardex.sisu.persistence.repos.cr.InjectorTestRepository;
 import fi.stardex.sisu.persistence.repos.cr.InjectorsRepository;
@@ -64,7 +61,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import static fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest.getListOfNonIncludedTests;
 import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.UIS_to_CR_pulseControlSwitch;
@@ -219,17 +215,15 @@ public class MainSectionController {
 
     private ManufacturerRepository manufacturerRepository;
 
-    private ManufacturerHeuiRepository manufacturerHeuiRepository;
-
     private GUI_TypeModel gui_typeModel;
-
-    private ProducerRepositoryModel producerRepositoryModel;
 
     private ManufacturerMenuDialogModel manufacturerMenuDialogModel;
 
     private MainSectionModel mainSectionModel;
 
     private InjectorSectionPwrState injectorSectionPwrState;
+
+    private NewEditInjectorDialogModel newEditInjectorDialogModel;
 
     private boolean oemAlertProcessing;
 
@@ -315,10 +309,6 @@ public class MainSectionController {
         return manufacturerListView;
     }
 
-    public RadioButton getCodingTestRadioButton() {
-        return codingTestRadioButton;
-    }
-
     public ListView<InjectorTest> getTestListView() {
         return testListView;
     }
@@ -395,16 +385,8 @@ public class MainSectionController {
         this.manufacturerRepository = manufacturerRepository;
     }
 
-    public void setManufacturerHeuiRepository(ManufacturerHeuiRepository manufacturerHeuiRepository) {
-        this.manufacturerHeuiRepository = manufacturerHeuiRepository;
-    }
-
     public void setGui_typeModel(GUI_TypeModel gui_typeModel) {
         this.gui_typeModel = gui_typeModel;
-    }
-
-    public void setProducerRepositoryModel(ProducerRepositoryModel producerRepositoryModel) {
-        this.producerRepositoryModel = producerRepositoryModel;
     }
 
     public void setManufacturerMenuDialogModel(ManufacturerMenuDialogModel manufacturerMenuDialogModel) {
@@ -417,6 +399,10 @@ public class MainSectionController {
 
     public void setInjectorSectionPwrState(InjectorSectionPwrState injectorSectionPwrState) {
         this.injectorSectionPwrState = injectorSectionPwrState;
+    }
+
+    public void setNewEditInjectorDialogModel(NewEditInjectorDialogModel newEditInjectorDialogModel) {
+        this.newEditInjectorDialogModel = newEditInjectorDialogModel;
     }
 
     @PostConstruct
@@ -443,6 +429,7 @@ public class MainSectionController {
 
         setupGUI_typeModelListener();
         setupManufacturerMenuDialogModelListener();
+        setupNewEditInjectorDialogListener();
         setupManufacturerListListener();
         setupInjectorSectionPwrButtonListener();
         setupStartButtonListener();
@@ -473,30 +460,20 @@ public class MainSectionController {
 
     private void setHEUIManufacturerListView() {
 
-        Iterable<ManufacturerHEUI> manufacturers = manufacturerHeuiRepository.findAll();
+        List<Manufacturer> manufacturers = manufacturerRepository.findByHeui(true);
         setManufacturersListView(manufacturers);
     }
 
     private void setCRManufacturerListView() {
 
-        Iterable<Manufacturer> manufacturers = manufacturerRepository.findAll();
+        List<Manufacturer> manufacturers = manufacturerRepository.findByCommonRail(true);
         setManufacturersListView(manufacturers);
     }
 
-    private void setManufacturersListView(Iterable<? extends Producer> manufacturers) {
 
-        List<Manufacturer> listOfManufacturers = new ArrayList<>();
-        StreamSupport.stream(manufacturers.spliterator(), false).map(this::convert).forEach(listOfManufacturers::add);
+    private void setManufacturersListView(List<Manufacturer> listOfManufacturers) {
         manufacturerListView.getItems().setAll(listOfManufacturers);
         manufacturerListView.refresh();
-    }
-
-    private Manufacturer convert(Producer producer) {
-
-        Manufacturer p = new Manufacturer();
-        p.setManufacturerName(producer.getManufacturerName());
-        p.setCustom(producer.isCustom());
-        return p;
     }
 
     private void setupGUI_typeModelListener() {
@@ -516,8 +493,6 @@ public class MainSectionController {
     private void setupManufacturerMenuDialogModelListener() {
 
         manufacturerMenuDialogModel.doneProperty().addListener((observable, oldValue, newValue) -> {
-//        manufacturerMenuDialogModel.customManufacturerProperty().addListener((observableValue, oldValue, newValue) -> {
-//            Iterable<Manufacturer> manufacturers = null;
 
             switch (gui_typeModel.guiTypeProperty().get()) {
                 case CR_Inj:
@@ -526,8 +501,6 @@ public class MainSectionController {
                 case HEUI:
                     setHEUIManufacturerListView();
             }
-//            Iterable<Manufacturer> manufacturers = manufacturerRepository.findAll();
-//            setManufacturersListView(manufacturers);
             manufacturerListView.getSelectionModel().select(manufacturerMenuDialogModel.customManufacturerProperty().get());
             mainSectionModel.makeOrDelProducerProperty().setValue(null);
         });
@@ -582,7 +555,6 @@ public class MainSectionController {
 
     private void setFilteredItems(Manufacturer manufacturer) {
 
-//        List<Injector> modelsByManufacturers = injectorsRepository.findByManufacturerAndIsCustom(manufacturer, customRadioButton.isSelected());
         List<Injector> modelsByManufacturers = injectorsRepository.findByManufacturerAndIsCustomAndIsHeui(
                 manufacturer,
                 customRadioButton.isSelected(),
@@ -1127,6 +1099,16 @@ public class MainSectionController {
             disableRadioButtons(testsToggleGroup, newValue);
             disableRadioButtons(baseTypeToggleGroup, newValue);
             disableNode(newValue, manufacturerListView, injectorsVBox);
+        });
+    }
+
+    private void setupNewEditInjectorDialogListener() {
+
+        newEditInjectorDialogModel.doneProperty().addListener((observable, oldValue, newValue) -> {
+            setFilteredItems(mainSectionModel.manufacturerObjectProperty().get());
+            Injector newInj = newEditInjectorDialogModel.customInjectorProperty().get();
+            modelListView.getSelectionModel().select(newInj);
+            modelListView.scrollTo(newInj);
         });
     }
 

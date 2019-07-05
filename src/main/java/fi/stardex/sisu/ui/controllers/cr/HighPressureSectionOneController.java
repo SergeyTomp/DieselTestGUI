@@ -376,6 +376,7 @@ public class HighPressureSectionOneController {
     private void regulator1pressModeOFF(){
         ultimaModbusWriter.add(PressureReg1_ON, false);
         regToggleButton.setSelected(false);
+        pressSpinner.getValueFactory().setValue(0);
     }
 
     private double calcTargetPress(Integer target){

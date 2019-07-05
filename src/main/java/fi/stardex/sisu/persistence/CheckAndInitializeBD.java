@@ -54,9 +54,6 @@ public class CheckAndInitializeBD {
     @Value("${stardex.custom_csvs.manufacturers}")
     private String customManufacturers;
 
-    @Value("${stardex.custom_csvs.manufacturersHeui}")
-    private String customManufacturersHeui;
-
     @Value("${stardex.custom_csvs.voltAmpereProfiles}")
     private String customVOAP;
 
@@ -115,8 +112,6 @@ public class CheckAndInitializeBD {
 
         File customInjectorTestsFile = new File(customCSVSDirectory, customInjectorTests);
 
-        File customManufacturersHeuiFile = new File(customCSVSDirectory, customManufacturersHeui);
-
         if (!customManufacturersFile.exists() || !customManufacturersFile.isFile())
             createCustomCSV(customManufacturersFile, custom_manufacturers_header);
 
@@ -128,9 +123,6 @@ public class CheckAndInitializeBD {
 
         if (!customInjectorTestsFile.exists() || !customInjectorTestsFile.isFile())
             createCustomCSV(customInjectorTestsFile, custom_injector_tests_header);
-
-        if (!customManufacturersHeuiFile.exists() || !customManufacturersHeuiFile.isFile())
-            createCustomCSV(customManufacturersHeuiFile, custom_manufacturers_header);
     }
 
     private void createCustomCSV(File file, String header) throws IOException {
