@@ -42,6 +42,8 @@ import fi.stardex.sisu.ui.controllers.pumps.SCVCalibrationController;
 import fi.stardex.sisu.ui.controllers.pumps.pressure.PumpHighPressureSectionPwrController;
 import fi.stardex.sisu.ui.controllers.pumps.pressure.PumpRegulatorSectionTwoController;
 import fi.stardex.sisu.ui.controllers.uis.RootLayoutController;
+import fi.stardex.sisu.model.updateModels.TachometerUltimaUpdateModel;
+import fi.stardex.sisu.model.updateModels.TestBenchSectionUpdateModel;
 import fi.stardex.sisu.util.DelayCalculator;
 import fi.stardex.sisu.util.enums.BeakerType;
 import fi.stardex.sisu.util.i18n.I18N;
@@ -205,12 +207,13 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                                  FirmwareVersion<FlowVersions> flowFirmwareVersion,
                                                                  FirmwareVersion<StandVersions> standFirmwareVersion,
                                                                  PumpTestModel pumpTestModel,
-                                                                 TargetRpmModel targetRpmModel,
-                                                                 TestBenchSectionPwrState testBenchSectionPwrState,
-                                                                 CurrentRpmModel currentRpmModel,
                                                                  PumpModel pumpModel,
-                                                                 GUI_TypeModel gui_typeModel,
-                                                                 InjectorTestModel injectorTestModel) {
+                                                                 InjectorTestModel injectorTestModel,
+                                                                 TestBenchSectionUpdateModel testBenchSectionUpdateModel,
+                                                                 TachometerUltimaUpdateModel tachometerUltimaUpdateModel,
+                                                                 TestBenchSectionModel testBenchSectionModel,
+                                                                 ModbusConnect flowModbusConnect,
+                                                                 ModbusConnect standModbusConnect) {
         TestBenchSectionController testBenchSectionController = rootLayoutController.getTestBenchSectionController();
         testBenchSectionController.setFlowModbusWriter(flowModbusWriter);
         testBenchSectionController.setStandModbusWriter(standModbusWriter);
@@ -219,12 +222,13 @@ public class JavaFXSpringConfigure extends ViewLoader{
         testBenchSectionController.setFlowFirmwareVersion(flowFirmwareVersion);
         testBenchSectionController.setStandFirmwareVersion(standFirmwareVersion);
         testBenchSectionController.setPumpTestModel(pumpTestModel);
-        testBenchSectionController.setTargetRpmModel(targetRpmModel);
-        testBenchSectionController.setTestBenchSectionPwrState(testBenchSectionPwrState);
-        testBenchSectionController.setCurrentRpmModel(currentRpmModel);
         testBenchSectionController.setPumpModel(pumpModel);
-        testBenchSectionController.setGui_typeModel(gui_typeModel);
         testBenchSectionController.setInjectorTestModel(injectorTestModel);
+        testBenchSectionController.setTestBenchSectionUpdateModel(testBenchSectionUpdateModel);
+        testBenchSectionController.setTachometerUltimaUpdateModel(tachometerUltimaUpdateModel);
+        testBenchSectionController.setTestBenchSectionModel(testBenchSectionModel);
+        testBenchSectionController.setFlowModbusConnect(flowModbusConnect);
+        testBenchSectionController.setStandModbusConnect(standModbusConnect);
         return testBenchSectionController;
     }
 
@@ -1137,9 +1141,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                              PumpModel pumpModel,
                                                              PumpReportModel pumpReportModel,
                                                              PumpHighPressureSectionPwrController pumpHighPressureSectionPwrController,
-                                                             TargetRpmModel targetRpmModel,
-                                                             CurrentRpmModel currentRpmModel,
-                                                             TestBenchSectionController testBenchSectionController) {
+                                                             TestBenchSectionController testBenchSectionController,
+                                                             TestBenchSectionModel testBenchSectionModel) {
         SCVCalibrationController scvCalibrationController = (SCVCalibrationController)scvCalibration.getController();
         scvCalibrationController.setScvParent(scvCalibration.getView());
         scvCalibrationController.setRootParent(rootLayout.getView());
@@ -1152,10 +1155,9 @@ public class JavaFXSpringConfigure extends ViewLoader{
         scvCalibrationController.setPumpModel(pumpModel);
         scvCalibrationController.setPumpReportModel(pumpReportModel);
         scvCalibrationController.setPumpHighPressureSectionPwrController(pumpHighPressureSectionPwrController);
-        scvCalibrationController.setTargetRpmModel(targetRpmModel);
-        scvCalibrationController.setCurrentRpmModel(currentRpmModel);
         scvCalibrationController.setTestBenchSectionController(testBenchSectionController);
         scvCalibrationController.setI18N(i18N);
+        scvCalibrationController.setTestBenchSectionModel(testBenchSectionModel);
         return scvCalibrationController;
     }
 

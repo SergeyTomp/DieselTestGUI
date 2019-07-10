@@ -1,15 +1,21 @@
 package fi.stardex.sisu.ui.controllers.cr;
 
 import eu.hansolo.enzo.lcd.Lcd;
-import fi.stardex.sisu.model.*;
+import fi.stardex.sisu.connect.ModbusConnect;
+import fi.stardex.sisu.model.InjectorTestModel;
+import fi.stardex.sisu.model.PumpModel;
+import fi.stardex.sisu.model.PumpTestModel;
+import fi.stardex.sisu.model.TestBenchSectionModel;
+import fi.stardex.sisu.model.updateModels.TachometerUltimaUpdateModel;
+import fi.stardex.sisu.model.updateModels.TestBenchSectionUpdateModel;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.DimasGUIEditionState;
-import fi.stardex.sisu.states.TestBenchSectionPwrState;
 import fi.stardex.sisu.util.GaugeCreator;
 import fi.stardex.sisu.util.enums.pump.PumpRotation;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.spinners.SpinnerManager;
 import fi.stardex.sisu.version.FirmwareVersion;
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -86,17 +92,15 @@ public class TestBenchSectionController {
 
     private PumpTestModel pumpTestModel;
 
-    private TargetRpmModel targetRpmModel;
-
-    private CurrentRpmModel currentRpmModel;
-
     private PumpModel pumpModel;
-
-    private GUI_TypeModel gui_typeModel;
 
     private InjectorTestModel injectorTestModel;
 
-    private TestBenchSectionPwrState testBenchSectionPwrState;
+    private TestBenchSectionUpdateModel testBenchSectionUpdateModel;
+
+    private TachometerUltimaUpdateModel tachometerUltimaUpdateModel;
+
+    private TestBenchSectionModel testBenchSectionModel;
 
     private static final String PUMP_BUTTON_ON = "pump-button-on";
 
@@ -114,52 +118,22 @@ public class TestBenchSectionController {
 
     private FirmwareVersion<StandVersions> standFirmwareVersion;
 
+    private ModbusConnect flowModbusConnect;
+
+    private ModbusConnect standModbusConnect;
+
+    private ChangeListener<Boolean> pumpTurnOnListener;
+
     public Spinner<Integer> getTargetRPMSpinner() {
         return targetRPMSpinner;
-    }
-    public ToggleButton getLeftDirectionRotationToggleButton() {
-        return leftDirectionRotationToggleButton;
-    }
-    public ToggleButton getRightDirectionRotationToggleButton() {
-        return rightDirectionRotationToggleButton;
-    }
-    public ToggleButton getPumpControlToggleButton() {
-        return pumpControlToggleButton;
-    }
-    public ToggleButton getTestBenchStartToggleButton() {
-        return testBenchStartToggleButton;
-    }
-    public ToggleButton getFanControlToggleButton() {
-        return fanControlToggleButton;
     }
     public Lcd getCurrentRPMLcd() {
         return currentRPMLcd;
     }
-    public ProgressBar getTempProgressBar1() {
-        return tempProgressBar1;
+    public ToggleButton getTestBenchStartToggleButton() {
+        return testBenchStartToggleButton;
     }
-    public ProgressBar getTempProgressBar2() {
-        return tempProgressBar2;
-    }
-    public ProgressBar getPressProgressBar1() {
-        return pressProgressBar1;
-    }
-    public Text getTempText1() {
-        return tempText1;
-    }
-    public Text getPressText1() {
-        return pressText1;
-    }
-    public Text getTempText2() {
-        return tempText2;
-    }
-    public ProgressBar getTankOil() {
-        return tankOil;
-    }
-    public Text getTankOilText() {
-        return tankOilText;
-    }
-    public StatePump getPumpState() {
+    private StatePump getPumpState() {
         return pumpState;
     }
     public boolean isOn() {
@@ -175,7 +149,7 @@ public class TestBenchSectionController {
     public void setStandModbusWriter(ModbusRegisterProcessor standModbusWriter) {
         this.standModbusWriter = standModbusWriter;
     }
-    public void setPumpState(StatePump pumpState) {
+    private void setPumpState(StatePump pumpState) {
         this.pumpState = pumpState;
     }
     public void setI18N(I18N i18N) {
@@ -193,26 +167,34 @@ public class TestBenchSectionController {
     public void setPumpTestModel(PumpTestModel pumpTestModel) {
         this.pumpTestModel = pumpTestModel;
     }
-    public void setTargetRpmModel(TargetRpmModel targetRpmModel) {
-        this.targetRpmModel = targetRpmModel;
-    }
-    public void setTestBenchSectionPwrState(TestBenchSectionPwrState testBenchSectionPwrState) {
-        this.testBenchSectionPwrState = testBenchSectionPwrState;
-    }
-    public void setCurrentRpmModel(CurrentRpmModel currentRpmModel) {
-        this.currentRpmModel = currentRpmModel;
-    }
 
     public void setPumpModel(PumpModel pumpModel) {
         this.pumpModel = pumpModel;
     }
 
-    public void setGui_typeModel(GUI_TypeModel gui_typeModel) {
-        this.gui_typeModel = gui_typeModel;
-    }
 
     public void setInjectorTestModel(InjectorTestModel injectorTestModel) {
         this.injectorTestModel = injectorTestModel;
+    }
+
+    public void setTestBenchSectionUpdateModel(TestBenchSectionUpdateModel testBenchSectionUpdateModel) {
+        this.testBenchSectionUpdateModel = testBenchSectionUpdateModel;
+    }
+
+    public void setTachometerUltimaUpdateModel(TachometerUltimaUpdateModel tachometerUltimaUpdateModel) {
+        this.tachometerUltimaUpdateModel = tachometerUltimaUpdateModel;
+    }
+
+    public void setTestBenchSectionModel(TestBenchSectionModel testBenchSectionModel) {
+        this.testBenchSectionModel = testBenchSectionModel;
+    }
+
+    public void setFlowModbusConnect(ModbusConnect flowModbusConnect) {
+        this.flowModbusConnect = flowModbusConnect;
+    }
+
+    public void setStandModbusConnect(ModbusConnect standModbusConnect) {
+        this.standModbusConnect = standModbusConnect;
     }
 
     public enum StatePump {
@@ -273,8 +255,9 @@ public class TestBenchSectionController {
 
         setupTestListener();
 
-        setupGuiTypeListener();
+        setupUpdatersListeners();
 
+        setupConnectionListeners();
     }
 
     private void bindingI18N() {
@@ -283,15 +266,6 @@ public class TestBenchSectionController {
         labelPressure1.textProperty().bind(i18N.createStringBinding("bench.label.pressure1"));
         labelRPM.textProperty().bind(i18N.createStringBinding("bench.label.rpm"));
         fuelLevelLabel.textProperty().bind(i18N.createStringBinding("bench.label.fuelLevel"));
-    }
-
-    private void setupGuiTypeListener() {
-
-        gui_typeModel.guiTypeProperty().addListener((observableValue, oldValue, newValue) -> {
-
-            leftDirectionRotationToggleButton.setSelected(false);
-            rightDirectionRotationToggleButton.setSelected(false);
-        });
     }
 
     private void setupTestListener() {
@@ -325,8 +299,10 @@ public class TestBenchSectionController {
 
             if (newValue == STAND_FM || newValue == STAND_FM_4_CH || standFirmwareVersion.versionProperty().get() == STAND)
                 testBenchStartToggleButton.setDisable(false);
-            else
+            else{
                 testBenchStartToggleButton.setDisable(true);
+                resetNodes();
+            }
 
         });
 
@@ -338,11 +314,33 @@ public class TestBenchSectionController {
 
             if (newValue == STAND || flowFirmwareVersion.versionProperty().get() == STAND_FM || flowFirmwareVersion.versionProperty().get() == STAND_FM_4_CH)
                 testBenchStartToggleButton.setDisable(false);
-            else
+            else{
                 testBenchStartToggleButton.setDisable(true);
+                resetNodes();
+            }
 
         });
 
+    }
+
+    private void resetNodes() {
+
+        tempProgressBar1.setProgress(0d);
+        tempProgressBar1.getStyleClass().clear();
+        tempProgressBar1.getStyleClass().add("progress-bar");
+        tempText1.setText("0");
+        tempProgressBar2.setProgress(0d);
+        tempProgressBar2.getStyleClass().clear();
+        tempProgressBar2.getStyleClass().add("progress-bar");
+        tempText2.setText("0");
+        pressProgressBar1.setProgress(0d);
+        pressProgressBar1.getStyleClass().clear();
+        pressProgressBar1.getStyleClass().add("progress-bar");
+        pressText1.setText("0");
+        tankOil.setProgress(0);
+        tankOil.getStyleClass().clear();
+        tankOil.getStyleClass().add("oil-bar");
+        tankOilText.setText("");
     }
 
     private void setupLCD() {
@@ -355,7 +353,7 @@ public class TestBenchSectionController {
 
         lcdStackPane.getChildren().add(currentRPMLcd);
 
-        currentRpmModel.currentRPMProperty().bind(currentRPMLcd.valueProperty());
+        testBenchSectionModel.currentRPMProperty().bind(currentRPMLcd.valueProperty());
     }
 
     private void setupRotationDirectionToggleButton() {
@@ -384,7 +382,6 @@ public class TestBenchSectionController {
                 }
             }
         });
-
     }
 
     private void setupTargetRPMSpinner() {
@@ -403,7 +400,7 @@ public class TestBenchSectionController {
 
                 standModbusWriter.add(TargetRPM, newValue);
             }
-            targetRpmModel.targetRPMProperty().setValue(newValue);
+            testBenchSectionModel.targetRPMProperty().setValue(newValue);
         });
 
     }
@@ -422,8 +419,13 @@ public class TestBenchSectionController {
 
         });
 
-        testBenchStartToggleButton.selectedProperty().bindBidirectional(testBenchSectionPwrState.isPowerButtonOnProperty());
-        testBenchSectionPwrState.isPowerButtonDisabledProperty().bind(testBenchStartToggleButton.disableProperty());
+        testBenchStartToggleButton.selectedProperty().bindBidirectional(testBenchSectionModel.isPowerButtonOnProperty());
+        testBenchSectionModel.isPowerButtonDisabledProperty().bind(testBenchStartToggleButton.disableProperty());
+
+        if (flowFirmwareVersion.getVersions() == STAND_FM || flowFirmwareVersion.getVersions() == STAND_FM_4_CH || standFirmwareVersion.versionProperty().get() == STAND)
+            testBenchStartToggleButton.setDisable(false);
+        else
+            testBenchStartToggleButton.setDisable(true);
 
     }
 
@@ -498,7 +500,10 @@ public class TestBenchSectionController {
         labelPressure1.visibleProperty().bind(dimasGuiEditionProperty.not());
         pressProgressBar1.visibleProperty().bind(dimasGuiEditionProperty.not());
 
-        dimasGuiEditionProperty.addListener((observableValue, oldValue, newValue) -> rightDirectionRotationToggleButton.setSelected(newValue));
+        dimasGuiEditionProperty.addListener((observableValue, oldValue, newValue) -> {
+            if(newValue){
+                rightDirectionRotationToggleButton.setSelected(true);}
+        });
 
     }
 
@@ -521,6 +526,134 @@ public class TestBenchSectionController {
 
         pumpStateChange();
 
+    }
+
+    private void setupUpdatersListeners() {
+
+        pumpTurnOnListener = (observableValue, oldValue, newValue) -> {
+            setPumpState(newValue ? StatePump.ON : StatePump.OFF);
+            changePumpButton();
+        };
+
+        testBenchSectionUpdateModel.pumpTurnOnProperty().addListener(pumpTurnOnListener);
+
+        testBenchSectionUpdateModel.sectionStartedProperty().addListener((observableValue, oldValue, newValue) ->
+                testBenchStartToggleButton.setSelected(newValue));
+
+        testBenchSectionUpdateModel.fanTurnOnProperty().addListener((observableValue, oldValue, newValue) ->
+                fanControlToggleButton.setSelected(newValue));
+
+        testBenchSectionUpdateModel.rotationDirectionProperty().addListener((observableValue, oldValue, newValue) -> {
+            if (newValue) rightDirectionRotationToggleButton.setSelected(true);
+            else leftDirectionRotationToggleButton.setSelected(true);
+        });
+
+        testBenchSectionUpdateModel.pumpAutoModeProperty().addListener((observableValue, oldValue, newValue) -> {
+            if (newValue) {
+                testBenchSectionUpdateModel.pumpTurnOnProperty().removeListener(pumpTurnOnListener);
+                setPumpState(testBenchStartToggleButton.isSelected() ? StatePump.AUTO_ON : StatePump.AUTO_OFF);
+                changePumpButton();
+            } else {
+                testBenchSectionUpdateModel.pumpTurnOnProperty().addListener(pumpTurnOnListener);
+            }
+        });
+
+        testBenchSectionUpdateModel.targetRPMProperty().addListener((observableValue, oldValue, newValue) ->
+                targetRPMSpinner.getValueFactory().setValue(newValue.intValue()));
+
+        testBenchSectionUpdateModel.currentRPMProperty().addListener((observableValue, oldValue, newValue) ->
+                currentRPMLcd.setValue(newValue.intValue()));
+
+        testBenchSectionUpdateModel.tankOilLevelProperty().addListener((observableValue, oldValue, newValue) -> {
+            int level = newValue.intValue();
+            if (level > 10)
+                changeTankOil("green-oil-bar", "NORMAL");
+            else if (level > 1)
+                changeTankOil("yellow-oil-bar", "LOW");
+            else
+                changeTankOil("red-oil-bar", "VERY\nLOW");
+
+            tankOil.setProgress(newValue.intValue() / 110.0);
+        });
+
+        testBenchSectionUpdateModel.pressureProperty().addListener((observableValue, oldValue, newValue) ->
+                setPressureProgress(3, 5, pressProgressBar1, pressText1, newValue.doubleValue()));
+
+        testBenchSectionUpdateModel.backFlowOilTemperatureProperty().addListener((observableValue, oldValue, newValue) ->
+                setTemperatureProgress(37, 41, tempProgressBar2, tempText2, newValue.doubleValue()));
+
+        testBenchSectionUpdateModel.tankOilTemperatureProperty().addListener((observableValue, oldValue, newValue) ->
+                setTemperatureProgress(37, 41, tempProgressBar1, tempText1, newValue.doubleValue()));
+
+        tachometerUltimaUpdateModel.currentRPMProperty().addListener((observableValue, oldValue, newValue) ->
+                currentRPMLcd.setValue(newValue.intValue()));
+    }
+
+    private void setupConnectionListeners(){
+
+        flowModbusConnect.connectedProperty().addListener((observableValue, oldValue, newValue) -> {
+            if(newValue && ((flowFirmwareVersion.getVersions() == STAND_FM) || (flowFirmwareVersion.getVersions() == STAND_FM_4_CH))) { initRotationDirection(); }});
+
+        standModbusConnect.connectedProperty().addListener((observableValue, oldValue, newValue) -> {if(newValue) initRotationDirection();});
+    }
+
+    private void initRotationDirection() {
+
+        rightDirectionRotationToggleButton.setSelected(true);
+        //forced focus request below is done to avoid phantom selection of left arrow simultaneously with right one despite of the fact that both buttons belong to toggle group
+        //phantom effect takes place while this method invocation upon first connection established only
+        //in fact left arrow is not selected but lightened nevertheless, hardware register value corresponds with right arrow
+        //reason is not clear, forced focus request is made just to avoid disorienting visual bug
+        Platform.runLater(() -> rightDirectionRotationToggleButton.requestFocus());
+    }
+
+    private void changePumpButton() {
+        StatePump currentStatePump = getPumpState();
+        pumpControlToggleButton.getStyleClass().set(1, currentStatePump.getStyle());
+        pumpControlToggleButton.setText(currentStatePump.getText());
+    }
+
+    private void changeTankOil(String style, String text) {
+
+        tankOil.getStyleClass().clear();
+        tankOil.getStyleClass().add(style);
+        tankOilText.setText(text);
+    }
+
+    private void setPressureProgress(int left, int right, ProgressBar progressBar, Text text, double pressureValue) {
+
+        if (pressureValue <= left) {
+            progressBarStyle(progressBar, "green-progress-bar");
+        }
+        if (pressureValue > left && pressureValue < right) {
+            progressBarStyle(progressBar, "orange-progress-bar");
+        }
+        if (pressureValue >= right) {
+            progressBarStyle(progressBar, "red-progress-bar");
+        }
+        fillProgressBar(pressureValue, text, progressBar);
+    }
+
+    private void setTemperatureProgress(int left, int right, ProgressBar progressBar, Text text, double temperatureValue){
+
+        if (temperatureValue <= left || temperatureValue >= right) {
+            progressBarStyle(progressBar, "red-progress-bar");
+        }
+        else {
+            progressBarStyle(progressBar, "green-progress-bar");
+        }
+        fillProgressBar(temperatureValue, text, progressBar);
+    }
+    private void progressBarStyle(ProgressBar progressBar, String style) {
+
+        progressBar.getStyleClass().clear();
+        progressBar.getStyleClass().add("progress-bar");
+        progressBar.getStyleClass().add(style);
+    }
+
+    private void fillProgressBar(double value, Text text, ProgressBar progressBar){
+        text.setText(String.format("%.1f", value));
+        progressBar.setProgress(value < 1 ? 1.0 : value);
     }
 
     private class HboxWidthListener implements ChangeListener<Number> {
@@ -548,5 +681,4 @@ public class TestBenchSectionController {
             }
         }
     }
-
 }

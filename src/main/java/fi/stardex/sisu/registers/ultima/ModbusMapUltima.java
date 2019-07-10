@@ -153,8 +153,8 @@ public enum ModbusMapUltima implements ModbusMap {
 
     // Отображение версий прошивок
     Version_controllable(REGISTER_HOLDING, 116, 1, true),
-    Main_version_0(REGISTER_INPUT, 118, 1, true),
-    Main_version_1(REGISTER_INPUT, 119, 1, true),
+    Main_version_0(REGISTER_INPUT, 4210, 1, true),
+    Main_version_1(REGISTER_INPUT, 4211, 1, true),
     MeasureCPU_version_0(REGISTER_INPUT, 8606, 1, true),
     MeasureCPU_version_1(REGISTER_INPUT, 8607, 1, true),
     PowerCPU_version_0(REGISTER_INPUT, 8608, 1, true),

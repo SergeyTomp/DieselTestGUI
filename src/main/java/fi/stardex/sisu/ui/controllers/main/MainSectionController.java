@@ -1,5 +1,8 @@
 package fi.stardex.sisu.ui.controllers.main;
 
+import fi.stardex.sisu.coding.delphi.c2i.DelphiC2ICodingDataStorage;
+import fi.stardex.sisu.coding.delphi.c3i.DelphiC3ICodingDataStorage;
+import fi.stardex.sisu.coding.denso.DensoCodingDataStorage;
 import fi.stardex.sisu.measurement.Measurements;
 import fi.stardex.sisu.model.*;
 import fi.stardex.sisu.persistence.orm.Manufacturer;
@@ -864,16 +867,13 @@ public class MainSectionController {
                 }
             }
 
+            clearAllResults();
             ultimaModbusWriter.add(UIS_to_CR_pulseControlSwitch, 0);
             resetButton.fire();
             disableNode(newValue == null, injectorsVBox);
             setManufacturer(newValue);
             mainSectionModel.manufacturerObjectProperty().setValue(newValue);
 
-            delayReportModel.clearResults();
-            rlc_reportModel.clearResults();
-            flowReportModel.clearResults();
-            codingReportModel.clearResults();
 
             if (newValue != null && newValue.isCustom()) {
                 defaultRadioButton.setDisable(true);
@@ -934,12 +934,10 @@ public class MainSectionController {
                 }
             }
 
+            clearAllResults();
             returnToDefaultTestListAuto();
             resetButton.fire();
-            delayReportModel.clearResults();
-            rlc_reportModel.clearResults();
-            flowReportModel.clearResults();
-            codingReportModel.clearResults();
+
             injectorNumberTextField.setText((newValue != null) ? ((Injector) newValue).getInjectorCode() : null);
 
             if (newValue == null) {
@@ -1028,17 +1026,14 @@ public class MainSectionController {
         testsToggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
 
             if (newValue == autoTestRadioButton) {
-//                setTestType(AUTO);  // можно удалить, класс Tests больше не используется
                 mainSectionModel.testTypeProperty().setValue(AUTO);
                 setTests();
             } else {
-//                setTestType(newValue == testPlanTestRadioButton ? TESTPLAN : CODING);   // можно удалить, класс Tests больше не используется
                 mainSectionModel.testTypeProperty().setValue(newValue == testPlanTestRadioButton ? TESTPLAN : CODING);
                 returnToDefaultTestListAuto();
                 setTests();
                 disableNode(boostUadjustmentState.boostUadjustmentStateProperty().get(), startToggleButton);
             }
-//            enabler.selectTestType();
             switch (mainSectionModel.testTypeProperty().get()) {
                 case AUTO:
                     disableNode(false, testListView);
@@ -1233,6 +1228,17 @@ public class MainSectionController {
         if (manufacturerName.equals("Bosch") || manufacturerName.equals("Denso") || manufacturerName.equals("Delphi") || manufacturerName.equals("Siemens"))
             return codetype != -1;
         else return false;
+    }
+
+    private void clearAllResults() {
+
+        DensoCodingDataStorage.clean();
+        DelphiC2ICodingDataStorage.clean();
+        DelphiC3ICodingDataStorage.clean();
+        delayReportModel.clearResults();
+        rlc_reportModel.clearResults();
+        flowReportModel.clearResults();
+        codingReportModel.clearResults();
     }
 
     private class PrintButtonEventHandler implements EventHandler<ActionEvent> {

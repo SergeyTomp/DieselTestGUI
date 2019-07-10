@@ -42,12 +42,11 @@ public class SCVCalibrationController {
     private ModbusRegisterProcessor flowModbusWriter;
     private HighPressureSectionUpdateModel highPressureSectionUpdateModel;
     private PumpPressureRegulatorOneModel pumpPressureRegulatorOneModel;
+    private TestBenchSectionModel testBenchSectionModel;
     private PumpRegulatorSectionTwoController pumpRegulatorSectionTwoController;
     private PumpHighPressureSectionPwrController pumpHighPressureSectionPwrController;
     private TestBenchSectionController testBenchSectionController;
     private SCVCalibrationModel scvCalibrationModel;
-    private TargetRpmModel targetRpmModel;
-    private CurrentRpmModel currentRpmModel;
     private PumpReportModel pumpReportModel;
     private ToggleButton highPressureSectionPwrButton;
     private ToggleButton testBenchSectionPwrButton;
@@ -132,21 +131,16 @@ public class SCVCalibrationController {
     public void setPumpHighPressureSectionPwrController(PumpHighPressureSectionPwrController pumpHighPressureSectionPwrController) {
         this.pumpHighPressureSectionPwrController = pumpHighPressureSectionPwrController;
     }
-
-    public void setTargetRpmModel(TargetRpmModel targetRpmModel) {
-        this.targetRpmModel = targetRpmModel;
-    }
-
-    public void setCurrentRpmModel(CurrentRpmModel currentRpmModel) {
-        this.currentRpmModel = currentRpmModel;
-    }
-
     public void setTestBenchSectionController(TestBenchSectionController testBenchSectionController) {
         this.testBenchSectionController = testBenchSectionController;
     }
 
     public void setI18N(I18N i18N) {
         this.i18N = i18N;
+    }
+
+    public void setTestBenchSectionModel(TestBenchSectionModel testBenchSectionModel) {
+        this.testBenchSectionModel = testBenchSectionModel;
     }
 
     @PostConstruct
@@ -173,7 +167,7 @@ public class SCVCalibrationController {
             scvStage.setScene(new Scene(scvParent));
             scvStage.initModality(Modality.NONE);
             //TODO uncomment below
-//            scvStage.initModality(Modality.WINDOW_MODAL);
+            scvStage.initModality(Modality.WINDOW_MODAL);
             scvStage.initOwner(rootParent.getScene().getWindow());
         }
         scvStage.show();
@@ -297,7 +291,7 @@ public class SCVCalibrationController {
 
     private void prepareMotor() {
 
-        if (isSectionReady(targetRpmModel.targetRPMProperty().get(), currentRpmModel.currentRPMProperty().get(), 0.1)) {
+        if (isSectionReady(testBenchSectionModel.targetRPMProperty().get(), testBenchSectionModel.currentRPMProperty().get(), 0.1)) {
             motorPreparationTimeline.stop();
             currentRpmTime = DEFAULT_WAITING_TIME;
             pressurePreparationTimeline.play();

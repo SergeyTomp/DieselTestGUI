@@ -95,7 +95,6 @@ public class PressureSensorController {
         ((Button)alert.getDialogPane().lookupButton(ButtonType.YES)).textProperty().setValue(yesButton.get());
         ((Button)alert.getDialogPane().lookupButton(ButtonType.NO)).textProperty().setValue(noButton.get());
         alert.setContentText(alertString.get());
-        System.err.println(alert.getDialogPane().getHeight());
         alert.showAndWait();
     }
 

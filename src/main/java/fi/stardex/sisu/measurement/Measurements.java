@@ -9,10 +9,7 @@ import fi.stardex.sisu.coding.delphi.c3i.DelphiC3ICodingDataStorage;
 import fi.stardex.sisu.coding.denso.DensoCoding;
 import fi.stardex.sisu.coding.denso.DensoCodingDataStorage;
 import fi.stardex.sisu.coding.siemens.SiemensCoding;
-import fi.stardex.sisu.model.CodingReportModel;
-import fi.stardex.sisu.model.FlowReportModel;
-import fi.stardex.sisu.model.MainSectionModel;
-import fi.stardex.sisu.model.PressureRegulatorOneModel;
+import fi.stardex.sisu.model.*;
 import fi.stardex.sisu.model.updateModels.HighPressureSectionUpdateModel;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.persistence.orm.cr.inj.TestName;
@@ -102,6 +99,8 @@ public class Measurements implements ChangeListener<Boolean> {
 
     private HighPressureSectionUpdateModel highPressureSectionUpdateModel;
 
+    private TestBenchSectionModel testBenchSectionModel;
+
     private boolean codingComplete;
 
     private Iterator<Integer> densoCodingPointsIterator;
@@ -124,7 +123,8 @@ public class Measurements implements ChangeListener<Boolean> {
                         PressureRegulatorOneModel pressureRegulatorOneModel,
                         HighPressureSectionUpdateModel highPressureSectionUpdateModel,
                         MainSectionModel mainSectionModel,
-                        InjectorControllersState injectorControllersState) {
+                        InjectorControllersState injectorControllersState,
+                        TestBenchSectionModel testBenchSectionModel) {
 
         this.flowReportModel = flowReportModel;
         this.mainSectionController = mainSectionController;
@@ -150,6 +150,7 @@ public class Measurements implements ChangeListener<Boolean> {
         this.isaDetectionController = isaDetectionController;
         this.mainSectionModel = mainSectionModel;
         this.injectorControllersState = injectorControllersState;
+        this.testBenchSectionModel = testBenchSectionModel;
     }
 
     @PostConstruct
@@ -229,9 +230,6 @@ public class Measurements implements ChangeListener<Boolean> {
             if (codingComplete)
                 performCoding();
 
-            DensoCodingDataStorage.clean();
-            DelphiC2ICodingDataStorage.clean();
-            DelphiC3ICodingDataStorage.clean();
             densoCodingPointsIterator = null;
             mainSectionController.pointToFirstTest();
             codingComplete = false;
@@ -414,7 +412,7 @@ public class Measurements implements ChangeListener<Boolean> {
 
     private void motorPreparation() {
 
-        if (isSectionReady(targetRPMSpinner.getValue().doubleValue(), currentRPMLcd.getValue(), 0.1)) {
+            if (isSectionReady(testBenchSectionModel.targetRPMProperty().get(), testBenchSectionModel.currentRPMProperty().get(), 0.1)){
 
             motorPreparationTimeline.stop();
             startPressure();

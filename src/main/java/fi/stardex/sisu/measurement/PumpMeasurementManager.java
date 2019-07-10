@@ -5,7 +5,6 @@ import fi.stardex.sisu.model.updateModels.HighPressureSectionUpdateModel;
 import fi.stardex.sisu.registers.flow.ModbusMapFlow;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.PumpsStartButtonState;
-import fi.stardex.sisu.states.TestBenchSectionPwrState;
 import fi.stardex.sisu.ui.controllers.cr.TestBenchSectionController;
 import fi.stardex.sisu.ui.controllers.pumps.CalibrationTestErrorController;
 import fi.stardex.sisu.ui.controllers.pumps.SCVCalibrationController;
@@ -43,15 +42,13 @@ public class PumpMeasurementManager {
     private PumpTestListModel pumpTestListModel;
     private PumpsStartButtonState pumpsStartButtonState;
     private PumpTestModel pumpTestModel;
-    private TargetRpmModel targetRpmModel;
     private ModbusRegisterProcessor flowModbusWriter;
     private PumpReportModel pumpReportModel;
     private PumpTestModeModel pumpTestModeModel;
-    private TestBenchSectionPwrState testBenchSectionPwrState;
-    private CurrentRpmModel currentRpmModel;
     private HighPressureSectionUpdateModel highPressureSectionUpdateModel;
     private PumpTimeProgressModel pumpTimeProgressModel;
     private SCVCalibrationModel scvCalibrationModel;
+    private TestBenchSectionModel testBenchSectionModel;
     private IntegerProperty adjustingTimeProperty;
     private IntegerProperty measuringTimeProperty;
     private PumpPressureRegulatorOneModel pumpPressureRegulatorOneModel;
@@ -74,9 +71,6 @@ public class PumpMeasurementManager {
     public void setPumpTestModel(PumpTestModel pumpTestModel) {
         this.pumpTestModel = pumpTestModel;
     }
-    public void setTargetRpmModel(TargetRpmModel targetRpmModel) {
-        this.targetRpmModel = targetRpmModel;
-    }
     public void setFlowModbusWriter(ModbusRegisterProcessor flowModbusWriter) {
         this.flowModbusWriter = flowModbusWriter;
     }
@@ -85,12 +79,6 @@ public class PumpMeasurementManager {
     }
     public void setPumpTestModeModel(PumpTestModeModel pumpTestModeModel) {
         this.pumpTestModeModel = pumpTestModeModel;
-    }
-    public void setTestBenchSectionPwrState(TestBenchSectionPwrState testBenchSectionPwrState) {
-        this.testBenchSectionPwrState = testBenchSectionPwrState;
-    }
-    public void setCurrentRpmModel(CurrentRpmModel currentRpmModel) {
-        this.currentRpmModel = currentRpmModel;
     }
     public void setHighPressureSectionUpdateModel(HighPressureSectionUpdateModel highPressureSectionUpdateModel) {
         this.highPressureSectionUpdateModel = highPressureSectionUpdateModel;
@@ -131,6 +119,10 @@ public class PumpMeasurementManager {
 
     public void setTestBenchSectionController(TestBenchSectionController testBenchSectionController) {
         this.testBenchSectionController = testBenchSectionController;
+    }
+
+    public void setTestBenchSectionModel(TestBenchSectionModel testBenchSectionModel) {
+        this.testBenchSectionModel = testBenchSectionModel;
     }
 
     @PostConstruct
@@ -237,7 +229,7 @@ public class PumpMeasurementManager {
 
     public void start(){
 
-        if (testBenchSectionPwrState.isPowerButtonDisabledProperty().get())
+        if (testBenchSectionModel.isPowerButtonDisabledProperty().get())
             startPressure();
         else
             startMotor();
@@ -257,7 +249,7 @@ public class PumpMeasurementManager {
 
     private void motorPreparation() {
 
-        if (isSectionReady(targetRpmModel.targetRPMProperty().getValue().doubleValue(), currentRpmModel.currentRPMProperty().getValue(), 0.1)) {
+        if (isSectionReady(testBenchSectionModel.targetRPMProperty().get(), testBenchSectionModel.currentRPMProperty().get(), 0.1)) {
 
             motorPreparationTimeline.stop();
             startPressure();

@@ -10,9 +10,7 @@ import fi.stardex.sisu.devices.Devices;
 import fi.stardex.sisu.measurement.Measurements;
 import fi.stardex.sisu.measurement.PumpMeasurementManager;
 import fi.stardex.sisu.model.*;
-import fi.stardex.sisu.model.updateModels.HighPressureSectionUpdateModel;
-import fi.stardex.sisu.model.updateModels.InjectorSectionUpdateModel;
-import fi.stardex.sisu.model.updateModels.PiezoRepairUpdateModel;
+import fi.stardex.sisu.model.updateModels.*;
 import fi.stardex.sisu.pdf.PDFService;
 import fi.stardex.sisu.persistence.CheckAndInitializeBD;
 import fi.stardex.sisu.persistence.orm.CSVSUpdater;
@@ -338,11 +336,11 @@ public class SpringJavaConfig {
                                 break;
                             case STAND_FM:
                                 updaters.stream().filter(updater -> updater instanceof FlowMasterUpdater
-                                        || updater instanceof TestBenchSectionUpdater).forEach(Platform::runLater);
+                                        || updater instanceof TestBenchSectionUpdateModel).forEach(Platform::runLater);
                                 break;
                             case STAND_FM_4_CH:
                                 updaters.stream().filter(updater -> updater instanceof FlowStreamUpdater
-                                        || updater instanceof TestBenchSectionUpdater).forEach(Platform::runLater);
+                                        || updater instanceof TestBenchSectionUpdateModel).forEach(Platform::runLater);
                                 break;
                             default:
                                 break;
@@ -492,17 +490,15 @@ public class SpringJavaConfig {
 
     @Bean
     @Autowired
-    public TestBenchSectionUpdater testBenchSectionUpdater(TestBenchSectionController testBenchSectionController,
-                                                           FirmwareVersion<FlowVersions> flowFirmwareVersion) {
-        return new TestBenchSectionUpdater(testBenchSectionController, flowFirmwareVersion);
+    public TestBenchSectionUpdateModel testBenchSectionUpdateModel(FirmwareVersion<FlowVersions> flowFirmwareVersion) {
+        return new TestBenchSectionUpdateModel(flowFirmwareVersion);
     }
 
     @Bean
     @Autowired
-    public TachometerUltimaUpdater tachometerUltimaUpdater(TestBenchSectionController testBenchSectionController,
-                                                           FirmwareVersion<FlowVersions> flowFirmwareVersion,
-                                                           ModbusConnect standModbusConnect) {
-        return new TachometerUltimaUpdater(testBenchSectionController, flowFirmwareVersion, standModbusConnect.connectedProperty());
+    public TachometerUltimaUpdateModel tachometerUltimaUpdateModel(FirmwareVersion<FlowVersions> flowFirmwareVersion,
+                                                                   ModbusConnect standModbusConnect) {
+        return new TachometerUltimaUpdateModel(flowFirmwareVersion, standModbusConnect.connectedProperty());
     }
 
     @Bean
@@ -649,7 +645,8 @@ public class SpringJavaConfig {
                                      PressureRegulatorOneModel pressureRegulatorOneModel,
                                      HighPressureSectionUpdateModel highPressureSectionUpdateModel,
                                      MainSectionModel mainSectionModel,
-                                     InjectorControllersState injectorControllersState) {
+                                     InjectorControllersState injectorControllersState,
+                                     TestBenchSectionModel testBenchSectionModel) {
         return new Measurements(mainSectionController, testBenchSectionController,
                 injectorSectionController,
                 isaDetectionController, codingReportModel, flowReportModel,
@@ -657,7 +654,8 @@ public class SpringJavaConfig {
                 pressureRegulatorOneModel,
                 highPressureSectionUpdateModel,
                 mainSectionModel,
-                injectorControllersState);
+                injectorControllersState,
+                testBenchSectionModel);
     }
 
     private List<Updater> addUpdaters(List<Updater> updatersList, Device targetDevice) {
@@ -705,12 +703,9 @@ public class SpringJavaConfig {
     public PumpMeasurementManager pumpMeasurementManager(PumpTestListModel pumpTestListModel,
                                                          PumpsStartButtonState pumpsStartButtonState,
                                                          PumpTestModel pumpTestModel,
-                                                         TargetRpmModel targetRpmModel,
                                                          ModbusRegisterProcessor flowModbusWriter,
                                                          PumpReportModel pumpReportModel,
                                                          PumpTestModeModel pumpTestModeModel,
-                                                         TestBenchSectionPwrState testBenchSectionPwrState,
-                                                         CurrentRpmModel currentRpmModel,
                                                          HighPressureSectionUpdateModel highPressureSectionUpdateModel,
                                                          PumpTimeProgressModel pumpTimeProgressModel,
                                                          PumpPressureRegulatorOneModel pumpPressureRegulatorOneModel,
@@ -722,17 +717,15 @@ public class SpringJavaConfig {
                                                          PumpModel pumpModel,
                                                          StartButtonController startButtonController,
                                                          PumpHighPressureSectionPwrController pumpHighPressureSectionPwrController,
-                                                         TestBenchSectionController testBenchSectionController) {
+                                                         TestBenchSectionController testBenchSectionController,
+                                                         TestBenchSectionModel testBenchSectionModel) {
         PumpMeasurementManager pumpMeasurementManager = new PumpMeasurementManager();
         pumpMeasurementManager.setPumpsStartButtonState(pumpsStartButtonState);
         pumpMeasurementManager.setPumpTestListModel(pumpTestListModel);
         pumpMeasurementManager.setPumpTestModel(pumpTestModel);
-        pumpMeasurementManager.setTargetRpmModel(targetRpmModel);
         pumpMeasurementManager.setFlowModbusWriter(flowModbusWriter);
         pumpMeasurementManager.setPumpReportModel(pumpReportModel);
         pumpMeasurementManager.setPumpTestModeModel(pumpTestModeModel);
-        pumpMeasurementManager.setTestBenchSectionPwrState(testBenchSectionPwrState);
-        pumpMeasurementManager.setCurrentRpmModel(currentRpmModel);
         pumpMeasurementManager.setHighPressureSectionUpdateModel(highPressureSectionUpdateModel);
         pumpMeasurementManager.setPumpTimeProgressModel(pumpTimeProgressModel);
         pumpMeasurementManager.setPumpPressureRegulatorOneModel(pumpPressureRegulatorOneModel);
@@ -745,6 +738,7 @@ public class SpringJavaConfig {
         pumpMeasurementManager.setStartButtonController(startButtonController);
         pumpMeasurementManager.setPumpHighPressureSectionPwrController(pumpHighPressureSectionPwrController);
         pumpMeasurementManager.setTestBenchSectionController(testBenchSectionController);
+        pumpMeasurementManager.setTestBenchSectionModel(testBenchSectionModel);
         return pumpMeasurementManager;
     }
 
@@ -1026,23 +1020,8 @@ public class SpringJavaConfig {
     }
 
     @Bean
-    public TargetRpmModel targetRpmModel() {
-        return new TargetRpmModel();
-    }
-
-    @Bean
     public PumpTestSpeedModel pumpTestSpeedModel() {
         return new PumpTestSpeedModel();
-    }
-
-    @Bean
-    public TestBenchSectionPwrState testBenchSectionPwrState() {
-        return new TestBenchSectionPwrState();
-    }
-
-    @Bean
-    public CurrentRpmModel currentRpmModel() {
-        return new CurrentRpmModel();
     }
 
     @Bean
@@ -1109,6 +1088,11 @@ public class SpringJavaConfig {
     @Bean
     public NewEditInjectorDialogModel newEditInjectorDialogModel() {
         return new NewEditInjectorDialogModel();
+    }
+
+    @Bean
+    public TestBenchSectionModel testBenchSectionModel() {
+        return new TestBenchSectionModel();
     }
 
 //    @Bean
