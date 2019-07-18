@@ -126,8 +126,8 @@ public class FirmwareDialogController {
 
         String standardString(List<String> parts) {
             sb.setLength(0);
-            parts.forEach(part -> {sb.append(part).append(".");
-                sb.setLength(sb.length() - 1);});
+            parts.forEach(part -> sb.append(part).append("."));
+            sb.setLength(sb.length() - 1);
             return sb.toString();
         }
     }
@@ -180,6 +180,7 @@ public class FirmwareDialogController {
             windowStage.initStyle(StageStyle.UTILITY);
             windowStage.titleProperty().bind(i18N.createStringBinding("settings.firmware.Button"));
         }
+        getVersions();
         windowStage.show();
     }
 
