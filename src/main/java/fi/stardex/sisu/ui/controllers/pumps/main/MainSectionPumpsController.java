@@ -1,6 +1,6 @@
 package fi.stardex.sisu.ui.controllers.pumps.main;
 
-import fi.stardex.sisu.model.PumpModel;
+import fi.stardex.sisu.model.pump.PumpModel;
 import fi.stardex.sisu.persistence.orm.pump.Pump;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;

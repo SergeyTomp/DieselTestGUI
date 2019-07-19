@@ -1,9 +1,9 @@
 package fi.stardex.sisu.ui.controllers.pumps.flow;
 
-import fi.stardex.sisu.combobox_values.Dimension;
-import fi.stardex.sisu.model.*;
+import fi.stardex.sisu.model.pump.*;
+import fi.stardex.sisu.util.enums.Dimension;
 import fi.stardex.sisu.persistence.orm.pump.PumpTest;
-import fi.stardex.sisu.ui.controllers.additional.BeakerController;
+import fi.stardex.sisu.ui.controllers.common.BeakerController;
 import fi.stardex.sisu.util.InputController;
 import fi.stardex.sisu.util.enums.BeakerType;
 import fi.stardex.sisu.util.i18n.I18N;

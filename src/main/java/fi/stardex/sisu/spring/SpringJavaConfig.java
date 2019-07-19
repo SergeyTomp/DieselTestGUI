@@ -10,6 +10,12 @@ import fi.stardex.sisu.devices.Devices;
 import fi.stardex.sisu.measurement.Measurements;
 import fi.stardex.sisu.measurement.PumpMeasurementManager;
 import fi.stardex.sisu.model.*;
+import fi.stardex.sisu.model.cr.*;
+import fi.stardex.sisu.model.pump.*;
+import fi.stardex.sisu.model.uis.CustomModelDialogModel;
+import fi.stardex.sisu.model.uis.CustomProducerDialogModel;
+import fi.stardex.sisu.model.uis.CustomTestDialogModel;
+import fi.stardex.sisu.model.uis.MainSectionUisModel;
 import fi.stardex.sisu.model.updateModels.*;
 import fi.stardex.sisu.pdf.PDFService;
 import fi.stardex.sisu.persistence.CheckAndInitializeBD;
@@ -28,12 +34,12 @@ import fi.stardex.sisu.registers.stand.ModbusMapStand;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.*;
-import fi.stardex.sisu.ui.controllers.ISADetectionController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.settings.ConnectionController;
+import fi.stardex.sisu.ui.controllers.cr.windows.ISADetectionController;
+import fi.stardex.sisu.ui.controllers.cr.tabs.FlowController;
+import fi.stardex.sisu.ui.controllers.cr.tabs.settings.ConnectionController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
-import fi.stardex.sisu.ui.controllers.cr.TestBenchSectionController;
-import fi.stardex.sisu.ui.controllers.main.MainSectionController;
+import fi.stardex.sisu.ui.controllers.common.TestBenchSectionController;
+import fi.stardex.sisu.ui.controllers.cr.MainSectionController;
 import fi.stardex.sisu.ui.controllers.pumps.CalibrationTestErrorController;
 import fi.stardex.sisu.ui.controllers.pumps.SCVCalibrationController;
 import fi.stardex.sisu.ui.controllers.pumps.main.PumpTestListController;
@@ -567,39 +573,6 @@ public class SpringJavaConfig {
         return new CheckAndInitializeBD(manufacturerRepository, dataSource);
     }
 
-//    @Bean
-//    @DependsOn("checkAndInitializeBD")
-//    @Autowired
-//    public ListView<Manufacturer> manufacturerList(ManufacturerRepository manufacturerRepository,
-//                                                   MainSectionController mainSectionController) {
-//        Iterable<Manufacturer> manufacturers = manufacturerRepository.findAll();
-//        List<Manufacturer> listOfManufacturers = new ArrayList<>();
-//        manufacturers.forEach(listOfManufacturers::add);
-
-//        ObservableList<Manufacturer> observableList = FXCollections.observableList(listOfManufacturers);
-//        ListView<Manufacturer> manufacturerList = mainSectionController.getManufacturerListView();
-//        manufacturerList.setItems(observableList);
-//
-//        return manufacturerList;
-//    }
-
-//    @Bean
-//    @Lazy
-//    @Autowired
-//    public Enabler enabler(MainSectionController mainSectionController,
-//                           InjectorSectionController injectorSectionController,
-//                           VoltageController voltageController,
-//                           FlowController flowController,
-//                           FlowReportController flowReportController,
-//                           GUI_TypeController gui_typeController,
-//                           FlowReportModel flowReportModel) {
-//        return new Enabler(mainSectionController,
-//                injectorSectionController,
-//                voltageController,
-//                flowController, flowReportController,
-//                gui_typeController.getGui_typeComboBox(),
-//                flowReportModel);
-//    }
 
     @Bean
     @Autowired
@@ -1093,6 +1066,26 @@ public class SpringJavaConfig {
     @Bean
     public TestBenchSectionModel testBenchSectionModel() {
         return new TestBenchSectionModel();
+    }
+
+    @Bean
+    public MainSectionUisModel mainSectionUisModel() {
+        return new MainSectionUisModel();
+    }
+
+    @Bean
+    public CustomModelDialogModel customInjectorDialogModel() {
+        return new CustomModelDialogModel();
+    }
+
+    @Bean
+    public CustomTestDialogModel customTestDialogModel() {
+        return new CustomTestDialogModel();
+    }
+
+    @Bean
+    public CustomProducerDialogModel customManufacturerDialogModel() {
+        return new CustomProducerDialogModel();
     }
 
 //    @Bean

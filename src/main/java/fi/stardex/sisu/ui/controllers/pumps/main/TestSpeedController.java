@@ -1,9 +1,9 @@
 package fi.stardex.sisu.ui.controllers.pumps.main;
 
-import fi.stardex.sisu.model.PumpTestModeModel;
-import fi.stardex.sisu.model.PumpTestModel;
-import fi.stardex.sisu.model.PumpTestSpeedModel;
-import fi.stardex.sisu.model.PumpTimeProgressModel;
+import fi.stardex.sisu.model.pump.PumpTestModeModel;
+import fi.stardex.sisu.model.pump.PumpTestModel;
+import fi.stardex.sisu.model.pump.PumpTestSpeedModel;
+import fi.stardex.sisu.model.pump.PumpTimeProgressModel;
 import fi.stardex.sisu.states.PumpsStartButtonState;
 import fi.stardex.sisu.util.enums.TestSpeed;
 import fi.stardex.sisu.util.i18n.I18N;

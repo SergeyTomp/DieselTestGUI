@@ -1,7 +1,7 @@
 package fi.stardex.sisu.ui.controllers.pumps.main;
 
-import fi.stardex.sisu.model.PumpTestListModel;
-import fi.stardex.sisu.model.PumpTestModeModel;
+import fi.stardex.sisu.model.pump.PumpTestListModel;
+import fi.stardex.sisu.model.pump.PumpTestModeModel;
 import fi.stardex.sisu.states.PumpsStartButtonState;
 import fi.stardex.sisu.util.enums.Tests;
 import javafx.animation.Animation;

@@ -1,6 +1,6 @@
 package fi.stardex.sisu.model;
 
-import fi.stardex.sisu.persistence.Producer;
+import fi.stardex.sisu.persistence.orm.interfaces.Producer;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import org.springframework.data.repository.CrudRepository;

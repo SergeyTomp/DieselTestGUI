@@ -1,5 +1,6 @@
 package fi.stardex.sisu.model;
 
+import fi.stardex.sisu.model.pump.ManufacturerPumpModel;
 import fi.stardex.sisu.persistence.orm.pump.ManufacturerPump;
 import fi.stardex.sisu.persistence.repos.pump.ManufacturerPumpRepository;
 import javafx.collections.ObservableList;

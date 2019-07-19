@@ -1,8 +1,8 @@
 package fi.stardex.sisu.settings;
 
-import fi.stardex.sisu.combobox_values.InjectorChannel;
-import fi.stardex.sisu.model.InjConfigurationModel;
-import fi.stardex.sisu.model.InjectorTypeModel;
+import fi.stardex.sisu.util.enums.InjectorChannel;
+import fi.stardex.sisu.model.cr.InjConfigurationModel;
+import fi.stardex.sisu.model.cr.InjectorTypeModel;
 import fi.stardex.sisu.states.VoltAmpereProfileDialogModel;
 import fi.stardex.sisu.util.enums.InjectorType;
 import javafx.collections.FXCollections;
@@ -12,8 +12,8 @@ import javafx.scene.control.ComboBox;
 import javax.annotation.PostConstruct;
 import java.util.prefs.Preferences;
 
-import static fi.stardex.sisu.combobox_values.InjectorChannel.MULTI_CHANNEL;
-import static fi.stardex.sisu.combobox_values.InjectorChannel.SINGLE_CHANNEL;
+import static fi.stardex.sisu.util.enums.InjectorChannel.MULTI_CHANNEL;
+import static fi.stardex.sisu.util.enums.InjectorChannel.SINGLE_CHANNEL;
 
 public class InjConfigurationController {
 

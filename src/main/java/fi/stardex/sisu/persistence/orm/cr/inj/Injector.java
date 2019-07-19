@@ -1,6 +1,5 @@
 package fi.stardex.sisu.persistence.orm.cr.inj;
 
-import fi.stardex.sisu.persistence.Producer;
 import fi.stardex.sisu.persistence.orm.EntityUpdates;
 import fi.stardex.sisu.persistence.orm.Manufacturer;
 import fi.stardex.sisu.persistence.orm.interfaces.Model;
@@ -73,6 +72,11 @@ public class Injector implements Model {
         return injectorCode;
     }
 
+    @Override
+    public String getModelCode() {
+        return getInjectorCode();
+    }
+
     public Manufacturer getManufacturer() {
         return manufacturer;
     }
@@ -93,6 +97,7 @@ public class Injector implements Model {
         return coefficient;
     }
 
+    @Override
     public Boolean isCustom() {
         return isCustom;
     }

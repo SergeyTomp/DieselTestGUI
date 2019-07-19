@@ -3,9 +3,9 @@ package fi.stardex.sisu.ui.updaters;
 
 import fi.stardex.sisu.annotations.Module;
 import fi.stardex.sisu.devices.Device;
-import fi.stardex.sisu.model.FlowRangeModel;
-import fi.stardex.sisu.model.PumpFlowTemperaturesModel;
-import fi.stardex.sisu.model.PumpFlowValuesModel;
+import fi.stardex.sisu.model.pump.FlowRangeModel;
+import fi.stardex.sisu.model.pump.PumpFlowTemperaturesModel;
+import fi.stardex.sisu.model.pump.PumpFlowValuesModel;
 import fi.stardex.sisu.states.InstantFlowState;
 import fi.stardex.sisu.states.PumpHighPressureSectionPwrState;
 import fi.stardex.sisu.version.FirmwareVersion;

@@ -1,10 +1,11 @@
 package fi.stardex.sisu.ui.controllers.pumps;
 
 import fi.stardex.sisu.model.*;
+import fi.stardex.sisu.model.pump.*;
 import fi.stardex.sisu.model.updateModels.HighPressureSectionUpdateModel;
 import fi.stardex.sisu.registers.flow.ModbusMapFlow;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
-import fi.stardex.sisu.ui.controllers.cr.TestBenchSectionController;
+import fi.stardex.sisu.ui.controllers.common.TestBenchSectionController;
 import fi.stardex.sisu.ui.controllers.pumps.pressure.PumpHighPressureSectionPwrController;
 import fi.stardex.sisu.ui.controllers.pumps.pressure.PumpRegulatorSectionTwoController;
 import fi.stardex.sisu.util.i18n.I18N;

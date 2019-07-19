@@ -1,9 +1,9 @@
 package fi.stardex.sisu.charts;
 
-import fi.stardex.sisu.combobox_values.InjectorChannel;
+import fi.stardex.sisu.util.enums.InjectorChannel;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
-import fi.stardex.sisu.ui.controllers.additional.tabs.DelayController;
+import fi.stardex.sisu.ui.controllers.cr.tabs.DelayController;
 import fi.stardex.sisu.util.DelayCalculator;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;

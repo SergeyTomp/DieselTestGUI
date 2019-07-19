@@ -5,6 +5,12 @@ import fi.stardex.sisu.connect.ModbusConnect;
 import fi.stardex.sisu.devices.Devices;
 import fi.stardex.sisu.measurement.Measurements;
 import fi.stardex.sisu.model.*;
+import fi.stardex.sisu.model.cr.*;
+import fi.stardex.sisu.model.pump.*;
+import fi.stardex.sisu.model.uis.CustomModelDialogModel;
+import fi.stardex.sisu.model.uis.CustomProducerDialogModel;
+import fi.stardex.sisu.model.uis.CustomTestDialogModel;
+import fi.stardex.sisu.model.uis.MainSectionUisModel;
 import fi.stardex.sisu.model.updateModels.HighPressureSectionUpdateModel;
 import fi.stardex.sisu.model.updateModels.InjectorSectionUpdateModel;
 import fi.stardex.sisu.model.updateModels.PiezoRepairUpdateModel;
@@ -18,32 +24,37 @@ import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.settings.*;
 import fi.stardex.sisu.states.*;
 import fi.stardex.sisu.ui.ViewHolder;
-import fi.stardex.sisu.ui.controllers.GUI_TypeController;
-import fi.stardex.sisu.ui.controllers.ISADetectionController;
-import fi.stardex.sisu.ui.controllers.additional.BeakerController;
-import fi.stardex.sisu.ui.controllers.additional.TabSectionController;
-import fi.stardex.sisu.ui.controllers.additional.dialogs.FirmwareDialogController;
-import fi.stardex.sisu.ui.controllers.additional.dialogs.VoltAmpereProfileController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.*;
-import fi.stardex.sisu.ui.controllers.additional.tabs.info.*;
-import fi.stardex.sisu.ui.controllers.additional.tabs.report.DelayReportController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.report.FlowReportController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.report.RLC_ReportController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.report.ReportController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.settings.ConnectionController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.settings.FirmwareButtonController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.settings.SettingsController;
+import fi.stardex.sisu.ui.controllers.common.GUI_TypeController;
+import fi.stardex.sisu.ui.controllers.common.TestBenchSectionController;
+import fi.stardex.sisu.ui.controllers.cr.windows.ISADetectionController;
+import fi.stardex.sisu.ui.controllers.common.BeakerController;
+import fi.stardex.sisu.ui.controllers.cr.TabSectionController;
+import fi.stardex.sisu.ui.controllers.cr.windows.FirmwareDialogController;
+import fi.stardex.sisu.ui.controllers.cr.windows.VoltAmpereProfileController;
+import fi.stardex.sisu.ui.controllers.cr.tabs.*;
+import fi.stardex.sisu.ui.controllers.cr.tabs.info.*;
+import fi.stardex.sisu.ui.controllers.cr.tabs.report.DelayReportController;
+import fi.stardex.sisu.ui.controllers.cr.tabs.report.FlowReportController;
+import fi.stardex.sisu.ui.controllers.cr.tabs.report.RLC_ReportController;
+import fi.stardex.sisu.ui.controllers.cr.tabs.report.ReportController;
+import fi.stardex.sisu.ui.controllers.cr.tabs.settings.ConnectionController;
+import fi.stardex.sisu.ui.controllers.cr.tabs.settings.FirmwareButtonController;
+import fi.stardex.sisu.ui.controllers.cr.tabs.settings.SettingsController;
 import fi.stardex.sisu.ui.controllers.cr.*;
-import fi.stardex.sisu.ui.controllers.dialogs.*;
-import fi.stardex.sisu.ui.controllers.main.MainSectionController;
+import fi.stardex.sisu.ui.controllers.cr.dialogs.*;
+import fi.stardex.sisu.ui.controllers.cr.MainSectionController;
 import fi.stardex.sisu.ui.controllers.pumps.CalibrationTestErrorController;
 import fi.stardex.sisu.ui.controllers.pumps.PumpTabSectionController;
 import fi.stardex.sisu.ui.controllers.pumps.SCVCalibrationController;
 import fi.stardex.sisu.ui.controllers.pumps.pressure.PumpHighPressureSectionPwrController;
 import fi.stardex.sisu.ui.controllers.pumps.pressure.PumpRegulatorSectionTwoController;
-import fi.stardex.sisu.ui.controllers.uis.RootLayoutController;
+import fi.stardex.sisu.ui.controllers.common.RootLayoutController;
 import fi.stardex.sisu.model.updateModels.TachometerUltimaUpdateModel;
 import fi.stardex.sisu.model.updateModels.TestBenchSectionUpdateModel;
+import fi.stardex.sisu.ui.controllers.uis.MainSectionUisController;
+import fi.stardex.sisu.ui.controllers.uis.dialogs.CustomInjectorUisDialogController;
+import fi.stardex.sisu.ui.controllers.uis.dialogs.CustomManufacturerUisDialogController;
+import fi.stardex.sisu.ui.controllers.uis.dialogs.CustomTestUisDialogController;
 import fi.stardex.sisu.util.DelayCalculator;
 import fi.stardex.sisu.util.enums.BeakerType;
 import fi.stardex.sisu.util.i18n.I18N;
@@ -97,13 +108,15 @@ public class JavaFXSpringConfigure extends ViewLoader{
     // иначе при входе в режиме Pump не всегда появляется список ОЕМ пока не переключиться в инжекторы и вернуться обратно
     @Bean
     @Autowired
-    @DependsOn({"pumpsOEMListController", "checkAndInitializeBD", "mainSectionController"})
+    @DependsOn({"pumpsOEMListController", "checkAndInitializeBD", "mainSectionController", "mainSectionUisController"})
     public GUI_TypeController gui_typeController(Preferences rootPreferences,
                                                  RootLayoutController rootLayoutController,
                                                  TabSectionController tabSectionController,
                                                  PumpTabSectionController pumpTabSectionController,
                                                  DimasGUIEditionState dimasGUIEditionState,
                                                  ViewHolder mainSectionPumps,
+                                                 ViewHolder mainSectionUIS,
+                                                 ViewHolder uisSection,
                                                  ViewHolder pumpHighPressureSection,
                                                  ViewHolder pumpTabSection,
                                                  ViewHolder settings,
@@ -118,7 +131,6 @@ public class JavaFXSpringConfigure extends ViewLoader{
         gui_typeController.setMainSection(mainSection().getView());
         gui_typeController.setMainSectionPumps(mainSectionPumps.getView());
         gui_typeController.setCRSection(crSection().getView());
-        gui_typeController.setUISSection(uisSection().getView());
         gui_typeController.setTabSection(tabSection().getView());
         gui_typeController.setSettingsGridPaneCR(tabSectionController.getSettingsGridPane());
         gui_typeController.setSettingsGridPanePumps(pumpTabSectionController.getSettingsGridPane());
@@ -134,6 +146,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
         gui_typeController.setGui_typeModel(gui_typeModel);
         gui_typeController.setMainSectionModel(mainSectionModel);
         gui_typeController.setInjectorSectionPwrState(injectorSectionPwrState);
+        gui_typeController.setMainSectionUIS(mainSectionUIS.getView());
+        gui_typeController.setUisSection(uisSection.getView());
         return gui_typeController;
     }
 
@@ -1175,5 +1189,88 @@ public class JavaFXSpringConfigure extends ViewLoader{
         calibrationTestErrorController.setErrorParent(calibrationTestError.getView());
         calibrationTestErrorController.setRootParent(rootLayout.getView());
         return calibrationTestErrorController;
+    }
+
+    @Bean
+    public ViewHolder mainSectionUIS() {
+        return loadView("/fxml/sections/Main/MainSectionUis.fxml");
+    }
+
+    @Bean
+    public ViewHolder customInjectorUisDialog() {
+        return loadView("/fxml/dialogs/CustomInjectorUisDialog.fxml");
+    }
+
+    @Bean
+    public ViewHolder customManufacturerUisDialog() {
+        return loadView("/fxml/dialogs/CustomManufacturerUisDialog.fxml");
+    }
+
+    @Bean
+    public ViewHolder customTestUisDialog() {
+        return loadView("/fxml/dialogs/CustomTestUisDialog.fxml");
+    }
+    @Bean
+    @Autowired
+    public MainSectionUisController mainSectionUisController(MainSectionUisModel mainSectionUisModel,
+                                                             GUI_TypeModel gui_typeModel,
+                                                             CustomModelDialogModel customModelDialogModel,
+                                                             CustomProducerDialogModel customProducerDialogModel,
+                                                             CustomTestDialogModel customTestDialogModel,
+                                                             ModbusRegisterProcessor flowModbusWriter,
+                                                             ModbusRegisterProcessor ultimaModbusWriter) {
+        MainSectionUisController mainSectionUisController = (MainSectionUisController)mainSectionUIS().getController();
+        mainSectionUisController.setMainSectionUisModel(mainSectionUisModel);
+        mainSectionUisController.setPrintDialogPanel(printDialogPanel());
+        mainSectionUisController.setI18N(i18N);
+        mainSectionUisController.setGui_typeModel(gui_typeModel);
+        mainSectionUisController.setCustomModelDialogModel(customModelDialogModel);
+        mainSectionUisController.setFlowModbusWriter(flowModbusWriter);
+        mainSectionUisController.setUltimaModbusWriter(ultimaModbusWriter);
+        mainSectionUisController.setCustomProducerDialogModel(customProducerDialogModel);
+        mainSectionUisController.setCustomTestDialogModel(customTestDialogModel);
+        return mainSectionUisController;
+    }
+
+    @Bean
+    @Autowired
+    public CustomManufacturerUisDialogController customManufacturerUisDialogController(MainSectionUisModel mainSectionUisModel,
+                                                                                       GUI_TypeModel guiTypeModel,
+                                                                                       CustomProducerDialogModel customProducerDialogModel) {
+        CustomManufacturerUisDialogController customManufacturerUisDialogController = (CustomManufacturerUisDialogController)customManufacturerUisDialog().getController();
+        customManufacturerUisDialogController.setMainSectionUisModel(mainSectionUisModel);
+        customManufacturerUisDialogController.setGuiTypeModel(guiTypeModel);
+        customManufacturerUisDialogController.setDialogViev(customManufacturerUisDialog().getView());
+        customManufacturerUisDialogController.setCustomProducerDialogModel(customProducerDialogModel);
+        customManufacturerUisDialogController.setI18N(i18N);
+        return customManufacturerUisDialogController;
+    }
+
+    @Bean
+    @Autowired
+    public CustomInjectorUisDialogController customInjectorUisDialogController(MainSectionUisModel mainSectionUisModel,
+                                                                               GUI_TypeModel guiTypeModel,
+                                                                               CustomModelDialogModel customModelDialogModel) {
+        CustomInjectorUisDialogController customInjectorUisDialogController = (CustomInjectorUisDialogController)customInjectorUisDialog().getController();
+        customInjectorUisDialogController.setMainSectionUisModel(mainSectionUisModel);
+        customInjectorUisDialogController.setDialogViev(customInjectorUisDialog().getView());
+        customInjectorUisDialogController.setGuiTypeModel(guiTypeModel);
+        customInjectorUisDialogController.setCustomModelDialogModel(customModelDialogModel);
+        customInjectorUisDialogController.setI18N(i18N);
+        return customInjectorUisDialogController;
+    }
+
+    @Bean
+    @Autowired
+    public CustomTestUisDialogController customTestUisDialogController(MainSectionUisModel mainSectionUisModel,
+                                                                       GUI_TypeModel guiTypeModel,
+                                                                       CustomTestDialogModel customTestDialogModel) {
+        CustomTestUisDialogController customTestUisDialogController = (CustomTestUisDialogController)customTestUisDialog().getController();
+        customTestUisDialogController.setMainSectionUisModel(mainSectionUisModel);
+        customTestUisDialogController.setGuiTypeModel(guiTypeModel);
+        customTestUisDialogController.setCustomTestDialogModel(customTestDialogModel);
+        customTestUisDialogController.setDialogView(customTestUisDialog().getView());
+        customTestUisDialogController.setI18N(i18N);
+        return customTestUisDialogController;
     }
 }

@@ -1,6 +1,6 @@
 package fi.stardex.sisu.ui.controllers.cr;
 
-import fi.stardex.sisu.model.RegulatorsQTYModel;
+import fi.stardex.sisu.model.cr.RegulatorsQTYModel;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;

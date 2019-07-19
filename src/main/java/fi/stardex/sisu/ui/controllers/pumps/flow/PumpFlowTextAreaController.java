@@ -1,8 +1,8 @@
 package fi.stardex.sisu.ui.controllers.pumps.flow;
 
 import fi.stardex.sisu.model.LanguageModel;
-import fi.stardex.sisu.model.PumpModel;
-import fi.stardex.sisu.model.PumpTestModel;
+import fi.stardex.sisu.model.pump.PumpModel;
+import fi.stardex.sisu.model.pump.PumpTestModel;
 import fi.stardex.sisu.persistence.orm.pump.Pump;
 import fi.stardex.sisu.persistence.orm.pump.PumpTest;
 import fi.stardex.sisu.util.i18n.I18N;

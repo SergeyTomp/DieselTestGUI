@@ -1,6 +1,6 @@
 package fi.stardex.sisu.persistence.orm;
 
-import fi.stardex.sisu.persistence.Producer;
+import fi.stardex.sisu.persistence.orm.interfaces.Producer;
 import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
 
 import javax.persistence.*;
@@ -27,18 +27,15 @@ public class Manufacturer implements Producer {
     private Boolean heui;
 
     @PostPersist
-    @Override
     public void onPostPersist() {
         EntityUpdates.getMapOfEntityUpdates().put(this.getClass().getSimpleName(), true);
     }
 
     @PostRemove
-    @Override
     public void onPostRemove() {
         EntityUpdates.getMapOfEntityUpdates().put(this.getClass().getSimpleName(), true);
     }
 
-    @Override
     public List<Injector> getInjectors() {
         return injectors;
     }

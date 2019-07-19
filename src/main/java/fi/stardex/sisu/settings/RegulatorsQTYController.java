@@ -1,6 +1,6 @@
 package fi.stardex.sisu.settings;
 
-import fi.stardex.sisu.model.RegulatorsQTYModel;
+import fi.stardex.sisu.model.cr.RegulatorsQTYModel;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;

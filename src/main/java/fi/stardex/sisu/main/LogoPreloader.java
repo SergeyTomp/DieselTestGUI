@@ -1,7 +1,7 @@
 package fi.stardex.sisu.main;
 
 import fi.stardex.sisu.spring.JavaFXSpringConfigure;
-import fi.stardex.sisu.ui.controllers.LogoController;
+import fi.stardex.sisu.ui.controllers.common.LogoController;
 import javafx.application.Preloader;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;

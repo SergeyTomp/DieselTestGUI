@@ -1,0 +1,19 @@
+manufacturer_name,display_order,is_custom
+Bosch,1,FALSE
+Cummins,2,FALSE
+DAF,3,FALSE
+Delphi,4,FALSE
+Detroit,5,FALSE
+Ford,6,FALSE
+Hyundai,7,FALSE
+Iveco,8,FALSE
+John Deere,9,FALSE
+Mercedes,10,FALSE
+Mitsubishi,11,FALSE
+Scania,12,FALSE
+VAG,13,FALSE
+Volvo,14,FALSE
+DelphiF2E,15,FALSE
+HPITest,16,FALSE
+Caterpillar,17,FALSE
+Custom,18,FALSE

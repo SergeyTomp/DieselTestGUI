@@ -1,12 +1,12 @@
 package fi.stardex.sisu.ui.controllers.pumps.main;
 
-import fi.stardex.sisu.model.PumpReportModel;
-import fi.stardex.sisu.model.PumpTestModeModel;
+import fi.stardex.sisu.model.pump.PumpReportModel;
+import fi.stardex.sisu.model.pump.PumpTestModeModel;
 import fi.stardex.sisu.registers.flow.ModbusMapFlow;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.PumpsStartButtonState;
 import fi.stardex.sisu.ui.ViewHolder;
-import fi.stardex.sisu.ui.controllers.dialogs.PrintDialogPanelController;
+import fi.stardex.sisu.ui.controllers.cr.dialogs.PrintDialogPanelController;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;

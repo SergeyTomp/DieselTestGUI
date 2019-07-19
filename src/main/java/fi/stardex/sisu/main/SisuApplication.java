@@ -2,7 +2,7 @@ package fi.stardex.sisu.main;
 
 import fi.stardex.sisu.logging.LogbackUncaughtExceptionHandler;
 import fi.stardex.sisu.ui.ViewHolder;
-import fi.stardex.sisu.ui.controllers.uis.RootLayoutController;
+import fi.stardex.sisu.ui.controllers.common.RootLayoutController;
 import fi.stardex.sisu.util.wrappers.StatusBarWrapper;
 import it.sauronsoftware.junique.AlreadyLockedException;
 import it.sauronsoftware.junique.JUnique;

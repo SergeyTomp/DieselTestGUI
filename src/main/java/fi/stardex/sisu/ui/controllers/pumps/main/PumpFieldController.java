@@ -1,6 +1,6 @@
 package fi.stardex.sisu.ui.controllers.pumps.main;
 
-import fi.stardex.sisu.model.PumpModel;
+import fi.stardex.sisu.model.pump.PumpModel;
 import fi.stardex.sisu.persistence.orm.pump.Pump;
 import fi.stardex.sisu.states.PumpsStartButtonState;
 import javafx.beans.value.ChangeListener;

@@ -1,7 +1,7 @@
 package fi.stardex.sisu.settings;
 
-import fi.stardex.sisu.combobox_values.Dimension;
-import fi.stardex.sisu.model.FlowViewModel;
+import fi.stardex.sisu.util.enums.Dimension;
+import fi.stardex.sisu.model.pump.FlowViewModel;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;

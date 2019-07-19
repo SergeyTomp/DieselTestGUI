@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<GridPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="fi.stardex.sisu.ui.controllers.uis.dialogs.CustomTestUisDialogController"
+            prefHeight="400.0" prefWidth="600.0">
+    <columnConstraints>
+        <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="10.0" prefWidth="150.0" />
+        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+    </rowConstraints>
+    <children>
+        <TextField fx:id="barTF" prefWidth="100.0" GridPane.columnIndex="3" GridPane.rowIndex="1">
+            <GridPane.margin>
+                <Insets bottom="10.0" left="10.0" right="20.0" top="10.0" />
+            </GridPane.margin>
+        </TextField>
+        <Label text="RPM" GridPane.rowIndex="1" />
+        <Label text="Width" GridPane.rowIndex="2" />
+        <Label text="Nominal Flow" GridPane.rowIndex="3" />
+        <Label text="Adjusting time" GridPane.rowIndex="4" />
+        <TextField fx:id="adjTimeTF" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
+            <GridPane.margin>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+            </GridPane.margin>
+        </TextField>
+        <TextField fx:id="nominalTF" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+            <GridPane.margin>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+            </GridPane.margin>
+        </TextField>
+        <TextField fx:id="widthTF" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+            <GridPane.margin>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+            </GridPane.margin>
+        </TextField>
+        <TextField fx:id="rpmTF" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+            <GridPane.margin>
+                <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+            </GridPane.margin>
+        </TextField>
+        <Label text="Bar" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+        <Label text="Freq" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+        <Label text="Flow range" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+        <Label text="Measurement time" GridPane.columnIndex="2" GridPane.rowIndex="4" />
+        <TextField fx:id="freqTF" prefWidth="100.0" GridPane.columnIndex="3" GridPane.rowIndex="2">
+            <GridPane.margin>
+                <Insets bottom="10.0" left="10.0" right="20.0" top="10.0" />
+            </GridPane.margin>
+        </TextField>
+        <TextField fx:id="measureTimeTF" prefWidth="100.0" GridPane.columnIndex="3" GridPane.rowIndex="4">
+            <GridPane.margin>
+                <Insets bottom="10.0" left="10.0" right="20.0" top="10.0" />
+            </GridPane.margin>
+        </TextField>
+        <Label text="Select test name: " GridPane.columnIndex="1" />
+        <ComboBox fx:id="testComboBox" prefWidth="150.0" GridPane.columnIndex="2" />
+        <Button fx:id="saveBtn" mnemonicParsing="false" text="Save" GridPane.columnIndex="2" GridPane.rowIndex="5" />
+        <Button fx:id="cancelBtn" mnemonicParsing="false" text="Cancel" GridPane.columnIndex="3" GridPane.rowIndex="5" />
+        <TextField fx:id="flowRangeTF" prefWidth="100.0" GridPane.columnIndex="3" GridPane.rowIndex="3">
+            <GridPane.margin>
+                <Insets bottom="10.0" left="10.0" right="20.0" top="10.0" />
+            </GridPane.margin>
+        </TextField>
+    </children>
+</GridPane>

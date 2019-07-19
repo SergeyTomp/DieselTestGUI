@@ -1,7 +1,7 @@
 package fi.stardex.sisu.ui.controllers.pumps;
 
-import fi.stardex.sisu.model.PumpReportModel;
-import fi.stardex.sisu.model.PumpReportModel.PumpFlowResult;
+import fi.stardex.sisu.model.pump.PumpReportModel;
+import fi.stardex.sisu.model.pump.PumpReportModel.PumpFlowResult;
 import fi.stardex.sisu.persistence.orm.pump.PumpTest;
 import fi.stardex.sisu.states.PumpsStartButtonState;
 import fi.stardex.sisu.util.enums.Measurement;

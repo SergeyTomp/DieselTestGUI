@@ -1,6 +1,7 @@
 package fi.stardex.sisu.spring;
 
 import fi.stardex.sisu.model.*;
+import fi.stardex.sisu.model.pump.*;
 import fi.stardex.sisu.model.updateModels.HighPressureSectionUpdateModel;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.CustomPumpState;

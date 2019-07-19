@@ -1,11 +1,11 @@
 package fi.stardex.sisu.coding.bosch;
 
-import fi.stardex.sisu.model.FlowReportModel.FlowResult;
+import fi.stardex.sisu.model.cr.FlowReportModel.FlowResult;
 import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.persistence.orm.cr.inj.TestName;
-import fi.stardex.sisu.ui.controllers.ISADetectionController;
-import fi.stardex.sisu.ui.controllers.ISADetectionController.ISAResult;
+import fi.stardex.sisu.ui.controllers.cr.windows.ISADetectionController;
+import fi.stardex.sisu.ui.controllers.cr.windows.ISADetectionController.ISAResult;
 import javafx.collections.ObservableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

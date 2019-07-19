@@ -1,0 +1,7 @@
+id,test_name,display_order
+1,Start test,5
+2,Idle test,4
+3,Medium load test,3
+4,Full load test,2
+5,Air cleaning,1
+6,BIP test,6

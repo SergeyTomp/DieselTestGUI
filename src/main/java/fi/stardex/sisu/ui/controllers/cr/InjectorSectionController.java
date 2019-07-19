@@ -1,7 +1,8 @@
 package fi.stardex.sisu.ui.controllers.cr;
 
 import fi.stardex.sisu.charts.TimerTasksManager;
-import fi.stardex.sisu.combobox_values.InjectorChannel;
+import fi.stardex.sisu.model.cr.*;
+import fi.stardex.sisu.util.enums.InjectorChannel;
 import fi.stardex.sisu.devices.Device;
 import fi.stardex.sisu.devices.Devices;
 import fi.stardex.sisu.model.*;
@@ -14,8 +15,8 @@ import fi.stardex.sisu.states.BoostUadjustmentState;
 import fi.stardex.sisu.states.InjectorControllersState;
 import fi.stardex.sisu.states.InjectorSectionPwrState;
 import fi.stardex.sisu.states.VoltAmpereProfileDialogModel;
-import fi.stardex.sisu.ui.controllers.GUI_TypeController;
-import fi.stardex.sisu.ui.controllers.additional.tabs.DelayController;
+import fi.stardex.sisu.ui.controllers.common.GUI_TypeController;
+import fi.stardex.sisu.ui.controllers.cr.tabs.DelayController;
 import fi.stardex.sisu.util.enums.InjectorType;
 import fi.stardex.sisu.util.enums.Measurement;
 import fi.stardex.sisu.util.i18n.I18N;

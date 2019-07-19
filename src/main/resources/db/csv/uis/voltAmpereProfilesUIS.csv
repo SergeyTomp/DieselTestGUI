@@ -1,0 +1,11 @@
+profile_name,cam_type,inlet_pressure,injector_type,injector_sub_type,boost_disable,boost_u,boost_i,battery_u,first_i,first_w,second_i,boost_i2,first_i2,first_w2,second_i2,negative_u,bip_pwm,bip_window,is_custom
+VA_038130073,1,6,Coil,SinglCoil,TRUE,30,15,30,15,760,11,15,15,760,11,60,15,400,FALSE
+VA_0414701005,2,3,Coil,SinglCoil,FALSE,30,9.5,30,9,750,9,9.5,9,750,9,60,20,400,FALSE
+VA2_0414701005,2,3,Coil,SinglCoil,FALSE,30,15,30,15,2000,10,15,15,2000,10,60,,,FALSE
+VA_1668325,2,4,Coil,SinglCoil,FALSE,50,10,28,10,1000,8,10,10,1000,8,60,,,FALSE
+VA_33800-84710,2,4,Coil,DoubleCoil,FALSE,55,12,28,12,2000,8,12,12,2000,8,60,,,FALSE
+VA_4061851,2,4,Coil,DoubleSignal,FALSE,30,8,28,8,2000,6,8,8,2000,6,60,,,FALSE
+VA_33800-84300,2,5,Coil,F2E,FALSE,55,15,28,15,2000,10,15,15,2000,10,60,,,FALSE
+VA_CAT 3600,2,3,Coil,Mechanical,FALSE,41,3,28,2,500,2,3,2,500,2,60,,,FALSE
+VA_Scania HPI,2,5,Coil,HPI,FALSE,41,3,28,2,500,2,3,2,500,2,60,,,FALSE
+VA_VW Piezo,2,3,Piezo,SinglPiezo,FALSE,140,15,12,15,760,11,15,15,760,11,60,,,FALSE

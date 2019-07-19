@@ -1,13 +1,12 @@
 package fi.stardex.sisu.util.converters;
 
-import fi.stardex.sisu.combobox_values.Dimension;
-import fi.stardex.sisu.model.FlowViewModel;
-import fi.stardex.sisu.model.MainSectionModel;
+import fi.stardex.sisu.util.enums.Dimension;
+import fi.stardex.sisu.model.pump.FlowViewModel;
+import fi.stardex.sisu.model.cr.MainSectionModel;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
-import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
+import fi.stardex.sisu.ui.controllers.cr.tabs.FlowController;
 import fi.stardex.sisu.util.enums.Measurement;
 import javafx.scene.control.Label;
-import javafx.scene.control.MultipleSelectionModel;
 import javafx.scene.control.SingleSelectionModel;
 
 import javax.annotation.PostConstruct;

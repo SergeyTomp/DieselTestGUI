@@ -1,5 +1,6 @@
 package fi.stardex.sisu.model;
 
+import fi.stardex.sisu.model.pump.PumpModel;
 import fi.stardex.sisu.persistence.orm.pump.ManufacturerPump;
 import fi.stardex.sisu.persistence.orm.pump.Pump;
 import fi.stardex.sisu.persistence.repos.pump.PumpRepository;

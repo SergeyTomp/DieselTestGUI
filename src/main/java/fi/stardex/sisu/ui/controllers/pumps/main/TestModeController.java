@@ -1,6 +1,6 @@
 package fi.stardex.sisu.ui.controllers.pumps.main;
 
-import fi.stardex.sisu.model.PumpTestModeModel;
+import fi.stardex.sisu.model.pump.PumpTestModeModel;
 import fi.stardex.sisu.states.PumpsStartButtonState;
 import fi.stardex.sisu.util.i18n.I18N;
 import javafx.fxml.FXML;

@@ -1,7 +1,7 @@
 package fi.stardex.sisu.ui.controllers.cr;
 
-import fi.stardex.sisu.model.InjectorTestModel;
-import fi.stardex.sisu.model.PressureRegulatorOneModel;
+import fi.stardex.sisu.model.cr.InjectorTestModel;
+import fi.stardex.sisu.model.cr.PressureRegulatorOneModel;
 import fi.stardex.sisu.model.PressureSensorModel;
 import fi.stardex.sisu.model.RegulationModesModel;
 import fi.stardex.sisu.model.updateModels.HighPressureSectionUpdateModel;

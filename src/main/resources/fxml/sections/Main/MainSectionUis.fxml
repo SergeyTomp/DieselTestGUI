@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<GridPane maxHeight="1.7976931348623157E308" maxWidth="300.0" minHeight="600.0" minWidth="300.0" prefHeight="600.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.uis.MainSectionUisController">
+<columnConstraints>
+    <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+</columnConstraints>
+<rowConstraints>
+    <RowConstraints minHeight="10.0" percentHeight="40.0" prefHeight="30.0" vgrow="SOMETIMES" />
+    <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" percentHeight="40.0" vgrow="NEVER" />
+    <RowConstraints maxHeight="99.0" minHeight="10.0" percentHeight="15.0" prefHeight="94.0" vgrow="NEVER" />
+    <RowConstraints minHeight="10.0" percentHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
+</rowConstraints>
+<children>
+    <HBox prefHeight="100.0" prefWidth="200.0" spacing="4.0">
+        <children>
+            <ListView fx:id="manufacturerListView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="100.0" stylesheets="@../../../css/Styling.css" />
+            <VBox fx:id="injectorsVBox" disable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="200.0" spacing="4.0">
+                <children>
+                    <HBox alignment="CENTER" prefHeight="50.0" spacing="20.0" stylesheets="@../../../css/Styling.css">
+                        <children>
+                            <RadioButton fx:id="defaultRadioButton" mnemonicParsing="false" selected="true" style="-fx-font-size: 11;" styleClass="radioButton" stylesheets="@../../../css/Styling.css" text="%main.defaultRB.radiobutton">
+                                <toggleGroup>
+                                    <ToggleGroup fx:id="baseTypeToggleGroup" />
+                                </toggleGroup>
+                                <font>
+                                    <Font size="11.0" />
+                                </font></RadioButton>
+                            <RadioButton fx:id="customRadioButton" mnemonicParsing="false" style="-fx-font-size: 11;" styleClass="radioButton" stylesheets="@../../../css/Styling.css" text="%main.customRB.radiobutton" toggleGroup="$baseTypeToggleGroup">
+                                <font>
+                                    <Font size="11.0" />
+                                </font></RadioButton>
+                        </children>
+                    </HBox>
+                    <TextField fx:id="searchModelTextField" styleClass="searchTextField" stylesheets="@../../../css/Styling.css" />
+                    <ListView fx:id="modelListView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" stylesheets="@../../../css/Styling.css" />
+                </children>
+            </VBox>
+        </children>
+        <padding>
+            <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+        </padding>
+        <GridPane.margin>
+            <Insets left="10.0" />
+        </GridPane.margin>
+    </HBox>
+    <VBox fx:id="injectorTestsVBox" prefHeight="200.0" prefWidth="300.0" visible="false" GridPane.rowIndex="1">
+        <children>
+            <TextField fx:id="injectorNumberTextField" alignment="CENTER" editable="false" styleClass="modelTextField" stylesheets="@../../../css/Styling.css">
+                <VBox.margin>
+                    <Insets left="30.0" right="30.0" top="10.0" />
+                </VBox.margin></TextField>
+            <GridPane>
+                <columnConstraints>
+                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="10.0" prefWidth="100.0" />
+                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                </columnConstraints>
+                <rowConstraints>
+                    <RowConstraints minHeight="-Infinity" prefHeight="35.0" vgrow="SOMETIMES" />
+                    <RowConstraints minHeight="-Infinity" prefHeight="35.0" vgrow="SOMETIMES" />
+                </rowConstraints>
+                <children>
+                    <RadioButton fx:id="autoTestRadioButton" mnemonicParsing="false" selected="true" styleClass="radioButton" stylesheets="@../../../css/Styling.css" text="%main.auto.radiobutton" GridPane.columnIndex="1">
+                        <GridPane.margin>
+                            <Insets left="5.0" />
+                        </GridPane.margin>
+                     <toggleGroup>
+                            <ToggleGroup fx:id="testsToggleGroup" />
+                     </toggleGroup>
+                    </RadioButton>
+                    <RadioButton fx:id="testPlanTestRadioButton" mnemonicParsing="false" styleClass="radioButton" stylesheets="@../../../css/Styling.css" text="%main.testPlan.radiobutton" toggleGroup="$testsToggleGroup" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                        <GridPane.margin>
+                            <Insets left="5.0" />
+                        </GridPane.margin>
+                    </RadioButton>
+                </children>
+                <VBox.margin>
+                    <Insets />
+                </VBox.margin>
+            </GridPane>
+            <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS">
+                <children>
+                    <ListView fx:id="testListView" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minWidth="200.0" prefHeight="140.0" prefWidth="263.0" stylesheets="@../../../css/Styling.css" VBox.vgrow="ALWAYS">
+                        <VBox.margin>
+                            <Insets bottom="5.0" />
+                        </VBox.margin></ListView>
+                    <GridPane VBox.vgrow="ALWAYS">
+                        <columnConstraints>
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        </columnConstraints>
+                        <rowConstraints>
+                            <RowConstraints />
+                        </rowConstraints>
+                        <children>
+                            <Button fx:id="moveUpButton" mnemonicParsing="false" prefHeight="26.0" prefWidth="70.0" styleClass="button-up" stylesheets="@../../../css/Styling.css" />
+                            <Button fx:id="moveDownButton" mnemonicParsing="false" prefHeight="26.0" prefWidth="70.0" styleClass="button-down" stylesheets="@../../../css/Styling.css" GridPane.columnIndex="1" />
+                            <Button fx:id="printButton" mnemonicParsing="false" prefHeight="26.0" prefWidth="70.0" text="Print" GridPane.columnIndex="2" />
+                            <Button fx:id="storeButton" mnemonicParsing="false" prefHeight="26.0" prefWidth="70.0" text="Store" />
+                            <Button fx:id="resetButton" mnemonicParsing="false" prefHeight="26.0" prefWidth="70.0" text="Reset" GridPane.columnIndex="1" />
+                        </children>
+                        <VBox.margin>
+                            <Insets />
+                        </VBox.margin>
+                    </GridPane>
+                </children>
+            </VBox>
+        </children>
+        <padding>
+            <Insets left="10.0" />
+        </padding>
+    </VBox>
+    <GridPane fx:id="timingGridPane" visible="false" GridPane.rowIndex="2">
+        <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" />
+        </columnConstraints>
+        <rowConstraints>
+            <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" percentHeight="60.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+        <children>
+            <VBox alignment="TOP_CENTER" focusTraversable="true" prefHeight="200.0" prefWidth="100.0" GridPane.rowIndex="1">
+                <children>
+                    <GridPane focusTraversable="true">
+                        <columnConstraints>
+                            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" percentWidth="40.0" prefWidth="100.0" />
+                            <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                        </columnConstraints>
+                        <rowConstraints>
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        </rowConstraints>
+                        <children>
+                            <ProgressBar fx:id="measuringTimeProgressBar" prefWidth="200.0" progress="0.0" stylesheets="@../../../css/Styling.css" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                <GridPane.margin>
+                                    <Insets right="20.0" />
+                                </GridPane.margin>
+                            </ProgressBar>
+                            <ProgressBar fx:id="adjustingTimeProgressBar" prefWidth="200.0" progress="0.0" stylesheets="@../../../css/Styling.css" GridPane.columnIndex="1">
+                                <GridPane.margin>
+                                    <Insets right="20.0" />
+                                </GridPane.margin>
+                            </ProgressBar>
+                            <Label fx:id="labelAdjustTime" stylesheets="@../../../css/Styling.css" text="%main.adjusting.label">
+                                <padding>
+                                    <Insets right="10.0" />
+                                </padding>
+                                <font>
+                                    <Font size="11.0" />
+                                </font>
+                            </Label>
+                            <Label fx:id="labelMeasureTime" stylesheets="@../../../css/Styling.css" text="%main.measuring.label" GridPane.rowIndex="1">
+                                <padding>
+                                    <Insets right="10.0" />
+                                </padding>
+                                <font>
+                                    <Font size="11.0" />
+                                </font>
+                            </Label>
+                            <Text fx:id="adjustingText" fill="#f9ff4c" strokeType="OUTSIDE" strokeWidth="0.0" text="0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" />
+                            <Text fx:id="measuringText" fill="#f9ff4c" strokeType="OUTSIDE" strokeWidth="0.0" text="0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" />
+                        </children>
+                    </GridPane>
+                </children>
+            </VBox>
+            <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0">
+                <children>
+                    <Label fx:id="timingSpeedLabel" stylesheets="@../../../css/Styling.css" text="%main.timingSpeed.label">
+                        <HBox.margin>
+                            <Insets left="10.0" />
+                        </HBox.margin></Label>
+                    <ComboBox fx:id="speedComboBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="27.0" prefWidth="90.0" styleClass="combo-box-speed" stylesheets="@../../../css/Styling.css">
+                        <HBox.margin>
+                            <Insets left="20.0" right="20.0" top="5.0" />
+                        </HBox.margin>
+                    </ComboBox>
+                </children>
+            </HBox>
+        </children>
+    </GridPane>
+    <StackPane fx:id="startStackPane" visible="false" GridPane.rowIndex="3">
+        <children>
+            <ToggleButton fx:id="startToggleButton" mnemonicParsing="false" prefHeight="55.0" prefWidth="173.0" styleClass="startButton" stylesheets="@../../../css/Styling.css" />
+        </children>
+    </StackPane>
+</children>
+</GridPane>

@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 
-<GridPane fx:id="RLC" minHeight="0" minWidth="0" prefHeight="399.0" prefWidth="881.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.additional.tabs.RLCController">
+<GridPane fx:id="RLC" minHeight="0" minWidth="0" prefHeight="399.0" prefWidth="881.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.cr.tabs.RLCController">
     <rowConstraints>
         <RowConstraints percentHeight="85.0" />
         <RowConstraints percentHeight="15.0" />

@@ -1,9 +1,9 @@
 package fi.stardex.sisu.ui.controllers.pumps.pressure;
 
 import eu.hansolo.medusa.Gauge;
-import fi.stardex.sisu.model.PumpModel;
-import fi.stardex.sisu.model.PumpPressureRegulatorOneModel;
-import fi.stardex.sisu.model.PumpTestModel;
+import fi.stardex.sisu.model.pump.PumpModel;
+import fi.stardex.sisu.model.pump.PumpPressureRegulatorOneModel;
+import fi.stardex.sisu.model.pump.PumpTestModel;
 import fi.stardex.sisu.model.RegulationModesModel;
 import fi.stardex.sisu.model.updateModels.HighPressureSectionUpdateModel;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;

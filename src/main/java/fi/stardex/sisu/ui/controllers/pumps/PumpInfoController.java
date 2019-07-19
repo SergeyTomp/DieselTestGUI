@@ -1,6 +1,6 @@
 package fi.stardex.sisu.ui.controllers.pumps;
 
-import fi.stardex.sisu.ui.controllers.additional.tabs.info.DensoController;
+import fi.stardex.sisu.ui.controllers.cr.tabs.info.DensoController;
 import fi.stardex.sisu.util.obtainers.CurrentPumpObtainer;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;

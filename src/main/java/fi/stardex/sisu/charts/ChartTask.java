@@ -1,15 +1,14 @@
 package fi.stardex.sisu.charts;
 
-import fi.stardex.sisu.combobox_values.InjectorChannel;
-import fi.stardex.sisu.model.*;
+import fi.stardex.sisu.model.cr.*;
+import fi.stardex.sisu.util.enums.InjectorChannel;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.InjectorControllersState;
 import fi.stardex.sisu.states.InjectorSectionPwrState;
 import fi.stardex.sisu.states.VoltAmpereProfileDialogModel;
-import fi.stardex.sisu.ui.controllers.additional.tabs.VoltageController;
-import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
+import fi.stardex.sisu.ui.controllers.cr.tabs.VoltageController;
 import fi.stardex.sisu.util.enums.InjectorType;
 import fi.stardex.sisu.util.filters.FilterInputChartData;
 import fi.stardex.sisu.version.FirmwareVersion;

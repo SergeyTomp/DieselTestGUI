@@ -94,7 +94,8 @@ public class Pump implements Model {
         return pumpPressureControl;
     }
 
-    public boolean isCustom() {
+    @Override
+    public Boolean isCustom() {
         return custom;
     }
 
@@ -105,6 +106,11 @@ public class Pump implements Model {
     @Override
     public String toString() {
         return pumpCode;
+    }
+
+    @Override
+    public String getModelCode() {
+        return getPumpCode();
     }
 
     @Override

@@ -1,6 +1,6 @@
 package fi.stardex.sisu.model;
 
-import fi.stardex.sisu.ui.controllers.GUI_TypeController;
+import fi.stardex.sisu.ui.controllers.common.GUI_TypeController;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 

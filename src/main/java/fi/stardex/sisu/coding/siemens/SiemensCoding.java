@@ -1,6 +1,6 @@
 package fi.stardex.sisu.coding.siemens;
 
-import fi.stardex.sisu.model.FlowReportModel;
+import fi.stardex.sisu.model.cr.FlowReportModel;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import javafx.collections.ObservableMap;
 import org.slf4j.Logger;

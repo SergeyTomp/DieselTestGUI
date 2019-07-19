@@ -1,6 +1,6 @@
 package fi.stardex.sisu.coding.delphi.c3i;
 
-import fi.stardex.sisu.model.FlowReportModel.FlowResult;
+import fi.stardex.sisu.model.cr.FlowReportModel.FlowResult;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 
 import java.util.List;

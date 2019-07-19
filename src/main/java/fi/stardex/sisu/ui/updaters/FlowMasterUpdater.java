@@ -2,12 +2,11 @@ package fi.stardex.sisu.ui.updaters;
 
 import fi.stardex.sisu.annotations.Module;
 import fi.stardex.sisu.devices.Device;
-import fi.stardex.sisu.model.InjConfigurationModel;
+import fi.stardex.sisu.model.cr.InjConfigurationModel;
 import fi.stardex.sisu.states.InjectorControllersState;
 import fi.stardex.sisu.states.InjectorSectionPwrState;
 import fi.stardex.sisu.states.InstantFlowState;
-import fi.stardex.sisu.ui.controllers.additional.tabs.FlowController;
-import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
+import fi.stardex.sisu.ui.controllers.cr.tabs.FlowController;
 import fi.stardex.sisu.version.FirmwareVersion;
 
 import javax.annotation.PostConstruct;

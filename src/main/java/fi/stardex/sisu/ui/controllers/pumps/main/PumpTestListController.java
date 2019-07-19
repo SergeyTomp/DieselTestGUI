@@ -1,10 +1,10 @@
 package fi.stardex.sisu.ui.controllers.pumps.main;
 
-import fi.stardex.sisu.model.AutoTestListLastChangeModel;
-import fi.stardex.sisu.model.AutoTestListLastChangeModel.PumpTestWrapper;
-import fi.stardex.sisu.model.PumpTestListModel;
-import fi.stardex.sisu.model.PumpTestModeModel;
-import fi.stardex.sisu.model.PumpTestModel;
+import fi.stardex.sisu.model.pump.AutoTestListLastChangeModel;
+import fi.stardex.sisu.model.pump.AutoTestListLastChangeModel.PumpTestWrapper;
+import fi.stardex.sisu.model.pump.PumpTestListModel;
+import fi.stardex.sisu.model.pump.PumpTestModeModel;
+import fi.stardex.sisu.model.pump.PumpTestModel;
 import fi.stardex.sisu.states.PumpsStartButtonState;
 import fi.stardex.sisu.util.enums.Move;
 import javafx.collections.ListChangeListener;

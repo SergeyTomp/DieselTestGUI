@@ -1,6 +1,6 @@
 package fi.stardex.sisu.ui.controllers.pumps.main;
 
-import fi.stardex.sisu.model.*;
+import fi.stardex.sisu.model.pump.*;
 import fi.stardex.sisu.persistence.orm.pump.Pump;
 import fi.stardex.sisu.states.CustomPumpState;
 import fi.stardex.sisu.states.PumpsStartButtonState;
