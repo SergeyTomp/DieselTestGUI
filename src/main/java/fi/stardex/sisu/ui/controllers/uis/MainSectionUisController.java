@@ -5,16 +5,16 @@ import fi.stardex.sisu.model.uis.CustomModelDialogModel;
 import fi.stardex.sisu.model.uis.CustomProducerDialogModel;
 import fi.stardex.sisu.model.uis.CustomTestDialogModel;
 import fi.stardex.sisu.model.uis.MainSectionUisModel;
-import fi.stardex.sisu.persistence.orm.interfaces.Model;
-import fi.stardex.sisu.persistence.orm.interfaces.Test;
-import fi.stardex.sisu.persistence.orm.uis.InjectorUisTest;
-import fi.stardex.sisu.persistence.orm.uis.ManufacturerUIS;
+import fi.stardex.sisu.persistence.orm.interfaces.*;
+import fi.stardex.sisu.persistence.repos.uis.UisModelService;
+import fi.stardex.sisu.persistence.repos.uis.UisProducerService;
+import fi.stardex.sisu.persistence.repos.uis.UisTestService;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
+import fi.stardex.sisu.states.BoostUadjustmentState;
 import fi.stardex.sisu.ui.ViewHolder;
-import fi.stardex.sisu.ui.controllers.common.GUI_TypeController;
 import fi.stardex.sisu.util.TimeProgressBar;
-import fi.stardex.sisu.util.enums.Operation;
 import fi.stardex.sisu.util.enums.Move;
+import fi.stardex.sisu.util.enums.Operation;
 import fi.stardex.sisu.util.enums.TestSpeed;
 import fi.stardex.sisu.util.enums.Tests;
 import fi.stardex.sisu.util.i18n.I18N;
@@ -22,10 +22,14 @@ import fi.stardex.sisu.util.listeners.PrintButtonHandler;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -44,14 +48,20 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
-
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static fi.stardex.sisu.registers.flow.ModbusMapFlow.StartMeasurementCycle;
 import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.UIS_to_CR_pulseControlSwitch;
+import static fi.stardex.sisu.ui.controllers.common.GUI_TypeController.GUIType.UIS;
+import static fi.stardex.sisu.util.enums.Measurement.DELIVERY;
+import static fi.stardex.sisu.util.enums.Measurement.VISUAL;
 import static fi.stardex.sisu.util.enums.Move.DOWN;
 import static fi.stardex.sisu.util.enums.Move.UP;
-import static fi.stardex.sisu.util.enums.Tests.TestType.AUTO;
+import static fi.stardex.sisu.util.enums.Tests.TestType.*;
 
 public class MainSectionUisController {
 
@@ -77,13 +87,14 @@ public class MainSectionUisController {
     @FXML private ToggleGroup testsToggleGroup;
     @FXML private RadioButton testPlanTestRadioButton;
     @FXML private RadioButton autoTestRadioButton;
+    @FXML private RadioButton codingTestRadioButton;
     @FXML private ToggleGroup baseTypeToggleGroup;
     @FXML private RadioButton defaultRadioButton;
     @FXML private RadioButton customRadioButton;
-    @FXML private ListView<ManufacturerUIS> manufacturerListView;
+    @FXML private ListView<Producer> manufacturerListView;
     @FXML private TextField searchModelTextField;
     @FXML private ListView<Model> modelListView;
-    @FXML private ListView<InjectorUisTest> testListView;
+    @FXML private ListView<Test> testListView;
     @FXML private ComboBox<TestSpeed> speedComboBox;
     @FXML private VBox injectorsVBox;
 
@@ -109,13 +120,20 @@ public class MainSectionUisController {
     private CustomModelDialogModel customModelDialogModel;
     private CustomProducerDialogModel customProducerDialogModel;
     private CustomTestDialogModel customTestDialogModel;
+    private BoostUadjustmentState boostUadjustmentState;
+    private UisModelService uisModelService;
+    private UisProducerService uisProducerService;
+    private UisTestService uisTestService;
+    private ModelService modelService;
+    private ProducerService producerService;
+    private TestService testService;
     private boolean oemAlertProcessing;
     private boolean modelAlertProcessing;
     private Alert alert;
     private StringProperty alertString = new SimpleStringProperty();
     private StringProperty yesButton = new SimpleStringProperty();
     private StringProperty noButton = new SimpleStringProperty();
-    private ObservableList<? extends Test> testListViewItems;
+    private static final ObservableList<Test> listOfNonIncludedTests = FXCollections.observableArrayList();
 
     public void setFlowModbusWriter(ModbusRegisterProcessor flowModbusWriter) {
         this.flowModbusWriter = flowModbusWriter;
@@ -123,7 +141,6 @@ public class MainSectionUisController {
     public void setUltimaModbusWriter(ModbusRegisterProcessor ultimaModbusWriter) {
         this.ultimaModbusWriter = ultimaModbusWriter;
     }
-
     public void setMainSectionUisModel(MainSectionUisModel mainSectionUisModel) {
         this.mainSectionUisModel = mainSectionUisModel;
     }
@@ -145,6 +162,22 @@ public class MainSectionUisController {
     public void setCustomTestDialogModel(CustomTestDialogModel customTestDialogModel) {
         this.customTestDialogModel = customTestDialogModel;
     }
+    public void setUisModelService(UisModelService uisModelService) {
+        this.uisModelService = uisModelService;
+    }
+    public void setUisProducerService(UisProducerService uisProducerService) {
+        this.uisProducerService = uisProducerService;
+    }
+    public void setUisTestService(UisTestService uisTestService) {
+        this.uisTestService = uisTestService;
+    }
+    public void setBoostUadjustmentState(BoostUadjustmentState boostUadjustmentState) {
+        this.boostUadjustmentState = boostUadjustmentState;
+    }
+
+    public static ObservableList<Test> getListOfNonIncludedTests() {
+        return listOfNonIncludedTests;
+    }
 
     @PostConstruct
     public void init() {
@@ -165,15 +198,15 @@ public class MainSectionUisController {
         setupTestListViewListener();
         setupTestsToggleGroupListener();
         setupMoveButtonEventHandlers();
-//        setupTestListAutoChangeListenerNew();
+        setupTestListAutoChangeListener();
         setupGuiTypeModelListener();
-//        setupManufacturerMenuDialogModelListener();
-//        setupManufacturerListListener();
+        setupCustomProducerDialogModelListener();
+        setupCustomModelDialogModelListener();
 //        setupInjectorSectionPwrButtonListener();
         setupStartButtonListener();
         setupPrintButton();
 //        boostUadjustmentState.boostUadjustmentStateProperty().addListener((observable, oldValue, newValue) -> disableNode(newValue, startToggleButton));
-        testListView.setCellFactory(CheckBoxListCell.forListView(InjectorUisTest::includedProperty));
+        testListView.setCellFactory(CheckBoxListCell.forListView(Test::includedProperty));
         showButtons(true, false);
     }
 
@@ -181,8 +214,75 @@ public class MainSectionUisController {
 
         modelListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 
+            if(modelAlertProcessing)return;
 
+//            if (!flowReportModel.getResultObservableMap().isEmpty()) {
+//
+//                showAlert();
+//                if (alert.getResult() != ButtonType.YES) {
+//
+//                    modelAlertProcessing = true;
+//                    modelListView.getSelectionModel().select(oldValue);
+//                    modelAlertProcessing = false;
+//                    return;
+//                }
+//            }
+
+            clearAllResults();
+            returnToDefaultTestListAuto();
+            resetButton.fire();
+            injectorNumberTextField.setText((newValue != null) ? (newValue).getModelCode() : null);
+
+            if (newValue == null) {
+                mainSectionUisModel.modelProperty().setValue(null);
+                mainSectionUisModel.injectorTestProperty().setValue(null);
+                showInjectorTests(false);
+                showNode(false, codingTestRadioButton);
+                testListView.getItems().clear();
+                return;
+            }
+            //принудительно достаём ВАП через @EntityGraph,
+            // т.к. при наполнении списка по выбранному ОЕМ ВАП не подгружается к каждому инжектору для экономии ресурсов
+            VAP defaultVAP = modelService.findByModelCode(newValue.getModelCode()).getVAP();
+            mainSectionUisModel.setModelIsChanging(true);
+            newValue.setVAP(defaultVAP);
+            mainSectionUisModel.modelProperty().setValue(newValue);
+            fetchTestsFromRepository();
+            showInjectorTests(true);
+            showNode(checkInjectorForCoding(newValue.getCodetype()), codingTestRadioButton);
+            mainSectionUisModel.setModelIsChanging(false);
         });
+    }
+
+    private void setupCustomProducerDialogModelListener() {
+
+        customProducerDialogModel.doneProperty().addListener((observableValue, oldValue, newValue) -> {
+
+            manufacturerListView.getItems().setAll(new ArrayList<>(producerService.findAll()));
+            manufacturerListView.refresh();
+            manufacturerListView.getSelectionModel().select(customProducerDialogModel.customProducerProperty().get());
+            mainSectionUisModel.customProducerProperty().setValue(null);
+        });
+        customProducerDialogModel.cancelProperty().addListener((observableValue, oldValue, newValue) ->
+                mainSectionUisModel.customProducerProperty().setValue(null));
+    }
+
+    private void setupCustomModelDialogModelListener() {
+
+        customModelDialogModel.doneProperty().addListener((observableValue, oldValue, newValue) -> {
+
+            List<? extends Model> customModels = modelService.findByProducerAndIsCustom(manufacturerListView.getSelectionModel().getSelectedItem(), true);
+            modelListView.getItems().setAll(new ArrayList<>(customModels));
+            modelListView.refresh();
+            modelListView.getSelectionModel().select(customModelDialogModel.customModelProperty().get());
+            mainSectionUisModel.customModelProperty().setValue(null);
+        });
+        customModelDialogModel.cancelProperty().addListener((observableValue, oldValue, newValue) ->
+                mainSectionUisModel.customModelProperty().setValue(null));
+    }
+
+    private void clearAllResults() {
+
     }
 
     private void setupTestListViewListener() {
@@ -197,8 +297,53 @@ public class MainSectionUisController {
 
         testsToggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
 
-
+            if (newValue == autoTestRadioButton) {
+                mainSectionUisModel.testTypeProperty().setValue(AUTO);
+                setTests();
+            } else {
+                mainSectionUisModel.testTypeProperty().setValue(newValue == testPlanTestRadioButton ? TESTPLAN : CODING);
+                returnToDefaultTestListAuto();
+                setTests();
+                disableNode(boostUadjustmentState.boostUadjustmentStateProperty().get(), startToggleButton);
+            }
+            switch (mainSectionUisModel.testTypeProperty().get()) {
+                case AUTO:
+                    disableNode(false, testListView);
+                    showButtons(true, false);
+                    showNode(true, timingGridPane);
+                    break;
+                case TESTPLAN:
+                    disableNode(false, testListView);
+                    showButtons(false, true);
+                    showNode(false, timingGridPane);
+                    break;
+                case CODING:
+                    disableNode(true, testListView);
+                    showButtons(false, true);
+                    showNode(true, timingGridPane);
+                    break;
+            }
         });
+    }
+
+    private void returnToDefaultTestListAuto() {
+
+        isAnotherAutoOrNewTestList = true;
+
+        if (!listOfNonIncludedTests.isEmpty()) {
+            List<Test> temp = new ArrayList<>(listOfNonIncludedTests);
+            temp.forEach(test -> test.includedProperty().set(true));
+        }
+        isAnotherAutoOrNewTestList = false;
+    }
+
+    private boolean checkInjectorForCoding(int codetype) {
+
+        String manufacturerName = mainSectionUisModel.manufacturerObjectProperty().get().getManufacturerName();
+
+        if (manufacturerName.equals("Bosch") || manufacturerName.equals("Denso") || manufacturerName.equals("Delphi") || manufacturerName.equals("Siemens"))
+            return codetype != -1;
+        else return false;
     }
 
     private void setupBaseTypeToggleGroupListener() {
@@ -226,21 +371,74 @@ public class MainSectionUisController {
 
     private void setupManufacturerListViewListener() {
 
+        manufacturerListView.getItems().addListener((ListChangeListener<Producer>) change ->
+                mainSectionUisModel.getProducerObservableList().setAll(manufacturerListView.getItems()));
+
         manufacturerListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 
             if(oemAlertProcessing) return;
 
+//            if (!flowReportModel.getResultObservableMap().isEmpty()) {
+//
+//                showAlert();
+//                if (alert.getResult() != ButtonType.YES) {
+//
+//                    oemAlertProcessing = true;
+//                    manufacturerListView.getSelectionModel().select(oldValue);
+//                    oemAlertProcessing = false;
+//                    return;
+//                }
+//            }
 
+            ultimaModbusWriter.add(UIS_to_CR_pulseControlSwitch, gui_typeModel.guiTypeProperty().getValue() == UIS ? 1 : 0);
+            resetButton.fire();
+            disableNode(newValue == null, injectorsVBox);
+            mainSectionUisModel.manufacturerObjectProperty().setValue(newValue);
+
+            if (newValue != null && newValue.isCustom()) {
+                defaultRadioButton.setDisable(true);
+                customRadioButton.setSelected(true);
+            } else
+                defaultRadioButton.setDisable(false);
+
+            setFilteredItems(newValue);
         });
     }
 
-    private void setFilteredItems(ManufacturerUIS manufacturer) {
+    private void setFilteredItems(Producer producer) {
 
-
-
+        List<? extends Model> modelsByManufacturers = modelService.findByProducerAndIsCustom(producer, customRadioButton.isSelected());
+        ObservableList<Model> injectors = FXCollections.observableArrayList(modelsByManufacturers);
+        filteredModelList = new FilteredList<>(injectors, model -> true);
+        modelListView.setItems(filteredModelList);
     }
 
-    public void pointToFirstTest() {
+    private void fetchTestsFromRepository() {
+
+        Task<List<? extends Test>> task = new Task<>() {
+            @Override
+            protected List<? extends Test> call() {
+                return uisTestService.findAllByInjector(mainSectionUisModel.modelProperty().get());
+            }
+        };
+
+        task.valueProperty().addListener((observableValue, oldValue, newValue) -> {
+
+            if (newValue != null) {
+
+                Model model = mainSectionUisModel.modelProperty().get();
+                VAP defaultVAP = model.getVAP();
+                newValue.stream().filter(t -> t.getVoltAmpereProfile() == null).forEach(t -> t.setVAP(defaultVAP));
+                mainSectionUisModel.getTestObservableList().setAll(newValue);
+                setTests();
+            }
+        });
+
+        Thread t = new Thread(task);
+        t.start();
+    }
+
+    private void pointToFirstTest() {
 
         testListView.getSelectionModel().select(0);
         testListView.scrollTo(0);
@@ -248,8 +446,39 @@ public class MainSectionUisController {
 
     private void setTests() {
 
+        Tests.TestType test = mainSectionUisModel.testTypeProperty().get();
+        switch (test) {
 
-
+            case AUTO:
+                testListView.setCellFactory(CheckBoxListCell.forListView(Test::includedProperty));
+                List<Test> injectorTests = mainSectionUisModel.getTestObservableList().
+                        stream().
+                        filter(injectorTest -> !injectorTest.getTestName().toString().equals("ISA Detection")).
+                        collect(Collectors.toList());
+                testListView.getItems().setAll(injectorTests);
+                testListView.getItems().sort((Comparator.comparingInt(injectorTest -> injectorTest.getTestName().getOrder())));
+                Platform.runLater(this::pointToFirstTest);
+                break;
+            case TESTPLAN:
+                testListView.setCellFactory(null);
+                injectorTests = mainSectionUisModel.getTestObservableList().
+                        stream().
+                        filter(injectorTest -> !injectorTest.getTestName().toString().equals("ISA Detection")).
+                        collect(Collectors.toList());
+                testListView.getItems().setAll(injectorTests);
+                testListView.getItems().sort((Comparator.comparingInt(injectorTest -> injectorTest.getTestName().getOrder())));
+                Platform.runLater(this::pointToFirstTest);
+                break;
+            case CODING:
+                testListView.setCellFactory(null);
+                testListView.getItems().setAll(mainSectionUisModel.getTestObservableList()
+                        .stream()
+                        .filter(injectorTest -> injectorTest.getTestName().getMeasurement() == DELIVERY || injectorTest.getTestName().getMeasurement() == VISUAL)
+                        .sorted(Comparator.comparingInt(injectorTest -> injectorTest.getTestName().getOrder()))
+                        .collect(Collectors.toList()));
+                Platform.runLater(this::pointToFirstTest);
+                break;
+        }
     }
 
     private void initManufacturerContextMenu() {
@@ -379,15 +608,33 @@ public class MainSectionUisController {
 
         gui_typeModel.guiTypeProperty().addListener((observableValue, oldValue, newValue) -> {
 
-            if (newValue == GUI_TypeController.GUIType.UIS) {
+            if (newValue == UIS) {
 
+                modelService = uisModelService;
+                producerService = uisProducerService;
+                testService = uisTestService;
                 ultimaModbusWriter.add(UIS_to_CR_pulseControlSwitch, 1);
-                baseTypeToggleGroup.selectToggle(defaultRadioButton);
 
-
+                manufacturerListView.getItems().setAll(new ArrayList<>(producerService.findAll()));
+                manufacturerListView.refresh();
             }
+            baseTypeToggleGroup.selectToggle(defaultRadioButton);
         });
 
+    }
+
+    private void setupTestListAutoChangeListener(){
+
+        listOfNonIncludedTests.addListener((ListChangeListener<? super Test>) change -> {
+
+            if (isAnotherAutoOrNewTestList)
+                return;
+
+            testListView.getItems().sort((o1, o2) -> Boolean.compare(o2.includedProperty().get(), o1.includedProperty().get()));
+            int includedQty = (int)testListView.getItems().stream().filter(t -> t.includedProperty().get()).count();
+            testListView.getItems().subList(0, includedQty).sort(Comparator.comparingInt(Test::getId));
+            testListView.scrollTo(0);
+        });
     }
 
     private  void setupResetButton() {
@@ -457,7 +704,7 @@ public class MainSectionUisController {
     private void moveTest(Move move) {
 
         int selectedTestIndex = testListView.getSelectionModel().getSelectedIndex();
-        MultipleSelectionModel<InjectorUisTest> testSelectionModel = testListView.getSelectionModel();
+        MultipleSelectionModel<Test> testSelectionModel = testListView.getSelectionModel();
 
         if (selectedTestIndex == -1)
             return;
@@ -467,16 +714,16 @@ public class MainSectionUisController {
         switch (move) {
 
             case UP:
-                Collections.swap(testListViewItems, selectedTestIndex, selectedTestIndex - 1);
+                Collections.swap(testListView.getItems(), selectedTestIndex, selectedTestIndex - 1);
                 testListView.getSelectionModel().select(selectedTestIndex - 1);
                 testListView.scrollTo(testSelectionModel.getSelectedIndex());
-                enableUpDownButtons(testSelectionModel.getSelectedIndex(), testListViewItems.size() - InjectorUisTest.getListOfNonIncludedTests().size());
+                enableUpDownButtons(testSelectionModel.getSelectedIndex(), testListView.getItems().size() - getListOfNonIncludedTests().size());
                 break;
             case DOWN:
-                Collections.swap(testListViewItems, selectedTestIndex, selectedTestIndex + 1);
+                Collections.swap(testListView.getItems(), selectedTestIndex, selectedTestIndex + 1);
                 testListView.getSelectionModel().select(selectedTestIndex + 1);
                 testListView.scrollTo(testSelectionModel.getSelectedIndex());
-                enableUpDownButtons(testSelectionModel.getSelectedIndex(), testListViewItems.size() - InjectorUisTest.getListOfNonIncludedTests().size());
+                enableUpDownButtons(testSelectionModel.getSelectedIndex(), testListView.getItems().size() - getListOfNonIncludedTests().size());
                 break;
         }
         disableNode(testListView.getSelectionModel().getSelectedIndex() != 0, startToggleButton);

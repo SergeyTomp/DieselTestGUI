@@ -1,6 +1,7 @@
 package fi.stardex.sisu.persistence.orm.uis;
 
 import fi.stardex.sisu.persistence.orm.interfaces.Name;
+import fi.stardex.sisu.util.enums.Measurement;
 import org.springframework.lang.NonNull;
 
 import javax.persistence.*;
@@ -34,7 +35,12 @@ public class InjectorUisTestName implements Name {
         return getDisplayOrder();
     }
 
-    public Integer getDisplayOrder() {
+    @Override
+    public Measurement getMeasurement() {
+        return Measurement.DELIVERY;
+    }
+
+    private Integer getDisplayOrder() {
         return displayOrder;
     }
 

@@ -6,11 +6,11 @@ import javafx.beans.property.SimpleObjectProperty;
 
 public class CustomProducerDialogModel {
 
-    private ObjectProperty<? extends Producer> customProducer = new SimpleObjectProperty<>();
+    private ObjectProperty<Producer> customProducer = new SimpleObjectProperty<>();
     private ObjectProperty<Object> done = new SimpleObjectProperty<>();
     private ObjectProperty<Object> cancel = new SimpleObjectProperty<>();
 
-    public ObjectProperty<? extends Producer> customProducerProperty() {
+    public ObjectProperty<Producer> customProducerProperty() {
         return customProducer;
     }
     public ObjectProperty<Object> doneProperty() {

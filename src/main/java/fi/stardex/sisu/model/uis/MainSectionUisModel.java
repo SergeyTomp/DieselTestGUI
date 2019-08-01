@@ -16,18 +16,19 @@ import javafx.scene.control.Button;
 public class MainSectionUisModel {
 
     // manufacturer listView part
-    private final ObservableList<? extends Producer> producerObservableList = FXCollections.observableArrayList();
-    private final ObjectProperty<? extends Producer> producerObjectProperty = new SimpleObjectProperty<>();
+    private final ObservableList<Producer> producerObservableList = FXCollections.observableArrayList();
+    private final ObjectProperty<Producer> producerObjectProperty = new SimpleObjectProperty<>();
     private ObjectProperty<Operation> customProducer = new SimpleObjectProperty<>();
 
     // model listView part
-    private ObjectProperty<? extends Model> model = new SimpleObjectProperty<>();
+    private ObjectProperty<Model> model = new SimpleObjectProperty<>();
     private ObjectProperty<Operation> customModel = new SimpleObjectProperty<>();
     private boolean modelIsChanging;
 
     // test listView part
     private final ObjectProperty<? extends Test> modelTestProperty = new SimpleObjectProperty<>();
     private ObjectProperty<Operation> customTest = new SimpleObjectProperty<>();
+    private ObservableList<Test> testObservableList = FXCollections.observableArrayList();
     private boolean testIsChanging;
 
     // test mode checkButtons part
@@ -41,10 +42,10 @@ public class MainSectionUisModel {
     // reset/store/print button part
     private Button storeButton = new Button();
 
-    public ObservableList<? extends Producer> getProducerObservableList() {
+    public ObservableList<Producer> getProducerObservableList() {
         return producerObservableList;
     }
-    public ObjectProperty<? extends Producer> manufacturerObjectProperty() {
+    public ObjectProperty<Producer> manufacturerObjectProperty() {
         return producerObjectProperty;
     }
     public ObjectProperty<Operation> customProducerProperty() {
@@ -62,7 +63,7 @@ public class MainSectionUisModel {
     public ObjectProperty<Tests.TestType> testTypeProperty() {
         return testType;
     }
-    public ObjectProperty<? extends Model> modelProperty() {
+    public ObjectProperty<Model> modelProperty() {
         return model;
     }
     public ObjectProperty<? extends Test> injectorTestProperty() {
@@ -76,6 +77,9 @@ public class MainSectionUisModel {
     }
     public Button getStoreButton() {
         return storeButton;
+    }
+    public ObservableList<Test> getTestObservableList() {
+        return testObservableList;
     }
 
     public void setModelIsChanging(boolean modelIsChanging) {

@@ -37,5 +37,34 @@ public class ManufacturerUIS implements Producer {
     @Override public void setCustom(boolean custom) {
         isCustom = custom;
     }
+
     @Override public void setManufacturerName(String manufacturerName) { this.manufacturerName = manufacturerName; }
+    public void setDisplayOrder(Integer displayOrder) {
+        this.displayOrder = displayOrder;
+    }
+    @Override public int getDisplayOrder() {
+        return displayOrder;
+    }
+
+    @Override public String toString() {
+        return manufacturerName;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof ManufacturerUIS)) return false;
+
+        ManufacturerUIS that = (ManufacturerUIS) o;
+
+        if (!getManufacturerName().equals(that.getManufacturerName())) return false;
+        return isCustom.equals(that.isCustom);
+    }
+
+    @Override
+    public int hashCode() {
+        int result = getManufacturerName().hashCode();
+        result = 31 * result + isCustom.hashCode();
+        return result;
+    }
 }

@@ -3,6 +3,9 @@ package fi.stardex.sisu.ui.controllers.uis.dialogs;
 import fi.stardex.sisu.model.GUI_TypeModel;
 import fi.stardex.sisu.model.uis.CustomProducerDialogModel;
 import fi.stardex.sisu.model.uis.MainSectionUisModel;
+import fi.stardex.sisu.persistence.orm.interfaces.Producer;
+import fi.stardex.sisu.persistence.orm.uis.ManufacturerUIS;
+import fi.stardex.sisu.persistence.repos.uis.UisProducerService;
 import fi.stardex.sisu.util.i18n.I18N;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
@@ -31,6 +34,7 @@ public class CustomManufacturerUisDialogController {
     private GUI_TypeModel guiTypeModel;
     private CustomProducerDialogModel customProducerDialogModel;
     private I18N i18N;
+    private UisProducerService uisProducerService;
 
     public void setMainSectionUisModel(MainSectionUisModel mainSectionUisModel) {
         this.mainSectionUisModel = mainSectionUisModel;
@@ -46,6 +50,9 @@ public class CustomManufacturerUisDialogController {
     }
     public void setI18N(I18N i18N) {
         this.i18N = i18N;
+    }
+    public void setUisProducerService(UisProducerService uisProducerService) {
+        this.uisProducerService = uisProducerService;
     }
 
     @PostConstruct
@@ -64,28 +71,66 @@ public class CustomManufacturerUisDialogController {
                     dialogStage.setTitle(mainSectionUisModel.customProducerProperty().get().getTitle() + "manufacturer");
                     dialogStage.setOnCloseRequest(event -> customProducerDialogModel.cancelProperty().setValue(new Object()));
                 }
+                switch (mainSectionUisModel.customProducerProperty().get()) {
+                    case NEW:
+                        setNew();
+                        break;
+                    case DELETE:
+                        setDelete();
+                        break;
+                }
                 dialogStage.show();
             }
         });
 
-        cancelBtn.setOnMouseClicked(event -> {
+        cancelBtn.setOnMouseClicked(mouseEvent -> {
 
             customProducerDialogModel.cancelProperty().setValue(new Object());
             dialogStage.close();
         });
 
+        applyBtn.setOnMouseClicked(mouseEvent -> {
+
+            switch (mainSectionUisModel.customProducerProperty().get()) {
+                case NEW:
+                    create();
+                    break;
+                case DELETE:
+                    delete();
+                    break;
+            }
+        });
+
+        guiTypeModel.guiTypeProperty().addListener((observable, oldValue, newValue) ->
+                customProducerDialogModel.customProducerProperty().setValue(null));
     }
 
     private void create() {
 
+        ManufacturerUIS newManufacturer = new ManufacturerUIS();
+        newManufacturer.setManufacturerName(nameTF.getText() + "_U");
+        newManufacturer.setDisplayOrder(mainSectionUisModel.getProducerObservableList().size() + 1);
+        newManufacturer.setCustom(true);
 
-        customProducerDialogModel.doneProperty().setValue(new Object());
+        if (mainSectionUisModel.getProducerObservableList().contains(newManufacturer)) {
+            notUniqueLabel.setVisible(true);
+        }
+        else {
+            notUniqueLabel.setVisible(false);
+            uisProducerService.save(newManufacturer);
+            customProducerDialogModel.customProducerProperty().setValue(newManufacturer);
+            customProducerDialogModel.doneProperty().setValue(new Object());
+            dialogStage.close();
+        }
     }
 
     private void delete() {
 
-
+        Producer producer = mainSectionUisModel.manufacturerObjectProperty().get();
+        uisProducerService.delete(producer);
+        customProducerDialogModel.customProducerProperty().setValue(null);
         customProducerDialogModel.doneProperty().setValue(new Object());
+        dialogStage.close();
     }
 
     private void setNew() {

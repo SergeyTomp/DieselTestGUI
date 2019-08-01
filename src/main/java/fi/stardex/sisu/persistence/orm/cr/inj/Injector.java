@@ -3,6 +3,7 @@ package fi.stardex.sisu.persistence.orm.cr.inj;
 import fi.stardex.sisu.persistence.orm.EntityUpdates;
 import fi.stardex.sisu.persistence.orm.Manufacturer;
 import fi.stardex.sisu.persistence.orm.interfaces.Model;
+import fi.stardex.sisu.persistence.orm.interfaces.VAP;
 
 import javax.persistence.*;
 import java.util.LinkedList;
@@ -84,7 +85,7 @@ public class Injector implements Model {
     public void setManufacturer(Manufacturer manufacturer) {
         this.manufacturer = manufacturer;
     }
-
+    @Override
     public Integer getCodetype() {
         return codetype;
     }
@@ -100,6 +101,11 @@ public class Injector implements Model {
     @Override
     public Boolean isCustom() {
         return isCustom;
+    }
+
+    @Override
+    public VAP getVAP() {
+        return null;
     }
 
     public VoltAmpereProfile getVoltAmpereProfile() {

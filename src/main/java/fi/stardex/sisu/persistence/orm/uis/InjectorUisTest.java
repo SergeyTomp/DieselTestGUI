@@ -2,12 +2,12 @@ package fi.stardex.sisu.persistence.orm.uis;
 
 import fi.stardex.sisu.persistence.orm.EntityUpdates;
 import fi.stardex.sisu.persistence.orm.interfaces.Test;
+import fi.stardex.sisu.persistence.orm.interfaces.VAP;
+import fi.stardex.sisu.ui.controllers.uis.MainSectionUisController;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import org.hibernate.annotations.NotFound;
 
 import javax.persistence.*;
@@ -22,9 +22,6 @@ import java.util.Objects;
                 @NamedAttributeNode("voltAmpereProfile")})})
 @Table(name = "injector_tests_uis")
 public class InjectorUisTest implements Test, ChangeListener<Boolean> {
-
-    private static final ObservableList<InjectorUisTest> listOfNonIncludedTests = FXCollections.observableArrayList();
-    private static InjectorUisTest changedInjectorTest;
 
     @Id
     @Column(name = "id")
@@ -146,16 +143,6 @@ public class InjectorUisTest implements Test, ChangeListener<Boolean> {
         this.included = included;
     }
 
-    public static ObservableList<InjectorUisTest> getListOfNonIncludedTests() {
-        return listOfNonIncludedTests;
-    }
-    public static InjectorUisTest getChangedInjectorTest() {
-        return changedInjectorTest;
-    }
-    public BooleanProperty includedProperty() {
-        return included;
-    }
-
     @Override public Integer getId() {
         return id;
     }
@@ -167,9 +154,6 @@ public class InjectorUisTest implements Test, ChangeListener<Boolean> {
     }
     @Override public InjectorUisVAP getVoltAmpereProfile() {
         return voltAmpereProfile;
-    }
-    @Override public boolean isIncluded() {
-        return included.get();
     }
     @Override public Integer getMotorSpeed() {
         return motorSpeed;
@@ -201,6 +185,12 @@ public class InjectorUisTest implements Test, ChangeListener<Boolean> {
     @Override public Integer getShift() {
         return doubleCoilOffset;
     }
+    @Override public void setVAP(VAP vap) {
+        this.voltAmpereProfile = (InjectorUisVAP)vap;
+    }
+    @Override public BooleanProperty includedProperty() {
+        return included;
+    }
 
     public Integer getAngle_1() {
         return angle_1;
@@ -224,19 +214,21 @@ public class InjectorUisTest implements Test, ChangeListener<Boolean> {
     public void setVoltAmpereProfile(InjectorUisVAP voltAmpereProfile) {
         this.voltAmpereProfile = voltAmpereProfile;
     }
-    public void setIncluded(boolean included) {
-        this.included.set(included);
-    }
 
     @Override
     public void changed(ObservableValue<? extends Boolean> observableValue, Boolean oldValue, Boolean newValue) {
 
-        changedInjectorTest = this;
+        if (newValue){
+            MainSectionUisController.getListOfNonIncludedTests().remove(this);
+        }
+        else{
+            MainSectionUisController.getListOfNonIncludedTests().add(this);
+        }
+    }
 
-        if (newValue)
-            listOfNonIncludedTests.remove(this);
-        else
-            listOfNonIncludedTests.add(this);
+    @Override
+    public String toString() {
+        return testName.getName();
     }
 
     @Override

@@ -2,6 +2,7 @@ package fi.stardex.sisu.persistence.orm.pump;
 
 import fi.stardex.sisu.persistence.orm.Manufacturer;
 import fi.stardex.sisu.persistence.orm.interfaces.Model;
+import fi.stardex.sisu.persistence.orm.interfaces.VAP;
 import fi.stardex.sisu.util.enums.pump.PumpPressureControl;
 import fi.stardex.sisu.util.enums.pump.PumpRegulatorConfig;
 import fi.stardex.sisu.util.enums.pump.PumpRegulatorType;

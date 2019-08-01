@@ -27,6 +27,7 @@ import fi.stardex.sisu.persistence.repos.cr.VoltAmpereProfileRepository;
 import fi.stardex.sisu.persistence.repos.pump.ManufacturerPumpRepository;
 import fi.stardex.sisu.persistence.repos.pump.PumpRepository;
 import fi.stardex.sisu.persistence.repos.pump.PumpTestRepository;
+import fi.stardex.sisu.persistence.repos.uis.*;
 import fi.stardex.sisu.registers.ModbusMap;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.flow.ModbusMapFlow;
@@ -587,8 +588,13 @@ public class SpringJavaConfig {
     public CSVSUpdater csvsUpdater(ManufacturerRepository manufacturerRepository,
                                    VoltAmpereProfileRepository voltAmpereProfileRepository,
                                    InjectorsRepository injectorsRepository,
-                                   InjectorTestRepository injectorTestRepository) {
-        return new CSVSUpdater(manufacturerRepository, voltAmpereProfileRepository, injectorsRepository, injectorTestRepository);
+                                   InjectorTestRepository injectorTestRepository,
+                                   UisProducerService producerService) {
+        return new CSVSUpdater(manufacturerRepository,
+                voltAmpereProfileRepository,
+                injectorsRepository,
+                injectorTestRepository,
+                producerService);
     }
 
     @Bean
@@ -1086,6 +1092,24 @@ public class SpringJavaConfig {
     @Bean
     public CustomProducerDialogModel customManufacturerDialogModel() {
         return new CustomProducerDialogModel();
+    }
+
+    @Bean
+    @Autowired
+    public UisModelService uisModelService(InjectorUisRepository injectorUisRepository) {
+        return new UisModelService(injectorUisRepository);
+    }
+
+    @Bean
+    @Autowired
+    public UisProducerService uisProducerService(ManufacturerUisRepository manufacturerUisRepository) {
+        return new UisProducerService(manufacturerUisRepository);
+    }
+
+    @Bean
+    @Autowired
+    public UisTestService uisTestService(InjectorUisTestRepository injectorUisTestRepository) {
+        return new UisTestService(injectorUisTestRepository);
     }
 
 //    @Bean

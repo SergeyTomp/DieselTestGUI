@@ -4,10 +4,13 @@ import fi.stardex.sisu.persistence.CheckAndInitializeBD;
 import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.persistence.orm.cr.inj.VoltAmpereProfile;
+import fi.stardex.sisu.persistence.orm.interfaces.Producer;
+import fi.stardex.sisu.persistence.orm.interfaces.ProducerService;
 import fi.stardex.sisu.persistence.repos.ManufacturerRepository;
 import fi.stardex.sisu.persistence.repos.cr.InjectorTestRepository;
 import fi.stardex.sisu.persistence.repos.cr.InjectorsRepository;
 import fi.stardex.sisu.persistence.repos.cr.VoltAmpereProfileRepository;
+import fi.stardex.sisu.persistence.repos.uis.UisProducerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -33,12 +36,17 @@ public class CSVSUpdater {
 
     private InjectorTestRepository injectorTestRepository;
 
+    private ProducerService producerService;
+
     private static final String NEW_LINE_SEPARATOR = "\n";
 
     private static final String COMMA_DELIMITER = ",";
 
     @Value("${stardex.custom_csvs.manufacturers.header}")
     private String custom_manufacturers_header;
+
+    @Value("${stardex.custom_csvs.manufacturersUis.header}")
+    private String custom_manufacturersUis_header;
 
     @Value("${stardex.custom_csvs.voltAmpereProfiles.header}")
     private String custom_voap_header;
@@ -58,6 +66,9 @@ public class CSVSUpdater {
     @Value("${stardex.custom_csvs.manufacturers}")
     private String customManufacturers;
 
+    @Value("${stardex.custom_csvs.manufacturersUis}")
+    private String customManufacturersUis;
+
     @Value("${stardex.custom_csvs.voltAmpereProfiles}")
     private String customVOAP;
 
@@ -70,12 +81,14 @@ public class CSVSUpdater {
     public CSVSUpdater(ManufacturerRepository manufacturerRepository,
                        VoltAmpereProfileRepository voltAmpereProfileRepository,
                        InjectorsRepository injectorsRepository,
-                       InjectorTestRepository injectorTestRepository) {
+                       InjectorTestRepository injectorTestRepository,
+                       UisProducerService producerService) {
 
         this.manufacturerRepository = manufacturerRepository;
         this.voltAmpereProfileRepository = voltAmpereProfileRepository;
         this.injectorsRepository = injectorsRepository;
         this.injectorTestRepository = injectorTestRepository;
+        this.producerService = producerService;
     }
 
     @PreDestroy
@@ -98,6 +111,8 @@ public class CSVSUpdater {
                     case "InjectorTest":
                         updateCustomCSV(new File(pathToCSVSDirectory, customInjectorTests), custom_injector_tests_header, injectorTestRepository);
                         break;
+                    case "ManufacturerUIS":
+                        updateCustomCSV(new File(pathToCSVSDirectory, customManufacturersUis), custom_manufacturersUis_header, producerService);
                     default:
                         break;
                 }
@@ -127,6 +142,28 @@ public class CSVSUpdater {
             logger.error("IO Exception occured!", ex);
         }
 
+    }
+
+    private void updateCustomCSV(File file, String header, ProducerService producerService) {
+
+        List<? extends Producer> customProducersList = producerService.findByIsCustom(true);
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            writer.append(header).append(NEW_LINE_SEPARATOR);
+            if (!customProducersList.isEmpty()) {
+                customProducersList.forEach(manufacturer -> {
+                    try {
+                        writer.append(manufacturer.getManufacturerName()).append(COMMA_DELIMITER)
+                                .append(String.valueOf(manufacturer.getDisplayOrder())).append(COMMA_DELIMITER)
+                                .append(String.valueOf(manufacturer.isCustom())).append(NEW_LINE_SEPARATOR);
+                    } catch (IOException ex) {
+                        logger.error("IO Exception occured!", ex);
+                    }
+                });
+            }
+        } catch (IOException ex) {
+            logger.error("IO Exception occured!", ex);
+        }
     }
 
     private void updateCustomCSV(File file, String header, VoltAmpereProfileRepository repository) {

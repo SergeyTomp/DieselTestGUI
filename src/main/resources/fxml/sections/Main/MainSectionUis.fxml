@@ -79,13 +79,18 @@
                     <RowConstraints minHeight="-Infinity" prefHeight="35.0" vgrow="SOMETIMES" />
                 </rowConstraints>
                 <children>
-                    <RadioButton fx:id="autoTestRadioButton" mnemonicParsing="false" selected="true" styleClass="radioButton" stylesheets="@../../../css/Styling.css" text="%main.auto.radiobutton" GridPane.columnIndex="1">
+                    <RadioButton fx:id="codingTestRadioButton" mnemonicParsing="false" styleClass="radioButton" stylesheets="@../../../css/Styling.css" text="%main.coding.radiobutton" GridPane.columnIndex="2" GridPane.rowIndex="1">
                         <GridPane.margin>
                             <Insets left="5.0" />
                         </GridPane.margin>
-                     <toggleGroup>
+                        <toggleGroup>
                             <ToggleGroup fx:id="testsToggleGroup" />
-                     </toggleGroup>
+                        </toggleGroup>
+                    </RadioButton>
+                    <RadioButton fx:id="autoTestRadioButton" mnemonicParsing="false" selected="true" styleClass="radioButton" stylesheets="@../../../css/Styling.css" text="%main.auto.radiobutton" toggleGroup="$testsToggleGroup" GridPane.columnIndex="1">
+                        <GridPane.margin>
+                            <Insets left="5.0" />
+                        </GridPane.margin>
                     </RadioButton>
                     <RadioButton fx:id="testPlanTestRadioButton" mnemonicParsing="false" styleClass="radioButton" stylesheets="@../../../css/Styling.css" text="%main.testPlan.radiobutton" toggleGroup="$testsToggleGroup" GridPane.columnIndex="1" GridPane.rowIndex="1">
                         <GridPane.margin>

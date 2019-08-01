@@ -2,6 +2,7 @@ package fi.stardex.sisu.persistence.orm.uis;
 
 import fi.stardex.sisu.persistence.orm.EntityUpdates;
 import fi.stardex.sisu.persistence.orm.interfaces.Model;
+import fi.stardex.sisu.persistence.orm.interfaces.VAP;
 
 import javax.persistence.*;
 import java.util.LinkedList;
@@ -10,7 +11,11 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "injectors_uis")
-@NamedEntityGraph(name = "InjectorsUIS.allLazy", attributeNodes = {@NamedAttributeNode("manufacturer"), @NamedAttributeNode("voltAmpereProfile")})
+@NamedEntityGraphs({
+        @NamedEntityGraph(name = "InjectorsUIS.allLazy", attributeNodes = {@NamedAttributeNode("manufacturer"), @NamedAttributeNode("voltAmpereProfile")}),
+        @NamedEntityGraph(name = "InjectorsUIS.modelCode", attributeNodes = {@NamedAttributeNode("voltAmpereProfile")})
+})
+
 public class InjectorUIS implements Model {
 
     @Id
@@ -72,6 +77,20 @@ public class InjectorUIS implements Model {
     public Boolean isCustom() {
         return isCustom;
     }
+
+    @Override
+    public VAP getVAP() {
+        return voltAmpereProfile;
+    }
+
+    @Override
+    public Integer getCodetype() {
+        return -1;
+    }
+
+    @Override
+    public void setVAP(VAP voltAmpereProfile){
+        this.voltAmpereProfile = (InjectorUisVAP) voltAmpereProfile;}
 
     @Override
     public String toString() {

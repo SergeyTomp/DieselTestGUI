@@ -19,6 +19,7 @@ import fi.stardex.sisu.persistence.repos.ISADetectionRepository;
 import fi.stardex.sisu.persistence.repos.InjectorTypeRepository;
 import fi.stardex.sisu.persistence.repos.ManufacturerRepository;
 import fi.stardex.sisu.persistence.repos.cr.*;
+import fi.stardex.sisu.persistence.repos.uis.*;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.settings.*;
@@ -1218,7 +1219,11 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                              CustomProducerDialogModel customProducerDialogModel,
                                                              CustomTestDialogModel customTestDialogModel,
                                                              ModbusRegisterProcessor flowModbusWriter,
-                                                             ModbusRegisterProcessor ultimaModbusWriter) {
+                                                             ModbusRegisterProcessor ultimaModbusWriter,
+                                                             UisModelService uisModelService,
+                                                             UisProducerService uisProducerService,
+                                                             UisTestService uisTestService,
+                                                             BoostUadjustmentState boostUadjustmentState) {
         MainSectionUisController mainSectionUisController = (MainSectionUisController)mainSectionUIS().getController();
         mainSectionUisController.setMainSectionUisModel(mainSectionUisModel);
         mainSectionUisController.setPrintDialogPanel(printDialogPanel());
@@ -1229,6 +1234,10 @@ public class JavaFXSpringConfigure extends ViewLoader{
         mainSectionUisController.setUltimaModbusWriter(ultimaModbusWriter);
         mainSectionUisController.setCustomProducerDialogModel(customProducerDialogModel);
         mainSectionUisController.setCustomTestDialogModel(customTestDialogModel);
+        mainSectionUisController.setUisModelService(uisModelService);
+        mainSectionUisController.setUisProducerService(uisProducerService);
+        mainSectionUisController.setUisTestService(uisTestService);
+        mainSectionUisController.setBoostUadjustmentState(boostUadjustmentState);
         return mainSectionUisController;
     }
 
@@ -1236,13 +1245,15 @@ public class JavaFXSpringConfigure extends ViewLoader{
     @Autowired
     public CustomManufacturerUisDialogController customManufacturerUisDialogController(MainSectionUisModel mainSectionUisModel,
                                                                                        GUI_TypeModel guiTypeModel,
-                                                                                       CustomProducerDialogModel customProducerDialogModel) {
+                                                                                       CustomProducerDialogModel customProducerDialogModel,
+                                                                                       UisProducerService uisProducerService) {
         CustomManufacturerUisDialogController customManufacturerUisDialogController = (CustomManufacturerUisDialogController)customManufacturerUisDialog().getController();
         customManufacturerUisDialogController.setMainSectionUisModel(mainSectionUisModel);
         customManufacturerUisDialogController.setGuiTypeModel(guiTypeModel);
         customManufacturerUisDialogController.setDialogViev(customManufacturerUisDialog().getView());
         customManufacturerUisDialogController.setCustomProducerDialogModel(customProducerDialogModel);
         customManufacturerUisDialogController.setI18N(i18N);
+        customManufacturerUisDialogController.setUisProducerService(uisProducerService);
         return customManufacturerUisDialogController;
     }
 

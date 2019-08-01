@@ -56,6 +56,12 @@ public class Manufacturer implements Producer {
     public boolean isCustom() {
         return isCustom;
     }
+
+    @Override
+    public int getDisplayOrder() {
+        return 0;
+    }
+
     @Override
     public void setCustom(boolean custom) {
         isCustom = custom;

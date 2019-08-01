@@ -1,12 +1,13 @@
 package fi.stardex.sisu.persistence.orm.interfaces;
 
+import javafx.beans.property.BooleanProperty;
+
 public interface Test {
 
     Integer getId();
     Name getTestName();
     Model getInjector();
     VAP getVoltAmpereProfile();
-    boolean isIncluded();
     Integer getMotorSpeed();
     Integer getSettedPressure();
     Integer getAdjustingTime();
@@ -17,5 +18,7 @@ public interface Test {
     Double getFlowRange();
     Boolean isCustom();
     Integer getShift();
+    BooleanProperty includedProperty();
+    void setVAP(VAP vap);
 
 }
