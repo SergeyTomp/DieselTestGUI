@@ -1,5 +1,6 @@
 package fi.stardex.sisu.persistence.repos.uis;
 
+import fi.stardex.sisu.persistence.orm.interfaces.Model;
 import fi.stardex.sisu.persistence.orm.interfaces.ModelService;
 import fi.stardex.sisu.persistence.orm.interfaces.Producer;
 import fi.stardex.sisu.persistence.orm.uis.InjectorUIS;
@@ -32,5 +33,20 @@ public class UisModelService implements ModelService {
     @Override
     public InjectorUIS findByIsCustom(boolean isCustom) {
         return injectorUisRepository.findByIsCustom(isCustom);
+    }
+
+    @Override
+    public boolean existsByModelCode(String code) {
+        return injectorUisRepository.existsByInjectorCode(code);
+    }
+
+    @Override
+    public void save(Model model) {
+        injectorUisRepository.save((InjectorUIS)model);
+    }
+
+    @Override
+    public void delete(Model model) {
+        injectorUisRepository.delete((InjectorUIS)model);
     }
 }

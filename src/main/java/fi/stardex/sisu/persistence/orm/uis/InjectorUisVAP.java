@@ -218,4 +218,9 @@ public class InjectorUisVAP implements VAP {
     public int hashCode() {
         return Objects.hash(getProfileName());
     }
+
+    @Override
+    public String toString() {
+        return profileName ;
+    }
 }

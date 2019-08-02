@@ -105,6 +105,9 @@ INSERT INTO INJECTOR_TESTS_UIS (ID, INJECTOR_CODE, TEST_NAME, MOTOR_SPEED, SETTE
 INSERT INTO REFERENCE_UIS (GENERATED_INJECTOR_CODE, INJECTOR_CODE)
   SELECT * FROM CSVREAD('classpath:/db/csv/uis/referenceUIS.csv');
 
+INSERT INTO MANUFACTURER_UIS (MANUFACTURER_NAME, DISPLAY_ORDER, IS_CUSTOM)
+  SELECT * FROM CSVREAD('~/stardex/custom_csvs/manufacturersUis_custom.csv');
+
 -- Внимание: последовательность выполнения скриптов критична - иначе при загрузке таблиц из файлов ругается на связи FOREIGN KEY -> ID
 -- сначала грузить таблицу с ID, потом таблицу с foreign_key -> ID
 -- напрмер: если сначала грузить INJECTORS_UIS, а потом VOLT_AMPERE_PROFILES_UIS, то получим ошибку

@@ -271,12 +271,10 @@ public class MainSectionUisController {
 
         customModelDialogModel.doneProperty().addListener((observableValue, oldValue, newValue) -> {
 
-            List<? extends Model> customModels = modelService.findByProducerAndIsCustom(manufacturerListView.getSelectionModel().getSelectedItem(), true);
-            modelListView.getItems().setAll(new ArrayList<>(customModels));
-            modelListView.refresh();
-            modelListView.getSelectionModel().select(customModelDialogModel.customModelProperty().get());
+            setFilteredItems(manufacturerListView.getSelectionModel().getSelectedItem());
             mainSectionUisModel.customModelProperty().setValue(null);
         });
+
         customModelDialogModel.cancelProperty().addListener((observableValue, oldValue, newValue) ->
                 mainSectionUisModel.customModelProperty().setValue(null));
     }
@@ -350,6 +348,12 @@ public class MainSectionUisController {
 
         baseTypeToggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
 
+            Producer selectedItem = manufacturerListView.getSelectionModel().getSelectedItem();
+
+            if (selectedItem == null)
+                return;
+
+            setFilteredItems(selectedItem);
 
         });
     }

@@ -7,10 +7,7 @@ import fi.stardex.sisu.measurement.Measurements;
 import fi.stardex.sisu.model.*;
 import fi.stardex.sisu.model.cr.*;
 import fi.stardex.sisu.model.pump.*;
-import fi.stardex.sisu.model.uis.CustomModelDialogModel;
-import fi.stardex.sisu.model.uis.CustomProducerDialogModel;
-import fi.stardex.sisu.model.uis.CustomTestDialogModel;
-import fi.stardex.sisu.model.uis.MainSectionUisModel;
+import fi.stardex.sisu.model.uis.*;
 import fi.stardex.sisu.model.updateModels.HighPressureSectionUpdateModel;
 import fi.stardex.sisu.model.updateModels.InjectorSectionUpdateModel;
 import fi.stardex.sisu.model.updateModels.PiezoRepairUpdateModel;
@@ -56,6 +53,7 @@ import fi.stardex.sisu.ui.controllers.uis.MainSectionUisController;
 import fi.stardex.sisu.ui.controllers.uis.dialogs.CustomInjectorUisDialogController;
 import fi.stardex.sisu.ui.controllers.uis.dialogs.CustomManufacturerUisDialogController;
 import fi.stardex.sisu.ui.controllers.uis.dialogs.CustomTestUisDialogController;
+import fi.stardex.sisu.ui.controllers.uis.dialogs.CustomVapUisDialogController;
 import fi.stardex.sisu.util.DelayCalculator;
 import fi.stardex.sisu.util.enums.BeakerType;
 import fi.stardex.sisu.util.i18n.I18N;
@@ -1261,13 +1259,21 @@ public class JavaFXSpringConfigure extends ViewLoader{
     @Autowired
     public CustomInjectorUisDialogController customInjectorUisDialogController(MainSectionUisModel mainSectionUisModel,
                                                                                GUI_TypeModel guiTypeModel,
-                                                                               CustomModelDialogModel customModelDialogModel) {
+                                                                               CustomModelDialogModel customModelDialogModel,
+                                                                               UisModelService uisModelService,
+                                                                               UisTestService uisTestService,
+                                                                               UisVapService uisVapService,
+                                                                               CustomVapUisDialogModel customVapUisDialogModel) {
         CustomInjectorUisDialogController customInjectorUisDialogController = (CustomInjectorUisDialogController)customInjectorUisDialog().getController();
         customInjectorUisDialogController.setMainSectionUisModel(mainSectionUisModel);
         customInjectorUisDialogController.setDialogViev(customInjectorUisDialog().getView());
         customInjectorUisDialogController.setGuiTypeModel(guiTypeModel);
         customInjectorUisDialogController.setCustomModelDialogModel(customModelDialogModel);
         customInjectorUisDialogController.setI18N(i18N);
+        customInjectorUisDialogController.setUisModelService(uisModelService);
+        customInjectorUisDialogController.setUisTestService(uisTestService);
+        customInjectorUisDialogController.setUisVapService(uisVapService);
+        customInjectorUisDialogController.setCustomVapUisDialogModel(customVapUisDialogModel);
         return customInjectorUisDialogController;
     }
 
@@ -1283,5 +1289,23 @@ public class JavaFXSpringConfigure extends ViewLoader{
         customTestUisDialogController.setDialogView(customTestUisDialog().getView());
         customTestUisDialogController.setI18N(i18N);
         return customTestUisDialogController;
+    }
+
+    @Bean
+    public ViewHolder customVapUisDialog() {
+        return loadView("/fxml/dialogs/CustomVapUisDialog.fxml");
+    }
+
+    @Bean
+    @Autowired
+    public CustomVapUisDialogController customVapUisDialogController(CustomVapUisDialogModel customVapUisDialogModel,
+                                                                     CustomModelDialogModel customModelDialogModel,
+                                                                     UisVapService uisVapService) {
+        CustomVapUisDialogController customVapUisDialogController = (CustomVapUisDialogController)customVapUisDialog().getController();
+        customVapUisDialogController.setCustomVapUisDialogModel(customVapUisDialogModel);
+        customVapUisDialogController.setCustomModelDialogModel(customModelDialogModel);
+        customVapUisDialogController.setNewEditVOAPDialog(customVapUisDialog().getView());
+        customVapUisDialogController.setUisVapService(uisVapService);
+        return customVapUisDialogController;
     }
 }

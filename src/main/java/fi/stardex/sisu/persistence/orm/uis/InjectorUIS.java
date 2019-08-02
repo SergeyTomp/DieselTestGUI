@@ -26,7 +26,7 @@ public class InjectorUIS implements Model {
     @JoinColumn(name = "manufacturer_name")
     private ManufacturerUIS manufacturer;
 
-    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "volt_ampere_profile", nullable = false)
     private InjectorUisVAP voltAmpereProfile;
 

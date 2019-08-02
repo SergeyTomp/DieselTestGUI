@@ -12,10 +12,7 @@ import fi.stardex.sisu.measurement.PumpMeasurementManager;
 import fi.stardex.sisu.model.*;
 import fi.stardex.sisu.model.cr.*;
 import fi.stardex.sisu.model.pump.*;
-import fi.stardex.sisu.model.uis.CustomModelDialogModel;
-import fi.stardex.sisu.model.uis.CustomProducerDialogModel;
-import fi.stardex.sisu.model.uis.CustomTestDialogModel;
-import fi.stardex.sisu.model.uis.MainSectionUisModel;
+import fi.stardex.sisu.model.uis.*;
 import fi.stardex.sisu.model.updateModels.*;
 import fi.stardex.sisu.pdf.PDFService;
 import fi.stardex.sisu.persistence.CheckAndInitializeBD;
@@ -1111,6 +1108,19 @@ public class SpringJavaConfig {
     public UisTestService uisTestService(InjectorUisTestRepository injectorUisTestRepository) {
         return new UisTestService(injectorUisTestRepository);
     }
+
+    @Bean
+    @Autowired
+    public UisVapService uisVapService(InjectorUisVapRepository injectorUisVapRepository) {
+        return new UisVapService(injectorUisVapRepository);
+    }
+
+    @Bean
+    public CustomVapUisDialogModel customVapUisDialogModel() {
+        return new CustomVapUisDialogModel();
+    }
+
+
 
 //    @Bean
 //    @Autowired
