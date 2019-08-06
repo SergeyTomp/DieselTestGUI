@@ -63,6 +63,30 @@ public class CheckAndInitializeBD {
     @Value("${stardex.custom_csvs.injectorTests}")
     private String customInjectorTests;
 
+    @Value("${stardex.custom_csvs.manufacturersUis}")
+    private String customManufacturersUis;
+
+    @Value("${stardex.custom_csvs.voltAmpereProfilesUis}")
+    private String customVapUis;
+
+    @Value("${stardex.custom_csvs.injectorsUis}")
+    private String customInjectorsUis;
+
+    @Value("${stardex.custom_csvs.injectorTestsUis}")
+    private String customInjectorUisTests;
+
+    @Value("${stardex.custom_csvs.manufacturersUis.header}")
+    private String custom_manufacturersUis_header;
+
+    @Value("${stardex.custom_csvs.voltAmpereProfilesUis.header}")
+    private String custom_vapUis_header;
+
+    @Value("${stardex.custom_csvs.injectorsUis.header}")
+    private String custom_injectorUis_header;
+
+    @Value("${stardex.custom_csvs.injectorUisTests.header}")
+    private String custom_injectorUis_tests_header;
+
     public CheckAndInitializeBD(ManufacturerRepository manufacturerRepository, DataSource dataSource) {
 
         this.manufacturerRepository = manufacturerRepository;
@@ -112,6 +136,14 @@ public class CheckAndInitializeBD {
 
         File customInjectorTestsFile = new File(customCSVSDirectory, customInjectorTests);
 
+        File customManufacturersUisFile = new File(customCSVSDirectory, customManufacturersUis);
+
+        File customVapUisFile = new File(customCSVSDirectory, customVapUis);
+
+        File customInjectorUisFile = new File(customCSVSDirectory, customInjectorsUis);
+
+        File customTestUisFile = new File(customCSVSDirectory, customInjectorUisTests);
+
         if (!customManufacturersFile.exists() || !customManufacturersFile.isFile())
             createCustomCSV(customManufacturersFile, custom_manufacturers_header);
 
@@ -123,6 +155,18 @@ public class CheckAndInitializeBD {
 
         if (!customInjectorTestsFile.exists() || !customInjectorTestsFile.isFile())
             createCustomCSV(customInjectorTestsFile, custom_injector_tests_header);
+
+        if (!customManufacturersUisFile.exists() || !customManufacturersUisFile.isFile())
+            createCustomCSV(customManufacturersUisFile, custom_manufacturersUis_header);
+
+        if (!customVapUisFile.exists() || !customVapUisFile.isFile())
+            createCustomCSV(customVapUisFile, custom_vapUis_header);
+
+        if (!customInjectorUisFile.exists() || !customInjectorUisFile.isFile())
+            createCustomCSV(customInjectorUisFile, custom_injectorUis_header);
+
+        if (!customTestUisFile.exists() || !customTestUisFile.isFile())
+            createCustomCSV(customTestUisFile, custom_injectorUis_tests_header);
     }
 
     private void createCustomCSV(File file, String header) throws IOException {

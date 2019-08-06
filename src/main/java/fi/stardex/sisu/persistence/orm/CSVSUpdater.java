@@ -4,24 +4,31 @@ import fi.stardex.sisu.persistence.CheckAndInitializeBD;
 import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.persistence.orm.cr.inj.VoltAmpereProfile;
-import fi.stardex.sisu.persistence.orm.interfaces.Producer;
-import fi.stardex.sisu.persistence.orm.interfaces.ProducerService;
+import fi.stardex.sisu.persistence.orm.interfaces.*;
+import fi.stardex.sisu.persistence.orm.uis.InjectorUIS;
+import fi.stardex.sisu.persistence.orm.uis.InjectorUisTest;
+import fi.stardex.sisu.persistence.orm.uis.InjectorUisVAP;
 import fi.stardex.sisu.persistence.repos.ManufacturerRepository;
 import fi.stardex.sisu.persistence.repos.cr.InjectorTestRepository;
 import fi.stardex.sisu.persistence.repos.cr.InjectorsRepository;
 import fi.stardex.sisu.persistence.repos.cr.VoltAmpereProfileRepository;
 import fi.stardex.sisu.persistence.repos.uis.UisProducerService;
+import fi.stardex.sisu.persistence.repos.uis.UisTestService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 
 import javax.annotation.PreDestroy;
+import javax.sql.rowset.spi.SyncResolver;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @PropertySource("classpath:properties/app.properties")
 public class CSVSUpdater {
@@ -38,6 +45,12 @@ public class CSVSUpdater {
 
     private ProducerService producerService;
 
+    private ModelService modelService;
+
+    private TestService testService;
+
+    private VapService vapService;
+
     private static final String NEW_LINE_SEPARATOR = "\n";
 
     private static final String COMMA_DELIMITER = ",";
@@ -50,6 +63,15 @@ public class CSVSUpdater {
 
     @Value("${stardex.custom_csvs.voltAmpereProfiles.header}")
     private String custom_voap_header;
+
+    @Value("${stardex.custom_csvs.voltAmpereProfilesUis.header}")
+    private String custom_vapUis_header;
+
+    @Value("${stardex.custom_csvs.injectorsUis.header}")
+    private String custom_injectorUis_header;
+
+    @Value("${stardex.custom_csvs.injectorUisTests.header}")
+    private String custom_injectorUis_tests_header;
 
     @Value("${stardex.custom_csvs.injectors.header}")
     private String custom_injectors_header;
@@ -72,23 +94,38 @@ public class CSVSUpdater {
     @Value("${stardex.custom_csvs.voltAmpereProfiles}")
     private String customVOAP;
 
+    @Value("${stardex.custom_csvs.voltAmpereProfilesUis}")
+    private String customVapUis;
+
     @Value("${stardex.custom_csvs.injectors}")
     private String customInjectors;
 
+    @Value("${stardex.custom_csvs.injectorsUis}")
+    private String customInjectorsUis;
+
     @Value("${stardex.custom_csvs.injectorTests}")
     private String customInjectorTests;
+
+    @Value("${stardex.custom_csvs.injectorTestsUis}")
+    private String customInjectorUisTests;
 
     public CSVSUpdater(ManufacturerRepository manufacturerRepository,
                        VoltAmpereProfileRepository voltAmpereProfileRepository,
                        InjectorsRepository injectorsRepository,
                        InjectorTestRepository injectorTestRepository,
-                       UisProducerService producerService) {
+                       UisProducerService producerService,
+                       ModelService modelService,
+                       TestService testService,
+                       VapService vapService) {
 
         this.manufacturerRepository = manufacturerRepository;
         this.voltAmpereProfileRepository = voltAmpereProfileRepository;
         this.injectorsRepository = injectorsRepository;
         this.injectorTestRepository = injectorTestRepository;
         this.producerService = producerService;
+        this.modelService = modelService;
+        this.testService = testService;
+        this.vapService = vapService;
     }
 
     @PreDestroy
@@ -113,11 +150,120 @@ public class CSVSUpdater {
                         break;
                     case "ManufacturerUIS":
                         updateCustomCSV(new File(pathToCSVSDirectory, customManufacturersUis), custom_manufacturersUis_header, producerService);
+                    case "InjectorUIS":
+                        updateCustomCSV(new File(pathToCSVSDirectory, customInjectorsUis), custom_injectorUis_header, modelService);
+                        break;
+                    case "InjectorUisVAP":
+                        updateCustomCSV(new File(pathToCSVSDirectory, customVapUis), custom_vapUis_header, vapService);
+                        break;
+                    case "InjectorUisTest":
+                        updateCustomCSV(new File(pathToCSVSDirectory, customInjectorUisTests), custom_injectorUis_tests_header, testService);
+                        break;
                     default:
                         break;
                 }
             }
         }));
+    }
+
+    private void updateCustomCSV(File file, String header, TestService testService) {
+
+        List<InjectorUisTest> customTestList = new ArrayList<>();
+
+        if (testService instanceof UisTestService) {
+            customTestList.addAll(testService.findAllByIsCustom(true).stream().map(test -> (InjectorUisTest)test).collect(Collectors.toList()));
+        }
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter((file)))) {
+
+            writer.append(header).append(NEW_LINE_SEPARATOR);
+            if (!customTestList.isEmpty()) {
+                customTestList.forEach(test ->{
+
+                    try{
+                        String vap = test.getVoltAmpereProfile() == null ? "" : test.getVoltAmpereProfile().getProfileName();
+                        writer.append(test.getId().toString()).append(COMMA_DELIMITER)
+                                .append(test.getInjector().getModelCode()).append(COMMA_DELIMITER)
+                                .append(test.getTestName().getName()).append(COMMA_DELIMITER)
+                                .append(test.getMotorSpeed() == null ? "" : test.getMotorSpeed().toString()).append(COMMA_DELIMITER)
+                                .append(test.getSettedPressure() == null ? "" : test.getSettedPressure().toString()).append(COMMA_DELIMITER)
+                                .append(test.getAngle_1() == null ? "" : test.getAngle_1().toString()).append(COMMA_DELIMITER)
+                                .append(test.getAngle_2() == null ? "" : test.getAngle_2().toString()).append(COMMA_DELIMITER)
+                                .append(test.getDoubleCoilOffset() == null ? "" : test.getDoubleCoilOffset().toString()).append(COMMA_DELIMITER)
+                                .append(test.getTotalPulseTime1() == null ? "" : test.getTotalPulseTime1().toString()).append(COMMA_DELIMITER)
+                                .append(test.getTotalPulseTime2() == null ? "" : test.getTotalPulseTime2().toString()).append(COMMA_DELIMITER)
+                                .append(test.getNominalFlow() == null ? "" : test.getNominalFlow().toString()).append(COMMA_DELIMITER)
+                                .append(test.getFlowRange() == null ? "" : test.getFlowRange().toString()).append(COMMA_DELIMITER)
+                                .append(test.getAdjustingTime() == null ? "" : test.getAdjustingTime().toString()).append(COMMA_DELIMITER)
+                                .append(test.getMeasurementTime() == null ? "" : test.getMeasurementTime().toString()).append(COMMA_DELIMITER)
+                                .append(vap).append(COMMA_DELIMITER)
+                                .append(test.getBip() == null ? "" : test.getBip().toString()).append(COMMA_DELIMITER)
+                                .append(test.getBipRange() == null ? "" : test.getBipRange().toString()).append(COMMA_DELIMITER)
+                                .append(test.getRackPosition() == null ? "" : test.getRackPosition().toString()).append(COMMA_DELIMITER)
+                                .append(test.isCustom().toString()).append(NEW_LINE_SEPARATOR);
+                    }catch (IOException ex){logger.error("IO Exception for Test file update process occurred!", ex);}
+                });
+            }
+        }catch (IOException ex) { logger.error("IO Exception for Test file update process occurred!", ex);}
+    }
+
+    private void updateCustomCSV(File file, String header, ModelService modelService) {
+
+        List<? extends Model> customModelsList = modelService.findByIsCustom(true);
+        try(BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            writer.append(header).append(NEW_LINE_SEPARATOR);
+            if (!customModelsList.isEmpty()) {
+                customModelsList.forEach(model -> {
+                    try {
+
+                        writer.append(model.getModelCode()).append(COMMA_DELIMITER)
+                                .append(model.getManufacturer().getManufacturerName()).append(COMMA_DELIMITER)
+                                .append(model.getVAP().getProfileName()).append(COMMA_DELIMITER)
+                                .append(String.valueOf(model.isCustom())).append(NEW_LINE_SEPARATOR);
+                    }catch (IOException ex) { logger.error("IO Exception for Models file update process occurred!", ex); }
+                });
+            }
+        } catch (IOException ex) { logger.error("IO Exception for Models file update process occurred!", ex); }
+
+    }
+
+    private void updateCustomCSV(File file, String header, VapService vapService) {
+
+        List<? extends VAP> customVapList = vapService.findByIsCustom(true);
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))){
+            writer.append(header).append(NEW_LINE_SEPARATOR);
+            if (!customVapList.isEmpty()) {
+                customVapList.forEach(vap -> {
+                    try {
+
+                        writer.append(vap.getProfileName()).append(COMMA_DELIMITER)
+                                .append(String.valueOf(((InjectorUisVAP) vap).getCamType())).append(COMMA_DELIMITER)
+                                .append(String.valueOf(((InjectorUisVAP) vap).getInletPressure())).append(COMMA_DELIMITER)
+                                .append(vap.getInjectorType().name()).append(COMMA_DELIMITER)
+                                .append(vap.getInjectorSubType().name()).append(COMMA_DELIMITER)
+                                .append(String.valueOf(vap.getBoostDisable())).append(COMMA_DELIMITER)
+                                .append(String.valueOf(vap.getBoostU())).append(COMMA_DELIMITER)
+                                .append(String.valueOf(vap.getBoostI())).append(COMMA_DELIMITER)
+                                .append(String.valueOf(vap.getBatteryU())).append(COMMA_DELIMITER)
+                                .append(String.valueOf(vap.getFirstI())).append(COMMA_DELIMITER)
+                                .append(String.valueOf(vap.getFirstW())).append(COMMA_DELIMITER)
+                                .append(String.valueOf(vap.getSecondI())).append(COMMA_DELIMITER)
+                                .append(String.valueOf(vap.getBoostI2())).append(COMMA_DELIMITER)
+                                .append(String.valueOf(vap.getFirstI2())).append(COMMA_DELIMITER)
+                                .append(String.valueOf(vap.getFirstW2())).append(COMMA_DELIMITER)
+                                .append(String.valueOf(vap.getSecondI2())).append(COMMA_DELIMITER)
+                                .append(String.valueOf(vap.getNegativeU())).append(COMMA_DELIMITER)
+                                .append(((InjectorUisVAP) vap).getBipPWM() == 0 ? "" : String.valueOf(((InjectorUisVAP) vap).getBipPWM())).append(COMMA_DELIMITER)
+                                .append(((InjectorUisVAP) vap).getBipWindow() == 0 ? "" : String.valueOf(((InjectorUisVAP) vap).getBipWindow())).append(COMMA_DELIMITER)
+                                .append(String.valueOf(vap.isCustom())).append(NEW_LINE_SEPARATOR);
+                    } catch (IOException ex) {
+                        logger.error("IO Exception for VAP file update process occurred!", ex);
+                    }
+                });
+            }
+
+        } catch (IOException ex) { logger.error("IO Exception for VAP file update process occurred!", ex); }
 
     }
 
@@ -133,13 +279,13 @@ public class CSVSUpdater {
                         writer.append(manufacturer.getManufacturerName()).append(COMMA_DELIMITER)
                                 .append(String.valueOf(manufacturer.isCustom())).append(NEW_LINE_SEPARATOR);
                     } catch (IOException ex) {
-                        logger.error("IO Exception occured!", ex);
+                        logger.error("IO Exception occurred!", ex);
                     }
 
                 });
             }
         } catch (IOException ex) {
-            logger.error("IO Exception occured!", ex);
+            logger.error("IO Exception occurred!", ex);
         }
 
     }
@@ -157,12 +303,12 @@ public class CSVSUpdater {
                                 .append(String.valueOf(manufacturer.getDisplayOrder())).append(COMMA_DELIMITER)
                                 .append(String.valueOf(manufacturer.isCustom())).append(NEW_LINE_SEPARATOR);
                     } catch (IOException ex) {
-                        logger.error("IO Exception occured!", ex);
+                        logger.error("IO Exception occurred!", ex);
                     }
                 });
             }
         } catch (IOException ex) {
-            logger.error("IO Exception occured!", ex);
+            logger.error("IO Exception occurred!", ex);
         }
     }
 
@@ -187,12 +333,12 @@ public class CSVSUpdater {
                                 .append(voap.getNegativeU().toString()).append(COMMA_DELIMITER)
                                 .append(voap.getBoostDisable().toString()).append(NEW_LINE_SEPARATOR);
                     } catch (IOException ex) {
-                        logger.error("IO Exception occured!", ex);
+                        logger.error("IO Exception occurred!", ex);
                     }
                 });
             }
         } catch (IOException ex) {
-            logger.error("IO Exception occured!", ex);
+            logger.error("IO Exception occurred!", ex);
         }
     }
 
@@ -216,12 +362,12 @@ public class CSVSUpdater {
                                 .append(coefficient).append(COMMA_DELIMITER)
                                 .append(injector.isCustom().toString()).append(NEW_LINE_SEPARATOR);
                     } catch (IOException ex) {
-                        logger.error("IO Exception occured!", ex);
+                        logger.error("IO Exception occurred!", ex);
                     }
                 });
             }
         } catch (IOException ex) {
-            logger.error("IO Exception occured!", ex);
+            logger.error("IO Exception occurred!", ex);
         }
 
     }
@@ -250,14 +396,28 @@ public class CSVSUpdater {
                                 .append(injectorTest.getFlowRange().toString()).append(COMMA_DELIMITER)
                                 .append(voltAmpereProfileValue).append(NEW_LINE_SEPARATOR);
                     } catch (IOException ex) {
-                        logger.error("IO Exception occured!", ex);
+                        logger.error("IO Exception occurred!", ex);
                     }
                 });
             }
         } catch (IOException ex) {
-            logger.error("IO Exception occured!", ex);
+            logger.error("IO Exception occurred!", ex);
         }
 
+    }
+
+    private String getStringFromInteger(Function<Test, Integer> integerFunction, Test test) {
+
+        if(test == null) return null;
+        if(integerFunction.apply(test) == null) return "";
+        return integerFunction.apply(test).toString();
+    }
+
+    private String getStringFromDouble(Function<Test, Double> doubleFunction, Test test) {
+
+        if(test == null) return null;
+        if(doubleFunction.apply(test) == null) return "";
+        return doubleFunction.apply(test).toString();
     }
 
 }

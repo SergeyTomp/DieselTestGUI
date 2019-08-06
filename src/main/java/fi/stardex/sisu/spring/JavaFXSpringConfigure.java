@@ -226,7 +226,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                                  TachometerUltimaUpdateModel tachometerUltimaUpdateModel,
                                                                  TestBenchSectionModel testBenchSectionModel,
                                                                  ModbusConnect flowModbusConnect,
-                                                                 ModbusConnect standModbusConnect) {
+                                                                 ModbusConnect standModbusConnect,
+                                                                 MainSectionUisModel mainSectionUisModel) {
         TestBenchSectionController testBenchSectionController = rootLayoutController.getTestBenchSectionController();
         testBenchSectionController.setFlowModbusWriter(flowModbusWriter);
         testBenchSectionController.setStandModbusWriter(standModbusWriter);
@@ -242,6 +243,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         testBenchSectionController.setTestBenchSectionModel(testBenchSectionModel);
         testBenchSectionController.setFlowModbusConnect(flowModbusConnect);
         testBenchSectionController.setStandModbusConnect(standModbusConnect);
+        testBenchSectionController.setMainSectionUisModel(mainSectionUisModel);
         return testBenchSectionController;
     }
 
@@ -1281,13 +1283,17 @@ public class JavaFXSpringConfigure extends ViewLoader{
     @Autowired
     public CustomTestUisDialogController customTestUisDialogController(MainSectionUisModel mainSectionUisModel,
                                                                        GUI_TypeModel guiTypeModel,
-                                                                       CustomTestDialogModel customTestDialogModel) {
+                                                                       CustomTestDialogModel customTestDialogModel,
+                                                                       UisTestNameService uisTestNameService,
+                                                                       UisTestService uisTestService) {
         CustomTestUisDialogController customTestUisDialogController = (CustomTestUisDialogController)customTestUisDialog().getController();
         customTestUisDialogController.setMainSectionUisModel(mainSectionUisModel);
         customTestUisDialogController.setGuiTypeModel(guiTypeModel);
         customTestUisDialogController.setCustomTestDialogModel(customTestDialogModel);
         customTestUisDialogController.setDialogView(customTestUisDialog().getView());
         customTestUisDialogController.setI18N(i18N);
+        customTestUisDialogController.setUisTestNameService(uisTestNameService);
+        customTestUisDialogController.setUisTestService(uisTestService);
         return customTestUisDialogController;
     }
 

@@ -6,6 +6,7 @@ import fi.stardex.sisu.model.cr.InjectorTestModel;
 import fi.stardex.sisu.model.pump.PumpModel;
 import fi.stardex.sisu.model.pump.PumpTestModel;
 import fi.stardex.sisu.model.TestBenchSectionModel;
+import fi.stardex.sisu.model.uis.MainSectionUisModel;
 import fi.stardex.sisu.model.updateModels.TachometerUltimaUpdateModel;
 import fi.stardex.sisu.model.updateModels.TestBenchSectionUpdateModel;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
@@ -102,6 +103,8 @@ public class TestBenchSectionController {
 
     private TestBenchSectionModel testBenchSectionModel;
 
+    private MainSectionUisModel mainSectionUisModel;
+
     private static final String PUMP_BUTTON_ON = "pump-button-on";
 
     private static final String PUMP_BUTTON_OFF = "pump-button-off";
@@ -197,6 +200,10 @@ public class TestBenchSectionController {
         this.standModbusConnect = standModbusConnect;
     }
 
+    public void setMainSectionUisModel(MainSectionUisModel mainSectionUisModel) {
+        this.mainSectionUisModel = mainSectionUisModel;
+    }
+
     public enum StatePump {
 
         ON("PUMP\n ON", true, PUMP_BUTTON_ON),
@@ -282,6 +289,17 @@ public class TestBenchSectionController {
         });
 
         injectorTestModel.injectorTestProperty().addListener((observableValue, oldValue, newValue) -> {
+
+            if (newValue != null) {
+
+                targetRPMSpinner.getValueFactory().setValue(newValue.getMotorSpeed());
+            }
+            else{
+                targetRPMSpinner.getValueFactory().setValue(0);
+            }
+        });
+
+        mainSectionUisModel.injectorTestProperty().addListener((observableValue, oldValue, newValue) -> {
 
             if (newValue != null) {
 

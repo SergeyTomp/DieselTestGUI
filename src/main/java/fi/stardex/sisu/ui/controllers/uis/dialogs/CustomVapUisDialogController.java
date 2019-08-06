@@ -215,7 +215,7 @@ public class CustomVapUisDialogController {
 
     private void create() {
 
-        if (uisVapService.existsById(enterNameTF.getText())) {
+        if (enterNameTF.getText().isEmpty() || uisVapService.existsById(enterNameTF.getText())) {
             notUniqueLabel.setVisible(true);
         } else {
             notUniqueLabel.setVisible(false);
@@ -272,8 +272,8 @@ public class CustomVapUisDialogController {
         enableBoostToggleButton.setDisable(false);
         camTypeCB.setDisable(false);
         inletPressureSpinner.setDisable(false);
-        bipPwmSpinner.setDisable(false);
-        bipWindowSpinner.setDisable(false);
+        bipPwmSpinner.setDisable(true);
+        bipWindowSpinner.setDisable(true);
         activateCoil2Spinners(customModelDialogModel.getInjectorSubType().get() == InjectorSubType.DOUBLE_COIL);
     }
 

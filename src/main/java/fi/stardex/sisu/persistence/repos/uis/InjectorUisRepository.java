@@ -16,7 +16,7 @@ public interface InjectorUisRepository extends CrudRepository<InjectorUIS, Strin
     InjectorUIS findByInjectorCode(String code);
 
     @EntityGraph(value = "InjectorsUIS.allLazy", type = EntityGraph.EntityGraphType.LOAD)
-    InjectorUIS findByIsCustom(boolean isCustom);
+    List<InjectorUIS> findByIsCustom(boolean isCustom);
 
     boolean existsByInjectorCode(String modelCode);
 

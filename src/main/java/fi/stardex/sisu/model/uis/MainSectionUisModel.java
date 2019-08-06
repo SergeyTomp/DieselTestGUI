@@ -26,7 +26,7 @@ public class MainSectionUisModel {
     private boolean modelIsChanging;
 
     // test listView part
-    private final ObjectProperty<? extends Test> modelTestProperty = new SimpleObjectProperty<>();
+    private final ObjectProperty<Test> modelTestProperty = new SimpleObjectProperty<>();
     private ObjectProperty<Operation> customTest = new SimpleObjectProperty<>();
     private ObservableList<Test> testObservableList = FXCollections.observableArrayList();
     private boolean testIsChanging;
@@ -66,7 +66,7 @@ public class MainSectionUisModel {
     public ObjectProperty<Model> modelProperty() {
         return model;
     }
-    public ObjectProperty<? extends Test> injectorTestProperty() {
+    public ObjectProperty<Test> injectorTestProperty() {
         return modelTestProperty;
     }
     public boolean isModelIsChanging() {

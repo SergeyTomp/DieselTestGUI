@@ -70,7 +70,7 @@ public class InjectorUIS implements Model {
 
     @Override
     public ManufacturerUIS getManufacturer() {
-        return null;
+        return manufacturer;
     }
 
     @Override

@@ -24,4 +24,19 @@ public class UisTestService implements TestService {
     public List<? extends Test> findAllByIsCustom(boolean isCustom) {
         return injectorUisTestRepository.findAllByIsCustom(isCustom);
     }
+
+    @Override
+    public void save(Test test) {
+        injectorUisTestRepository.save((InjectorUisTest)test);
+    }
+
+    @Override
+    public void delete(Test test) {
+        injectorUisTestRepository.delete((InjectorUisTest)test);
+    }
+
+    @Override
+    public void update(Test test) {
+        save(test);
+    }
 }

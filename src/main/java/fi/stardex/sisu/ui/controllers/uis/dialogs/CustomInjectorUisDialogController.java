@@ -15,6 +15,8 @@ import fi.stardex.sisu.persistence.repos.uis.UisVapService;
 import fi.stardex.sisu.util.enums.InjectorSubType;
 import fi.stardex.sisu.util.enums.InjectorType;
 import fi.stardex.sisu.util.i18n.I18N;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -22,11 +24,14 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Region;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import javax.annotation.PostConstruct;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -71,6 +76,9 @@ public class CustomInjectorUisDialogController {
     private UisModelService uisModelService;
     private UisTestService uisTestService;
     private UisVapService uisVapService;
+    private Alert alert;
+    private StringProperty alertString = new SimpleStringProperty("Please specify all values!");
+    private StringProperty yesButton = new SimpleStringProperty();
 
     public void setMainSectionUisModel(MainSectionUisModel mainSectionUisModel) {
         this.mainSectionUisModel = mainSectionUisModel;
@@ -225,9 +233,13 @@ public class CustomInjectorUisDialogController {
 
         customVapUisDialogModel.cancelProperty().addListener((observableValue, oldValue, newValue) ->
                 customModelDialogModel.customVapOperationProperty().setValue(null));
+
+        bindingI18N();
     }
 
     private void create() {
+
+        if(!isDataComplete()) return;
 
         if (injectorCodeTF.getText().isEmpty() || uisModelService.existsByModelCode(injectorCodeTF.getText())) {
             noUniqueLabel.setVisible(true);
@@ -245,6 +257,8 @@ public class CustomInjectorUisDialogController {
     }
 
     private void update() {
+
+        if(!isDataComplete()) return;
 
         Model injectorForUpdate = mainSectionUisModel.modelProperty().get();
         injectorForUpdate.setVAP(voapListView.getSelectionModel().getSelectedItem());
@@ -287,6 +301,7 @@ public class CustomInjectorUisDialogController {
         defaultRB.setDisable(false);
         customRB.setDisable(false);
         sureLabel.setVisible(false);
+        injectorCodeTF.setText(mainSectionUisModel.modelProperty().get().getModelCode());
     }
 
     private void setDelete() {
@@ -298,6 +313,7 @@ public class CustomInjectorUisDialogController {
         defaultRB.setDisable(true);
         customRB.setDisable(true);
         sureLabel.setVisible(true);
+        injectorCodeTF.setText(mainSectionUisModel.modelProperty().get().getModelCode());
     }
 
     private void selectFirst() {
@@ -340,5 +356,33 @@ public class CustomInjectorUisDialogController {
                 secondI2Label.setText("");
             }
         }
+    }
+
+    private void showAlert() {
+
+        if (alert == null) {
+            alert = new Alert(Alert.AlertType.NONE, "", ButtonType.YES);
+            alert.initStyle(StageStyle.UNDECORATED);
+            alert.getDialogPane().getStylesheets().add(getClass().getResource("/css/Styling.css").toExternalForm());
+            alert.getDialogPane().getStyleClass().add("alertDialog");
+            alert.setResizable(true);
+            alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+        }
+        ((Button) alert.getDialogPane().lookupButton(ButtonType.YES)).textProperty().setValue(yesButton.get());
+        alert.setContentText(alertString.get());
+        alert.show();
+    }
+
+    private boolean isDataComplete() {
+
+        if (injectorCodeTF.getText().isEmpty() || voapListView.getSelectionModel().getSelectedItem() == null) showAlert();
+        if(alert != null && alert.isShowing())return false;
+        return true;
+    }
+
+    private void bindingI18N() {
+
+        yesButton.bind((i18N.createStringBinding("alert.yesButton")));
+        alertString.bind((i18N.createStringBinding("alert.customDialog")));
     }
 }

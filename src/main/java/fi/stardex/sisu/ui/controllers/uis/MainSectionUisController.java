@@ -288,7 +288,49 @@ public class MainSectionUisController {
         testListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 
 
+            if (isFocusMoved)
+                return;
+
+            if (newValue == null) {
+                return;
+            }
+
+            mainSectionUisModel.setTestIsChanging(true);   // for listener of width changes in the VoltAmpereProfileController blocking
+            mainSectionUisModel.injectorTestProperty().set(newValue);
+
+            if (autoTestRadioButton.isSelected()) {
+
+                boolean startButtonNotSelected = !startToggleButton.isSelected();
+                boolean notFirstTestSelected = testListView.getSelectionModel().getSelectedIndex() != 0;
+                boolean testNotIncluded = listOfNonIncludedTests.contains(newValue);
+                boolean boostUadjustmentRunning = boostUadjustmentState.boostUadjustmentStateProperty().get();
+
+                showButtons(!testNotIncluded && startButtonNotSelected, false);
+                enableUpDownButtons(testListView.getSelectionModel().getSelectedIndex(), testListView.getItems().size() - getListOfNonIncludedTests().size());
+
+                disableNode(((startButtonNotSelected) && ((notFirstTestSelected) || testNotIncluded)) || boostUadjustmentRunning, startToggleButton);
+
+            } else if (testPlanTestRadioButton.isSelected() && startToggleButton.isSelected()) {
+
+//                measurements.switchOffInjectorSection();
+//                measurements.start();
+            }
+
+            currentAdjustingTime = newValue.getAdjustingTime();
+//            currentAdjustingTime = 5;
+
+            currentMeasuringTime = newValue.getMeasurementTime();
+//            currentMeasuringTime = 5;
+
+            setProgress(speedComboBox.getSelectionModel().getSelectedItem().getMultiplier());
+            mainSectionUisModel.setTestIsChanging(false);
         });
+    }
+
+    private void setProgress(double multiplier) {
+
+        adjustingTime.setProgress((int)(currentAdjustingTime * multiplier));
+        measuringTime.setProgress((int)(currentMeasuringTime * multiplier));
     }
 
     private void setupTestsToggleGroupListener() {
@@ -444,6 +486,7 @@ public class MainSectionUisController {
 
     private void pointToFirstTest() {
 
+        mainSectionUisModel.injectorTestProperty().setValue(null);
         testListView.getSelectionModel().select(0);
         testListView.scrollTo(0);
     }
@@ -548,10 +591,17 @@ public class MainSectionUisController {
         editTest.setOnAction(actionEvent -> mainSectionUisModel.customTestProperty().setValue(Operation.EDIT));
         MenuItem deleteTest = new MenuItem("Delete");
         deleteTest.setOnAction(actionEvent -> mainSectionUisModel.customTestProperty().setValue(Operation.DELETE));
-        testMenu.getItems().add(newTest);
+
 
         testListView.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
             if (event.getButton() == MouseButton.SECONDARY) {
+                testMenu.getItems().clear();
+
+                testMenu.getItems().add(newTest);
+                if (!defaultRadioButton.isSelected() && testListView.getSelectionModel().getSelectedItem() != null) {
+                    testMenu.getItems().add(editTest);
+                    testMenu.getItems().add(deleteTest);
+                }
                 testMenu.show(testListView, event.getScreenX(), event.getScreenY());
             } else
                 testMenu.hide();
@@ -559,6 +609,12 @@ public class MainSectionUisController {
 
         customTestDialogModel.cancelProperty().addListener((observableValue, oldValue, newValue) ->
                 mainSectionUisModel.customTestProperty().setValue(null));
+
+        customTestDialogModel.doneProperty().addListener((observable, oldValue, newValue) -> {
+            fetchTestsFromRepository();
+            mainSectionUisModel.customTestProperty().setValue(null);
+
+        });
     }
 
     private void setupStartButtonListener() {
@@ -601,10 +657,7 @@ public class MainSectionUisController {
     private void setupSpeedComboBox() {
         speedComboBox.getItems().setAll(TestSpeed.values());
         speedComboBox.getSelectionModel().selectFirst();
-        speedComboBox.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
-            adjustingTime.setProgress((int)(currentAdjustingTime * newValue.getMultiplier()));
-            measuringTime.setProgress((int)(currentMeasuringTime * newValue.getMultiplier()));
-        });
+        speedComboBox.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> setProgress(newValue.getMultiplier()));
     }
 
     //TODO add initialisation of manufacturers list

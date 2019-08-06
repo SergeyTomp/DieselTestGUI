@@ -1,6 +1,9 @@
 package fi.stardex.sisu.persistence.orm;
 
 import fi.stardex.sisu.persistence.orm.cr.inj.*;
+import fi.stardex.sisu.persistence.orm.uis.InjectorUIS;
+import fi.stardex.sisu.persistence.orm.uis.InjectorUisTest;
+import fi.stardex.sisu.persistence.orm.uis.InjectorUisVAP;
 import fi.stardex.sisu.persistence.orm.uis.ManufacturerUIS;
 
 import java.util.HashMap;
@@ -17,7 +20,9 @@ public class EntityUpdates {
         mapOfEntityUpdates.put(Injector.class.getSimpleName(), false);
         mapOfEntityUpdates.put(InjectorTest.class.getSimpleName(), false);
         mapOfEntityUpdates.put(ManufacturerUIS.class.getSimpleName(), false);
-
+        mapOfEntityUpdates.put(InjectorUIS.class.getSimpleName(), false);
+        mapOfEntityUpdates.put(InjectorUisVAP.class.getSimpleName(), false);
+        mapOfEntityUpdates.put(InjectorUisTest.class.getSimpleName(), false);
     }
 
     public static Map<String, Boolean> getMapOfEntityUpdates() {

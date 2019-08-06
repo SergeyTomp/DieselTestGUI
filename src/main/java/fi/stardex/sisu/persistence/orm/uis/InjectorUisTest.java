@@ -9,13 +9,16 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import org.hibernate.annotations.NotFound;
+import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
 @NamedEntityGraphs({
-        @NamedEntityGraph(name = "InjectorUisTest.testName", attributeNodes = @NamedAttributeNode("testName")),
+        @NamedEntityGraph(name = "InjectorUisTest.testName", attributeNodes = {
+                @NamedAttributeNode("testName"),
+                @NamedAttributeNode("injector")}),
         @NamedEntityGraph(name = "InjectorUisTest.allLazy", attributeNodes = {
                 @NamedAttributeNode("injector"),
                 @NamedAttributeNode("testName"),
@@ -119,11 +122,12 @@ public class InjectorUisTest implements Test, ChangeListener<Boolean> {
                            Boolean isCustom,
                            Integer totalPulseTime2,
                            Integer doubleCoilOffset,
+                           Integer angle_1,
+                           Integer angle_2,
                            InjectorUisVAP voltAmpereProfile,
                            Integer bip,
                            Integer bipRange,
-                           Integer rackPosition,
-                           BooleanProperty included) {
+                           Integer rackPosition) {
         this.injector = injector;
         this.testName = testName;
         this.motorSpeed = motorSpeed;
@@ -140,7 +144,8 @@ public class InjectorUisTest implements Test, ChangeListener<Boolean> {
         this.bip = bip;
         this.bipRange = bipRange;
         this.rackPosition = rackPosition;
-        this.included = included;
+        this.angle_1 = angle_1;
+        this.angle_2 = angle_2;
     }
 
     @Override public Integer getId() {
@@ -185,9 +190,6 @@ public class InjectorUisTest implements Test, ChangeListener<Boolean> {
     @Override public Integer getShift() {
         return doubleCoilOffset;
     }
-    @Override public void setVAP(VAP vap) {
-        this.voltAmpereProfile = (InjectorUisVAP)vap;
-    }
     @Override public BooleanProperty includedProperty() {
         return included;
     }
@@ -211,8 +213,51 @@ public class InjectorUisTest implements Test, ChangeListener<Boolean> {
         return rackPosition;
     }
 
-    public void setVoltAmpereProfile(InjectorUisVAP voltAmpereProfile) {
-        this.voltAmpereProfile = voltAmpereProfile;
+    @Override public void setMotorSpeed(Integer motorSpeed) {
+        this.motorSpeed = motorSpeed;
+    }
+    @Override public void setVAP(VAP vap) {
+        this.voltAmpereProfile = (InjectorUisVAP)vap;
+    }
+    @Override public void setSettedPressure(Integer settedPressure) {
+        this.settedPressure =settedPressure;
+    }
+    @Override public void setAdjustingTime(Integer adjustingTime) {
+        this.adjustingTime = adjustingTime;
+    }
+    @Override public void setMeasurementTime(Integer measurementTime) {
+        this.measurementTime = measurementTime;
+    }
+    @Override public void setTotalPulseTime1(Integer totalPulseTime1) {
+        this.totalPulseTime1 = totalPulseTime1;
+    }
+    @Override public void setTotalPulseTime2(Integer totalPulseTime2) {
+        this.totalPulseTime2 = totalPulseTime2;
+    }
+    @Override public void setNominalFlow(Double nominalFlow) {
+        this.nominalFlow = nominalFlow;
+    }
+    @Override public void setFlowRange(Double flowRange) {
+        this.flowRange = flowRange;
+    }
+    @Override public void setShift(Integer shift) {
+        this.doubleCoilOffset = shift;
+    }
+
+    public void setAngle_1(Integer angle_1) {
+        this.angle_1 = angle_1;
+    }
+    public void setAngle_2(Integer angle_2) {
+        this.angle_2 = angle_2;
+    }
+    public void setBip(Integer bip) {
+        this.bip = bip;
+    }
+    public void setBipRange(Integer bipRange) {
+        this.bipRange = bipRange;
+    }
+    public void setRackPosition(Integer rackPosition) {
+        this.rackPosition = rackPosition;
     }
 
     @Override

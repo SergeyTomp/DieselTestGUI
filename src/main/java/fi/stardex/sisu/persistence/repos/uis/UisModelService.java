@@ -31,7 +31,7 @@ public class UisModelService implements ModelService {
     }
 
     @Override
-    public InjectorUIS findByIsCustom(boolean isCustom) {
+    public List<InjectorUIS> findByIsCustom(boolean isCustom) {
         return injectorUisRepository.findByIsCustom(isCustom);
     }
 

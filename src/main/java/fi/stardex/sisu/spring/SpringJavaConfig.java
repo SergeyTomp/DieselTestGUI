@@ -17,6 +17,9 @@ import fi.stardex.sisu.model.updateModels.*;
 import fi.stardex.sisu.pdf.PDFService;
 import fi.stardex.sisu.persistence.CheckAndInitializeBD;
 import fi.stardex.sisu.persistence.orm.CSVSUpdater;
+import fi.stardex.sisu.persistence.orm.interfaces.ModelService;
+import fi.stardex.sisu.persistence.orm.interfaces.TestService;
+import fi.stardex.sisu.persistence.orm.interfaces.VapService;
 import fi.stardex.sisu.persistence.repos.ManufacturerRepository;
 import fi.stardex.sisu.persistence.repos.cr.InjectorTestRepository;
 import fi.stardex.sisu.persistence.repos.cr.InjectorsRepository;
@@ -586,12 +589,18 @@ public class SpringJavaConfig {
                                    VoltAmpereProfileRepository voltAmpereProfileRepository,
                                    InjectorsRepository injectorsRepository,
                                    InjectorTestRepository injectorTestRepository,
-                                   UisProducerService producerService) {
+                                   UisProducerService producerService,
+                                   UisModelService modelService,
+                                   UisTestService testService,
+                                   UisVapService vapService) {
         return new CSVSUpdater(manufacturerRepository,
                 voltAmpereProfileRepository,
                 injectorsRepository,
                 injectorTestRepository,
-                producerService);
+                producerService,
+                modelService,
+                testService,
+                vapService);
     }
 
     @Bean
@@ -1120,6 +1129,11 @@ public class SpringJavaConfig {
         return new CustomVapUisDialogModel();
     }
 
+    @Bean
+    @Autowired
+    public UisTestNameService uisTestNameService(InjectorUisTestNameRepository injectorUisTestNameRepository) {
+        return new UisTestNameService(injectorUisTestNameRepository);
+    }
 
 
 //    @Bean

@@ -12,7 +12,7 @@ public interface InjectorUisTestRepository extends CrudRepository<InjectorUisTes
     @EntityGraph(value = "InjectorUisTest.testName", type = EntityGraph.EntityGraphType.LOAD)
     List<InjectorUisTest> findAllByInjector(Model model);
 
-    @EntityGraph(value = "InjectorTest.allLazy", type = EntityGraph.EntityGraphType.LOAD)
+    @EntityGraph(value = "InjectorUisTest.allLazy", type = EntityGraph.EntityGraphType.LOAD)
     List<InjectorUisTest> findAllByIsCustom(boolean isCustom);
 
 }
