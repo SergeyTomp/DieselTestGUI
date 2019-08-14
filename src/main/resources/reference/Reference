@@ -16,7 +16,7 @@
 - В терминале (из созданной папки) выполнить:
    1. tar cvzf sisu.tgz sisu.jar sisu.desktop stardexLogo.png openjdk-11.0.1_linux-x64_bin.tar.gz
    2. cat avangard.header sisu.tgz > sisu.”номер версии”.update
-Папка для установки апдейта на компьютер /opt/sisu/GUI/:
+Папка для установки апдейта на компьютер /opt/sisu/GUI/
 
 Для сборки старой GUI UIS выполнить:
   - В Stardex Version классе меняю имя апдейта
@@ -28,8 +28,7 @@
 - В терминале из новой папки: tar cvzf uis.tgz uis.jar uis.desktop stardexLogo.png
 - В терминале из новой папки: cat avangard.header uis.tgz > uis.”номер версии”.update
 Папки для установки апдейта на компьютер
-/opt/avangard/GUI/stardexLogo.png
-/opt/avangard/daemon/avangard
+
 
 - Для старой GUI CR выполнить:
   - В Stardex Version классе меняю имя апдейта
@@ -40,6 +39,15 @@
 - Из Идеи проект -> build-> lib -> скопировать jar-файл и поместить в папку -> переименовать в uis.jar
 - В терминале из новой папки: tar cvzf avangard.tgz avangard.jar avangard.desktop stardexLogo.png avangard
 - В терминале из новой папки: cat avangard.header uis.tgz > sisu-cr-”номер версии”.update
+
+
+Для Merlin:
+  - В Stardex Version классе меняю имя апдейта
+  - В файле build.gradle меняю version
+  - gradle-clean и gradle-assemble
+- Создть новую папку где будет новый апдейт
+- Копировать в неё из последнего старого апдейта merlin.desktop, merlin.header, merlinLogo.png
+- Из Идеи проект -> build-> lib -> скопировать jar-файл и поместить в папку -> переименовать в merlin.jar
+- В терминале из новой папки: tar cvzf merlin.tgz merlin.jar merlin.desktop merlinLogo.png
+- В терминале из новой папки: cat merlin.header merlin.tgz > merlin-”номер версии”.update
 Папки для установки апдейта на компьютер
-/opt/avangard/GUI/stardexLogo.png
-/opt/avangard/daemon/avangard
