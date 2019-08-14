@@ -152,7 +152,8 @@ public enum ModbusMapUltima implements ModbusMap {
     UIS_to_CR_pulseControlSwitch(REGISTER_HOLDING, 157, 1, false),
 
     // Отображение версий прошивок
-    Version_controllable(REGISTER_HOLDING, 116, 1, true),
+    Version_controllable_1(REGISTER_HOLDING, 116, 1, true),
+    Version_controllable_2(REGISTER_HOLDING, 117, 1, true),
     Main_version_0(REGISTER_INPUT, 4210, 1, true),
     Main_version_1(REGISTER_INPUT, 4211, 1, true),
     MeasureCPU_version_0(REGISTER_INPUT, 8606, 1, true),

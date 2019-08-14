@@ -449,9 +449,11 @@ public class JavaFXSpringConfigure extends ViewLoader{
     }
 
     @Bean
-    public TabSectionController tabSectionController() {
+    @Autowired
+    public TabSectionController tabSectionController(InjectorTypeModel injectorTypeModel) {
         TabSectionController tabSectionController = (TabSectionController) tabSection().getController();
         tabSectionController.setI18N(i18N);
+        tabSectionController.setInjectorTypeModel(injectorTypeModel);
         return tabSectionController;
     }
 

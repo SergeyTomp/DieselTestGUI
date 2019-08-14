@@ -210,9 +210,11 @@ public class FirmwareDialogController {
 
         if (ultimaModbusConnect.connectedProperty().get()) {
 
-            ultimaRegisterProvider.read(Version_controllable);
-            Object lastValue;
-            if ((lastValue = Version_controllable.getLastValue()) != null && (int)lastValue == 0xAA) {
+            ultimaRegisterProvider.read(Version_controllable_1);
+            ultimaRegisterProvider.read(Version_controllable_2);
+            Object lastValue_1 = Version_controllable_1.getLastValue();
+            Object lastValue_2 = Version_controllable_2.getLastValue();
+            if ((lastValue_1 != null && lastValue_2 != null && (int)lastValue_1 == 0xF1 && (int)lastValue_2 == 0xAA) ) {
 
                 List<String> parts = new ArrayList<>();
                 versionsMap.forEach((cpuType, label) -> {

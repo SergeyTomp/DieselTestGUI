@@ -1,0 +1,10 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Version=1.0
+Type=Application
+Terminal=false
+Icon[en_US]=/opt/avangard/GUI/stardexLogo.png
+Name[en_US]=SISU_UIS
+Exec=java -jar /opt/avangard/GUI/uis.jar
+Name=SISU_UIS
+Icon=/opt/avangard/GUI/stardexLogo.png

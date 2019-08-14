@@ -121,7 +121,7 @@ public class PiezoRepairController {
         SpinnerManager.setupDoubleSpinner(voltageSpinner);
         LOW.setLastValue(LOW.getMin());
         HIGH.setLastValue(HIGH.getMin());
-        currentSpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(2.5, 20, 0, 0.1));
+        currentSpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(2.5, 5, 0, 0.1));
         SpinnerManager.setupDoubleSpinner(currentSpinner);
     }
 

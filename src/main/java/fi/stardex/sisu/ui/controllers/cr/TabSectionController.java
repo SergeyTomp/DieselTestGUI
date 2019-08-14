@@ -1,8 +1,10 @@
 package fi.stardex.sisu.ui.controllers.cr;
 
+import fi.stardex.sisu.model.cr.InjectorTypeModel;
 import fi.stardex.sisu.ui.controllers.cr.tabs.*;
 import fi.stardex.sisu.ui.controllers.cr.tabs.info.InfoController;
 import fi.stardex.sisu.ui.controllers.cr.tabs.report.ReportController;
+import fi.stardex.sisu.util.enums.InjectorType;
 import fi.stardex.sisu.util.i18n.I18N;
 import javafx.fxml.FXML;
 import javafx.scene.control.Spinner;
@@ -70,6 +72,8 @@ public class TabSectionController {
 
     private I18N i18N;
 
+    public InjectorTypeModel injectorTypeModel;
+
     public RLCController getRlCController() {
         return rlcController;
     }
@@ -126,10 +130,20 @@ public class TabSectionController {
         return settingsGridPane;
     }
 
+    public void setInjectorTypeModel(InjectorTypeModel injectorTypeModel) {
+        this.injectorTypeModel = injectorTypeModel;
+    }
+
     @PostConstruct
     private void init(){
         bindingI18N();
 //        tabPane.getTabs().remove(tabPiezoRepair);
+        injectorTypeModel.injectorTypeProperty().addListener((observableValue, oldValue, newValue) -> {
+
+            if(newValue == InjectorType.PIEZO)
+                tabPane.getTabs().add(tabPiezoRepair);
+            else tabPane.getTabs().remove(tabPiezoRepair);
+        });
     }
 
 

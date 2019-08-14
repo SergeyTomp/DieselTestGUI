@@ -125,7 +125,7 @@ public class ConnectionController {
 
     private void setPairValues() {
 
-        ultimaConnect.setKey(rootPrefs.get("UltimaIP", "192.168.10.206"));
+        ultimaConnect.setKey(rootPrefs.get("UltimaIP", "192.168.10.200"));
         flowMeterConnect.setKey(rootPrefs.get("FlowIP", "192.168.10.201"));
         standConnect.setKey(rootPrefs.get("StandIP", "192.168.10.202"));
 
