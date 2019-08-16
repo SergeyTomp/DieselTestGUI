@@ -1,0 +1,10 @@
+Для сборки update выполнить:
+  - В Stardex Version классе меняю имя апдейта
+  - В файле build.gradle меняю version
+  - gradle-clean и gradle-assemble
+- Создть новую папку где будет новый апдейт
+- Копировать в неё из последнего старого апдейта файлы uis.desktop, stardexLogo.png, avangard.header
+- Из Идеи проект -> build-> lib -> скопировать jar-файл и поместить в папку -> переименовать в uis.jar
+- В терминале из новой папки: tar cvzf uis.tgz uis.jar uis.desktop stardexLogo.png
+- В терминале из новой папки: cat avangard.header uis.tgz > uis.”номер версии”.update
+

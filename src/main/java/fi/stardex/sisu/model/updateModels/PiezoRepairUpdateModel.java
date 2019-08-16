@@ -23,10 +23,10 @@ public class PiezoRepairUpdateModel implements Updater {
 
     @Override
     public void run() {
-
-        if (TouchDetection.getLastValue() != null) {
-            double lastValue = (double) (TouchDetection.getLastValue());
-            touchLevel.setValue(lastValue);
-        }
+//
+//        if (TouchDetection.getLastValue() != null) {
+//            double lastValue = (double) (TouchDetection.getLastValue());
+//            touchLevel.setValue(lastValue);
+//        }
     }
 }

@@ -1,0 +1,21 @@
+#!/bin/bash
+echo Updating Merlin...
+mkdir -p /tmp/upd
+sed -e '1,/^exit$/d' "$0" | tar -C /tmp/upd -zxf -
+cd /tmp/upd
+sleep 3
+sudo rm -f /var/log/syslog*
+sudo rm -f /opt/avangard/GUI/merlin.jar
+sudo rm -f /opt/avangard/GUI/avangard.jar
+sudo rm -f /opt/avangard/GUI/uis.jar
+sudo rm -f /opt/avangard/GUI/merlinLogo.png
+sudo rm -f ~/Desktop/merlin.desktop
+sudo cp /tmp/upd/merlin.jar /opt/avangard/GUI/
+sudo cp /tmp/upd/merlinLogo.png /opt/avangard/GUI/
+sudo cp /tmp/upd/merlin.desktop ~/Desktop/
+sudo chmod 777 ~/Desktop/merlin.desktop
+sleep 3
+rm -rf /tmp/upd
+echo Finish
+sudo reboot
+exit

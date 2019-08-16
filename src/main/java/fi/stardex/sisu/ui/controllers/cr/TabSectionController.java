@@ -118,6 +118,10 @@ public class TabSectionController {
         return tabDelay;
     }
 
+    public Tab getTabPiezoRepair() {
+        return tabPiezoRepair;
+    }
+
     public Tab getTabInfo() {
         return tabInfo;
     }

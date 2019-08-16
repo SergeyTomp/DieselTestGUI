@@ -1,0 +1,10 @@
+Для сборки update выполнить:
+  - В Stardex Version классе меняю имя апдейта
+  - В файле build.gradle меняю version
+  - gradle-clean и gradle-assemble
+- Создть новую папку где будет новый апдейт
+- Копировать в неё из последнего старого апдейта merlin.desktop, merlin.header, merlinLogo.png
+- Из Идеи проект -> build-> lib -> скопировать jar-файл и поместить в папку -> переименовать в merlin.jar
+- В терминале из новой папки: tar cvzf merlin.tgz merlin.jar merlin.desktop merlinLogo.png
+- В терминале из новой папки: cat merlin.header merlin.tgz > merlin-”номер версии”.update
+

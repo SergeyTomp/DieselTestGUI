@@ -1,0 +1,25 @@
+#!/bin/bash
+echo Updating Avangard...
+mkdir -p /tmp/upd
+sed -e '1,/^exit$/d' "$0" | tar -C /tmp/upd -zxf -
+cd /tmp/upd
+sudo stop avangard
+sleep 3
+sudo rm -f /var/log/syslog*
+sudo rm -rf ~/avangardsisudb
+sudo rm -f /opt/avangard/GUI/avangard.jar
+sudo rm -f /opt/avangard/GUI/stardexLogo.png
+sudo rm -f ~/Desktop/stardex.desktop
+sudo rm -f /opt/avangard/daemon/avangard
+sudo cp /tmp/upd/avangard /opt/avangard/daemon/
+sudo chmod 777 /opt/avangard/daemon/avangard
+sudo cp /tmp/upd/avangard.jar /opt/avangard/GUI/
+sudo cp /tmp/upd/stardexLogo.png /opt/avangard/GUI/
+sudo cp /tmp/upd/stardex.desktop ~/Desktop/
+sudo chmod 777 ~/Desktop/stardex.desktop
+sudo start avangard
+sleep 3
+rm -rf /tmp/upd
+echo Finish
+sudo reboot
+exit

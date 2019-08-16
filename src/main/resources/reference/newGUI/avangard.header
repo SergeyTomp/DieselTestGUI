@@ -1,0 +1,26 @@
+#!/bin/bash
+echo Updating Sisu...
+mkdir -p /tmp/upd
+sudo mkdir -p /opt/sisu/GUI/
+sed -e '1,/^exit$/d' "$0" | tar -C /tmp/upd -zxf -
+cd /tmp/upd
+sleep 3
+sudo rm -f /var/log/syslog*
+sudo rm -rf ~/stardex
+sudo rm -f /opt/sisu/GUI/sisu.jar
+sudo cp /tmp/upd/sisu.jar /opt/sisu/GUI/
+
+sudo tar xkfvz openjdk-11.0.1_linux-x64_bin.tar.gz --directory /usr/lib/jvm
+
+sudo rm -f /opt/sisu/GUI/stardexLogo.png
+sudo cp /tmp/upd/stardexLogo.png /opt/sisu/GUI/
+
+sudo rm -f ~/Desktop/sisu.desktop
+sudo cp /tmp/upd/sisu.desktop ~/Desktop/
+sudo chmod 777 ~/Desktop/sisu.desktop
+
+sleep 3
+rm -rf /tmp/upd
+echo Finish
+sudo reboot
+exit

@@ -65,6 +65,7 @@ import javafx.beans.property.BooleanProperty;
 import javafx.scene.control.TextField;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.*;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
@@ -534,13 +535,6 @@ public class SpringJavaConfig {
     @Scope("prototype")
     public ChartTaskFour chartTaskFour() {
         return new ChartTaskFour();
-    }
-
-    @Bean
-    @Qualifier("piesoRepairTask")
-    @Scope("prototype")
-    public PiezoRepairTask piezoRepairTask() {
-        return new PiezoRepairTask();
     }
 
     @Bean

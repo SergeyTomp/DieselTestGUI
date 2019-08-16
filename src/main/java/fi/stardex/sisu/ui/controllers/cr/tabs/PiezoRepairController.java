@@ -2,10 +2,13 @@ package fi.stardex.sisu.ui.controllers.cr.tabs;
 
 import eu.hansolo.medusa.Gauge;
 import fi.stardex.sisu.charts.PiezoRepairTask;
+import fi.stardex.sisu.connect.ModbusConnect;
 import fi.stardex.sisu.model.PiezoRepairModel;
 import fi.stardex.sisu.model.updateModels.PiezoRepairUpdateModel;
 import fi.stardex.sisu.registers.ModbusMap;
+import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
+import fi.stardex.sisu.ui.controllers.cr.TabSectionController;
 import fi.stardex.sisu.util.GaugeCreator;
 import fi.stardex.sisu.util.enums.VoltageRange;
 import fi.stardex.sisu.util.spinners.SpinnerManager;
@@ -13,7 +16,9 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -23,11 +28,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
-import org.springframework.beans.factory.annotation.Lookup;
-import org.springframework.beans.factory.annotation.Qualifier;
 
 import javax.annotation.PostConstruct;
-
 import java.util.Timer;
 
 import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.*;
@@ -59,6 +61,7 @@ public class PiezoRepairController {
     private PiezoRepairModel piezoRepairModel;
     private PiezoRepairUpdateModel piezoRepairUpdateModel;
     private ModbusRegisterProcessor ultimaModbusWriter;
+    private ModbusConnect ultimaModbusConnect;
     private Timeline pulseStartTimeLine;
     private Timeline progressTimeLine;
     private VoltageProgressBar adjustingTime;
@@ -66,6 +69,9 @@ public class PiezoRepairController {
     private boolean incorrectInput;
     private static final float ONE_AMPERE_MULTIPLY = 93.07f;
     private Gauge gauge;
+    private RegisterProvider ultimaRegisterProvider;
+    private TabSectionController tabSectionController;
+    private ObjectProperty<Boolean> isTabPiezoShowing = new SimpleObjectProperty<>();
 
     public void setPiezoRepairModel(PiezoRepairModel piezoRepairModel) {
         this.piezoRepairModel = piezoRepairModel;
@@ -73,23 +79,41 @@ public class PiezoRepairController {
     public void setPiezoRepairUpdateModel(PiezoRepairUpdateModel piezoRepairUpdateModel) {
         this.piezoRepairUpdateModel = piezoRepairUpdateModel;
     }
-
     public void setUltimaModbusWriter(ModbusRegisterProcessor ultimaModbusWriter) {
         this.ultimaModbusWriter = ultimaModbusWriter;
     }
-
-    @Lookup
-    @Qualifier("piesoRepairTask")
-    public PiezoRepairTask getPiezoRepairTask() {
-        return null;
+    public void setUltimaModbusConnect(ModbusConnect ultimaModbusConnect) {
+        this.ultimaModbusConnect = ultimaModbusConnect;
     }
+    public void setUltimaRegisterProvider(RegisterProvider ultimaRegisterProvider) {
+        this.ultimaRegisterProvider = ultimaRegisterProvider;
+    }
+
+    public void setTabSectionController(TabSectionController tabSectionController) {
+        this.tabSectionController = tabSectionController;
+    }
+
+    /**Two ways for data request running are possible:
+     *
+     * 1 - standard one is through Updater interface realised in PiezoRepairUpdateModel, standard request circle period is 500ms
+     *   - deactivate methods startTouchControl() and stopTouchControl() in isTabPiezoShowing() listener
+     *   - activate PiezoRepairUpdateModel via uncommenting of it's run() method content
+     *   - activate piezoRepairUpdateModel.touchLevelProperty() listener in setupListeners()
+     *   - deactivate touchLevel listener in setupListeners()
+     *
+     * 2 - special one through TimerTask interface realised in PiezoRepairTask, request circle period could be defined in Timer timer period parameter:
+     *   - activate methods startTouchControl() and stopTouchControl() in isTabPiezoShowing() listener
+     *   - set required period for request circle in startTouchControl() method
+     *   - deactivate PiezoRepairUpdateModel via commenting of it's run() method content
+     *   - deactivate piezoRepairUpdateModel.touchLevelProperty() listener in setupListeners()
+     *   - activate touchLevel listener in setupListeners()
+     * */
 
     @PostConstruct
     public void init() {
 
         startStopButtonStyleClass = startStopButton.getStyleClass();
         setupSpinners();
-        setupListeners();
         initToggleGroup();
         setupTimeLines();
         adjustingTime = new VoltageProgressBar(voltageAdjustment, adjustingText, outputValue);
@@ -101,6 +125,9 @@ public class PiezoRepairController {
         bulbImage.setImage(darkBulb);
         gauge = GaugeCreator.createPiezoGauge();
         gaugeStackPane.getChildren().add(gauge);
+        startStopButton.setDisable(true);
+        isTabPiezoShowing.bind(tabSectionController.getTabPiezoRepair().selectedProperty());
+        setupListeners();
     }
 
     private void setupTimeLines(){
@@ -153,13 +180,11 @@ public class PiezoRepairController {
                 startStopButtonStyleClass.add("stopButtonLight");
                 disableNodes(true, lowVoltageButton, highVoltageButton, voltageSpinner, currentSpinner);
                 front(range);
-//                startTouchControl();
             }
             else {
                 startStopButtonStyleClass.add("startButton");
                 disableNodes(false, lowVoltageButton, highVoltageButton, voltageSpinner, currentSpinner);
                 slump(range);
-//                stopTouchControl();
             }
             piezoRepairModel.startMeasureProperty().setValue(newValue);
         });
@@ -232,29 +257,40 @@ public class PiezoRepairController {
         currentSpinner.valueProperty().addListener((observable, oldValue, newValue) ->
                 piezoRepairModel.currentValueProperty().setValue(newValue));
 
-        piezoRepairUpdateModel.touchLevelProperty().addListener((observableValue, oldValue, newValue) -> {
+//        piezoRepairUpdateModel.touchLevelProperty().addListener((observableValue, oldValue, newValue) -> {
+//
+//
+//                gauge.setValue(newValue.doubleValue());
+//
+//                if (newValue.intValue() > 50) {
+//                    bulbImage.setImage(lightBulb);
+//                }else {
+//                    bulbImage.setImage(darkBulb);
+//                }
+//        });
 
-//            if (newValue != null) {
+        touchLevel.addListener((observable, oldValue, newValue) -> {
 
-                gauge.setValue(newValue.doubleValue());
-
-                if (newValue.intValue() > 50) {
-                    bulbImage.setImage(lightBulb);
-                }else {
-                    bulbImage.setImage(darkBulb);
-                }
-//            }
+            gauge.setValue(newValue.doubleValue());
+            if (newValue.intValue() > 50) {
+                bulbImage.setImage(lightBulb);
+            }else {
+                bulbImage.setImage(darkBulb);
+            }
         });
 
-//        touchLevel.addListener((observableValue, oldValue, newValue) -> {
+        ultimaModbusConnect.connectedProperty().addListener((observable, oldValue, newValue)  -> {
 
-//            if (newValue != null && newValue.intValue() > 50) {
-//                bulbImage.setImage(lightBulb);
-//            }else {
-//                bulbImage.setImage(darkBulb);
-//            }
-//        });
-//
+            startStopButton.setDisable(!newValue);
+            if(!newValue) startStopButton.setSelected(false);
+        });
+
+        isTabPiezoShowing.addListener((observableValue, oldValue, newValue) -> {
+
+            if (newValue) {
+                startTouchControl();
+            }else stopTouchControl();
+        });
     }
 
     private void switchRange(VoltageRange range) {
@@ -323,16 +359,19 @@ public class PiezoRepairController {
 
     private void startTouchControl() {
 
-        timer = new Timer();
-        PiezoRepairTask piezoRepairTask = getPiezoRepairTask();
-        piezoRepairTask.touchLevelProperty().addListener((observableValue, oldValue, newValue) -> touchLevel.setValue(newValue));
-        timer.schedule(piezoRepairTask, 0, 100);
+        timer = new Timer("piezoTouchControlThread",true);
+        PiezoRepairTask task = new PiezoRepairTask(ultimaRegisterProvider);
+        task.touchLevelProperty().addListener((observableValue, oldValue, newValue) -> {
+            if (newValue != null) { touchLevel.setValue(newValue); }
+        });
+        timer.schedule(task, 0, 100);
     }
 
     private void stopTouchControl(){
 
         timer.cancel();
         timer.purge();
+        touchLevel.setValue(0);
     }
 
     private class VoltageProgressBar {
@@ -351,13 +390,13 @@ public class PiezoRepairController {
             this.output = output;
         }
 
-        public void setTimeStep(int timeStep) {
+        void setTimeStep(int timeStep) {
             this.timeStep = timeStep;
         }
-        public void setInitialVoltage(double initialVoltage) {
+        void setInitialVoltage(double initialVoltage) {
             this.initialVoltage = initialVoltage;
         }
-        public void setVoltageStep(double voltageStep) {
+        void setVoltageStep(double voltageStep) {
             this.voltageStep = voltageStep;
         }
 
@@ -369,7 +408,7 @@ public class PiezoRepairController {
 //            progressBar.setVisible(true);     // возможно progressBar потом совсем убрать
         }
 
-        public int tick() {
+        int tick() {
 
             int time = Integer.valueOf(text.getText());
 
