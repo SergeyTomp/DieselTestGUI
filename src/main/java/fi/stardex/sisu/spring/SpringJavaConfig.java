@@ -1129,6 +1129,16 @@ public class SpringJavaConfig {
         return new UisTestNameService(injectorUisTestNameRepository);
     }
 
+    @Bean
+    public UisSettingsModel uisSettingsModel() {
+        return new UisSettingsModel();
+    }
+
+    @Bean
+    public UisInjectorSectionModel uisInjectorSectionModel() {
+        return new UisInjectorSectionModel();
+    }
+
 
 //    @Bean
 //    @Autowired

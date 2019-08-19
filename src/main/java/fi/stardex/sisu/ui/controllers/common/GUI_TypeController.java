@@ -39,11 +39,13 @@ public class GUI_TypeController {
 
     private Parent pumpSection;
 
-    private Parent uisSection;
-
     private Parent tabSection;
 
     private Parent tabSectionPumps;
+
+    private Parent uisTabSection;
+
+    private Parent injectorSectionUis;
 
     private GridPane mainSectionGridPane;
 
@@ -52,6 +54,8 @@ public class GUI_TypeController {
     private GridPane settingsGridPaneCR;
 
     private GridPane settingsGridPanePumps;
+
+    private GridPane uisSettingsGridPane;
 
     private Parent activeMainSection;
 
@@ -62,6 +66,8 @@ public class GUI_TypeController {
     private Parent settings;
 
     private Parent connection;
+
+    private Parent uisSettings;
 
     private DimasGUIEditionState dimasGUIEditionState;
 
@@ -74,10 +80,6 @@ public class GUI_TypeController {
     private MainSectionModel mainSectionModel;
 
     private InjectorSectionPwrState injectorSectionPwrState;
-
-    public ComboBox<GUIType> getGui_typeComboBox() {
-        return gui_typeComboBox;
-    }
 
     public void setManufacturerPumpModel(ManufacturerPumpModel manufacturerPumpModel) {
         this.manufacturerPumpModel = manufacturerPumpModel;
@@ -94,13 +96,8 @@ public class GUI_TypeController {
     public void setMainSectionUIS(Parent mainSectionUIS) {
         this.mainSectionUIS = mainSectionUIS;
     }
-
-    public void setUisSection(Parent uisSection) {
-        this.uisSection = uisSection;
-    }
-
-    public void setTabSection(Parent tabSection) {
-        this.tabSection = tabSection;
+    public void setInjectorSectionUis(Parent injectorSectionUis) {
+        this.injectorSectionUis = injectorSectionUis;
     }
     public void setMainSectionGridPane(GridPane mainSectionGridPane) {
         this.mainSectionGridPane = mainSectionGridPane;
@@ -108,23 +105,11 @@ public class GUI_TypeController {
     public void setAdditionalSectionGridPane(GridPane additionalSectionGridPane) {
         this.additionalSectionGridPane = additionalSectionGridPane;
     }
-    public void setSettingsGridPaneCR(GridPane settingsGridPaneCR) {
-        this.settingsGridPaneCR = settingsGridPaneCR;
-    }
-    public void setSettingsGridPanePumps(GridPane settingsGridPanePumps) {
-        this.settingsGridPanePumps = settingsGridPanePumps;
-    }
     public void setMainSectionPumps(Parent mainSectionPumps) {
         this.mainSectionPumps = mainSectionPumps;
     }
     public void setPumpSection(Parent pumpSection) {
         this.pumpSection = pumpSection;
-    }
-    public void setTabSectionPumps(Parent tabSectionPumps) {
-        this.tabSectionPumps = tabSectionPumps;
-    }
-    public void setSettings(Parent settings) {
-        this.settings = settings;
     }
     public void setConnection(Parent connection) {
         this.connection = connection;
@@ -138,13 +123,35 @@ public class GUI_TypeController {
     public void setGui_typeModel(GUI_TypeModel gui_typeModel) {
         this.gui_typeModel = gui_typeModel;
     }
-
     public void setMainSectionModel(MainSectionModel mainSectionModel) {
         this.mainSectionModel = mainSectionModel;
     }
-
     public void setInjectorSectionPwrState(InjectorSectionPwrState injectorSectionPwrState) {
         this.injectorSectionPwrState = injectorSectionPwrState;
+    }
+    public void setTabSection(Parent tabSection) {
+        this.tabSection = tabSection;
+    }
+    public void setTabSectionPumps(Parent tabSectionPumps) {
+        this.tabSectionPumps = tabSectionPumps;
+    }
+    public void setUisTabSection(Parent uisTabSection) {
+        this.uisTabSection = uisTabSection;
+    }
+    public void setSettings(Parent settings) {
+        this.settings = settings;
+    }
+    public void setUisSettings(Parent uisSettings) {
+        this.uisSettings = uisSettings;
+    }
+    public void setSettingsGridPaneCR(GridPane settingsGridPaneCR) {
+        this.settingsGridPaneCR = settingsGridPaneCR;
+    }
+    public void setSettingsGridPanePumps(GridPane settingsGridPanePumps) {
+        this.settingsGridPanePumps = settingsGridPanePumps;
+    }
+    public void setUisSettingsGridPane(GridPane uisSettingsGridPane) {
+        this.uisSettingsGridPane = uisSettingsGridPane;
     }
 
     @PostConstruct
@@ -187,41 +194,47 @@ public class GUI_TypeController {
     private void changeToCRInj() {
 
         clearSections();
+        settingsGridPaneCR.getChildren().clear();
 
         mainSectionGridPane.add(mainSection, 0, 1);
         additionalSectionGridPane.add(crSection, 0, 1);
         additionalSectionGridPane.add(tabSection, 0, 2);
 
-        if (settingsGridPaneCR.getChildren().isEmpty()) {
-            settingsGridPaneCR.add(connection, 0, 0);
-            settingsGridPaneCR.add(settings, 1, 0);
-        }
+        settingsGridPaneCR.add(connection, 0, 0);
+        settingsGridPaneCR.add(settings, 1, 0);
 
-        settings.getChildrenUnmodifiable().stream().filter(node -> node.getId().equals("isDIMASCheckBox")).forEach(node -> node.setVisible(true));
+        settings.getChildrenUnmodifiable()
+                .stream()
+                .filter(node -> node.getId() != null)
+                .filter(node -> node.getId().equals("isDIMASCheckBox"))
+                .findAny()
+                .ifPresent(c -> c.setVisible(true));
 
         activeMainSection = mainSection;
         activeChangeableSection = crSection;
         activeTabSection = tabSection;
 
         logger.info("Changed to CrInj");
-
     }
 
     private void changeToCRPump() {
 
         clearSections();
+        settingsGridPanePumps.getChildren().clear();
 
         mainSectionGridPane.add(mainSectionPumps, 0, 1);
         additionalSectionGridPane.add(pumpSection, 0, 1);
         additionalSectionGridPane.add(tabSectionPumps, 0, 2);
 
-        if (settingsGridPanePumps.getChildren().isEmpty()) {
-            settingsGridPanePumps.add(connection, 0, 0);
-            settingsGridPanePumps.add(settings, 1, 0);
-        }
+        settingsGridPanePumps.add(connection, 0, 0);
+        settingsGridPanePumps.add(settings, 1, 0);
 
-        settings.getChildrenUnmodifiable().stream().filter(node -> node.getId().equals("isDIMASCheckBox")).forEach(node -> node.setVisible(false));
-
+        settings.getChildrenUnmodifiable()
+                .stream()
+                .filter(node -> node.getId() != null)
+                .filter(node -> node.getId().equals("isDIMASCheckBox"))
+                .findAny()
+                .ifPresent(c -> c.setVisible(false));
 
         activeMainSection = mainSectionPumps;
         activeChangeableSection = pumpSection;
@@ -230,7 +243,6 @@ public class GUI_TypeController {
         manufacturerPumpModel.initManufacturerPumpList();
 
         logger.info("Changed to CrPump");
-
     }
 
     private void changeToHEUI() {
@@ -241,23 +253,26 @@ public class GUI_TypeController {
     private void changeToUIS() {
 
         clearSections();
+        uisSettingsGridPane.getChildren().clear();
 
         mainSectionGridPane.add(mainSectionUIS, 0, 1);
+        additionalSectionGridPane.add(injectorSectionUis, 0, 1);
+        additionalSectionGridPane.add(uisTabSection, 0, 2);
 
-        additionalSectionGridPane.add(uisSection, 0, 1);
+        uisSettingsGridPane.add(connection, 0, 0);
+        uisSettingsGridPane.add(uisSettings, 1, 0);
+
         activeMainSection = mainSectionUIS;
-        activeChangeableSection = uisSection;
-        activeTabSection = null;
+        activeChangeableSection = injectorSectionUis;
+        activeTabSection = uisTabSection;
 
         logger.info("Changed to UIS");
-
     }
 
     private void clearSections() {
 
         mainSectionGridPane.getChildren().remove(activeMainSection);
         additionalSectionGridPane.getChildren().removeAll(activeChangeableSection, activeTabSection);
-
     }
 
     private boolean isStarted() {

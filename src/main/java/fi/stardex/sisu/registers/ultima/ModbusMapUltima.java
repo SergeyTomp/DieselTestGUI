@@ -151,6 +151,24 @@ public enum ModbusMapUltima implements ModbusMap {
     // переключение типа управления импульсами, 0 - CR, 1 - UIS
     UIS_to_CR_pulseControlSwitch(REGISTER_HOLDING, 157, 1, false),
 
+    // регистры UIS
+    Angle_1(REGISTER_HOLDING, 153, 1, false),               //Угловой слот 1: Угол запуска в градусах
+    Angle_2(REGISTER_HOLDING, 155, 1, false),               //Угловой слот 2: Угол запуска в градусах
+    AngleInjector_1(REGISTER_HOLDING, 154, 1, false),       //Угловой слот 1: Номер форсунки
+    AngleInjector_2(REGISTER_HOLDING, 156, 1, false),       //Угловой слот 2: Номер форсунки
+    BipModeInterval_1(REGISTER_HOLDING, 10, 1, false),      //Время фазы BIP канала 1 (в мкс)
+    BipModeDuty_1(REGISTER_HOLDING, 11, 1, false),          //Скважность BIP канала 1
+    SecondSignalInterval(REGISTER_HOLDING, 12, 1, false),   //Время окончания фазы удерджания для второго сигнала (в мкс)
+    BipModeInterval_2(REGISTER_HOLDING, 30, 1, false),      //Время фазы BIP канала 2 (в мкс)
+    BipModeDuty_2(REGISTER_HOLDING, 31, 1, false),          //Скважность BIP канала 2
+    MaxPressureRegistered(REGISTER_INPUT, 4124, 1, true),   //Максимальное зарегестрированное значение  давления
+    HpiModeOn(DISCRETE_COIL, 10, 1, false),                 //Форсунка HPI флаг
+    BipModeOn_1(DISCRETE_COIL, 4, 1, false),                //Форсунка HPI флаг
+    BipModeOn_2(DISCRETE_COIL, 24, 1, false),               //Форсунка HPI флаг
+    DoubleSignalModeOn_1(DISCRETE_COIL, 5, 1, false),       //Форсунка HPI флаг
+    DoubleSignalModeOn_2(DISCRETE_COIL, 25, 1, false),      //Форсунка HPI флаг
+    FirstPulseFlag(DISCRETE_COIL, 44, 1, false),            //Флаг первого импульса в регулярной последовательности
+
     // Отображение версий прошивок
     Version_controllable_1(REGISTER_HOLDING, 116, 1, true),
     Version_controllable_2(REGISTER_HOLDING, 117, 1, true),

@@ -58,7 +58,7 @@ public class CustomManufacturerUisDialogController {
     @PostConstruct
     public void init() {
 
-        mainSectionUisModel.customProducerProperty().addListener((observableValue, oldValue, newValue) -> {
+        mainSectionUisModel.customProducerOperationProperty().addListener((observableValue, oldValue, newValue) -> {
 
             if(newValue == null) return;
             if (guiTypeModel.guiTypeProperty().get() == UIS) {
@@ -68,10 +68,10 @@ public class CustomManufacturerUisDialogController {
                     dialogStage.setScene(new Scene(dialogViev));
                     dialogStage.setResizable(false);
                     dialogStage.initModality(Modality.APPLICATION_MODAL);
-                    dialogStage.setTitle(mainSectionUisModel.customProducerProperty().get().getTitle() + "manufacturer");
+                    dialogStage.setTitle(mainSectionUisModel.customProducerOperationProperty().get().getTitle() + "manufacturer");
                     dialogStage.setOnCloseRequest(event -> customProducerDialogModel.cancelProperty().setValue(new Object()));
                 }
-                switch (mainSectionUisModel.customProducerProperty().get()) {
+                switch (mainSectionUisModel.customProducerOperationProperty().get()) {
                     case NEW:
                         setNew();
                         break;
@@ -91,7 +91,7 @@ public class CustomManufacturerUisDialogController {
 
         applyBtn.setOnMouseClicked(mouseEvent -> {
 
-            switch (mainSectionUisModel.customProducerProperty().get()) {
+            switch (mainSectionUisModel.customProducerOperationProperty().get()) {
                 case NEW:
                     create();
                     break;

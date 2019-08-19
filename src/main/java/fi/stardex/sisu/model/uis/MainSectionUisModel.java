@@ -17,17 +17,17 @@ public class MainSectionUisModel {
 
     // manufacturer listView part
     private final ObservableList<Producer> producerObservableList = FXCollections.observableArrayList();
-    private final ObjectProperty<Producer> producerObjectProperty = new SimpleObjectProperty<>();
-    private ObjectProperty<Operation> customProducer = new SimpleObjectProperty<>();
+    private final ObjectProperty<Producer> producerProperty = new SimpleObjectProperty<>();
+    private ObjectProperty<Operation> customProducerOperation = new SimpleObjectProperty<>();
 
-    // model listView part
-    private ObjectProperty<Model> model = new SimpleObjectProperty<>();
-    private ObjectProperty<Operation> customModel = new SimpleObjectProperty<>();
+    // modelProperty listView part
+    private ObjectProperty<Model> modelProperty = new SimpleObjectProperty<>();
+    private ObjectProperty<Operation> customModelOperation = new SimpleObjectProperty<>();
     private boolean modelIsChanging;
 
     // test listView part
-    private final ObjectProperty<Test> modelTestProperty = new SimpleObjectProperty<>();
-    private ObjectProperty<Operation> customTest = new SimpleObjectProperty<>();
+    private final ObjectProperty<Test> testProperty = new SimpleObjectProperty<>();
+    private ObjectProperty<Operation> customTestOperation = new SimpleObjectProperty<>();
     private ObservableList<Test> testObservableList = FXCollections.observableArrayList();
     private boolean testIsChanging;
 
@@ -46,16 +46,16 @@ public class MainSectionUisModel {
         return producerObservableList;
     }
     public ObjectProperty<Producer> manufacturerObjectProperty() {
-        return producerObjectProperty;
+        return producerProperty;
     }
-    public ObjectProperty<Operation> customProducerProperty() {
-        return customProducer;
+    public ObjectProperty<Operation> customProducerOperationProperty() {
+        return customProducerOperation;
     }
-    public ObjectProperty<Operation> customModelProperty() {
-        return customModel;
+    public ObjectProperty<Operation> customModelOperationProperty() {
+        return customModelOperation;
     }
-    public ObjectProperty<Operation> customTestProperty() {
-        return customTest;
+    public ObjectProperty<Operation> customTestOperationProperty() {
+        return customTestOperation;
     }
     public BooleanProperty startButtonProperty() {
         return startButton;
@@ -63,11 +63,11 @@ public class MainSectionUisModel {
     public ObjectProperty<Tests.TestType> testTypeProperty() {
         return testType;
     }
-    public ObjectProperty<Model> modelProperty() {
-        return model;
+    public ObjectProperty<Model> modelPropertyProperty() {
+        return modelProperty;
     }
     public ObjectProperty<Test> injectorTestProperty() {
-        return modelTestProperty;
+        return testProperty;
     }
     public boolean isModelIsChanging() {
         return modelIsChanging;

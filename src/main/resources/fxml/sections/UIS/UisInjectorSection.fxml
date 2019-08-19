@@ -1,0 +1,251 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<StackPane fx:id="rootStackPane" alignment="CENTER_RIGHT" maxHeight="-Infinity" minHeight="260.0" minWidth="910.0" prefHeight="260.0" stylesheets="@../../../css/Styling.css" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.uis.UisInjectorSectionController">
+    <children>
+        <GridPane fx:id="rootGridPane" alignment="TOP_CENTER" styleClass="pane" StackPane.alignment="CENTER_RIGHT">
+            <children>
+            <VBox>
+               <children>
+                  <TextField fx:id="typeTextField" alignment="CENTER" maxHeight="-Infinity" styleClass="modelTextField" stylesheets="@../../../css/Styling.css">
+                     <VBox.margin>
+                        <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
+                     </VBox.margin>
+                  </TextField>
+                      <GridPane>
+                          <columnConstraints>
+                              <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" percentWidth="50.0" prefWidth="70.0" />
+                              <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" percentWidth="50.0" prefWidth="100.0" />
+                          </columnConstraints>
+                          <rowConstraints>
+                              <RowConstraints maxHeight="-Infinity" prefHeight="10.0" />
+                              <RowConstraints maxHeight="-Infinity" prefHeight="40.0" vgrow="SOMETIMES" />
+                              <RowConstraints maxHeight="-Infinity" prefHeight="40.0" vgrow="SOMETIMES" />
+                          </rowConstraints>
+                          <children>
+                              <Label fx:id="widthLabel" text="Width" GridPane.rowIndex="1" />
+                              <Label fx:id="angle1Label" text="Angle_1" GridPane.rowIndex="2" />
+                              <StackPane fx:id="widthStackPane" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                  <Spinner fx:id="widthSpinner" editable="true" />
+                              </StackPane>
+                              <StackPane fx:id="angle1StackPane" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                  <Spinner fx:id="angle1Spinner" editable="true" />
+                              </StackPane>
+                          </children>
+                      </GridPane>
+                  <GridPane>
+                    <columnConstraints>
+                      <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                      <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                      <RowConstraints maxHeight="-Infinity" prefHeight="40.0" vgrow="SOMETIMES" />
+                      <RowConstraints maxHeight="-Infinity" prefHeight="40.0" vgrow="SOMETIMES" />
+                      <RowConstraints maxHeight="-Infinity" prefHeight="40.0" vgrow="SOMETIMES" />
+                        <RowConstraints prefHeight="10.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                     <children>
+                        <StackPane fx:id="topLabelStackPane">
+                           <children>
+                              <Label fx:id="pressureLabel" text="Pressure" visible="false" />
+                              <Label fx:id="offsetLabel" text="Pressurisation" visible="false" />
+                              <Label fx:id="width2Label" text="Width_2" visible="false" />
+                           </children>
+                        </StackPane>
+                        <StackPane fx:id="midLabelStackPane" GridPane.rowIndex="1">
+                           <children>
+                              <Label fx:id="angle2Label" text="Angle_2" visible="false" />
+                              <Label fx:id="currentLabel" text="Ampere" visible="false" />
+                           </children>
+                        </StackPane>
+                        <StackPane fx:id="lowLabelStackPane" GridPane.rowIndex="2">
+                           <children>
+                              <Label fx:id="dutyLabel" text="Percent" visible="false" />
+                           </children>
+                        </StackPane>
+                        <StackPane fx:id="topSpinnerStackPane" GridPane.columnIndex="1">
+                           <children>
+                              <Spinner fx:id="pressureSpinner" visible="false" />
+                              <Spinner fx:id="width2Spinner" editable="true" visible="false" />
+                              <Spinner fx:id="offsetSpinner" visible="false" />
+                           </children>
+                        </StackPane>
+                        <StackPane fx:id="midSpinnerStackPane" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                           <children>
+                              <Spinner fx:id="currentSpinner" visible="false" />
+                              <Spinner fx:id="angle2Spinner" editable="true" visible="false" />
+                           </children>
+                        </StackPane>
+                        <StackPane fx:id="lowSpinnerStackPane" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                           <children>
+                              <Spinner fx:id="dutySpinner" visible="false" />
+                           </children>
+                        </StackPane>
+                     </children>
+                  </GridPane>
+               </children>
+            </VBox>
+                <GridPane GridPane.columnIndex="1">
+                    <columnConstraints>
+                        <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="10.0" percentWidth="100.0" />
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints minHeight="10.0" percentHeight="75.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                  <RowConstraints minHeight="10.0" percentHeight="25.0" prefHeight="100.0" vgrow="SOMETIMES" />
+                    </rowConstraints>
+                    <children>
+                        <GridPane maxWidth="1000.0" GridPane.rowIndex="1">
+                            <columnConstraints>
+                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="12.5" prefWidth="100.0" />
+                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="12.5" prefWidth="100.0" />
+                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="12.5" prefWidth="100.0" />
+                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="12.5" prefWidth="100.0" />
+                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="12.5" prefWidth="100.0" />
+                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="12.5" prefWidth="100.0" />
+                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="12.5" prefWidth="100.0" />
+                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="12.5" prefWidth="100.0" />
+                            </columnConstraints>
+                            <rowConstraints>
+                                <RowConstraints minHeight="10.0" percentHeight="100" prefHeight="100.0" vgrow="SOMETIMES" />
+                            </rowConstraints>
+                            <children>
+                                <StackPane fx:id="led1StackPane" prefWidth="80.0" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                           <children>
+                              <ToggleButton fx:id="led1ToggleButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="65.0" prefWidth="65.0" styleClass="led" stylesheets="@../../../css/Styling.css" text="1">
+                                 <StackPane.margin>
+                                    <Insets />
+                                 </StackPane.margin></ToggleButton>
+                           </children></StackPane>
+                                <StackPane fx:id="led2StackPane" GridPane.columnIndex="1">
+                           <children>
+                              <ToggleButton fx:id="led2ToggleButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="65.0" prefWidth="65.0" styleClass="led" stylesheets="@../../../css/Styling.css" text="2">
+                                 <StackPane.margin>
+                                    <Insets />
+                                 </StackPane.margin></ToggleButton>
+                           </children></StackPane>
+                                <StackPane fx:id="led3StackPane" GridPane.columnIndex="2">
+                           <children>
+                              <ToggleButton fx:id="led3ToggleButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="65.0" prefWidth="65.0" styleClass="led" stylesheets="@../../../css/Styling.css" text="3">
+                                 <StackPane.margin>
+                                    <Insets left="10.0" right="10.0" />
+                                 </StackPane.margin></ToggleButton>
+                           </children></StackPane>
+                                <StackPane fx:id="led4StackPane" GridPane.columnIndex="3">
+                           <children>
+                              <ToggleButton fx:id="led4ToggleButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="65.0" prefWidth="65.0" styleClass="led" stylesheets="@../../../css/Styling.css" text="4">
+                                 <StackPane.margin>
+                                    <Insets left="10.0" right="10.0" />
+                                 </StackPane.margin></ToggleButton>
+                           </children></StackPane>
+                                <StackPane fx:id="led5StackPane" GridPane.columnIndex="4">
+                           <children>
+                              <ToggleButton fx:id="led5ToggleButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="65.0" prefWidth="65.0" styleClass="led" stylesheets="@../../../css/Styling.css" text="5">
+                                 <StackPane.margin>
+                                    <Insets left="10.0" right="10.0" />
+                                 </StackPane.margin></ToggleButton>
+                           </children></StackPane>
+                                <StackPane fx:id="led6StackPane" GridPane.columnIndex="5">
+                           <children>
+                              <ToggleButton fx:id="led6ToggleButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="65.0" prefWidth="65.0" styleClass="led" stylesheets="@../../../css/Styling.css" text="6">
+                                 <StackPane.margin>
+                                    <Insets left="10.0" right="10.0" />
+                                 </StackPane.margin></ToggleButton>
+                           </children></StackPane>
+                                <StackPane fx:id="led7StackPane" GridPane.columnIndex="6">
+                           <children>
+                              <ToggleButton fx:id="led7ToggleButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="65.0" prefWidth="65.0" styleClass="led" stylesheets="@../../../css/Styling.css" text="7">
+                                 <StackPane.margin>
+                                    <Insets left="10.0" right="10.0" />
+                                 </StackPane.margin></ToggleButton>
+                           </children></StackPane>
+                                <StackPane fx:id="led8StackPane" GridPane.columnIndex="7">
+                           <children>
+                              <ToggleButton fx:id="led8ToggleButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="65.0" prefWidth="65.0" styleClass="led" stylesheets="@../../../css/Styling.css" text="8">
+                                 <StackPane.margin>
+                                    <Insets left="10.0" right="10.0" />
+                                 </StackPane.margin></ToggleButton>
+                           </children></StackPane>
+                            </children>
+                        </GridPane>
+                        <GridPane alignment="TOP_RIGHT" prefHeight="172.0" prefWidth="644.0">
+                            <columnConstraints>
+                                <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" />
+                                <ColumnConstraints fillWidth="false" halignment="RIGHT" hgrow="ALWAYS" maxWidth="200.0" />
+                                <ColumnConstraints fillWidth="false" halignment="RIGHT" hgrow="ALWAYS" maxWidth="67.0" minWidth="42.0" prefWidth="61.0" />
+                            </columnConstraints>
+                            <rowConstraints>
+                                <RowConstraints valignment="CENTER" vgrow="SOMETIMES" />
+                        <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="8.0" valignment="CENTER" vgrow="SOMETIMES" />
+                        <RowConstraints />
+                            </rowConstraints>
+                            <children>
+                                <GridPane alignment="CENTER" GridPane.columnIndex="0">
+                                    <columnConstraints>
+                                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" />
+                                        <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" />
+                                    </columnConstraints>
+                                    <rowConstraints>
+                                        <RowConstraints valignment="CENTER" vgrow="ALWAYS" />
+                                    </rowConstraints>
+                                    <children>
+                                        <StackPane fx:id="bipStackPane">
+                                            <GridPane.margin>
+                                                <Insets />
+                                            </GridPane.margin>
+                                 <children>
+                                              <Button fx:id="saveBipButton" disable="true" mnemonicParsing="false" prefHeight="25.0" prefWidth="65.0" text="Save" StackPane.alignment="BOTTOM_CENTER" />
+                                 </children>
+                                        </StackPane>
+                                        <StackPane fx:id="delayStackPane" GridPane.columnIndex="1">
+                                            <GridPane.margin>
+                                                <Insets />
+                                            </GridPane.margin>
+                                 <children>
+                                              <Button fx:id="saveDelayButton" disable="true" mnemonicParsing="false" prefHeight="25.0" prefWidth="65.0" text="Save" StackPane.alignment="BOTTOM_CENTER" />
+                                 </children>
+                                        </StackPane>
+                                    </children>
+                                </GridPane>
+                                <!--LCD-->
+                                <StackPane fx:id="lcdStackPane" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.hgrow="NEVER" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                           <GridPane.margin>
+                              <Insets />
+                           </GridPane.margin></StackPane>
+                                <!--InjectorSwitch-->
+                                <ToggleButton fx:id="regulatorToggleButton" minHeight="90.0" minWidth="50.0" prefWidth="50.0" styleClass="switcher" stylesheets="@../../../css/Styling.css" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS" GridPane.rowSpan="2" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                           <GridPane.margin>
+                              <Insets bottom="2.0" left="2.0" right="10.0" top="2.0" />
+                           </GridPane.margin></ToggleButton>
+                        <ProgressBar maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="8.0" progress="0.0" visible="false" GridPane.columnSpan="3" GridPane.rowIndex="1">
+                           <padding>
+                              <Insets left="10.0" right="10.0" />
+                           </padding>
+                        </ProgressBar>
+
+                            </children>
+                        </GridPane>
+                    </children>
+                </GridPane>
+            </children>
+            <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="200.0" prefWidth="300.0" />
+                <ColumnConstraints hgrow="SOMETIMES" />
+            </columnConstraints>
+            <rowConstraints>
+                <RowConstraints percentHeight="100.0" valignment="CENTER" vgrow="ALWAYS" />
+            </rowConstraints>
+        </GridPane>
+    </children>
+</StackPane>

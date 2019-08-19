@@ -50,10 +50,13 @@ import fi.stardex.sisu.ui.controllers.common.RootLayoutController;
 import fi.stardex.sisu.model.updateModels.TachometerUltimaUpdateModel;
 import fi.stardex.sisu.model.updateModels.TestBenchSectionUpdateModel;
 import fi.stardex.sisu.ui.controllers.uis.MainSectionUisController;
+import fi.stardex.sisu.ui.controllers.uis.UisInjectorSectionController;
+import fi.stardex.sisu.ui.controllers.uis.UisSettingsController;
 import fi.stardex.sisu.ui.controllers.uis.dialogs.CustomInjectorUisDialogController;
 import fi.stardex.sisu.ui.controllers.uis.dialogs.CustomManufacturerUisDialogController;
 import fi.stardex.sisu.ui.controllers.uis.dialogs.CustomTestUisDialogController;
 import fi.stardex.sisu.ui.controllers.uis.dialogs.CustomVapUisDialogController;
+import fi.stardex.sisu.ui.controllers.uis.tabs.UisTabSectionController;
 import fi.stardex.sisu.util.DelayCalculator;
 import fi.stardex.sisu.util.enums.BeakerType;
 import fi.stardex.sisu.util.i18n.I18N;
@@ -115,16 +118,17 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                  DimasGUIEditionState dimasGUIEditionState,
                                                  ViewHolder mainSectionPumps,
                                                  ViewHolder mainSectionUIS,
-                                                 ViewHolder uisSection,
                                                  ViewHolder pumpHighPressureSection,
                                                  ViewHolder pumpTabSection,
                                                  ViewHolder settings,
                                                  ViewHolder connection,
+                                                 ViewHolder uisInjectorSection,
                                                  ManufacturerPumpModel manufacturerPumpModel,
                                                  PumpsStartButtonState pumpsStartButtonState,
                                                  GUI_TypeModel gui_typeModel,
                                                  MainSectionModel mainSectionModel,
-                                                 InjectorSectionPwrState injectorSectionPwrState) {
+                                                 InjectorSectionPwrState injectorSectionPwrState,
+                                                 UisTabSectionController uisTabSectionController) {
         GUI_TypeController gui_typeController = rootLayoutController.getGui_typeController();
         gui_typeController.setRootPreferences(rootPreferences);
         gui_typeController.setMainSection(mainSection().getView());
@@ -146,7 +150,10 @@ public class JavaFXSpringConfigure extends ViewLoader{
         gui_typeController.setMainSectionModel(mainSectionModel);
         gui_typeController.setInjectorSectionPwrState(injectorSectionPwrState);
         gui_typeController.setMainSectionUIS(mainSectionUIS.getView());
-        gui_typeController.setUisSection(uisSection.getView());
+        gui_typeController.setInjectorSectionUis(uisInjectorSection.getView());
+        gui_typeController.setUisTabSection(uisTabSection().getView());
+        gui_typeController.setUisSettings(uisSettings().getView());
+        gui_typeController.setUisSettingsGridPane(uisTabSectionController.getSettingsGridPane());
         return gui_typeController;
     }
 
@@ -1320,5 +1327,51 @@ public class JavaFXSpringConfigure extends ViewLoader{
         customVapUisDialogController.setNewEditVOAPDialog(customVapUisDialog().getView());
         customVapUisDialogController.setUisVapService(uisVapService);
         return customVapUisDialogController;
+    }
+
+    @Bean
+    public ViewHolder uisInjectorSection() {
+        return loadView("/fxml/sections/UIS/UisInjectorSection.fxml");
+    }
+
+    @Bean
+    @Autowired
+    public UisInjectorSectionController uisInjectorSectionController(MainSectionUisModel mainSectionUisModel,
+                                                                     UisInjectorSectionModel uisInjectorSectionModel) {
+        UisInjectorSectionController uisInjectorSectionController = (UisInjectorSectionController)uisInjectorSection().getController();
+        uisInjectorSectionController.setMainSectionUisModel(mainSectionUisModel);
+        uisInjectorSectionController.setUisInjectorSectionModel(uisInjectorSectionModel);
+        return uisInjectorSectionController;
+    }
+
+    @Bean
+    public ViewHolder uisSettings() {
+        return loadView("/fxml/sections/UIS/UisSettings.fxml");
+    }
+
+    @Bean
+    @Autowired
+    public UisSettingsController uisSettingsController(Preferences rootPrefs,
+                                                       I18N i18N,
+                                                       UisSettingsModel uisSettingsModel) {
+        UisSettingsController uisSettingsController = (UisSettingsController) uisSettings().getController();
+        uisSettingsController.setI18N(i18N);
+        uisSettingsController.setRootPrefs(rootPrefs);
+        uisSettingsController.setUisSettingsModel(uisSettingsModel);
+        return uisSettingsController;
+    }
+
+
+    @Bean
+    public ViewHolder uisTabSection() {
+        return loadView("/fxml/sections/UIS/UisTabSection.fxml");
+    }
+
+    @Bean
+    @Autowired
+    public UisTabSectionController uisTabSectionController(I18N i18N) {
+        UisTabSectionController uisTabSectionController = (UisTabSectionController)uisTabSection().getController();
+        uisTabSectionController.setI18N(i18N);
+        return uisTabSectionController;
     }
 }

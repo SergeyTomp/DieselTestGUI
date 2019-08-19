@@ -95,7 +95,7 @@ public class CustomTestUisDialogController {
     @PostConstruct
     public void init() {
 
-        mainSectionUisModel.customTestProperty().addListener((observableValue, oldValue, newValue) -> {
+        mainSectionUisModel.customTestOperationProperty().addListener((observableValue, oldValue, newValue) -> {
 
             if(newValue == null) return;
             if (guiTypeModel.guiTypeProperty().get() == UIS) {
@@ -105,7 +105,7 @@ public class CustomTestUisDialogController {
                     dialogStage.setScene(new Scene(dialogView));
                     dialogStage.setResizable(false);
                     dialogStage.initModality(Modality.APPLICATION_MODAL);
-                    dialogStage.setTitle(mainSectionUisModel.customTestProperty().get().getTitle() + " test");
+                    dialogStage.setTitle(mainSectionUisModel.customTestOperationProperty().get().getTitle() + " test");
                     dialogStage.setOnCloseRequest(event -> customTestDialogModel.cancelProperty().setValue(new Object()));
                 }
                 setLabels();
@@ -115,7 +115,7 @@ public class CustomTestUisDialogController {
 
         saveBtn.setOnMouseClicked(event -> {
 
-            switch (mainSectionUisModel.customTestProperty().get()) {
+            switch (mainSectionUisModel.customTestOperationProperty().get()) {
 
                 case NEW:
                     create();
@@ -189,7 +189,7 @@ public class CustomTestUisDialogController {
         if(!isDataComplete())return;
 
         InjectorUisTest test = new InjectorUisTest(
-                (InjectorUIS) mainSectionUisModel.modelProperty().get(),
+                (InjectorUIS) mainSectionUisModel.modelPropertyProperty().get(),
                 testComboBox.getSelectionModel().getSelectedItem(),
                 getInteger(rpmTF),
                 getInteger(barTF),
@@ -253,8 +253,8 @@ public class CustomTestUisDialogController {
     private void setLabels() {
 
         saveBtn.setDisable(true);
-        InjectorSubType injectorSubType = mainSectionUisModel.modelProperty().get().getVAP().getInjectorSubType();
-        Operation operation = mainSectionUisModel.customTestProperty().get();
+        InjectorSubType injectorSubType = mainSectionUisModel.modelPropertyProperty().get().getVAP().getInjectorSubType();
+        Operation operation = mainSectionUisModel.customTestOperationProperty().get();
         disableNodes(false);
         selectFields(injectorSubType);
 
@@ -266,7 +266,7 @@ public class CustomTestUisDialogController {
                     .filter(testName -> (!testName.getName().equals("BIP test")) || (injectorSubType == SINGLE_COIL))
                     .collect(Collectors.toList()));
 
-            List<InjectorUisTest> injectorTests = uisTestService.findAllByInjector(mainSectionUisModel.modelProperty().get());
+            List<InjectorUisTest> injectorTests = uisTestService.findAllByInjector(mainSectionUisModel.modelPropertyProperty().get());
 
             if (injectorTests != null) {
                 injectorTests.forEach(injectorTest -> testComboBox.getItems().remove(injectorTest.getTestName())); }

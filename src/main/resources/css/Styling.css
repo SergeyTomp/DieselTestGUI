@@ -458,6 +458,68 @@ label
 }
 
 /***************
+*quadLed
+****************/
+.quadLed {
+
+    -textFont-color: #ffff66;
+    -fx-font-size: 12pt;
+    -fx-font-weight: 300;
+    -fx-font-family: "Arial";
+    -fx-text-fill: -textFont-color;
+
+    -fx-background-image: url("../img/quadLed-off.png");
+    -fx-background-size: stretch;
+    -fx-background-color: transparent;
+    -fx-background-repeat: no-repeat;
+    -fx-opacity: 0.8;
+}
+
+.quadLed:hover{
+    -fx-opacity: 1;
+}
+
+.quadLed:disabled{
+    -fx-background-image: url("../img/quadLed-disable.png");
+    -fx-background-size: stretch;
+    -fx-opacity: 1;
+}
+
+/*.quadLed:focused{*/
+/*-fx-opacity: 1;*/
+/*}*/
+
+.quadLed .quadLedBlink-on{
+    -fx-background-image: url("../img/quadLed-on.png");
+    -fx-background-size: stretch;
+    -fx-opacity: 1;
+}
+
+.quadLedBlink-on{
+    -fx-background-image: url("../img/quadLed-on.png");
+    -fx-background-size: stretch;
+    -fx-opacity: 1;
+}
+
+.quadLedBlink-on:disabled{
+    -fx-background-image: url("../img/quadLed-on.png");
+    -fx-background-size: stretch;
+    -fx-opacity: 1;
+}
+
+.quadLedBlink-off{
+    -fx-background-image: url("../img/quadLed-off.png");
+    -fx-background-size: stretch;
+    /*-fx-opacity: 1;*/
+}
+
+.quadLedBlink-disable{
+    -fx-background-image: url("../img/quadLed-disable.png");
+    -fx-background-size: stretch;
+    -fx-opacity: 1;
+}
+
+/***************
 *rightArrow-button
 ****************/
 

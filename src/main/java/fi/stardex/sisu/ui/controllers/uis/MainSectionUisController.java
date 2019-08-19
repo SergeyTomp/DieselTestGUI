@@ -234,7 +234,7 @@ public class MainSectionUisController {
             injectorNumberTextField.setText((newValue != null) ? (newValue).getModelCode() : null);
 
             if (newValue == null) {
-                mainSectionUisModel.modelProperty().setValue(null);
+                mainSectionUisModel.modelPropertyProperty().setValue(null);
                 mainSectionUisModel.injectorTestProperty().setValue(null);
                 showInjectorTests(false);
                 showNode(false, codingTestRadioButton);
@@ -246,7 +246,7 @@ public class MainSectionUisController {
             VAP defaultVAP = modelService.findByModelCode(newValue.getModelCode()).getVAP();
             mainSectionUisModel.setModelIsChanging(true);
             newValue.setVAP(defaultVAP);
-            mainSectionUisModel.modelProperty().setValue(newValue);
+            mainSectionUisModel.modelPropertyProperty().setValue(newValue);
             fetchTestsFromRepository();
             showInjectorTests(true);
             showNode(checkInjectorForCoding(newValue.getCodetype()), codingTestRadioButton);
@@ -261,10 +261,10 @@ public class MainSectionUisController {
             manufacturerListView.getItems().setAll(new ArrayList<>(producerService.findAll()));
             manufacturerListView.refresh();
             manufacturerListView.getSelectionModel().select(customProducerDialogModel.customProducerProperty().get());
-            mainSectionUisModel.customProducerProperty().setValue(null);
+            mainSectionUisModel.customProducerOperationProperty().setValue(null);
         });
         customProducerDialogModel.cancelProperty().addListener((observableValue, oldValue, newValue) ->
-                mainSectionUisModel.customProducerProperty().setValue(null));
+                mainSectionUisModel.customProducerOperationProperty().setValue(null));
     }
 
     private void setupCustomModelDialogModelListener() {
@@ -272,11 +272,11 @@ public class MainSectionUisController {
         customModelDialogModel.doneProperty().addListener((observableValue, oldValue, newValue) -> {
 
             setFilteredItems(manufacturerListView.getSelectionModel().getSelectedItem());
-            mainSectionUisModel.customModelProperty().setValue(null);
+            mainSectionUisModel.customModelOperationProperty().setValue(null);
         });
 
         customModelDialogModel.cancelProperty().addListener((observableValue, oldValue, newValue) ->
-                mainSectionUisModel.customModelProperty().setValue(null));
+                mainSectionUisModel.customModelOperationProperty().setValue(null));
     }
 
     private void clearAllResults() {
@@ -464,7 +464,7 @@ public class MainSectionUisController {
         Task<List<? extends Test>> task = new Task<>() {
             @Override
             protected List<? extends Test> call() {
-                return uisTestService.findAllByInjector(mainSectionUisModel.modelProperty().get());
+                return uisTestService.findAllByInjector(mainSectionUisModel.modelPropertyProperty().get());
             }
         };
 
@@ -472,7 +472,7 @@ public class MainSectionUisController {
 
             if (newValue != null) {
 
-                Model model = mainSectionUisModel.modelProperty().get();
+                Model model = mainSectionUisModel.modelPropertyProperty().get();
                 VAP defaultVAP = model.getVAP();
                 newValue.stream().filter(t -> t.getVoltAmpereProfile() == null).forEach(t -> t.setVAP(defaultVAP));
                 mainSectionUisModel.getTestObservableList().setAll(newValue);
@@ -532,9 +532,9 @@ public class MainSectionUisController {
 
         ContextMenu manufacturerMenu = new ContextMenu();
         MenuItem newManufacturer = new MenuItem("New");
-        newManufacturer.setOnAction(actionEvent -> mainSectionUisModel.customProducerProperty().setValue(Operation.NEW));
+        newManufacturer.setOnAction(actionEvent -> mainSectionUisModel.customProducerOperationProperty().setValue(Operation.NEW));
         MenuItem deleteManufacturer = new MenuItem("Delete");
-        deleteManufacturer.setOnAction(actionEvent -> mainSectionUisModel.customProducerProperty().setValue(Operation.DELETE));
+        deleteManufacturer.setOnAction(actionEvent -> mainSectionUisModel.customProducerOperationProperty().setValue(Operation.DELETE));
 
         manufacturerListView.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             if (event.getButton() == MouseButton.SECONDARY) {
@@ -549,19 +549,19 @@ public class MainSectionUisController {
         });
 
         customProducerDialogModel.cancelProperty().addListener((observableValue, oldValue, newValue) ->
-                mainSectionUisModel.customProducerProperty().setValue(null));
+                mainSectionUisModel.customProducerOperationProperty().setValue(null));
     }
 
     private void initModelContextMenu() {
 
         ContextMenu modelMenu = new ContextMenu();
         MenuItem newModel = new MenuItem("New");
-        newModel.setOnAction(actionEvent -> mainSectionUisModel.customModelProperty().setValue(Operation.NEW));
+        newModel.setOnAction(actionEvent -> mainSectionUisModel.customModelOperationProperty().setValue(Operation.NEW));
         MenuItem editModel = new MenuItem("Edit");
-        editModel.setOnAction(actionEvent -> mainSectionUisModel.customModelProperty().setValue(Operation.EDIT));
+        editModel.setOnAction(actionEvent -> mainSectionUisModel.customModelOperationProperty().setValue(Operation.EDIT));
         MenuItem copyModel = new MenuItem("Copy");
         MenuItem deleteModel = new MenuItem("Delete");
-        deleteModel.setOnAction(actionEvent -> mainSectionUisModel.customModelProperty().setValue(Operation.DELETE));
+        deleteModel.setOnAction(actionEvent -> mainSectionUisModel.customModelOperationProperty().setValue(Operation.DELETE));
 
         modelListView.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             if (event.getButton() == MouseButton.SECONDARY) {
@@ -579,18 +579,18 @@ public class MainSectionUisController {
         });
 
         customModelDialogModel.cancelProperty().addListener((observableValue, oldValue, newValue) ->
-                mainSectionUisModel.customModelProperty().setValue(null));
+                mainSectionUisModel.customModelOperationProperty().setValue(null));
     }
 
     private void initTestContextMenu() {
 
         ContextMenu testMenu = new ContextMenu();
         MenuItem newTest = new MenuItem("New");
-        newTest.setOnAction(actionEvent -> mainSectionUisModel.customTestProperty().setValue(Operation.NEW));
+        newTest.setOnAction(actionEvent -> mainSectionUisModel.customTestOperationProperty().setValue(Operation.NEW));
         MenuItem editTest = new MenuItem("Edit");
-        editTest.setOnAction(actionEvent -> mainSectionUisModel.customTestProperty().setValue(Operation.EDIT));
+        editTest.setOnAction(actionEvent -> mainSectionUisModel.customTestOperationProperty().setValue(Operation.EDIT));
         MenuItem deleteTest = new MenuItem("Delete");
-        deleteTest.setOnAction(actionEvent -> mainSectionUisModel.customTestProperty().setValue(Operation.DELETE));
+        deleteTest.setOnAction(actionEvent -> mainSectionUisModel.customTestOperationProperty().setValue(Operation.DELETE));
 
 
         testListView.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
@@ -608,11 +608,11 @@ public class MainSectionUisController {
         });
 
         customTestDialogModel.cancelProperty().addListener((observableValue, oldValue, newValue) ->
-                mainSectionUisModel.customTestProperty().setValue(null));
+                mainSectionUisModel.customTestOperationProperty().setValue(null));
 
         customTestDialogModel.doneProperty().addListener((observable, oldValue, newValue) -> {
             fetchTestsFromRepository();
-            mainSectionUisModel.customTestProperty().setValue(null);
+            mainSectionUisModel.customTestOperationProperty().setValue(null);
 
         });
     }

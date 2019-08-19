@@ -82,7 +82,7 @@
         <dependency>
             <groupId>eu.hansolo</groupId>
             <artifactId>Medusa</artifactId>
-            <version>8.0</version>
+            <version>11.1</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/eu.hansolo.enzo/Enzo -->

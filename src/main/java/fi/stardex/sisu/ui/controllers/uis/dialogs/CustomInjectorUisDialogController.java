@@ -31,7 +31,6 @@ import javafx.stage.StageStyle;
 
 import javax.annotation.PostConstruct;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -111,7 +110,7 @@ public class CustomInjectorUisDialogController {
     @PostConstruct
     public void init() {
 
-        mainSectionUisModel.customModelProperty().addListener((observableValue, oldValue, newValue) -> {
+        mainSectionUisModel.customModelOperationProperty().addListener((observableValue, oldValue, newValue) -> {
             if(newValue == null) return;
             if (guiTypeModel.guiTypeProperty().get() == UIS) {
 
@@ -120,10 +119,10 @@ public class CustomInjectorUisDialogController {
                     dialogStage.setScene(new Scene(dialogViev));
                     dialogStage.setResizable(false);
                     dialogStage.initModality(Modality.APPLICATION_MODAL);
-                    dialogStage.setTitle(mainSectionUisModel.customModelProperty().get().getTitle() + "injector");
+                    dialogStage.setTitle(mainSectionUisModel.customModelOperationProperty().get().getTitle() + "injector");
                     dialogStage.setOnCloseRequest(event -> customModelDialogModel.cancelProperty().setValue(new Object()));
                 }
-                switch (mainSectionUisModel.customModelProperty().get()) {
+                switch (mainSectionUisModel.customModelOperationProperty().get()) {
                     case NEW:
                         setNew();
                         break;
@@ -178,7 +177,7 @@ public class CustomInjectorUisDialogController {
 
         saveBtn.setOnMouseClicked(mouseEvent -> {
 
-            switch (mainSectionUisModel.customModelProperty().get()) {
+            switch (mainSectionUisModel.customModelOperationProperty().get()) {
                 case NEW:
                     create();
                     break;
@@ -260,7 +259,7 @@ public class CustomInjectorUisDialogController {
 
         if(!isDataComplete()) return;
 
-        Model injectorForUpdate = mainSectionUisModel.modelProperty().get();
+        Model injectorForUpdate = mainSectionUisModel.modelPropertyProperty().get();
         injectorForUpdate.setVAP(voapListView.getSelectionModel().getSelectedItem());
         List<InjectorUisTest> injectorTests = uisTestService.findAllByInjector(injectorForUpdate);
         injectorTests.clear();
@@ -273,7 +272,7 @@ public class CustomInjectorUisDialogController {
 
     private void delete() {
 
-        Model injectorForUpdate = mainSectionUisModel.modelProperty().get();
+        Model injectorForUpdate = mainSectionUisModel.modelPropertyProperty().get();
         uisModelService.delete(injectorForUpdate);
         customModelDialogModel.customModelProperty().setValue(injectorForUpdate);
         customModelDialogModel.doneProperty().setValue(new Object());
@@ -301,7 +300,7 @@ public class CustomInjectorUisDialogController {
         defaultRB.setDisable(false);
         customRB.setDisable(false);
         sureLabel.setVisible(false);
-        injectorCodeTF.setText(mainSectionUisModel.modelProperty().get().getModelCode());
+        injectorCodeTF.setText(mainSectionUisModel.modelPropertyProperty().get().getModelCode());
     }
 
     private void setDelete() {
@@ -313,7 +312,7 @@ public class CustomInjectorUisDialogController {
         defaultRB.setDisable(true);
         customRB.setDisable(true);
         sureLabel.setVisible(true);
-        injectorCodeTF.setText(mainSectionUisModel.modelProperty().get().getModelCode());
+        injectorCodeTF.setText(mainSectionUisModel.modelPropertyProperty().get().getModelCode());
     }
 
     private void selectFirst() {

@@ -3,7 +3,6 @@ package fi.stardex.sisu.util;
 import eu.hansolo.enzo.lcd.Lcd;
 import eu.hansolo.enzo.lcd.LcdBuilder;
 import eu.hansolo.medusa.*;
-import javafx.beans.property.DoubleProperty;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Stop;
 
@@ -208,5 +207,56 @@ public class GaugeCreator {
 //        .onValueChanged(o -> System.out.println(((DoubleProperty) o).get()))
         .build();
 
+    }
+
+    public static Gauge createBipGauge() {
+        Section section1New = SectionBuilder.create()
+                .start(0)
+                .stop(600)
+                .color(Color.RED)
+                .build();
+        Section section2New = SectionBuilder.create()
+                .start(600)
+                .stop(1200)
+                .color(Color.GREEN)
+                .build();
+        Section section3New = SectionBuilder.create()
+                .start(1200)
+                .stop(1800)
+                .color(Color.RED)
+                .build();
+        return GaugeBuilder.create()
+                .skinType(Gauge.SkinType.SIMPLE_SECTION)
+                .valueColor(Color.WHITE)
+                .barColor(Color.AQUA)
+                .animated(false)
+                .valueVisible(true)
+                .sectionsVisible(true)
+                .decimals(0)
+                .minValue(0)
+                .maxValue(1800)
+                .title("BIP")
+                .unit("AVG")
+                .titleColor(Color.YELLOW)
+                .unitColor(Color.YELLOW)
+                .sections(section1New, section2New, section3New)
+                .checkSectionsForValue(true)
+                .build();
+    }
+
+    public  static Gauge createDelayGauge() {
+        return GaugeBuilder.create()
+                .skinType(Gauge.SkinType.SIMPLE_SECTION)
+                .titleColor(Color.YELLOW)
+                .minValue(0)
+                .maxValue(5000)
+                .valueVisible(true)
+                .valueColor(Color.WHITE)
+                .barColor(Color.YELLOW)
+                .animated(false)
+                .decimals(0)
+                .title("Delay")
+                .unitColor(Color.YELLOW)
+                .build();
     }
 }

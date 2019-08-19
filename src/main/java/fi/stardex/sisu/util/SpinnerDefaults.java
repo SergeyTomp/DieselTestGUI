@@ -93,4 +93,9 @@ public class SpinnerDefaults {
     public static final int OFFSET_SPINNER_MAX = 2000;
     public static final int OFFSET_SPINNER_STEP = 1;
     public static final int OFFSET_SPINNER_INIT = 1;
+
+    public static final int ANGLE_OFFSET_SPINNER_MIN = 0;
+    public static final int ANGLE_OFFSET_SPINNER_MAX = 350;
+    public static final int ANGLE_OFFSET_SPINNER_STEP = 1;
+    public static final int ANGLE_OFFSET_SPINNER_INIT = 70;
 }
