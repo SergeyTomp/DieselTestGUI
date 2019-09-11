@@ -1,6 +1,7 @@
 package fi.stardex.sisu.ui.controllers.common;
 
 import fi.stardex.sisu.model.GUI_TypeModel;
+import fi.stardex.sisu.model.Step3Model;
 import fi.stardex.sisu.model.cr.MainSectionModel;
 import fi.stardex.sisu.model.pump.ManufacturerPumpModel;
 import fi.stardex.sisu.states.DimasGUIEditionState;
@@ -81,6 +82,8 @@ public class GUI_TypeController {
 
     private InjectorSectionPwrState injectorSectionPwrState;
 
+    private Step3Model step3Model;
+
     public void setManufacturerPumpModel(ManufacturerPumpModel manufacturerPumpModel) {
         this.manufacturerPumpModel = manufacturerPumpModel;
     }
@@ -153,6 +156,9 @@ public class GUI_TypeController {
     public void setUisSettingsGridPane(GridPane uisSettingsGridPane) {
         this.uisSettingsGridPane = uisSettingsGridPane;
     }
+    public void setStep3Model(Step3Model step3Model) {
+        this.step3Model = step3Model;
+    }
 
     @PostConstruct
     private void init() {
@@ -186,6 +192,7 @@ public class GUI_TypeController {
 
         gui_typeComboBox.getSelectionModel().select(currentGUIType);
         gui_typeComboBox.visibleProperty().bind(dimasGUIEditionState.isDimasGuiEditionProperty().not());
+        gui_typeComboBox.disableProperty().bind(step3Model.step3PauseProperty());
         pumpsStartButtonState.startButtonProperty().addListener((observableValue, oldValue, newValue) -> gui_typeComboBox.setDisable(newValue));
         mainSectionModel.startButtonProperty().addListener((observableValue, oldValue, newValue) -> gui_typeComboBox.setDisable(isStarted()));
         injectorSectionPwrState.powerButtonProperty().addListener((observableValue, oldValue, newValue) -> gui_typeComboBox.setDisable(isStarted()));

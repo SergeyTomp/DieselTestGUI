@@ -87,6 +87,8 @@ public class MainSectionController {
 
     private static Logger logger = LoggerFactory.getLogger(MainSectionController.class);
 
+    @FXML private GridPane testsToggleGroupGridPane;
+
     @FXML private TextField injectorNumberTextField;
 
     @FXML private VBox injectorTestsVBox;
@@ -188,6 +190,8 @@ public class MainSectionController {
     private RLC_ReportModel rlc_reportModel;
 
     private CodingReportModel codingReportModel;
+
+    private Step3Model step3Model;
 
     private InjectorsRepository injectorsRepository;
 
@@ -361,6 +365,10 @@ public class MainSectionController {
         this.newEditInjectorDialogModel = newEditInjectorDialogModel;
     }
 
+    public void setStep3Model(Step3Model step3Model) {
+        this.step3Model = step3Model;
+    }
+
     @PostConstruct
     private void init() {
 
@@ -389,6 +397,7 @@ public class MainSectionController {
         setupManufacturerListListener();
         setupInjectorSectionPwrButtonListener();
         setupStartButtonListener();
+        setupStep3StartListener();
         printButton.setOnAction(new PrintButtonEventHandler());
         boostUadjustmentState.boostUadjustmentStateProperty().addListener((observable, oldValue, newValue) -> disableNode(newValue, startToggleButton));
 
@@ -839,6 +848,7 @@ public class MainSectionController {
 
             setFilteredItems(newValue);
         }));
+        step3Model.step3PauseProperty().addListener((observableValue, oldValue, newValue) -> manufacturerListView.setDisable(newValue));
         return this;
     }
 
@@ -926,6 +936,7 @@ public class MainSectionController {
             injectorModel.setInjectorIsChanging(false);
             mainSectionModel.setInjectorIsChanging(false);  // in future replace above line
         });
+        step3Model.step3PauseProperty().addListener((observableValue, oldValue, newValue) -> modelListView.setDisable(newValue));
         return this;
     }
 
@@ -955,7 +966,9 @@ public class MainSectionController {
                 showButtons(!testNotIncluded && startButtonNotSelected, false);
                 enableUpDownButtons(testsSelectionModel.getSelectedIndex(), testListViewItems.size() - getListOfNonIncludedTests().size());
 
-                disableNode(((startButtonNotSelected) && ((notFirstTestSelected) || testNotIncluded)) || boostUadjustmentRunning, startToggleButton);
+                disableNode(((startButtonNotSelected) && ((notFirstTestSelected) || testNotIncluded))
+                        || boostUadjustmentRunning
+                        || step3Model.step3PauseProperty().get(), startToggleButton);
 
             } else if (testPlanTestRadioButton.isSelected() && startToggleButton.isSelected()) {
 
@@ -974,6 +987,7 @@ public class MainSectionController {
             injectorTestModel.setTestIsChanging(false);
             mainSectionModel.setTestIsChanging(false);  // in future replace above line
         });
+        step3Model.step3PauseProperty().addListener((observableValue, oldValue, newValue) -> testListView.setDisable(newValue));
         return this;
     }
 
@@ -1008,6 +1022,7 @@ public class MainSectionController {
                     break;
             }
         });
+        step3Model.step3PauseProperty().addListener((observableValue, oldValue, newValue) -> testsToggleGroupGridPane.setDisable(newValue));
         return this;
     }
 
@@ -1051,6 +1066,8 @@ public class MainSectionController {
             disableRadioButtons(baseTypeToggleGroup, newValue);
             disableNode(newValue, manufacturerListView, injectorsVBox);
         });
+
+        step3Model.step3PauseProperty().addListener((observableValue, oldValue, newValue) -> startToggleButton.setDisable(newValue));
     }
 
     private void setupNewEditInjectorDialogListener() {
@@ -1060,6 +1077,24 @@ public class MainSectionController {
             Injector newInj = newEditInjectorDialogModel.customInjectorProperty().get();
             modelListView.getSelectionModel().select(newInj);
             modelListView.scrollTo(newInj);
+        });
+    }
+
+    private void setupStep3StartListener() {
+
+        step3Model.step3PauseProperty().addListener((observableValue, oldValue, newValue) -> {
+            if (newValue) {
+                testListView.getItems().stream().filter(test -> test.getTestName().toString().equals("Maximum Load")).findAny().ifPresent(test -> {
+                    testListView.getSelectionModel().select(test);
+                    testListView.scrollTo(test);
+                });
+            }
+        });
+        step3Model.pulseIsActiveProperty().addListener((observableValue, oldValue, newValue) -> {
+            if (!newValue) {
+                testListView.getSelectionModel().select(0);
+                testListView.scrollTo(0);
+            }
         });
     }
 

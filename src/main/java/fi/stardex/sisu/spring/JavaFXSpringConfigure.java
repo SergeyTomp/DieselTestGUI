@@ -128,7 +128,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                  GUI_TypeModel gui_typeModel,
                                                  MainSectionModel mainSectionModel,
                                                  InjectorSectionPwrState injectorSectionPwrState,
-                                                 UisTabSectionController uisTabSectionController) {
+                                                 UisTabSectionController uisTabSectionController,
+                                                 Step3Model step3Model) {
         GUI_TypeController gui_typeController = rootLayoutController.getGui_typeController();
         gui_typeController.setRootPreferences(rootPreferences);
         gui_typeController.setMainSection(mainSection().getView());
@@ -154,6 +155,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         gui_typeController.setUisTabSection(uisTabSection().getView());
         gui_typeController.setUisSettings(uisSettings().getView());
         gui_typeController.setUisSettingsGridPane(uisTabSectionController.getSettingsGridPane());
+        gui_typeController.setStep3Model(step3Model);
         return gui_typeController;
     }
 
@@ -181,7 +183,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                        ManufacturerMenuDialogModel manufacturerMenuDialogModel,
                                                        MainSectionModel mainSection_model,
                                                        InjectorSectionPwrState injectorSectionPwrState,
-                                                       NewEditInjectorDialogModel newEditInjectorDialogModel) {
+                                                       NewEditInjectorDialogModel newEditInjectorDialogModel,
+                                                       Step3Model step3Model) {
         MainSectionController mainSectionController = (MainSectionController) mainSection().getController();
         mainSectionController.setNewEditInjectorDialog(newEditInjectorDialog());
         mainSectionController.setNewEditTestDialog(newEditTestDialog());
@@ -205,6 +208,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         mainSectionController.setMainSectionModel(mainSection_model);
         mainSectionController.setInjectorSectionPwrState(injectorSectionPwrState);
         mainSectionController.setNewEditInjectorDialogModel(newEditInjectorDialogModel);
+        mainSectionController.setStep3Model(step3Model);
         return mainSectionController;
     }
 
@@ -357,7 +361,9 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                                InjectorTestModel injectorTestModel,
                                                                InjectorControllersState injectorControllersState,
                                                                GUI_TypeModel gui_typeModel,
-                                                               InjectorSectionPwrState injectorSectionPwrState) {
+                                                               InjectorSectionPwrState injectorSectionPwrState,
+                                                               Step3Model step3Model,
+                                                               TabSectionModel tabSectionModel) {
         InjectorSectionController injectorSectionController = crSectionController().getInjectorSectionController();
         injectorSectionController.setUltimaModbusWriter(ultimaModbusWriter);
         injectorSectionController.setTimerTasksManager(timerTasksManager);
@@ -376,6 +382,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
         injectorSectionController.setInjectorControllersState(injectorControllersState);
         injectorSectionController.setGui_typeModel(gui_typeModel);
         injectorSectionController.setInjectorSectionPwrState(injectorSectionPwrState);
+        injectorSectionController.setStep3Model(step3Model);
+        injectorSectionController.setTabSectionModel(tabSectionModel);
         return injectorSectionController;
     }
 
@@ -457,10 +465,16 @@ public class JavaFXSpringConfigure extends ViewLoader{
 
     @Bean
     @Autowired
-    public TabSectionController tabSectionController(InjectorTypeModel injectorTypeModel) {
+    public TabSectionController tabSectionController(InjectorTypeModel injectorTypeModel,
+                                                     MainSectionModel mainSectionModel,
+                                                     TabSectionModel tabSectionModel,
+                                                     Step3Model step3Model) {
         TabSectionController tabSectionController = (TabSectionController) tabSection().getController();
         tabSectionController.setI18N(i18N);
         tabSectionController.setInjectorTypeModel(injectorTypeModel);
+        tabSectionController.setMainSectionModel(mainSectionModel);
+        tabSectionController.setTabSectionModel(tabSectionModel);
+        tabSectionController.setStep3Model(step3Model);
         return tabSectionController;
     }
 
@@ -970,7 +984,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                        ModbusRegisterProcessor ultimaModbusWriter,
                                                        PiezoRepairUpdateModel piezoRepairUpdateModel,
                                                        ModbusConnect ultimaModbusConnect,
-                                                       RegisterProvider ultimaRegisterProvider){
+                                                       RegisterProvider ultimaRegisterProvider,
+                                                       TabSectionModel tabSectionModel){
         PiezoRepairController piezoRepairController = tabSectionController.getPiezoRepairController();
         piezoRepairController.setPiezoRepairModel(piezoRepairModel);
         piezoRepairController.setUltimaModbusWriter(ultimaModbusWriter);
@@ -978,6 +993,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         piezoRepairController.setUltimaModbusConnect(ultimaModbusConnect);
         piezoRepairController.setUltimaRegisterProvider(ultimaRegisterProvider);
         piezoRepairController.setTabSectionController(tabSectionController);
+        piezoRepairController.setTabSectionModel(tabSectionModel);
         return piezoRepairController;
     }
 
@@ -1237,7 +1253,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                              UisModelService uisModelService,
                                                              UisProducerService uisProducerService,
                                                              UisTestService uisTestService,
-                                                             BoostUadjustmentState boostUadjustmentState) {
+                                                             BoostUadjustmentState boostUadjustmentState,
+                                                             Step3Model step3Model) {
         MainSectionUisController mainSectionUisController = (MainSectionUisController)mainSectionUIS().getController();
         mainSectionUisController.setMainSectionUisModel(mainSectionUisModel);
         mainSectionUisController.setPrintDialogPanel(printDialogPanel());
@@ -1252,6 +1269,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         mainSectionUisController.setUisProducerService(uisProducerService);
         mainSectionUisController.setUisTestService(uisTestService);
         mainSectionUisController.setBoostUadjustmentState(boostUadjustmentState);
+        mainSectionUisController.setStep3Model(step3Model);
         return mainSectionUisController;
     }
 
@@ -1373,5 +1391,18 @@ public class JavaFXSpringConfigure extends ViewLoader{
         UisTabSectionController uisTabSectionController = (UisTabSectionController)uisTabSection().getController();
         uisTabSectionController.setI18N(i18N);
         return uisTabSectionController;
+    }
+
+    @Bean
+    @Autowired
+    public Step3Controller step3Controller(TabSectionController tabSectionController,
+                                           Step3Model step3Model,
+                                           ModbusRegisterProcessor ultimaModbusWriter,
+                                           MainSectionModel mainSectionModel) {
+        Step3Controller step3Controller = tabSectionController.getStep3Controller();
+        step3Controller.setStep3Model(step3Model);
+        step3Controller.setUltimaModbusWriter(ultimaModbusWriter);
+        step3Controller.setMainSectionModel(mainSectionModel);
+        return step3Controller;
     }
 }

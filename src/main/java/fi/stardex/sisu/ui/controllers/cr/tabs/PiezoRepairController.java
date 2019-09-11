@@ -4,6 +4,7 @@ import eu.hansolo.medusa.Gauge;
 import fi.stardex.sisu.charts.PiezoRepairTask;
 import fi.stardex.sisu.connect.ModbusConnect;
 import fi.stardex.sisu.model.PiezoRepairModel;
+import fi.stardex.sisu.model.TabSectionModel;
 import fi.stardex.sisu.model.updateModels.PiezoRepairUpdateModel;
 import fi.stardex.sisu.registers.ModbusMap;
 import fi.stardex.sisu.registers.RegisterProvider;
@@ -72,6 +73,7 @@ public class PiezoRepairController {
     private RegisterProvider ultimaRegisterProvider;
     private TabSectionController tabSectionController;
     private ObjectProperty<Boolean> isTabPiezoShowing = new SimpleObjectProperty<>();
+    private TabSectionModel tabSectionModel;
 
     public void setPiezoRepairModel(PiezoRepairModel piezoRepairModel) {
         this.piezoRepairModel = piezoRepairModel;
@@ -88,9 +90,11 @@ public class PiezoRepairController {
     public void setUltimaRegisterProvider(RegisterProvider ultimaRegisterProvider) {
         this.ultimaRegisterProvider = ultimaRegisterProvider;
     }
-
     public void setTabSectionController(TabSectionController tabSectionController) {
         this.tabSectionController = tabSectionController;
+    }
+    public void setTabSectionModel(TabSectionModel tabSectionModel) {
+        this.tabSectionModel = tabSectionModel;
     }
 
     /**Two ways for data request running are possible:
@@ -126,7 +130,6 @@ public class PiezoRepairController {
         gauge = GaugeCreator.createPiezoGauge();
         gaugeStackPane.getChildren().add(gauge);
         startStopButton.setDisable(true);
-        isTabPiezoShowing.bind(tabSectionController.getTabPiezoRepair().selectedProperty());
         setupListeners();
     }
 
@@ -285,7 +288,7 @@ public class PiezoRepairController {
             if(!newValue) startStopButton.setSelected(false);
         });
 
-        isTabPiezoShowing.addListener((observableValue, oldValue, newValue) -> {
+        tabSectionModel.piezoTabIsShowingProperty().addListener((observableValue, oldValue, newValue) -> {
 
             if (newValue) {
                 startTouchControl();

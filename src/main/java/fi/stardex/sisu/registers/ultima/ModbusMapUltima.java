@@ -135,12 +135,13 @@ public enum ModbusMapUltima implements ModbusMap {
     // тахометр
     Tachometer(REGISTER_HOLDING, 44, 1, true),
 
-    // ремонт пьезо сименс
+    // ремонт piezo Siemens и coil Bosch
     HoldingPulseMode(DISCRETE_COIL, 11, 1, false),
     PulseFrontSlump(DISCRETE_COIL, 40, 1, false),
     BoardNumber(REGISTER_HOLDING, 40, 1, false),
     CurrentLimit(REGISTER_HOLDING, 16, 1, false),
     TouchDetection(REGISTER_INPUT, 4098, 2, true),
+    CoilHoldingWidth(REGISTER_HOLDING, 250, 1, false),
 
     // режим зеркалирования регулятора 1 на регулятор 2 и 3(только для насосов)
     Reg1_To_Reg2_Mirror(DISCRETE_COIL, 102, 1, false),

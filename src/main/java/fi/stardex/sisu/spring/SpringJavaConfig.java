@@ -1139,6 +1139,15 @@ public class SpringJavaConfig {
         return new UisInjectorSectionModel();
     }
 
+    @Bean
+    public Step3Model step3Model() {
+        return new Step3Model();
+    }
+
+    @Bean
+    public TabSectionModel tabSectionModel() {
+        return new TabSectionModel();
+    }
 
 //    @Bean
 //    @Autowired

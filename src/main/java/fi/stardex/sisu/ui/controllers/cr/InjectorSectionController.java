@@ -117,6 +117,10 @@ public class InjectorSectionController {
 
     private InjectorTestModel injectorTestModel;
 
+    private Step3Model step3Model;
+
+    private TabSectionModel tabSectionModel;
+
     private BoostUadjustmentState boostUadjustmentState;
 
     private InjectorControllersState injectorControllersState;
@@ -277,6 +281,14 @@ public class InjectorSectionController {
         this.injectorSectionPwrState = injectorSectionPwrState;
     }
 
+    public void setStep3Model(Step3Model step3Model) {
+        this.step3Model = step3Model;
+    }
+
+    public void setTabSectionModel(TabSectionModel tabSectionModel) {
+        this.tabSectionModel = tabSectionModel;
+    }
+
     @PostConstruct
     private void init() {
 
@@ -433,7 +445,8 @@ public class InjectorSectionController {
                 boolean isDoubleCoil = newValue.getVoltAmpereProfile().isDoubleCoil();
                 led1ToggleButton.setSelected(true);
                 selectButton(false, led2ToggleButton, led3ToggleButton, led4ToggleButton);
-                disableNode (newValue.getVoltAmpereProfile().isDoubleCoil(), led2ToggleButton, led3ToggleButton, led4ToggleButton);
+                disableNode (isDoubleCoil || tabSectionModel.step3TabIsShowingProperty().get(), led2ToggleButton, led3ToggleButton, led4ToggleButton);
+//                disableNode (tabSectionModel.step3TabIsShowingProperty().get(), led2ToggleButton, led3ToggleButton, led4ToggleButton);
                 ultimaModbusWriter.add(Double_Coil_Mode_En, isDoubleCoil);
                 ultimaModbusWriter.add(SecondCoilShiftEnable, isDoubleCoil);
             }
@@ -468,6 +481,31 @@ public class InjectorSectionController {
         injectorControllersState.getLedBeaker2ToggleButton().selectedProperty().bind(led2ToggleButton.selectedProperty());
         injectorControllersState.getLedBeaker3ToggleButton().selectedProperty().bind(led3ToggleButton.selectedProperty());
         injectorControllersState.getLedBeaker4ToggleButton().selectedProperty().bind(led4ToggleButton.selectedProperty());
+
+        step3Model.step3PauseProperty().addListener((observableValue, oldValue, newValue) -> {
+            if (injectorTestModel.injectorTestProperty().get().getTestName().getMeasurement() != Measurement.NO) {
+                widthCurrentSignalSpinner.setDisable(newValue);
+                freqCurrentSignalSpinner.setDisable(newValue);
+                injectorSectionStartToggleButton.setDisable(newValue);
+            }
+            if (injectorTestModel.injectorTestProperty().get().getVoltAmpereProfile().isDoubleCoil()) {
+                width2CurrentSignalSpinner.setDisable(newValue);
+                offset2CurrentSignalSpinner.setDisable(newValue);
+            }
+        });
+
+        tabSectionModel.step3TabIsShowingProperty().addListener((observableValue, oldValue, newValue) -> {
+            if (newValue) {
+                injectorSectionStartToggleButton.setSelected(false);
+                led1ToggleButton.setSelected(true);
+                led2ToggleButton.setSelected(false);
+                led3ToggleButton.setSelected(false);
+                led4ToggleButton.setSelected(false);
+            }
+            if (injectorTestModel.injectorTestProperty().get() == null || !injectorTestModel.injectorTestProperty().get().getVoltAmpereProfile().isDoubleCoil()) {
+                disableNode(newValue, led1ToggleButton, led2ToggleButton, led3ToggleButton, led4ToggleButton);
+            }
+        });
     }
 
     private void bindingI18N() {
@@ -689,7 +727,6 @@ public class InjectorSectionController {
                 ultimaModbusWriter.add(Injectors_Running_En, false);
                 ledParametersChangeListener.switchOffAll();
                 timerTasksManager.stop();
-//                enabler.disableVAP(false);
                 disableNode(isDoubleCoil, led2ToggleButton, led3ToggleButton, led4ToggleButton);
                 disableNode(!isDoubleCoil, width2CurrentSignalSpinner, offset2CurrentSignalSpinner);
             }

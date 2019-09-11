@@ -1,6 +1,7 @@
 package fi.stardex.sisu.ui.controllers.uis;
 
 import fi.stardex.sisu.model.GUI_TypeModel;
+import fi.stardex.sisu.model.Step3Model;
 import fi.stardex.sisu.model.uis.CustomModelDialogModel;
 import fi.stardex.sisu.model.uis.CustomProducerDialogModel;
 import fi.stardex.sisu.model.uis.CustomTestDialogModel;
@@ -66,7 +67,7 @@ import static fi.stardex.sisu.util.enums.Tests.TestType.*;
 public class MainSectionUisController {
 
     private static Logger logger = LoggerFactory.getLogger(MainSectionUisController.class);
-
+    @FXML private GridPane testsToggleGroupGridPane;
     @FXML private TextField injectorNumberTextField;
     @FXML private VBox injectorTestsVBox;
     @FXML private GridPane timingGridPane;
@@ -121,6 +122,7 @@ public class MainSectionUisController {
     private CustomProducerDialogModel customProducerDialogModel;
     private CustomTestDialogModel customTestDialogModel;
     private BoostUadjustmentState boostUadjustmentState;
+    private Step3Model step3Model;
     private UisModelService uisModelService;
     private UisProducerService uisProducerService;
     private UisTestService uisTestService;
@@ -175,6 +177,10 @@ public class MainSectionUisController {
         this.boostUadjustmentState = boostUadjustmentState;
     }
 
+    public void setStep3Model(Step3Model step3Model) {
+        this.step3Model = step3Model;
+    }
+
     public static ObservableList<Test> getListOfNonIncludedTests() {
         return listOfNonIncludedTests;
     }
@@ -203,6 +209,7 @@ public class MainSectionUisController {
         setupCustomProducerDialogModelListener();
         setupCustomModelDialogModelListener();
 //        setupInjectorSectionPwrButtonListener();
+        setupStep3StartListener();
         setupStartButtonListener();
         setupPrintButton();
 //        boostUadjustmentState.boostUadjustmentStateProperty().addListener((observable, oldValue, newValue) -> disableNode(newValue, startToggleButton));
@@ -252,6 +259,8 @@ public class MainSectionUisController {
             showNode(checkInjectorForCoding(newValue.getCodetype()), codingTestRadioButton);
             mainSectionUisModel.setModelIsChanging(false);
         });
+        step3Model.step3PauseProperty().addListener((observableValue, oldValue, newValue) -> modelListView.setDisable(newValue));
+
     }
 
     private void setupCustomProducerDialogModelListener() {
@@ -308,7 +317,9 @@ public class MainSectionUisController {
                 showButtons(!testNotIncluded && startButtonNotSelected, false);
                 enableUpDownButtons(testListView.getSelectionModel().getSelectedIndex(), testListView.getItems().size() - getListOfNonIncludedTests().size());
 
-                disableNode(((startButtonNotSelected) && ((notFirstTestSelected) || testNotIncluded)) || boostUadjustmentRunning, startToggleButton);
+                disableNode(((startButtonNotSelected) && ((notFirstTestSelected) || testNotIncluded))
+                        || boostUadjustmentRunning
+                        || step3Model.step3PauseProperty().get(), startToggleButton);
 
             } else if (testPlanTestRadioButton.isSelected() && startToggleButton.isSelected()) {
 
@@ -325,6 +336,7 @@ public class MainSectionUisController {
             setProgress(speedComboBox.getSelectionModel().getSelectedItem().getMultiplier());
             mainSectionUisModel.setTestIsChanging(false);
         });
+        step3Model.step3PauseProperty().addListener((observableValue, oldValue, newValue) -> testListView.setDisable(newValue));
     }
 
     private void setProgress(double multiplier) {
@@ -364,6 +376,7 @@ public class MainSectionUisController {
                     break;
             }
         });
+        step3Model.step3PauseProperty().addListener((observableValue, oldValue, newValue) -> testsToggleGroupGridPane.setDisable(newValue));
     }
 
     private void returnToDefaultTestListAuto() {
@@ -449,6 +462,27 @@ public class MainSectionUisController {
 
             setFilteredItems(newValue);
         });
+        step3Model.step3PauseProperty().addListener((observableValue, oldValue, newValue) -> manufacturerListView.setDisable(newValue));
+
+    }
+
+    //TODO uncomment upon replacement of MainSectionController by MainSectionUisController as unique for all GUI types
+    private void setupStep3StartListener() {
+
+//        step3Model.step3PauseProperty().addListener((observableValue, oldValue, newValue) -> {
+//            if (newValue) {
+//                testListView.getItems().stream().filter(test -> test.getTestName().toString().equals("Maximum Load")).findAny().ifPresent(test -> {
+//                    testListView.getSelectionModel().select(test);
+//                    testListView.scrollTo(test);
+//                });
+//            }
+//        });
+//        step3Model.pulseIsActiveProperty().addListener((observableValue, oldValue, newValue) -> {
+//            if (!newValue) {
+//                testListView.getSelectionModel().select(0);
+//                testListView.scrollTo(0);
+//            }
+//        });
     }
 
     private void setFilteredItems(Producer producer) {
@@ -646,6 +680,8 @@ public class MainSectionUisController {
             disableRadioButtons(baseTypeToggleGroup, newValue);
             disableNode(newValue, manufacturerListView, injectorsVBox);
         });
+
+        step3Model.step3PauseProperty().addListener((observableValue, oldValue, newValue) -> startToggleButton.setDisable(newValue));
     }
 
     private void setupTimeProgressBars() {
