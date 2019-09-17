@@ -358,7 +358,7 @@ public class ISADetectionController {
 
             isaStage = new Stage(StageStyle.UNDECORATED);
             isaStage.setScene(new Scene(isaParent));
-            isaStage.initModality(Modality.WINDOW_MODAL);
+            isaStage.initModality(Modality.NONE);
             isaStage.initOwner(rootParent.getScene().getWindow());
         }
         isaStage.show();

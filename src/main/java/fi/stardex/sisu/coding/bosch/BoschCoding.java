@@ -14,6 +14,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 import static fi.stardex.sisu.coding.bosch.BitFields.*;
+import static fi.stardex.sisu.ui.controllers.cr.windows.ISADetectionController.*;
+import static fi.stardex.sisu.ui.controllers.cr.windows.ISADetectionController.ISAResultState.INVALID;
+import static fi.stardex.sisu.ui.controllers.cr.windows.ISADetectionController.ISAResultState.OFF;
 import static fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer.getInjector;
 
 public class BoschCoding {
@@ -50,7 +53,7 @@ public class BoschCoding {
 
         }
 
-        /**Remove unnecessary fake results generation upon real tests activation for codeType == 0 */
+        /**In case of real tests activation for codeType == 0 do not forget to remove this fake results generation */
         if (injectorCodeType == CodeTypes.ZERO) {
 
             if (temp.keySet().stream().noneMatch(k -> k.getTestName().toString().equals(IDLE.toString()))) {
@@ -75,8 +78,8 @@ public class BoschCoding {
                     break;
                 default:
 
-                    InjectorTest preInjection3Test = new InjectorTest(new TestName(PRE_INJ_3.toString()), 1d, 100d);
-                    InjectorTest kemTest = new InjectorTest(new TestName(KEM.toString()), 1d, 100d);
+                    InjectorTest preInjection3Test = new InjectorTest(new TestName(PRE_INJ_3.toString()), 0d, 100d);
+                    InjectorTest kemTest = new InjectorTest(new TestName(KEM.toString()), 0d, 100d);
 
                     temp.put(preInjection3Test, getRandomFlowsList());
                     temp.put(kemTest, getRandomFlowsList());
@@ -91,14 +94,21 @@ public class BoschCoding {
 
     private static Map<String, List<Integer>> convert(Map<InjectorTest, List<Double>> mapToConvert) {
 
+        Set<Map.Entry<InjectorTest, List<Double>>> filteredSet = mapToConvert.entrySet()
+                .stream()
+                .filter(es -> injectorCodeType.getTestsList().contains(es.getKey().getTestName().toString()))
+                .collect(Collectors.toSet());
+
         Map<String, List<Integer>> convertedMap = new HashMap<>();
 
-        for (Map.Entry<InjectorTest, List<Double>> entry : mapToConvert.entrySet()) {
+        for (Map.Entry<InjectorTest, List<Double>> entry : filteredSet) {
 
-            double flowRange = entry.getKey().getFlowRange();
+//            double flowRange = entry.getKey().getFlowRange();
             double nominalFlow = entry.getKey().getNominalFlow();
 
-            List<Integer> convertedList = entry.getValue().stream().map(value -> convertToInt(value, nominalFlow, flowRange)).collect(Collectors.toList());
+            int fieldLength = getFieldLength(entry.getKey().getTestName().toString());
+
+            List<Integer> convertedList = entry.getValue().stream().map(value -> convertToInt(value, nominalFlow, fieldLength)).collect(Collectors.toList());
 
             convertedMap.put(entry.getKey().toString(), convertedList);
 
@@ -118,20 +128,32 @@ public class BoschCoding {
 
     }
 
-    private static int convertToInt(double value, Double nominalFlow, Double flowRange) {
+    private static int convertToInt(double value, Double nominalFlow, int fieldLength) {
 
         if (value == -99d)
             return -99;
         else {
-            /**  Deviation from central point calculation with limitation  within 49 % of flowRange*/
             double delta = nominalFlow - value;
-            double deltaLimitAbs = (nominalFlow * (flowRange * 0.49 / 100));
-            value = ((value >= (nominalFlow - deltaLimitAbs)) && (value <= (nominalFlow + deltaLimitAbs))) ? delta : delta < 0 ? deltaLimitAbs : - deltaLimitAbs;
+            /**  Deviation from central point calculation with limitation  within 49 % of flowRange*/
+//            double deltaLimitAbs = (nominalFlow * (flowRange * 0.49 / 100));
+//            value = ((value >= (nominalFlow - deltaLimitAbs)) && (value <= (nominalFlow + deltaLimitAbs))) ? delta : delta < 0 ? deltaLimitAbs : - deltaLimitAbs;
 
             /** Deviation from central point calculation without limitation*/
 //            value = nominalFlow - value;
 
-            return (int) (value / valueDivider);
+            /** Limitation of deviation value to corresponding field bit size*/
+//            int valueToReturn = (int) (Math.round(value / valueDivider));
+//            int minValue = - (int) (Math.pow(2d, fieldLength));
+//            int maxValue = (int) (Math.pow(2d, fieldLength) - 1);
+//            valueToReturn = valueToReturn >= minValue && valueToReturn <= maxValue ? valueToReturn : valueToReturn < 0 ? minValue : maxValue;
+
+//            return (int) (value / valueDivider);
+
+            /** New calculation of deviation from central point value with limitation to 50%*/
+            int sign = delta < 0 ? -1 : 1;
+            int valueToReturn = (int) (Math.round((delta / valueDivider) / 2));
+            valueToReturn = Math.abs(valueToReturn) > Math.pow(2d, fieldLength - 2) ? (sign * (int)Math.pow(2d, fieldLength - 2)) : valueToReturn;
+            return valueToReturn;
         }
     }
 
@@ -143,14 +165,8 @@ public class BoschCoding {
         for (int i = 0; i < CHANNELS_QTY; i++) {
 
             int value = 0;
+            int isaCharIndex = 32;
             injectorFlows.clear();
-
-            /** Original calculation of flows results sum.
-             * Seems to have a mistake: every time we get sums of flows for all tests and for all channels instead of every channel flows sum individually*/
-//            for (Map.Entry<String, List<Integer>> entry : convertedMap.entrySet()) {
-//
-//                value += entry.getValue().stream().filter(element -> element != -99).reduce(Integer::sum).orElse(0);
-//            }
 
             /** Corrected variant of summing - now we get flows sum individually for very channel*/
             for (Map.Entry<String, List<Integer>> entry : convertedMap.entrySet()) {
@@ -161,6 +177,14 @@ public class BoschCoding {
 
             if (value != -99) {
                 value += injectorCoefficient;
+                if (injectorCodeType == CodeTypes.FIVE) {
+                    ISAResultState isaResultState = getIsaResult().get(i).getIsaResultState();
+                    if (isaResultState != INVALID && isaResultState != OFF) {
+                        System.err.println(getIsaResult().get(i).getIsa_char());
+                        isaCharIndex = MASK.indexOf(getIsaResult().get(i).getIsa_char());
+                    }
+                    value += isaCharIndex;
+                }
                 value = (value & 15) + ((value & 240) >> 4) + 1 & 15;
             }
             resultCheckSum.add(value);
@@ -169,10 +193,11 @@ public class BoschCoding {
         logger.debug("2. Check sum list: {}", resultCheckSum);
 
         return resultCheckSum;
-
     }
 
     private static void convertNegativeValues(Map<String, List<Integer>> convertedMap) {
+
+        int fieldLength;
 
         for (Map.Entry<String, List<Integer>> entry : convertedMap.entrySet()) {
 
@@ -182,17 +207,22 @@ public class BoschCoding {
 
                 if (value != -99) {
 
-                    int fieldSize = Arrays
-                            .stream(BitFields.values())
-                            .filter(v -> v.toString().equals(entry.getKey()))
-                            .findFirst()
-                            .orElseThrow()
-                            .fieldLength(injectorIntCodeType, injectorCoefficient);
-                    value = value < 0 ? value + (int) Math.pow(2d, fieldSize) : value;
+                    fieldLength = getFieldLength(entry.getKey());
+                    value = value < 0 ? value + (int) Math.pow(2d, fieldLength) : value;
                     entry.getValue().set(i, value);
                 }
             }
         }
+    }
+
+    private static int getFieldLength(String testName){
+
+        return Arrays
+                .stream(BitFields.values())
+                .filter(v -> v.toString().equals(testName))
+                .findFirst()
+                .orElseThrow()
+                .fieldLength(injectorIntCodeType, injectorCoefficient);
     }
 
     private static List<String> getCodeResult(Map<String, List<Integer>> preparedMap) {
@@ -334,7 +364,7 @@ public class BoschCoding {
                 codeResult.forEach(result -> resultList.add(result.contains(NO_CODING) ? "Coding impossible" : prepareStringResult(result, injectorCodeType, true)));
                 break;
             case FIVE:
-                List<ISAResult> isaResult = ISADetectionController.getIsaResult();
+                List<ISAResult> isaResult = getIsaResult();
                 for (int i = 0; i < codeResult.size(); i++) {
                     if (codeResult.get(i).contains(NO_CODING))
                         resultList.add("Coding impossible");
@@ -390,11 +420,12 @@ public class BoschCoding {
             return result.toString();
     }
 
+    /** Generate random flows for fake tests for codeType == 0, values should provide -1, 0, 1 in deviation from central point calculation in convertToInt(...) */
     private static List<Double> getRandomFlowsList() {
 
         List<Double> randomFlows = new ArrayList<>();
         for (int i = 0; i < 4; i++) {
-            randomFlows.add((randomFlow.nextInt(3) - 1) * 0.25);
+            randomFlows.add((randomFlow.nextInt(3) - 1) * valueDivider * 2);
         }
         return randomFlows;
     }
@@ -421,26 +452,46 @@ enum CodeTypes {
             else length = length + PRE_INJ_3.fieldLength(codeType, k_coeff) + KEM.fieldLength(codeType, k_coeff);
             return length;
         }
+        @Override final List<String> getTestsList() {
+            return Arrays.asList(EMISSION_POINT.toString(),
+                    IDLE.toString(),
+                    MAX_LOAD.toString(),
+                    PRE_INJ.toString(),
+                    PRE_INJ_2.toString(),
+                    KEM.toString(),
+                    PRE_INJ_3.toString(),
+                    RESERVE.toString(),
+                    REST.toString());}
     },
     ONE(1) {
         @Override final double divider(int k_coeff) { return getDivider(k_coeff); }
         @Override final int codeSize(int k_coeff) { return commonPart(k_coeff); }
+        @Override final List<String> getTestsList() {
+            return Arrays.asList(EMISSION_POINT.toString(), IDLE.toString(), MAX_LOAD.toString(), PRE_INJ.toString());}
     },
     TWO(2) {
         @Override final double divider(int k_coeff) { return getDivider(k_coeff); }
         @Override final int codeSize(int k_coeff) { return commonPart(k_coeff) + PRE_INJ_2.fieldLength(getCodeType(), k_coeff); }
+        @Override final List<String> getTestsList() {
+            return Arrays.asList(EMISSION_POINT.toString(), IDLE.toString(), MAX_LOAD.toString(), PRE_INJ.toString(), PRE_INJ_2.toString());}
     },
     THREE(3) {
         @Override final double divider(int k_coeff) { return getDivider(k_coeff); }
         @Override final int codeSize(int k_coeff) { return commonPart(k_coeff) + 2; }
+        @Override final List<String> getTestsList() {
+            return Arrays.asList(EMISSION_POINT.toString(), IDLE.toString(), MAX_LOAD.toString(), PRE_INJ.toString());}
     },
     FOUR(4) {
         @Override final double divider(int k_coeff) { return getDivider(k_coeff); }
         @Override final int codeSize(int k_coeff) { return commonPart(k_coeff) + PRE_INJ_2.fieldLength(getCodeType(), k_coeff) + 1; }
+        @Override final List<String> getTestsList() {
+            return Arrays.asList(EMISSION_POINT.toString(), IDLE.toString(), MAX_LOAD.toString(), PRE_INJ.toString(), PRE_INJ_2.toString());}
     },
     FIVE(5) {
         @Override final double divider(int k_coeff) { return getDivider(k_coeff); }
         @Override final int codeSize(int k_coeff) { return commonPart(k_coeff); }
+        @Override final List<String> getTestsList() {
+            return Arrays.asList(EMISSION_POINT.toString(), IDLE.toString(), MAX_LOAD.toString(), PRE_INJ.toString());}
     };
 
     private final int codeType;
@@ -473,6 +524,8 @@ enum CodeTypes {
 
     abstract int codeSize(int k_coeff);
 
+    abstract List<String> getTestsList();
+
     public static int codeStep(int codeSize) {
         return codeSize % 5 == 0 ? 5 : 4;
     }
@@ -504,8 +557,8 @@ enum BitFields{
     MAX_LOAD ("Maximum Load"){final int fieldLength(int codeType, int k){return 7;}},
     PRE_INJ ("Pre-injection") {final int fieldLength(int codeType, int k){return 5;}},
     PRE_INJ_2 ("Pre-injection 2") {final int fieldLength(int codeType, int k){return codeType != 0 ? 5 : k != 0 ? 4 : 6;}},
-    PRE_INJ_3 ("Pre-injection 3") {final int fieldLength(int codeType, int k){return 4;}},
     KEM ("Kem") {int fieldLength(final int codeType, int k){return 7;}},
+    PRE_INJ_3 ("Pre-injection 3") {final int fieldLength(int codeType, int k){return 4;}},
     RESERVE ("Reserve"){final int fieldLength(int codeType, int k){return 7;}},
     REST ("Rest"){final int fieldLength(int codeType, int k){return 2;}},
     CHECK_SUM ("Check Sum") {final int fieldLength(int codeType, int k){return 4;}};

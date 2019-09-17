@@ -192,7 +192,7 @@ public class GUI_TypeController {
 
         gui_typeComboBox.getSelectionModel().select(currentGUIType);
         gui_typeComboBox.visibleProperty().bind(dimasGUIEditionState.isDimasGuiEditionProperty().not());
-        gui_typeComboBox.disableProperty().bind(step3Model.step3PauseProperty());
+        step3Model.step3PauseProperty().addListener((observableValue, oldValue, newValue) -> gui_typeComboBox.setDisable(newValue));
         pumpsStartButtonState.startButtonProperty().addListener((observableValue, oldValue, newValue) -> gui_typeComboBox.setDisable(newValue));
         mainSectionModel.startButtonProperty().addListener((observableValue, oldValue, newValue) -> gui_typeComboBox.setDisable(isStarted()));
         injectorSectionPwrState.powerButtonProperty().addListener((observableValue, oldValue, newValue) -> gui_typeComboBox.setDisable(isStarted()));
