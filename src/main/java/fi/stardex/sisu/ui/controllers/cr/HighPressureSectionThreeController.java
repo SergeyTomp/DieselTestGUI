@@ -39,7 +39,6 @@ public class HighPressureSectionThreeController {
     @FXML private ToggleButton regToggleButton;
     @FXML private StackPane rootStackPane;
     private HighPressureSectionPwrState highPressureSectionPwrState;
-//    private ObjectProperty<RegActive> activeControlledParameter = new SimpleObjectProperty<>();
     private ModbusRegisterProcessor ultimaModbusWriter;
     private HighPressureSectionUpdateModel highPressureSectionUpdateModel;
     private I18N i18N;
@@ -142,9 +141,9 @@ public class HighPressureSectionThreeController {
         @Override
         public void handle(MouseEvent event) {
             regulationModesModel.regulatorThreeModeProperty().setValue(activeParam);
-            if (highPressureSectionPwrState.powerButtonProperty().get() && regToggleButton.isSelected()) {
+//            if (highPressureSectionPwrState.powerButtonProperty().get() && regToggleButton.isSelected()) {
                 ultimaModbusWriter.add(mapParam, mapParam_ON);
-            }
+//            }
         }
     }
 
@@ -166,9 +165,9 @@ public class HighPressureSectionThreeController {
 
             if (newValue) {
                 regulationModesModel.regulatorThreeModeProperty().setValue(activeParam);
-                if(highPressureSectionPwrState.powerButtonProperty().get() && regToggleButton.isSelected()){
+//                if(highPressureSectionPwrState.powerButtonProperty().get() && regToggleButton.isSelected()){
                     ultimaModbusWriter.add(mapParam, mapParam_ON);
-                }
+//                }
                 if(highPressureSectionPwrState.powerButtonProperty().get() && regToggleButton.isSelected()){
                     switch (activeParam){
                         case CURRENT:

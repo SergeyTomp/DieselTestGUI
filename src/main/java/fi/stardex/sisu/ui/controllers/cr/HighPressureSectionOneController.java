@@ -222,10 +222,10 @@ public class HighPressureSectionOneController {
 
             if (newValue){
                 regulationModesModel.regulatorOneModeProperty().setValue(activeParam);
-                if(highPressureSectionPwrState.powerButtonProperty().get() && regToggleButton.isSelected()){
+//                if(highPressureSectionPwrState.powerButtonProperty().get() && regToggleButton.isSelected()){
                     ultimaModbusWriter.add(mapParam_1, mapParam_1_ON);
                     ultimaModbusWriter.add(mapParam_2, mapParam_2_ON);
-                }
+//                }
                 if(highPressureSectionPwrState.powerButtonProperty().get() && regToggleButton.isSelected()){
                     switch (activeParam){
                         case PRESSURE:
@@ -266,11 +266,11 @@ public class HighPressureSectionOneController {
         @Override
         public void handle(MouseEvent event) {
             regulationModesModel.regulatorOneModeProperty().setValue(activeParam);
-            if (highPressureSectionPwrState.powerButtonProperty().get()  && regToggleButton.isSelected()) {
+//            if (highPressureSectionPwrState.powerButtonProperty().get()  && regToggleButton.isSelected()) {
                 ultimaModbusWriter.add(mapParam_1, mapParam_1_ON);
                 ultimaModbusWriter.add(mapParam_2, mapParam_2_ON);
 
-            }
+//            }
         }
     }
 
@@ -362,13 +362,10 @@ public class HighPressureSectionOneController {
 
     /** метод запускается при выборе режимов тест и авто */
     private void regulator1pressModeON(Integer targetPress){
-//        if (regulationModesModel.regulatorOneModeProperty().get() != PRESSURE){
             regulationModesModel.regulatorOneModeProperty().setValue(PRESSURE);
             ultimaModbusWriter.add(PressureReg1_PressMode, true);   //вкл.режим давления
             ultimaModbusWriter.add(PressureReg1_I_Mode, false);     //откл.режим тока
-//        }
         pressSpinner.getValueFactory().setValue(targetPress);
-//        ultimaModbusWriter.add(PressureReg1_PressTask, calcTargetPress(targetPress));
         regToggleButton.setSelected(true);
     }
 

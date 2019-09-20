@@ -219,9 +219,9 @@ public class PumpRegulatorSectionTwoController {
         @Override
         public void handle(MouseEvent event) {
             regulationModesModel.regulatorTwoModeProperty().setValue(activeParam);
-            if (pumpHighPressureSectionPwrState.powerButtonProperty().get() && regToggleButton.isSelected()) {
+//            if (pumpHighPressureSectionPwrState.powerButtonProperty().get() && regToggleButton.isSelected()) {
                 ultimaModbusWriter.add(mapParam, mapParam_ON);
-            }
+//            }
         }
     }
 
@@ -243,9 +243,9 @@ public class PumpRegulatorSectionTwoController {
 
             if (newValue) {
                 regulationModesModel.regulatorTwoModeProperty().setValue(activeParam);
-                if(pumpHighPressureSectionPwrState.powerButtonProperty().get() && regToggleButton.isSelected()){
+//                if(pumpHighPressureSectionPwrState.powerButtonProperty().get() && regToggleButton.isSelected()){
                     ultimaModbusWriter.add(mapParam, mapParam_ON);
-                }
+//                }
                 if(pumpHighPressureSectionPwrState.powerButtonProperty().get() && regToggleButton.isSelected()){
                     switch (activeParam){
                         case CURRENT:
@@ -332,8 +332,11 @@ public class PumpRegulatorSectionTwoController {
                 ultimaModbusWriter.add(PressureReg2_ON, true);
                 break;
             case NO_REGULATION:
+                ultimaModbusWriter.add(PressureReg2_DutyMode, false); //duty mode is active when channel duty mode register is set false
+                ultimaModbusWriter.add(Reg1_To_Reg2_Mirror, true);
+                ultimaModbusWriter.add(PressureReg2_ON, true);
                 break;
-            default:ultimaModbusWriter.add(PressureReg2_ON, false);
+            default: ultimaModbusWriter.add(PressureReg2_ON, false);
         }
     }
 

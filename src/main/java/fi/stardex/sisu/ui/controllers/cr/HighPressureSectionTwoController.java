@@ -38,7 +38,6 @@ public class HighPressureSectionTwoController {
     @FXML private ToggleButton regToggleButton;
     @FXML private StackPane rootStackPane;
     private HighPressureSectionPwrState highPressureSectionPwrState;
-//    private ObjectProperty<RegActive> activeControlledParameter = new SimpleObjectProperty<>();
     private ModbusRegisterProcessor ultimaModbusWriter;
     private HighPressureSectionUpdateModel highPressureSectionUpdateModel;
     private final String GREEN_STYLE_CLASS = "regulator-spinner-selected";
@@ -140,9 +139,9 @@ public class HighPressureSectionTwoController {
         @Override
         public void handle(MouseEvent event) {
             regulationModesModel.regulatorTwoModeProperty().setValue(activeParam);
-            if (highPressureSectionPwrState.powerButtonProperty().get() && regToggleButton.isSelected()) {
+//            if (highPressureSectionPwrState.powerButtonProperty().get() && regToggleButton.isSelected()) {
                 ultimaModbusWriter.add(mapParam, mapParam_ON);
-            }
+//            }
         }
     }
 
@@ -164,9 +163,9 @@ public class HighPressureSectionTwoController {
 
             if (newValue) {
                 regulationModesModel.regulatorTwoModeProperty().setValue(activeParam);
-                if(highPressureSectionPwrState.powerButtonProperty().get() && regToggleButton.isSelected()){
+//                if(highPressureSectionPwrState.powerButtonProperty().get() && regToggleButton.isSelected()){
                     ultimaModbusWriter.add(mapParam, mapParam_ON);
-                }
+//                }
                 if(highPressureSectionPwrState.powerButtonProperty().get() && regToggleButton.isSelected()){
                     switch (activeParam){
                         case CURRENT:

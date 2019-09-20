@@ -207,9 +207,9 @@ public class PumpRegulatorSectionThreeController {
         @Override
         public void handle(MouseEvent event) {
             regulationModesModel.regulatorThreeModeProperty().setValue(activeParam);
-            if (pumpHighPressureSectionPwrState.powerButtonProperty().get() && regToggleButton.isSelected()) {
+//            if (pumpHighPressureSectionPwrState.powerButtonProperty().get() && regToggleButton.isSelected()) {
                 ultimaModbusWriter.add(mapParam, mapParam_ON);
-            }
+//            }
         }
     }
 
@@ -231,9 +231,9 @@ public class PumpRegulatorSectionThreeController {
 
             if (newValue) {
                 regulationModesModel.regulatorThreeModeProperty().setValue(activeParam);
-                if(pumpHighPressureSectionPwrState.powerButtonProperty().get() && regToggleButton.isSelected()){
+//                if(pumpHighPressureSectionPwrState.powerButtonProperty().get() && regToggleButton.isSelected()){
                     ultimaModbusWriter.add(mapParam, mapParam_ON);
-                }
+//                }
                 if(pumpHighPressureSectionPwrState.powerButtonProperty().get() && regToggleButton.isSelected()){
                     switch (activeParam){
                         case CURRENT:
