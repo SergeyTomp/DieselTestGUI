@@ -233,6 +233,10 @@ public class MainSectionController {
 
     private NewEditInjectorDialogModel newEditInjectorDialogModel;
 
+    private TabSectionModel tabSectionModel;
+
+    private PiezoRepairModel piezoRepairModel;
+
     private boolean oemAlertProcessing;
 
     private boolean modelAlertProcessing;
@@ -369,6 +373,14 @@ public class MainSectionController {
         this.step3Model = step3Model;
     }
 
+    public void setTabSectionModel(TabSectionModel tabSectionModel) {
+        this.tabSectionModel = tabSectionModel;
+    }
+
+    public void setPiezoRepairModel(PiezoRepairModel piezoRepairModel) {
+        this.piezoRepairModel = piezoRepairModel;
+    }
+
     @PostConstruct
     private void init() {
 
@@ -394,13 +406,11 @@ public class MainSectionController {
         setupGUI_typeModelListener();
         setupManufacturerMenuDialogModelListener();
         setupNewEditInjectorDialogListener();
-        setupManufacturerListListener();
+//        setupManufacturerListListener();
         setupInjectorSectionPwrButtonListener();
         setupStartButtonListener();
         setupStep3StartListener();
         printButton.setOnAction(new PrintButtonEventHandler());
-        boostUadjustmentState.boostUadjustmentStateProperty().addListener((observable, oldValue, newValue) -> disableNode(newValue, startToggleButton));
-
         testListView.setCellFactory(CheckBoxListCell.forListView(InjectorTest::includedProperty));
         showButtons(true, false);
     }
@@ -474,14 +484,14 @@ public class MainSectionController {
                 mainSectionModel.makeOrDelProducerProperty().setValue(null));
     }
 
-    private void setupManufacturerListListener() {
-
-        manufacturerListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
-                mainSectionModel.manufacturerObjectProperty().setValue(newValue));
-
-        manufacturerListView.getItems().addListener((ListChangeListener<Manufacturer>) change ->
-                mainSectionModel.getManufacturerObservableList().setAll(manufacturerListView.getItems()));
-    }
+//    private void setupManufacturerListListener() {
+//
+//        manufacturerListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
+//                mainSectionModel.manufacturerObjectProperty().setValue(newValue));
+//
+//        manufacturerListView.getItems().addListener((ListChangeListener<Manufacturer>) change ->
+//                mainSectionModel.getManufacturerObservableList().setAll(manufacturerListView.getItems()));
+//    }
 
     private MainSectionController makeReferenceToInternalObjects() {
 
@@ -848,7 +858,12 @@ public class MainSectionController {
 
             setFilteredItems(newValue);
         }));
+
+        manufacturerListView.getItems().addListener((ListChangeListener<Manufacturer>) change ->
+                mainSectionModel.getManufacturerObservableList().setAll(manufacturerListView.getItems()));
+
         step3Model.step3PauseProperty().addListener((observableValue, oldValue, newValue) -> manufacturerListView.setDisable(newValue));
+        piezoRepairModel.startMeasureProperty().addListener((observableValue, oldValue, newValue) -> manufacturerListView.setDisable(newValue));
         return this;
     }
 
@@ -937,6 +952,7 @@ public class MainSectionController {
             mainSectionModel.setInjectorIsChanging(false);  // in future replace above line
         });
         step3Model.step3PauseProperty().addListener((observableValue, oldValue, newValue) -> modelListView.setDisable(newValue));
+        piezoRepairModel.startMeasureProperty().addListener((observableValue, oldValue, newValue) -> modelListView.setDisable(newValue));
         return this;
     }
 
@@ -968,7 +984,8 @@ public class MainSectionController {
 
                 disableNode(((startButtonNotSelected) && ((notFirstTestSelected) || testNotIncluded))
                         || boostUadjustmentRunning
-                        || step3Model.step3PauseProperty().get(), startToggleButton);
+                        || tabSectionModel.step3TabIsShowingProperty().get()
+                        || tabSectionModel.piezoTabIsShowingProperty().get(), startToggleButton);
 
             } else if (testPlanTestRadioButton.isSelected() && startToggleButton.isSelected()) {
 
@@ -987,7 +1004,8 @@ public class MainSectionController {
             injectorTestModel.setTestIsChanging(false);
             mainSectionModel.setTestIsChanging(false);  // in future replace above line
         });
-        step3Model.step3PauseProperty().addListener((observableValue, oldValue, newValue) -> testListView.setDisable(newValue));
+        tabSectionModel.step3TabIsShowingProperty().addListener((observableValue, oldValue, newValue) -> testListView.setDisable(newValue));
+        tabSectionModel.piezoTabIsShowingProperty().addListener((observableValue, oldValue, newValue) -> testListView.setDisable(newValue));
         return this;
     }
 
@@ -1022,7 +1040,8 @@ public class MainSectionController {
                     break;
             }
         });
-        step3Model.step3PauseProperty().addListener((observableValue, oldValue, newValue) -> testsToggleGroupGridPane.setDisable(newValue));
+        tabSectionModel.step3TabIsShowingProperty().addListener((observableValue, oldValue, newValue) -> testsToggleGroupGridPane.setDisable(newValue));
+        tabSectionModel.piezoTabIsShowingProperty().addListener((observableValue, oldValue, newValue) -> testsToggleGroupGridPane.setDisable(newValue));
         return this;
     }
 
@@ -1067,7 +1086,15 @@ public class MainSectionController {
             disableNode(newValue, manufacturerListView, injectorsVBox);
         });
 
-        step3Model.step3PauseProperty().addListener((observableValue, oldValue, newValue) -> startToggleButton.setDisable(newValue));
+        tabSectionModel.step3TabIsShowingProperty().addListener((observableValue, oldValue, newValue) ->
+                startToggleButton.setDisable(newValue || boostUadjustmentState.boostUadjustmentStateProperty().get()));
+        tabSectionModel.piezoTabIsShowingProperty().addListener((observableValue, oldValue, newValue) ->
+                startToggleButton.setDisable(newValue || boostUadjustmentState.boostUadjustmentStateProperty().get()));
+        boostUadjustmentState.boostUadjustmentStateProperty().addListener((observable, oldValue, newValue) ->
+                disableNode(newValue
+                        || tabSectionModel.step3TabIsShowingProperty().get()
+                        || tabSectionModel.piezoTabIsShowingProperty().get(),
+                        startToggleButton));
     }
 
     private void setupNewEditInjectorDialogListener() {

@@ -2,16 +2,16 @@ package fi.stardex.sisu.ui.controllers.cr.tabs;
 
 import fi.stardex.sisu.model.Step3Model;
 import fi.stardex.sisu.model.cr.MainSectionModel;
+import fi.stardex.sisu.persistence.orm.bosch_info.Parameters;
+import fi.stardex.sisu.persistence.repos.cr.BoschRepository;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
+import fi.stardex.sisu.states.BoostUadjustmentState;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.ProgressBar;
-import javafx.scene.control.Spinner;
-import javafx.scene.control.SpinnerValueFactory;
-import javafx.scene.control.ToggleButton;
+import javafx.scene.control.*;
 import javafx.scene.text.Text;
 import javafx.util.Duration;
 
@@ -21,6 +21,7 @@ import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.*;
 
 public class Step3Controller {
 
+    @FXML private TextField aheTextField;
     @FXML private Text pauseText;
     @FXML private Spinner<Double> currentSpinner;
     @FXML private Spinner<Integer> timeSpinner;
@@ -32,6 +33,8 @@ public class Step3Controller {
     private PauseProgress pauseProgress;
     private Step3Model step3Model;
     private MainSectionModel mainSectionModel;
+    private BoostUadjustmentState boostUadjustmentState;
+    private BoschRepository boschRepository;
     private int vapBatteryU;
     private double vapSecondI;
     private float pauseBalance;
@@ -51,6 +54,12 @@ public class Step3Controller {
     public void setMainSectionModel(MainSectionModel mainSectionModel) {
         this.mainSectionModel = mainSectionModel;
     }
+    public void setBoostUadjustmentState(BoostUadjustmentState boostUadjustmentState) {
+        this.boostUadjustmentState = boostUadjustmentState;
+    }
+    public void setBoschRepository(BoschRepository boschRepository) {
+        this.boschRepository = boschRepository;
+    }
 
     @PostConstruct
     public void init() {
@@ -63,8 +72,8 @@ public class Step3Controller {
 
     private void setupSpinners() {
 
-        currentSpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(10, 14, 10, 0.5));
-        timeSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(750, 1500, 750, 250));
+        currentSpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(10, 14, 13, 0.5));
+        timeSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(750, 1500, 1000, 250));
     }
 
     private void setupTimeLines() {
@@ -92,6 +101,12 @@ public class Step3Controller {
         });
 
         step3Model.step3PauseProperty().bind(startStopButton.selectedProperty());
+        boostUadjustmentState.boostUadjustmentStateProperty().addListener((observableValue, oldValue, newValue) -> startStopButton.setDisable(newValue));
+        mainSectionModel.injectorProperty().addListener((observableValue, oldValue, newValue) ->{
+            if (newValue != null) {
+                boschRepository.findById(newValue.getInjectorCode()).ifPresent(p -> aheTextField.setText(p.getAHE()));
+            }
+        });
     }
 
     private void start() {
@@ -155,7 +170,7 @@ public class Step3Controller {
         void setProgressBar(float initialTime) {
 
             this.initialTime = initialTime / 1000;
-            text.setText(String.valueOf(initialTime / 1000));
+            text.setText(String.valueOf((int)(initialTime / 1000)));
             progressBar.setProgress(initialTime == 0 ? 0 : 1);
         }
 
@@ -165,7 +180,7 @@ public class Step3Controller {
 
             if (time > 0) {
 
-                text.setText(String.valueOf(time -= timeStep));
+                text.setText(String.valueOf((int)(time -= timeStep)));
                 progressBar.setProgress (time / initialTime);
             }
             return time;

@@ -95,15 +95,15 @@ public class GaugeCreator {
         .foregroundBaseColor(Color.BLACK)  // Defines a color foreground elements
 
         // Related to Title Text
-        .title("Title") // Set the text for the title
+        .title("") // Set the text for the title
         .titleColor(Color.YELLOW) // Define the color for the title text
 
         // Related to Sub Title Text
-        .subTitle("SubTitle") // Set the text for the subtitle
+        .subTitle("") // Set the text for the subtitle
         .subTitleColor(Color.YELLOW) // Define the color for the subtitle text
 
         // Related to Unit Text
-        .unit("Unit") // Set the text for the unit
+        .unit("") // Set the text for the unit
         .unitColor(Color.YELLOW) // Define the color for the unit
 
         // Related to Value Text

@@ -4,6 +4,7 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.HBox?>
@@ -16,6 +17,12 @@
    <children>
       <VBox layoutX="170.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
+            <HBox alignment="CENTER_LEFT" spacing="10.0">
+               <children>
+                  <Label text="AHE" />
+                  <TextField fx:id="aheTextField" alignment="CENTER" prefHeight="26.0" prefWidth="134.0" styleClass="searchTextField" stylesheets="@../../../../css/Styling.css" />
+               </children>
+            </HBox>
             <HBox alignment="CENTER_LEFT" spacing="10.0">
                <children>
                   <Spinner fx:id="currentSpinner" prefHeight="55.0" prefWidth="170.0" styleClass="repair-spinner" stylesheets="@../../../../css/Styling.css" />

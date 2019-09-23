@@ -1,7 +1,9 @@
 package fi.stardex.sisu.ui.controllers.uis;
 
 import fi.stardex.sisu.model.GUI_TypeModel;
+import fi.stardex.sisu.model.PiezoRepairModel;
 import fi.stardex.sisu.model.Step3Model;
+import fi.stardex.sisu.model.TabSectionModel;
 import fi.stardex.sisu.model.uis.CustomModelDialogModel;
 import fi.stardex.sisu.model.uis.CustomProducerDialogModel;
 import fi.stardex.sisu.model.uis.CustomTestDialogModel;
@@ -123,6 +125,8 @@ public class MainSectionUisController {
     private CustomTestDialogModel customTestDialogModel;
     private BoostUadjustmentState boostUadjustmentState;
     private Step3Model step3Model;
+    private TabSectionModel tabSectionModel;
+    private PiezoRepairModel piezoRepairModel;
     private UisModelService uisModelService;
     private UisProducerService uisProducerService;
     private UisTestService uisTestService;
@@ -176,13 +180,17 @@ public class MainSectionUisController {
     public void setBoostUadjustmentState(BoostUadjustmentState boostUadjustmentState) {
         this.boostUadjustmentState = boostUadjustmentState;
     }
-
     public void setStep3Model(Step3Model step3Model) {
         this.step3Model = step3Model;
     }
-
+    public void setTabSectionModel(TabSectionModel tabSectionModel) {
+        this.tabSectionModel = tabSectionModel;
+    }
     public static ObservableList<Test> getListOfNonIncludedTests() {
         return listOfNonIncludedTests;
+    }
+    public void setPiezoRepairModel(PiezoRepairModel piezoRepairModel) {
+        this.piezoRepairModel = piezoRepairModel;
     }
 
     @PostConstruct
@@ -212,7 +220,6 @@ public class MainSectionUisController {
         setupStep3StartListener();
         setupStartButtonListener();
         setupPrintButton();
-//        boostUadjustmentState.boostUadjustmentStateProperty().addListener((observable, oldValue, newValue) -> disableNode(newValue, startToggleButton));
         testListView.setCellFactory(CheckBoxListCell.forListView(Test::includedProperty));
         showButtons(true, false);
     }
@@ -260,6 +267,7 @@ public class MainSectionUisController {
             mainSectionUisModel.setModelIsChanging(false);
         });
         step3Model.step3PauseProperty().addListener((observableValue, oldValue, newValue) -> modelListView.setDisable(newValue));
+        piezoRepairModel.startMeasureProperty().addListener((observableValue, oldValue, newValue) -> modelListView.setDisable(newValue));
 
     }
 
@@ -319,7 +327,8 @@ public class MainSectionUisController {
 
                 disableNode(((startButtonNotSelected) && ((notFirstTestSelected) || testNotIncluded))
                         || boostUadjustmentRunning
-                        || step3Model.step3PauseProperty().get(), startToggleButton);
+                        || tabSectionModel.step3TabIsShowingProperty().get()
+                        || tabSectionModel.piezoTabIsShowingProperty().get(), startToggleButton);
 
             } else if (testPlanTestRadioButton.isSelected() && startToggleButton.isSelected()) {
 
@@ -336,7 +345,8 @@ public class MainSectionUisController {
             setProgress(speedComboBox.getSelectionModel().getSelectedItem().getMultiplier());
             mainSectionUisModel.setTestIsChanging(false);
         });
-        step3Model.step3PauseProperty().addListener((observableValue, oldValue, newValue) -> testListView.setDisable(newValue));
+        tabSectionModel.step3TabIsShowingProperty().addListener((observableValue, oldValue, newValue) -> testListView.setDisable(newValue));
+        tabSectionModel.piezoTabIsShowingProperty().addListener((observableValue, oldValue, newValue) -> testListView.setDisable(newValue));
     }
 
     private void setProgress(double multiplier) {
@@ -376,7 +386,8 @@ public class MainSectionUisController {
                     break;
             }
         });
-        step3Model.step3PauseProperty().addListener((observableValue, oldValue, newValue) -> testsToggleGroupGridPane.setDisable(newValue));
+        tabSectionModel.step3TabIsShowingProperty().addListener((observableValue, oldValue, newValue) -> testsToggleGroupGridPane.setDisable(newValue));
+        tabSectionModel.piezoTabIsShowingProperty().addListener((observableValue, oldValue, newValue) -> testsToggleGroupGridPane.setDisable(newValue));
     }
 
     private void returnToDefaultTestListAuto() {
@@ -463,6 +474,7 @@ public class MainSectionUisController {
             setFilteredItems(newValue);
         });
         step3Model.step3PauseProperty().addListener((observableValue, oldValue, newValue) -> manufacturerListView.setDisable(newValue));
+        piezoRepairModel.startMeasureProperty().addListener((observableValue, oldValue, newValue) -> manufacturerListView.setDisable(newValue));
 
     }
 
@@ -681,7 +693,15 @@ public class MainSectionUisController {
             disableNode(newValue, manufacturerListView, injectorsVBox);
         });
 
-        step3Model.step3PauseProperty().addListener((observableValue, oldValue, newValue) -> startToggleButton.setDisable(newValue));
+        tabSectionModel.step3TabIsShowingProperty().addListener((observableValue, oldValue, newValue) ->
+                startToggleButton.setDisable(newValue || boostUadjustmentState.boostUadjustmentStateProperty().get()));
+        tabSectionModel.piezoTabIsShowingProperty().addListener((observableValue, oldValue, newValue) ->
+                startToggleButton.setDisable(newValue || boostUadjustmentState.boostUadjustmentStateProperty().get()));
+        boostUadjustmentState.boostUadjustmentStateProperty().addListener((observable, oldValue, newValue) ->
+                disableNode(newValue
+                                || tabSectionModel.step3TabIsShowingProperty().get()
+                                || tabSectionModel.piezoTabIsShowingProperty().get(),
+                        startToggleButton));
     }
 
     private void setupTimeProgressBars() {

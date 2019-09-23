@@ -1,5 +1,6 @@
 package fi.stardex.sisu.ui.controllers.cr;
 
+import fi.stardex.sisu.model.PiezoRepairModel;
 import fi.stardex.sisu.model.Step3Model;
 import fi.stardex.sisu.model.TabSectionModel;
 import fi.stardex.sisu.model.cr.InjectorTypeModel;
@@ -25,151 +26,103 @@ import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.*;
 public class TabSectionController {
 
     @FXML private Tab tabStep3;
-
     @FXML private Tab tabPiezoRepair;
-
     @FXML private GridPane settingsGridPane;
-
     @FXML private Tab tabDelay;
-
     @FXML private Tab tabVoltage;
-
     @FXML private Tab tabRLC;
-
     @FXML private Tab tabSettings;
-
     @FXML private Tab tabFlow;
-
     @FXML private Tab tabReport;
-
     @FXML private Tab tabCoding;
-
     @FXML private Tab tabInfo;
-
     @FXML private TabPane tabPane;
-
     @FXML private StackPane voltage;
-
     @FXML private GridPane delay;
-
     @FXML private AnchorPane flow;
-
     @FXML private GridPane coding;
-
     @FXML private GridPane rlc;
-
     @FXML private GridPane info;
-
     @FXML private VoltageController voltageController;
-
     @FXML private DelayController delayController;
-
     @FXML private FlowController flowController;
-
     @FXML private ReportController reportController;
-
     @FXML private RLCController rlcController;
-
     @FXML private Spinner<Double> sensitivitySpinner;
-
     @FXML private CodingController codingController;
-
     @FXML private InfoController infoController;
-
     @FXML private PiezoRepairController piezoRepairController;
-
     @FXML private Step3Controller step3Controller;
 
     private I18N i18N;
-
     private InjectorTypeModel injectorTypeModel;
-
     private MainSectionModel mainSectionModel;
-
     private TabSectionModel tabSectionModel;
-
     private Step3Model step3Model;
-
+    private PiezoRepairModel piezoRepairModel;
     private ChangeListener<InjectorType> piezoTypeListener;
-
     public RLCController getRlCController() {
         return rlcController;
     }
-
     public FlowController getFlowController() {
         return flowController;
     }
-
     public ReportController getReportController() {
         return reportController;
     }
-
     public VoltageController getVoltageController() {
         return voltageController;
     }
-
     public DelayController getDelayController() {
         return delayController;
     }
-
     public CodingController getCodingController() {
         return codingController;
     }
-
     public InfoController getInfoController() {
         return infoController;
     }
-
     public PiezoRepairController getPiezoRepairController() {
         return piezoRepairController;
     }
-
     public Step3Controller getStep3Controller() {
         return step3Controller;
     }
-
     public void setI18N(I18N i18N) {
         this.i18N = i18N;
     }
-
     public Tab getTabVoltage() {
         return tabVoltage;
     }
-
     public Tab getTabDelay() {
         return tabDelay;
     }
-
     public Tab getTabPiezoRepair() {
         return tabPiezoRepair;
     }
-
     public Tab getTabInfo() {
         return tabInfo;
     }
-
     public Tab getTabSettings() {
         return tabSettings;
     }
-
     public GridPane getSettingsGridPane() {
         return settingsGridPane;
     }
-
     public void setInjectorTypeModel(InjectorTypeModel injectorTypeModel) {
         this.injectorTypeModel = injectorTypeModel;
     }
-
     public void setMainSectionModel(MainSectionModel mainSectionModel) {
         this.mainSectionModel = mainSectionModel;
     }
-
     public void setTabSectionModel(TabSectionModel tabSectionModel) {
         this.tabSectionModel = tabSectionModel;
     }
-
     public void setStep3Model(Step3Model step3Model) {
         this.step3Model = step3Model;
+    }
+    public void setPiezoRepairModel(PiezoRepairModel piezoRepairModel) {
+        this.piezoRepairModel = piezoRepairModel;
     }
 
     @PostConstruct
@@ -208,15 +161,12 @@ public class TabSectionController {
 
         tabSectionModel.step3TabIsShowingProperty().bind(tabStep3.selectedProperty());
         tabSectionModel.piezoTabIsShowingProperty().bind(tabPiezoRepair.selectedProperty());
-        tabDelay.disableProperty().bind(step3Model.step3PauseProperty());
-        tabVoltage.disableProperty().bind(step3Model.step3PauseProperty());
-        tabRLC.disableProperty().bind(step3Model.step3PauseProperty());
-        tabSettings.disableProperty().bind(step3Model.step3PauseProperty());
-        tabFlow.disableProperty().bind(step3Model.step3PauseProperty());
-        tabReport.disableProperty().bind(step3Model.step3PauseProperty());
-        tabCoding.disableProperty().bind(step3Model.step3PauseProperty());
-        tabInfo.disableProperty().bind(step3Model.step3PauseProperty());
 
+        tabPane.getTabs().stream().filter(t -> !t.textProperty().get().equals("Piezo") && !t.textProperty().get().equals("Step_3")).forEach(t -> {
+
+            step3Model.step3PauseProperty().addListener((observableValue, oldValue, newValue) -> t.setDisable(newValue));
+            piezoRepairModel.startMeasureProperty().addListener((observableValue, oldValue, newValue) -> t.setDisable(newValue));
+        });
     }
 
 

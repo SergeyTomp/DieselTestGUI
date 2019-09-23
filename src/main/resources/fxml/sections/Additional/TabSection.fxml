@@ -46,8 +46,8 @@
         <Tab fx:id="tabPiezoRepair" text="%h4.tab.repair">
           <fx:include fx:id="piezoRepair" source="tabs/PiezoRepair.fxml" />
         </Tab>
-        <Tab fx:id="tabStep3" text="Step3">
-            <fx:include fx:id="step3" source="tabs/Step3.fxml"/>
+        <Tab fx:id="tabStep3" text="Step_3">
+            <fx:include fx:id="step3" source="tabs/Step3.fxml" />
         </Tab>
     </tabs>
 </TabPane>

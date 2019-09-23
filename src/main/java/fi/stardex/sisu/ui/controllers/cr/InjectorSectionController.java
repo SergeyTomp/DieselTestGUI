@@ -409,7 +409,9 @@ public class InjectorSectionController {
                 default:
                     setDefaultSpinnerValueFactories(true);
                     disableNode(false, widthCurrentSignalSpinner, freqCurrentSignalSpinner);
-                    disableNode(boostUadjustmentState.boostUadjustmentStateProperty().get(), injectorSectionStartToggleButton);
+                    disableNode(boostUadjustmentState.boostUadjustmentStateProperty().get()
+                            || tabSectionModel.step3TabIsShowingProperty().get()
+                            || tabSectionModel.piezoTabIsShowingProperty().get(), injectorSectionStartToggleButton);
                     disableNode(!newValue.getVoltAmpereProfile().isDoubleCoil(), width2CurrentSignalSpinner, offset2CurrentSignalSpinner);
                     Integer freq = newValue.getInjectionRate();
                     Integer width = newValue.getTotalPulseTime();
@@ -495,6 +497,21 @@ public class InjectorSectionController {
         });
 
         tabSectionModel.step3TabIsShowingProperty().addListener((observableValue, oldValue, newValue) -> {
+            injectorSectionStartToggleButton.setDisable(newValue || injectorTestModel.injectorTestProperty().get().getTestName().getMeasurement() == Measurement.NO);
+            if (newValue) {
+                injectorSectionStartToggleButton.setSelected(false);
+                led1ToggleButton.setSelected(true);
+                led2ToggleButton.setSelected(false);
+                led3ToggleButton.setSelected(false);
+                led4ToggleButton.setSelected(false);
+            }
+            if (injectorTestModel.injectorTestProperty().get() == null || !injectorTestModel.injectorTestProperty().get().getVoltAmpereProfile().isDoubleCoil()) {
+                disableNode(newValue, led1ToggleButton, led2ToggleButton, led3ToggleButton, led4ToggleButton);
+            }
+        });
+
+        tabSectionModel.piezoTabIsShowingProperty().addListener((observableValue, oldValue, newValue) -> {
+            injectorSectionStartToggleButton.setDisable(newValue || injectorTestModel.injectorTestProperty().get().getTestName().getMeasurement() == Measurement.NO);
             if (newValue) {
                 injectorSectionStartToggleButton.setSelected(false);
                 led1ToggleButton.setSelected(true);
