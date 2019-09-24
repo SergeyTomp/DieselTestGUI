@@ -2,6 +2,7 @@ package fi.stardex.sisu.ui.controllers.common;
 
 import eu.hansolo.enzo.lcd.Lcd;
 import fi.stardex.sisu.connect.ModbusConnect;
+import fi.stardex.sisu.model.TabSectionModel;
 import fi.stardex.sisu.model.cr.InjectorTestModel;
 import fi.stardex.sisu.model.pump.PumpModel;
 import fi.stardex.sisu.model.pump.PumpTestModel;
@@ -105,6 +106,8 @@ public class TestBenchSectionController {
 
     private MainSectionUisModel mainSectionUisModel;
 
+    private TabSectionModel tabSectionModel;
+
     private static final String PUMP_BUTTON_ON = "pump-button-on";
 
     private static final String PUMP_BUTTON_OFF = "pump-button-off";
@@ -204,6 +207,10 @@ public class TestBenchSectionController {
         this.mainSectionUisModel = mainSectionUisModel;
     }
 
+    public void setTabSectionModel(TabSectionModel tabSectionModel) {
+        this.tabSectionModel = tabSectionModel;
+    }
+
     public enum StatePump {
 
         ON("PUMP\n ON", true, PUMP_BUTTON_ON),
@@ -265,6 +272,8 @@ public class TestBenchSectionController {
         setupUpdatersListeners();
 
         setupConnectionListeners();
+
+        setupTabSectionListeners();
     }
 
     private void bindingI18N() {
@@ -273,6 +282,27 @@ public class TestBenchSectionController {
         labelPressure1.textProperty().bind(i18N.createStringBinding("bench.label.pressure1"));
         labelRPM.textProperty().bind(i18N.createStringBinding("bench.label.rpm"));
         fuelLevelLabel.textProperty().bind(i18N.createStringBinding("bench.label.fuelLevel"));
+    }
+
+    private void setupTabSectionListeners() {
+
+        tabSectionModel.step3TabIsShowingProperty().addListener((observableValue, oldValue, newValue) -> {
+            if (newValue) {
+                testBenchStartToggleButton.setSelected(false);
+            }
+            testBenchStartToggleButton.setDisable(newValue || (flowFirmwareVersion.getVersions() != STAND_FM
+                    && flowFirmwareVersion.getVersions() != STAND_FM_4_CH
+                    && standFirmwareVersion.versionProperty().get() != STAND));
+        });
+
+        tabSectionModel.piezoTabIsShowingProperty().addListener((observableValue, oldValue, newValue) -> {
+            if (newValue) {
+                testBenchStartToggleButton.setSelected(false);
+            }
+            testBenchStartToggleButton.setDisable(newValue || (flowFirmwareVersion.getVersions() != STAND_FM
+                    && flowFirmwareVersion.getVersions() != STAND_FM_4_CH
+                    && standFirmwareVersion.versionProperty().get() != STAND));
+        });
     }
 
     private void setupTestListener() {

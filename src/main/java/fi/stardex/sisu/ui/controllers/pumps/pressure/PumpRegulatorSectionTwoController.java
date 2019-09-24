@@ -1,6 +1,7 @@
 package fi.stardex.sisu.ui.controllers.pumps.pressure;
 
 import eu.hansolo.medusa.Gauge;
+import fi.stardex.sisu.model.GUI_TypeModel;
 import fi.stardex.sisu.model.pump.PumpModel;
 import fi.stardex.sisu.model.pump.PumpPressureRegulatorOneModel;
 import fi.stardex.sisu.model.pump.PumpTestModel;
@@ -9,6 +10,7 @@ import fi.stardex.sisu.model.updateModels.HighPressureSectionUpdateModel;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.PumpHighPressureSectionPwrState;
+import fi.stardex.sisu.ui.controllers.common.GUI_TypeController;
 import fi.stardex.sisu.util.GaugeCreator;
 import fi.stardex.sisu.util.enums.RegActive;
 import fi.stardex.sisu.util.i18n.I18N;
@@ -53,6 +55,7 @@ public class PumpRegulatorSectionTwoController {
     private PumpModel pumpModel;
     private PumpTestModel pumpTestModel;
     private PumpPressureRegulatorOneModel pumpPressureRegulatorOneModel;
+    private GUI_TypeModel gui_typeModel;
     private final String GREEN_STYLE_CLASS = "regulator-spinner-selected";
 
     public Spinner<Double> getCurrentSpinner() {
@@ -77,9 +80,11 @@ public class PumpRegulatorSectionTwoController {
     public void setPumpTestModel(PumpTestModel pumpTestModel) {
         this.pumpTestModel = pumpTestModel;
     }
-
     public void setPumpPressureRegulatorOneModel(PumpPressureRegulatorOneModel pumpPressureRegulatorOneModel) {
         this.pumpPressureRegulatorOneModel = pumpPressureRegulatorOneModel;
+    }
+    public void setGui_typeModel(GUI_TypeModel gui_typeModel) {
+        this.gui_typeModel = gui_typeModel;
     }
 
     public void setI18N(I18N i18N) {
@@ -155,8 +160,23 @@ public class PumpRegulatorSectionTwoController {
         highPressureSectionUpdateModel.current_2Property().addListener((observableValue, oldValue, newValue) -> currentSpinner.getValueFactory().setValue((Double) newValue));
         highPressureSectionUpdateModel.duty_2Property().addListener((observableValue, oldValue, newValue) -> dutySpinner.getValueFactory().setValue((Double)newValue));
 
-        gauge.valueProperty().bind(highPressureSectionUpdateModel.gauge_2PropertyProperty());
+        /**при переходе в другой GUI нужно отключать регулятор давления и менять режим регулирования на ток,
+         * запрос фокуса на регулирующий спиннер работает только при открытии GUI, при закрытии нет (для этого добавлен блок else{})*/
+        gui_typeModel.guiTypeProperty().addListener((observable, oldValue, newValue) -> {
 
+            if (newValue != GUI_TypeController.GUIType.CR_Pump) {
+
+                ultimaModbusWriter.add(PressureReg2_I_Mode, true);
+                ultimaModbusWriter.add(PressureReg2_I_Task, 0d);
+                regToggleButton.setSelected(false);
+            }else{
+                currentSpinner.requestFocus();
+                rootStackPane.requestFocus();
+                currentSpinner.getValueFactory().setValue(0d);
+            }
+        });
+
+        gauge.valueProperty().bind(highPressureSectionUpdateModel.gauge_2PropertyProperty());
     }
 
     private void addRegulatorDependentListeners() {
@@ -208,7 +228,7 @@ public class PumpRegulatorSectionTwoController {
         ModbusMapUltima mapParam;
         boolean mapParam_ON;
 
-        public TwoSpinnerArrowClickHandler(RegActive activeParam,
+        TwoSpinnerArrowClickHandler(RegActive activeParam,
                                            ModbusMapUltima mapParam,
                                            boolean mapParam_ON) {
             this.activeParam = activeParam;
@@ -230,7 +250,7 @@ public class PumpRegulatorSectionTwoController {
         ModbusMapUltima mapParam;
         boolean mapParam_ON;
 
-        public TwoSpinnerFocusListener(RegActive activeParam,
+        TwoSpinnerFocusListener(RegActive activeParam,
                                        ModbusMapUltima mapParam,
                                        boolean mapParam_ON) {
             this.activeParam = activeParam;
@@ -264,7 +284,7 @@ public class PumpRegulatorSectionTwoController {
 
         RegActive regActive;
 
-        public ParameterChangeListener(RegActive regActive) {
+        ParameterChangeListener(RegActive regActive) {
             this.regActive = regActive;
         }
 

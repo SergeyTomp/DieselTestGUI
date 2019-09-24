@@ -1,5 +1,6 @@
 package fi.stardex.sisu.ui.controllers.cr;
 
+import fi.stardex.sisu.model.GUI_TypeModel;
 import fi.stardex.sisu.model.cr.InjectorTestModel;
 import fi.stardex.sisu.model.cr.PressureRegulatorOneModel;
 import fi.stardex.sisu.model.PressureSensorModel;
@@ -8,6 +9,7 @@ import fi.stardex.sisu.model.updateModels.HighPressureSectionUpdateModel;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.HighPressureSectionPwrState;
+import fi.stardex.sisu.ui.controllers.common.GUI_TypeController;
 import fi.stardex.sisu.util.enums.RegActive;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.listeners.ThreeSpinnerStyleChangeListener;
@@ -50,37 +52,34 @@ public class HighPressureSectionOneController {
     private final String GREEN_STYLE_CLASS = "regulator-spinner-selected";
     private I18N i18N;
     private RegulationModesModel regulationModesModel;
+    private GUI_TypeModel gui_typeModel;
 
     public void setI18N(I18N i18N) {
         this.i18N = i18N;
     }
-
     public void setHighPressureSectionPwrState(HighPressureSectionPwrState highPressureSectionPwrState) {
         this.highPressureSectionPwrState = highPressureSectionPwrState;
     }
-
     public void setPressureSensorModel(PressureSensorModel pressureSensorModel) {
         this.pressureSensorModel = pressureSensorModel;
     }
-
     public void setUltimaModbusWriter(ModbusRegisterProcessor ultimaModbusWriter) {
         this.ultimaModbusWriter = ultimaModbusWriter;
     }
-
     public void setHighPressureSectionUpdateModel(HighPressureSectionUpdateModel highPressureSectionUpdateModel) {
         this.highPressureSectionUpdateModel = highPressureSectionUpdateModel;
     }
-
     public void setInjectorTestModel(InjectorTestModel injectorTestModel) {
         this.injectorTestModel = injectorTestModel;
     }
-
     public void setPressureRegulatorOneModel(PressureRegulatorOneModel pressureRegulatorOneModel) {
         this.pressureRegulatorOneModel = pressureRegulatorOneModel;
     }
-
     public void setRegulationModesModel(RegulationModesModel regulationModesModel) {
         this.regulationModesModel = regulationModesModel;
+    }
+    public void setGui_typeModel(GUI_TypeModel gui_typeModel) {
+        this.gui_typeModel = gui_typeModel;
     }
 
     @PostConstruct
@@ -169,6 +168,23 @@ public class HighPressureSectionOneController {
             }
             else regulator1pressModeOFF();
         });
+
+        /**при переходе в другой GUI нужно отключать регулятор давления и менять режим регулирования на давление,
+         * запрос фокуса на регулирующий спиннер работает только при открытии GUI, при закрытии нет (для этого добавлен блок else{})*/
+        gui_typeModel.guiTypeProperty().addListener((observable, oldValue, newValue) -> {
+
+            if (newValue != GUI_TypeController.GUIType.CR_Inj && newValue != GUI_TypeController.GUIType.HEUI) {
+
+                ultimaModbusWriter.add(PressureReg1_PressMode, true);
+                ultimaModbusWriter.add(PressureReg1_I_Mode, false);
+                ultimaModbusWriter.add(PressureReg1_PressTask, 0);
+                regToggleButton.setSelected(false);
+            }else{
+                pressSpinner.requestFocus();
+                rootStackPane.requestFocus();
+                pressSpinner.getValueFactory().setValue(0);
+            }
+        });
     }
 
     private class StackPanePowerButtonWidthListener implements ChangeListener<Number> {
@@ -176,7 +192,7 @@ public class HighPressureSectionOneController {
         private final StackPane stackPWB;
         private final ToggleButton powerButton;
 
-        public StackPanePowerButtonWidthListener(StackPane stackPWB, ToggleButton powerButton) {
+        StackPanePowerButtonWidthListener(StackPane stackPWB, ToggleButton powerButton) {
             this.stackPWB = stackPWB;
             this.powerButton = powerButton;
         }
@@ -205,7 +221,7 @@ public class HighPressureSectionOneController {
         ModbusMapUltima mapParam_2;
         boolean mapParam_2_ON;
 
-        public ThreeSpinnerFocusListener(RegActive activeParam,
+        ThreeSpinnerFocusListener(RegActive activeParam,
                                          ModbusMapUltima mapParam_1,
                                          boolean mapParam_1_ON,
                                          ModbusMapUltima mapParam_2,
@@ -251,7 +267,7 @@ public class HighPressureSectionOneController {
         ModbusMapUltima mapParam_2;
         boolean mapParam_2_ON;
 
-        public ThreeSpinnerArrowClickHandler(RegActive activeParam,
+        ThreeSpinnerArrowClickHandler(RegActive activeParam,
                                              ModbusMapUltima mapParam_1,
                                              boolean mapParam_1_ON,
                                              ModbusMapUltima mapParam_2,
@@ -278,7 +294,7 @@ public class HighPressureSectionOneController {
 
         RegActive activeParam;
 
-        public ParameterChangeListener(RegActive activeParam) {
+        ParameterChangeListener(RegActive activeParam) {
             this.activeParam = activeParam;
         }
 

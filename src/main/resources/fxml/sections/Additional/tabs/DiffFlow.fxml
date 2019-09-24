@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.cr.tabs.DiffFlowController">
+    <children>
+        <HBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <children>
+                <VBox prefHeight="200.0" prefWidth="500.0" spacing="12.0">
+                    <children>
+                        <HBox alignment="CENTER_LEFT" spacing="10.0">
+                            <children>
+                        <VBox alignment="CENTER">
+                           <children>
+                              <Label text="Shifting Time">
+                                 <VBox.margin>
+                                    <Insets right="40.0" />
+                                 </VBox.margin>
+                              </Label>
+                              <HBox alignment="CENTER" spacing="5.0">
+                                 <children>
+                                            <Spinner fx:id="shiftingTimeSpinner" prefHeight="50.0" prefWidth="170.0" styleClass="repair-spinner" stylesheets="@../../../../css/Styling.css" />
+                                            <Label text="ms">
+                                                <font>
+                                                    <Font size="24.0" />
+                                                </font>
+                                                <HBox.margin>
+                                                    <Insets right="20.0" />
+                                                </HBox.margin>
+                                            </Label>
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                        <VBox alignment="CENTER">
+                           <children>
+                              <Label text="AutoShifting Period">
+                                 <VBox.margin>
+                                    <Insets right="50.0" />
+                                 </VBox.margin>
+                              </Label>
+                              <HBox alignment="CENTER" spacing="5.0">
+                                 <children>
+                                            <Spinner fx:id="shiftingPeriodSpinner" prefHeight="50.0" prefWidth="170.0" styleClass="repair-spinner" stylesheets="@../../../../css/Styling.css" />
+                                            <Label text="s">
+                                                <font>
+                                                    <Font size="24.0" />
+                                                </font>
+                                            </Label>
+                                 </children>
+                              </HBox>
+                           </children>
+                        </VBox>
+                            </children>
+                        </HBox>
+                        <HBox spacing="70.0">
+                            <children>
+                        <Button fx:id="shiftingAutoStartButton" alignment="CENTER" mnemonicParsing="false" prefHeight="55.0" prefWidth="170.0" styleClass="quadLed" stylesheets="@../../../../css/Styling.css" text="Auto Shifting" />
+                        <Button fx:id="manualShiftingStartButton" alignment="CENTER" mnemonicParsing="false" prefHeight="55.0" prefWidth="170.0" styleClass="quadLed" stylesheets="@../../../../css/Styling.css" text="Manual Shifting" />
+                            </children>
+                        </HBox>
+                  <HBox alignment="CENTER_LEFT">
+                     <VBox.margin>
+                        <Insets left="170.0" />
+                     </VBox.margin>
+                     <children>
+                        <ImageView fx:id="shiftingInProgressImageView" fitHeight="55.0" fitWidth="55.0" pickOnBounds="true" preserveRatio="true" />
+                        <Label text="Shifting ON" />
+                     </children>
+                  </HBox>
+                    </children>
+                    <padding>
+                        <Insets left="20.0" top="20.0" />
+                    </padding>
+                </VBox>
+            </children>
+        </HBox>
+    </children>
+</AnchorPane>

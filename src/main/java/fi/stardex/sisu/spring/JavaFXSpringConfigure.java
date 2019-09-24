@@ -8,9 +8,7 @@ import fi.stardex.sisu.model.*;
 import fi.stardex.sisu.model.cr.*;
 import fi.stardex.sisu.model.pump.*;
 import fi.stardex.sisu.model.uis.*;
-import fi.stardex.sisu.model.updateModels.HighPressureSectionUpdateModel;
-import fi.stardex.sisu.model.updateModels.InjectorSectionUpdateModel;
-import fi.stardex.sisu.model.updateModels.PiezoRepairUpdateModel;
+import fi.stardex.sisu.model.updateModels.*;
 import fi.stardex.sisu.pdf.PDFService;
 import fi.stardex.sisu.persistence.repos.ISADetectionRepository;
 import fi.stardex.sisu.persistence.repos.InjectorTypeRepository;
@@ -47,8 +45,6 @@ import fi.stardex.sisu.ui.controllers.pumps.SCVCalibrationController;
 import fi.stardex.sisu.ui.controllers.pumps.pressure.PumpHighPressureSectionPwrController;
 import fi.stardex.sisu.ui.controllers.pumps.pressure.PumpRegulatorSectionTwoController;
 import fi.stardex.sisu.ui.controllers.common.RootLayoutController;
-import fi.stardex.sisu.model.updateModels.TachometerUltimaUpdateModel;
-import fi.stardex.sisu.model.updateModels.TestBenchSectionUpdateModel;
 import fi.stardex.sisu.ui.controllers.uis.MainSectionUisController;
 import fi.stardex.sisu.ui.controllers.uis.UisInjectorSectionController;
 import fi.stardex.sisu.ui.controllers.uis.UisSettingsController;
@@ -244,7 +240,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                                  TestBenchSectionModel testBenchSectionModel,
                                                                  ModbusConnect flowModbusConnect,
                                                                  ModbusConnect standModbusConnect,
-                                                                 MainSectionUisModel mainSectionUisModel) {
+                                                                 MainSectionUisModel mainSectionUisModel,
+                                                                 TabSectionModel tabSectionModel) {
         TestBenchSectionController testBenchSectionController = rootLayoutController.getTestBenchSectionController();
         testBenchSectionController.setFlowModbusWriter(flowModbusWriter);
         testBenchSectionController.setStandModbusWriter(standModbusWriter);
@@ -261,6 +258,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         testBenchSectionController.setFlowModbusConnect(flowModbusConnect);
         testBenchSectionController.setStandModbusConnect(standModbusConnect);
         testBenchSectionController.setMainSectionUisModel(mainSectionUisModel);
+        testBenchSectionController.setTabSectionModel(tabSectionModel);
         return testBenchSectionController;
     }
 
@@ -284,7 +282,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                                              InjectorTestModel injectorTestModel,
                                                                              PressureRegulatorOneModel pressureRegulatorOneModel,
                                                                              I18N i18N,
-                                                                             RegulationModesModel regulationModesModel){
+                                                                             RegulationModesModel regulationModesModel,
+                                                                             GUI_TypeModel gui_typeModel){
         HighPressureSectionOneController highPressureSectionOneController = injectorHighPressureSectionController.getHighPressureSectionOneController();
         highPressureSectionOneController.setHighPressureSectionPwrState(highPressureSectionPwrState);
         highPressureSectionOneController.setPressureSensorModel(pressureSensorModel);
@@ -294,6 +293,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         highPressureSectionOneController.setPressureRegulatorOneModel(pressureRegulatorOneModel);
         highPressureSectionOneController.setI18N(i18N);
         highPressureSectionOneController.setRegulationModesModel(regulationModesModel);
+        highPressureSectionOneController.setGui_typeModel(gui_typeModel);
         return highPressureSectionOneController;
     }
 
@@ -305,13 +305,15 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                                              ModbusRegisterProcessor ultimaModbusWriter,
                                                                              HighPressureSectionUpdateModel highPressureSectionUpdateModel,
                                                                              I18N i18N,
-                                                                             RegulationModesModel regulationModesModel){
+                                                                             RegulationModesModel regulationModesModel,
+                                                                             GUI_TypeModel gui_typeModel){
         HighPressureSectionTwoController highPressureSectionTwoController = injectorHighPressureSectionController.getHighPressureSectionTwoController();
         highPressureSectionTwoController.setHighPressureSectionPwrState(highPressureSectionPwrState);
         highPressureSectionTwoController.setUltimaModbusWriter(ultimaModbusWriter);
         highPressureSectionTwoController.setHighPressureSectionUpdateModel(highPressureSectionUpdateModel);
         highPressureSectionTwoController.setI18N(i18N);
         highPressureSectionTwoController.setRegulationModesModel(regulationModesModel);
+        highPressureSectionTwoController.setGui_typeModel(gui_typeModel);
         return highPressureSectionTwoController;
     }
 
@@ -322,13 +324,15 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                                                  ModbusRegisterProcessor ultimaModbusWriter,
                                                                                  HighPressureSectionUpdateModel highPressureSectionUpdateModel,
                                                                                  I18N i18N,
-                                                                                 RegulationModesModel regulationModesModel){
+                                                                                 RegulationModesModel regulationModesModel,
+                                                                                 GUI_TypeModel gui_typeModel){
         HighPressureSectionThreeController highPressureSectionThreeController = injectorHighPressureSectionController.getHighPressureSectionThreeController();
         highPressureSectionThreeController.setHighPressureSectionPwrState(highPressureSectionPwrState);
         highPressureSectionThreeController.setUltimaModbusWriter(ultimaModbusWriter);
         highPressureSectionThreeController.setHighPressureSectionUpdateModel(highPressureSectionUpdateModel);
         highPressureSectionThreeController.setI18N(i18N);
         highPressureSectionThreeController.setRegulationModesModel(regulationModesModel);
+        highPressureSectionThreeController.setGui_typeModel(gui_typeModel);
         return highPressureSectionThreeController;
     }
 
@@ -344,9 +348,13 @@ public class JavaFXSpringConfigure extends ViewLoader{
     @Bean
     @Autowired
     public HighPressureSectionPwrController highPressureSectionPwrController(InjectorHighPressureSectionController injectorHighPressureSectionController,
-                                                                             HighPressureSectionPwrState highPressureSectionPwrState){
+                                                                             HighPressureSectionPwrState highPressureSectionPwrState,
+                                                                             TabSectionModel tabSectionModel,
+                                                                             GUI_TypeModel gui_typeModel){
         HighPressureSectionPwrController highPressureSectionPwrController = injectorHighPressureSectionController.getHighPressureSectionPwrController();
         highPressureSectionPwrController.setHighPressureSectionPwrState(highPressureSectionPwrState);
+        highPressureSectionPwrController.setTabSectionModel(tabSectionModel);
+        highPressureSectionPwrController.setGui_typeModel(gui_typeModel);
         return highPressureSectionPwrController;
     }
 
@@ -475,7 +483,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                      MainSectionModel mainSectionModel,
                                                      TabSectionModel tabSectionModel,
                                                      Step3Model step3Model,
-                                                     PiezoRepairModel piezoRepairModel) {
+                                                     PiezoRepairModel piezoRepairModel,
+                                                     InjectorSectionPwrState injectorSectionPwrState) {
         TabSectionController tabSectionController = (TabSectionController) tabSection().getController();
         tabSectionController.setI18N(i18N);
         tabSectionController.setInjectorTypeModel(injectorTypeModel);
@@ -483,6 +492,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         tabSectionController.setTabSectionModel(tabSectionModel);
         tabSectionController.setStep3Model(step3Model);
         tabSectionController.setPiezoRepairModel(piezoRepairModel);
+        tabSectionController.setInjectorSectionPwrState(injectorSectionPwrState);
         return tabSectionController;
     }
 
@@ -1420,5 +1430,16 @@ public class JavaFXSpringConfigure extends ViewLoader{
         step3Controller.setBoostUadjustmentState(boostUadjustmentState);
         step3Controller.setBoschRepository(boschRepository);
         return step3Controller;
+    }
+
+    @Bean
+    @Autowired
+    public DiffFlowController diffFlowController(TabSectionController tabSectionController,
+                                                 ModbusRegisterProcessor flowModbusWriter,
+                                                 DiffFlowUpdateModel diffFlowUpdateModel) {
+        DiffFlowController diffFlowController = tabSectionController.getDiffFlowController();
+        diffFlowController.setFlowModbusWriter(flowModbusWriter);
+        diffFlowController.setDiffFlowUpdateModel(diffFlowUpdateModel);
+        return diffFlowController;
     }
 }

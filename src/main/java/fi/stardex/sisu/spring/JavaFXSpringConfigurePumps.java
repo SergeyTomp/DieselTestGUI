@@ -299,7 +299,8 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
                                                                                HighPressureSectionUpdateModel highPressureSectionUpdateModel,
                                                                                RegulationModesModel regulationModesModel,
                                                                                PumpTestModel pumpTestModel,
-                                                                               PumpPressureRegulatorOneModel pumpPressureRegulatorOneModel) {
+                                                                               PumpPressureRegulatorOneModel pumpPressureRegulatorOneModel,
+                                                                               GUI_TypeModel gui_typeModel) {
         PumpRegulatorSectionOneController pumpRegulatorSectionOneController = pumpHighPressureSectionController.getPumpRegulatorSectionOneController();
         pumpRegulatorSectionOneController.setI18N(i18N);
         pumpRegulatorSectionOneController.setPumpHighPressureSectionPwrState(pumpHighPressureSectionPwrState);
@@ -309,6 +310,7 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
         pumpRegulatorSectionOneController.setRegulationModesModel(regulationModesModel);
         pumpRegulatorSectionOneController.setPumpTestModel(pumpTestModel);
         pumpRegulatorSectionOneController.setPumpPressureRegulatorOneModel(pumpPressureRegulatorOneModel);
+        pumpRegulatorSectionOneController.setGui_typeModel(gui_typeModel);
         return pumpRegulatorSectionOneController;
     }
 
@@ -321,7 +323,8 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
                                                                                RegulationModesModel regulationModesModel,
                                                                                PumpModel pumpModel,
                                                                                PumpTestModel pumpTestModel,
-                                                                               PumpPressureRegulatorOneModel pumpPressureRegulatorOneModel) {
+                                                                               PumpPressureRegulatorOneModel pumpPressureRegulatorOneModel,
+                                                                               GUI_TypeModel gui_typeModel) {
         PumpRegulatorSectionTwoController pumpRegulatorSectionTwoController = pumpHighPressureSectionController.getPumpRegulatorSectionTwoController();
         pumpRegulatorSectionTwoController.setI18N(i18N);
         pumpRegulatorSectionTwoController.setHighPressureSectionPwrState(pumpHighPressureSectionPwrState);
@@ -331,6 +334,7 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
         pumpRegulatorSectionTwoController.setPumpModel(pumpModel);
         pumpRegulatorSectionTwoController.setPumpTestModel(pumpTestModel);
         pumpRegulatorSectionTwoController.setPumpPressureRegulatorOneModel(pumpPressureRegulatorOneModel);
+        pumpRegulatorSectionTwoController.setGui_typeModel(gui_typeModel);
         return pumpRegulatorSectionTwoController;
     }
 
@@ -342,7 +346,8 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
                                                                                    HighPressureSectionUpdateModel highPressureSectionUpdateModel,
                                                                                    RegulationModesModel regulationModesModel,
                                                                                    PumpModel pumpModel,
-                                                                                   PumpTestModel pumpTestModel) {
+                                                                                   PumpTestModel pumpTestModel,
+                                                                                   GUI_TypeModel gui_typeModel) {
         PumpRegulatorSectionThreeController pumpRegulatorSectionThreeController = pumpHighPressureSectionController.getPumpRegulatorSectionThreeController();
         pumpRegulatorSectionThreeController.setI18N(i18N);
         pumpRegulatorSectionThreeController.setHighPressureSectionPwrState(pumpHighPressureSectionPwrState);
@@ -351,6 +356,7 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
         pumpRegulatorSectionThreeController.setRegulationModesModel(regulationModesModel);
         pumpRegulatorSectionThreeController.setPumpModel(pumpModel);
         pumpRegulatorSectionThreeController.setPumpTestModel(pumpTestModel);
+        pumpRegulatorSectionThreeController.setGui_typeModel(gui_typeModel);
         return pumpRegulatorSectionThreeController;
     }
 
@@ -366,9 +372,11 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
     @Bean
     @Autowired
     public PumpHighPressureSectionPwrController pumpHighPressureSectionPwrController(PumpHighPressureSectionController pumpHighPressureSectionController,
-                                                                                     PumpHighPressureSectionPwrState pumpHighPressureSectionPwrState) {
+                                                                                     PumpHighPressureSectionPwrState pumpHighPressureSectionPwrState,
+                                                                                     GUI_TypeModel gui_typeModel) {
         PumpHighPressureSectionPwrController pumpHighPressureSectionPwrController = pumpHighPressureSectionController.getPumpHighPressureSectionPwrController();
         pumpHighPressureSectionPwrController.setPumpHighPressureSectionPwrState(pumpHighPressureSectionPwrState);
+        pumpHighPressureSectionPwrController.setGui_typeModel(gui_typeModel);
         return pumpHighPressureSectionPwrController;
     }
 

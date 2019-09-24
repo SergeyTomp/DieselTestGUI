@@ -8,6 +8,7 @@ import fi.stardex.sisu.model.updateModels.HighPressureSectionUpdateModel;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.PumpHighPressureSectionPwrState;
+import fi.stardex.sisu.ui.controllers.common.GUI_TypeController;
 import fi.stardex.sisu.util.GaugeCreator;
 import fi.stardex.sisu.util.enums.RegActive;
 import fi.stardex.sisu.util.i18n.I18N;
@@ -57,6 +58,7 @@ public class PumpRegulatorSectionOneController {
     private PumpPressureRegulatorOneModel pumpPressureRegulatorOneModel;
     private RegulationModesModel regulationModesModel;
     private PumpTestModel pumpTestModel;
+    private GUI_TypeModel gui_typeModel;
     private final String GREEN_STYLE_CLASS = "regulator-spinner-selected";
 
     public void setI18N(I18N i18N) {
@@ -82,6 +84,9 @@ public class PumpRegulatorSectionOneController {
     }
     public void setPumpPressureRegulatorOneModel(PumpPressureRegulatorOneModel pumpPressureRegulatorOneModel) {
         this.pumpPressureRegulatorOneModel = pumpPressureRegulatorOneModel;
+    }
+    public void setGui_typeModel(GUI_TypeModel gui_typeModel) {
+        this.gui_typeModel = gui_typeModel;
     }
 
     @PostConstruct
@@ -183,6 +188,23 @@ public class PumpRegulatorSectionOneController {
             }
             else regulator1pressModeOFF();
         });
+
+        /**при переходе в другой GUI нужно отключать регулятор давления и менять режим регулирования на давление,
+         * запрос фокуса на регулирующий спиннер работает только при открытии GUI, при закрытии нет (для этого добавлен блок else{})*/
+        gui_typeModel.guiTypeProperty().addListener((observable, oldValue, newValue) -> {
+
+            if (newValue != GUI_TypeController.GUIType.CR_Pump) {
+
+                ultimaModbusWriter.add(PressureReg1_PressMode, true);
+                ultimaModbusWriter.add(PressureReg1_I_Mode, false);
+                ultimaModbusWriter.add(PressureReg1_PressTask, 0);
+                regToggleButton.setSelected(false);
+            }else{
+                pressSpinner.requestFocus();
+                rootStackPane.requestFocus();
+                pressSpinner.getValueFactory().setValue(0);
+            }
+        });
     }
 
     private class ThreeSpinnerFocusListener implements ChangeListener<Boolean> {
@@ -192,7 +214,7 @@ public class PumpRegulatorSectionOneController {
         ModbusMapUltima mapParam_2;
         boolean mapParam_2_ON;
 
-        public ThreeSpinnerFocusListener(RegActive activeParam,
+        ThreeSpinnerFocusListener(RegActive activeParam,
                                          ModbusMapUltima mapParam_1,
                                          boolean mapParam_1_ON,
                                          ModbusMapUltima mapParam_2,
@@ -217,12 +239,15 @@ public class PumpRegulatorSectionOneController {
                     switch (activeParam){
                         case PRESSURE:
                             ultimaModbusWriter.add(PressureReg1_PressTask, calcTargetPress(pressSpinner.getValue()));
+                            System.err.println(pressSpinner.getValue());
                             break;
                         case CURRENT:
                             ultimaModbusWriter.add(PressureReg1_I_Task, currentSpinner.getValue());
+                            System.err.println(currentSpinner.getValue());
                             break;
                         case DUTY:
                             ultimaModbusWriter.add(PressureReg1_DutyTask, dutySpinner.getValue());
+                            System.err.println(dutySpinner.getValue());
                             break;
                     }
                 }
@@ -238,7 +263,7 @@ public class PumpRegulatorSectionOneController {
         ModbusMapUltima mapParam_2;
         boolean mapParam_2_ON;
 
-        public ThreeSpinnerArrowClickHandler(RegActive activeParam,
+        ThreeSpinnerArrowClickHandler(RegActive activeParam,
                                              ModbusMapUltima mapParam_1,
                                              boolean mapParam_1_ON,
                                              ModbusMapUltima mapParam_2,
@@ -265,7 +290,7 @@ public class PumpRegulatorSectionOneController {
 
         RegActive activeParam;
 
-        public ParameterChangeListener(RegActive activeParam) {
+        ParameterChangeListener(RegActive activeParam) {
             this.activeParam = activeParam;
         }
 

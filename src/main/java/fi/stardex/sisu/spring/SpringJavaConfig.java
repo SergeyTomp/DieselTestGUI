@@ -191,6 +191,7 @@ public class SpringJavaConfig {
                         int firmwareVersionNumber = (int) read(ModbusMapFlow.FirmwareVersion);
                         switch (firmwareVersionNumber) {
                             case 0xAACC:
+                            case 0xDDFF:
                                 flowFirmwareVersion.setVersions(MASTER);
                                 standIPField.setDisable(false);
                                 standPortField.setDisable(false);
@@ -336,7 +337,8 @@ public class SpringJavaConfig {
                         switch (version) {
                             case MASTER:
                                 updaters.stream().filter(updater -> updater instanceof FlowMasterUpdater
-                                        || updater instanceof PumpFlowUpdater).forEach(Platform::runLater);
+                                        || updater instanceof PumpFlowUpdater
+                                        || updater instanceof DiffFlowUpdateModel).forEach(Platform::runLater);
                                 break;
                             case STREAM:
                                 updaters.stream().filter(updater -> updater instanceof FlowStreamUpdater
@@ -1147,6 +1149,11 @@ public class SpringJavaConfig {
     @Bean
     public TabSectionModel tabSectionModel() {
         return new TabSectionModel();
+    }
+
+    @Bean
+    public DiffFlowUpdateModel diffFlowUpdateModel() {
+        return new DiffFlowUpdateModel();
     }
 
 //    @Bean

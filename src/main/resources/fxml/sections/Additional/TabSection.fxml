@@ -49,5 +49,8 @@
         <Tab fx:id="tabStep3" text="Step_3">
             <fx:include fx:id="step3" source="tabs/Step3.fxml" />
         </Tab>
+        <Tab fx:id="tabDiffFlow" text="DiffFlow">
+            <fx:include fx:id="diffFlow" source="tabs/DiffFlow.fxml" />
+        </Tab>
     </tabs>
 </TabPane>

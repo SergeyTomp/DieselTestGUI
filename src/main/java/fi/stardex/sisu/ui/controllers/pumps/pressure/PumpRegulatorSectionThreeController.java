@@ -1,6 +1,7 @@
 package fi.stardex.sisu.ui.controllers.pumps.pressure;
 
 import eu.hansolo.medusa.Gauge;
+import fi.stardex.sisu.model.GUI_TypeModel;
 import fi.stardex.sisu.model.pump.PumpModel;
 import fi.stardex.sisu.model.pump.PumpTestModel;
 import fi.stardex.sisu.model.RegulationModesModel;
@@ -8,6 +9,7 @@ import fi.stardex.sisu.model.updateModels.HighPressureSectionUpdateModel;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.PumpHighPressureSectionPwrState;
+import fi.stardex.sisu.ui.controllers.common.GUI_TypeController;
 import fi.stardex.sisu.util.GaugeCreator;
 import fi.stardex.sisu.util.enums.RegActive;
 import fi.stardex.sisu.util.i18n.I18N;
@@ -51,6 +53,7 @@ public class PumpRegulatorSectionThreeController {
     private RegulationModesModel regulationModesModel;
     private PumpModel pumpModel;
     private PumpTestModel pumpTestModel;
+    private GUI_TypeModel gui_typeModel;
     private final String GREEN_STYLE_CLASS = "regulator-spinner-selected";
 
     public void setHighPressureSectionPwrState(PumpHighPressureSectionPwrState pumpHighPressureSectionPwrState) {
@@ -73,6 +76,9 @@ public class PumpRegulatorSectionThreeController {
     }
     public void setI18N(I18N i18N) {
         this.i18N = i18N;
+    }
+    public void setGui_typeModel(GUI_TypeModel gui_typeModel) {
+        this.gui_typeModel = gui_typeModel;
     }
 
     @PostConstruct
@@ -144,6 +150,22 @@ public class PumpRegulatorSectionThreeController {
         highPressureSectionUpdateModel.current_3Property().addListener((observableValue, oldValue, newValue) -> currentSpinner.getValueFactory().setValue((Double) newValue));
         highPressureSectionUpdateModel.duty_3Property().addListener((observableValue, oldValue, newValue) -> dutySpinner.getValueFactory().setValue((Double)newValue));
 
+        /**при переходе в другой GUI нужно отключать регулятор давления и менять режим регулирования на ток,
+         * запрос фокуса на регулирующий спиннер работает только при открытии GUI, при закрытии нет (для этого добавлен блок else{})*/
+        gui_typeModel.guiTypeProperty().addListener((observable, oldValue, newValue) -> {
+
+            if (newValue != GUI_TypeController.GUIType.CR_Pump) {
+
+                ultimaModbusWriter.add(PressureReg3_I_Mode, true);
+                ultimaModbusWriter.add(PressureReg3_I_Task, 0d);
+                regToggleButton.setSelected(false);
+            }else{
+                currentSpinner.requestFocus();
+                rootStackPane.requestFocus();
+                currentSpinner.getValueFactory().setValue(0d);
+            }
+        });
+
         gauge.valueProperty().bind(highPressureSectionUpdateModel.gauge_3PropertyProperty());
     }
 
@@ -196,7 +218,7 @@ public class PumpRegulatorSectionThreeController {
         ModbusMapUltima mapParam;
         boolean mapParam_ON;
 
-        public TwoSpinnerArrowClickHandler(RegActive activeParam,
+        TwoSpinnerArrowClickHandler(RegActive activeParam,
                                            ModbusMapUltima mapParam,
                                            boolean mapParam_ON) {
             this.activeParam = activeParam;
@@ -218,7 +240,7 @@ public class PumpRegulatorSectionThreeController {
         ModbusMapUltima mapParam;
         boolean mapParam_ON;
 
-        public TwoSpinnerFocusListener(RegActive activeParam,
+        TwoSpinnerFocusListener(RegActive activeParam,
                                        ModbusMapUltima mapParam,
                                        boolean mapParam_ON) {
             this.activeParam = activeParam;
@@ -252,7 +274,7 @@ public class PumpRegulatorSectionThreeController {
 
         RegActive regActive;
 
-        public ParameterChangeListener(RegActive regActive) {
+        ParameterChangeListener(RegActive regActive) {
             this.regActive = regActive;
         }
 

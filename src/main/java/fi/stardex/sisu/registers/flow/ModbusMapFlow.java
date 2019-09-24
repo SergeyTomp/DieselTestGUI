@@ -50,7 +50,14 @@ public enum ModbusMapFlow implements ModbusMap {
 
     Channel10Level(REGISTER_INPUT, 128, 2, true),
     Channel10Temperature1(REGISTER_INPUT, 138, 2, true),
-    Channel10Temperature2(REGISTER_INPUT, 140, 2, true);
+    Channel10Temperature2(REGISTER_INPUT, 140, 2, true),
+
+    // Differential flowmeter registers
+    ShiftingDuration(REGISTER_HOLDING, 2, 1, false),
+    ShiftingPeriod(REGISTER_HOLDING, 3, 1, false),
+    ShiftingAutoStartIsOn(DISCRETE_COIL, 2, 1, true),
+    ShiftingManualStart(DISCRETE_COIL, 3, 1, true),
+    ShiftingIsInProgress(DISCRETE_INPUT, 11, 1, true);
 
     private final RegisterType type;
     private final int ref;

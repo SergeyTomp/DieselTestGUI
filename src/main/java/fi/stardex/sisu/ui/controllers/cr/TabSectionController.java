@@ -3,8 +3,11 @@ package fi.stardex.sisu.ui.controllers.cr;
 import fi.stardex.sisu.model.PiezoRepairModel;
 import fi.stardex.sisu.model.Step3Model;
 import fi.stardex.sisu.model.TabSectionModel;
+import fi.stardex.sisu.model.TestBenchSectionModel;
 import fi.stardex.sisu.model.cr.InjectorTypeModel;
 import fi.stardex.sisu.model.cr.MainSectionModel;
+import fi.stardex.sisu.states.HighPressureSectionPwrState;
+import fi.stardex.sisu.states.InjectorSectionPwrState;
 import fi.stardex.sisu.ui.controllers.cr.tabs.*;
 import fi.stardex.sisu.ui.controllers.cr.tabs.info.InfoController;
 import fi.stardex.sisu.ui.controllers.cr.tabs.report.ReportController;
@@ -25,6 +28,7 @@ import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.*;
 
 public class TabSectionController {
 
+    @FXML private Tab tabDiffFlow;
     @FXML private Tab tabStep3;
     @FXML private Tab tabPiezoRepair;
     @FXML private GridPane settingsGridPane;
@@ -53,6 +57,7 @@ public class TabSectionController {
     @FXML private InfoController infoController;
     @FXML private PiezoRepairController piezoRepairController;
     @FXML private Step3Controller step3Controller;
+    @FXML private DiffFlowController diffFlowController;
 
     private I18N i18N;
     private InjectorTypeModel injectorTypeModel;
@@ -61,6 +66,7 @@ public class TabSectionController {
     private Step3Model step3Model;
     private PiezoRepairModel piezoRepairModel;
     private ChangeListener<InjectorType> piezoTypeListener;
+    private InjectorSectionPwrState injectorSectionPwrState;
     public RLCController getRlCController() {
         return rlcController;
     }
@@ -87,6 +93,9 @@ public class TabSectionController {
     }
     public Step3Controller getStep3Controller() {
         return step3Controller;
+    }
+    public DiffFlowController getDiffFlowController() {
+        return diffFlowController;
     }
     public void setI18N(I18N i18N) {
         this.i18N = i18N;
@@ -124,12 +133,16 @@ public class TabSectionController {
     public void setPiezoRepairModel(PiezoRepairModel piezoRepairModel) {
         this.piezoRepairModel = piezoRepairModel;
     }
+    public void setInjectorSectionPwrState(InjectorSectionPwrState injectorSectionPwrState) {
+        this.injectorSectionPwrState = injectorSectionPwrState;
+    }
 
     @PostConstruct
     private void init(){
 
         bindingI18N();
         tabPane.getTabs().remove(tabStep3);
+        tabPane.getTabs().remove(tabDiffFlow);
 
         piezoTypeListener = (observableValue, oldValue, newValue) -> {
 
@@ -167,8 +180,19 @@ public class TabSectionController {
             step3Model.step3PauseProperty().addListener((observableValue, oldValue, newValue) -> t.setDisable(newValue));
             piezoRepairModel.startMeasureProperty().addListener((observableValue, oldValue, newValue) -> t.setDisable(newValue));
         });
+
+        mainSectionModel.startButtonProperty().addListener((observableValue, oldValue, newValue) -> disableTabs());
+        injectorSectionPwrState.powerButtonProperty().addListener((observableValue, oldValue, newValue) -> disableTabs());
     }
 
+    private void disableTabs() {
+        tabStep3.setDisable(sectionsON());
+        tabPiezoRepair.setDisable(sectionsON());
+    }
+
+    private boolean sectionsON() {
+        return mainSectionModel.startButtonProperty().get() || injectorSectionPwrState.powerButtonProperty().get();
+    }
 
     private void bindingI18N() {
         tabDelay.textProperty().bind(i18N.createStringBinding("additional.delay"));
