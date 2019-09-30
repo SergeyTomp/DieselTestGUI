@@ -36,7 +36,7 @@ public class PumpHighPressureSectionPwrController {
         pumpHighPressureSectionPwrState.powerButtonProperty().bindBidirectional(pwrButtonToggleButton.selectedProperty());
 
         gui_typeModel.guiTypeProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != GUI_TypeController.GUIType.CR_Pump) {
+            if (oldValue == GUI_TypeController.GUIType.CR_Pump) {
                 pwrButtonToggleButton.setSelected(false);
             }
         });

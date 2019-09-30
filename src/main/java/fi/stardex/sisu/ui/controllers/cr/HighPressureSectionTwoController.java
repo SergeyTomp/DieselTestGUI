@@ -119,15 +119,16 @@ public class HighPressureSectionTwoController {
         highPressureSectionUpdateModel.current_2Property().addListener((observableValue, oldValue, newValue) -> currentSpinner.getValueFactory().setValue((Double) newValue));
         highPressureSectionUpdateModel.duty_2Property().addListener((observableValue, oldValue, newValue) -> dutySpinner.getValueFactory().setValue((Double)newValue));
 
-        /**при переходе в другой GUI нужно отключать регулятор давления и менять режим регулирования на ток,
-         * запрос фокуса на регулирующий спиннер работает только при открытии GUI, при закрытии нет (для этого добавлен блок else{})*/
+        /** При переходе в другой GUI нужно отключать регулятор давления и менять режим регулирования на ток.
+         * Запрос фокуса на регулирующий спиннер работает только при открытии GUI - добавлен блок else if(){} для включения режима регулирования и визуализации его зелёной рамкой.*/
         gui_typeModel.guiTypeProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != GUI_TypeController.GUIType.CR_Inj && newValue != GUI_TypeController.GUIType.HEUI) {
+            if (oldValue == GUI_TypeController.GUIType.CR_Inj || oldValue == GUI_TypeController.GUIType.HEUI) {
 
-                ultimaModbusWriter.add(PressureReg2_I_Mode, true);
-                ultimaModbusWriter.add(PressureReg2_I_Task, 0d);
                 regToggleButton.setSelected(false);
-            }else{
+            }
+
+            else if(newValue == GUI_TypeController.GUIType.CR_Inj || newValue == GUI_TypeController.GUIType.HEUI){
+
                 currentSpinner.requestFocus();
                 rootStackPane.requestFocus();
                 currentSpinner.getValueFactory().setValue(0d);

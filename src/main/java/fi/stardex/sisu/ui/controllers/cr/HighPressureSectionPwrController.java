@@ -55,7 +55,7 @@ public class HighPressureSectionPwrController {
         });
 
         gui_typeModel.guiTypeProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue != GUI_TypeController.GUIType.CR_Inj && newValue != GUI_TypeController.GUIType.HEUI) {
+            if (oldValue == GUI_TypeController.GUIType.CR_Inj || oldValue == GUI_TypeController.GUIType.HEUI) {
                 pwrButtonToggleButton.setSelected(false);
             }
         });

@@ -169,17 +169,17 @@ public class HighPressureSectionOneController {
             else regulator1pressModeOFF();
         });
 
-        /**при переходе в другой GUI нужно отключать регулятор давления и менять режим регулирования на давление,
-         * запрос фокуса на регулирующий спиннер работает только при открытии GUI, при закрытии нет (для этого добавлен блок else{})*/
+        /** При переходе в другой GUI нужно отключать регулятор давления и менять режим регулирования на давление.
+         * Запрос фокуса на регулирующий спиннер работает только при открытии GUI - добавлен блок else if(){} для включения режима регулирования и визуализации его зелёной рамкой.*/
         gui_typeModel.guiTypeProperty().addListener((observable, oldValue, newValue) -> {
 
-            if (newValue != GUI_TypeController.GUIType.CR_Inj && newValue != GUI_TypeController.GUIType.HEUI) {
+            if (oldValue == GUI_TypeController.GUIType.CR_Inj || oldValue == GUI_TypeController.GUIType.HEUI) {
 
-                ultimaModbusWriter.add(PressureReg1_PressMode, true);
-                ultimaModbusWriter.add(PressureReg1_I_Mode, false);
-                ultimaModbusWriter.add(PressureReg1_PressTask, 0);
                 regToggleButton.setSelected(false);
-            }else{
+            }
+
+            else if(newValue == GUI_TypeController.GUIType.CR_Inj || newValue == GUI_TypeController.GUIType.HEUI){
+
                 pressSpinner.requestFocus();
                 rootStackPane.requestFocus();
                 pressSpinner.getValueFactory().setValue(0);
