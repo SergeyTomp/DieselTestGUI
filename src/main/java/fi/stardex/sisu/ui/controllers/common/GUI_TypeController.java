@@ -5,6 +5,7 @@ import fi.stardex.sisu.model.PiezoRepairModel;
 import fi.stardex.sisu.model.Step3Model;
 import fi.stardex.sisu.model.cr.MainSectionModel;
 import fi.stardex.sisu.model.pump.ManufacturerPumpModel;
+import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.DimasGUIEditionState;
 import fi.stardex.sisu.states.InjectorSectionPwrState;
 import fi.stardex.sisu.states.PumpsStartButtonState;
@@ -18,6 +19,8 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.PostConstruct;
 import java.util.prefs.Preferences;
 
+import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.UIS_to_CR_pulseControlSwitch;
+
 public class GUI_TypeController {
 
     private final Logger logger = LoggerFactory.getLogger(GUI_TypeController.class);
@@ -28,64 +31,36 @@ public class GUI_TypeController {
 
     @FXML
     private ComboBox<GUIType> gui_typeComboBox;
-
     private Preferences rootPreferences;
-
     private Parent mainSection;
-
     private Parent mainSectionPumps;
-
     private Parent mainSectionUIS;
-
     private Parent crSection;
-
     private Parent pumpSection;
-
     private Parent tabSection;
-
     private Parent tabSectionPumps;
-
     private Parent uisTabSection;
-
     private Parent injectorSectionUis;
-
     private GridPane mainSectionGridPane;
-
     private GridPane additionalSectionGridPane;
-
     private GridPane settingsGridPaneCR;
-
     private GridPane settingsGridPanePumps;
-
     private GridPane uisSettingsGridPane;
-
     private Parent activeMainSection;
-
     private Parent activeChangeableSection;
-
     private Parent activeTabSection;
-
     private Parent settings;
-
     private Parent connection;
-
     private Parent uisSettings;
-
     private DimasGUIEditionState dimasGUIEditionState;
-
     private ManufacturerPumpModel manufacturerPumpModel;
-
     private GUI_TypeModel gui_typeModel;
-
     private PumpsStartButtonState pumpsStartButtonState;
-
     private MainSectionModel mainSectionModel;
-
     private InjectorSectionPwrState injectorSectionPwrState;
-
     private Step3Model step3Model;
-
     private PiezoRepairModel piezoRepairModel;
+    private ModbusRegisterProcessor ultimaModbusWriter;
 
     public void setManufacturerPumpModel(ManufacturerPumpModel manufacturerPumpModel) {
         this.manufacturerPumpModel = manufacturerPumpModel;
@@ -165,6 +140,9 @@ public class GUI_TypeController {
     public void setPiezoRepairModel(PiezoRepairModel piezoRepairModel) {
         this.piezoRepairModel = piezoRepairModel;
     }
+    public void setUltimaModbusWriter(ModbusRegisterProcessor ultimaModbusWriter) {
+        this.ultimaModbusWriter = ultimaModbusWriter;
+    }
 
     @PostConstruct
     private void init() {
@@ -203,6 +181,8 @@ public class GUI_TypeController {
         pumpsStartButtonState.startButtonProperty().addListener((observableValue, oldValue, newValue) -> gui_typeComboBox.setDisable(newValue));
         mainSectionModel.startButtonProperty().addListener((observableValue, oldValue, newValue) -> gui_typeComboBox.setDisable(isStarted()));
         injectorSectionPwrState.powerButtonProperty().addListener((observableValue, oldValue, newValue) -> gui_typeComboBox.setDisable(isStarted()));
+
+        ultimaModbusWriter.add(UIS_to_CR_pulseControlSwitch, currentGUIType == GUIType.UIS ? 1 : 0);
     }
 
     private void changeToCRInj() {
@@ -227,6 +207,8 @@ public class GUI_TypeController {
         activeMainSection = mainSection;
         activeChangeableSection = crSection;
         activeTabSection = tabSection;
+
+        ultimaModbusWriter.add(UIS_to_CR_pulseControlSwitch, 0);
 
         logger.info("Changed to CrInj");
     }
@@ -256,6 +238,8 @@ public class GUI_TypeController {
 
         manufacturerPumpModel.initManufacturerPumpList();
 
+        ultimaModbusWriter.add(UIS_to_CR_pulseControlSwitch, 0);
+
         logger.info("Changed to CrPump");
     }
 
@@ -279,6 +263,8 @@ public class GUI_TypeController {
         activeMainSection = mainSectionUIS;
         activeChangeableSection = injectorSectionUis;
         activeTabSection = uisTabSection;
+
+        ultimaModbusWriter.add(UIS_to_CR_pulseControlSwitch, 1);
 
         logger.info("Changed to UIS");
     }

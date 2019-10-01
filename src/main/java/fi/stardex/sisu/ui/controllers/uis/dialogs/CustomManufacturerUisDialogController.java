@@ -60,8 +60,11 @@ public class CustomManufacturerUisDialogController {
 
         mainSectionUisModel.customProducerOperationProperty().addListener((observableValue, oldValue, newValue) -> {
 
+            /** Additional check of GUI type is done to prevent listener invocation and dialog window irrelevant to GUI type activation.
+             * This will be important after implementation of MainSectionUisController as a unique one for all GUI types.
+             * Such a check could be done through {@code newValue instanceOf InjectorUisTest} but it is slower */
+            if (guiTypeModel.guiTypeProperty().get() != UIS) {return;}
             if(newValue == null) return;
-            if (guiTypeModel.guiTypeProperty().get() == UIS) {
 
                 if (dialogStage == null) {
                     dialogStage = new Stage();
@@ -80,7 +83,6 @@ public class CustomManufacturerUisDialogController {
                         break;
                 }
                 dialogStage.show();
-            }
         });
 
         cancelBtn.setOnMouseClicked(mouseEvent -> {

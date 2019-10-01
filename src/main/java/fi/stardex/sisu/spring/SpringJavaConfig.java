@@ -17,9 +17,6 @@ import fi.stardex.sisu.model.updateModels.*;
 import fi.stardex.sisu.pdf.PDFService;
 import fi.stardex.sisu.persistence.CheckAndInitializeBD;
 import fi.stardex.sisu.persistence.orm.CSVSUpdater;
-import fi.stardex.sisu.persistence.orm.interfaces.ModelService;
-import fi.stardex.sisu.persistence.orm.interfaces.TestService;
-import fi.stardex.sisu.persistence.orm.interfaces.VapService;
 import fi.stardex.sisu.persistence.repos.ManufacturerRepository;
 import fi.stardex.sisu.persistence.repos.cr.InjectorTestRepository;
 import fi.stardex.sisu.persistence.repos.cr.InjectorsRepository;
@@ -65,7 +62,6 @@ import javafx.beans.property.BooleanProperty;
 import javafx.scene.control.TextField;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.*;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
@@ -1154,6 +1150,31 @@ public class SpringJavaConfig {
     @Bean
     public DiffFlowUpdateModel diffFlowUpdateModel() {
         return new DiffFlowUpdateModel();
+    }
+
+    @Bean
+    public UisTabSectionModel uisTabSectionModel() {
+        return new UisTabSectionModel();
+    }
+
+    @Bean
+    @Autowired
+    public UisHardwareUpdateModel uisHardwareUpdateModel(MainSectionUisModel mainSectionUisModel,
+                                                         GUI_TypeModel gui_typeModel) {
+        UisHardwareUpdateModel uisHardwareUpdateModel = new UisHardwareUpdateModel();
+        uisHardwareUpdateModel.setMainSectionUisModel(mainSectionUisModel);
+        uisHardwareUpdateModel.setGui_typeModel(gui_typeModel);
+        return uisHardwareUpdateModel;
+    }
+
+    @Bean
+    public UisVoltageTabModel uisVoltageTabModel() {
+        return new UisVoltageTabModel();
+    }
+
+    @Bean
+    public UisVapModel uisVapDialogModel() {
+        return new UisVapModel();
     }
 
 //    @Bean

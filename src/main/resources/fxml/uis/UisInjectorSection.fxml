@@ -13,13 +13,13 @@
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 
-<StackPane fx:id="rootStackPane" alignment="CENTER_RIGHT" maxHeight="-Infinity" minHeight="260.0" minWidth="910.0" prefHeight="260.0" stylesheets="@../../../css/Styling.css" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.uis.UisInjectorSectionController">
+<StackPane fx:id="rootStackPane" alignment="CENTER_RIGHT" maxHeight="-Infinity" minHeight="260.0" minWidth="910.0" prefHeight="260.0" stylesheets="@../../css/Styling.css" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.uis.UisInjectorSectionController">
     <children>
         <GridPane fx:id="rootGridPane" alignment="TOP_CENTER" styleClass="pane" StackPane.alignment="CENTER_RIGHT">
             <children>
             <VBox>
                <children>
-                  <TextField fx:id="typeTextField" alignment="CENTER" maxHeight="-Infinity" styleClass="modelTextField" stylesheets="@../../../css/Styling.css">
+                  <TextField fx:id="typeTextField" alignment="CENTER" maxHeight="-Infinity" styleClass="modelTextField" stylesheets="@../../css/Styling.css">
                      <VBox.margin>
                         <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
                      </VBox.margin>
@@ -77,20 +77,20 @@
                         </StackPane>
                         <StackPane fx:id="topSpinnerStackPane" GridPane.columnIndex="1">
                            <children>
-                              <Spinner fx:id="pressureSpinner" visible="false" />
+                              <Spinner fx:id="pressureSpinner" editable="true" visible="false" />
                               <Spinner fx:id="width2Spinner" editable="true" visible="false" />
-                              <Spinner fx:id="offsetSpinner" visible="false" />
+                              <Spinner fx:id="offsetSpinner" editable="true" visible="false" />
                            </children>
                         </StackPane>
                         <StackPane fx:id="midSpinnerStackPane" GridPane.columnIndex="1" GridPane.rowIndex="1">
                            <children>
-                              <Spinner fx:id="currentSpinner" visible="false" />
+                              <Spinner fx:id="currentSpinner" editable="true" visible="false" />
                               <Spinner fx:id="angle2Spinner" editable="true" visible="false" />
                            </children>
                         </StackPane>
                         <StackPane fx:id="lowSpinnerStackPane" GridPane.columnIndex="1" GridPane.rowIndex="2">
                            <children>
-                              <Spinner fx:id="dutySpinner" visible="false" />
+                              <Spinner fx:id="dutySpinner" editable="true" visible="false" />
                            </children>
                         </StackPane>
                      </children>
@@ -123,56 +123,56 @@
                             <children>
                                 <StackPane fx:id="led1StackPane" prefWidth="80.0" GridPane.columnIndex="0" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                            <children>
-                              <ToggleButton fx:id="led1ToggleButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="65.0" prefWidth="65.0" styleClass="led" stylesheets="@../../../css/Styling.css" text="1">
+                              <ToggleButton fx:id="led1ToggleButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="65.0" prefWidth="65.0" styleClass="led" stylesheets="@../../css/Styling.css" text="1">
                                  <StackPane.margin>
                                     <Insets />
                                  </StackPane.margin></ToggleButton>
                            </children></StackPane>
                                 <StackPane fx:id="led2StackPane" GridPane.columnIndex="1">
                            <children>
-                              <ToggleButton fx:id="led2ToggleButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="65.0" prefWidth="65.0" styleClass="led" stylesheets="@../../../css/Styling.css" text="2">
+                              <ToggleButton fx:id="led2ToggleButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="65.0" prefWidth="65.0" styleClass="led" stylesheets="@../../css/Styling.css" text="2">
                                  <StackPane.margin>
                                     <Insets />
                                  </StackPane.margin></ToggleButton>
                            </children></StackPane>
                                 <StackPane fx:id="led3StackPane" GridPane.columnIndex="2">
                            <children>
-                              <ToggleButton fx:id="led3ToggleButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="65.0" prefWidth="65.0" styleClass="led" stylesheets="@../../../css/Styling.css" text="3">
+                              <ToggleButton fx:id="led3ToggleButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="65.0" prefWidth="65.0" styleClass="led" stylesheets="@../../css/Styling.css" text="3">
                                  <StackPane.margin>
                                     <Insets left="10.0" right="10.0" />
                                  </StackPane.margin></ToggleButton>
                            </children></StackPane>
                                 <StackPane fx:id="led4StackPane" GridPane.columnIndex="3">
                            <children>
-                              <ToggleButton fx:id="led4ToggleButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="65.0" prefWidth="65.0" styleClass="led" stylesheets="@../../../css/Styling.css" text="4">
+                              <ToggleButton fx:id="led4ToggleButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="65.0" prefWidth="65.0" styleClass="led" stylesheets="@../../css/Styling.css" text="4">
                                  <StackPane.margin>
                                     <Insets left="10.0" right="10.0" />
                                  </StackPane.margin></ToggleButton>
                            </children></StackPane>
                                 <StackPane fx:id="led5StackPane" GridPane.columnIndex="4">
                            <children>
-                              <ToggleButton fx:id="led5ToggleButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="65.0" prefWidth="65.0" styleClass="led" stylesheets="@../../../css/Styling.css" text="5">
+                              <ToggleButton fx:id="led5ToggleButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="65.0" prefWidth="65.0" styleClass="led" stylesheets="@../../css/Styling.css" text="5">
                                  <StackPane.margin>
                                     <Insets left="10.0" right="10.0" />
                                  </StackPane.margin></ToggleButton>
                            </children></StackPane>
                                 <StackPane fx:id="led6StackPane" GridPane.columnIndex="5">
                            <children>
-                              <ToggleButton fx:id="led6ToggleButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="65.0" prefWidth="65.0" styleClass="led" stylesheets="@../../../css/Styling.css" text="6">
+                              <ToggleButton fx:id="led6ToggleButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="65.0" prefWidth="65.0" styleClass="led" stylesheets="@../../css/Styling.css" text="6">
                                  <StackPane.margin>
                                     <Insets left="10.0" right="10.0" />
                                  </StackPane.margin></ToggleButton>
                            </children></StackPane>
                                 <StackPane fx:id="led7StackPane" GridPane.columnIndex="6">
                            <children>
-                              <ToggleButton fx:id="led7ToggleButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="65.0" prefWidth="65.0" styleClass="led" stylesheets="@../../../css/Styling.css" text="7">
+                              <ToggleButton fx:id="led7ToggleButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="65.0" prefWidth="65.0" styleClass="led" stylesheets="@../../css/Styling.css" text="7">
                                  <StackPane.margin>
                                     <Insets left="10.0" right="10.0" />
                                  </StackPane.margin></ToggleButton>
                            </children></StackPane>
                                 <StackPane fx:id="led8StackPane" GridPane.columnIndex="7">
                            <children>
-                              <ToggleButton fx:id="led8ToggleButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="65.0" prefWidth="65.0" styleClass="led" stylesheets="@../../../css/Styling.css" text="8">
+                              <ToggleButton fx:id="led8ToggleButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="65.0" prefWidth="65.0" styleClass="led" stylesheets="@../../css/Styling.css" text="8">
                                  <StackPane.margin>
                                     <Insets left="10.0" right="10.0" />
                                  </StackPane.margin></ToggleButton>
@@ -224,7 +224,7 @@
                               <Insets />
                            </GridPane.margin></StackPane>
                                 <!--InjectorSwitch-->
-                                <ToggleButton fx:id="regulatorToggleButton" minHeight="90.0" minWidth="50.0" prefWidth="50.0" styleClass="switcher" stylesheets="@../../../css/Styling.css" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS" GridPane.rowSpan="2" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                                <ToggleButton fx:id="regulatorToggleButton" minHeight="90.0" minWidth="50.0" prefWidth="50.0" styleClass="switcher" stylesheets="@../../css/Styling.css" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS" GridPane.rowSpan="2" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                            <GridPane.margin>
                               <Insets bottom="2.0" left="2.0" right="10.0" top="2.0" />
                            </GridPane.margin></ToggleButton>

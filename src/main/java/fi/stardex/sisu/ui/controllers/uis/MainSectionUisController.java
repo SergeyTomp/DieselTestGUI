@@ -248,7 +248,7 @@ public class MainSectionUisController {
             injectorNumberTextField.setText((newValue != null) ? (newValue).getModelCode() : null);
 
             if (newValue == null) {
-                mainSectionUisModel.modelPropertyProperty().setValue(null);
+                mainSectionUisModel.modelProperty().setValue(null);
                 mainSectionUisModel.injectorTestProperty().setValue(null);
                 showInjectorTests(false);
                 showNode(false, codingTestRadioButton);
@@ -260,7 +260,7 @@ public class MainSectionUisController {
             VAP defaultVAP = modelService.findByModelCode(newValue.getModelCode()).getVAP();
             mainSectionUisModel.setModelIsChanging(true);
             newValue.setVAP(defaultVAP);
-            mainSectionUisModel.modelPropertyProperty().setValue(newValue);
+            mainSectionUisModel.modelProperty().setValue(newValue);
             fetchTestsFromRepository();
             showInjectorTests(true);
             showNode(checkInjectorForCoding(newValue.getCodetype()), codingTestRadioButton);
@@ -460,7 +460,6 @@ public class MainSectionUisController {
 //                }
 //            }
 
-            ultimaModbusWriter.add(UIS_to_CR_pulseControlSwitch, gui_typeModel.guiTypeProperty().getValue() == UIS ? 1 : 0);
             resetButton.fire();
             disableNode(newValue == null, injectorsVBox);
             mainSectionUisModel.manufacturerObjectProperty().setValue(newValue);
@@ -510,7 +509,7 @@ public class MainSectionUisController {
         Task<List<? extends Test>> task = new Task<>() {
             @Override
             protected List<? extends Test> call() {
-                return uisTestService.findAllByInjector(mainSectionUisModel.modelPropertyProperty().get());
+                return uisTestService.findAllByInjector(mainSectionUisModel.modelProperty().get());
             }
         };
 
@@ -518,7 +517,7 @@ public class MainSectionUisController {
 
             if (newValue != null) {
 
-                Model model = mainSectionUisModel.modelPropertyProperty().get();
+                Model model = mainSectionUisModel.modelProperty().get();
                 VAP defaultVAP = model.getVAP();
                 newValue.stream().filter(t -> t.getVoltAmpereProfile() == null).forEach(t -> t.setVAP(defaultVAP));
                 mainSectionUisModel.getTestObservableList().setAll(newValue);

@@ -843,7 +843,6 @@ public class MainSectionController {
             }
 
             clearAllResults();
-            ultimaModbusWriter.add(UIS_to_CR_pulseControlSwitch, 0);
             resetButton.fire();
             disableNode(newValue == null, injectorsVBox);
             setManufacturer(newValue);

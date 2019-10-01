@@ -63,7 +63,7 @@ public class MainSectionUisModel {
     public ObjectProperty<Tests.TestType> testTypeProperty() {
         return testType;
     }
-    public ObjectProperty<Model> modelPropertyProperty() {
+    public ObjectProperty<Model> modelProperty() {
         return modelProperty;
     }
     public ObjectProperty<Test> injectorTestProperty() {

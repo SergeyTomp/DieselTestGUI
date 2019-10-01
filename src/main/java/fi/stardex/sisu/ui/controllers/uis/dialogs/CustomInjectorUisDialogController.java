@@ -111,30 +111,33 @@ public class CustomInjectorUisDialogController {
     public void init() {
 
         mainSectionUisModel.customModelOperationProperty().addListener((observableValue, oldValue, newValue) -> {
-            if(newValue == null) return;
-            if (guiTypeModel.guiTypeProperty().get() == UIS) {
 
-                if (dialogStage == null) {
-                    dialogStage = new Stage();
-                    dialogStage.setScene(new Scene(dialogViev));
-                    dialogStage.setResizable(false);
-                    dialogStage.initModality(Modality.APPLICATION_MODAL);
-                    dialogStage.setTitle(mainSectionUisModel.customModelOperationProperty().get().getTitle() + "injector");
-                    dialogStage.setOnCloseRequest(event -> customModelDialogModel.cancelProperty().setValue(new Object()));
-                }
-                switch (mainSectionUisModel.customModelOperationProperty().get()) {
-                    case NEW:
-                        setNew();
-                        break;
-                    case DELETE:
-                        setDelete();
-                        break;
-                    case EDIT:
-                        setEdit();
-                        break;
-                }
-                dialogStage.show();
+            /** Additional check of GUI type is done to prevent listener invocation and dialog window irrelevant to GUI type activation.
+             * This will be important after implementation of MainSectionUisController as a unique one for all GUI types.
+             * Such a check could be done through {@code newValue instanceOf InjectorUisTest} but it is slower */
+            if (guiTypeModel.guiTypeProperty().get() != UIS) {return;}
+            if(newValue == null) return;
+
+            if (dialogStage == null) {
+                dialogStage = new Stage();
+                dialogStage.setScene(new Scene(dialogViev));
+                dialogStage.setResizable(false);
+                dialogStage.initModality(Modality.APPLICATION_MODAL);
+                dialogStage.setTitle(mainSectionUisModel.customModelOperationProperty().get().getTitle() + "injector");
+                dialogStage.setOnCloseRequest(event -> customModelDialogModel.cancelProperty().setValue(new Object()));
             }
+            switch (mainSectionUisModel.customModelOperationProperty().get()) {
+                case NEW:
+                    setNew();
+                    break;
+                case DELETE:
+                    setDelete();
+                    break;
+                case EDIT:
+                    setEdit();
+                    break;
+            }
+            dialogStage.show();
         });
 
         injTypeCB.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
@@ -259,7 +262,7 @@ public class CustomInjectorUisDialogController {
 
         if(!isDataComplete()) return;
 
-        Model injectorForUpdate = mainSectionUisModel.modelPropertyProperty().get();
+        Model injectorForUpdate = mainSectionUisModel.modelProperty().get();
         injectorForUpdate.setVAP(voapListView.getSelectionModel().getSelectedItem());
         List<InjectorUisTest> injectorTests = uisTestService.findAllByInjector(injectorForUpdate);
         injectorTests.clear();
@@ -272,7 +275,7 @@ public class CustomInjectorUisDialogController {
 
     private void delete() {
 
-        Model injectorForUpdate = mainSectionUisModel.modelPropertyProperty().get();
+        Model injectorForUpdate = mainSectionUisModel.modelProperty().get();
         uisModelService.delete(injectorForUpdate);
         customModelDialogModel.customModelProperty().setValue(injectorForUpdate);
         customModelDialogModel.doneProperty().setValue(new Object());
@@ -300,7 +303,7 @@ public class CustomInjectorUisDialogController {
         defaultRB.setDisable(false);
         customRB.setDisable(false);
         sureLabel.setVisible(false);
-        injectorCodeTF.setText(mainSectionUisModel.modelPropertyProperty().get().getModelCode());
+        injectorCodeTF.setText(mainSectionUisModel.modelProperty().get().getModelCode());
     }
 
     private void setDelete() {
@@ -312,7 +315,7 @@ public class CustomInjectorUisDialogController {
         defaultRB.setDisable(true);
         customRB.setDisable(true);
         sureLabel.setVisible(true);
-        injectorCodeTF.setText(mainSectionUisModel.modelPropertyProperty().get().getModelCode());
+        injectorCodeTF.setText(mainSectionUisModel.modelProperty().get().getModelCode());
     }
 
     private void selectFirst() {

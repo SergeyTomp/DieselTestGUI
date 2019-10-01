@@ -36,7 +36,6 @@ public class PumpsOEMListController implements ListChangeListener<ManufacturerPu
     public void setPumpsStartButtonState(PumpsStartButtonState pumpsStartButtonState) {
         this.pumpsStartButtonState = pumpsStartButtonState;
     }
-
     public void setGui_typeModel(GUI_TypeModel gui_typeModel) {
         this.gui_typeModel = gui_typeModel;
     }

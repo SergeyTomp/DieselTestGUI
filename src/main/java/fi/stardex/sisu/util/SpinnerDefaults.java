@@ -98,4 +98,16 @@ public class SpinnerDefaults {
     public static final int ANGLE_OFFSET_SPINNER_MAX = 350;
     public static final int ANGLE_OFFSET_SPINNER_STEP = 1;
     public static final int ANGLE_OFFSET_SPINNER_INIT = 70;
+
+    public static final int BIP_WINDOW_SPINNER_MIN = 0;
+    public static final int BIP_WINDOW_SPINNER_MAX = 1000;
+    public static final int BIP_WINDOW_SPINNER_INIT = 0;
+    public static final int BIP_WINDOW_SPINNER_STEP = 1;
+
+    public static final int BIP_PWM_SPINNER_MIN = 0;
+    public static final int BIP_PWM_SPINNER_MAX = 50;
+    public static final int BIP_PWM_SPINNER_INIT = 0;
+    public static final int BIP_PWM_SPINNER_STEP = 1;
+
+
 }

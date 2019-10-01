@@ -53,6 +53,8 @@ import fi.stardex.sisu.ui.controllers.uis.dialogs.CustomManufacturerUisDialogCon
 import fi.stardex.sisu.ui.controllers.uis.dialogs.CustomTestUisDialogController;
 import fi.stardex.sisu.ui.controllers.uis.dialogs.CustomVapUisDialogController;
 import fi.stardex.sisu.ui.controllers.uis.tabs.UisTabSectionController;
+import fi.stardex.sisu.ui.controllers.uis.tabs.UisVoltageController;
+import fi.stardex.sisu.ui.controllers.uis.windows.UisVapController;
 import fi.stardex.sisu.util.DelayCalculator;
 import fi.stardex.sisu.util.enums.BeakerType;
 import fi.stardex.sisu.util.i18n.I18N;
@@ -126,7 +128,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                  InjectorSectionPwrState injectorSectionPwrState,
                                                  UisTabSectionController uisTabSectionController,
                                                  Step3Model step3Model,
-                                                 PiezoRepairModel piezoRepairModel) {
+                                                 PiezoRepairModel piezoRepairModel,
+                                                 ModbusRegisterProcessor ultimaModbusWriter) {
         GUI_TypeController gui_typeController = rootLayoutController.getGui_typeController();
         gui_typeController.setRootPreferences(rootPreferences);
         gui_typeController.setMainSection(mainSection().getView());
@@ -154,6 +157,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         gui_typeController.setUisSettingsGridPane(uisTabSectionController.getSettingsGridPane());
         gui_typeController.setStep3Model(step3Model);
         gui_typeController.setPiezoRepairModel(piezoRepairModel);
+        gui_typeController.setUltimaModbusWriter(ultimaModbusWriter);
         return gui_typeController;
     }
 
@@ -403,7 +407,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
 
     @Bean
     public ViewHolder uisSection() {
-        return loadView("/fxml/sections/UIS/UISSection.fxml");
+        return loadView("/fxml/uis/UISSection.fxml");
     }
 
     @Bean
@@ -1371,22 +1375,28 @@ public class JavaFXSpringConfigure extends ViewLoader{
 
     @Bean
     public ViewHolder uisInjectorSection() {
-        return loadView("/fxml/sections/UIS/UisInjectorSection.fxml");
+        return loadView("/fxml/uis/UisInjectorSection.fxml");
     }
 
     @Bean
     @Autowired
     public UisInjectorSectionController uisInjectorSectionController(MainSectionUisModel mainSectionUisModel,
-                                                                     UisInjectorSectionModel uisInjectorSectionModel) {
+                                                                     UisInjectorSectionModel uisInjectorSectionModel,
+                                                                     UisHardwareUpdateModel uisHardwareUpdateModel,
+                                                                     ModbusRegisterProcessor ultimaModbusWriter,
+                                                                     GUI_TypeModel gui_typeModel) {
         UisInjectorSectionController uisInjectorSectionController = (UisInjectorSectionController)uisInjectorSection().getController();
         uisInjectorSectionController.setMainSectionUisModel(mainSectionUisModel);
         uisInjectorSectionController.setUisInjectorSectionModel(uisInjectorSectionModel);
+        uisInjectorSectionController.setUisHardwareUpdateModel(uisHardwareUpdateModel);
+        uisInjectorSectionController.setUltimaModbusWriter(ultimaModbusWriter);
+        uisInjectorSectionController.setGui_typeModel(gui_typeModel);
         return uisInjectorSectionController;
     }
 
     @Bean
     public ViewHolder uisSettings() {
-        return loadView("/fxml/sections/UIS/UisSettings.fxml");
+        return loadView("/fxml/uis/UisSettings.fxml");
     }
 
     @Bean
@@ -1404,14 +1414,16 @@ public class JavaFXSpringConfigure extends ViewLoader{
 
     @Bean
     public ViewHolder uisTabSection() {
-        return loadView("/fxml/sections/UIS/UisTabSection.fxml");
+        return loadView("/fxml/uis/UisTabSection.fxml");
     }
 
     @Bean
     @Autowired
-    public UisTabSectionController uisTabSectionController(I18N i18N) {
+    public UisTabSectionController uisTabSectionController(I18N i18N,
+                                                           UisTabSectionModel uisTabSectionModel) {
         UisTabSectionController uisTabSectionController = (UisTabSectionController)uisTabSection().getController();
         uisTabSectionController.setI18N(i18N);
+        uisTabSectionController.setUisTabSectionModel(uisTabSectionModel);
         return uisTabSectionController;
     }
 
@@ -1441,5 +1453,56 @@ public class JavaFXSpringConfigure extends ViewLoader{
         diffFlowController.setFlowModbusWriter(flowModbusWriter);
         diffFlowController.setDiffFlowUpdateModel(diffFlowUpdateModel);
         return diffFlowController;
+    }
+
+    @Bean
+    @Autowired
+    public UisVoltageController uisVoltageController(UisTabSectionController uisTabSectionController,
+                                                     UisInjectorSectionModel uisInjectorSectionModel,
+                                                     UisTabSectionModel uisTabSectionModel,
+                                                     MainSectionUisModel mainSectionUisModel,
+                                                     UisVoltageTabModel uisVoltageTabModel,
+                                                     I18N i18N,
+                                                     UisHardwareUpdateModel uisHardwareUpdateModel,
+                                                     UisVapModel uisVapModel) {
+        UisVoltageController uisVoltageController = uisTabSectionController.getUisVoltageController();
+        uisVoltageController.setUisInjectorSectionModel(uisInjectorSectionModel);
+        uisVoltageController.setUisTabSectionModel(uisTabSectionModel);
+        uisVoltageController.setMainSectionUisModel(mainSectionUisModel);
+        uisVoltageController.setUisVoltageTabModel(uisVoltageTabModel);
+        uisVoltageController.setI18N(i18N);
+        uisVoltageController.setUisHardwareUpdateModel(uisHardwareUpdateModel);
+        uisVoltageController.setUisVapModel(uisVapModel);
+        return uisVoltageController;
+    }
+
+    @Bean
+    public ViewHolder uisVap() {
+        return loadView("/fxml/uis/UisVap.fxml");
+    }
+
+    @Bean
+    @Autowired
+    public UisVapController uisVapController(UisVoltageTabModel uisVoltageTabModel,
+                                             I18N i18N,
+                                             UisVapModel uisVapModel,
+                                             ModbusRegisterProcessor ultimaModbusWriter,
+                                             MainSectionUisModel mainSectionUisModel,
+                                             UisInjectorSectionModel uisInjectorSectionModel,
+                                             UisHardwareUpdateModel uisHardwareUpdateModel,
+                                             GUI_TypeModel gui_typeModel,
+                                             UisSettingsModel uisSettingsModel) {
+        UisVapController uisVapController = (UisVapController)uisVap().getController();
+        uisVapController.setUisVoltageTabModel(uisVoltageTabModel);
+        uisVapController.setVapDialogView(uisVap().getView());
+        uisVapController.setI18N(i18N);
+        uisVapController.setUisVapModel(uisVapModel);
+        uisVapController.setUltimaModbusWriter(ultimaModbusWriter);
+        uisVapController.setMainSectionUisModel(mainSectionUisModel);
+        uisVapController.setUisInjectorSectionModel(uisInjectorSectionModel);
+        uisVapController.setUisHardwareUpdateModel(uisHardwareUpdateModel);
+        uisVapController.setGui_typeModel(gui_typeModel);
+        uisVapController.setUisSettingsModel(uisSettingsModel);
+        return uisVapController;
     }
 }

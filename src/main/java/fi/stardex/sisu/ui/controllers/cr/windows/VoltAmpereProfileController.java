@@ -680,7 +680,7 @@ public class VoltAmpereProfileController {
         }
     }
 
-    public void saveValues() {
+    private void saveValues() {
 
         firstWSavedValue = firstWSpinner.getValue();
         boostISavedValue = boostISpinner.getValue();

@@ -2,8 +2,12 @@ package fi.stardex.sisu.ui.controllers.uis;
 
 import eu.hansolo.enzo.lcd.Lcd;
 import eu.hansolo.medusa.Gauge;
+import fi.stardex.sisu.model.GUI_TypeModel;
 import fi.stardex.sisu.model.uis.MainSectionUisModel;
 import fi.stardex.sisu.model.uis.UisInjectorSectionModel;
+import fi.stardex.sisu.model.updateModels.UisHardwareUpdateModel;
+import fi.stardex.sisu.persistence.orm.uis.InjectorUisTest;
+import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.util.GaugeCreator;
 import fi.stardex.sisu.util.enums.InjectorSubType;
 import fi.stardex.sisu.util.spinners.SpinnerManager;
@@ -26,8 +30,10 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.Inj_Process_Global_Error;
+import static fi.stardex.sisu.ui.controllers.common.GUI_TypeController.GUIType.UIS;
 import static fi.stardex.sisu.util.SpinnerDefaults.*;
-import static fi.stardex.sisu.util.enums.InjectorSubType.SINGLE_COIL;
+import static fi.stardex.sisu.util.enums.InjectorSubType.*;
 
 public class UisInjectorSectionController {
 
@@ -92,6 +98,9 @@ public class UisInjectorSectionController {
 
     private MainSectionUisModel mainSectionUisModel;
     private UisInjectorSectionModel uisInjectorSectionModel;
+    private UisHardwareUpdateModel uisHardwareUpdateModel;
+    private GUI_TypeModel gui_typeModel;
+    private ModbusRegisterProcessor ultimaModbusWriter;
     private Logger logger = LoggerFactory.getLogger(UisInjectorSectionController.class);
 
     public void setMainSectionUisModel(MainSectionUisModel mainSectionUisModel) {
@@ -99,6 +108,15 @@ public class UisInjectorSectionController {
     }
     public void setUisInjectorSectionModel(UisInjectorSectionModel uisInjectorSectionModel) {
         this.uisInjectorSectionModel = uisInjectorSectionModel;
+    }
+    public void setUisHardwareUpdateModel(UisHardwareUpdateModel uisHardwareUpdateModel) {
+        this.uisHardwareUpdateModel = uisHardwareUpdateModel;
+    }
+    public void setUltimaModbusWriter(ModbusRegisterProcessor ultimaModbusWriter) {
+        this.ultimaModbusWriter = ultimaModbusWriter;
+    }
+    public void setGui_typeModel(GUI_TypeModel gui_typeModel) {
+        this.gui_typeModel = gui_typeModel;
     }
 
     @PostConstruct
@@ -111,7 +129,7 @@ public class UisInjectorSectionController {
         bipStackPane.getChildren().add(0, bipGauge);
         delayStackPane.getChildren().add(0, delayGauge);
         hideSlaveControls();
-        mainSectionUisModel.modelPropertyProperty().addListener((observableValue, oldValue, newValue) -> {
+        mainSectionUisModel.modelProperty().addListener((observableValue, oldValue, newValue) -> {
             typeTextField.setText(newValue == null ? "" : newValue.getVAP().getInjectorSubType().name());
             configureSlaveControls(newValue == null ? SINGLE_COIL : newValue.getVAP().getInjectorSubType());
         });
@@ -120,7 +138,7 @@ public class UisInjectorSectionController {
         setupLedControllers();
         setToggleGroupToLeds(toggleGroup);
         setupTimelines();
-
+        setupListeners();
     }
 
     private void configureSlaveControls(InjectorSubType injectorSubType) {
@@ -183,30 +201,33 @@ public class UisInjectorSectionController {
                 WIDTH_CURRENT_SIGNAL_SPINNER_MAX,
                 WIDTH_CURRENT_SIGNAL_SPINNER_INIT,
                 WIDTH_CURRENT_SIGNAL_SPINNER_STEP));
-        offsetSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(WIDTH_CURRENT_SIGNAL_SPINNER_MIN,
-                WIDTH_CURRENT_SIGNAL_SPINNER_MAX,
-                WIDTH_CURRENT_SIGNAL_SPINNER_INIT,
-                WIDTH_CURRENT_SIGNAL_SPINNER_STEP));
-        angle1Spinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(WIDTH_CURRENT_SIGNAL_SPINNER_MIN,
-                WIDTH_CURRENT_SIGNAL_SPINNER_MAX,
-                WIDTH_CURRENT_SIGNAL_SPINNER_INIT,
-                WIDTH_CURRENT_SIGNAL_SPINNER_STEP));
-        angle2Spinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(WIDTH_CURRENT_SIGNAL_SPINNER_MIN,
-                WIDTH_CURRENT_SIGNAL_SPINNER_MAX,
-                WIDTH_CURRENT_SIGNAL_SPINNER_INIT,
-                WIDTH_CURRENT_SIGNAL_SPINNER_STEP));
-        pressureSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(WIDTH_CURRENT_SIGNAL_SPINNER_MIN,
-                WIDTH_CURRENT_SIGNAL_SPINNER_MAX,
-                WIDTH_CURRENT_SIGNAL_SPINNER_INIT,
-                WIDTH_CURRENT_SIGNAL_SPINNER_STEP));
+        offsetSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(OFFSET_SPINNER_MIN,
+                OFFSET_SPINNER_MAX,
+                OFFSET_SPINNER_INIT,
+                OFFSET_SPINNER_STEP));
+        angle1Spinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(
+                ANGLE_OFFSET_SPINNER_MIN,
+                ANGLE_OFFSET_SPINNER_MAX,
+                ANGLE_OFFSET_SPINNER_INIT,
+                ANGLE_OFFSET_SPINNER_STEP));
+        angle2Spinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(
+                ANGLE_OFFSET_SPINNER_MIN,
+                ANGLE_OFFSET_SPINNER_MAX,
+                ANGLE_OFFSET_SPINNER_INIT,
+                ANGLE_OFFSET_SPINNER_STEP));
+        pressureSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(
+                PRESS_REG_1_SPINNER_MIN,
+                2500,
+                PRESS_REG_1_SPINNER_INIT,
+                PRESS_REG_1_SPINNER_STEP));
         currentSpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(CURRENT_REG_1_SPINNER_MIN,
                 CURRENT_REG_1_SPINNER_MAX,
                 CURRENT_REG_1_SPINNER_INIT,
                 CURRENT_REG_1_SPINNER_STEP));
-        dutySpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(CURRENT_REG_1_SPINNER_MIN,
-                CURRENT_REG_1_SPINNER_MAX,
-                CURRENT_REG_1_SPINNER_INIT,
-                CURRENT_REG_1_SPINNER_STEP));
+        dutySpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(DUTY_CYCLE_REG_1_SPINNER_MIN,
+                DUTY_CYCLE_REG_1_SPINNER_MAX,
+                DUTY_CYCLE_REG_1_SPINNER_INIT,
+                DUTY_CYCLE_REG_1_SPINNER_STEP));
 
         SpinnerManager.setupDoubleSpinner(currentSpinner);
         SpinnerManager.setupDoubleSpinner(dutySpinner);
@@ -260,8 +281,6 @@ public class UisInjectorSectionController {
 
     private void setupListeners() {
 
-
-
         uisInjectorSectionModel.getLedBeaker1ToggleButton().selectedProperty().bind(led1ToggleButton.selectedProperty());
         uisInjectorSectionModel.getLedBeaker2ToggleButton().selectedProperty().bind(led2ToggleButton.selectedProperty());
         uisInjectorSectionModel.getLedBeaker3ToggleButton().selectedProperty().bind(led3ToggleButton.selectedProperty());
@@ -270,6 +289,68 @@ public class UisInjectorSectionController {
         uisInjectorSectionModel.getLedBeaker6ToggleButton().selectedProperty().bind(led6ToggleButton.selectedProperty());
         uisInjectorSectionModel.getLedBeaker7ToggleButton().selectedProperty().bind(led7ToggleButton.selectedProperty());
         uisInjectorSectionModel.getLedBeaker8ToggleButton().selectedProperty().bind(led8ToggleButton.selectedProperty());
+        uisInjectorSectionModel.getPowerButton().selectedProperty().bind(regulatorToggleButton.selectedProperty());
+        uisInjectorSectionModel.width_1Property().bind(widthSpinner.valueProperty());
+        uisInjectorSectionModel.width_2Property().bind(width2Spinner.valueProperty());
+        uisInjectorSectionModel.shiftProperty().bind(offsetSpinner.valueProperty());
+        uisInjectorSectionModel.angle_1Property().bind(angle1Spinner.valueProperty());
+        uisInjectorSectionModel.angle_2Property().bind(angle2Spinner.valueProperty());
+
+        uisHardwareUpdateModel.injectorErrorProperty().addListener((observableValue, oldValue, newValue) -> {
+
+            if (newValue) {
+                ultimaModbusWriter.add(Inj_Process_Global_Error, false);
+            }
+        });
+
+        widthSpinner.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.toString().equals(uisHardwareUpdateModel.widthProperty().get())) {
+                widthSpinner.getEditor().setStyle(null);
+            }
+        });
+        width2Spinner.valueProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.toString().equals(uisHardwareUpdateModel.width2Property().get())) {
+                width2Spinner.getEditor().setStyle(null);
+            }
+        });
+
+        mainSectionUisModel.injectorTestProperty().addListener((observable, oldValue, newValue) -> {
+
+            /** Additional check of GUI type is done to prevent ClassCactExeption when Test is casted to InjectorUisTest.
+             * This will be important after implementation of MainSectionUisController as a unique one for all GUI types.
+             * Such a check could be done through {@code newValue instanceOf InjectorUisTest} but it is slower */
+            if (gui_typeModel.guiTypeProperty().get() != UIS) {return;}
+
+            if (newValue == null) {
+
+                widthSpinner.getValueFactory().setValue(WIDTH_CURRENT_SIGNAL_SPINNER_INIT);
+                angle1Spinner.getValueFactory().setValue(ANGLE_OFFSET_SPINNER_INIT);
+                return;
+            }
+
+            Integer totalPulseTime1 = newValue.getTotalPulseTime1();
+            Integer totalPulseTime2 = newValue.getTotalPulseTime2();
+            Integer angle_1 = ((InjectorUisTest) newValue).getAngle_1();
+            Integer angle_2 = ((InjectorUisTest) newValue).getAngle_2();
+            Integer shift = newValue.getShift();
+            Integer settedPressure = newValue.getSettedPressure();
+
+            widthSpinner.getValueFactory().setValue(totalPulseTime1);
+            angle1Spinner.getValueFactory().setValue(angle_1);
+
+            InjectorSubType injectorSubType = newValue.getVoltAmpereProfile().getInjectorSubType();
+
+            if (injectorSubType == DOUBLE_COIL || injectorSubType == HPI || injectorSubType == DOUBLE_SIGNAL) {
+                width2Spinner.getValueFactory().setValue(totalPulseTime2 != null ? totalPulseTime2 : totalPulseTime1 - shift);
+                if (injectorSubType != DOUBLE_COIL) {
+                    angle2Spinner.getValueFactory().setValue(angle_2);
+                } else {
+                    offsetSpinner.getValueFactory().setValue(shift);
+                }
+            } else if (injectorSubType == F2E) {
+                pressureSpinner.getValueFactory().setValue(settedPressure);
+            }
+        });
     }
 
     private void setNumber(int number, ToggleButton ledToggleButton) {
@@ -353,7 +434,7 @@ public class UisInjectorSectionController {
         private final StackPane rootStackPane;
         private final StackPane stackPaneLCD;
 
-        public HboxWidthListener(StackPane rootStackPane, StackPane stackPaneLCD) {
+        HboxWidthListener(StackPane rootStackPane, StackPane stackPaneLCD) {
             this.rootStackPane = rootStackPane;
             this.stackPaneLCD = stackPaneLCD;
         }

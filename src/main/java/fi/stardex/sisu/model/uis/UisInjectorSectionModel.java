@@ -1,6 +1,8 @@
 package fi.stardex.sisu.model.uis;
 
+import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.scene.control.ToggleButton;
 
@@ -10,11 +12,6 @@ import java.util.List;
 public class UisInjectorSectionModel {
 
     private ObjectProperty<List<ToggleButton>> activeLedToggleButtonsList = new SimpleObjectProperty<>();
-
-    public ObjectProperty<List<ToggleButton>> activeLedToggleButtonsListProperty() {
-        return activeLedToggleButtonsList;
-    }
-
     private List<Integer> arrayNumbersOfActiveLedToggleButtons = new ArrayList<>();
 
     private ToggleButton ledBeaker1ToggleButton = new ToggleButton();
@@ -25,6 +22,12 @@ public class UisInjectorSectionModel {
     private ToggleButton ledBeaker6ToggleButton = new ToggleButton();
     private ToggleButton ledBeaker7ToggleButton = new ToggleButton();
     private ToggleButton ledBeaker8ToggleButton = new ToggleButton();
+    private ToggleButton powerButton = new ToggleButton();
+    private IntegerProperty width_1 = new SimpleIntegerProperty();
+    private IntegerProperty width_2 = new SimpleIntegerProperty();
+    private IntegerProperty shift = new SimpleIntegerProperty();
+    private IntegerProperty angle_1 = new SimpleIntegerProperty();
+    private IntegerProperty angle_2 = new SimpleIntegerProperty();
 
     public ToggleButton getLedBeaker1ToggleButton() {
         return ledBeaker1ToggleButton;
@@ -50,8 +53,28 @@ public class UisInjectorSectionModel {
     public ToggleButton getLedBeaker8ToggleButton() {
         return ledBeaker8ToggleButton;
     }
-
+    public ToggleButton getPowerButton() {
+        return powerButton;
+    }
+    public IntegerProperty width_1Property() {
+        return width_1;
+    }
+    public IntegerProperty width_2Property() {
+        return width_2;
+    }
+    public IntegerProperty shiftProperty() {
+        return shift;
+    }
+    public IntegerProperty angle_1Property() {
+        return angle_1;
+    }
+    public IntegerProperty angle_2Property() {
+        return angle_2;
+    }
     public List<Integer> getArrayNumbersOfActiveLedToggleButtons() {
         return arrayNumbersOfActiveLedToggleButtons;
+    }
+    public ObjectProperty<List<ToggleButton>> activeLedToggleButtonsListProperty() {
+        return activeLedToggleButtonsList;
     }
 }
