@@ -3,23 +3,35 @@ package fi.stardex.sisu.ui.controllers.uis;
 import eu.hansolo.enzo.lcd.Lcd;
 import eu.hansolo.medusa.Gauge;
 import fi.stardex.sisu.model.GUI_TypeModel;
+import fi.stardex.sisu.model.RegulationModesModel;
+import fi.stardex.sisu.model.TestBenchSectionModel;
 import fi.stardex.sisu.model.uis.MainSectionUisModel;
 import fi.stardex.sisu.model.uis.UisInjectorSectionModel;
+import fi.stardex.sisu.model.uis.UisSettingsModel;
+import fi.stardex.sisu.model.uis.UisVapModel;
 import fi.stardex.sisu.model.updateModels.UisHardwareUpdateModel;
 import fi.stardex.sisu.persistence.orm.uis.InjectorUisTest;
+import fi.stardex.sisu.persistence.orm.uis.InjectorUisVAP;
+import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
+import fi.stardex.sisu.ui.controllers.common.GUI_TypeController;
 import fi.stardex.sisu.util.GaugeCreator;
 import fi.stardex.sisu.util.enums.InjectorSubType;
+import fi.stardex.sisu.util.enums.RegActive;
+import fi.stardex.sisu.util.listeners.ThreeSpinnerStyleChangeListener;
 import fi.stardex.sisu.util.spinners.SpinnerManager;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
 import org.slf4j.Logger;
@@ -30,13 +42,18 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.Inj_Process_Global_Error;
+import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.*;
 import static fi.stardex.sisu.ui.controllers.common.GUI_TypeController.GUIType.UIS;
 import static fi.stardex.sisu.util.SpinnerDefaults.*;
 import static fi.stardex.sisu.util.enums.InjectorSubType.*;
+import static fi.stardex.sisu.util.enums.RegActive.CURRENT;
+import static fi.stardex.sisu.util.enums.RegActive.DUTY;
+import static fi.stardex.sisu.util.enums.RegActive.PRESSURE;
 
 public class UisInjectorSectionController {
 
+    @FXML private Label bipLabel;
+    @FXML private Label bipTaskLabel;
     @FXML private ToggleButton led1ToggleButton;
     @FXML private ToggleButton led2ToggleButton;
     @FXML private ToggleButton led3ToggleButton;
@@ -87,7 +104,7 @@ public class UisInjectorSectionController {
     @FXML private StackPane rootStackPane;
 
     private Lcd lcd;
-    private Gauge bipGauge;
+    private GaugeCreator.BipGauge bipGauge;
     private Gauge delayGauge;
     private ObservableList<ToggleButton> ledToggleButtons;
     private ToggleGroup toggleGroup = new ToggleGroup();
@@ -95,11 +112,18 @@ public class UisInjectorSectionController {
     private List<KeyFrame> keyFramesList;
     private static final String LED_BLINK_ON = "ledBlink-on";
     private static final String LED_BLINK_OFF = "ledBlink-off";
+    private final String GREEN_STYLE_CLASS = "regulator-spinner-selected";
+    private final String BIP = "BIP";
 
     private MainSectionUisModel mainSectionUisModel;
     private UisInjectorSectionModel uisInjectorSectionModel;
     private UisHardwareUpdateModel uisHardwareUpdateModel;
     private GUI_TypeModel gui_typeModel;
+    private UisSettingsModel uisSettingsModel;
+    private TestBenchSectionModel testBenchSectionModel;
+    private RegulationModesModel regulationModesModel;
+    private UisVapModel uisVapModel;
+
     private ModbusRegisterProcessor ultimaModbusWriter;
     private Logger logger = LoggerFactory.getLogger(UisInjectorSectionController.class);
 
@@ -118,6 +142,18 @@ public class UisInjectorSectionController {
     public void setGui_typeModel(GUI_TypeModel gui_typeModel) {
         this.gui_typeModel = gui_typeModel;
     }
+    public void setUisSettingsModel(UisSettingsModel uisSettingsModel) {
+        this.uisSettingsModel = uisSettingsModel;
+    }
+    public void setTestBenchSectionModel(TestBenchSectionModel testBenchSectionModel) {
+        this.testBenchSectionModel = testBenchSectionModel;
+    }
+    public void setRegulationModesModel(RegulationModesModel regulationModesModel) {
+        this.regulationModesModel = regulationModesModel;
+    }
+    public void setUisVapModel(UisVapModel uisVapModel) {
+        this.uisVapModel = uisVapModel;
+    }
 
     @PostConstruct
     public void init() {
@@ -126,22 +162,21 @@ public class UisInjectorSectionController {
         delayGauge = GaugeCreator.createDelayGauge();
         lcd = GaugeCreator.createLcd("Bar");
         lcdStackPane.getChildren().add(0, lcd);
-        bipStackPane.getChildren().add(0, bipGauge);
+        bipStackPane.getChildren().add(0, bipGauge.getBipGauge());
         delayStackPane.getChildren().add(0, delayGauge);
         hideSlaveControls();
-        mainSectionUisModel.modelProperty().addListener((observableValue, oldValue, newValue) -> {
-            typeTextField.setText(newValue == null ? "" : newValue.getVAP().getInjectorSubType().name());
-            configureSlaveControls(newValue == null ? SINGLE_COIL : newValue.getVAP().getInjectorSubType());
-        });
         rootStackPane.widthProperty().addListener(new HboxWidthListener(rootStackPane, lcdStackPane));
         setupSpinners();
         setupLedControllers();
         setToggleGroupToLeds(toggleGroup);
         setupTimelines();
         setupListeners();
+        setupF2eSpinnerListeners();
+        lcd.valueProperty().bind(uisHardwareUpdateModel.lcdPressureProperty());
+        bipLabel.setText("BIP(\u00B5s)");
     }
 
-    private void configureSlaveControls(InjectorSubType injectorSubType) {
+    private void configureModeControls(InjectorSubType injectorSubType) {
 
         hideSlaveControls();
         switch (injectorSubType) {
@@ -171,6 +206,8 @@ public class UisInjectorSectionController {
                 lcd.setOpacity(1);
                 break;
         }
+        injectorSubType.getModeSwitchRegisters().forEach((k, v) -> ultimaModbusWriter.add(k, v));
+        injectorSubType.getSlotConfigureRegisters().forEach((k, v) -> ultimaModbusWriter.add(k, v));
     }
 
     private void hideSlaveControls() {
@@ -187,12 +224,14 @@ public class UisInjectorSectionController {
         pressureSpinner.setVisible(false);
         currentSpinner.setVisible(false);
         dutySpinner.setVisible(false);
+        regulatorToggleButton.setSelected(false);
         regulatorToggleButton.setDisable(true);
         lcd.setOpacity(0.4);
     }
 
     private void setupSpinners() {
 
+        int maxPressure = uisSettingsModel.pressureSensorProperty().get();
         widthSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(WIDTH_CURRENT_SIGNAL_SPINNER_MIN,
                 WIDTH_CURRENT_SIGNAL_SPINNER_MAX,
                 WIDTH_CURRENT_SIGNAL_SPINNER_INIT,
@@ -217,7 +256,7 @@ public class UisInjectorSectionController {
                 ANGLE_OFFSET_SPINNER_STEP));
         pressureSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(
                 PRESS_REG_1_SPINNER_MIN,
-                2500,
+                maxPressure,
                 PRESS_REG_1_SPINNER_INIT,
                 PRESS_REG_1_SPINNER_STEP));
         currentSpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(CURRENT_REG_1_SPINNER_MIN,
@@ -236,6 +275,21 @@ public class UisInjectorSectionController {
         SpinnerManager.setupIntegerSpinner(angle1Spinner);
         SpinnerManager.setupIntegerSpinner(angle2Spinner);
         SpinnerManager.setupIntegerSpinner(pressureSpinner);
+
+        uisSettingsModel.pressureSensorProperty().addListener((observableValue, oldValue, newValue) ->
+                pressureSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(
+                PRESS_REG_1_SPINNER_MIN,
+                newValue.intValue(),
+                PRESS_REG_1_SPINNER_INIT,
+                PRESS_REG_1_SPINNER_STEP)));
+
+        /** RPM source switch in fact is simply UIS <-> CR modes switch.*/
+        uisSettingsModel.rpmSourceProperty().addListener((observableValue, oldValue, newValue) ->
+                ultimaModbusWriter.add(UIS_to_CR_pulseControlSwitch, newValue.getSourceId()));
+
+        pressureSpinner.getStyleClass().add(1, GREEN_STYLE_CLASS);
+        currentSpinner.getStyleClass().add(1, "");
+        dutySpinner.getStyleClass().add(1, "");
     }
 
     private void setupLedControllers() {
@@ -289,7 +343,7 @@ public class UisInjectorSectionController {
         uisInjectorSectionModel.getLedBeaker6ToggleButton().selectedProperty().bind(led6ToggleButton.selectedProperty());
         uisInjectorSectionModel.getLedBeaker7ToggleButton().selectedProperty().bind(led7ToggleButton.selectedProperty());
         uisInjectorSectionModel.getLedBeaker8ToggleButton().selectedProperty().bind(led8ToggleButton.selectedProperty());
-        uisInjectorSectionModel.getPowerButton().selectedProperty().bind(regulatorToggleButton.selectedProperty());
+        uisInjectorSectionModel.powerButtonProperty().bind(regulatorToggleButton.selectedProperty());
         uisInjectorSectionModel.width_1Property().bind(widthSpinner.valueProperty());
         uisInjectorSectionModel.width_2Property().bind(width2Spinner.valueProperty());
         uisInjectorSectionModel.shiftProperty().bind(offsetSpinner.valueProperty());
@@ -314,6 +368,20 @@ public class UisInjectorSectionController {
             }
         });
 
+//        offsetSpinner.valueProperty().addListener((observable, oldValue, newValue) -> ultimaModbusWriter.add(SecondCoilShiftTime, newValue));
+
+        mainSectionUisModel.modelProperty().addListener((observableValue, oldValue, newValue) -> {
+            if (newValue != null) {
+                InjectorSubType injectorSubType = newValue.getVAP().getInjectorSubType();
+                typeTextField.setText(injectorSubType.name());
+                configureModeControls(injectorSubType);
+            }
+            else {
+                typeTextField.setText("");
+                configureModeControls(SINGLE_COIL);
+            }
+        });
+
         mainSectionUisModel.injectorTestProperty().addListener((observable, oldValue, newValue) -> {
 
             /** Additional check of GUI type is done to prevent ClassCactExeption when Test is casted to InjectorUisTest.
@@ -328,10 +396,12 @@ public class UisInjectorSectionController {
                 return;
             }
 
+            InjectorUisTest test = (InjectorUisTest) newValue;
+            InjectorUisVAP vap = (InjectorUisVAP)newValue.getVoltAmpereProfile();
             Integer totalPulseTime1 = newValue.getTotalPulseTime1();
             Integer totalPulseTime2 = newValue.getTotalPulseTime2();
-            Integer angle_1 = ((InjectorUisTest) newValue).getAngle_1();
-            Integer angle_2 = ((InjectorUisTest) newValue).getAngle_2();
+            Integer angle_1 = test.getAngle_1();
+            Integer angle_2 = test.getAngle_2();
             Integer shift = newValue.getShift();
             Integer settedPressure = newValue.getSettedPressure();
 
@@ -340,8 +410,9 @@ public class UisInjectorSectionController {
 
             InjectorSubType injectorSubType = newValue.getVoltAmpereProfile().getInjectorSubType();
 
+            //TODO: черновой вариант, нужно вдумчиво привести в соответствие с требованиями железа т.к. в работающей старой версии всё неоптимально
             if (injectorSubType == DOUBLE_COIL || injectorSubType == HPI || injectorSubType == DOUBLE_SIGNAL) {
-                width2Spinner.getValueFactory().setValue(totalPulseTime2 != null ? totalPulseTime2 : totalPulseTime1 - shift);
+                width2Spinner.getValueFactory().setValue(injectorSubType == DOUBLE_COIL ? totalPulseTime1 : totalPulseTime2);
                 if (injectorSubType != DOUBLE_COIL) {
                     angle2Spinner.getValueFactory().setValue(angle_2);
                 } else {
@@ -350,7 +421,79 @@ public class UisInjectorSectionController {
             } else if (injectorSubType == F2E) {
                 pressureSpinner.getValueFactory().setValue(settedPressure);
             }
+
+            if (newValue.getTestName().getName().contains(BIP)) {
+                bipTaskLabel.setText("\u0020" + test.getBip() + "\u00B1" + test.getBipRange());
+                bipGauge.setParameters(test.getBip(), vap.getBipWindow(), vap.getFirstW(), test.getBipRange());
+            } else {
+                bipGauge.setBipMode(false);
+                Platform.runLater(bipGauge);
+                bipTaskLabel.setText("");
+            }
         });
+
+        testBenchSectionModel.targetRPMProperty().addListener((observable, oldValue, newValue) -> {
+
+            int targetRPM = newValue.intValue();
+            int period = targetRPM != 0 ? (int) ((60d / targetRPM) * 1000) : 100;
+
+            ultimaModbusWriter.add(GImpulsesPeriod, period);
+        });
+    }
+
+    private void setupF2eSpinnerListeners() {
+
+        /** смена режима по клику на стрелках*/
+        //вкл.режим давления, откл.режим тока
+        pressureSpinner.setOnMouseClicked(new ThreeSpinnerArrowClickHandler(PRESSURE, PressureReg1_PressMode, true, PressureReg1_I_Mode, false));
+        //откл.режим давления, вкл.режим тока
+        currentSpinner.setOnMouseClicked(new ThreeSpinnerArrowClickHandler(CURRENT, PressureReg1_PressMode, false, PressureReg1_I_Mode, true));
+        //откл.режим давления, откл.режим тока, вкл.режим скважности
+        dutySpinner.setOnMouseClicked(new ThreeSpinnerArrowClickHandler(DUTY, PressureReg1_PressMode, false, PressureReg1_I_Mode, false));
+
+        /** смена режима по клику в текстовом поле спиннера */
+        //вкл.режим давления, откл.режим тока
+        pressureSpinner.focusedProperty().addListener(new ThreeSpinnerFocusListener(PRESSURE, PressureReg1_PressMode, true, PressureReg1_I_Mode, false));
+        //откл.режим давления, вкл.режим тока
+        currentSpinner.focusedProperty().addListener(new ThreeSpinnerFocusListener(CURRENT, PressureReg1_PressMode, false, PressureReg1_I_Mode, true));
+        //откл.режим давления, откл.режим тока, вкл.режим скважности
+        dutySpinner.focusedProperty().addListener(new ThreeSpinnerFocusListener(DUTY, PressureReg1_PressMode, false, PressureReg1_I_Mode, false));
+
+        /** изменение цвета рамки спиннера на зелёный при переходе в спиннер другого рекулятора*/
+        pressureSpinner.focusedProperty().addListener(new ThreeSpinnerStyleChangeListener(pressureSpinner, currentSpinner, dutySpinner, PRESSURE));
+        currentSpinner.focusedProperty().addListener(new ThreeSpinnerStyleChangeListener(pressureSpinner, currentSpinner, dutySpinner, CURRENT));
+        dutySpinner.focusedProperty().addListener(new ThreeSpinnerStyleChangeListener(pressureSpinner, currentSpinner, dutySpinner, DUTY));
+
+        /** слушаем изменения значений в спиннерах и отправляем уставки спиннеров */
+        pressureSpinner.valueProperty().addListener(new ParameterChangeListener(PRESSURE));
+        uisInjectorSectionModel.pressureSpinnerProperty().bind(pressureSpinner.valueProperty());
+        currentSpinner.valueProperty().addListener(new ParameterChangeListener(CURRENT));
+        dutySpinner.valueProperty().addListener(new ParameterChangeListener(DUTY));
+
+        /** слушаем кнопку включения секции регуляторов*/
+        uisInjectorSectionModel.powerButtonProperty().addListener(new HighPressureSectionPwrListener());
+
+        /** слушаем изменения в модели данных, полученных из прошивки (значения полей в модели данных изменяются только для "наблюдающих" спиннеров)*/
+        uisHardwareUpdateModel.currentProperty().addListener((observableValue, oldValue, newValue) -> currentSpinner.getValueFactory().setValue((Double) newValue));
+        uisHardwareUpdateModel.dutyProperty().addListener((observableValue, oldValue, newValue) -> dutySpinner.getValueFactory().setValue((Double)newValue));
+
+        /** При переходе в другой GUI нужно отключать регулятор давления и менять режим регулирования на давление.
+         * Запрос фокуса на регулирующий спиннер работает только при открытии GUI - добавлен блок else if(){} для включения режима регулирования и визуализации его зелёной рамкой.*/
+
+        gui_typeModel.guiTypeProperty().addListener((observable, oldValue, newValue) -> {
+
+            if (oldValue == GUI_TypeController.GUIType.CR_Inj || oldValue == GUI_TypeController.GUIType.HEUI) {
+
+                regulatorToggleButton.setSelected(false);
+            }
+
+            else if(newValue == GUI_TypeController.GUIType.CR_Inj || newValue == GUI_TypeController.GUIType.HEUI){
+
+                regulationModesModel.regulatorOneModeProperty().setValue(PRESSURE);
+                pressureSpinner.getValueFactory().setValue(0);
+            }
+        });
+
     }
 
     private void setNumber(int number, ToggleButton ledToggleButton) {
@@ -474,6 +617,148 @@ public class UisInjectorSectionController {
 
             }
 
+        }
+    }
+
+    private double calcTargetPress(Integer target){
+        return target.doubleValue() / uisSettingsModel.pressureSensorProperty().get();
+    }
+
+    private void regulator_ON(){
+
+        switch(regulationModesModel.regulatorOneModeProperty().get()){
+            case PRESSURE:
+                double press1 = calcTargetPress(pressureSpinner.getValue());
+                ultimaModbusWriter.add(PressureReg1_PressTask, press1);
+                ultimaModbusWriter.add(PressureReg1_ON, true);
+                break;
+            case CURRENT:
+                double current1 = currentSpinner.getValue();
+                ultimaModbusWriter.add(PressureReg1_I_Task, current1);
+                ultimaModbusWriter.add(PressureReg1_ON, true);
+                break;
+            case DUTY:
+                double duty1 = dutySpinner.getValue();
+                ultimaModbusWriter.add(PressureReg1_DutyTask, duty1);
+                ultimaModbusWriter.add(PressureReg1_ON, true);
+                break;
+            default:ultimaModbusWriter.add(PressureReg1_ON, false);
+        }
+    }
+    private class ThreeSpinnerArrowClickHandler implements EventHandler<MouseEvent> {
+
+        RegActive activeRegulatingMode;
+        ModbusMapUltima mapParam_1;
+        boolean mapParam_1_ON;
+        ModbusMapUltima mapParam_2;
+        boolean mapParam_2_ON;
+
+        ThreeSpinnerArrowClickHandler(RegActive activeRegulatingMode,
+                                      ModbusMapUltima mapParam_1,
+                                      boolean mapParam_1_ON,
+                                      ModbusMapUltima mapParam_2,
+                                      boolean mapParam_2_ON) {
+            this.activeRegulatingMode = activeRegulatingMode;
+            this.mapParam_1 = mapParam_1;
+            this.mapParam_1_ON = mapParam_1_ON;
+            this.mapParam_2 = mapParam_2;
+            this.mapParam_2_ON = mapParam_2_ON;
+        }
+
+        @Override
+        public void handle(MouseEvent event) {
+            regulationModesModel.regulatorOneModeProperty().setValue(activeRegulatingMode);
+            ultimaModbusWriter.add(mapParam_1, mapParam_1_ON);
+            ultimaModbusWriter.add(mapParam_2, mapParam_2_ON);
+        }
+    }
+
+    private class ThreeSpinnerFocusListener implements ChangeListener<Boolean>{
+        RegActive activeParam;
+        ModbusMapUltima mapParam_1;
+        boolean mapParam_1_ON;
+        ModbusMapUltima mapParam_2;
+        boolean mapParam_2_ON;
+
+        ThreeSpinnerFocusListener(RegActive activeParam,
+                                  ModbusMapUltima mapParam_1,
+                                  boolean mapParam_1_ON,
+                                  ModbusMapUltima mapParam_2,
+                                  boolean mapParam_2_ON) {
+            this.activeParam = activeParam;
+            this.mapParam_1 = mapParam_1;
+            this.mapParam_1_ON = mapParam_1_ON;
+            this.mapParam_2 = mapParam_2;
+            this.mapParam_2_ON = mapParam_2_ON;
+        }
+
+        @Override
+        public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+
+            if (newValue){
+                regulationModesModel.regulatorOneModeProperty().setValue(activeParam);
+                ultimaModbusWriter.add(mapParam_1, mapParam_1_ON);
+                ultimaModbusWriter.add(mapParam_2, mapParam_2_ON);
+                if(uisInjectorSectionModel.powerButtonProperty().get()){
+                    switch (activeParam){
+                        case PRESSURE:
+                            ultimaModbusWriter.add(PressureReg1_PressTask, calcTargetPress(pressureSpinner.getValue()));
+                            break;
+                        case CURRENT:
+                            ultimaModbusWriter.add(PressureReg1_I_Task, currentSpinner.getValue());
+                            break;
+                        case DUTY:
+                            ultimaModbusWriter.add(PressureReg1_DutyTask, dutySpinner.getValue());
+                            break;
+                    }
+                }
+            }
+        }
+    }
+
+    private class ParameterChangeListener implements ChangeListener<Number>{
+
+        RegActive activeParam;
+
+        ParameterChangeListener(RegActive activeParam) {
+            this.activeParam = activeParam;
+        }
+
+        @Override
+        public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+
+            if((uisInjectorSectionModel.powerButtonProperty().get() && activeParam == regulationModesModel.regulatorOneModeProperty().get())){
+
+                switch (regulationModesModel.regulatorOneModeProperty().get()){
+                    case PRESSURE:
+                        ultimaModbusWriter.add(PressureReg1_PressTask, calcTargetPress(newValue.intValue()));
+                        System.err.println("press1 " + newValue);
+                        break;
+                    case CURRENT:
+                        ultimaModbusWriter.add(PressureReg1_I_Task, newValue);
+                        System.err.println("current1 " + newValue);
+                        break;
+                    case DUTY:
+                        ultimaModbusWriter.add(PressureReg1_DutyTask, newValue);
+                        System.err.println("duty1 " + newValue);
+
+                        break;
+                }
+            }
+        }
+    }
+
+    private class HighPressureSectionPwrListener implements ChangeListener<Boolean>{
+        @Override
+        public void changed(ObservableValue<? extends Boolean> observableValue, Boolean oldValue, Boolean newValue) {
+            if (newValue) {
+                if (regulatorToggleButton.isSelected()) {
+                    regulator_ON();
+                }
+            }
+            else {
+                ultimaModbusWriter.add(PressureReg1_ON, false);
+            }
         }
     }
 }

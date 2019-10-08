@@ -3,10 +3,15 @@ package fi.stardex.sisu.model.updateModels;
 import fi.stardex.sisu.annotations.Module;
 import fi.stardex.sisu.devices.Device;
 import fi.stardex.sisu.model.GUI_TypeModel;
+import fi.stardex.sisu.model.RegulationModesModel;
 import fi.stardex.sisu.model.uis.MainSectionUisModel;
+import fi.stardex.sisu.model.uis.UisSettingsModel;
 import fi.stardex.sisu.persistence.orm.interfaces.Model;
+import fi.stardex.sisu.persistence.orm.interfaces.Test;
+import fi.stardex.sisu.persistence.orm.uis.InjectorUisTest;
 import fi.stardex.sisu.ui.updaters.Updater;
 import fi.stardex.sisu.util.enums.InjectorSubType;
+import fi.stardex.sisu.util.enums.RegActive;
 import javafx.beans.property.*;
 
 import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.*;
@@ -32,11 +37,22 @@ public class UisHardwareUpdateModel implements Updater {
     private StringProperty width2 = new SimpleStringProperty(String.valueOf(0));
     private StringProperty shift = new SimpleStringProperty(String.valueOf(0));
     private BooleanProperty injectorError = new SimpleBooleanProperty();
+    private DoubleProperty current = new SimpleDoubleProperty();
+    private DoubleProperty duty = new SimpleDoubleProperty();
+    private IntegerProperty lcdPressure = new SimpleIntegerProperty();
+    private StringProperty bipPWM = new SimpleStringProperty();
+    private StringProperty bipWindow = new SimpleStringProperty();
 
     private MainSectionUisModel mainSectionUisModel;
     private GUI_TypeModel gui_typeModel;
+    private RegulationModesModel regulationModesModel;
+    private UisSettingsModel uisSettingsModel;
     private ObjectProperty<Model> modelProperty;
+    private ObjectProperty<Test> testProperty;
     private static final float ONE_AMPERE_MULTIPLY = 93.07f;
+    private InjectorSubType injectorSubType;
+    private Model model;
+    private InjectorUisTest test;
 
     public StringProperty widthProperty() {
         return width;
@@ -83,13 +99,35 @@ public class UisHardwareUpdateModel implements Updater {
     public StringProperty shiftProperty() {
         return shift;
     }
+    public DoubleProperty currentProperty() {
+        return current;
+    }
+    public DoubleProperty dutyProperty() {
+        return duty;
+    }
+    public IntegerProperty lcdPressureProperty() {
+        return lcdPressure;
+    }
+    public StringProperty bipPWMProperty() {
+        return bipPWM;
+    }
+    public StringProperty bipWindowProperty() {
+        return bipWindow;
+    }
 
     public void setMainSectionUisModel(MainSectionUisModel mainSectionUisModel) {
         this.mainSectionUisModel = mainSectionUisModel;
         this.modelProperty = mainSectionUisModel.modelProperty();
+        this.testProperty = mainSectionUisModel.injectorTestProperty();
     }
     public void setGui_typeModel(GUI_TypeModel gui_typeModel) {
         this.gui_typeModel = gui_typeModel;
+    }
+    public void setRegulationModesModel(RegulationModesModel regulationModesModel) {
+        this.regulationModesModel = regulationModesModel;
+    }
+    public void setUisSettingsModel(UisSettingsModel uisSettingsModel) {
+        this.uisSettingsModel = uisSettingsModel;
     }
 
     @Override
@@ -99,6 +137,8 @@ public class UisHardwareUpdateModel implements Updater {
 
     @Override
     public void run() {
+
+        RegActive activeRegulatingMode = regulationModesModel.regulatorOneModeProperty().get();
 
         if (gui_typeModel.guiTypeProperty().get() != UIS) { return; }
 
@@ -139,39 +179,74 @@ public class UisHardwareUpdateModel implements Updater {
 //            System.err.println("Injectors_Running_En  " + value);
 //        }
 
-        Model model = modelProperty.get();
-        if (model != null && model.getVAP().getInjectorSubType() == InjectorSubType.DOUBLE_COIL) {
+        model = modelProperty.get();
+        test = (InjectorUisTest) testProperty.get();
+        boolean isBipTest = (test != null && test.getTestName().getName().contains("BIP"));
+        if (model != null) {
 
-            if ((value = FirstWBoardTwo.getLastValue().toString()) != null){
-                first_W2.setValue(value);
+            injectorSubType = model.getVAP().getInjectorSubType();
+
+            if (injectorSubType == InjectorSubType.DOUBLE_COIL) {
+
+                if ((value = FirstWBoardTwo.getLastValue().toString()) != null){
+                    first_W2.setValue(value);
+                }
+                if ((value = FirstIBoardTwo.getLastValue().toString()) != null) {
+                    convertedValue = round(convertDataToFloat(value) / ONE_AMPERE_MULTIPLY);
+                    first_I2.setValue(Float.toString(convertedValue));
+                }
+                if ((value = SecondIBoardTwo.getLastValue().toString()) != null) {
+                    convertedValue = round(convertDataToFloat(value) / ONE_AMPERE_MULTIPLY);
+                    second_I2.setValue(Float.toString(convertedValue));
+                }
+                if ((value = BoostIBoardTwo.getLastValue().toString()) != null) {
+                    convertedValue = round(convertDataToFloat(value) / ONE_AMPERE_MULTIPLY);
+                    boost_I2.setValue(Float.toString(convertedValue));
+                }
+                if ((value = WidthBoardTwo.getLastValue().toString()) != null) {
+                    width2.setValue(value);
+                }
+                if ((value = SecondCoilShiftTime.getLastValue().toString()) != null) {
+                    shift.setValue(value);
+                }
             }
-            if ((value = FirstIBoardTwo.getLastValue().toString()) != null) {
-                convertedValue = round(convertDataToFloat(value) / ONE_AMPERE_MULTIPLY);
-                first_I2.setValue(Float.toString(convertedValue));
+            else if (injectorSubType == InjectorSubType.F2E) {
+
+                if(PressureReg1_PressFact.getLastValue() != null){
+                    double pressure = uisSettingsModel.pressureSensorProperty().get() * (Double) PressureReg1_PressFact.getLastValue();
+                    lcdPressure.setValue(pressure);
+                }
+                if ((PressureReg1_I_Fact.getLastValue()) != null && activeRegulatingMode != RegActive.CURRENT) {
+                    current.setValue(round((double)PressureReg1_I_Fact.getLastValue()));
+                }
+                if ((PressureReg1_DutyFact.getLastValue()) != null && activeRegulatingMode != RegActive.DUTY) {
+                    duty.setValue(round((double)PressureReg1_DutyFact.getLastValue()));
+                }
             }
-            if ((value = SecondIBoardTwo.getLastValue().toString()) != null) {
-                convertedValue = round(convertDataToFloat(value) / ONE_AMPERE_MULTIPLY);
-                second_I2.setValue(Float.toString(convertedValue));
-            }
-            if ((value = BoostIBoardTwo.getLastValue().toString()) != null) {
-                convertedValue = round(convertDataToFloat(value) / ONE_AMPERE_MULTIPLY);
-                boost_I2.setValue(Float.toString(convertedValue));
-            }
-            if ((value = WidthBoardTwo.getLastValue().toString()) != null) {
-                width2.setValue(value);
-            }
-            if ((value = SecondCoilShiftTime.getLastValue().toString()) != null) {
-                shift.setValue(value);
+            else {
+
+                first_W2.setValue(Float.toString(0f));
+                first_I2.setValue(Float.toString(0f));
+                second_I2.setValue(Float.toString(0f));
+                boost_I2.setValue(Float.toString(0f));
+                width2.setValue(Integer.toString(0));
+                shift.setValue(Integer.toString(0));
             }
         }
-        else{
 
-            first_W2.setValue(Float.toString(0f));
-            first_I2.setValue(Float.toString(0f));
-            second_I2.setValue(Float.toString(0f));
-            boost_I2.setValue(Float.toString(0f));
-            width2.setValue(Integer.toString(0));
-            shift.setValue(Integer.toString(0));
+        if (isBipTest) {
+
+            if ((value = BipModeInterval_1.getLastValue().toString()) != null) {
+                bipWindow.set(value);
+            }
+            if ((value = BipModeDuty_1.getLastValue().toString()) != null) {
+                bipPWM.set(value);
+            }
+        } else {
+
+            bipPWM.setValue(Integer.toString(0));
+            bipWindow.setValue(Integer.toString(0));
         }
+
     }
 }

@@ -1384,13 +1384,21 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                                      UisInjectorSectionModel uisInjectorSectionModel,
                                                                      UisHardwareUpdateModel uisHardwareUpdateModel,
                                                                      ModbusRegisterProcessor ultimaModbusWriter,
-                                                                     GUI_TypeModel gui_typeModel) {
+                                                                     GUI_TypeModel gui_typeModel,
+                                                                     UisSettingsModel uisSettingsModel,
+                                                                     TestBenchSectionModel testBenchSectionModel,
+                                                                     RegulationModesModel regulationModesModel,
+                                                                     UisVapModel uisVapModel) {
         UisInjectorSectionController uisInjectorSectionController = (UisInjectorSectionController)uisInjectorSection().getController();
         uisInjectorSectionController.setMainSectionUisModel(mainSectionUisModel);
         uisInjectorSectionController.setUisInjectorSectionModel(uisInjectorSectionModel);
         uisInjectorSectionController.setUisHardwareUpdateModel(uisHardwareUpdateModel);
         uisInjectorSectionController.setUltimaModbusWriter(ultimaModbusWriter);
         uisInjectorSectionController.setGui_typeModel(gui_typeModel);
+        uisInjectorSectionController.setUisSettingsModel(uisSettingsModel);
+        uisInjectorSectionController.setTestBenchSectionModel(testBenchSectionModel);
+        uisInjectorSectionController.setRegulationModesModel(regulationModesModel);
+        uisInjectorSectionController.setUisVapModel(uisVapModel);
         return uisInjectorSectionController;
     }
 

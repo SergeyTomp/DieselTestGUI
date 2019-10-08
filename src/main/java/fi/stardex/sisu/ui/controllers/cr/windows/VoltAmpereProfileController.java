@@ -196,14 +196,14 @@ public class VoltAmpereProfileController {
 
                 int firstW = currentVAP.getFirstW();
                 Integer width = newValue.getTotalPulseTime();
-                firstW = (width - firstW >= MAX_DELTA_WIDTH_TO_FIRST_WIDTH) ? firstW : width - MAX_DELTA_WIDTH_TO_FIRST_WIDTH;
+                firstW = (width - firstW >= MIN_DELTA_WIDTH_TO_FIRST_WIDTH) ? firstW : width - MIN_DELTA_WIDTH_TO_FIRST_WIDTH;
                 firstWSpinner.getValueFactory().setValue(firstW);
 
                 if (currentVAP.isDoubleCoil()) {
 
                     firstW = currentVAP.getFirstW2();
                     width = newValue.getTotalPulseTime2();
-                    firstW = (width - firstW >= MAX_DELTA_WIDTH_TO_FIRST_WIDTH) ? firstW : width - MAX_DELTA_WIDTH_TO_FIRST_WIDTH;
+                    firstW = (width - firstW >= MIN_DELTA_WIDTH_TO_FIRST_WIDTH) ? firstW : width - MIN_DELTA_WIDTH_TO_FIRST_WIDTH;
                     firstW2Spinner.getValueFactory().setValue(firstW);
                 }
 
@@ -593,8 +593,8 @@ public class VoltAmpereProfileController {
 
         firstIValue = (boostIValue - firstIValue >= 0.5) ? firstIValue : boostIValue - 0.5;
         secondIValue = (firstIValue - secondIValue >= 0.5) ? secondIValue : firstIValue - 0.5;
-        if ((widthValue - firstWValue <= MAX_DELTA_WIDTH_TO_FIRST_WIDTH)) {
-            firstWValue = widthValue - MAX_DELTA_WIDTH_TO_FIRST_WIDTH;
+        if ((widthValue - firstWValue <= MIN_DELTA_WIDTH_TO_FIRST_WIDTH)) {
+            firstWValue = widthValue - MIN_DELTA_WIDTH_TO_FIRST_WIDTH;
             secondIValue = firstIValue - 0.6d;
         }
 
@@ -638,8 +638,8 @@ public class VoltAmpereProfileController {
 
             firstI2Value = (boostI2Value - firstI2Value >= 0.5) ? firstI2Value : boostI2Value - 0.5;
             secondI2Value = (firstI2Value - secondI2Value >= 0.5) ? secondI2Value : firstI2Value - 0.5;
-            if ((width2Value - firstW2Value <= MAX_DELTA_WIDTH_TO_FIRST_WIDTH)) {
-                firstW2Value = width2Value - MAX_DELTA_WIDTH_TO_FIRST_WIDTH;
+            if ((width2Value - firstW2Value <= MIN_DELTA_WIDTH_TO_FIRST_WIDTH)) {
+                firstW2Value = width2Value - MIN_DELTA_WIDTH_TO_FIRST_WIDTH;
                 secondI2Value = firstI2Value - 0.6d;
             }
 
@@ -820,8 +820,8 @@ public class VoltAmpereProfileController {
             return (i1 - i2 >= 0.5) ? i2 : i1 - 0.5;
         }
 
-        private int getWidth(int width, int width_1) { return width - width_1 >= MAX_DELTA_WIDTH_TO_FIRST_WIDTH ? width_1 : width; }
+        private int getWidth(int width, int width_1) { return width - width_1 >= MIN_DELTA_WIDTH_TO_FIRST_WIDTH ? width_1 : width; }
 
-        private double getCurrent2(int width, int width_1, double i1, double i2) { return width - width_1 <= MAX_DELTA_WIDTH_TO_FIRST_WIDTH ? i2 : i1 - 0.6; }
+        private double getCurrent2(int width, int width_1, double i1, double i2) { return width - width_1 <= MIN_DELTA_WIDTH_TO_FIRST_WIDTH ? i2 : i1 - 0.6; }
     }
 }

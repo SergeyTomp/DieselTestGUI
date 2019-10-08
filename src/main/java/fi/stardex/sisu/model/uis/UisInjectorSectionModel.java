@@ -1,9 +1,6 @@
 package fi.stardex.sisu.model.uis;
 
-import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 import javafx.scene.control.ToggleButton;
 
 import java.util.ArrayList;
@@ -22,12 +19,13 @@ public class UisInjectorSectionModel {
     private ToggleButton ledBeaker6ToggleButton = new ToggleButton();
     private ToggleButton ledBeaker7ToggleButton = new ToggleButton();
     private ToggleButton ledBeaker8ToggleButton = new ToggleButton();
-    private ToggleButton powerButton = new ToggleButton();
     private IntegerProperty width_1 = new SimpleIntegerProperty();
     private IntegerProperty width_2 = new SimpleIntegerProperty();
     private IntegerProperty shift = new SimpleIntegerProperty();
     private IntegerProperty angle_1 = new SimpleIntegerProperty();
     private IntegerProperty angle_2 = new SimpleIntegerProperty();
+    private BooleanProperty powerButton = new SimpleBooleanProperty();
+    private IntegerProperty pressureSpinner = new SimpleIntegerProperty();
 
     public ToggleButton getLedBeaker1ToggleButton() {
         return ledBeaker1ToggleButton;
@@ -53,9 +51,13 @@ public class UisInjectorSectionModel {
     public ToggleButton getLedBeaker8ToggleButton() {
         return ledBeaker8ToggleButton;
     }
-    public ToggleButton getPowerButton() {
+    public BooleanProperty powerButtonProperty() {
         return powerButton;
     }
+    public IntegerProperty pressureSpinnerProperty() {
+        return pressureSpinner;
+    }
+
     public IntegerProperty width_1Property() {
         return width_1;
     }

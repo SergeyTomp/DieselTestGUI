@@ -204,7 +204,7 @@ public class UisVoltageController {
 
         mainSectionUisModel.modelProperty().addListener((observableValue, oldValue, newValue) -> clearCharts());
         mainSectionUisModel.injectorTestProperty().addListener((observableValue, oldValue, newValue) -> clearCharts());
-        pulseSettingsButton.disableProperty().bind(uisInjectorSectionModel.getPowerButton().selectedProperty());
+        pulseSettingsButton.disableProperty().bindBidirectional(uisInjectorSectionModel.powerButtonProperty());
     }
 
     private void configLineChartData() {

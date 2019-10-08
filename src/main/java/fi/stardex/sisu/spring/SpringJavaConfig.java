@@ -1160,10 +1160,14 @@ public class SpringJavaConfig {
     @Bean
     @Autowired
     public UisHardwareUpdateModel uisHardwareUpdateModel(MainSectionUisModel mainSectionUisModel,
-                                                         GUI_TypeModel gui_typeModel) {
+                                                         GUI_TypeModel gui_typeModel,
+                                                         RegulationModesModel regulationModesModel,
+                                                         UisSettingsModel uisSettingsModel) {
         UisHardwareUpdateModel uisHardwareUpdateModel = new UisHardwareUpdateModel();
         uisHardwareUpdateModel.setMainSectionUisModel(mainSectionUisModel);
         uisHardwareUpdateModel.setGui_typeModel(gui_typeModel);
+        uisHardwareUpdateModel.setRegulationModesModel(regulationModesModel);
+        uisHardwareUpdateModel.setUisSettingsModel(uisSettingsModel);
         return uisHardwareUpdateModel;
     }
 

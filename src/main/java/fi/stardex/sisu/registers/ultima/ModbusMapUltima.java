@@ -157,11 +157,11 @@ public enum ModbusMapUltima implements ModbusMap {
     Angle_2(REGISTER_HOLDING, 155, 1, false),               //Угловой слот 2: Угол запуска в градусах
     AngleInjector_1(REGISTER_HOLDING, 154, 1, false),       //Угловой слот 1: Номер форсунки
     AngleInjector_2(REGISTER_HOLDING, 156, 1, false),       //Угловой слот 2: Номер форсунки
-    BipModeInterval_1(REGISTER_HOLDING, 10, 1, false),      //Время фазы BIP канала 1 (в мкс)
-    BipModeDuty_1(REGISTER_HOLDING, 11, 1, false),          //Скважность BIP канала 1
+    BipModeInterval_1(REGISTER_HOLDING, 10, 1, true),       //Время фазы BIP канала 1 (в мкс)
+    BipModeDuty_1(REGISTER_HOLDING, 11, 1, true),           //Скважность BIP канала 1
     SecondSignalInterval(REGISTER_HOLDING, 12, 1, false),   //Время окончания фазы удерджания для второго сигнала (в мкс)
-    BipModeInterval_2(REGISTER_HOLDING, 30, 1, false),      //Время фазы BIP канала 2 (в мкс)
-    BipModeDuty_2(REGISTER_HOLDING, 31, 1, false),          //Скважность BIP канала 2
+    BipModeInterval_2(REGISTER_HOLDING, 30, 1, true),       //Время фазы BIP канала 2 (в мкс)
+    BipModeDuty_2(REGISTER_HOLDING, 31, 1, true),           //Скважность BIP канала 2
     MaxPressureRegistered(REGISTER_INPUT, 4124, 1, true),   //Максимальное зарегестрированное значение  давления
     HpiModeOn(DISCRETE_COIL, 10, 1, false),                 //Форсунка HPI флаг
     BipModeOn_1(DISCRETE_COIL, 4, 1, false),                //Форсунка HPI флаг

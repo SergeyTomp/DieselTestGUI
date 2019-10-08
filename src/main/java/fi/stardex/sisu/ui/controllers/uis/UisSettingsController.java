@@ -102,9 +102,7 @@ public class UisSettingsController {
                                                                                                 ANGLE_OFFSET_SPINNER_STEP));
         uisSettingsModel.angleOffsetProperty().bind(sensorAngleSpinner.valueProperty());
         sensorAngleSpinner.getValueFactory().setValue(rootPrefs.getInt(PREF_KEY_OFFSET, 70));
-        sensorAngleSpinner.valueProperty().addListener((observableValue, oldValue, newValue) -> {
-            rootPrefs.putInt(PREF_KEY_OFFSET, newValue);
-        });
+        sensorAngleSpinner.valueProperty().addListener((observableValue, oldValue, newValue) -> rootPrefs.putInt(PREF_KEY_OFFSET, newValue));
 
         firmwareButton.setOnAction(actionEvent -> uisSettingsModel.getFirmwareVersionButton().fire());
         bindingI18N();
