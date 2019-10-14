@@ -35,6 +35,11 @@ public class ChartTaskOne extends ChartTask {
     }
 
     @Override
+    protected ObservableList<XYChart.Data<Double, Double>> getChartDataList() {
+        return chartTaskDataModel.getChartOneDataList();
+    }
+
+    @Override
     protected int getChartNumber() {
         return 1;
     }

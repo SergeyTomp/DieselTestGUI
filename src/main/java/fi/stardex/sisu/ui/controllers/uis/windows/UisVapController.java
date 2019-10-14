@@ -17,6 +17,8 @@ import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
@@ -96,6 +98,7 @@ public class UisVapController {
     private InjectorUisVAP currentVAP;
     private InjectorUisTest currentTest;
     private boolean isBipTest;
+    private Logger log = LoggerFactory.getLogger(UisVapController.class);
 
     public void setUisVoltageTabModel(UisVoltageTabModel uisVoltageTabModel) {
         this.uisVoltageTabModel = uisVoltageTabModel;
@@ -140,7 +143,7 @@ public class UisVapController {
         setupVoltageTabListener();
         bindingI18N();
         setupVoltageTabListener();
-        setupPulseSequenceChangesListeners();
+        setupPulseSequenceChangeListeners();
     }
 
     private enum Invocator {
@@ -190,11 +193,10 @@ public class UisVapController {
 
     //TODO: черновой вариант, нужно вдумчиво привести в соответствие с требованиями железа
     // в работающей старой версии все параметры отправляются по факту изменения хотя бы одного, что неочевидно для углов, например
-    private void setupPulseSequenceChangesListeners() {
+    private void setupPulseSequenceChangeListeners() {
 
         uisInjectorSectionModel.width_1Property().addListener((observableValue, oldValue, newValue) -> {
-
-            if (mainSectionUisModel.isTestIsChanging()) { return; }
+            if (mainSectionUisModel.isTestIsChanging() || mainSectionUisModel.isModelIsChanging()) { return; }
             if ((newValue.intValue() >= WIDTH_CURRENT_SIGNAL_SPINNER_MIN)
                     && (newValue.intValue() <= WIDTH_CURRENT_SIGNAL_SPINNER_MAX)) {
                 sendVAPRegisters(Invocator.SPINNER);
@@ -203,7 +205,7 @@ public class UisVapController {
 
         uisInjectorSectionModel.width_2Property().addListener((observableValue, oldValue, newValue) -> {
 
-            if (mainSectionUisModel.isTestIsChanging()) { return; }
+            if (mainSectionUisModel.isTestIsChanging() || mainSectionUisModel.isModelIsChanging()) { return; }
             if ((newValue.intValue() >= WIDTH_CURRENT_SIGNAL_SPINNER_MIN)
                     && (newValue.intValue() <= WIDTH_CURRENT_SIGNAL_SPINNER_MAX)) {
                 sendVAPRegisters(Invocator.SPINNER);
@@ -212,35 +214,23 @@ public class UisVapController {
 
         uisInjectorSectionModel.angle_1Property().addListener((observableValue, oldValue, newValue) -> {
 
-            if (mainSectionUisModel.isTestIsChanging()) { return; }
+            if (mainSectionUisModel.isTestIsChanging() || mainSectionUisModel.isModelIsChanging()) { return; }
             sendVAPRegisters(Invocator.SPINNER);
         });
 
         uisInjectorSectionModel.angle_2Property().addListener((observableValue, oldValue, newValue) -> {
 
-            if (mainSectionUisModel.isTestIsChanging()) { return; }
+            if (mainSectionUisModel.isTestIsChanging() || mainSectionUisModel.isModelIsChanging()) { return; }
             sendVAPRegisters(Invocator.SPINNER);
         });
 
         uisInjectorSectionModel.shiftProperty().addListener((observableValue, oldValue, newValue) -> {
 
-            if (mainSectionUisModel.isTestIsChanging()) { return; }
+            if (mainSectionUisModel.isTestIsChanging() || mainSectionUisModel.isModelIsChanging()) { return; }
             ultimaModbusWriter.add(SecondCoilShiftTime, newValue);
         });
 
         uisSettingsModel.angleOffsetProperty().addListener((observableValue, oldValue, newValue) -> sendVAPRegisters(Invocator.SPINNER));
-
-        bipWindowSpinner.valueProperty().addListener((observableValue, oldValue, newValue) -> {
-
-            ultimaModbusWriter.add(BipModeInterval_1, newValue);
-            ultimaModbusWriter.add(BipModeInterval_2, newValue);
-        });
-
-        bipPwmSpinner.valueProperty().addListener((observableValue, oldValue, newValue) -> {
-
-            ultimaModbusWriter.add(BipModeDuty_1, newValue);
-            ultimaModbusWriter.add(BipModeDuty_2, newValue);
-        });
     }
 
     private void setupVoltageTabListener() {
@@ -282,12 +272,12 @@ public class UisVapController {
         uisVapModel.boostDisableProperty().setValue(currentVAP.getBoostDisable());
         enableBoostToggleButton.setSelected(currentVAP.getBoostDisable());
 
-        boolean isDoubleCoil = currentVAP.getInjectorSubType() == DOUBLE_COIL || currentVAP.getInjectorSubType() == HPI;
+        boolean isDoubleChannel = currentVAP.getInjectorSubType() == DOUBLE_COIL || currentVAP.getInjectorSubType() == HPI;
 
-        activateCoil2Spinners(isDoubleCoil);
+        activateCoil2Spinners(isDoubleChannel);
         activateBipSpinners(isBipTest);
 
-        if (isDoubleCoil) {
+        if (isDoubleChannel) {
 
             firstI = currentVAP.getFirstI2();
             secondI = currentVAP.getSecondI2();
@@ -507,10 +497,11 @@ public class UisVapController {
         });
 
     }
-    //TODO: черновой вариант, нужно вдумчиво привести в соответствие с требованиями железа, т.к. в работающей старой версии отправка явно с избытком
     private void sendVAPRegisters(Invocator who) {
 
-//        System.err.println(who + " sendVAPRegisters");
+        log.info("-----------------------------------");
+        log.info((char)27 + "[31m" + who + " sendVAPRegisters");
+        log.info("-----------------------------------");
 
         int negativeValue = negativeUSpinner.getValue();
         double boostIValue = boostISpinner.getValue();
@@ -520,27 +511,41 @@ public class UisVapController {
         int angleOffset = uisSettingsModel.angleOffsetProperty().get();
         int widthValue;
         int angle_1;
+        int bipWindow = 0;
+        int bipPWM = 0;
         switch (who) {
             case TEST:
                 widthValue = currentTest.getTotalPulseTime1();
-                angle_1 = (angleOffset - currentTest.getAngle_1() + 360) % 360;
+                angle_1 = calculateAngle(angleOffset, currentTest.getAngle_1());
+                if (isBipTest) {
+                    bipWindow = currentVAP.getBipWindow();
+                    bipPWM = currentVAP.getBipPWM();
+                }
                 break;
             case SPINNER:
                 widthValue = uisInjectorSectionModel.width_1Property().get();
-                angle_1 = (angleOffset - uisInjectorSectionModel.angle_1Property().get() + 360) % 360;
+                angle_1 = calculateAngle(angleOffset, uisInjectorSectionModel.angle_1Property().get());
+                if (isBipTest) {
+                    bipWindow = uisVapModel.bipWindowProperty().get();
+                    bipPWM = uisVapModel.bipPWMProperty().get();
+                }
                 break;
             default:
                 widthValue = uisInjectorSectionModel.width_1Property().get();
-                angle_1 = (angleOffset - uisInjectorSectionModel.angle_1Property().get() + 360) % 360;
+                angle_1 = calculateAngle(angleOffset, uisInjectorSectionModel.angle_1Property().get());
+                if (isBipTest) {
+                    bipWindow = uisVapModel.bipWindowProperty().get();
+                    bipPWM = uisVapModel.bipPWMProperty().get();
+                }
         }
 
         boolean boostToggleButtonSelected = enableBoostToggleButton.isSelected();
 
-        firstIValue = (boostIValue - firstIValue >= 0.5) ? firstIValue : boostIValue - 0.5;
-        secondIValue = (firstIValue - secondIValue >= 0.5) ? secondIValue : firstIValue - 0.5;
+        firstIValue = calculateFirstI(boostIValue, firstIValue);
+        secondIValue = calculateSecondI(firstIValue, secondIValue);
         if ((widthValue - firstWValue <= MIN_DELTA_WIDTH_TO_FIRST_WIDTH)) {
-            firstWValue = widthValue - MIN_DELTA_WIDTH_TO_FIRST_WIDTH;
-            secondIValue = firstIValue - 0.6d;
+            firstWValue = getCorrectedFirstW(widthValue, MIN_DELTA_WIDTH_TO_FIRST_WIDTH);
+            secondIValue = getCorrectedSecondI(firstIValue);
         }
 
         ultimaModbusWriter.add(Boost_U, boostUSpinner.getValue());
@@ -556,103 +561,128 @@ public class UisVapController {
         ultimaModbusWriter.add(Angle_1, angle_1);
         ultimaModbusWriter.add(StartOnBatteryUOne, boostToggleButtonSelected);
 
+        log.info((char)27 + "[31mBoost_U " + boostUSpinner.getValue());
+        log.info((char)27 + "[31mBattery_U  " + batteryUSpinner.getValue());
+        log.info((char)27 + "[31mNegative_U " + negativeValue);
+        log.info((char)27 + "[31mBoostIBoardOne " + boostIValue);
+        log.info((char)27 + "[31mFirstIBoardOne " + firstIValue);
+        log.info((char)27 + "[31mSecondIBoardOne " + secondIValue);
+        log.info((char)27 + "[31mFirstWBoardOne " + firstWValue);
+        log.info((char)27 + "[31mWidthBoardOne " + widthValue);
+        log.info((char)27 + "[31mBoostUOneEnabled " + boostToggleButtonSelected);
+        log.info((char)27 + "[31mAngle_1 " + angle_1);
+
         if (isBipTest) {
-            ultimaModbusWriter.add(BipModeInterval_1, currentVAP.getBipWindow());
-            ultimaModbusWriter.add(BipModeInterval_2, currentVAP.getBipWindow());
+            ultimaModbusWriter.add(BipModeInterval_1, bipWindow + firstWValue);
+            ultimaModbusWriter.add(BipModeInterval_2, bipWindow + firstWValue);
+            ultimaModbusWriter.add(BipModeDuty_1, bipPWM);
+            ultimaModbusWriter.add(BipModeDuty_2, bipPWM);
+
+            log.info((char)27 + "[31mBipModeInterval_1 " + bipWindow);
+            log.info((char)27 + "[31mBipModeDuty_1 " + bipPWM);
+
         }
 
-//        System.err.println("Boost_U " + boostUSpinner.getValue());
-//        System.err.println("Battery_U " + batteryUSpinner.getValue());
-//        System.err.println("Negative_U " + negativeValue);
-//        System.err.println("BoostIBoardOne " + boostIValue);
-//        System.err.println("FirstIBoardOne " + firstIValue);
-//        System.err.println("SecondIBoardOne " + secondIValue);
-//        System.err.println("FirstWBoardOne " + firstWValue);
-//        System.err.println("WidthBoardOne " + widthValue);
-//        System.err.println("BoostUOne " + boostToggleButtonSelected);
-//        System.err.println("Angle_1 " + angle_1);
-//        System.err.println();
+        if (currentVAP != null) {
 
-        if (currentVAP != null &&
-                (currentVAP.getInjectorSubType() == DOUBLE_COIL
-                        || currentVAP.getInjectorSubType() == HPI
-                        || currentVAP.getInjectorSubType() == DOUBLE_SIGNAL)) {
+            if (currentVAP.getInjectorSubType() == DOUBLE_COIL || currentVAP.getInjectorSubType() == HPI) {
 
-            double boostI2Value = boostI2Spinner.getValue();
-            double firstI2Value = firstI2Spinner.getValue();
-            double secondI2Value = secondI2Spinner.getValue();
-            int firstW2Value = firstW2Spinner.getValue();
-            int width2Value;
-            switch (who) {
-                case TEST:
-                    width2Value = currentVAP.getInjectorSubType() == DOUBLE_COIL ? currentTest.getTotalPulseTime1() : currentTest.getTotalPulseTime2();
-                    break;
-                case SPINNER:
-                    width2Value = uisInjectorSectionModel.width_2Property().get();
-                    break;
-                default:
-                    width2Value = uisInjectorSectionModel.width_1Property().get();
+                double boostI2Value = boostI2Spinner.getValue();
+                double firstI2Value = firstI2Spinner.getValue();
+                double secondI2Value = secondI2Spinner.getValue();
+                int firstW2Value = firstW2Spinner.getValue();
+                int width2Value;
+                switch (who) {
+                    case TEST:
+                        width2Value = currentVAP.getInjectorSubType() == DOUBLE_COIL ? currentTest.getTotalPulseTime1() : currentTest.getTotalPulseTime2();
+                        break;
+                    case SPINNER:
+                        width2Value = uisInjectorSectionModel.width_2Property().get();
+                        break;
+                    default:
+                        width2Value = uisInjectorSectionModel.width_1Property().get();
+                }
+
+                firstI2Value = calculateFirstI(boostI2Value, firstI2Value);
+                secondI2Value = calculateSecondI(firstI2Value, secondI2Value);
+                if ((width2Value - firstW2Value <= MIN_DELTA_WIDTH_TO_FIRST_WIDTH)) {
+                    firstW2Value = getCorrectedFirstW(width2Value, MIN_DELTA_WIDTH_TO_FIRST_WIDTH);
+                    secondI2Value = getCorrectedSecondI(firstI2Value);
+                }
+
+                ultimaModbusWriter.add(BoostIBoardTwo, (int) (boostI2Value * ONE_AMPERE_MULTIPLY));
+                ultimaModbusWriter.add(FirstIBoardTwo, (int) (firstI2Value * ONE_AMPERE_MULTIPLY));
+                ultimaModbusWriter.add(SecondIBoardTwo, (int) (secondI2Value * ONE_AMPERE_MULTIPLY));
+                ultimaModbusWriter.add(FirstWBoardTwo, firstW2Value);
+                ultimaModbusWriter.add(WidthBoardTwo, width2Value);
+                ultimaModbusWriter.add(StartOnBatteryUTwo, boostToggleButtonSelected);
+
+                log.info((char)27 + "[31mBoostIBoardTwo " + boostIValue);
+                log.info((char)27 + "[31mFirstIBoardTwo " + firstIValue);
+                log.info((char)27 + "[31mSecondIBoardTwo " + secondIValue);
+                log.info((char)27 + "[31mFirstWBoardTwo " + firstWValue);
+                log.info((char)27 + "[31mWidthBoardTwo " + widthValue);
+                log.info((char)27 + "[31mBoostUTwoEnabled " + boostToggleButtonSelected);
+            }
+            else {
+
+                ultimaModbusWriter.add(BoostIBoardTwo, (int) (boostIValue * ONE_AMPERE_MULTIPLY));
+                ultimaModbusWriter.add(FirstIBoardTwo, (int) (firstIValue * ONE_AMPERE_MULTIPLY));
+                ultimaModbusWriter.add(SecondIBoardTwo, (int) (secondIValue * ONE_AMPERE_MULTIPLY));
+                ultimaModbusWriter.add(FirstWBoardTwo, firstWValue);
+                ultimaModbusWriter.add(WidthBoardTwo, widthValue);
+                ultimaModbusWriter.add(StartOnBatteryUTwo, boostToggleButtonSelected);
             }
 
-            firstI2Value = (boostI2Value - firstI2Value >= 0.5) ? firstI2Value : boostI2Value - 0.5;
-            secondI2Value = (firstI2Value - secondI2Value >= 0.5) ? secondI2Value : firstI2Value - 0.5;
-            if ((width2Value - firstW2Value <= MIN_DELTA_WIDTH_TO_FIRST_WIDTH)) {
-                firstW2Value = width2Value - MIN_DELTA_WIDTH_TO_FIRST_WIDTH;
-                secondI2Value = firstI2Value - 0.6d;
-            }
+            if (currentVAP.getInjectorSubType() == HPI || currentVAP.getInjectorSubType() == DOUBLE_SIGNAL) {
 
-            ultimaModbusWriter.add(BoostIBoardTwo, (int) (boostI2Value * ONE_AMPERE_MULTIPLY));
-            ultimaModbusWriter.add(FirstIBoardTwo, (int) (firstI2Value * ONE_AMPERE_MULTIPLY));
-            ultimaModbusWriter.add(SecondIBoardTwo, (int) (secondI2Value * ONE_AMPERE_MULTIPLY));
-            ultimaModbusWriter.add(FirstWBoardTwo, firstW2Value);
-            ultimaModbusWriter.add(WidthBoardTwo, width2Value);
-            ultimaModbusWriter.add(StartOnBatteryUTwo, boostToggleButtonSelected);
-//            System.err.println("BoostIBoardTwo " + boostI2Value);
-//            System.err.println("FirstIBoardTwo " + firstI2Value);
-//            System.err.println("SecondIBoardTwo " + secondI2Value);
-//            System.err.println("FirstWBoardTwo " + firstW2Value);
-//            System.err.println("WidthBoardTwo " + width2Value);
-//            System.err.println("BoostUTwo " + boostToggleButtonSelected);
-
-            if (currentVAP.getInjectorSubType() != DOUBLE_COIL) {
                 int angle_2;
                 switch (who) {
                     case TEST:
-                        angle_2 = (angleOffset - currentTest.getAngle_2() + 360) % 360;
+                        angle_2 = calculateAngle(angleOffset, currentTest.getAngle_2());
                         break;
                     case SPINNER:
-                        angle_2 = (angleOffset - uisInjectorSectionModel.angle_2Property().get() + 360) % 360;
+                        angle_2 = calculateAngle(angleOffset, uisInjectorSectionModel.angle_2Property().get());
                         break;
                     default:
-                        angle_2 = (angleOffset - uisInjectorSectionModel.angle_2Property().get() + 360) % 360;
+                        angle_2 = calculateAngle(angleOffset, uisInjectorSectionModel.angle_2Property().get());
                 }
                 ultimaModbusWriter.add(Angle_2, angle_2);
-//                System.err.println("Angle_2 " + angle_2);
+
+                log.info((char)27 + "[31mAngle_2 " + angle_2);
             }
+            if (currentVAP.getInjectorSubType() == DOUBLE_SIGNAL) {
 
-        } else {
+                int width_2;
+                switch (who) {
+                    case TEST:
+                        width_2 = currentTest.getTotalPulseTime2();
+                        break;
+                    case SPINNER:
+                        width_2 = uisInjectorSectionModel.width_2Property().get();
+                        break;
+                    default:
+                        width_2 = uisInjectorSectionModel.width_1Property().get();
+                        break;
+                }
+                ultimaModbusWriter.add(SecondSignalInterval, width_2);
 
-            ultimaModbusWriter.add(BoostIBoardTwo, (int) (boostIValue * ONE_AMPERE_MULTIPLY));
-            ultimaModbusWriter.add(FirstIBoardTwo, (int) (firstIValue * ONE_AMPERE_MULTIPLY));
-            ultimaModbusWriter.add(SecondIBoardTwo, (int) (secondIValue * ONE_AMPERE_MULTIPLY));
-            ultimaModbusWriter.add(FirstWBoardTwo, firstWValue);
-            ultimaModbusWriter.add(WidthBoardTwo, widthValue);
-            ultimaModbusWriter.add(BoostIBoardThree, (int) (boostIValue * ONE_AMPERE_MULTIPLY));
-            ultimaModbusWriter.add(FirstIBoardThree, (int) (firstIValue * ONE_AMPERE_MULTIPLY));
-            ultimaModbusWriter.add(SecondIBoardThree, (int) (secondIValue * ONE_AMPERE_MULTIPLY));
-            ultimaModbusWriter.add(FirstWBoardThree, firstWValue);
-            ultimaModbusWriter.add(WidthBoardThree, widthValue);
-            ultimaModbusWriter.add(BoostIBoardFour, (int) (boostIValue * ONE_AMPERE_MULTIPLY));
-            ultimaModbusWriter.add(FirstIBoardFour, (int) (firstIValue * ONE_AMPERE_MULTIPLY));
-            ultimaModbusWriter.add(SecondIBoardFour, (int) (secondIValue * ONE_AMPERE_MULTIPLY));
-            ultimaModbusWriter.add(FirstWBoardFour, firstWValue);
-            ultimaModbusWriter.add(WidthBoardFour, widthValue);
-            ultimaModbusWriter.add(StartOnBatteryUTwo, boostToggleButtonSelected);
-            ultimaModbusWriter.add(StartOnBatteryUThree, boostToggleButtonSelected);
-            ultimaModbusWriter.add(StartOnBatteryUFour, boostToggleButtonSelected);
+                log.info((char)27 + "[31mSecondSignalInterval " + width_2);
+            }
         }
         ultimaModbusWriter.add(FirstPulseFlag, true);
+        log.info("-----------------------------------");
     }
+
+    private int calculateAngle(int offset, int angle) { return (offset - angle + 360) % 360; }
+
+    private double calculateFirstI(double boostI, double firstI) { return boostI - firstI >= 0.5 ? firstI : boostI - 0.5; }
+
+    private double calculateSecondI(double firstI, double secondI) { return firstI - secondI >= 0.5 ? secondI : firstI - 0.5; }
+
+    private int getCorrectedFirstW(int width, int delta) { return width - delta; }
+
+    private double getCorrectedSecondI(double firstI) { return firstI - 0.6; }
 
     private void setupSpinnerStyleWhenValueChangedListener() {
 
@@ -668,7 +698,8 @@ public class UisVapController {
         secondI2Spinner.valueProperty().addListener((observableValue, oldValue, newValue) -> setColor(secondI2Spinner, uisHardwareUpdateModel.second_I2Property().get()));
         boostI2Spinner.valueProperty().addListener((observableValue, oldValue, newValue) -> setColor(boostI2Spinner, uisHardwareUpdateModel.boost_I2Property().get()));
         bipPwmSpinner.valueProperty().addListener((observableValue, oldValue, newValue) -> setColor(bipPwmSpinner, uisHardwareUpdateModel.bipPWMProperty().get()));
-        bipWindowSpinner.valueProperty().addListener((observableValue, oldValue, newValue) -> setColor(bipWindowSpinner, uisHardwareUpdateModel.bipWindowProperty().get()));
+        bipWindowSpinner.valueProperty().addListener((observableValue, oldValue, newValue)
+                -> setColor(bipWindowSpinner, String.valueOf(Integer.parseInt(uisHardwareUpdateModel.bipWindowProperty().get()) - Integer.parseInt(uisHardwareUpdateModel.first_WProperty().get()))));
     }
 
     private void setColor(Spinner<? extends Number> spinner, String updaterValue) {
@@ -748,7 +779,7 @@ public class UisVapController {
         setColor(secondI2Spinner, uisHardwareUpdateModel.second_I2Property().get());
         setColor(boostI2Spinner, uisHardwareUpdateModel.boost_I2Property().get());
         setColor(bipPwmSpinner, uisHardwareUpdateModel.bipPWMProperty().get());
-        setColor(bipWindowSpinner, uisHardwareUpdateModel.bipWindowProperty().get());
+        setColor(bipWindowSpinner, String.valueOf(Integer.parseInt(uisHardwareUpdateModel.bipWindowProperty().get()) - Integer.parseInt(uisHardwareUpdateModel.first_WProperty().get())));
     }
 
     private void bindingI18N() {

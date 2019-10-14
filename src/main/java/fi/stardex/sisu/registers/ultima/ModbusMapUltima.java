@@ -164,10 +164,10 @@ public enum ModbusMapUltima implements ModbusMap {
     BipModeDuty_2(REGISTER_HOLDING, 31, 1, true),           //Скважность BIP канала 2
     MaxPressureRegistered(REGISTER_INPUT, 4124, 1, true),   //Максимальное зарегестрированное значение  давления
     HpiModeOn(DISCRETE_COIL, 10, 1, false),                 //Форсунка HPI флаг
-    BipModeOn_1(DISCRETE_COIL, 4, 1, false),                //Форсунка HPI флаг
-    BipModeOn_2(DISCRETE_COIL, 24, 1, false),               //Форсунка HPI флаг
-    DoubleSignalModeOn_1(DISCRETE_COIL, 5, 1, false),       //Форсунка HPI флаг
-    DoubleSignalModeOn_2(DISCRETE_COIL, 25, 1, false),      //Форсунка HPI флаг
+    BipModeOn_1(DISCRETE_COIL, 4, 1, false),                //Режим  BIP включен
+    BipModeOn_2(DISCRETE_COIL, 24, 1, false),               //Режим  BIP включен
+    DoubleSignalModeOn_1(DISCRETE_COIL, 5, 1, false),       //Режим ДаблСигнал включен
+    DoubleSignalModeOn_2(DISCRETE_COIL, 25, 1, false),      //Режим ДаблСигнал включен
     FirstPulseFlag(DISCRETE_COIL, 44, 1, false),            //Флаг первого импульса в регулярной последовательности
 
     // Отображение версий прошивок

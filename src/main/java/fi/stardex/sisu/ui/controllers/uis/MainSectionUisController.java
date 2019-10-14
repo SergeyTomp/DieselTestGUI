@@ -531,7 +531,7 @@ public class MainSectionUisController {
 
     private void pointToFirstTest() {
 
-        mainSectionUisModel.injectorTestProperty().setValue(null);
+//        mainSectionUisModel.injectorTestProperty().setValue(null);
         testListView.getSelectionModel().select(0);
         testListView.scrollTo(0);
     }
@@ -725,7 +725,6 @@ public class MainSectionUisController {
                 modelService = uisModelService;
                 producerService = uisProducerService;
                 testService = uisTestService;
-                ultimaModbusWriter.add(UIS_to_CR_pulseControlSwitch, 1);
 
                 manufacturerListView.getItems().setAll(new ArrayList<>(producerService.findAll()));
                 manufacturerListView.refresh();

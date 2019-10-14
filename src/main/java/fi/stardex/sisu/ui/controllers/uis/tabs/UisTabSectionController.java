@@ -41,6 +41,7 @@ public class UisTabSectionController {
 
     @PostConstruct
     public void init() {
+        uisTabSectionModel.isTabVoltageShowingProperty().bind(tabVoltage.selectedProperty());
         bindingI18N();
     }
 

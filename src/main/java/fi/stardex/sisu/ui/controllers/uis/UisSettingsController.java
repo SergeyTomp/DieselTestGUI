@@ -63,9 +63,9 @@ public class UisSettingsController {
 
         rpmSourceComboBox.getItems().setAll(RpmSource.values());
         rpmSourceComboBox.getItems().sort(Comparator.comparingInt(RpmSource::getOrder));
+        rpmSourceComboBox.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> rootPrefs.put(PREF_KEY_RPM, newValue.name()));
         uisSettingsModel.rpmSourceProperty().bind(rpmSourceComboBox.getSelectionModel().selectedItemProperty());
         rpmSourceComboBox.getSelectionModel().select(RpmSource.valueOf(rootPrefs.get(PREF_KEY_RPM, EXTERNAL.name())));
-        rpmSourceComboBox.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> rootPrefs.put(PREF_KEY_RPM, newValue.name()));
 
         languagesComboBox.setItems(FXCollections.observableArrayList(Locales.values()));
         uisSettingsModel.languageProperty().bind(languagesComboBox.getSelectionModel().selectedItemProperty());
@@ -103,7 +103,6 @@ public class UisSettingsController {
         uisSettingsModel.angleOffsetProperty().bind(sensorAngleSpinner.valueProperty());
         sensorAngleSpinner.getValueFactory().setValue(rootPrefs.getInt(PREF_KEY_OFFSET, 70));
         sensorAngleSpinner.valueProperty().addListener((observableValue, oldValue, newValue) -> rootPrefs.putInt(PREF_KEY_OFFSET, newValue));
-
         firmwareButton.setOnAction(actionEvent -> uisSettingsModel.getFirmwareVersionButton().fire());
         bindingI18N();
     }

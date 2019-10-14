@@ -1388,7 +1388,9 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                                      UisSettingsModel uisSettingsModel,
                                                                      TestBenchSectionModel testBenchSectionModel,
                                                                      RegulationModesModel regulationModesModel,
-                                                                     UisVapModel uisVapModel) {
+                                                                     UisVapModel uisVapModel,
+                                                                     ChartTaskDataModel chartTaskDataModel,
+                                                                     TimerTasksManager timerTasksManager) {
         UisInjectorSectionController uisInjectorSectionController = (UisInjectorSectionController)uisInjectorSection().getController();
         uisInjectorSectionController.setMainSectionUisModel(mainSectionUisModel);
         uisInjectorSectionController.setUisInjectorSectionModel(uisInjectorSectionModel);
@@ -1399,6 +1401,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
         uisInjectorSectionController.setTestBenchSectionModel(testBenchSectionModel);
         uisInjectorSectionController.setRegulationModesModel(regulationModesModel);
         uisInjectorSectionController.setUisVapModel(uisVapModel);
+        uisInjectorSectionController.setChartTaskDataModel(chartTaskDataModel);
+        uisInjectorSectionController.setTimerTasksManager(timerTasksManager);
         return uisInjectorSectionController;
     }
 
@@ -1472,7 +1476,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                      UisVoltageTabModel uisVoltageTabModel,
                                                      I18N i18N,
                                                      UisHardwareUpdateModel uisHardwareUpdateModel,
-                                                     UisVapModel uisVapModel) {
+                                                     UisVapModel uisVapModel,
+                                                     ChartTaskDataModel chartTaskDataModel) {
         UisVoltageController uisVoltageController = uisTabSectionController.getUisVoltageController();
         uisVoltageController.setUisInjectorSectionModel(uisInjectorSectionModel);
         uisVoltageController.setUisTabSectionModel(uisTabSectionModel);
@@ -1481,6 +1486,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         uisVoltageController.setI18N(i18N);
         uisVoltageController.setUisHardwareUpdateModel(uisHardwareUpdateModel);
         uisVoltageController.setUisVapModel(uisVapModel);
+        uisVoltageController.setChartTaskDataModel(chartTaskDataModel);
         return uisVoltageController;
     }
 

@@ -18,6 +18,7 @@ import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.*;
 import static fi.stardex.sisu.ui.controllers.common.GUI_TypeController.GUIType.UIS;
 import static fi.stardex.sisu.util.SpinnerDefaults.*;
 import static fi.stardex.sisu.util.converters.DataConverter.*;
+import static fi.stardex.sisu.util.enums.InjectorSubType.*;
 
 @Module(value = Device.ULTIMA)
 public class UisHardwareUpdateModel implements Updater {
@@ -186,7 +187,7 @@ public class UisHardwareUpdateModel implements Updater {
 
             injectorSubType = model.getVAP().getInjectorSubType();
 
-            if (injectorSubType == InjectorSubType.DOUBLE_COIL) {
+            if (injectorSubType == DOUBLE_COIL || injectorSubType == HPI) {
 
                 if ((value = FirstWBoardTwo.getLastValue().toString()) != null){
                     first_W2.setValue(value);
@@ -210,7 +211,16 @@ public class UisHardwareUpdateModel implements Updater {
                     shift.setValue(value);
                 }
             }
-            else if (injectorSubType == InjectorSubType.F2E) {
+            else {
+
+                first_W2.setValue(Float.toString(0f));
+                first_I2.setValue(Float.toString(0f));
+                second_I2.setValue(Float.toString(0f));
+                boost_I2.setValue(Float.toString(0f));
+                width2.setValue(Integer.toString(0));
+                shift.setValue(Integer.toString(0));
+            }
+            if (injectorSubType == F2E) {
 
                 if(PressureReg1_PressFact.getLastValue() != null){
                     double pressure = uisSettingsModel.pressureSensorProperty().get() * (Double) PressureReg1_PressFact.getLastValue();
@@ -223,15 +233,7 @@ public class UisHardwareUpdateModel implements Updater {
                     duty.setValue(round((double)PressureReg1_DutyFact.getLastValue()));
                 }
             }
-            else {
 
-                first_W2.setValue(Float.toString(0f));
-                first_I2.setValue(Float.toString(0f));
-                second_I2.setValue(Float.toString(0f));
-                boost_I2.setValue(Float.toString(0f));
-                width2.setValue(Integer.toString(0));
-                shift.setValue(Integer.toString(0));
-            }
         }
 
         if (isBipTest) {

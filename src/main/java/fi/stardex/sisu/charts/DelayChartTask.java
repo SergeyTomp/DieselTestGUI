@@ -89,6 +89,11 @@ public class DelayChartTask extends ChartTask {
     }
 
     @Override
+    protected ObservableList<XYChart.Data<Double, Double>> getChartDataList() {
+        return chartTaskDataModel.getDelayChartDataList();
+    }
+
+    @Override
     protected int getChartNumber() {
         return 5;
     }
@@ -236,6 +241,7 @@ public class DelayChartTask extends ChartTask {
         minimumDelayTextField.setText(String.format("%.0f", delayCalculator.getMinimumDelay()));
         maximumDelayTextField.setText(String.format("%.0f", delayCalculator.getMaximumDelay()));
         averageDelayTextField.setText(String.format("%.0f", delayCalculator.getAverageDelay()));
+        chartTaskDataModel.delayValueProperty().setValue(delayCalculator.getAverageDelay());
     }
 
     private int getNumber(ToggleButton ledBeakerController) {

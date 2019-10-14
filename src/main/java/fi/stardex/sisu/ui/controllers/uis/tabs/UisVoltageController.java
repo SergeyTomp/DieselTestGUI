@@ -1,12 +1,16 @@
 package fi.stardex.sisu.ui.controllers.uis.tabs;
 
+import fi.stardex.sisu.model.ChartTaskDataModel;
 import fi.stardex.sisu.model.uis.*;
 import fi.stardex.sisu.model.updateModels.UisHardwareUpdateModel;
 import fi.stardex.sisu.util.enums.InjectorType;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.listeners.VapModelListener;
 import fi.stardex.sisu.util.listeners.VoltageLabelListener;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.chart.LineChart;
@@ -25,6 +29,10 @@ import static fi.stardex.sisu.util.converters.DataConverter.convertDataToDouble;
 
 public class UisVoltageController {
 
+    @FXML private Label bipLabel;
+    @FXML private Label bipUOMLabel;
+    @FXML private Label coil1BipValueLabel;
+    @FXML private Label coil2BipValueLabel;
     @FXML private LineChart<Double, Double> lineChart;
     @FXML private NumberAxis yAxis;
     @FXML private NumberAxis xAxis;
@@ -63,20 +71,18 @@ public class UisVoltageController {
     private List<XYChart.Data<Double, Double>> emptyPointsList = new ArrayList<>(Collections.singletonList(new XYChart.Data<>(0d,0d)));
     private I18N i18N;
     private static final String RED_COLOR_STYLE = "-fx-text-fill: red";
+    private final String BIP = "BIP";
+    private StringProperty bipEnabledProperty = new SimpleStringProperty();
+    private StringProperty bipDisabledProperty = new SimpleStringProperty();
     private UisInjectorSectionModel uisInjectorSectionModel;
     private UisTabSectionModel uisTabSectionModel;
     private MainSectionUisModel mainSectionUisModel;
     private UisVoltageTabModel uisVoltageTabModel;
     private UisHardwareUpdateModel uisHardwareUpdateModel;
     private UisVapModel uisVapModel;
+    private ChartTaskDataModel chartTaskDataModel;
     private ObservableList<XYChart.Data<Double, Double>> data1;
     private ObservableList<XYChart.Data<Double, Double>> data2;
-    private ObservableList<XYChart.Data<Double, Double>> data3;
-    private ObservableList<XYChart.Data<Double, Double>> data4;
-    private ObservableList<XYChart.Data<Double, Double>> data5;
-    private ObservableList<XYChart.Data<Double, Double>> data6;
-    private ObservableList<XYChart.Data<Double, Double>> data7;
-    private ObservableList<XYChart.Data<Double, Double>> data8;
 
     public void setUisInjectorSectionModel(UisInjectorSectionModel uisInjectorSectionModel) {
         this.uisInjectorSectionModel = uisInjectorSectionModel;
@@ -97,9 +103,11 @@ public class UisVoltageController {
     public void setUisHardwareUpdateModel(UisHardwareUpdateModel uisHardwareUpdateModel) {
         this.uisHardwareUpdateModel = uisHardwareUpdateModel;
     }
-
     public void setUisVapModel(UisVapModel uisVapModel) {
         this.uisVapModel = uisVapModel;
+    }
+    public void setChartTaskDataModel(ChartTaskDataModel chartTaskDataModel) {
+        this.chartTaskDataModel = chartTaskDataModel;
     }
 
     @PostConstruct
@@ -111,6 +119,9 @@ public class UisVoltageController {
         setupXYAxisResizable();
         setupModelsListeners();
         bindingI18N();
+        bipLabel.textProperty().bind(bipDisabledProperty);
+        bipUOMLabel.setText("\u00B5s");
+        showBipLabels(false);
     }
 
     private void setupVoltAmpereProfileDialog() {
@@ -161,6 +172,11 @@ public class UisVoltageController {
         uisHardwareUpdateModel.second_I2Property().addListener((observableValue, oldValue, newValue) -> secondI2Label.setText(newValue));
         uisHardwareUpdateModel.boost_I2Property().addListener((observableValue, oldValue, newValue) -> boostI2Label.setText(newValue));
         uisHardwareUpdateModel.first_W2Property().addListener((observableValue, oldValue, newValue) -> firstW2Label.setText(newValue));
+
+        uisHardwareUpdateModel.bipWindowProperty().addListener((observableValue, oldValue, newValue)
+                -> coil1BipValueLabel.setText(String.valueOf(Integer.parseInt(newValue) - Integer.parseInt(firstWidth.getText()))));
+        uisHardwareUpdateModel.bipWindowProperty().addListener((observableValue, oldValue, newValue)
+                -> coil2BipValueLabel.setText(String.valueOf(Integer.parseInt(newValue) - Integer.parseInt(firstWidth.getText()))));
     }
 
     private void setupLabelListeners() {
@@ -186,6 +202,8 @@ public class UisVoltageController {
         firstI2Label.textProperty().addListener(new VoltageLabelListener(firstI2Label, uisVapModel.firstI2Property()));
         secondI2Label.textProperty().addListener(new VoltageLabelListener(secondI2Label, uisVapModel.secondI2Property()));
         boostI2Label.textProperty().addListener(new VoltageLabelListener(boostI2Label, uisVapModel.boostI2Property()));
+        coil1BipValueLabel.textProperty().addListener(new VoltageLabelListener(coil1BipValueLabel, uisVapModel.bipWindowProperty()));
+        coil2BipValueLabel.textProperty().addListener(new VoltageLabelListener(coil2BipValueLabel, uisVapModel.bipWindowProperty()));
 //
         uisVapModel.boostUProperty().addListener(new VapModelListener(voltage));
         uisVapModel.firstWProperty().addListener(new VapModelListener(firstWidth));
@@ -198,13 +216,33 @@ public class UisVoltageController {
         uisVapModel.firstI2Property().addListener(new VapModelListener(firstI2Label));
         uisVapModel.secondI2Property().addListener(new VapModelListener(secondI2Label));
         uisVapModel.boostI2Property().addListener(new VapModelListener(boostI2Label));
+        uisVapModel.bipWindowProperty().addListener(new VapModelListener(coil1BipValueLabel));
+        uisVapModel.bipWindowProperty().addListener(new VapModelListener(coil2BipValueLabel));
+
     }
 
     private void setupModelsListeners() {
 
         mainSectionUisModel.modelProperty().addListener((observableValue, oldValue, newValue) -> clearCharts());
-        mainSectionUisModel.injectorTestProperty().addListener((observableValue, oldValue, newValue) -> clearCharts());
+        mainSectionUisModel.injectorTestProperty().addListener((observableValue, oldValue, newValue) -> {
+            clearCharts();
+            if (newValue != null && newValue.getTestName().getName().contains(BIP)) {
+                bipLabel.textProperty().bind(bipEnabledProperty);
+                showBipLabels(true);
+            } else {
+                bipLabel.textProperty().bind(bipDisabledProperty);
+                showBipLabels(false);
+            }
+        });
         pulseSettingsButton.disableProperty().bindBidirectional(uisInjectorSectionModel.powerButtonProperty());
+        chartTaskDataModel.getChartOneDataList().addListener((ListChangeListener<XYChart.Data<Double, Double>>) change -> {
+            data1.clear();
+            data1.addAll(change.getList());
+        });
+        chartTaskDataModel.getChartTwoDataList().addListener((ListChangeListener<XYChart.Data<Double, Double>>) change -> {
+            data2.clear();
+            data2.setAll(change.getList());
+        });
     }
 
     private void configLineChartData() {
@@ -213,45 +251,15 @@ public class UisVoltageController {
         series1.setName("");
         XYChart.Series<Double, Double> series2 = new XYChart.Series<>();
         series2.setName("");
-        XYChart.Series<Double, Double> series3 = new XYChart.Series<>();
-        series3.setName("");
-        XYChart.Series<Double, Double> series4 = new XYChart.Series<>();
-        series4.setName("");
-        XYChart.Series<Double, Double> series5 = new XYChart.Series<>();
-        series5.setName("");
-        XYChart.Series<Double, Double> series6 = new XYChart.Series<>();
-        series6.setName("");
-        XYChart.Series<Double, Double> series7 = new XYChart.Series<>();
-        series7.setName("");
-        XYChart.Series<Double, Double> series8 = new XYChart.Series<>();
-        series8.setName("");
 
         data1 = FXCollections.observableArrayList();
         data2 = FXCollections.observableArrayList();
-        data3 = FXCollections.observableArrayList();
-        data4 = FXCollections.observableArrayList();
-        data5 = FXCollections.observableArrayList();
-        data6 = FXCollections.observableArrayList();
-        data7 = FXCollections.observableArrayList();
-        data8 = FXCollections.observableArrayList();
 
         series1.setData(data1);
         series2.setData(data2);
-        series3.setData(data3);
-        series4.setData(data4);
-        series5.setData(data5);
-        series6.setData(data6);
-        series7.setData(data7);
-        series8.setData(data8);
 
         lineChart.getData().add(series1);
         lineChart.getData().add(series2);
-        lineChart.getData().add(series3);
-        lineChart.getData().add(series4);
-        lineChart.getData().add(series5);
-        lineChart.getData().add(series6);
-        lineChart.getData().add(series7);
-        lineChart.getData().add(series8);
 
         xAxis.setLowerBound(0);
         xAxis.setUpperBound(1200);
@@ -305,6 +313,12 @@ public class UisVoltageController {
         xAxis.setUpperBound(w1 == 0 ? 0 : w1 > w2 ? w1 * 1.2 : w2 * 1.2);
     }
 
+    private void showBipLabels(boolean show) {
+        bipUOMLabel.setVisible(show);
+        coil1BipValueLabel.setVisible(show);
+        coil2BipValueLabel.setVisible(show);
+    }
+
     private void bindingI18N() {
         labelVoltage.textProperty().bind(i18N.createStringBinding("h4.voltage.label.voltage"));
         labelFirstWidth.textProperty().bind(i18N.createStringBinding("h4.voltage.label.first"));
@@ -327,5 +341,7 @@ public class UisVoltageController {
         labelNegativeUUOM.textProperty().bind(i18N.createStringBinding("h4.voltage.label.volt"));
         coil1Label.textProperty().bind(i18N.createStringBinding("voapProfile.label.coil1"));
         coil2Label.textProperty().bind(i18N.createStringBinding("voapProfile.label.coil2"));
+        bipEnabledProperty.bind(i18N.createStringBinding("h4.voltage.label.bipWindow"));
+        bipDisabledProperty.bind(i18N.createStringBinding("h4.voltage.label.bipDisabled"));
     }
 }

@@ -1,7 +1,10 @@
 package fi.stardex.sisu.charts;
 
+import fi.stardex.sisu.model.GUI_TypeModel;
+import fi.stardex.sisu.ui.controllers.common.GUI_TypeController;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Lookup;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -24,6 +27,8 @@ public class TimerTasksManager {
     private volatile boolean running;
 
     private Timer timer;
+    @Autowired
+    private GUI_TypeModel gui_typeModel;
 
     private List<Timer> timersList = new ArrayList<>();
 
@@ -62,7 +67,13 @@ public class TimerTasksManager {
         if (running)
             return;
 
-        listOfCharts = new ArrayList<>(Arrays.asList(getChartTaskOne(), getChartTaskTwo(), getChartTaskThree(), getChartTaskFour(), getDelayChartTask()));
+        //TODO - для UIS временно отключены задачи графиков 3, 4 и DelayChartTask(), пока не унифицируется задача DelayChartTask()
+        if (gui_typeModel.guiTypeProperty().get() == GUI_TypeController.GUIType.CR_Inj) {
+
+            listOfCharts = new ArrayList<>(Arrays.asList(getChartTaskOne(), getChartTaskTwo(), getChartTaskThree(), getChartTaskFour(), getDelayChartTask()));
+        }else
+            listOfCharts = new ArrayList<>(Arrays.asList(getChartTaskOne(), getChartTaskTwo()));
+
 
         listOfCharts.forEach(chartTask -> {
 

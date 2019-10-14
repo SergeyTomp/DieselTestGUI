@@ -1181,6 +1181,11 @@ public class SpringJavaConfig {
         return new UisVapModel();
     }
 
+    @Bean
+    public ChartTaskDataModel chartTaskDataModel() {
+        return new ChartTaskDataModel();
+    }
+
 //    @Bean
 //    @Autowired
 //    public FxListSelection pumpTestListSelectionModel(PumpTestListController pumpTestListController) {

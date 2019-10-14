@@ -153,6 +153,7 @@ public class GUI_TypeController {
 
             if (newValue != null) {
 
+                System.err.println(newValue);
                 switch (newValue) {
                     case CR_Inj:
                         changeToCRInj();
@@ -181,8 +182,6 @@ public class GUI_TypeController {
         pumpsStartButtonState.startButtonProperty().addListener((observableValue, oldValue, newValue) -> gui_typeComboBox.setDisable(newValue));
         mainSectionModel.startButtonProperty().addListener((observableValue, oldValue, newValue) -> gui_typeComboBox.setDisable(isStarted()));
         injectorSectionPwrState.powerButtonProperty().addListener((observableValue, oldValue, newValue) -> gui_typeComboBox.setDisable(isStarted()));
-
-        ultimaModbusWriter.add(UIS_to_CR_pulseControlSwitch, currentGUIType == GUIType.UIS ? 1 : 0);
     }
 
     private void changeToCRInj() {

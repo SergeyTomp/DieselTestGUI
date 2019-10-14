@@ -813,12 +813,12 @@ public class InjectorSectionController {
 //        }
     }
 
-    private void setBlinkingStatus(ToggleButton ledBeakerController, boolean blinking){
-        ledBeakerController.setUserData(blinking);
+    private void setBlinkingStatus(ToggleButton ledToggleButton, boolean blinking){
+        ledToggleButton.setUserData(blinking);
     }
 
-    private boolean getBlinkingStatus(ToggleButton ledBeakerController){
-        return (boolean)ledBeakerController.getUserData();
+    private boolean getBlinkingStatus(ToggleButton ledToggleButton){
+        return (boolean)ledToggleButton.getUserData();
     }
 
     private KeyFrame makeKeyFrame(ToggleButton ledToggleButton){
