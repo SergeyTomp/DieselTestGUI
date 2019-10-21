@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.cr.tabs.Step3Controller">
+   <children>
+      <VBox layoutX="170.0" spacing="10.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <HBox alignment="CENTER_LEFT" spacing="10.0">
+               <children>
+                  <Label text="AHE" />
+                  <TextField fx:id="aheTextField" alignment="CENTER" prefHeight="26.0" prefWidth="134.0" styleClass="searchTextField" stylesheets="@../../../css/Styling.css" />
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" spacing="10.0">
+               <children>
+                  <Spinner fx:id="currentSpinner" prefHeight="55.0" prefWidth="170.0" styleClass="repair-spinner" stylesheets="@../../../css/Styling.css" />
+                  <Label text="A">
+                     <font>
+                        <Font size="24.0" />
+                     </font>
+                  </Label>
+               </children>
+            </HBox>
+            <HBox alignment="CENTER_LEFT" spacing="10.0">
+               <children>
+                  <Spinner fx:id="timeSpinner" prefHeight="55.0" prefWidth="170.0" styleClass="repair-spinner" stylesheets="@../../../css/Styling.css" />
+                  <Label text="mS">
+                     <font>
+                        <Font size="24.0" />
+                     </font>
+                  </Label>
+               </children>
+            </HBox>
+            <VBox spacing="5.0">
+               <children>
+                  <StackPane maxWidth="170.0" prefWidth="170.0">
+                     <children>
+                        <ProgressBar fx:id="pauseProgressBar" prefWidth="170.0" progress="0.0" stylesheets="@../../../css/Styling.css" />
+                        <Text fx:id="pauseText" fill="#f9ff4c" strokeType="OUTSIDE" strokeWidth="0.0" text="0" />
+                     </children>
+                  </StackPane>
+                  <ToggleButton fx:id="startStopButton" mnemonicParsing="false" prefHeight="55.0" prefWidth="170.0" styleClass="startButton" stylesheets="@../../../css/Styling.css" />
+               </children>
+               <VBox.margin>
+                  <Insets top="10.0" />
+               </VBox.margin>
+            </VBox>
+         </children>
+         <padding>
+            <Insets bottom="20.0" left="20.0" right="20.0" top="10.0" />
+         </padding>
+      </VBox>
+   </children>
+</AnchorPane>

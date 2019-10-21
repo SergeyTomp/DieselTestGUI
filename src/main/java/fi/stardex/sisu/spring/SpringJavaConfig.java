@@ -1186,6 +1186,11 @@ public class SpringJavaConfig {
         return new ChartTaskDataModel();
     }
 
+    @Bean
+    public DelayModel delayModel() {
+        return new DelayModel();
+    }
+
 //    @Bean
 //    @Autowired
 //    public FxListSelection pumpTestListSelectionModel(PumpTestListController pumpTestListController) {

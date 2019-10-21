@@ -4,9 +4,11 @@ import fi.stardex.sisu.model.ChartTaskDataModel;
 import fi.stardex.sisu.model.GUI_TypeModel;
 import fi.stardex.sisu.model.cr.*;
 import fi.stardex.sisu.model.uis.MainSectionUisModel;
+import fi.stardex.sisu.model.uis.UisInjectorSectionModel;
 import fi.stardex.sisu.model.uis.UisTabSectionModel;
 import fi.stardex.sisu.model.uis.UisVapModel;
-import fi.stardex.sisu.util.enums.InjectorChannel;
+import fi.stardex.sisu.persistence.orm.interfaces.Test;
+import fi.stardex.sisu.persistence.orm.uis.InjectorUisTest;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
@@ -14,6 +16,7 @@ import fi.stardex.sisu.states.InjectorControllersState;
 import fi.stardex.sisu.states.InjectorSectionPwrState;
 import fi.stardex.sisu.states.VoltAmpereProfileDialogModel;
 import fi.stardex.sisu.ui.controllers.cr.tabs.VoltageController;
+import fi.stardex.sisu.util.enums.InjectorChannel;
 import fi.stardex.sisu.util.enums.InjectorSubType;
 import fi.stardex.sisu.util.enums.InjectorType;
 import fi.stardex.sisu.util.filters.FilterInputChartData;
@@ -32,7 +35,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.TimerTask;
 
-import static fi.stardex.sisu.ui.controllers.common.GUI_TypeController.GUIType.*;
+import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.SecondSignalInterval;
+import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.WidthBoardTwo;
+import static fi.stardex.sisu.util.converters.DataConverter.convertDataToInt;
 import static fi.stardex.sisu.util.enums.InjectorSubType.*;
 import static fi.stardex.sisu.util.enums.InjectorType.*;
 import static fi.stardex.sisu.version.UltimaFirmwareVersion.UltimaVersions;
@@ -47,13 +52,11 @@ public abstract class ChartTask extends TimerTask {
 
     private static final double CURRENT_COEF = 93.07;
 
-    private boolean updateOSC;
+    protected boolean updateOSC;
 
     private int firmwareWidth;
 
     private InjectorType injectorType;
-
-    private InjectorSubType injectorSubType;
 
     @Autowired
     protected ModbusRegisterProcessor ultimaModbusWriter;
@@ -82,9 +85,6 @@ public abstract class ChartTask extends TimerTask {
     private InjectorTypeModel injectorTypeModel;
 
     @Autowired
-    private InjectorModel injectorModel;
-
-    @Autowired
     protected InjectorControllersState injectorControllersState;
 
     @Autowired
@@ -105,7 +105,9 @@ public abstract class ChartTask extends TimerTask {
     @Autowired
     protected ChartTaskDataModel chartTaskDataModel;
 
-    private final String BIP = "BIP";
+    @Autowired
+    protected UisInjectorSectionModel uisInjectorSectionModel;
+
     private final int DERIVATIVE_OFFSET = 10; // Yi+10 - Yi   use for search DERIVATIVE.
     private final double STEP_BIP = -5.0; //add to Bip Line if bip doesn't search
     private final int MAX_REPEAT = 20; // max repeat loop for search Bip signal
@@ -152,73 +154,90 @@ public abstract class ChartTask extends TimerTask {
     protected void addDataToChart(double[] data, ObservableList<XYChart.Data<Double, Double>> chartData) {
 
         chartData.clear();
-
         double xValue = 0;
-
         List<XYChart.Data<Double, Double>> pointsList = new ArrayList<>();
 
-        List<XYChart.Data<Double, Double>> piezoDelphiNegativePoints = new ArrayList<>();
+        switch (gui_typeModel.guiTypeProperty().get()) {
 
-        if (injectorTypeModel.injectorTypeProperty().get() == PIEZO_DELPHI) {
+            case CR_Inj:
+            case HEUI:
 
-            for (double aData : data) {
-                pointsList.add(new XYChart.Data<>(xValue, aData / CURRENT_COEF));
-                if (xValue >= firmwareWidth)
-                    piezoDelphiNegativePoints.add(new XYChart.Data<>(xValue, -aData / CURRENT_COEF));
+                if (injectorType == PIEZO_DELPHI) {
 
-                xValue += X_VALUE_OFFSET;
-            }
+                    List<XYChart.Data<Double, Double>> piezoDelphiNegativePoints = new ArrayList<>();
 
-        } else {
+                    for (double aData : data) {
+                        pointsList.add(new XYChart.Data<>(xValue, aData / CURRENT_COEF));
+                        if (xValue >= firmwareWidth){
+                            piezoDelphiNegativePoints.add(new XYChart.Data<>(xValue, -aData / CURRENT_COEF));
+                        }
+                        xValue += X_VALUE_OFFSET;
+                    }
 
-            for (double aData : data) {
-                pointsList.add(new XYChart.Data<>(xValue, aData / CURRENT_COEF));
-                xValue += X_VALUE_OFFSET;
-            }
+                    int i = 0;
+                    for (XYChart.Data<Double, Double> point : piezoDelphiNegativePoints) {
+                        pointsList.get(i).setYValue(point.getYValue());
+                        i++;
+                    }
 
+                } else {
+
+                    for (double aData : data) {
+                        pointsList.add(new XYChart.Data<>(xValue, aData / CURRENT_COEF));
+                        xValue += X_VALUE_OFFSET;
+                    }
+
+                    if (injectorType == PIEZO) {
+
+                        double xOffset = 0;
+                        for (Double aData : data) {
+                            pointsList.add(new XYChart.Data<>(xValue, -aData / CURRENT_COEF));
+                            xValue += X_VALUE_OFFSET;
+                            xOffset += X_VALUE_OFFSET;
+                            if (xOffset > 200)
+                                break;
+                        }
+                    }
+                }
+                break;
+
+            case UIS:
+
+                for (Double aData : data) {
+                    pointsList.add(new XYChart.Data<>(xValue, aData / CURRENT_COEF));
+                    xValue += X_VALUE_OFFSET;
+                }
+
+                if (injectorType == PIEZO) {
+
+                    double xOffset = 0;
+                    for (Double aData : data) {
+                        pointsList.add(new XYChart.Data<>(xValue, -aData / CURRENT_COEF));
+                        xValue += X_VALUE_OFFSET;
+                        xOffset += X_VALUE_OFFSET;
+                        if (xOffset > 200) {
+                            break;
+                        }
+                    }
+                }
+
+                if (isBipTest(mainSectionUisModel.injectorTestProperty().get())) {
+
+                    int reduction = (int)(uisVapModel.bipWindowProperty().get() * 0.05); // BipWindow - 0.05 ; 5% cut of array both sides
+                    int timeStart = uisVapModel.firstWProperty().get() - reduction;
+                    int timeEnd = timeStart + uisVapModel.bipWindowProperty().get() - reduction;
+                    double bipSignalValue = getBipSignalValue(data, timeStart, timeEnd);
+                    chartTaskDataModel.bipSignalValueProperty().setValue(bipSignalValue);
+                }
+                break;
         }
-        if (injectorTypeModel.injectorTypeProperty().get() == PIEZO) {
-
-            double xOffset = 0;
-
-            for (Double aData : data) {
-                pointsList.add(new XYChart.Data<>(xValue, -aData / CURRENT_COEF));
-                xValue += X_VALUE_OFFSET;
-                xOffset += X_VALUE_OFFSET;
-                if (xOffset > 200)
-                    break;
-            }
-
-        } else if (injectorTypeModel.injectorTypeProperty().get() == PIEZO_DELPHI) {
-
-            int i = 0;
-
-            for (XYChart.Data<Double, Double> point : piezoDelphiNegativePoints) {
-                pointsList.get(i).setYValue(point.getYValue());
-                i++;
-            }
-
-        }
-
-        if (gui_typeModel.guiTypeProperty().get() == UIS && mainSectionUisModel.injectorTestProperty().get().getTestName().getName().contains(BIP)) {
-
-            int reduction = (int)(uisVapModel.bipWindowProperty().get() * 0.05); // BipWindow - 0.05 ; 5% cut of array both sides
-            int timeStart = uisVapModel.firstWProperty().get() - reduction;
-            int timeEnd = timeStart + uisVapModel.bipWindowProperty().get() - reduction;
-            double bipSignalValue = getBipSignalValue(data, timeStart, timeEnd);
-            chartTaskDataModel.bipSignalValueProperty().setValue(bipSignalValue + 100);
-        }
-
         chartData.addAll(pointsList);
-
     }
 
     protected void addData(ArrayList<Integer> resultDataList, ObservableList<XYChart.Data<Double, Double>> chartData) {
 
         double[] resultData = getFilteredResultData(resultDataList);
         addDataToChart(resultData, chartData);
-
-
     }
 
     private boolean isChartActive() {
@@ -226,10 +245,10 @@ public abstract class ChartTask extends TimerTask {
         switch (gui_typeModel.guiTypeProperty().get()) {
 
             case CR_Inj:
+            case HEUI:
 
-                updateOSC = voltageController.isTabVoltageShowingProperty().get();
-                if (injectorControllersState.getArrayNumbersOfActiveLedToggleButtons().size() == 0 || !updateOSC){
-                    return false;}
+                if (injectorControllersState.getArrayNumbersOfActiveLedToggleButtons().size() == 0
+                        || !voltageController.isTabVoltageShowingProperty().get()){ return false;}
 
                 if (injConfigurationModel.injConfigurationProperty().get() == InjectorChannel.SINGLE_CHANNEL) {
 
@@ -244,7 +263,8 @@ public abstract class ChartTask extends TimerTask {
                 }
                 return true;
             case UIS:
-                updateOSC = uisTabSectionModel.isTabVoltageShowingProperty().get();
+
+                if (uisInjectorSectionModel.activeLedToggleButtonsListProperty().get().isEmpty()) { return false; }
                 int number = getChartNumber();
                 return isDoubleCoil() ? number != 3 && number != 4 : number != 2 && number != 3 && number != 4;
             default:
@@ -252,10 +272,64 @@ public abstract class ChartTask extends TimerTask {
         }
     }
 
+    protected int calculatePointsNumber() {
+
+        int pointsNumber;
+        int offset;
+
+        switch (gui_typeModel.guiTypeProperty().get()) {
+
+            case CR_Inj:
+            case HEUI:
+
+                if (injectorType == COIL) {
+                    offset = 200;
+                    pointsNumber = (int) ((firmwareWidth + offset) / X_VALUE_OFFSET);
+
+                } else if (injectorType == PIEZO)
+                    pointsNumber = (int) ((firmwareWidth) / X_VALUE_OFFSET);
+                else {
+                    offset = firmwareWidth < 500 ? firmwareWidth : 500;
+                    pointsNumber = (int) ((firmwareWidth + offset) / X_VALUE_OFFSET);
+                }
+                return pointsNumber;
+
+            case UIS:
+
+                InjectorSubType injectorSubType = mainSectionUisModel.modelProperty().get().getVAP().getInjectorSubType();
+                int width_2;
+
+                if (injectorType == COIL) {
+
+                    if (injectorSubType == DOUBLE_SIGNAL) {
+
+                        width_2 = convertDataToInt(SecondSignalInterval.getLastValue().toString());
+                        pointsNumber = (int)((width_2 + 1000) / X_VALUE_OFFSET);
+
+                    } else if (injectorSubType == HPI) {
+
+                        width_2 = convertDataToInt(WidthBoardTwo.getLastValue().toString());
+                        pointsNumber = firmwareWidth > width_2 ? (int) ((firmwareWidth + 1000) / X_VALUE_OFFSET) : (int) ((width_2 + 1000) / X_VALUE_OFFSET);
+
+                    } else {
+
+                        pointsNumber = (int) ((firmwareWidth + 1000) / X_VALUE_OFFSET);
+                    }
+                } else {
+
+                    pointsNumber = (int) (firmwareWidth / X_VALUE_OFFSET);
+                }
+                return pointsNumber;
+
+            default:return (int) (firmwareWidth / X_VALUE_OFFSET);
+        }
+    }
+
     private InjectorType checkInjectorType() {
 
         switch (gui_typeModel.guiTypeProperty().get()) {
             case CR_Inj:
+            case HEUI:
                 return injectorTypeModel.injectorTypeProperty().get();
             case UIS:
                 return mainSectionUisModel.modelProperty().get().getVAP().getInjectorType();
@@ -267,6 +341,7 @@ public abstract class ChartTask extends TimerTask {
 
         switch (gui_typeModel.guiTypeProperty().get()) {
             case CR_Inj:
+            case HEUI:
                 return voltAmpereProfileDialogModel.isDoubleCoilProperty().get();
             case UIS:
                 InjectorSubType injectorSubType = mainSectionUisModel.modelProperty().get().getVAP().getInjectorSubType();
@@ -275,80 +350,38 @@ public abstract class ChartTask extends TimerTask {
         }
     }
 
+    private boolean isBipTest(Test test) {
+        return ((InjectorUisTest)test).getVoltAmpereProfile().getBipPWM() != null
+                && ((InjectorUisTest)test).getVoltAmpereProfile().getBipWindow() != null;
+    }
+
     @Override
     public void run() {
 
-//
-//        updateOSC = voltageController.isTabVoltageShowingProperty().get();
-//
-//        if (injectorControllersState.getArrayNumbersOfActiveLedToggleButtons().size() == 0)
-//            return;
-//
-//        if(injConfigurationModel.injConfigurationProperty().get() == InjectorChannel.SINGLE_CHANNEL){
-//            int number = getChartNumber();
-//            if (number == 2 | number == 3 | number == 4)
-//                return;
-//
-//        } else {
-//
-//            if (!injectorControllersState.getArrayNumbersOfActiveLedToggleButtons().contains(getChartNumber())) {
-//
-//                if (!voltAmpereProfileDialogModel.isDoubleCoilProperty().get()) {
-//
-//                    return;
-//                } else if (getChartNumber() == 3 || getChartNumber() == 4) {
-//                    return;
-//                }
-//            }
-//        }
+        if (!updateOSC)
+            return;
 
         if (!isChartActive()) {
             return;
         }
 
-
-
-        injectorType = checkInjectorType();
-
-        int n;
-
         firmwareWidth = getFirmwareWidth();
+        injectorType = checkInjectorType();
+        int pointsNumber = calculatePointsNumber();
 
-//        InjectorType injectorType = injectorTypeModel.injectorTypeProperty().get();
-
-        int offset;
-
-        if (injectorType == COIL) {
-
-            offset = 200;
-            n = (int) ((firmwareWidth + offset) / X_VALUE_OFFSET);
-
-        } else if (injectorType == PIEZO)
-
-            n = (int) ((firmwareWidth) / X_VALUE_OFFSET);
-
-        else {
-
-            offset = firmwareWidth < 500 ? firmwareWidth : 500;
-            n = (int) ((firmwareWidth + offset) / X_VALUE_OFFSET);
-        }
-
-        int div = n / 2047;
-
-        int remainder = n % 2047;
-
+        int framesNumber = pointsNumber / 2047;
+        int pointsRemainder = pointsNumber % 2047;
         int part = 1;
 
-//        if (!updateOSC)
-//            return;
+        if (!updateOSC)
+            return;
 
         ArrayList<Integer> resultDataList = new ArrayList<>();
-
         RegisterProvider ultimaRegisterProvider = ultimaModbusWriter.getRegisterProvider();
 
         try {
 
-            for (int i = 0; i < div; i++) {
+            for (int i = 0; i < framesNumber; i++) {
                 if (!updateOSC)
                     return;
                 ultimaModbusWriter.add(getCurrentGraphFrameNum(), part);
@@ -365,7 +398,7 @@ public abstract class ChartTask extends TimerTask {
             ultimaModbusWriter.add(getCurrentGraphFrameNum(), part);
             ultimaModbusWriter.add(getCurrentGraphUpdate(), true);
             waitForUpdate(ultimaRegisterProvider, 500);
-            Integer[] data = ultimaRegisterProvider.readBytePacket(getCurrentGraph().getRef(), remainder);
+            Integer[] data = ultimaRegisterProvider.readBytePacket(getCurrentGraph().getRef(), pointsRemainder);
             addModbusData(resultDataList, data);
 
         } catch (ModbusException e) {
@@ -380,19 +413,17 @@ public abstract class ChartTask extends TimerTask {
 
         }
 
-//        Platform.runLater(() -> {
-//            if(injectorSectionPwrState.powerButtonProperty().get()){
-//                ChartTask.this.addData(resultDataList, ChartTask.this.getData());
-//            }
-//        });
+        if (!updateOSC)
+            return;
 
         refreshCharts(resultDataList);
     }
 
-    private void refreshCharts(ArrayList<Integer> resultDataList) {
+    protected void refreshCharts(ArrayList<Integer> resultDataList) {
 
         switch (gui_typeModel.guiTypeProperty().get()) {
             case CR_Inj:
+            case HEUI:
                 Platform.runLater(() -> {
                     if(injectorSectionPwrState.powerButtonProperty().get()){
                         ChartTask.this.addData(resultDataList, ChartTask.this.getData());
@@ -432,9 +463,7 @@ public abstract class ChartTask extends TimerTask {
 
                 logger.error("Cast Error: ", e);
                 return;
-
             }
-
         } while (ready);
 
     }
@@ -494,5 +523,4 @@ public abstract class ChartTask extends TimerTask {
         }
         return output;
     }
-
 }

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.StackPane?>
+
+<StackPane fx:id="firmwareStackPane" alignment="CENTER_LEFT" maxWidth="1.7976931348623157E308" stylesheets="@../../../../css/Styling.css" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.cr.tabs.settings.FirmwareButtonController">
+   <children>
+      <Button fx:id="firmwareButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" prefWidth="150.0" text="%settings.firmware.Button" />
+   </children>
+   <padding>
+      <Insets left="47.0" />
+   </padding>
+</StackPane>

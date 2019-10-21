@@ -52,6 +52,7 @@ import fi.stardex.sisu.ui.controllers.uis.dialogs.CustomInjectorUisDialogControl
 import fi.stardex.sisu.ui.controllers.uis.dialogs.CustomManufacturerUisDialogController;
 import fi.stardex.sisu.ui.controllers.uis.dialogs.CustomTestUisDialogController;
 import fi.stardex.sisu.ui.controllers.uis.dialogs.CustomVapUisDialogController;
+import fi.stardex.sisu.ui.controllers.uis.tabs.UisDelayController;
 import fi.stardex.sisu.ui.controllers.uis.tabs.UisTabSectionController;
 import fi.stardex.sisu.ui.controllers.uis.tabs.UisVoltageController;
 import fi.stardex.sisu.ui.controllers.uis.windows.UisVapController;
@@ -163,7 +164,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
 
     @Bean
     public ViewHolder mainSection() {
-        return loadView("/fxml/sections/Main/MainSection.fxml");
+        return loadView("/fxml/CR/MainSection.fxml");
     }
 
     @Bean
@@ -220,7 +221,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
 
     @Bean
     public ViewHolder crSection() {
-        return loadView("/fxml/sections/CR/CRSection.fxml");
+        return loadView("/fxml/CR/CRSection.fxml");
     }
 
     @Bean
@@ -412,12 +413,12 @@ public class JavaFXSpringConfigure extends ViewLoader{
 
     @Bean
     public ViewHolder tabSection() {
-        return loadView("/fxml/sections/Additional/TabSection.fxml");
+        return loadView("/fxml/CR/TabSection.fxml");
     }
 
     @Bean
     public ViewHolder isaDetection() {
-        return loadView("/fxml/ISADetection.fxml");
+        return loadView("/fxml/CR/ISADetection.fxml");
     }
 
     @Bean
@@ -454,31 +455,31 @@ public class JavaFXSpringConfigure extends ViewLoader{
 
     @Bean
     public ViewHolder infoDefault(){
-        return loadView("/fxml/sections/Additional/tabs/info/DefaultOEM.fxml");
+        return loadView("/fxml/CR/tabs/info/DefaultOEM.fxml");
     }
 
     @Bean ViewHolder infoBosch(){
-        return loadView("/fxml/sections/Additional/tabs/info/Bosch.fxml");
+        return loadView("/fxml/CR/tabs/info/Bosch.fxml");
     }
 
     @Bean ViewHolder infoSiemens(){
-        return loadView("/fxml/sections/Additional/tabs/info/Siemens.fxml");
+        return loadView("/fxml/CR/tabs/info/Siemens.fxml");
     }
 
     @Bean ViewHolder infoDenso(){
-        return loadView("/fxml/sections/Additional/tabs/info/Denso.fxml");
+        return loadView("/fxml/CR/tabs/info/Denso.fxml");
     }
 
     @Bean ViewHolder infoCaterpillar(){
-        return loadView("/fxml/sections/Additional/tabs/info/Caterpillar.fxml");
+        return loadView("/fxml/CR/tabs/info/Caterpillar.fxml");
     }
 
     @Bean ViewHolder infoAZPI(){
-        return loadView("/fxml/sections/Additional/tabs/info/AZPI.fxml");
+        return loadView("/fxml/CR/tabs/info/AZPI.fxml");
     }
 
     @Bean ViewHolder infoDelphi(){
-        return loadView("/fxml/sections/Additional/tabs/info/Delphi.fxml");
+        return loadView("/fxml/CR/tabs/info/Delphi.fxml");
     }
 
     @Bean
@@ -720,7 +721,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
 
     @Bean
     public ViewHolder connection(){
-        return loadView("/fxml/sections/Additional/tabs/settings/Connection.fxml");
+        return loadView("/fxml/CR/tabs/settings/Connection.fxml");
     }
 
 
@@ -746,7 +747,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
 
     @Bean(value = "voltAmpereProfileDialog")
     public ViewHolder voltAmpereProfileDialog() {
-        return loadView("/fxml/sections/Additional/dialogs/voltAmpereProfileDialog.fxml");
+        return loadView("/fxml/CR/dialogs/voltAmpereProfileDialog.fxml");
     }
 
     @Bean
@@ -881,7 +882,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
 
     @Bean
     public ViewHolder manufacturerMenuDialog() {
-        return loadView("/fxml/dialogs/ManufacturerMenuDialog.fxml");
+        return loadView("/fxml/CR/dialogs/ManufacturerMenuDialog.fxml");
     }
 
     @Bean
@@ -902,7 +903,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
 
     @Bean
     public ViewHolder newEditVOAPDialog() {
-        return loadView("/fxml/dialogs/NewEditVOAPDialog.fxml");
+        return loadView("/fxml/CR/dialogs/NewEditVOAPDialog.fxml");
     }
 
 
@@ -916,10 +917,10 @@ public class JavaFXSpringConfigure extends ViewLoader{
     }
 
     @Bean
-    public ViewHolder printDialogPanel(){ return loadView("/fxml/dialogs/PrintDialogPanel.fxml"); }
+    public ViewHolder printDialogPanel(){ return loadView("/fxml/common/PrintDialogPanel.fxml"); }
 
     @Bean
-    public ViewHolder firmwareDialog(){return loadView("/fxml/dialogs/FirmwareDialog.fxml");}
+    public ViewHolder firmwareDialog(){return loadView("/fxml/common/FirmwareDialog.fxml");}
 
     @Bean
     @Autowired
@@ -939,7 +940,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
 
     @Bean
     public ViewHolder newEditInjectorDialog() {
-        return loadView("/fxml/dialogs/NewEditInjectorDialog.fxml");
+        return loadView("/fxml/CR/dialogs/NewEditInjectorDialog.fxml");
     }
 
     @Bean
@@ -963,7 +964,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
 
     @Bean
     public ViewHolder newEditTestDialog() {
-        return loadView("/fxml/dialogs/NewEditTestDialog.fxml");
+        return loadView("/fxml/CR/dialogs/NewEditTestDialog.fxml");
     }
 
     @Bean
@@ -1021,47 +1022,47 @@ public class JavaFXSpringConfigure extends ViewLoader{
 
     @Bean
     public ViewHolder dimasGuiEdition(){
-            return loadView("/fxml/sections/Additional/tabs/settings/DimasGuiEdition.fxml");
+            return loadView("/fxml/CR/tabs/settings/DimasGuiEdition.fxml");
     }
 
     @Bean
     public ViewHolder fastCoding(){
-        return loadView("/fxml/sections/Additional/tabs/settings/FastCoding.fxml");
+        return loadView("/fxml/CR/tabs/settings/FastCoding.fxml");
     }
 
     @Bean
     public ViewHolder flowView(){
-        return loadView("/fxml/sections/Additional/tabs/settings/FlowView.fxml");
+        return loadView("/fxml/CR/tabs/settings/FlowView.fxml");
     }
 
     @Bean
     public ViewHolder injConfiguration(){
-        return loadView("/fxml/sections/Additional/tabs/settings/InjConfiguration.fxml");
+        return loadView("/fxml/CR/tabs/settings/InjConfiguration.fxml");
     }
 
     @Bean
     public ViewHolder instantFlow(){
-        return loadView("/fxml/sections/Additional/tabs/settings/InstantFlow.fxml");
+        return loadView("/fxml/CR/tabs/settings/InstantFlow.fxml");
     }
 
     @Bean
     public ViewHolder language(){
-        return loadView("/fxml/sections/Additional/tabs/settings/Language.fxml");
+        return loadView("/fxml/CR/tabs/settings/Language.fxml");
     }
 
     @Bean
     public ViewHolder pressureSensor(){
-        return loadView("/fxml/sections/Additional/tabs/settings/PressureSensor.fxml");
+        return loadView("/fxml/CR/tabs/settings/PressureSensor.fxml");
     }
 
     @Bean
     public ViewHolder regulatorsQTY(){
-        return loadView("/fxml/sections/Additional/tabs/settings/RegulatorsQTY.fxml");
+        return loadView("/fxml/CR/tabs/settings/RegulatorsQTY.fxml");
     }
 
     @Bean
     public ViewHolder settings(){
-        return loadView("/fxml/sections/Additional/tabs/settings/Settings.fxml");
+        return loadView("/fxml/CR/tabs/settings/Settings.fxml");
     }
 
     @Bean
@@ -1246,22 +1247,22 @@ public class JavaFXSpringConfigure extends ViewLoader{
 
     @Bean
     public ViewHolder mainSectionUIS() {
-        return loadView("/fxml/sections/Main/MainSectionUis.fxml");
+        return loadView("/fxml/uis/MainSectionUis.fxml");
     }
 
     @Bean
     public ViewHolder customInjectorUisDialog() {
-        return loadView("/fxml/dialogs/CustomInjectorUisDialog.fxml");
+        return loadView("/fxml/uis/dialogs/CustomInjectorUisDialog.fxml");
     }
 
     @Bean
     public ViewHolder customManufacturerUisDialog() {
-        return loadView("/fxml/dialogs/CustomManufacturerUisDialog.fxml");
+        return loadView("/fxml/uis/dialogs/CustomManufacturerUisDialog.fxml");
     }
 
     @Bean
     public ViewHolder customTestUisDialog() {
-        return loadView("/fxml/dialogs/CustomTestUisDialog.fxml");
+        return loadView("/fxml/uis/dialogs/CustomTestUisDialog.fxml");
     }
     @Bean
     @Autowired
@@ -1357,7 +1358,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
 
     @Bean
     public ViewHolder customVapUisDialog() {
-        return loadView("/fxml/dialogs/CustomVapUisDialog.fxml");
+        return loadView("/fxml/uis/dialogs/CustomVapUisDialog.fxml");
     }
 
     @Bean
@@ -1408,7 +1409,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
 
     @Bean
     public ViewHolder uisSettings() {
-        return loadView("/fxml/uis/UisSettings.fxml");
+        return loadView("/fxml/uis/tabs/UisSettings.fxml");
     }
 
     @Bean
@@ -1426,7 +1427,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
 
     @Bean
     public ViewHolder uisTabSection() {
-        return loadView("/fxml/uis/UisTabSection.fxml");
+        return loadView("/fxml/uis/tabs/UisTabSection.fxml");
     }
 
     @Bean
@@ -1491,8 +1492,25 @@ public class JavaFXSpringConfigure extends ViewLoader{
     }
 
     @Bean
+    @Autowired
+    public UisDelayController uisDelayController(UisTabSectionController uisTabSectionController,
+                                                 ChartTaskDataModel chartTaskDataModel,
+                                                 MainSectionUisModel mainSectionUisModel,
+                                                 DelayCalculator delayCalculator,
+                                                 I18N i18N,
+                                                 DelayModel delayModel) {
+        UisDelayController uisDelayController = uisTabSectionController.getUisDelayController();
+        uisDelayController.setChartTaskDataModel(chartTaskDataModel);
+        uisDelayController.setDelayCalculator(delayCalculator);
+        uisDelayController.setMainSectionUisModel(mainSectionUisModel);
+        uisDelayController.setI18N(i18N);
+        uisDelayController.setDelayModel(delayModel);
+        return uisDelayController;
+    }
+
+    @Bean
     public ViewHolder uisVap() {
-        return loadView("/fxml/uis/UisVap.fxml");
+        return loadView("/fxml/uis/dialogs/UisVap.fxml");
     }
 
     @Bean

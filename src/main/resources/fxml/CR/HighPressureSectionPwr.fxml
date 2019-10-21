@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<?import javafx.geometry.Insets?>
+<StackPane fx:id="pwrButtonStackPane"
+           xmlns="http://javafx.com/javafx"
+           xmlns:fx="http://javafx.com/fxml"
+           fx:controller="fi.stardex.sisu.ui.controllers.cr.HighPressureSectionPwrController"
+           prefHeight="400.0" prefWidth="600.0">
+    <children>
+        <ToggleButton fx:id="pwrButtonToggleButton" minHeight="90.0" minWidth="50.0" mnemonicParsing="false" prefWidth="50.0" styleClass="switcher" stylesheets="@../../css/Styling.css">
+            <StackPane.margin>
+                <Insets left="4.0" right="10.0" />
+            </StackPane.margin></ToggleButton>
+    </children>
+
+</StackPane>

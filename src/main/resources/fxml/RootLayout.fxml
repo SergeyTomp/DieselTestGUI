@@ -31,6 +31,6 @@
             <RowConstraints maxHeight="260.0" minHeight="-Infinity" prefHeight="240.0" vgrow="ALWAYS" />
             <RowConstraints maxHeight="1.7976931348623157E308" minHeight="-Infinity" prefHeight="150.0" vgrow="ALWAYS" />
         </rowConstraints>
-        <fx:include fx:id="testBenchSectionHBox" source="sections/CR/TestBenchSection.fxml" GridPane.rowIndex="0" />
+        <fx:include fx:id="testBenchSectionHBox" source="CR/TestBenchSection.fxml" GridPane.rowIndex="0" />
     </GridPane>
 </GridPane>

@@ -42,7 +42,7 @@ public class UisHardwareUpdateModel implements Updater {
     private DoubleProperty duty = new SimpleDoubleProperty();
     private IntegerProperty lcdPressure = new SimpleIntegerProperty();
     private StringProperty bipPWM = new SimpleStringProperty();
-    private StringProperty bipWindow = new SimpleStringProperty();
+    private StringProperty bipWindow = new SimpleStringProperty(String.valueOf(0));
 
     private MainSectionUisModel mainSectionUisModel;
     private GUI_TypeModel gui_typeModel;
@@ -182,7 +182,7 @@ public class UisHardwareUpdateModel implements Updater {
 
         model = modelProperty.get();
         test = (InjectorUisTest) testProperty.get();
-        boolean isBipTest = (test != null && test.getTestName().getName().contains("BIP"));
+        boolean isBipTest = (test != null && isBipTest(test));
         if (model != null) {
 
             injectorSubType = model.getVAP().getInjectorSubType();
@@ -250,5 +250,10 @@ public class UisHardwareUpdateModel implements Updater {
             bipWindow.setValue(Integer.toString(0));
         }
 
+    }
+
+    private boolean isBipTest(Test test) {
+        return ((InjectorUisTest)test).getVoltAmpereProfile().getBipPWM() != null
+                && ((InjectorUisTest)test).getVoltAmpereProfile().getBipWindow() != null;
     }
 }

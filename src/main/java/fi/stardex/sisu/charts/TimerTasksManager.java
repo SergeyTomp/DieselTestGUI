@@ -72,7 +72,7 @@ public class TimerTasksManager {
 
             listOfCharts = new ArrayList<>(Arrays.asList(getChartTaskOne(), getChartTaskTwo(), getChartTaskThree(), getChartTaskFour(), getDelayChartTask()));
         }else
-            listOfCharts = new ArrayList<>(Arrays.asList(getChartTaskOne(), getChartTaskTwo()));
+            listOfCharts = new ArrayList<>(Arrays.asList(getChartTaskOne(), getChartTaskTwo(), getDelayChartTask()));
 
 
         listOfCharts.forEach(chartTask -> {

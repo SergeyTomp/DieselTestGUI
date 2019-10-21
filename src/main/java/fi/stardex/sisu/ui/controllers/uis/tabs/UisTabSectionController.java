@@ -20,6 +20,7 @@ public class UisTabSectionController {
     @FXML private Tab tabInfo;
     @FXML private Tab tabMechanical;
     @FXML private UisVoltageController uisVoltageController;
+    @FXML private UisDelayController uisDelayController;
 
 
     private I18N i18N;
@@ -27,6 +28,10 @@ public class UisTabSectionController {
 
     public UisVoltageController getUisVoltageController() {
         return uisVoltageController;
+    }
+
+    public UisDelayController getUisDelayController() {
+        return uisDelayController;
     }
 
     public GridPane getSettingsGridPane() {

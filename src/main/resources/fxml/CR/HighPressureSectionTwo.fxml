@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
+
+<StackPane fx:id="rootStackPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="130.0" minWidth="230.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.cr.HighPressureSectionTwoController">
+
+   <children>
+      <GridPane>
+         <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="150.0" />
+            <ColumnConstraints halignment="LEFT" hgrow="ALWAYS" minWidth="70.0" prefWidth="100.0" />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+         </rowConstraints>
+         <children>
+            <GridPane>
+               <columnConstraints>
+                  <ColumnConstraints halignment="LEFT" minWidth="50.0" prefWidth="100.0" />
+                  <ColumnConstraints halignment="RIGHT" hgrow="ALWAYS" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints maxHeight="37.0" minHeight="37.0" prefHeight="37.0" valignment="TOP" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="37.0" minHeight="37.0" prefHeight="37.0" valignment="CENTER" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="37.0" minHeight="37.0" prefHeight="37.0" valignment="CENTER" vgrow="SOMETIMES" />
+                  <RowConstraints maxHeight="62.0" minHeight="0.0" prefHeight="11.0" valignment="CENTER" vgrow="SOMETIMES" />
+               </rowConstraints>
+               <children>
+                  <Spinner fx:id="currentSpinner" editable="true" maxHeight="30.0" maxWidth="90.0" minHeight="30.0" minWidth="90.0" prefHeight="30.0" prefWidth="90.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <Spinner fx:id="dutySpinner" editable="true" maxHeight="30.0" maxWidth="90.0" minHeight="30.0" minWidth="90.0" prefHeight="30.0" prefWidth="90.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                  <Label fx:id="currentLabel" text="%highPressure.label.amp" GridPane.rowIndex="1">
+                     <padding>
+                        <Insets left="10.0" />
+                     </padding></Label>
+                  <Label fx:id="dutyLabel" text="%highPressure.label.cycle" GridPane.rowIndex="2">
+                     <padding>
+                        <Insets left="10.0" />
+                     </padding></Label>
+                  <Label fx:id="regLabel" minWidth="30.0" text="%highPressure.label.reg2.name" GridPane.columnIndex="1">
+                     <padding>
+                        <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+                     </padding>
+                  </Label>
+               </children>
+            </GridPane>
+            <StackPane fx:id="pwbStackPane" GridPane.columnIndex="1">
+               <children>
+                  <ToggleButton fx:id="regToggleButton" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="65.0" prefWidth="60.0" styleClass="button-power" stylesheets="@../../css/Styling.css" />
+               </children>
+            </StackPane>
+         </children>
+      </GridPane>
+   </children>
+</StackPane>

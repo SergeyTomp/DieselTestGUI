@@ -1,10 +1,15 @@
 package fi.stardex.sisu.charts;
 
+import fi.stardex.sisu.model.DelayModel;
+import fi.stardex.sisu.model.GUI_TypeModel;
+import fi.stardex.sisu.model.uis.MainSectionUisModel;
+import fi.stardex.sisu.model.uis.UisInjectorSectionModel;
 import fi.stardex.sisu.util.enums.InjectorChannel;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.ui.controllers.cr.tabs.DelayController;
 import fi.stardex.sisu.util.DelayCalculator;
+import fi.stardex.sisu.util.enums.InjectorSubType;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.scene.chart.XYChart;
@@ -27,35 +32,35 @@ import java.util.List;
 public class DelayChartTask extends ChartTask {
 
     private Logger logger = LoggerFactory.getLogger(DelayChartTask.class);
-
-    private ObservableList<XYChart.Data<Double, Double>> delayData;
-
     private Spinner<Double> sensitivitySpinner;
-
     private TextField minimumDelayTextField;
-
     private TextField maximumDelayTextField;
-
     private TextField averageDelayTextField;
-
     private List<ToggleButton> activeLedToggleButtonsList;
-
-    private boolean updateOSC;
-
     private static final double PULSE_LENGTH_STEP = 32.888;
-
     private static final int DELAY_SAMPLE_SIZE = 256;
-
     private final DelayCalculator delayCalculator;
-
     private final DelayController delayController;
+    private final GUI_TypeModel gui_typeModel;
+    private final DelayModel delayModel;
+    private final UisInjectorSectionModel uisInjectorSectionModel;
+    private final MainSectionUisModel mainSectionUisModel;
+    private int slotNumber;
 
     @Autowired
-    public DelayChartTask(DelayCalculator delayCalculator, DelayController delayController) {
+    public DelayChartTask(DelayCalculator delayCalculator,
+                          DelayController delayController,
+                          GUI_TypeModel gui_typeModel,
+                          DelayModel delayModel,
+                          UisInjectorSectionModel uisInjectorSectionModel,
+                          MainSectionUisModel mainSectionUisModel) {
 
         this.delayCalculator = delayCalculator;
         this.delayController = delayController;
-        delayData = delayController.getDelayData();
+        this.gui_typeModel = gui_typeModel;
+        this.delayModel = delayModel;
+        this.uisInjectorSectionModel = uisInjectorSectionModel;
+        this.mainSectionUisModel = mainSectionUisModel;
         sensitivitySpinner = delayController.getSensitivitySpinner();
         minimumDelayTextField = delayController.getMinimumDelay();
         maximumDelayTextField = delayController.getMaximumDelay();
@@ -98,68 +103,110 @@ public class DelayChartTask extends ChartTask {
         return 5;
     }
 
-    public void setUpdateOSC(boolean updateOSC) {
-        this.updateOSC = updateOSC;
+    private boolean isChartActive() {
+
+        boolean isActive;
+        switch (gui_typeModel.guiTypeProperty().get()) {
+
+            case CR_Inj:
+            case HEUI:
+
+                activeLedToggleButtonsList = injectorControllersState.activeLedToggleButtonsListProperty().get();
+                ToggleButton ledController = singleSelected();
+
+                if (ledController == null) {
+
+                    delayController.showAttentionLabel(true);
+                    isActive = false;
+                } else{
+                    delayController.showAttentionLabel(false);
+                    delayController.setChannelNumber(getNumber(ledController));
+                    slotNumber = injConfigurationModel.injConfigurationProperty().get() == InjectorChannel.SINGLE_CHANNEL ? 1 : getNumber(ledController);
+                    isActive = delayController.isTabDelayShowingProperty().get();
+                }
+                break;
+
+            case UIS:
+
+                isActive = !uisInjectorSectionModel.activeLedToggleButtonsListProperty().get().isEmpty();
+                slotNumber = mainSectionUisModel.injectorTestProperty().get().getVoltAmpereProfile().getInjectorSubType() == InjectorSubType.HPI ? 2 : 1;
+                break;
+
+            default:isActive = false;
+        }
+        return isActive;
+    }
+
+    @Override
+    protected int calculatePointsNumber() {
+
+        int pointsNumber;
+        int addingTime;
+
+        switch (gui_typeModel.guiTypeProperty().get()) {
+
+            case CR_Inj:
+            case HEUI:
+
+                addingTime = delayController.getAddingTimeValue();
+                pointsNumber = (int) ((coilOnePulseParametersModel.widthProperty().get() + addingTime) / PULSE_LENGTH_STEP) > DELAY_SAMPLE_SIZE - 1 ?
+                        DELAY_SAMPLE_SIZE - 1 : (int) ((coilOnePulseParametersModel.widthProperty().get() + addingTime) / PULSE_LENGTH_STEP);
+                break;
+            case UIS:
+                /** Calculation of pointsNumber is a bit different for old UIS-GUI version.
+                 * 1. Values of PULSE_LENGTH_STEP and DELAY_SAMPLE_SIZE for Ultima version 0x00 (very old products, about 4 pcs sold) differ from those for other versions (4.111, 2047 vs. 32.888, 256 correspondingly.).
+                 * 2. Trigger value for TRUE/FALSE definition in pointsNumber formula calculation below is 256 - 1, but not == DELAY_SAMPLE_SIZE - 1 as in CR_Inj !!!)
+                 * 3. TRUE condition in pointsNumber formula below corresponds to 2046 hard, again not DELAY_SAMPLE_SIZE - 1 in comparison with CR_Inj !!!
+                 * All this stuff should be defined and fixed for CR_Inj and UIS upon the decision to implement support for 0x00 Ultima version.*/
+                addingTime = delayModel.addingTimeProperty().get();
+                pointsNumber = (int) ((uisInjectorSectionModel.width_1Property().get() + addingTime) / PULSE_LENGTH_STEP) > DELAY_SAMPLE_SIZE - 1 ?
+                        DELAY_SAMPLE_SIZE - 1 : (int) ((uisInjectorSectionModel.width_1Property().get() + addingTime) / PULSE_LENGTH_STEP);
+                break;
+            default:pointsNumber = 0;
+        }
+        return pointsNumber;
     }
 
     @Override
     public void run() {
 
-        updateOSC = delayController.isTabDelayShowingProperty().get();
-
-        activeLedToggleButtonsList = injectorControllersState.activeLedToggleButtonsListProperty().get();
-
-        ToggleButton ledController = singleSelected();
-
-        if (ledController == null) {
-            delayController.showAttentionLabel(true);
+        if (!updateOSC)
             return;
-        } else
-            delayController.showAttentionLabel(false);
-            delayController.setChannelNumber(getNumber(ledController));
 
-        int addingTime = delayController.getAddingTimeValue();
+        if (!isChartActive()) {
+            return;
+        }
 
-        int n = (int) ((coilOnePulseParametersModel.widthProperty().get() + addingTime) / PULSE_LENGTH_STEP) > DELAY_SAMPLE_SIZE - 1 ?
-                DELAY_SAMPLE_SIZE - 1 : (int) ((coilOnePulseParametersModel.widthProperty().get() + addingTime) / PULSE_LENGTH_STEP);
-
-        int remainder = n % DELAY_SAMPLE_SIZE;
-
-        int injectorModbusChannel = injConfigurationModel.injConfigurationProperty().get() == InjectorChannel.SINGLE_CHANNEL ? 1 : getNumber(ledController);
+        int pointsNumber = calculatePointsNumber();
+        int pointsRemainder = pointsNumber % DELAY_SAMPLE_SIZE;
 
         ArrayList<Integer> resultDataList = new ArrayList<>();
-
         RegisterProvider ultimaRegisterProvider = ultimaModbusWriter.getRegisterProvider();
 
         try {
 
-            if (!updateOSC) {
+            if (!updateOSC)
                 return;
-            }
-            ultimaModbusWriter.add(getCurrentGraphFrameNum(), injectorModbusChannel);
+
+            ultimaModbusWriter.add(getCurrentGraphFrameNum(), slotNumber);
             ultimaModbusWriter.add(getCurrentGraphUpdate(), true);
             waitForUpdate(ultimaRegisterProvider, 300);
-            Integer[] data = ultimaRegisterProvider.readBytePacket(getCurrentGraph().getRef(), remainder);
+            Integer[] data = ultimaRegisterProvider.readBytePacket(getCurrentGraph().getRef(), pointsRemainder);
             addModbusData(resultDataList, data);
-
         } catch (ModbusException e) {
 
             logger.error("Cannot obtain delay graphic", e);
             return;
-
         } catch (ClassCastException e) {
 
             logger.error("Cast Exception: ", e);
             return;
-
         }
 
         if (!updateOSC) {
             return;
         }
-
-        Platform.runLater(() -> addData(resultDataList, delayData));
-
+        refreshCharts(resultDataList);
     }
 
     private ToggleButton singleSelected() {
@@ -170,29 +217,22 @@ public class DelayChartTask extends ChartTask {
     protected void addDataToChart(double[] data, ObservableList<XYChart.Data<Double, Double>> chartData) {
 
         chartData.clear();
-
         double xValue = 0;
-
         List<XYChart.Data<Double, Double>> pointsList = new ArrayList<>();
 
         for (Double aData : data) {
             pointsList.add(new XYChart.Data<>(xValue, aData / 4095 * 3.3));
             xValue += PULSE_LENGTH_STEP;
         }
-
         chartData.addAll(pointsList);
         setDelay(pointsList);
-
     }
 
     private void setDelay(final List<XYChart.Data<Double, Double>> resultDataList) {
 
         List<XYChart.Data<Double, Double>> testPoints = new ArrayList<>();
-
         Iterator<XYChart.Data<Double, Double>> iterator = resultDataList.iterator();
-
         Double point = null;
-
         double spinner = sensitivitySpinner.getValue();
 
         while (iterator.hasNext()) {
@@ -209,11 +249,8 @@ public class DelayChartTask extends ChartTask {
 
                     point = calculatePoint(testPoints.get(testPoints.size() - 2), testPoints.get(testPoints.size() - 3));
                     break;
-
                 }
-
             }
-
         }
 
         if (point == null)

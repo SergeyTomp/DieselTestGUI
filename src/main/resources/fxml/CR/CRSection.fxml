@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox maxHeight="260.0" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" prefHeight="260.0" prefWidth="910.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.cr.CRSectionController">
+   <children>
+      <HBox styleClass="pane" stylesheets="@../../css/Styling.css">
+          <fx:include fx:id="injectorHighPressureSection" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" source="InjectorHighPressureSection.fxml" HBox.hgrow="ALWAYS" />
+      </HBox>
+      <HBox styleClass="pane" stylesheets="@../../css/Styling.css" VBox.vgrow="SOMETIMES">
+          <fx:include fx:id="injectorSection" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" source="InjectorSection.fxml" HBox.hgrow="SOMETIMES" />
+      </HBox>
+   </children>
+</VBox>

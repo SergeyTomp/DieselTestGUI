@@ -3,6 +3,7 @@ package fi.stardex.sisu.ui.controllers.uis.windows;
 import fi.stardex.sisu.model.GUI_TypeModel;
 import fi.stardex.sisu.model.uis.*;
 import fi.stardex.sisu.model.updateModels.UisHardwareUpdateModel;
+import fi.stardex.sisu.persistence.orm.interfaces.Test;
 import fi.stardex.sisu.persistence.orm.uis.InjectorUisTest;
 import fi.stardex.sisu.persistence.orm.uis.InjectorUisVAP;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
@@ -94,7 +95,6 @@ public class UisVapController {
     private I18N i18N;
     private List<Spinner> listOfVAPSpinners = new ArrayList<>();
     private static final String RED_COLOR_STYLE = "-fx-text-fill: red";
-    private final String BIP = "BIP";
     private InjectorUisVAP currentVAP;
     private InjectorUisTest currentTest;
     private boolean isBipTest;
@@ -134,7 +134,7 @@ public class UisVapController {
     @PostConstruct
     public void init() {
 
-        setupEnableBoostToggleButton();
+        setupDisableBoostToggleButton();
         setupVAPSpinners();
         setupApplyButton();
         setupCancelButton();
@@ -163,7 +163,7 @@ public class UisVapController {
 
                 currentVAP = (InjectorUisVAP)newValue.getVoltAmpereProfile();
                 currentTest = (InjectorUisTest)newValue;
-                isBipTest = newValue.getTestName().getName().contains(BIP);
+                isBipTest = isBipTest(newValue);
 
                 int firstW = currentVAP.getFirstW();
                 Integer width = newValue.getTotalPulseTime1();
@@ -258,8 +258,8 @@ public class UisVapController {
         double secondI = currentVAP.getSecondI();
         double boostI = currentVAP.getBoostI();
 
-        firstI = boostI - firstI >= 0.5 ? firstI : boostI - 0.5;
-        secondI = firstI - secondI  >= 0.5 ? secondI : firstI - 0.5;
+        firstI = calculateFirstI(boostI, firstI);
+        secondI = calculateSecondI(firstI, secondI);
 
         boostUSpinner.getValueFactory().setValue(currentVAP.getBoostU());
         batteryUSpinner.getValueFactory().setValue(currentVAP.getBatteryU());
@@ -283,8 +283,8 @@ public class UisVapController {
             secondI = currentVAP.getSecondI2();
             boostI = currentVAP.getBoostI2();
 
-            firstI = boostI - firstI >= 0.5 ? firstI : boostI - 0.5;
-            secondI = firstI - secondI  >= 0.5 ? secondI : firstI - 0.5;
+            firstI = calculateFirstI(boostI, firstI);
+            secondI = calculateSecondI(firstI, secondI);
             firstW2Spinner.getValueFactory().setValue(currentVAP.getFirstW2());
             firstI2Spinner.getValueFactory().setValue((firstI * 100 % 10 != 0) ? round(firstI) : firstI);
             secondI2Spinner.getValueFactory().setValue((secondI * 100 % 10 != 0) ? round(secondI) : secondI);
@@ -316,16 +316,16 @@ public class UisVapController {
         saveDataToVapModel(Invocator.TEST);
     }
 
-    private void setupEnableBoostToggleButton() {
+    private void setupDisableBoostToggleButton() {
 
         enableBoostToggleButton.setSelected(true);
-        enableBoostToggleButton.textProperty().bind(i18N.createStringBinding("voapProfile.button.boostUdisable"));
+        enableBoostToggleButton.textProperty().bind(i18N.createStringBinding("voapProfile.button.boostUenable"));
         enableBoostToggleButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue){
-                enableBoostToggleButton.textProperty().bind(i18N.createStringBinding("voapProfile.button.boostUdisable"));
+                enableBoostToggleButton.textProperty().bind(i18N.createStringBinding("voapProfile.button.boostUenable"));
             }
             else {
-                enableBoostToggleButton.textProperty().bind(i18N.createStringBinding("voapProfile.button.boostUenable"));
+                enableBoostToggleButton.textProperty().bind(i18N.createStringBinding("voapProfile.button.boostUdisable"));
             }});
     }
 
@@ -497,6 +497,7 @@ public class UisVapController {
         });
 
     }
+
     private void sendVAPRegisters(Invocator who) {
 
         log.info("-----------------------------------");
@@ -569,7 +570,7 @@ public class UisVapController {
         log.info((char)27 + "[31mSecondIBoardOne " + secondIValue);
         log.info((char)27 + "[31mFirstWBoardOne " + firstWValue);
         log.info((char)27 + "[31mWidthBoardOne " + widthValue);
-        log.info((char)27 + "[31mBoostUOneEnabled " + boostToggleButtonSelected);
+        log.info((char)27 + "[31mBoostUOneDisabled " + boostToggleButtonSelected);
         log.info((char)27 + "[31mAngle_1 " + angle_1);
 
         if (isBipTest) {
@@ -622,7 +623,7 @@ public class UisVapController {
                 log.info((char)27 + "[31mSecondIBoardTwo " + secondIValue);
                 log.info((char)27 + "[31mFirstWBoardTwo " + firstWValue);
                 log.info((char)27 + "[31mWidthBoardTwo " + widthValue);
-                log.info((char)27 + "[31mBoostUTwoEnabled " + boostToggleButtonSelected);
+                log.info((char)27 + "[31mBoostUTwoDisabled " + boostToggleButtonSelected);
             }
             else {
 
@@ -780,6 +781,11 @@ public class UisVapController {
         setColor(boostI2Spinner, uisHardwareUpdateModel.boost_I2Property().get());
         setColor(bipPwmSpinner, uisHardwareUpdateModel.bipPWMProperty().get());
         setColor(bipWindowSpinner, String.valueOf(Integer.parseInt(uisHardwareUpdateModel.bipWindowProperty().get()) - Integer.parseInt(uisHardwareUpdateModel.first_WProperty().get())));
+    }
+
+    private boolean isBipTest(Test test) {
+        return ((InjectorUisTest)test).getVoltAmpereProfile().getBipPWM() != null
+                && ((InjectorUisTest)test).getVoltAmpereProfile().getBipWindow() != null;
     }
 
     private void bindingI18N() {

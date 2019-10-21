@@ -715,10 +715,13 @@ public class MainSectionUisController {
         speedComboBox.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> setProgress(newValue.getMultiplier()));
     }
 
-    //TODO add initialisation of manufacturers list
     private void setupGuiTypeModelListener() {
 
         gui_typeModel.guiTypeProperty().addListener((observableValue, oldValue, newValue) -> {
+
+            if (oldValue == UIS) {
+                startToggleButton.setSelected(false);
+            }
 
             if (newValue == UIS) {
 

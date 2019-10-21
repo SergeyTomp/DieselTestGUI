@@ -12,6 +12,7 @@ import fi.stardex.sisu.model.uis.UisInjectorSectionModel;
 import fi.stardex.sisu.model.uis.UisSettingsModel;
 import fi.stardex.sisu.model.uis.UisVapModel;
 import fi.stardex.sisu.model.updateModels.UisHardwareUpdateModel;
+import fi.stardex.sisu.persistence.orm.interfaces.Test;
 import fi.stardex.sisu.persistence.orm.uis.InjectorUisTest;
 import fi.stardex.sisu.persistence.orm.uis.InjectorUisVAP;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
@@ -27,6 +28,7 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.beans.Observable;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -43,6 +45,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -118,7 +121,6 @@ public class UisInjectorSectionController {
     private static final String LED_BLINK_ON = "ledBlink-on";
     private static final String LED_BLINK_OFF = "ledBlink-off";
     private final String GREEN_STYLE_CLASS = "regulator-spinner-selected";
-    private final String BIP = "BIP";
 
     private MainSectionUisModel mainSectionUisModel;
     private UisInjectorSectionModel uisInjectorSectionModel;
@@ -356,6 +358,7 @@ public class UisInjectorSectionController {
         uisInjectorSectionModel.getLedBeaker6ToggleButton().selectedProperty().bind(led6ToggleButton.selectedProperty());
         uisInjectorSectionModel.getLedBeaker7ToggleButton().selectedProperty().bind(led7ToggleButton.selectedProperty());
         uisInjectorSectionModel.getLedBeaker8ToggleButton().selectedProperty().bind(led8ToggleButton.selectedProperty());
+
         uisInjectorSectionModel.powerButtonProperty().bind(regulatorToggleButton.selectedProperty());
         uisInjectorSectionModel.width_1Property().bind(widthSpinner.valueProperty());
         uisInjectorSectionModel.width_2Property().bind(width2Spinner.valueProperty());
@@ -401,6 +404,7 @@ public class UisInjectorSectionController {
         mainSectionUisModel.modelProperty().addListener((observableValue, oldValue, newValue) -> {
 
             if (newValue != null) {
+                selectButton(true, led1ToggleButton);
                 InjectorType injectorType = newValue.getVAP().getInjectorType();
                 InjectorSubType injectorSubType = newValue.getVAP().getInjectorSubType();
                 typeTextField.setText(injectorSubType.name());
@@ -408,6 +412,8 @@ public class UisInjectorSectionController {
                 ultimaModbusWriter.add(Injector_type, injectorType.getValueToSend());
             }
             else {
+
+                selectButton(false, (ledToggleButtons.toArray(new ToggleButton[8])));
                 typeTextField.setText("");
                 configureModeControls(SINGLE_COIL);
                 ultimaModbusWriter.add(Injector_type, COIL.getValueToSend());
@@ -428,6 +434,9 @@ public class UisInjectorSectionController {
 
                 widthSpinner.getValueFactory().setValue(WIDTH_CURRENT_SIGNAL_SPINNER_INIT);
                 angle1Spinner.getValueFactory().setValue(ANGLE_OFFSET_SPINNER_INIT);
+                bipGauge.setBipMode(false);
+                Platform.runLater(bipGauge);
+                bipTaskLabel.setText("");
                 return;
             }
 
@@ -457,7 +466,7 @@ public class UisInjectorSectionController {
                 pressureSpinner.getValueFactory().setValue(settedPressure);
             }
 
-            if (newValue.getTestName().getName().contains(BIP)) {
+            if (isBipTest(newValue)) {
                 bipTaskLabel.setText("\u0020" + test.getBip() + "\u00B1" + test.getBipRange());
                 bipGauge.setParameters(test.getBip(), vap.getBipWindow(), vap.getFirstW(), test.getBipRange());
                 ultimaModbusWriter.add(BipModeOn_1, true);
@@ -540,6 +549,7 @@ public class UisInjectorSectionController {
     private void setupCharTaskListener() {
 
         chartTaskDataModel.bipSignalValueProperty().addListener((observableValue, oldValue, newValue) -> bipGauge.setValue(newValue.doubleValue()));
+        chartTaskDataModel.delayValueProperty().addListener((observableValue, oldValue, newValue) -> delayGauge.setValue(newValue.doubleValue()));
     }
 
     private void setupStartButtonListener() {
@@ -599,6 +609,11 @@ public class UisInjectorSectionController {
 
     private void setNumber(int number, ToggleButton ledToggleButton) {
         ledToggleButton.setText(String.valueOf(number));
+    }
+
+    private boolean isBipTest(Test test) {
+        return ((InjectorUisTest)test).getVoltAmpereProfile().getBipPWM() != null
+                && ((InjectorUisTest)test).getVoltAmpereProfile().getBipWindow() != null;
     }
 
     private int getNumber(ToggleButton ledToggleButton) {
@@ -723,7 +738,7 @@ public class UisInjectorSectionController {
 
         public LedParametersChangeListener() {
 
-            ledToggleButtons.forEach(s -> s.selectedProperty().addListener(this));
+//            ledToggleButtons.forEach(s -> s.selectedProperty().addListener(this));
         }
 
         @Override
@@ -766,6 +781,12 @@ public class UisInjectorSectionController {
         for (Node node : nodes)
             node.setDisable(disable);
 
+    }
+
+    private void selectButton(boolean select, ToggleButton ... nodes) {
+        for (ToggleButton node : nodes){
+            node.setSelected(select);
+        }
     }
     private class ThreeSpinnerArrowClickHandler implements EventHandler<MouseEvent> {
 

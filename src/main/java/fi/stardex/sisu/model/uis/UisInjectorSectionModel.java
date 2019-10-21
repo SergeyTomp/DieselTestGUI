@@ -1,15 +1,19 @@
 package fi.stardex.sisu.model.uis;
 
 import javafx.beans.property.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.control.ToggleButton;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class UisInjectorSectionModel {
 
-    private ObjectProperty<List<ToggleButton>> activeLedToggleButtonsList = new SimpleObjectProperty<>();
-    private List<Integer> arrayNumbersOfActiveLedToggleButtons = new ArrayList<>();
+    private ObjectProperty<List<ToggleButton>> activeLedToggleButtonsList = new SimpleObjectProperty<>(new ArrayList<>());
+    private ObservableList<ToggleButton> ledToggleButtons;
 
     private ToggleButton ledBeaker1ToggleButton = new ToggleButton();
     private ToggleButton ledBeaker2ToggleButton = new ToggleButton();
@@ -73,10 +77,37 @@ public class UisInjectorSectionModel {
     public IntegerProperty angle_2Property() {
         return angle_2;
     }
-    public List<Integer> getArrayNumbersOfActiveLedToggleButtons() {
-        return arrayNumbersOfActiveLedToggleButtons;
-    }
     public ObjectProperty<List<ToggleButton>> activeLedToggleButtonsListProperty() {
         return activeLedToggleButtonsList;
+    }
+
+    @PostConstruct
+    public void init() {
+
+        ledToggleButtons = FXCollections.observableArrayList(new LinkedList<>());
+        ledToggleButtons.add(ledBeaker1ToggleButton);
+        ledToggleButtons.add(ledBeaker2ToggleButton);
+        ledToggleButtons.add(ledBeaker3ToggleButton);
+        ledToggleButtons.add(ledBeaker4ToggleButton);
+        ledToggleButtons.add(ledBeaker5ToggleButton);
+        ledToggleButtons.add(ledBeaker6ToggleButton);
+        ledToggleButtons.add(ledBeaker7ToggleButton);
+        ledToggleButtons.add(ledBeaker8ToggleButton);
+        ledToggleButtons.forEach(tb -> tb.selectedProperty().addListener((observableValue, oldValue, newValue) -> fillArrayOfActiveLedToggleButtons(tb)));
+    }
+
+    /**method could be simply expanded to multiple ToggleButton selection variant if necessary:
+     * just comment single selection variant and uncomment multiple selection variant*/
+    private synchronized void fillArrayOfActiveLedToggleButtons(ToggleButton tb) {
+
+        List<ToggleButton> toggleButtonsList = activeLedToggleButtonsListProperty().get();
+
+        /**single selection variant*/
+        toggleButtonsList.clear();
+        if (tb.isSelected()) { toggleButtonsList.add(tb); }
+
+        /**multiple selection variant*/
+//        ledToggleButtons.stream().filter(ToggleButton::isSelected).forEach(toggleButtonsList::add);
+//        toggleButtonsList.sort(Comparator.comparingInt(b -> Integer.parseInt(b.getText())));
     }
 }
