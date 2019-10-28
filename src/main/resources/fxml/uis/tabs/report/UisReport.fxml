@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+
+<TabPane tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.uis.tabs.UisReportController">
+    <tabs>
+        <Tab fx:id="tabFlowReport" text="%additional.report.flow">
+            <fx:include fx:id="uisFlowReport" source="UisFlowReport.fxml" />
+        </Tab>
+        <Tab fx:id="tabRLCReport" text="%additional.report.RLC">
+            <fx:include fx:id="uisRlcReport" source="UisRlcReport.fxml" />
+        </Tab>
+        <Tab fx:id="tabDelayReport" text="%additional.report.delay">
+            <fx:include fx:id="uisDelayReport" source="UisDelayReport.fxml" />
+        </Tab>
+    </tabs>
+
+</TabPane>

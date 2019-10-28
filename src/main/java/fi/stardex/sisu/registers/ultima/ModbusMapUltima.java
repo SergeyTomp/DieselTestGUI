@@ -162,13 +162,14 @@ public enum ModbusMapUltima implements ModbusMap {
     SecondSignalInterval(REGISTER_HOLDING, 12, 1, false),   //Время окончания фазы удерджания для второго сигнала (в мкс)
     BipModeInterval_2(REGISTER_HOLDING, 30, 1, true),       //Время фазы BIP канала 2 (в мкс)
     BipModeDuty_2(REGISTER_HOLDING, 31, 1, true),           //Скважность BIP канала 2
-    MaxPressureRegistered(REGISTER_INPUT, 4124, 1, true),   //Максимальное зарегестрированное значение  давления
+    MaxPressureRegistered(REGISTER_INPUT, 4124, 2, true),   //Максимальное зарегестрированное значение  давления
     HpiModeOn(DISCRETE_COIL, 10, 1, false),                 //Форсунка HPI флаг
     BipModeOn_1(DISCRETE_COIL, 4, 1, false),                //Режим  BIP включен
     BipModeOn_2(DISCRETE_COIL, 24, 1, false),               //Режим  BIP включен
     DoubleSignalModeOn_1(DISCRETE_COIL, 5, 1, false),       //Режим ДаблСигнал включен
     DoubleSignalModeOn_2(DISCRETE_COIL, 25, 1, false),      //Режим ДаблСигнал включен
     FirstPulseFlag(DISCRETE_COIL, 44, 1, false),            //Флаг первого импульса в регулярной последовательности
+    OpeningPressureReset(DISCRETE_COIL, 101, 1, true),      //Обнулить максимальное давление
 
     // Отображение версий прошивок
     Version_controllable_1(REGISTER_HOLDING, 116, 1, true),

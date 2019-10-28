@@ -1187,8 +1187,28 @@ public class SpringJavaConfig {
     }
 
     @Bean
-    public DelayModel delayModel() {
-        return new DelayModel();
+    @Autowired
+    public UisDelayModel uisDelayModel(MainSectionUisModel mainSectionUisModel,
+                                       UisInjectorSectionModel uisInjectorSectionModel) {
+        UisDelayModel uisDelayModel = new UisDelayModel();
+        uisDelayModel.setMainSectionUisModel(mainSectionUisModel);
+        uisDelayModel.setUisInjectorSectionModel(uisInjectorSectionModel);
+        return uisDelayModel;
+    }
+
+    @Bean
+    @Autowired
+    public UisRlcModel uisRlcReportModel(MainSectionUisModel mainSectionUisModel,
+                                         UisInjectorSectionModel uisInjectorSectionModel) {
+        UisRlcModel uisRlcModel = new UisRlcModel();
+        uisRlcModel.setMainSectionUisModel(mainSectionUisModel);
+        uisRlcModel.setUisInjectorSectionModel(uisInjectorSectionModel);
+        return uisRlcModel;
+    }
+
+    @Bean
+    public UisFlowModel uisFlowModel() {
+        return new UisFlowModel();
     }
 
 //    @Bean

@@ -60,23 +60,18 @@ public class RLC_ReportModel {
         public StringProperty parameterProperty() {
             return parameter;
         }
-
         public StringProperty unitsProperty() {
             return units;
         }
-
         public StringProperty channel_1Property() {
             return channel_1;
         }
-
         public StringProperty channel_2Property() {
             return channel_2;
         }
-
         public StringProperty channel_3Property() {
             return channel_3;
         }
-
         public StringProperty channel_4Property() {
             return channel_4;
         }
@@ -122,5 +117,4 @@ public class RLC_ReportModel {
             return parameterValues;
         }
     }
-
 }

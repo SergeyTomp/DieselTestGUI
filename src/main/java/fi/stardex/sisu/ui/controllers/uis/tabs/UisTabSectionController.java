@@ -21,6 +21,9 @@ public class UisTabSectionController {
     @FXML private Tab tabMechanical;
     @FXML private UisVoltageController uisVoltageController;
     @FXML private UisDelayController uisDelayController;
+    @FXML private UisRlcController uisRlcController;
+    @FXML private UisReportController uisReportController;
+    @FXML private MechanicalController mechanicalController;
 
 
     private I18N i18N;
@@ -29,9 +32,17 @@ public class UisTabSectionController {
     public UisVoltageController getUisVoltageController() {
         return uisVoltageController;
     }
-
     public UisDelayController getUisDelayController() {
         return uisDelayController;
+    }
+    public UisRlcController getUisRlcController() {
+        return uisRlcController;
+    }
+    public UisReportController getUisReportController() {
+        return uisReportController;
+    }
+    public MechanicalController getMechanicalController() {
+        return mechanicalController;
     }
 
     public GridPane getSettingsGridPane() {
@@ -59,6 +70,6 @@ public class UisTabSectionController {
         tabFlow.textProperty().bind(i18N.createStringBinding("additional.flow"));
         tabReport.textProperty().bind(i18N.createStringBinding("additional.report"));
         tabInfo.textProperty().bind(i18N.createStringBinding("additional.info"));
-        tabMechanical.textProperty().bind(i18N.createStringBinding("additional.mechanical"));
+        tabMechanical.textProperty().bind(i18N.createStringBinding("additional.mechanical.openingPress"));
     }
 }

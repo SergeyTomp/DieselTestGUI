@@ -1,6 +1,6 @@
 package fi.stardex.sisu.charts;
 
-import fi.stardex.sisu.model.DelayModel;
+import fi.stardex.sisu.model.uis.UisDelayModel;
 import fi.stardex.sisu.model.GUI_TypeModel;
 import fi.stardex.sisu.model.uis.MainSectionUisModel;
 import fi.stardex.sisu.model.uis.UisInjectorSectionModel;
@@ -42,7 +42,7 @@ public class DelayChartTask extends ChartTask {
     private final DelayCalculator delayCalculator;
     private final DelayController delayController;
     private final GUI_TypeModel gui_typeModel;
-    private final DelayModel delayModel;
+    private final UisDelayModel uisDelayModel;
     private final UisInjectorSectionModel uisInjectorSectionModel;
     private final MainSectionUisModel mainSectionUisModel;
     private int slotNumber;
@@ -51,14 +51,14 @@ public class DelayChartTask extends ChartTask {
     public DelayChartTask(DelayCalculator delayCalculator,
                           DelayController delayController,
                           GUI_TypeModel gui_typeModel,
-                          DelayModel delayModel,
+                          UisDelayModel uisDelayModel,
                           UisInjectorSectionModel uisInjectorSectionModel,
                           MainSectionUisModel mainSectionUisModel) {
 
         this.delayCalculator = delayCalculator;
         this.delayController = delayController;
         this.gui_typeModel = gui_typeModel;
-        this.delayModel = delayModel;
+        this.uisDelayModel = uisDelayModel;
         this.uisInjectorSectionModel = uisInjectorSectionModel;
         this.mainSectionUisModel = mainSectionUisModel;
         sensitivitySpinner = delayController.getSensitivitySpinner();
@@ -158,7 +158,7 @@ public class DelayChartTask extends ChartTask {
                  * 2. Trigger value for TRUE/FALSE definition in pointsNumber formula calculation below is 256 - 1, but not == DELAY_SAMPLE_SIZE - 1 as in CR_Inj !!!)
                  * 3. TRUE condition in pointsNumber formula below corresponds to 2046 hard, again not DELAY_SAMPLE_SIZE - 1 in comparison with CR_Inj !!!
                  * All this stuff should be defined and fixed for CR_Inj and UIS upon the decision to implement support for 0x00 Ultima version.*/
-                addingTime = delayModel.addingTimeProperty().get();
+                addingTime = uisDelayModel.addingTimeProperty().get();
                 pointsNumber = (int) ((uisInjectorSectionModel.width_1Property().get() + addingTime) / PULSE_LENGTH_STEP) > DELAY_SAMPLE_SIZE - 1 ?
                         DELAY_SAMPLE_SIZE - 1 : (int) ((uisInjectorSectionModel.width_1Property().get() + addingTime) / PULSE_LENGTH_STEP);
                 break;

@@ -41,6 +41,7 @@ public class UisHardwareUpdateModel implements Updater {
     private DoubleProperty current = new SimpleDoubleProperty();
     private DoubleProperty duty = new SimpleDoubleProperty();
     private IntegerProperty lcdPressure = new SimpleIntegerProperty();
+    private IntegerProperty maxLcdPressure = new SimpleIntegerProperty();
     private StringProperty bipPWM = new SimpleStringProperty();
     private StringProperty bipWindow = new SimpleStringProperty(String.valueOf(0));
 
@@ -108,6 +109,9 @@ public class UisHardwareUpdateModel implements Updater {
     }
     public IntegerProperty lcdPressureProperty() {
         return lcdPressure;
+    }
+    public IntegerProperty maxLcdPressureProperty() {
+        return maxLcdPressure;
     }
     public StringProperty bipPWMProperty() {
         return bipPWM;
@@ -234,6 +238,18 @@ public class UisHardwareUpdateModel implements Updater {
                 }
             }
 
+            if (injectorSubType == MECHANIC) {
+
+                int pressureSensor = uisSettingsModel.pressureSensorProperty().get();
+                if(PressureReg1_PressFact.getLastValue() != null){
+                    double pressure = pressureSensor * (Double) PressureReg1_PressFact.getLastValue();
+                    lcdPressure.setValue(pressure);
+                }
+                if(MaxPressureRegistered.getLastValue() != null){
+                    double pressure = pressureSensor * (Double) MaxPressureRegistered.getLastValue();
+                    maxLcdPressure.setValue(pressure);
+                }
+            }
         }
 
         if (isBipTest) {

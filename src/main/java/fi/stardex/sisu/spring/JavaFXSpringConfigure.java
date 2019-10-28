@@ -52,9 +52,7 @@ import fi.stardex.sisu.ui.controllers.uis.dialogs.CustomInjectorUisDialogControl
 import fi.stardex.sisu.ui.controllers.uis.dialogs.CustomManufacturerUisDialogController;
 import fi.stardex.sisu.ui.controllers.uis.dialogs.CustomTestUisDialogController;
 import fi.stardex.sisu.ui.controllers.uis.dialogs.CustomVapUisDialogController;
-import fi.stardex.sisu.ui.controllers.uis.tabs.UisDelayController;
-import fi.stardex.sisu.ui.controllers.uis.tabs.UisTabSectionController;
-import fi.stardex.sisu.ui.controllers.uis.tabs.UisVoltageController;
+import fi.stardex.sisu.ui.controllers.uis.tabs.*;
 import fi.stardex.sisu.ui.controllers.uis.windows.UisVapController;
 import fi.stardex.sisu.util.DelayCalculator;
 import fi.stardex.sisu.util.enums.BeakerType;
@@ -1498,13 +1496,13 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                  MainSectionUisModel mainSectionUisModel,
                                                  DelayCalculator delayCalculator,
                                                  I18N i18N,
-                                                 DelayModel delayModel) {
+                                                 UisDelayModel uisDelayModel) {
         UisDelayController uisDelayController = uisTabSectionController.getUisDelayController();
         uisDelayController.setChartTaskDataModel(chartTaskDataModel);
         uisDelayController.setDelayCalculator(delayCalculator);
         uisDelayController.setMainSectionUisModel(mainSectionUisModel);
         uisDelayController.setI18N(i18N);
-        uisDelayController.setDelayModel(delayModel);
+        uisDelayController.setUisDelayModel(uisDelayModel);
         return uisDelayController;
     }
 
@@ -1536,5 +1534,81 @@ public class JavaFXSpringConfigure extends ViewLoader{
         uisVapController.setGui_typeModel(gui_typeModel);
         uisVapController.setUisSettingsModel(uisSettingsModel);
         return uisVapController;
+    }
+
+    @Bean
+    @Autowired
+    public UisRlcController uisRlcController(UisTabSectionController uisTabSectionController,
+                                             ModbusRegisterProcessor ultimaModbusWriter,
+                                             RegisterProvider ultimaRegisterProvider,
+                                             I18N i18N,
+                                             MainSectionUisModel mainSectionUisModel,
+                                             UisInjectorSectionModel uisInjectorSectionModel,
+                                             UisRlcModel uisRlcModel) {
+        UisRlcController uisRlcController = uisTabSectionController.getUisRlcController();
+        uisRlcController.setUltimaModbusWriter(ultimaModbusWriter);
+        uisRlcController.setUltimaRegisterProvider(ultimaRegisterProvider);
+        uisRlcController.setI18N(i18N);
+        uisRlcController.setMainSectionUisModel(mainSectionUisModel);
+        uisRlcController.setUisInjectorSectionModel(uisInjectorSectionModel);
+        uisRlcController.setUisRlcModel(uisRlcModel);
+        return uisRlcController;
+    }
+
+    @Bean
+    @Autowired
+    public UisReportController uisReportController(UisTabSectionController uisTabSectionController,
+                                                   I18N i18N) {
+        UisReportController uisReportController = uisTabSectionController.getUisReportController();
+        uisReportController.setI18N(i18N);
+        return uisReportController;
+    }
+
+    @Bean
+    @Autowired
+    public UisRlcReportController uisRlcReportController(UisReportController uisReportController,
+                                                         I18N i18N,
+                                                         UisRlcModel uisRlcModel) {
+        UisRlcReportController uisRlcReportController = uisReportController.getUisRlcReportController();
+        uisRlcReportController.setI18N(i18N);
+        uisRlcReportController.setUisRlcModel(uisRlcModel);
+        return uisRlcReportController;
+    }
+
+    @Bean
+    @Autowired
+    public UisDelayReportController uisDelayReportController(UisReportController uisReportController,
+                                                             I18N i18N,
+                                                             UisDelayModel uisDelayModel) {
+        UisDelayReportController uisDelayReportController = uisReportController.getUisDelayReportController();
+        uisDelayReportController.setI18N(i18N);
+        uisDelayReportController.setUisDelayModel(uisDelayModel);
+        return uisDelayReportController;
+    }
+
+    @Bean
+    @Autowired
+    public UisFlowReportController uisFlowReportController(UisReportController uisReportController,
+                                                           I18N i18N,
+                                                           MainSectionUisModel mainSectionUisModel,
+                                                           UisFlowModel uisFlowModel) {
+        UisFlowReportController uisFlowReportController = uisReportController.getUisFlowReportController();
+        uisFlowReportController.setI18N(i18N);
+        uisFlowReportController.setMainSectionUisModel(mainSectionUisModel);
+        uisFlowReportController.setUisFlowModel(uisFlowModel);
+        return uisFlowReportController;
+    }
+
+    @Bean
+    @Autowired
+    public MechanicalController mechanicalController(UisTabSectionController uisTabSectionController,
+                                                     ModbusRegisterProcessor ultimaModbusWriter,
+                                                     UisHardwareUpdateModel uisHardwareUpdateModel,
+                                                     I18N i18N) {
+        MechanicalController mechanicalController = uisTabSectionController.getMechanicalController();
+        mechanicalController.setUltimaModbusWriter(ultimaModbusWriter);
+        mechanicalController.setUisHardwareUpdateModel(uisHardwareUpdateModel);
+        mechanicalController.setI18N(i18N);
+        return mechanicalController;
     }
 }

@@ -1,7 +1,6 @@
 package fi.stardex.sisu.ui.controllers.cr.tabs.report;
 
 import fi.stardex.sisu.model.cr.RLC_ReportModel;
-import fi.stardex.sisu.model.cr.RLC_ReportModel.RlcResult;
 import fi.stardex.sisu.util.i18n.I18N;
 import javafx.beans.property.BooleanProperty;
 import javafx.collections.FXCollections;
@@ -11,6 +10,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 
 import javax.annotation.PostConstruct;
+
+import fi.stardex.sisu.model.cr.RLC_ReportModel.RlcResult;
 
 public class RLC_ReportController {
     @FXML
@@ -26,7 +27,7 @@ public class RLC_ReportController {
     @FXML
     private TableColumn<RlcResult,String> channel3Column;
     @FXML
-    private TableColumn<RlcResult,String> channel4Column;
+    private TableColumn<RLC_ReportModel.RlcResult,String> channel4Column;
 
     private BooleanProperty newResultFlag;
 

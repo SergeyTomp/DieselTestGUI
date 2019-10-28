@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.text.Font?>
+
+<StackPane xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.uis.tabs.UisFlowReportController">
+    <children>
+        <TableView fx:id="flowTableView" prefHeight="400.0">
+            <columns>
+                <TableColumn fx:id="flowTestNameColumn" prefWidth="150.0" text="%h4.report.table.label.testName" />
+                <TableColumn fx:id="flowNominalColumn" minWidth="0.0" prefWidth="200.0" text="%h4.report.table.label.nominal" />
+                <TableColumn fx:id="flow1Column" prefWidth="50.0" text="1" />
+                <TableColumn fx:id="flow2Column" prefWidth="50.0" text="2" />
+                <TableColumn fx:id="flow3Column" prefWidth="50.0" text="3" />
+                <TableColumn fx:id="flow4Column" prefWidth="50.0" text="4" />
+                <TableColumn fx:id="flow5Column" prefWidth="50.0" text="5" />
+                <TableColumn fx:id="flow6Column" prefWidth="50.0" text="6" />
+                <TableColumn fx:id="flow7Column" prefWidth="50.0" text="7" />
+                <TableColumn fx:id="flow8Column" prefWidth="50.0" text="8" />
+                <TableColumn fx:id="deleteColumn" prefWidth="100.0" />
+            </columns>
+        </TableView>
+        <Label fx:id="flowReportAttentionLabel" text="Reports available only for AUTO test types" visible="false">
+            <font>
+                <Font size="22.0" />
+            </font>
+        </Label>
+    </children>
+</StackPane>

@@ -18,17 +18,13 @@
       <fx:include fx:id="uisVoltage" source="UisVoltage.fxml" />
     </Tab>
       <Tab fx:id="tabDelay" text="%additional.delay">
-        <fx:include fx:id="uisDelay" source="UisDelay.fxml"/>
+        <fx:include fx:id="uisDelay" source="UisDelay.fxml" />
       </Tab>
       <Tab fx:id="tabRLC" text="%h4.tab.RLC">
-          <content>
-              <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-          </content>
+        <fx:include fx:id="uisRlc" source="/fxml/uis/tabs/UisRLC.fxml" />
       </Tab>
       <Tab fx:id="tabReport" text="%additional.report">
-        <content>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-        </content>
+        <fx:include fx:id="uisReport" source="/fxml/uis/tabs/report/UisReport.fxml" />
       </Tab>
 
       <Tab fx:id="tabInfo" text="%additional.info">
@@ -49,10 +45,8 @@
             </GridPane>
          </content>
       </Tab>
-      <Tab fx:id="tabMechanical" text="Mechanical">
-        <content>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-        </content>
+      <Tab fx:id="tabMechanical" text="%additional.mechanical.openingPress">
+        <fx:include fx:id="mechanical" source="/fxml/uis/tabs/Mechanical.fxml"/>
       </Tab>
   </tabs>
 </TabPane>

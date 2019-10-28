@@ -100,14 +100,18 @@ public class UisInjectorSectionModel {
      * just comment single selection variant and uncomment multiple selection variant*/
     private synchronized void fillArrayOfActiveLedToggleButtons(ToggleButton tb) {
 
-        List<ToggleButton> toggleButtonsList = activeLedToggleButtonsListProperty().get();
+        List<ToggleButton> toggleButtonsList = new ArrayList<>();
 
         /**single selection variant*/
-        toggleButtonsList.clear();
-        if (tb.isSelected()) { toggleButtonsList.add(tb); }
+//        toggleButtonsList.clear();
+        if (tb.isSelected()) {
+            toggleButtonsList.add(tb);
+        }
 
         /**multiple selection variant*/
 //        ledToggleButtons.stream().filter(ToggleButton::isSelected).forEach(toggleButtonsList::add);
 //        toggleButtonsList.sort(Comparator.comparingInt(b -> Integer.parseInt(b.getText())));
+
+        activeLedToggleButtonsList.setValue(toggleButtonsList);
     }
 }

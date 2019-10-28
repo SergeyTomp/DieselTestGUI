@@ -1,7 +1,7 @@
 package fi.stardex.sisu.ui.controllers.uis.tabs;
 
 import fi.stardex.sisu.model.ChartTaskDataModel;
-import fi.stardex.sisu.model.DelayModel;
+import fi.stardex.sisu.model.uis.UisDelayModel;
 import fi.stardex.sisu.model.uis.MainSectionUisModel;
 import fi.stardex.sisu.util.DelayCalculator;
 import fi.stardex.sisu.util.i18n.I18N;
@@ -45,7 +45,7 @@ public class UisDelayController {
     private MainSectionUisModel mainSectionUisModel;
     private I18N i18N;
     private ChartTaskDataModel chartTaskDataModel;
-    private DelayModel delayModel;
+    private UisDelayModel uisDelayModel;
 
     public void setDelayCalculator(DelayCalculator delayCalculator) {
         this.delayCalculator = delayCalculator;
@@ -59,8 +59,8 @@ public class UisDelayController {
     public void setChartTaskDataModel(ChartTaskDataModel chartTaskDataModel) {
         this.chartTaskDataModel = chartTaskDataModel;
     }
-    public void setDelayModel(DelayModel delayModel) {
-        this.delayModel = delayModel;
+    public void setUisDelayModel(UisDelayModel uisDelayModel) {
+        this.uisDelayModel = uisDelayModel;
     }
 
     @PostConstruct
@@ -72,20 +72,37 @@ public class UisDelayController {
                 SENSITIVITY_SPINNER_MAX,
                 SENSITIVITY_SPINNER_INIT,
                 SENSITIVITY_SPINNER_STEP));
+
         resetDelayButton.setOnAction(event -> clearDelayResults());
         saveDelayButton.setOnAction(event-> {
-
+            uisDelayModel.setAverageDelay(averageDelay.getText());
+            uisDelayModel.storeResult();
         });
 
         mainSectionUisModel.injectorTestProperty().addListener((observableValue, oldValue, newValue) -> {
 
+            clearDelayResults();
+
+            if (newValue == null) {
+                saveDelayButton.setDisable(true);
+                uisDelayModel.clearResults();
+                return;
+            }
+            saveDelayButton.setDisable(false);
         });
 
-        addingTime.textProperty().addListener((observableValue, oldValue, newValue) -> delayModel.addingTimeProperty().setValue(Integer.parseInt(newValue)));
+        mainSectionUisModel.modelProperty().addListener((observableValue, oldValue, newValue) -> uisDelayModel.clearResults());
+
+        addingTime.textProperty().addListener((observableValue, oldValue, newValue)
+                -> uisDelayModel.addingTimeProperty().setValue(Integer.parseInt(newValue)));
+
         chartTaskDataModel.getDelayChartDataList().addListener((ListChangeListener<XYChart.Data<Double, Double>>) change -> {
             delayData.clear();
             delayData.setAll(change.getList());
         });
+
+        chartTaskDataModel.delayValueProperty().addListener((observableValue, oldValue, newValue)
+                -> averageDelay.setText(String.format("%.0f", newValue.doubleValue())));
     }
     private void setupDelayChart() {
 

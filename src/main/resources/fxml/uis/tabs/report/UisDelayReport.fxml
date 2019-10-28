@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.StackPane?>
+
+<StackPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="fi.stardex.sisu.ui.controllers.uis.tabs.UisDelayReportController">
+    <children>
+        <TableView fx:id="delayTableView" stylesheets="@../../../../css/Styling.css">
+            <columns>
+                <TableColumn fx:id="parameterColumn" prefWidth="150.0" text="%h4.report.table.label.testName" />
+                <TableColumn fx:id="unitsColumn" prefWidth="70.0" styleClass="unitsOfMeasureColumn" text="%h4.report.measure.label.units" />
+                <TableColumn fx:id="channel1Column" minWidth="70.0" prefWidth="80.0" text="1" />
+                <TableColumn fx:id="channel2Column" minWidth="70.0" prefWidth="80.0" text="2" />
+                <TableColumn fx:id="channel3Column" minWidth="70.0" prefWidth="80.0" text="3" />
+                <TableColumn fx:id="channel4Column" minWidth="70.0" prefWidth="80.0" text="4" />
+                <TableColumn fx:id="channel5Column" minWidth="70.0" prefWidth="80.0" text="5" />
+                <TableColumn fx:id="channel6Column" minWidth="70.0" prefWidth="80.0" text="6" />
+                <TableColumn fx:id="channel7Column" minWidth="70.0" prefWidth="80.0" text="7" />
+                <TableColumn fx:id="channel8Column" minWidth="70.0" prefWidth="80.0" text="8" />
+                <TableColumn fx:id="deleteColumn" prefWidth="100.0" />
+            </columns>
+        </TableView>
+    </children>
+
+</StackPane>
