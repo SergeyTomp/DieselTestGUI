@@ -24,6 +24,7 @@ public class UisTabSectionController {
     @FXML private UisRlcController uisRlcController;
     @FXML private UisReportController uisReportController;
     @FXML private MechanicalController mechanicalController;
+    @FXML private UisFlowController uisFlowController;
 
 
     private I18N i18N;
@@ -43,6 +44,9 @@ public class UisTabSectionController {
     }
     public MechanicalController getMechanicalController() {
         return mechanicalController;
+    }
+    public UisFlowController getUisFlowController() {
+        return uisFlowController;
     }
 
     public GridPane getSettingsGridPane() {

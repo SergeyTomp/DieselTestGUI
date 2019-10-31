@@ -334,18 +334,22 @@ public class SpringJavaConfig {
                             case MASTER:
                                 updaters.stream().filter(updater -> updater instanceof FlowMasterUpdater
                                         || updater instanceof PumpFlowUpdater
+                                        || updater instanceof UisFlowUpdater
                                         || updater instanceof DiffFlowUpdateModel).forEach(Platform::runLater);
                                 break;
                             case STREAM:
                                 updaters.stream().filter(updater -> updater instanceof FlowStreamUpdater
+                                        || updater instanceof UisFlowUpdater
                                         || updater instanceof PumpFlowUpdater).forEach(Platform::runLater);
                                 break;
                             case STAND_FM:
                                 updaters.stream().filter(updater -> updater instanceof FlowMasterUpdater
+                                        || updater instanceof UisFlowUpdater
                                         || updater instanceof TestBenchSectionUpdateModel).forEach(Platform::runLater);
                                 break;
                             case STAND_FM_4_CH:
                                 updaters.stream().filter(updater -> updater instanceof FlowStreamUpdater
+                                        || updater instanceof UisFlowUpdater
                                         || updater instanceof TestBenchSectionUpdateModel).forEach(Platform::runLater);
                                 break;
                             default:
@@ -1207,8 +1211,21 @@ public class SpringJavaConfig {
     }
 
     @Bean
-    public UisFlowModel uisFlowModel() {
-        return new UisFlowModel();
+    @Autowired
+    public UisFlowModel uisFlowModel(MainSectionUisModel mainSectionUisModel,
+                                     UisInjectorSectionModel uisInjectorSectionModel) {
+        UisFlowModel uisFlowModel = new UisFlowModel();
+        uisFlowModel.setMainSectionUisModel(mainSectionUisModel);
+        uisFlowModel.setUisInjectorSectionModel(uisInjectorSectionModel);
+        return uisFlowModel;
+    }
+
+    @Bean
+    @Autowired
+    public UisFlowUpdater uisFlowUpdater(FirmwareVersion<FlowVersions> flowFirmwareVersion) {
+        UisFlowUpdater uisFlowUpdater = new UisFlowUpdater();
+        uisFlowUpdater.setFlowFirmwareVersion(flowFirmwareVersion);
+        return uisFlowUpdater;
     }
 
 //    @Bean

@@ -36,9 +36,9 @@ public class UisFlowReportController {
     @FXML private TableColumn<UisFlowResult, String> flow8Column;
     @FXML private TableColumn<UisFlowResult, Boolean> deleteColumn;
 
-    private static final String CELL_COLOR_DEFAULT = "-fx-text-fill: #bf8248;";
-    private static final String CELL_COLOR_ORANGE = "-fx-text-fill: orange;";
-    private static final String CELL_COLOR_RED = "-fx-text-fill: red;";
+    private static final String CELL_COLOR_DEFAULT = "-fx-text-fill: #bf8248; -fx-alignment: CENTER";
+    private static final String CELL_COLOR_ORANGE = "-fx-text-fill: orange; -fx-alignment: CENTER";
+    private static final String CELL_COLOR_RED = "-fx-text-fill: red; -fx-alignment: CENTER";
 
     private I18N i18N;
     private MainSectionUisModel mainSectionUisModel;

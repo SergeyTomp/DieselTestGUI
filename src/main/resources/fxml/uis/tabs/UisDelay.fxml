@@ -21,7 +21,7 @@
         <ColumnConstraints halignment="CENTER" hgrow="NEVER" maxWidth="400.0" minWidth="350.0" prefWidth="350.0" />
     </columnConstraints>
     <rowConstraints>
-        <RowConstraints minHeight="10.0" vgrow="ALWAYS" />
+        <RowConstraints minHeight="-Infinity" prefHeight="260.0" vgrow="ALWAYS" />
     </rowConstraints>
     <children>
         <LineChart id="LineChart" fx:id="delayChart" axisSortingPolicy="NONE" createSymbols="false" prefHeight="329.0" prefWidth="552.0" titleSide="LEFT">
@@ -33,7 +33,7 @@
                 <NumberAxis side="LEFT" />
             </yAxis>
         </LineChart>
-        <GridPane fx:id="delayResults" prefHeight="159.0" prefWidth="300.0" GridPane.columnIndex="1" StackPane.alignment="CENTER">
+        <GridPane fx:id="delayResults" GridPane.columnIndex="1" StackPane.alignment="CENTER">
             <children>
                 <Label fx:id="minDelay" text="%h4.delay.label.MinDelay" GridPane.columnIndex="0" GridPane.rowIndex="1">
                     <GridPane.margin>
@@ -109,13 +109,13 @@
                 <ColumnConstraints fillWidth="false" halignment="RIGHT" hgrow="ALWAYS" maxWidth="-Infinity" minWidth="10.0" prefWidth="120.0" />
             </columnConstraints>
             <rowConstraints>
-                <RowConstraints maxHeight="50.0" minHeight="50.0" prefHeight="50.0" valignment="CENTER" vgrow="ALWAYS" />
-                <RowConstraints maxHeight="80.0" minHeight="50.0" prefHeight="50.0" valignment="CENTER" vgrow="ALWAYS" />
-                <RowConstraints maxHeight="80.0" minHeight="50.0" prefHeight="50.0" valignment="CENTER" vgrow="ALWAYS" />
-                <RowConstraints maxHeight="80.0" minHeight="50.0" prefHeight="50.0" valignment="CENTER" vgrow="ALWAYS" />
-                <RowConstraints maxHeight="80.0" minHeight="50.0" prefHeight="50.0" valignment="CENTER" vgrow="ALWAYS" />
-                <RowConstraints maxHeight="80.0" minHeight="50.0" prefHeight="50.0" valignment="CENTER" vgrow="ALWAYS" />
-                <RowConstraints maxHeight="80.0" minHeight="30.0" prefHeight="30.0" valignment="CENTER" vgrow="ALWAYS" />
+                <RowConstraints maxHeight="50.0" minHeight="40.0" prefHeight="50.0" valignment="CENTER" vgrow="ALWAYS" />
+                <RowConstraints maxHeight="80.0" minHeight="40.0" prefHeight="50.0" valignment="CENTER" vgrow="ALWAYS" />
+                <RowConstraints maxHeight="80.0" minHeight="40.0" prefHeight="50.0" valignment="CENTER" vgrow="ALWAYS" />
+                <RowConstraints maxHeight="80.0" minHeight="40.0" prefHeight="50.0" valignment="CENTER" vgrow="ALWAYS" />
+                <RowConstraints maxHeight="80.0" minHeight="40.0" prefHeight="50.0" valignment="CENTER" vgrow="ALWAYS" />
+                <RowConstraints maxHeight="80.0" minHeight="40.0" prefHeight="50.0" valignment="CENTER" vgrow="ALWAYS" />
+                <RowConstraints maxHeight="80.0" minHeight="20.0" prefHeight="30.0" valignment="CENTER" vgrow="ALWAYS" />
             </rowConstraints>
         </GridPane>
         <Label fx:id="delayAttentionLabel" alignment="CENTER" prefHeight="55.0" prefWidth="661.0" text="h4.delay.label.attention" textFill="#0d0d0d" underline="true" visible="false" wrapText="true">

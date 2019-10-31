@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.uis.tabs.UisFlowController">
+   <children>
+      <VBox AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="5.0">
+         <children>
+            <GridPane prefHeight="50.0">
+              <columnConstraints>
+                <ColumnConstraints halignment="RIGHT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints minHeight="30.0" prefHeight="30.0" valignment="CENTER" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <HBox alignment="CENTER_RIGHT">
+                     <GridPane.margin>
+                        <Insets right="20.0" />
+                     </GridPane.margin>
+                     <children>
+                        <Label fx:id="flowLabel" text="Delivery" />
+                        <Label fx:id="flowRangeLabel">
+                           <padding>
+                              <Insets left="10.0" />
+                           </padding>
+                        </Label>
+                     </children>
+                  </HBox>
+                  <ComboBox fx:id="flowUnitsComboBox" prefWidth="150.0" GridPane.columnIndex="1">
+                     <GridPane.margin>
+                        <Insets left="20.0" />
+                     </GridPane.margin>
+                  </ComboBox>
+               </children>
+            </GridPane>
+            <GridPane prefHeight="279.0" VBox.vgrow="ALWAYS">
+                <fx:include fx:id="uisBeakerOne" source="UisBeaker.fxml" GridPane.columnIndex="0" />
+                <fx:include fx:id="uisBeakerTwo" source="UisBeaker.fxml" GridPane.columnIndex="1" />
+                <fx:include fx:id="uisBeakerThree" source="UisBeaker.fxml" GridPane.columnIndex="2" />
+                <fx:include fx:id="uisBeakerFour" source="UisBeaker.fxml" GridPane.columnIndex="3" />
+                <fx:include fx:id="uisBeakerFive" source="UisBeaker.fxml" GridPane.columnIndex="4" />
+                <fx:include fx:id="uisBeakerSix" source="UisBeaker.fxml" GridPane.columnIndex="5" />
+                <fx:include fx:id="uisBeakerSeven" source="UisBeaker.fxml" GridPane.columnIndex="6" />
+                <fx:include fx:id="uisBeakerEight" source="UisBeaker.fxml" GridPane.columnIndex="7" />
+              <columnConstraints>
+                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                  <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+                <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints vgrow="SOMETIMES" />
+              </rowConstraints>
+            </GridPane>
+         </children>
+      </VBox>
+   </children>
+</AnchorPane>

@@ -19,7 +19,8 @@ public class FlowUnitObtainer {
     enum ConverterUOM{
 
         INJECTOR (1d) {@Override double convert(String uom) { return uom.equals(MILLILITRE_PER_MINUTE) ? getBaseCoeff() : getBaseCoeff() * 0.06; }},
-        PUMP (16.67) {@Override double convert(String uom) { return uom.equals(MILLILITRE_PER_MINUTE) ? getBaseCoeff() : getBaseCoeff() * 0.06; }};
+        PUMP (16.67) {@Override double convert(String uom) { return uom.equals(MILLILITRE_PER_MINUTE) ? getBaseCoeff() : getBaseCoeff() * 0.06; }},
+        UIS (1d) {@Override double convert(String uom) { return uom.equals(MILLILITRE_PER_MINUTE) ? getBaseCoeff() : getBaseCoeff() * 0.06; }};
 
         private final double baseCoeff;
 
@@ -43,6 +44,8 @@ public class FlowUnitObtainer {
 
     private static Double pumpBackFlowCoefficient;
 
+    private static double uisDeliveryCoefficient;
+
     public static double getDeliveryCoefficient() {
         return deliveryCoefficient;
     }
@@ -59,6 +62,10 @@ public class FlowUnitObtainer {
         return pumpBackFlowCoefficient;
     }
 
+    public static double getUisDeliveryCoefficient() {
+        return uisDeliveryCoefficient;
+    }
+
     private static final StringProperty deliveryProperty = new SimpleStringProperty();
 
     private static final StringProperty backFlowProperty = new SimpleStringProperty();
@@ -66,6 +73,8 @@ public class FlowUnitObtainer {
     private static final StringProperty pumpDeliveryProperty = new SimpleStringProperty();
 
     private static final StringProperty pumpBackFlowProperty = new SimpleStringProperty();
+
+    private static final StringProperty uisDeliveryProperty = new SimpleStringProperty();
 
     public static void createDeliveryFlowUnitBinding(ComboBox<String> comboBox) {
 
@@ -101,6 +110,13 @@ public class FlowUnitObtainer {
 //            pumpBackFlowCoefficient = calcCoefficient(newValue);
             pumpBackFlowCoefficient = ConverterUOM.PUMP.convert(newValue);
         });
+    }
+
+    public static void createUisDeliveryFlowUnitBinding(ComboBox<String> comboBox) {
+
+        uisDeliveryProperty.bind(comboBox.getSelectionModel().selectedItemProperty());
+        uisDeliveryProperty.addListener((observable, oldValue, newValue) ->
+                uisDeliveryCoefficient = ConverterUOM.UIS.convert(newValue));
     }
 
     private static double calcCoefficient(String value){

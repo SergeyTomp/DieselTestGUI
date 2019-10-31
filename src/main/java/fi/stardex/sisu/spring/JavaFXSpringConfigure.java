@@ -1277,7 +1277,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                              BoostUadjustmentState boostUadjustmentState,
                                                              Step3Model step3Model,
                                                              TabSectionModel tabSectionModel,
-                                                             PiezoRepairModel piezoRepairModel) {
+                                                             PiezoRepairModel piezoRepairModel,
+                                                             UisFlowModel uisFlowModel) {
         MainSectionUisController mainSectionUisController = (MainSectionUisController)mainSectionUIS().getController();
         mainSectionUisController.setMainSectionUisModel(mainSectionUisModel);
         mainSectionUisController.setPrintDialogPanel(printDialogPanel());
@@ -1295,6 +1296,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         mainSectionUisController.setStep3Model(step3Model);
         mainSectionUisController.setTabSectionModel(tabSectionModel);
         mainSectionUisController.setPiezoRepairModel(piezoRepairModel);
+        mainSectionUisController.setUisFlowModel(uisFlowModel);
         return mainSectionUisController;
     }
 

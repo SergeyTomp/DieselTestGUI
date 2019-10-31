@@ -2,19 +2,49 @@ package fi.stardex.sisu.model.uis;
 
 import fi.stardex.sisu.pdf.Result;
 import fi.stardex.sisu.persistence.orm.interfaces.Test;
+import fi.stardex.sisu.util.i18n.I18N;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import static fi.stardex.sisu.util.FlowUnitObtainer.getUisDeliveryCoefficient;
+import static fi.stardex.sisu.util.converters.DataConverter.convertDataToDouble;
+
 public class UisFlowModel {
 
+    private MainSectionUisModel mainSectionUisModel;
+    private UisInjectorSectionModel uisInjectorSectionModel;
+    private I18N i18N;
     private BooleanProperty resultMapChanged = new SimpleBooleanProperty();
     private ObservableMap<Test, UisFlowResult> resultObservableMap = FXCollections.observableMap(new LinkedHashMap<>());
+    private StringProperty flowRangeLabelProperty = new SimpleStringProperty(""); //just the label text above beaker, no real flow range information for calculations.
+    private StringProperty flowUnitsProperty = new SimpleStringProperty("");
+    private StringProperty flowValueProperty = new SimpleStringProperty();
+
+    private double scaledLeftLimit;
+    private double scaledRightLimit;
+
+    public void setScaledLeftLimit(double scaledLeftLimit) {
+        this.scaledLeftLimit = scaledLeftLimit;
+    }
+    public void setScaledRightLimit(double scaledRightLimit) {
+        this.scaledRightLimit = scaledRightLimit;
+    }
+    public void setMainSectionUisModel(MainSectionUisModel mainSectionUisModel) {
+        this.mainSectionUisModel = mainSectionUisModel;
+    }
+    public void setUisInjectorSectionModel(UisInjectorSectionModel uisInjectorSectionModel) {
+        this.uisInjectorSectionModel = uisInjectorSectionModel;
+    }
+    public void setI18N(I18N i18N) {
+        this.i18N = i18N;
+    }
 
     public BooleanProperty resultMapChangedProperty() {
         return resultMapChanged;
@@ -22,23 +52,49 @@ public class UisFlowModel {
     public ObservableMap<Test, UisFlowResult> getResultObservableMap() {
         return resultObservableMap;
     }
+    public StringProperty getFlowRangeLabelProperty() {
+        return flowRangeLabelProperty;
+    }
+    public StringProperty getFlowUnitsProperty() {
+        return flowUnitsProperty;
+    }
+    public StringProperty getFlowValueProperty() {
+        return flowValueProperty;
+    }
+
+    @PostConstruct
+    public void init() {
+        mainSectionUisModel.getStoreButton().setOnAction(event -> storeResult());
+        mainSectionUisModel.modelProperty().addListener((observableValue, oldValue, newValue) -> clearResults());
+    }
 
     public void storeResult(){
 
+        if (flowRangeLabelProperty.get().isEmpty()) {return;}
 
+        Test test = mainSectionUisModel.injectorTestProperty().get();
 
-        resultMapChanged.setValue(true);
-        resultMapChanged.setValue(false);
+        String nominalFlow = flowRangeLabelProperty.get() + " " + flowUnitsProperty.get();
+
+        if (!resultObservableMap.containsKey(test)) {
+
+            resultObservableMap.put(test, new UisFlowResult(test, nominalFlow,"-", "-", "-","-","-", "-", "-","-"));
+        }
+        resultObservableMap.get(test).setParameters(flowValueProperty.get());
+        resultMapChangeSignal();
     }
 
     public void clearResults(){
         resultObservableMap.clear();
-        resultMapChanged.setValue(true);
-        resultMapChanged.setValue(false);
+        resultMapChangeSignal();
     }
 
     public void deleteResult(Test test){
         resultObservableMap.remove(test);
+        resultMapChangeSignal();
+    }
+
+    private void resultMapChangeSignal() {
         resultMapChanged.setValue(true);
         resultMapChanged.setValue(false);
     }
@@ -56,6 +112,14 @@ public class UisFlowModel {
         private final StringProperty flow7;
         private final StringProperty flow8;
 
+        private double flow_1double;
+        private double flow_2double;
+        private double flow_3double;
+        private double flow_4double;
+        private double flow_5double;
+        private double flow_6double;
+        private double flow_7double;
+        private double flow_8double;
         private double flowRangeLeft;
         private double flowRangeRight;
         private double acceptableFlowRangeLeft;
@@ -105,7 +169,7 @@ public class UisFlowModel {
             return acceptableFlowRangeRight;
         }
 
-        public UisFlowResult(Test test,
+        UisFlowResult(Test test,
                              String nominalFlow,
                              String flow1,
                              String flow2,
@@ -125,6 +189,45 @@ public class UisFlowModel {
             this.flow6 = new SimpleStringProperty(flow6);
             this.flow7 = new SimpleStringProperty(flow7);
             this.flow8 = new SimpleStringProperty(flow8);
+        }
+
+        private void setParameters(String value) {
+
+            List<String> actualFlowsList = getValueColumns();
+            double uisDeliveryCoefficient = getUisDeliveryCoefficient();
+
+            /**Universal approach of setting new values to existing actualFlowsList,could be used in both cases:
+             * - single channel and multi channel modes if the last one will be activated in future*/
+            uisInjectorSectionModel.activeLedToggleButtonsListProperty().get().stream()
+                    .map(toggleButton -> (Integer.parseInt(toggleButton.getText()) - 1))
+                    .forEach(i -> actualFlowsList.set(i, value));
+
+            this.flow1.setValue(getFlow(actualFlowsList.get(0)));
+            this.flow2.setValue(getFlow(actualFlowsList.get(1)));
+            this.flow3.setValue(getFlow(actualFlowsList.get(2)));
+            this.flow4.setValue(getFlow(actualFlowsList.get(3)));
+            this.flow5.setValue(getFlow(actualFlowsList.get(4)));
+            this.flow6.setValue(getFlow(actualFlowsList.get(5)));
+            this.flow7.setValue(getFlow(actualFlowsList.get(6)));
+            this.flow8.setValue(getFlow(actualFlowsList.get(7)));
+
+            flow_1double = flow1.get().equals("-") ? -99d : convertDataToDouble(flow1.get()) / uisDeliveryCoefficient;
+            flow_2double = flow2.get().equals("-") ? -99d : convertDataToDouble(flow2.get()) / uisDeliveryCoefficient;
+            flow_3double = flow3.get().equals("-") ? -99d : convertDataToDouble(flow3.get()) / uisDeliveryCoefficient;
+            flow_4double = flow4.get().equals("-") ? -99d : convertDataToDouble(flow4.get()) / uisDeliveryCoefficient;
+            flow_5double = flow5.get().equals("-") ? -99d : convertDataToDouble(flow5.get()) / uisDeliveryCoefficient;
+            flow_6double = flow6.get().equals("-") ? -99d : convertDataToDouble(flow6.get()) / uisDeliveryCoefficient;
+            flow_7double = flow7.get().equals("-") ? -99d : convertDataToDouble(flow7.get()) / uisDeliveryCoefficient;
+            flow_8double = flow8.get().equals("-") ? -99d : convertDataToDouble(flow8.get()) / uisDeliveryCoefficient;
+
+            flowRangeLeft = scaledLeftLimit;
+            flowRangeRight = scaledRightLimit;
+            acceptableFlowRangeLeft = scaledLeftLimit - scaledLeftLimit * 0.03;
+            acceptableFlowRangeRight = scaledRightLimit + scaledRightLimit * 0.03;
+        }
+
+        private String getFlow(String flow) {
+            return (flow == null || flow.isEmpty()) ? "-" : flow;
         }
 
         @Override

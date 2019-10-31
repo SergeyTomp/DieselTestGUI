@@ -10,9 +10,7 @@
 <TabPane prefHeight="210.0" prefWidth="930.0" stylesheets="@../../../css/Styling.css" tabClosingPolicy="UNAVAILABLE" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.uis.tabs.UisTabSectionController">
   <tabs>
     <Tab fx:id="tabFlow" text="%additional.flow">
-      <content>
-        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-      </content>
+        <fx:include fx:id="uisFlow" source="UisFlow.fxml" />
     </Tab>
     <Tab fx:id="tabVoltage" text="%additional.voltage">
       <fx:include fx:id="uisVoltage" source="UisVoltage.fxml" />
@@ -46,7 +44,7 @@
          </content>
       </Tab>
       <Tab fx:id="tabMechanical" text="%additional.mechanical.openingPress">
-        <fx:include fx:id="mechanical" source="/fxml/uis/tabs/Mechanical.fxml"/>
+        <fx:include fx:id="mechanical" source="/fxml/uis/tabs/Mechanical.fxml" />
       </Tab>
   </tabs>
 </TabPane>

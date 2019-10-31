@@ -1,5 +1,6 @@
 package fi.stardex.sisu.model.uis;
 
+import fi.stardex.sisu.util.enums.Dimension;
 import fi.stardex.sisu.util.enums.uis.RpmSource;
 import fi.stardex.sisu.util.i18n.Locales;
 import javafx.beans.property.*;
@@ -12,6 +13,7 @@ public class UisSettingsModel {
     private final ObjectProperty<RpmSource> rpmSourceProperty = new SimpleObjectProperty<>();
     private final IntegerProperty pressureSensorProperty = new SimpleIntegerProperty();
     private final BooleanProperty instantFlowProperty = new SimpleBooleanProperty();
+    private final ObjectProperty<Dimension> flowRangeViewProperty = new SimpleObjectProperty<>();
     private final Button firmwareVersionButton = new Button();
 
     public ObjectProperty<Locales> languageProperty() {
@@ -28,6 +30,9 @@ public class UisSettingsModel {
     }
     public BooleanProperty instantFlowProperty() {
         return instantFlowProperty;
+    }
+    public ObjectProperty<Dimension> getFlowRangeViewProperty() {
+        return flowRangeViewProperty;
     }
     public Button getFirmwareVersionButton() {
         return firmwareVersionButton;

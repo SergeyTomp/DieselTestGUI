@@ -2,6 +2,8 @@ package fi.stardex.sisu.spring;
 
 import fi.stardex.sisu.model.*;
 import fi.stardex.sisu.model.pump.*;
+import fi.stardex.sisu.model.uis.UisFlowModel;
+import fi.stardex.sisu.model.uis.UisInjectorSectionModel;
 import fi.stardex.sisu.model.updateModels.HighPressureSectionUpdateModel;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.CustomPumpState;
@@ -16,6 +18,10 @@ import fi.stardex.sisu.ui.controllers.pumps.flow.PumpFlowController;
 import fi.stardex.sisu.ui.controllers.pumps.flow.PumpFlowTextAreaController;
 import fi.stardex.sisu.ui.controllers.pumps.main.*;
 import fi.stardex.sisu.ui.controllers.pumps.pressure.*;
+import fi.stardex.sisu.ui.controllers.uis.tabs.UisBeakerController;
+import fi.stardex.sisu.ui.controllers.uis.tabs.UisFlowController;
+import fi.stardex.sisu.ui.controllers.uis.tabs.UisTabSectionController;
+import fi.stardex.sisu.ui.updaters.UisFlowUpdater;
 import fi.stardex.sisu.util.enums.BeakerType;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.rescalers.Rescaler;
@@ -380,4 +386,118 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
         return pumpHighPressureSectionPwrController;
     }
 
+    @Bean
+    @Autowired
+    public UisFlowController uisFlowController(UisTabSectionController uisTabSectionController,
+                                               I18N i18N,
+                                               UisFlowModel uisFlowModel){
+        UisFlowController uisFlowController = uisTabSectionController.getUisFlowController();
+        uisFlowController.setI18N(i18N);
+        uisFlowController.setUisFlowModel(uisFlowModel);
+        return uisFlowController;
+    }
+
+    @Bean
+    @Autowired
+    public UisBeakerController uisBeakerOneController(UisFlowController uisFlowController,
+                                                      UisFlowModel uisFlowModel,
+                                                      UisInjectorSectionModel uisInjectorSectionModel,
+                                                      UisFlowUpdater uisFlowUpdater) {
+        UisBeakerController uisBeakerOneController = uisFlowController.getUisBeakerOneController();
+        uisBeakerOneController.setUisFlowModel(uisFlowModel);
+        uisBeakerOneController.setLedToggleButton(uisInjectorSectionModel.getLedBeaker1ToggleButton());
+        uisBeakerOneController.setUisFlowUpdater(uisFlowUpdater);
+        return uisBeakerOneController;
+    }
+
+    @Bean
+    @Autowired
+    public UisBeakerController uisBeakerTwoController(UisFlowController uisFlowController,
+                                                      UisFlowModel uisFlowModel,
+                                                      UisInjectorSectionModel uisInjectorSectionModel,
+                                                      UisFlowUpdater uisFlowUpdater) {
+        UisBeakerController uisBeakerTwoController = uisFlowController.getUisBeakerTwoController();
+        uisBeakerTwoController.setUisFlowModel(uisFlowModel);
+        uisBeakerTwoController.setLedToggleButton(uisInjectorSectionModel.getLedBeaker2ToggleButton());
+        uisBeakerTwoController.setUisFlowUpdater(uisFlowUpdater);
+        return uisBeakerTwoController;
+    }
+
+    @Bean
+    @Autowired
+    public UisBeakerController uisBeakerThreeController(UisFlowController uisFlowController,
+                                                        UisFlowModel uisFlowModel,
+                                                        UisInjectorSectionModel uisInjectorSectionModel,
+                                                        UisFlowUpdater uisFlowUpdater) {
+        UisBeakerController uisBeakerThreeController = uisFlowController.getUisBeakerThreeController();
+        uisBeakerThreeController.setUisFlowModel(uisFlowModel);
+        uisBeakerThreeController.setLedToggleButton(uisInjectorSectionModel.getLedBeaker3ToggleButton());
+        uisBeakerThreeController.setUisFlowUpdater(uisFlowUpdater);
+        return uisBeakerThreeController;
+    }
+
+    @Bean
+    @Autowired
+    public UisBeakerController uisBeakerFourController(UisFlowController uisFlowController,
+                                                       UisFlowModel uisFlowModel,
+                                                       UisInjectorSectionModel uisInjectorSectionModel,
+                                                       UisFlowUpdater uisFlowUpdater) {
+        UisBeakerController uisBeakerFourController = uisFlowController.getUisBeakerFourController();
+        uisBeakerFourController.setUisFlowModel(uisFlowModel);
+        uisBeakerFourController.setLedToggleButton(uisInjectorSectionModel.getLedBeaker4ToggleButton());
+        uisBeakerFourController.setUisFlowUpdater(uisFlowUpdater);
+        return uisBeakerFourController;
+    }
+
+    @Bean
+    @Autowired
+    public UisBeakerController uisBeakerFiveController(UisFlowController uisFlowController,
+                                                       UisFlowModel uisFlowModel,
+                                                       UisInjectorSectionModel uisInjectorSectionModel,
+                                                       UisFlowUpdater uisFlowUpdater) {
+        UisBeakerController uisBeakerFiveController = uisFlowController.getUisBeakerFiveController();
+        uisBeakerFiveController.setUisFlowModel(uisFlowModel);
+        uisBeakerFiveController.setLedToggleButton(uisInjectorSectionModel.getLedBeaker5ToggleButton());
+        uisBeakerFiveController.setUisFlowUpdater(uisFlowUpdater);
+        return uisBeakerFiveController;
+    }
+
+    @Bean
+    @Autowired
+    public UisBeakerController uisBeakerSixController(UisFlowController uisFlowController,
+                                                      UisFlowModel uisFlowModel,
+                                                      UisInjectorSectionModel uisInjectorSectionModel,
+                                                      UisFlowUpdater uisFlowUpdater) {
+        UisBeakerController uisBeakerSixController = uisFlowController.getUisBeakerSixController();
+        uisBeakerSixController.setUisFlowModel(uisFlowModel);
+        uisBeakerSixController.setLedToggleButton(uisInjectorSectionModel.getLedBeaker6ToggleButton());
+        uisBeakerSixController.setUisFlowUpdater(uisFlowUpdater);
+        return uisBeakerSixController;
+    }
+
+    @Bean
+    @Autowired
+    public UisBeakerController uisBeakerSevenController(UisFlowController uisFlowController,
+                                                        UisFlowModel uisFlowModel,
+                                                        UisInjectorSectionModel uisInjectorSectionModel,
+                                                        UisFlowUpdater uisFlowUpdater) {
+        UisBeakerController uisBeakerSevenController = uisFlowController.getUisBeakerSevenController();
+        uisBeakerSevenController.setUisFlowModel(uisFlowModel);
+        uisBeakerSevenController.setLedToggleButton(uisInjectorSectionModel.getLedBeaker7ToggleButton());
+        uisBeakerSevenController.setUisFlowUpdater(uisFlowUpdater);
+        return uisBeakerSevenController;
+    }
+
+    @Bean
+    @Autowired
+    public UisBeakerController uisBeakerEightController(UisFlowController uisFlowController,
+                                                        UisFlowModel uisFlowModel,
+                                                        UisInjectorSectionModel uisInjectorSectionModel,
+                                                        UisFlowUpdater uisFlowUpdater) {
+        UisBeakerController uisBeakerEightController = uisFlowController.getUisBeakerEightController();
+        uisBeakerEightController.setUisFlowModel(uisFlowModel);
+        uisBeakerEightController.setLedToggleButton(uisInjectorSectionModel.getLedBeaker8ToggleButton());
+        uisBeakerEightController.setUisFlowUpdater(uisFlowUpdater);
+        return uisBeakerEightController;
+    }
 }

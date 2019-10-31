@@ -1,6 +1,7 @@
 package fi.stardex.sisu.ui.controllers.uis;
 
 import fi.stardex.sisu.model.uis.UisSettingsModel;
+import fi.stardex.sisu.util.enums.Dimension;
 import fi.stardex.sisu.util.enums.uis.RpmSource;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.i18n.Locales;
@@ -22,6 +23,8 @@ import static fi.stardex.sisu.util.enums.uis.RpmSource.EXTERNAL;
 
 public class UisSettingsController {
 
+    @FXML private ComboBox <Dimension>  rangeViewComboBox;
+    @FXML private Label rangeViewLabel;
     @FXML private Button firmwareButton;
     @FXML private GridPane settingsUisGridPane;
     @FXML private Label pressureSensorLabel;
@@ -41,6 +44,7 @@ public class UisSettingsController {
     private static final String PREF_KEY_PRESSURE = "pressureSensorSelected";
     private static final String PREF_KEY_OFFSET = "angleOffsetSelected";
     private static final String PREF_KEY_RPM = "rpmSourceSelected";
+    private static final String PREF_KEY_RANGE_VIEW = "flowOutputDimensionSelected";
 
     private Alert alert;
     private StringProperty yesButton = new SimpleStringProperty();
@@ -60,6 +64,11 @@ public class UisSettingsController {
 
     @PostConstruct
     public void init() {
+
+        rangeViewComboBox.setItems(FXCollections.observableArrayList(Dimension.LIMIT, Dimension.PLUS_OR_MINUS));
+        uisSettingsModel.getFlowRangeViewProperty().bind(rangeViewComboBox.valueProperty());
+        rangeViewComboBox.getSelectionModel().select(Dimension.valueOf(rootPrefs.get(PREF_KEY_RANGE_VIEW, Dimension.LIMIT.name())));
+        rangeViewComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> rootPrefs.put(PREF_KEY_RANGE_VIEW, newValue.name()));
 
         rpmSourceComboBox.getItems().setAll(RpmSource.values());
         rpmSourceComboBox.getItems().sort(Comparator.comparingInt(RpmSource::getOrder));

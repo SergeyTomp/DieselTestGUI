@@ -4,10 +4,7 @@ import fi.stardex.sisu.model.GUI_TypeModel;
 import fi.stardex.sisu.model.PiezoRepairModel;
 import fi.stardex.sisu.model.Step3Model;
 import fi.stardex.sisu.model.TabSectionModel;
-import fi.stardex.sisu.model.uis.CustomModelDialogModel;
-import fi.stardex.sisu.model.uis.CustomProducerDialogModel;
-import fi.stardex.sisu.model.uis.CustomTestDialogModel;
-import fi.stardex.sisu.model.uis.MainSectionUisModel;
+import fi.stardex.sisu.model.uis.*;
 import fi.stardex.sisu.persistence.orm.interfaces.*;
 import fi.stardex.sisu.persistence.repos.uis.UisModelService;
 import fi.stardex.sisu.persistence.repos.uis.UisProducerService;
@@ -58,7 +55,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static fi.stardex.sisu.registers.flow.ModbusMapFlow.StartMeasurementCycle;
-import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.UIS_to_CR_pulseControlSwitch;
 import static fi.stardex.sisu.ui.controllers.common.GUI_TypeController.GUIType.UIS;
 import static fi.stardex.sisu.util.enums.Measurement.DELIVERY;
 import static fi.stardex.sisu.util.enums.Measurement.VISUAL;
@@ -127,6 +123,7 @@ public class MainSectionUisController {
     private Step3Model step3Model;
     private TabSectionModel tabSectionModel;
     private PiezoRepairModel piezoRepairModel;
+    private UisFlowModel uisFlowModel;
     private UisModelService uisModelService;
     private UisProducerService uisProducerService;
     private UisTestService uisTestService;
@@ -192,6 +189,9 @@ public class MainSectionUisController {
     public void setPiezoRepairModel(PiezoRepairModel piezoRepairModel) {
         this.piezoRepairModel = piezoRepairModel;
     }
+    public void setUisFlowModel(UisFlowModel uisFlowModel) {
+        this.uisFlowModel = uisFlowModel;
+    }
 
     @PostConstruct
     public void init() {
@@ -230,17 +230,17 @@ public class MainSectionUisController {
 
             if(modelAlertProcessing)return;
 
-//            if (!flowReportModel.getResultObservableMap().isEmpty()) {
-//
-//                showAlert();
-//                if (alert.getResult() != ButtonType.YES) {
-//
-//                    modelAlertProcessing = true;
-//                    modelListView.getSelectionModel().select(oldValue);
-//                    modelAlertProcessing = false;
-//                    return;
-//                }
-//            }
+            if (!uisFlowModel.getResultObservableMap().isEmpty()) {
+
+                showAlert();
+                if (alert.getResult() != ButtonType.YES) {
+
+                    modelAlertProcessing = true;
+                    modelListView.getSelectionModel().select(oldValue);
+                    modelAlertProcessing = false;
+                    return;
+                }
+            }
 
             clearAllResults();
             returnToDefaultTestListAuto();
@@ -760,9 +760,8 @@ public class MainSectionUisController {
     }
 
     private void setupStoreButton() {
-
+        storeButton.setOnMouseClicked(mouseEvent -> mainSectionUisModel.getStoreButton().fire());
     }
-
 
     private void showAlert() {
 
