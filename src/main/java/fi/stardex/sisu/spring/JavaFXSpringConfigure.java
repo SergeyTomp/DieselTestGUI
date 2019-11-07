@@ -380,7 +380,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                                GUI_TypeModel gui_typeModel,
                                                                InjectorSectionPwrState injectorSectionPwrState,
                                                                Step3Model step3Model,
-                                                               TabSectionModel tabSectionModel) {
+                                                               TabSectionModel tabSectionModel,
+                                                               RLC_ReportModel rlc_reportModel) {
         InjectorSectionController injectorSectionController = crSectionController().getInjectorSectionController();
         injectorSectionController.setUltimaModbusWriter(ultimaModbusWriter);
         injectorSectionController.setTimerTasksManager(timerTasksManager);
@@ -401,6 +402,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         injectorSectionController.setInjectorSectionPwrState(injectorSectionPwrState);
         injectorSectionController.setStep3Model(step3Model);
         injectorSectionController.setTabSectionModel(tabSectionModel);
+        injectorSectionController.setRlc_reportModel(rlc_reportModel);
         return injectorSectionController;
     }
 
@@ -926,13 +928,15 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                                     I18N i18N,
                                                                     GUI_TypeModel gui_typeModel,
                                                                     PumpModel pumpModel,
-                                                                    MainSectionModel mainSectionModel){
+                                                                    MainSectionModel mainSectionModel,
+                                                                    MainSectionUisModel mainSectionUisModel){
         PrintDialogPanelController printDialogPanelController = (PrintDialogPanelController) printDialogPanel().getController();
         printDialogPanelController.setPdfService(pdfService);
         printDialogPanelController.setI18N(i18N);
         printDialogPanelController.setGui_typeModel(gui_typeModel);
         printDialogPanelController.setPumpModel(pumpModel);
         printDialogPanelController.setMainSectionModel(mainSectionModel);
+        printDialogPanelController.setMainSectionUisModel(mainSectionUisModel);
         return printDialogPanelController;
     }
 
@@ -984,7 +988,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                        InjectorTypeModel injectorTypeModel,
                                        RLC_ReportModel rlc_reportModel,
                                        InjectorControllersState injectorControllersState,
-                                       InjectorModel injectorModel) {
+                                       InjectorModel injectorModel,
+                                       InjectorSectionPwrState injectorSectionPwrState) {
         RLCController RLCController = tabSectionController.getRlCController();
         RLCController.setUltimaModbusWriter(ultimaModbusWriter);
         RLCController.setUltimaRegisterProvider(ultimaRegisterProvider);
@@ -994,6 +999,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         RLCController.setRlc_reportModel(rlc_reportModel);
         RLCController.setInjectorControllersState(injectorControllersState);
         RLCController.setInjectorModel(injectorModel);
+        RLCController.setInjectorSectionPwrState(injectorSectionPwrState);
         return RLCController;
 
     }
@@ -1278,7 +1284,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                              Step3Model step3Model,
                                                              TabSectionModel tabSectionModel,
                                                              PiezoRepairModel piezoRepairModel,
-                                                             UisFlowModel uisFlowModel) {
+                                                             UisFlowModel uisFlowModel,
+                                                             UisRlcModel uisRlcModel) {
         MainSectionUisController mainSectionUisController = (MainSectionUisController)mainSectionUIS().getController();
         mainSectionUisController.setMainSectionUisModel(mainSectionUisModel);
         mainSectionUisController.setPrintDialogPanel(printDialogPanel());
@@ -1297,6 +1304,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         mainSectionUisController.setTabSectionModel(tabSectionModel);
         mainSectionUisController.setPiezoRepairModel(piezoRepairModel);
         mainSectionUisController.setUisFlowModel(uisFlowModel);
+        mainSectionUisController.setUisRlcModel(uisRlcModel);
         return mainSectionUisController;
     }
 

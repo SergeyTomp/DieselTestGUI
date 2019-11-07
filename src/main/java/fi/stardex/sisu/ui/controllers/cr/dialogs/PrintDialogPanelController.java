@@ -3,9 +3,11 @@ package fi.stardex.sisu.ui.controllers.cr.dialogs;
 import fi.stardex.sisu.model.GUI_TypeModel;
 import fi.stardex.sisu.model.cr.MainSectionModel;
 import fi.stardex.sisu.model.pump.PumpModel;
+import fi.stardex.sisu.model.uis.MainSectionUisModel;
 import fi.stardex.sisu.pdf.Customer;
 import fi.stardex.sisu.pdf.ExceptionalConsumer;
 import fi.stardex.sisu.pdf.PDFService;
+import fi.stardex.sisu.persistence.orm.uis.InjectorUIS;
 import fi.stardex.sisu.ui.controllers.common.GUI_TypeController;
 import fi.stardex.sisu.util.EmptyObjectDefaultChecker;
 import fi.stardex.sisu.util.enums.Tests;
@@ -137,6 +139,8 @@ public class PrintDialogPanelController{
 
     private PumpModel pumpModel;
 
+    private MainSectionUisModel mainSectionUisModel;
+
     public void setPdfService(PDFService pdfService) {
         this.pdfService = pdfService;
     }
@@ -160,6 +164,10 @@ public class PrintDialogPanelController{
 
     public void setMainSectionModel(MainSectionModel mainSectionModel) {
         this.mainSectionModel = mainSectionModel;
+    }
+
+    public void setMainSectionUisModel(MainSectionUisModel mainSectionUisModel) {
+        this.mainSectionUisModel = mainSectionUisModel;
     }
 
     @PostConstruct
@@ -194,26 +202,30 @@ public class PrintDialogPanelController{
     public void saveToPdf() {
         pdfOrPrint(customer -> pdfService.makePDFForInjector(customer, CurrentInjectorObtainer.getInjector()),
                 customer -> pdfService.makePDFForInjectorCoding(customer, CurrentInjectorObtainer.getInjector()),
-                customer -> pdfService.makePDFForPump(customer, pumpModel.pumpProperty().get()));
+                customer -> pdfService.makePDFForPump(customer, pumpModel.pumpProperty().get()),
+                customer -> pdfService.makePDFForUis(customer, (InjectorUIS) (mainSectionUisModel.modelProperty().get())));
     }
 
     @FXML
     public void onPrint() {
         pdfOrPrint(customer -> pdfService.printInjector(customer, CurrentInjectorObtainer.getInjector()),
                 customer -> pdfService.printInjectorCoding(customer, CurrentInjectorObtainer.getInjector()),
-                customer -> pdfService.printPump(customer, pumpModel.pumpProperty().get()));
+                customer -> pdfService.printPump(customer, pumpModel.pumpProperty().get()),
+                customer -> pdfService.printUis(customer, (InjectorUIS) (mainSectionUisModel.modelProperty().get())));
     }
 
     @FXML
     public void onPDFAndPrint() {
         pdfOrPrint(customer -> pdfService.printAndPDFInjector(customer, CurrentInjectorObtainer.getInjector()),
                 customer -> pdfService.printAndPDFInjectorCoding(customer, CurrentInjectorObtainer.getInjector()),
-                customer -> pdfService.printAndPDFPump(customer, pumpModel.pumpProperty().get()));
+                customer -> pdfService.printAndPDFPump(customer, pumpModel.pumpProperty().get()),
+                customer -> pdfService.printAndPDFUis(customer, (InjectorUIS) (mainSectionUisModel.modelProperty().get())));
     }
 
     private void pdfOrPrint(ExceptionalConsumer<Customer, IOException> processInjector,
                             ExceptionalConsumer<Customer, IOException> processInjectorCoding,
-                            ExceptionalConsumer<Customer, IOException> processPump){
+                            ExceptionalConsumer<Customer, IOException> processPump,
+                            ExceptionalConsumer<Customer, IOException> processUis){
         Customer customer = prepareDocument();
         try {
             if (gui_typeModel.guiTypeProperty().get() == GUI_TypeController.GUIType.CR_Inj && CurrentInjectorObtainer.getInjector() != null) {
@@ -224,6 +236,8 @@ public class PrintDialogPanelController{
                     }
             }else if (gui_typeModel.guiTypeProperty().get() == GUI_TypeController.GUIType.CR_Pump && pumpModel.pumpProperty().get() != null) {
                 processPump.accept(customer);
+            }else if (gui_typeModel.guiTypeProperty().get() == GUI_TypeController.GUIType.UIS && mainSectionUisModel.modelProperty().get() != null) {
+                processUis.accept(customer);
             }
 
         } catch (IOException e) {

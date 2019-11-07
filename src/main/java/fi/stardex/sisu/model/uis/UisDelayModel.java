@@ -52,8 +52,7 @@ public class UisDelayModel {
             resultObservableMap.put(testName, new UisDelayResult(testName));
         }
         resultObservableMap.get(testName).setParameterValue(ledNumber, averageDelay);
-        newDelayAddedProperty.setValue(true);
-        newDelayAddedProperty.setValue(false);
+        newResultSignal();
     }
 
     public void clearResults() {

@@ -121,6 +121,8 @@ public class InjectorSectionController {
 
     private TabSectionModel tabSectionModel;
 
+    private RLC_ReportModel rlc_reportModel;
+
     private BoostUadjustmentState boostUadjustmentState;
 
     private InjectorControllersState injectorControllersState;
@@ -289,6 +291,10 @@ public class InjectorSectionController {
         this.tabSectionModel = tabSectionModel;
     }
 
+    public void setRlc_reportModel(RLC_ReportModel rlc_reportModel) {
+        this.rlc_reportModel = rlc_reportModel;
+    }
+
     @PostConstruct
     private void init() {
 
@@ -335,6 +341,8 @@ public class InjectorSectionController {
         injectorModel.injectorProperty().addListener(new BoostUChangeListener());
 
         injectorTypeModel.injectorTypeProperty().setValue(InjectorType.COIL);
+
+        injectorSectionStartToggleButton.visibleProperty().bind(rlc_reportModel.isMeasuringProperty().not());
 
         ledParametersChangeListener = new LedParametersChangeListener();
 

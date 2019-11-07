@@ -99,6 +99,10 @@ public class UisFlowModel {
         resultMapChanged.setValue(false);
     }
 
+    public List<UisFlowResult> getResultsList(){
+        return new ArrayList<>(resultObservableMap.values());
+    }
+
     public class UisFlowResult implements Result{
 
         private final ObjectProperty<Test> injectorTest;
@@ -154,6 +158,31 @@ public class UisFlowModel {
         }
         public StringProperty flow8Property() {
             return flow8;
+        }
+
+        public double getFlow_1double() {
+            return flow_1double;
+        }
+        public double getFlow_2double() {
+            return flow_2double;
+        }
+        public double getFlow_3double() {
+            return flow_3double;
+        }
+        public double getFlow_4double() {
+            return flow_4double;
+        }
+        public double getFlow_5double() {
+            return flow_5double;
+        }
+        public double getFlow_6double() {
+            return flow_6double;
+        }
+        public double getFlow_7double() {
+            return flow_7double;
+        }
+        public double getFlow_8double() {
+            return flow_8double;
         }
 
         public double getFlowRangeLeft() {
@@ -219,6 +248,8 @@ public class UisFlowModel {
             flow_6double = flow6.get().equals("-") ? -99d : convertDataToDouble(flow6.get()) / uisDeliveryCoefficient;
             flow_7double = flow7.get().equals("-") ? -99d : convertDataToDouble(flow7.get()) / uisDeliveryCoefficient;
             flow_8double = flow8.get().equals("-") ? -99d : convertDataToDouble(flow8.get()) / uisDeliveryCoefficient;
+
+            System.err.println(flow_1double + " " + flow_2double);
 
             flowRangeLeft = scaledLeftLimit;
             flowRangeRight = scaledRightLimit;

@@ -666,7 +666,10 @@ public class SpringJavaConfig {
                                  RLC_ReportModel rlc_reportModel,
                                  CodingReportModel codingReportModel,
                                  FlowReportModel flowReportModel,
-                                 PumpReportModel pumpReportModel) {
+                                 PumpReportModel pumpReportModel,
+                                 UisFlowModel uisFlowModel,
+                                 UisDelayModel uisDelayModel,
+                                 UisRlcModel uisRlcModel) {
         PDFService pdfService = new PDFService();
         pdfService.setI18N(i18N);
         pdfService.setDesktopFiles(desktopFiles);
@@ -676,6 +679,9 @@ public class SpringJavaConfig {
         pdfService.setCodingReportModel(codingReportModel);
         pdfService.setFlowReportModel(flowReportModel);
         pdfService.setPumpReportModel(pumpReportModel);
+        pdfService.setUisFlowModel(uisFlowModel);
+        pdfService.setUisDelayModel(uisDelayModel);
+        pdfService.setUisRlcModel(uisRlcModel);
         return pdfService;
     }
 

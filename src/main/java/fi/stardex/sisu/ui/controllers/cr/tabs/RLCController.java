@@ -1,11 +1,9 @@
 package fi.stardex.sisu.ui.controllers.cr.tabs;
 
 import eu.hansolo.medusa.Gauge;
+import fi.stardex.sisu.model.cr.*;
+import fi.stardex.sisu.states.InjectorSectionPwrState;
 import fi.stardex.sisu.util.enums.InjectorChannel;
-import fi.stardex.sisu.model.cr.InjConfigurationModel;
-import fi.stardex.sisu.model.cr.InjectorModel;
-import fi.stardex.sisu.model.cr.InjectorTypeModel;
-import fi.stardex.sisu.model.cr.RLC_ReportModel;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
@@ -59,6 +57,7 @@ public class RLCController {
     private InjConfigurationModel injConfigurationModel;
     private RLC_ReportModel rlc_reportModel;
     private InjectorControllersState injectorControllersState;
+    private InjectorSectionPwrState injectorSectionPwrState;
     private InjectorModel injectorModel;
     private ModbusRegisterProcessor ultimaModbusWriter;
     private RegisterProvider ultimaRegisterProvider;
@@ -112,6 +111,11 @@ public class RLCController {
         this.injectorControllersState = injectorControllersState;
     }
 
+    public void setInjectorSectionPwrState(InjectorSectionPwrState injectorSectionPwrState) {
+        this.injectorSectionPwrState = injectorSectionPwrState;
+    }
+
+
     public void setInjectorModel(InjectorModel injectorModel) {
         this.injectorModel = injectorModel;
     }
@@ -150,6 +154,8 @@ public class RLCController {
                 rlc_reportModel.storeResult(unitsGauge3, unitsGauge4, titleGauge3, titleGauge4, 2, resultGauge3, resultGauge4);
             }
         });
+
+        injectorSectionPwrState.powerButtonProperty().addListener((observableValue, oldValue, newValue) -> measureButton.setDisable(newValue));
     }
 
     private void setupModelsListeners() {
@@ -263,6 +269,7 @@ public class RLCController {
 
     private void measure() {
         logger.warn("Measure Button Pressed");
+        rlc_reportModel.isMeasuringProperty().setValue(true);
 
         activeLedToggleButtonsList = injectorControllersState.activeLedToggleButtonsListProperty().get();
         Boolean isDoubleCoil = injectorModel.injectorProperty().get().getVoltAmpereProfile().isDoubleCoil();
@@ -360,6 +367,7 @@ public class RLCController {
                 }
             }
             disableNode(false, storeButton, measureButton);
+            rlc_reportModel.isMeasuringProperty().setValue(false);
             logger.warn("Measure & Store Buttons Ready (Enabled)");
         }
     }

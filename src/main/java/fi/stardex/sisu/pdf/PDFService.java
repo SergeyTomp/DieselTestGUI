@@ -11,9 +11,14 @@ import fi.stardex.sisu.model.cr.FlowReportModel.FlowResult;
 import fi.stardex.sisu.model.cr.RLC_ReportModel;
 import fi.stardex.sisu.model.pump.PumpReportModel;
 import fi.stardex.sisu.model.pump.PumpReportModel.PumpFlowResult;
+import fi.stardex.sisu.model.uis.UisDelayModel;
+import fi.stardex.sisu.model.uis.UisFlowModel;
+import fi.stardex.sisu.model.uis.UisFlowModel.UisFlowResult;
+import fi.stardex.sisu.model.uis.UisRlcModel;
 import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
 import fi.stardex.sisu.persistence.orm.interfaces.Model;
 import fi.stardex.sisu.persistence.orm.pump.Pump;
+import fi.stardex.sisu.persistence.orm.uis.InjectorUIS;
 import fi.stardex.sisu.ui.controllers.cr.dialogs.PrintDialogPanelController;
 import fi.stardex.sisu.util.DesktopFiles;
 import fi.stardex.sisu.util.enums.Measurement;
@@ -116,8 +121,11 @@ public class PDFService {
     private I18N i18N;
     private List<Result> rlcResultsList;
     private List<Result> delayResultsList;
+    private List<Result> uisDelayResultsList;
+    private List<Result> uisRlcResultsList;
     private List<FlowResult> flowResultsList;
     private List<PumpFlowResult> pumpFlowResultsList;
+    private List<UisFlowResult> uisFlowResultsList;
     private List<Result> codingResultsList;
     private DesktopFiles desktopFiles;
     private DelayReportModel delayReportModel;
@@ -125,6 +133,9 @@ public class PDFService {
     private CodingReportModel codingReportModel;
     private FlowReportModel flowReportModel;
     private PumpReportModel pumpReportModel;
+    private UisFlowModel uisFlowModel;
+    private UisDelayModel uisDelayModel;
+    private UisRlcModel uisRlcModel;
 
     public void setDesktopFiles(DesktopFiles desktopFiles) {
         this.desktopFiles = desktopFiles;
@@ -153,6 +164,18 @@ public class PDFService {
 
     public void setPumpReportModel(PumpReportModel pumpReportModel) {
         this.pumpReportModel = pumpReportModel;
+    }
+
+    public void setUisFlowModel(UisFlowModel uisFlowModel) {
+        this.uisFlowModel = uisFlowModel;
+    }
+
+    public void setUisDelayModel(UisDelayModel uisDelayModel) {
+        this.uisDelayModel = uisDelayModel;
+    }
+
+    public void setUisRlcModel(UisRlcModel uisRlcModel) {
+        this.uisRlcModel = uisRlcModel;
     }
 
     public void setI18N(I18N i18N) {
@@ -191,6 +214,9 @@ public class PDFService {
     public void makePDFForPump(Customer customer, Pump pump) throws IOException {
         makePDF(customer, pump, ResultPrintMode.PUMPS, false, true);
     }
+    public void makePDFForUis(Customer customer, InjectorUIS injectorUIS) throws IOException  {
+        makePDF(customer, injectorUIS, ResultPrintMode.UIS, false, true);
+    }
     public void makePDFForInjectorCoding(Customer customer, Injector injector) throws IOException {
         makePDF(customer, injector, ResultPrintMode.CODING, false, true);
     }
@@ -203,6 +229,9 @@ public class PDFService {
     public void printPump(Customer customer, Pump pump) throws IOException {
         makePDF(customer, pump, ResultPrintMode.PUMPS, true, false);
     }
+    public void printUis(Customer customer, InjectorUIS injectorUIS) throws IOException  {
+        makePDF(customer, injectorUIS, ResultPrintMode.UIS, true, false);
+    }
     public void printAndPDFInjector(Customer customer, Injector injector) throws IOException {
         makePDF(customer, injector, ResultPrintMode.INJECTORS, true, true);
     }
@@ -212,10 +241,13 @@ public class PDFService {
     public void printAndPDFPump(Customer customer, Pump pump) throws IOException {
         makePDF(customer, pump, ResultPrintMode.PUMPS, true, true);
     }
+    public void printAndPDFUis(Customer customer, InjectorUIS injectorUIS) throws IOException  {
+        makePDF(customer, injectorUIS, ResultPrintMode.UIS, true, true);
+    }
 
     private enum ResultPrintMode {
 
-        INJECTORS, PUMPS, CODING
+        INJECTORS, PUMPS, CODING, UIS
     }
 
 
@@ -225,12 +257,16 @@ public class PDFService {
         currentPage = new PDPage();
         document.addPage(currentPage);
 
-        rlcResultsList = rlc_reportModel.getResultsList();
         flowResultsList = flowReportModel.getResultsList();
-        pumpFlowResultsList = pumpReportModel.getResultsList();
-
+        rlcResultsList = rlc_reportModel.getResultsList();
         delayResultsList = delayReportModel.getResultsList();
         codingResultsList = codingReportModel.getResultsList();
+
+        pumpFlowResultsList = pumpReportModel.getResultsList();
+
+        uisFlowResultsList = uisFlowModel.getResultsList();
+        uisDelayResultsList = uisDelayModel.getResultsList();
+        uisRlcResultsList = uisRlcModel.getResultsList();
 
         drawHeaderPage(document, currentPage);
 
@@ -244,6 +280,10 @@ public class PDFService {
             drawTable(document, codingResultsList, new CodingHeader(), START_TABLE);
         } else if (resultMode == ResultPrintMode.PUMPS) {
             drawFlowTable(document, new PumpHeader(), START_TABLE, pumpFlowResultsList);
+        } else if (resultMode == ResultPrintMode.UIS) {
+            float startTable = drawTable(document, uisRlcResultsList, new UisMeasurementHeader(), START_TABLE);
+            startTable = drawFlowTable(document, new UisFlowHeader(), startTable, uisFlowResultsList);
+            drawTable(document, uisDelayResultsList, new UisDelayHeader(), startTable);
         }
         finish(printPDF, savePDF);
     }
@@ -274,8 +314,9 @@ public class PDFService {
                     drawInjectorFlowData(baseTable);
                 }else if(header instanceof PumpHeader){
                     drawPumpFlowData(baseTable);
-                }
-                else {
+                } else if (header instanceof UisFlowHeader) {
+                    drawUisFlowData(baseTable);
+                } else {
                     logger.error("Unknown header class, impossible to define FlowTable type");
                     throw new RuntimeException("Unknown header class, impossible to define FlowTable type");
                 }
@@ -391,6 +432,41 @@ public class PDFService {
             color = getColorCellOfResult(flow, result, Measurement.BACK_FLOW);
             cell.setFillColor(color);
 
+            setCellSettings(baseTable);
+        }
+    }
+
+    private void drawUisFlowData(BaseTable baseTable) {
+
+        for (UisFlowResult result : uisFlowResultsList) {
+
+            Row<PDPage> row = baseTable.createRow(CELL_HEIGHT);
+            Cell<PDPage> cell = row.createCell(result.getMainColumn());
+            row.createCell(result.getSubColumn1());
+            cell = row.createCell(result.flow1Property().get());
+            Color color = getColorCellOfResult(result.getFlow_1double(), result);
+            cell.setFillColor(color);
+            cell = row.createCell(result.flow2Property().get());
+            color = getColorCellOfResult(result.getFlow_2double(), result);
+            cell.setFillColor(color);
+            cell = row.createCell(result.flow3Property().get());
+            color = getColorCellOfResult(result.getFlow_3double(), result);
+            cell.setFillColor(color);
+            cell = row.createCell(result.flow4Property().get());
+            color = getColorCellOfResult(result.getFlow_4double(), result);
+            cell.setFillColor(color);
+            cell = row.createCell(result.flow5Property().get());
+            color = getColorCellOfResult(result.getFlow_5double(), result);
+            cell.setFillColor(color);
+            cell = row.createCell(result.flow6Property().get());
+            color = getColorCellOfResult(result.getFlow_6double(), result);
+            cell.setFillColor(color);
+            cell = row.createCell(result.flow7Property().get());
+            color = getColorCellOfResult(result.getFlow_7double(), result);
+            cell.setFillColor(color);
+            cell = row.createCell(result.flow8Property().get());
+            color = getColorCellOfResult(result.getFlow_8double(), result);
+            cell.setFillColor(color);
             setCellSettings(baseTable);
         }
     }
@@ -684,6 +760,28 @@ public class PDFService {
         return cellColor;
     }
 
+    private Color getColorCellOfResult(double flow, UisFlowResult result) {
+
+        double nominalRight = result.getFlowRangeRight();
+        double nominalLeft = result.getFlowRangeLeft();
+        double nominalExceptRight = result.getAcceptableFlowRangeRight();
+        double nominalExceptLeft = result.getAcceptableFlowRangeLeft();
+
+        /** Change color if data out of borders : 5% - in borders - yellow, out of borders - red*/
+        Color cellColor = Color.WHITE;
+
+        if(Double.compare(flow, nominalRight) == 0 || flow > nominalRight || Double.compare(flow, nominalLeft) == 0 || flow < nominalLeft){
+            cellColor = Color.ORANGE;
+        }
+        if(Double.compare(flow, nominalExceptRight) == 0 || flow > nominalExceptRight || Double.compare(flow, nominalExceptLeft) == 0 || flow < nominalExceptLeft) {
+            cellColor = Color.RED;
+        }
+        if(flow < 0){
+            cellColor = Color.WHITE;
+        }
+        return cellColor;
+    }
+
     private void bindingI18N(){
 
         titleValue = new SimpleStringProperty();
@@ -777,6 +875,29 @@ public class PDFService {
         }
     }
 
+    private class UisDelayHeader implements Header {
+
+        @Override
+        public String getMainHeader() {
+            return injectionDelayMeasurementResults.getValue();
+        }
+
+        @Override
+        public List<HeaderCell> getHeaderCells() {
+            return new ArrayList<>(Arrays.asList(
+                    new HeaderCell(18, delayTestName.getValue()),
+                    new HeaderCell(18, measurementUnits.getValue()),
+                    new HeaderCell(8, "(1)"),
+                    new HeaderCell(8, "(2)"),
+                    new HeaderCell(8, "(3)"),
+                    new HeaderCell(8, "(4)"),
+                    new HeaderCell(8, "(5)"),
+                    new HeaderCell(8, "(6)"),
+                    new HeaderCell(8, "(7)"),
+                    new HeaderCell(8, "(8)")));
+        }
+    }
+
     private class FlowHeader implements Header {
 
         @Override
@@ -789,6 +910,53 @@ public class PDFService {
             return new ArrayList<>(Arrays.asList(new HeaderCell(19, testName.getValue()), new HeaderCell(21, deliveryBackflow.getValue()),
                     new HeaderCell(24, deliveryLH.get()), new HeaderCell(9, "(1)"), new HeaderCell(9, "(2)"),
                     new HeaderCell(9, "(3)"), new HeaderCell(9, "(4)")));
+        }
+    }
+
+    private class UisFlowHeader implements Header {
+
+        @Override
+        public String getMainHeader() {
+            return flowMeasurementResults.getValue();
+        }
+
+        @Override
+        public List<HeaderCell> getHeaderCells() {
+            return new ArrayList<>(Arrays.asList(
+                    new HeaderCell(18, testName.getValue()),
+                    new HeaderCell(18, deliveryLH.get()),
+                    new HeaderCell(8, "(1)"),
+                    new HeaderCell(8, "(2)"),
+                    new HeaderCell(8, "(3)"),
+                    new HeaderCell(8, "(4)"),
+                    new HeaderCell(8, "(5)"),
+                    new HeaderCell(8, "(6)"),
+                    new HeaderCell(8, "(7)"),
+                    new HeaderCell(8, "(8)"))
+            );
+        }
+    }
+
+    private class UisMeasurementHeader implements Header{
+
+        @Override
+        public String getMainHeader() {
+            return electricalCharacteristics.getValue();
+        }
+
+        @Override
+        public List<HeaderCell> getHeaderCells() {
+            return new ArrayList<>(Arrays.asList(
+                    new HeaderCell(18, parameterName.getValue()),
+                    new HeaderCell(18, measurementUnits.getValue()),
+                    new HeaderCell(8, "(1)"),
+                    new HeaderCell(8, "(2)"),
+                    new HeaderCell(8, "(3)"),
+                    new HeaderCell(8, "(4)"),
+                    new HeaderCell(8, "(5)"),
+                    new HeaderCell(8, "(6)"),
+                    new HeaderCell(8, "(7)"),
+                    new HeaderCell(8, "(8)")));
         }
     }
 
@@ -832,7 +1000,7 @@ public class PDFService {
         private float width;
         private String value;
 
-        public HeaderCell(float width, String value) {
+        HeaderCell(float width, String value) {
             this.width = width;
             this.value = value;
         }

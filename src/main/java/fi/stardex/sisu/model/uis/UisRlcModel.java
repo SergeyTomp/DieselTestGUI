@@ -20,6 +20,7 @@ public class UisRlcModel {
     private double resultGauge4;
     private ObservableMap<String, UisRlcResult> resultObservableMap = FXCollections.observableMap(new LinkedHashMap<>());
     private BooleanProperty newRlcAddedProperty = new SimpleBooleanProperty();
+    private BooleanProperty isMeasuring = new SimpleBooleanProperty();
 
     private MainSectionUisModel mainSectionUisModel;
     private UisInjectorSectionModel uisInjectorSectionModel;
@@ -43,6 +44,10 @@ public class UisRlcModel {
     public ObservableMap<String, UisRlcResult> getResultObservableMap() {
         return resultObservableMap;
     }
+    public BooleanProperty isMeasuringProperty() {
+        return isMeasuring;
+    }
+
     public BooleanProperty newRlcAddedProperty() {
         return newRlcAddedProperty;
     }
@@ -88,7 +93,7 @@ public class UisRlcModel {
             resultObservableMap.get(titleGauge3).setParameterValue(ledNumber, String.valueOf(resultGauge3));
             resultObservableMap.get(titleGauge4).setParameterValue(ledNumber, String.valueOf(resultGauge4));
         }
-        newRlcAddedProperty.setValue(true);
+        newResultSignal();
     }
 
     public void clearResults(){

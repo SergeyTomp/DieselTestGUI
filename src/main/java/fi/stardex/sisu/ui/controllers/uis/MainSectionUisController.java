@@ -119,6 +119,7 @@ public class MainSectionUisController {
     private CustomModelDialogModel customModelDialogModel;
     private CustomProducerDialogModel customProducerDialogModel;
     private CustomTestDialogModel customTestDialogModel;
+    private UisRlcModel uisRlcModel;
     private BoostUadjustmentState boostUadjustmentState;
     private Step3Model step3Model;
     private TabSectionModel tabSectionModel;
@@ -191,6 +192,9 @@ public class MainSectionUisController {
     }
     public void setUisFlowModel(UisFlowModel uisFlowModel) {
         this.uisFlowModel = uisFlowModel;
+    }
+    public void setUisRlcModel(UisRlcModel uisRlcModel) {
+        this.uisRlcModel = uisRlcModel;
     }
 
     @PostConstruct
@@ -665,6 +669,7 @@ public class MainSectionUisController {
     private void setupStartButtonListener() {
 
         mainSectionUisModel.startButtonProperty().bind(startToggleButton.selectedProperty());
+        startToggleButton.visibleProperty().bind(uisRlcModel.isMeasuringProperty().not());
         Timeline startButtonTimeline = new Timeline(new KeyFrame(Duration.millis(400), event -> startBlinking()));
         startButtonTimeline.setCycleCount(Animation.INDEFINITE);
 

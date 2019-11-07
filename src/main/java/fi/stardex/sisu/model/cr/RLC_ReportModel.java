@@ -17,17 +17,19 @@ public class RLC_ReportModel {
 
     private ObservableMap<String, RlcResult> resultObservableMap = FXCollections.observableMap(new HashMap<>());
     private BooleanProperty newRlcAddedProperty = new SimpleBooleanProperty();
+    private BooleanProperty isMeasuring = new SimpleBooleanProperty();
 
     public List<Result> getResultsList(){
         return new ArrayList<>(resultObservableMap.values());
     }
-
     public BooleanProperty newRlcAddedProperty() {
         return newRlcAddedProperty;
     }
-
     public ObservableMap<String, RlcResult> getResultObservableMap() {
         return resultObservableMap;
+    }
+    public BooleanProperty isMeasuringProperty() {
+        return isMeasuring;
     }
 
     public void storeResult(String unitsGauge1, String unitsGauge2, String titleGauge1, String titleGauge2, int ledNumber, Integer parameter1, Double parameter2){

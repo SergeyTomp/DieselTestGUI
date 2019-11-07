@@ -101,6 +101,7 @@ public class UisRlcController {
 
         measureButton.setOnAction(event -> new Thread(this::measure).start());
         storeButton.setOnAction(event -> uisRlcModel.storeResult());
+        mainSectionUisModel.startButtonProperty().addListener((observableValue, oldValue, newValue) -> measureButton.setDisable(newValue));
     }
 
     private void setupModelsListeners() {
@@ -118,6 +119,7 @@ public class UisRlcController {
     private void measure() {
 
         logger.warn("Measure Button Pressed");
+        uisRlcModel.isMeasuringProperty().setValue(true);
 
         ToggleButton ledController = selectedButton();
         InjectorType injectorType = mainSectionUisModel.modelProperty().get().getVAP().getInjectorType();
@@ -208,6 +210,7 @@ public class UisRlcController {
                 }
             }
             disableNode(false, storeButton, measureButton);
+            uisRlcModel.isMeasuringProperty().setValue(false);
             logger.warn("Measure & Store Buttons Ready (Enabled)");
         }
     }

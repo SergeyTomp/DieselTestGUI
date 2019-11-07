@@ -1057,6 +1057,7 @@ public class MainSectionController {
     private void setupStartButtonListener() {
 
         mainSectionModel.startButtonProperty().bind(startToggleButton.selectedProperty());
+        startToggleButton.visibleProperty().bind(rlc_reportModel.isMeasuringProperty().not());
 
         Timeline startButtonTimeline = new Timeline(new KeyFrame(Duration.millis(400), event -> startBlinking()));
         startButtonTimeline.setCycleCount(Animation.INDEFINITE);
