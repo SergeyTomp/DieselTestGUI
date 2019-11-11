@@ -13,4 +13,10 @@ public interface Result {
     String getSubColumn1();
     String getSubColumn2();
     List<String> getValueColumns();
+    double getRangeLeft();
+    double getRangeRight();
+    double getAcceptableRangeLeft();
+    double getAcceptableRangeRight();
+    List<Double> getNumericDataColumns();
+
 }

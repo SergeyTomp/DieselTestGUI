@@ -1,8 +1,8 @@
 package fi.stardex.sisu.ui.controllers.uis.tabs;
 
 import fi.stardex.sisu.model.uis.MainSectionUisModel;
-import fi.stardex.sisu.model.uis.UisFlowModel;
-import fi.stardex.sisu.model.uis.UisFlowModel.UisFlowResult;
+import fi.stardex.sisu.model.uis.UisBipModel;
+import fi.stardex.sisu.model.uis.UisBipModel.UisBipResult;
 import fi.stardex.sisu.persistence.orm.interfaces.Test;
 import fi.stardex.sisu.util.i18n.I18N;
 import javafx.beans.property.SimpleBooleanProperty;
@@ -20,38 +20,36 @@ import javax.annotation.PostConstruct;
 
 import static fi.stardex.sisu.util.converters.DataConverter.convertDataToDouble;
 
-public class UisFlowReportController {
-
-
-    @FXML private TableView<UisFlowResult> flowTableView;
-    @FXML private TableColumn<UisFlowResult, Test> flowTestNameColumn;
-    @FXML private TableColumn<UisFlowResult, String> flowNominalColumn;
-    @FXML private TableColumn<UisFlowResult, String> flow1Column;
-    @FXML private TableColumn<UisFlowResult, String> flow2Column;
-    @FXML private TableColumn<UisFlowResult, String> flow3Column;
-    @FXML private TableColumn<UisFlowResult, String> flow4Column;
-    @FXML private TableColumn<UisFlowResult, String> flow5Column;
-    @FXML private TableColumn<UisFlowResult, String> flow6Column;
-    @FXML private TableColumn<UisFlowResult, String> flow7Column;
-    @FXML private TableColumn<UisFlowResult, String> flow8Column;
-    @FXML private TableColumn<UisFlowResult, Boolean> deleteColumn;
+public class UisBipReportController {
+    @FXML private TableView<UisBipResult> bipTableView;
+    @FXML private TableColumn<UisBipResult, Test> testNameColumn;
+    @FXML private TableColumn<UisBipResult, String>  bipNominalColumn;
+    @FXML private TableColumn<UisBipResult, String>  bip1Column;
+    @FXML private TableColumn<UisBipResult, String>  bip2Column;
+    @FXML private TableColumn<UisBipResult, String>  bip3Column;
+    @FXML private TableColumn<UisBipResult, String>  bip4Column;
+    @FXML private TableColumn<UisBipResult, String>  bip5Column;
+    @FXML private TableColumn<UisBipResult, String>  bip6Column;
+    @FXML private TableColumn<UisBipResult, String>  bip7Column;
+    @FXML private TableColumn<UisBipResult, String>  bip8Column;
+    @FXML private TableColumn<UisBipResult, Boolean>  deleteColumn;
 
     private static final String CELL_COLOR_DEFAULT = "-fx-text-fill: #bf8248; -fx-alignment: CENTER";
     private static final String CELL_COLOR_ORANGE = "-fx-text-fill: orange; -fx-alignment: CENTER";
     private static final String CELL_COLOR_RED = "-fx-text-fill: red; -fx-alignment: CENTER";
 
-    private I18N i18N;
     private MainSectionUisModel mainSectionUisModel;
-    private UisFlowModel uisFlowModel;
+    private UisBipModel uisBipModel;
+    private I18N i18N;
 
-    public void setI18N(I18N i18N) {
-        this.i18N = i18N;
-    }
     public void setMainSectionUisModel(MainSectionUisModel mainSectionUisModel) {
         this.mainSectionUisModel = mainSectionUisModel;
     }
-    public void setUisFlowModel(UisFlowModel uisFlowModel) {
-        this.uisFlowModel = uisFlowModel;
+    public void setUisBipModel(UisBipModel uisBipModel) {
+        this.uisBipModel = uisBipModel;
+    }
+    public void setI18N(I18N i18N) {
+        this.i18N = i18N;
     }
 
     @PostConstruct
@@ -63,47 +61,47 @@ public class UisFlowReportController {
 
     private void setupTableColumns() {
 
-        flowTestNameColumn.setCellValueFactory(c -> c.getValue().injectorTestProperty());
-        flowNominalColumn.setCellValueFactory(c -> c.getValue().nominalFlowProperty());
-        flow1Column.setCellValueFactory(c -> c.getValue().value1Property());
-        flow2Column.setCellValueFactory(c -> c.getValue().value2Property());
-        flow3Column.setCellValueFactory(c -> c.getValue().value3Property());
-        flow4Column.setCellValueFactory(c -> c.getValue().value4Property());
-        flow5Column.setCellValueFactory(c -> c.getValue().value5Property());
-        flow6Column.setCellValueFactory(c -> c.getValue().value6Property());
-        flow7Column.setCellValueFactory(c -> c.getValue().value7Property());
-        flow8Column.setCellValueFactory(c -> c.getValue().value8Property());
+        testNameColumn.setCellValueFactory(c -> c.getValue().injectorTestProperty());
+        bipNominalColumn.setCellValueFactory(c -> c.getValue().nominalBipProperty());
+        bip1Column.setCellValueFactory(c -> c.getValue().value1Property());
+        bip2Column.setCellValueFactory(c -> c.getValue().value2Property());
+        bip3Column.setCellValueFactory(c -> c.getValue().value3Property());
+        bip4Column.setCellValueFactory(c -> c.getValue().value4Property());
+        bip5Column.setCellValueFactory(c -> c.getValue().value5Property());
+        bip6Column.setCellValueFactory(c -> c.getValue().value6Property());
+        bip7Column.setCellValueFactory(c -> c.getValue().value7Property());
+        bip8Column.setCellValueFactory(c -> c.getValue().value8Property());
         deleteColumn.setCellValueFactory(c -> new SimpleBooleanProperty());
 
-        setCellFactory(flow1Column);
-        setCellFactory(flow2Column);
-        setCellFactory(flow3Column);
-        setCellFactory(flow4Column);
-        setCellFactory(flow5Column);
-        setCellFactory(flow6Column);
-        setCellFactory(flow7Column);
-        setCellFactory(flow8Column);
+        setCellFactory(bip1Column);
+        setCellFactory(bip2Column);
+        setCellFactory(bip3Column);
+        setCellFactory(bip4Column);
+        setCellFactory(bip5Column);
+        setCellFactory(bip6Column);
+        setCellFactory(bip7Column);
+        setCellFactory(bip8Column);
         deleteColumn.setCellFactory(tableColumn -> new ButtonCell());
     }
 
     private void setupResultChangeListener(){
 
-        ObservableList<UisFlowResult> flowResultsSource = FXCollections.observableArrayList();
-        uisFlowModel.resultMapChangedProperty().addListener((observable, oldValue, newValue) -> {
+        ObservableList<UisBipResult> flowResultsSource = FXCollections.observableArrayList();
+        uisBipModel.resultMapChangedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
                 flowResultsSource.clear();
-                flowResultsSource.addAll(uisFlowModel.getResultObservableMap().values());
-                flowTableView.setItems(flowResultsSource);
-                flowTableView.refresh();
+                flowResultsSource.addAll(uisBipModel.getResultObservableMap().values());
+                bipTableView.setItems(flowResultsSource);
+                bipTableView.refresh();
             }
         });
     }
 
-    private void setCellFactory(TableColumn<UisFlowResult, String> column){
+    private void setCellFactory(TableColumn<UisBipResult, String> column){
 
         column.setCellFactory(new Callback<>() {
             @Override
-            public TableCell<UisFlowResult, String> call(TableColumn<UisFlowResult, String> param) {
+            public TableCell<UisBipResult, String> call(TableColumn<UisBipResult, String> param) {
                 return new TableCell<>() {
 
                     @Override
@@ -117,7 +115,7 @@ public class UisFlowReportController {
                         } else {
                             setText(item);
 
-                            UisFlowResult flowTestResult = flowTableView.getItems().get(getTableRow().getIndex());
+                            UisBipResult flowTestResult = bipTableView.getItems().get(getTableRow().getIndex());
 
                             double flowRangeLeft = flowTestResult.getRangeLeft();
                             double flowRangeRight = flowTestResult.getRangeRight();
@@ -163,7 +161,7 @@ public class UisFlowReportController {
         else throw new RuntimeException("Invalid cell value");
     }
 
-    private class ButtonCell extends TableCell<UisFlowResult, Boolean> {
+    private class ButtonCell extends TableCell<UisBipResult, Boolean> {
 
         private final Button deleteButton;
 
@@ -173,7 +171,7 @@ public class UisFlowReportController {
             deleteButton.setStyle("-textFont-color: #1f1f2e");
             showNode(false, deleteButton);
             deleteButton.visibleProperty().bind(mainSectionUisModel.startButtonProperty().not());
-            deleteButton.setOnAction(event -> uisFlowModel.deleteResult(getTableRow().getTableView().getItems().get(getTableRow().getIndex()).injectorTestProperty().get()));
+            deleteButton.setOnAction(event -> uisBipModel.deleteResult(getTableRow().getTableView().getItems().get(getTableRow().getIndex()).injectorTestProperty().get()));
         }
 
         @Override
@@ -196,7 +194,7 @@ public class UisFlowReportController {
 
     private void bindingI18N() {
 
-        flowTestNameColumn.textProperty().bind(i18N.createStringBinding("h4.report.table.label.testName"));
-        flowNominalColumn.textProperty().bind(i18N.createStringBinding("h4.report.table.label.nominal"));
+        testNameColumn.textProperty().bind(i18N.createStringBinding("h4.report.table.label.testName"));
+        bipNominalColumn.textProperty().bind(i18N.createStringBinding("h4.report.table.label.nominal"));
     }
 }

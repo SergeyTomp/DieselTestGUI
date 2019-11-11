@@ -6,6 +6,7 @@ import fi.stardex.sisu.util.i18n.I18N;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
+import javafx.event.ActionEvent;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
@@ -64,7 +65,7 @@ public class UisFlowModel {
 
     @PostConstruct
     public void init() {
-        mainSectionUisModel.getStoreButton().setOnAction(event -> storeResult());
+        mainSectionUisModel.getStoreButton().addEventHandler(ActionEvent.ACTION, event -> storeResult());
         mainSectionUisModel.modelProperty().addListener((observableValue, oldValue, newValue) -> clearResults());
     }
 
@@ -99,7 +100,7 @@ public class UisFlowModel {
         resultMapChanged.setValue(false);
     }
 
-    public List<UisFlowResult> getResultsList(){
+    public List<Result> getResultsList(){
         return new ArrayList<>(resultObservableMap.values());
     }
 
@@ -135,68 +136,73 @@ public class UisFlowModel {
         public StringProperty nominalFlowProperty() {
             return nominalFlow;
         }
-        public StringProperty flow1Property() {
+        public StringProperty value1Property() {
             return flow1;
         }
-        public StringProperty flow2Property() {
+        public StringProperty value2Property() {
             return flow2;
         }
-        public StringProperty flow3Property() {
+        public StringProperty value3Property() {
             return flow3;
         }
-        public StringProperty flow4Property() {
+        public StringProperty value4Property() {
             return flow4;
         }
-        public StringProperty flow5Property() {
+        public StringProperty value5Property() {
             return flow5;
         }
-        public StringProperty flow6Property() {
+        public StringProperty value6Property() {
             return flow6;
         }
-        public StringProperty flow7Property() {
+        public StringProperty value7Property() {
             return flow7;
         }
-        public StringProperty flow8Property() {
+        public StringProperty value8Property() {
             return flow8;
         }
 
-        public double getFlow_1double() {
+        public double getDoubleValue_1() {
             return flow_1double;
         }
-        public double getFlow_2double() {
+        public double getDoubleValue_2() {
             return flow_2double;
         }
-        public double getFlow_3double() {
+        public double getDoubleValue_3() {
             return flow_3double;
         }
-        public double getFlow_4double() {
+        public double getDoubleValue_4() {
             return flow_4double;
         }
-        public double getFlow_5double() {
+        public double getDoubleValue_5() {
             return flow_5double;
         }
-        public double getFlow_6double() {
+        public double getDoubleValue_6() {
             return flow_6double;
         }
-        public double getFlow_7double() {
+        public double getDoubleValue_7() {
             return flow_7double;
         }
-        public double getFlow_8double() {
+        public double getDoubleValue_8() {
             return flow_8double;
         }
 
-        public double getFlowRangeLeft() {
+        @Override
+        public double getRangeLeft() {
             return flowRangeLeft;
         }
-        public double getFlowRangeRight() {
+        @Override
+        public double getRangeRight() {
             return flowRangeRight;
         }
-        public double getAcceptableFlowRangeLeft() {
+        @Override
+        public double getAcceptableRangeLeft() {
             return acceptableFlowRangeLeft;
         }
-        public double getAcceptableFlowRangeRight() {
+        @Override
+        public double getAcceptableRangeRight() {
             return acceptableFlowRangeRight;
         }
+
 
         UisFlowResult(Test test,
                              String nominalFlow,
@@ -249,8 +255,6 @@ public class UisFlowModel {
             flow_7double = flow7.get().equals("-") ? -99d : convertDataToDouble(flow7.get()) / uisDeliveryCoefficient;
             flow_8double = flow8.get().equals("-") ? -99d : convertDataToDouble(flow8.get()) / uisDeliveryCoefficient;
 
-            System.err.println(flow_1double + " " + flow_2double);
-
             flowRangeLeft = scaledLeftLimit;
             flowRangeRight = scaledRightLimit;
             acceptableFlowRangeLeft = scaledLeftLimit - scaledLeftLimit * 0.03;
@@ -279,6 +283,11 @@ public class UisFlowModel {
         @Override
         public List<String> getValueColumns() {
             return new ArrayList<>(Arrays.asList(flow1.get(), flow2.get(), flow3.get(), flow4.get(), flow5.get(), flow6.get(), flow7.get(), flow8.get()));
+        }
+
+        @Override
+        public List<Double> getNumericDataColumns() {
+            return new ArrayList<>(Arrays.asList(flow_1double, flow_2double, flow_3double, flow_4double, flow_5double, flow_6double, flow_7double, flow_8double));
         }
     }
 }

@@ -3,6 +3,7 @@ package fi.stardex.sisu.model.uis;
 import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.scene.control.Button;
 import javafx.scene.control.ToggleButton;
 
 import javax.annotation.PostConstruct;
@@ -30,6 +31,9 @@ public class UisInjectorSectionModel {
     private IntegerProperty angle_2 = new SimpleIntegerProperty();
     private BooleanProperty powerButton = new SimpleBooleanProperty();
     private IntegerProperty pressureSpinner = new SimpleIntegerProperty();
+    private DoubleProperty bipValue = new SimpleDoubleProperty(0);
+    private Button saveBipButton = new Button();
+    private StringProperty bipRangeLabel = new SimpleStringProperty("");
 
     public ToggleButton getLedBeaker1ToggleButton() {
         return ledBeaker1ToggleButton;
@@ -79,6 +83,15 @@ public class UisInjectorSectionModel {
     }
     public ObjectProperty<List<ToggleButton>> activeLedToggleButtonsListProperty() {
         return activeLedToggleButtonsList;
+    }
+    public Button getSaveBipButton() {
+        return saveBipButton;
+    }
+    public DoubleProperty bipValueProperty() {
+        return bipValue;
+    }
+    public StringProperty bipRangeLabelProperty() {
+        return bipRangeLabel;
     }
 
     @PostConstruct

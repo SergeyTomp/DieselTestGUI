@@ -119,10 +119,10 @@ public class PumpReportController {
 
                             PumpFlowResult flowTestResult = flowTableView.getItems().get(getTableRow().getIndex());
 
-                            double flowRangeLeft = flowTestResult.getFlowRangeLeft(flowType);
-                            double flowRangeRight = flowTestResult.getFlowRangeRight(flowType);
-                            double acceptableFlowRangeLeft = flowTestResult.getAcceptableFlowRangeLeft(flowType);
-                            double acceptableFlowRangeRight = flowTestResult.getAcceptableFlowRangeRight(flowType);
+                            double flowRangeLeft = flowTestResult.getRangeLeft(flowType);
+                            double flowRangeRight = flowTestResult.getRangeRight(flowType);
+                            double acceptableFlowRangeLeft = flowTestResult.getAcceptableRangeLeft(flowType);
+                            double acceptableFlowRangeRight = flowTestResult.getAcceptableRangeRight(flowType);
 
                             if (item.equals("-") || (acceptableFlowRangeLeft == 0 && acceptableFlowRangeRight == 0)){
 

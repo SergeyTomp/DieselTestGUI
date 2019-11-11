@@ -14,6 +14,8 @@
         <Tab fx:id="tabDelayReport" text="%additional.report.delay">
             <fx:include fx:id="uisDelayReport" source="UisDelayReport.fxml" />
         </Tab>
+        <Tab fx:id="tabBipReport" text="BIP">
+            <fx:include fx:id="uisBipReport" source="UisBipReport.fxml" />
+        </Tab>
     </tabs>
-
 </TabPane>

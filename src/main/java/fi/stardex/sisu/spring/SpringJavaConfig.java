@@ -669,7 +669,8 @@ public class SpringJavaConfig {
                                  PumpReportModel pumpReportModel,
                                  UisFlowModel uisFlowModel,
                                  UisDelayModel uisDelayModel,
-                                 UisRlcModel uisRlcModel) {
+                                 UisRlcModel uisRlcModel,
+                                 UisBipModel uisBipModel) {
         PDFService pdfService = new PDFService();
         pdfService.setI18N(i18N);
         pdfService.setDesktopFiles(desktopFiles);
@@ -682,6 +683,7 @@ public class SpringJavaConfig {
         pdfService.setUisFlowModel(uisFlowModel);
         pdfService.setUisDelayModel(uisDelayModel);
         pdfService.setUisRlcModel(uisRlcModel);
+        pdfService.setUisBipModel(uisBipModel);
         return pdfService;
     }
 
@@ -1232,6 +1234,16 @@ public class SpringJavaConfig {
         UisFlowUpdater uisFlowUpdater = new UisFlowUpdater();
         uisFlowUpdater.setFlowFirmwareVersion(flowFirmwareVersion);
         return uisFlowUpdater;
+    }
+
+    @Bean
+    @Autowired
+    public UisBipModel uisBipModel(MainSectionUisModel mainSectionUisModel,
+                                   UisInjectorSectionModel uisInjectorSectionModel) {
+        UisBipModel uisBipModel = new UisBipModel();
+        uisBipModel.setMainSectionUisModel(mainSectionUisModel);
+        uisBipModel.setUisInjectorSectionModel(uisInjectorSectionModel);
+        return uisBipModel;
     }
 
 //    @Bean

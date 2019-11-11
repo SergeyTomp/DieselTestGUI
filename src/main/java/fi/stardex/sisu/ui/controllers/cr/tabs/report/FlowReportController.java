@@ -167,10 +167,10 @@ public class FlowReportController {
 
                             FlowResult flowTestResult = flowTableView.getItems().get(getTableRow().getIndex());
 
-                            double flowRangeLeft = flowTestResult.getFlowRangeLeft();
-                            double flowRangeRight = flowTestResult.getFlowRangeRight();
-                            double acceptableFlowRangeLeft = flowTestResult.getAcceptableFlowRangeLeft();
-                            double acceptableFlowRangeRight = flowTestResult.getAcceptableFlowRangeRight();
+                            double flowRangeLeft = flowTestResult.getRangeLeft();
+                            double flowRangeRight = flowTestResult.getRangeRight();
+                            double acceptableFlowRangeLeft = flowTestResult.getAcceptableRangeLeft();
+                            double acceptableFlowRangeRight = flowTestResult.getAcceptableRangeRight();
 
                             if (item.equals("-"))
                                 setStyle(CELL_COLOR_DEFAULT);

@@ -7,13 +7,12 @@ import fi.stardex.sisu.model.*;
 import fi.stardex.sisu.model.cr.CodingReportModel;
 import fi.stardex.sisu.model.cr.DelayReportModel;
 import fi.stardex.sisu.model.cr.FlowReportModel;
-import fi.stardex.sisu.model.cr.FlowReportModel.FlowResult;
 import fi.stardex.sisu.model.cr.RLC_ReportModel;
 import fi.stardex.sisu.model.pump.PumpReportModel;
 import fi.stardex.sisu.model.pump.PumpReportModel.PumpFlowResult;
+import fi.stardex.sisu.model.uis.UisBipModel;
 import fi.stardex.sisu.model.uis.UisDelayModel;
 import fi.stardex.sisu.model.uis.UisFlowModel;
-import fi.stardex.sisu.model.uis.UisFlowModel.UisFlowResult;
 import fi.stardex.sisu.model.uis.UisRlcModel;
 import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
 import fi.stardex.sisu.persistence.orm.interfaces.Model;
@@ -105,6 +104,7 @@ public class PDFService {
     private StringProperty codingResults;
     private StringProperty injectionDelayMeasurementResults;
     private StringProperty flowMeasurementResults;
+    private StringProperty bipMeasurementRepults;
     private StringProperty electricalCharacteristics;
     private StringProperty pumpFlowMeasurementResults;
     private StringProperty injectorNumber;
@@ -119,14 +119,7 @@ public class PDFService {
     private PDFont font;
     private LanguageModel languageModel;
     private I18N i18N;
-    private List<Result> rlcResultsList;
-    private List<Result> delayResultsList;
-    private List<Result> uisDelayResultsList;
-    private List<Result> uisRlcResultsList;
-    private List<FlowResult> flowResultsList;
     private List<PumpFlowResult> pumpFlowResultsList;
-    private List<UisFlowResult> uisFlowResultsList;
-    private List<Result> codingResultsList;
     private DesktopFiles desktopFiles;
     private DelayReportModel delayReportModel;
     private RLC_ReportModel rlc_reportModel;
@@ -136,6 +129,7 @@ public class PDFService {
     private UisFlowModel uisFlowModel;
     private UisDelayModel uisDelayModel;
     private UisRlcModel uisRlcModel;
+    private UisBipModel uisBipModel;
 
     public void setDesktopFiles(DesktopFiles desktopFiles) {
         this.desktopFiles = desktopFiles;
@@ -176,6 +170,10 @@ public class PDFService {
 
     public void setUisRlcModel(UisRlcModel uisRlcModel) {
         this.uisRlcModel = uisRlcModel;
+    }
+
+    public void setUisBipModel(UisBipModel uisBipModel) {
+        this.uisBipModel = uisBipModel;
     }
 
     public void setI18N(I18N i18N) {
@@ -250,83 +248,49 @@ public class PDFService {
         INJECTORS, PUMPS, CODING, UIS
     }
 
-
     private void makePDF(Customer customer, Model model, ResultPrintMode resultMode, boolean printPDF, boolean savePDF) throws IOException {
         this.customer = customer;
         document = new PDDocument();
         currentPage = new PDPage();
         document.addPage(currentPage);
 
-        flowResultsList = flowReportModel.getResultsList();
-        rlcResultsList = rlc_reportModel.getResultsList();
-        delayResultsList = delayReportModel.getResultsList();
-        codingResultsList = codingReportModel.getResultsList();
-
-        pumpFlowResultsList = pumpReportModel.getResultsList();
-
-        uisFlowResultsList = uisFlowModel.getResultsList();
-        uisDelayResultsList = uisDelayModel.getResultsList();
-        uisRlcResultsList = uisRlcModel.getResultsList();
-
         drawHeaderPage(document, currentPage);
 
         drawCustomerAndInjectorData(customer, model);
 
         if (resultMode == ResultPrintMode.INJECTORS) {
-            float startTable = drawTable(document, rlcResultsList, new MeasurementHeader(), START_TABLE);
-            startTable = drawFlowTable(document, new FlowHeader(), startTable, flowResultsList);
-            drawTable(document, delayResultsList, new DelayHeader(), startTable);
+            float startTable = drawTable(document, rlc_reportModel.getResultsList(), new MeasurementHeader(), START_TABLE);
+            startTable = drawTable(document, flowReportModel.getResultsList(), new FlowHeader(), startTable);
+            drawTable(document, delayReportModel.getResultsList(), new DelayHeader(), startTable);
         } else if (resultMode == ResultPrintMode.CODING) {
-            drawTable(document, codingResultsList, new CodingHeader(), START_TABLE);
+            drawTable(document, codingReportModel.getResultsList(), new CodingHeader(), START_TABLE);
         } else if (resultMode == ResultPrintMode.PUMPS) {
-            drawFlowTable(document, new PumpHeader(), START_TABLE, pumpFlowResultsList);
+            pumpFlowResultsList = pumpReportModel.getResultsList();
+            drawTable(document, pumpFlowResultsList, new PumpHeader(), START_TABLE);
         } else if (resultMode == ResultPrintMode.UIS) {
-            float startTable = drawTable(document, uisRlcResultsList, new UisMeasurementHeader(), START_TABLE);
-            startTable = drawFlowTable(document, new UisFlowHeader(), startTable, uisFlowResultsList);
-            drawTable(document, uisDelayResultsList, new UisDelayHeader(), startTable);
+            float startTable = drawTable(document, uisRlcModel.getResultsList(), new UisMeasurementHeader(), START_TABLE);
+            startTable = drawTable(document, uisFlowModel.getResultsList(), new UisFlowHeader(), startTable);
+            startTable = drawTable(document, uisBipModel.getResultsList(), new BipHeader(), startTable);
+            drawTable(document, uisDelayModel.getResultsList(), new UisDelayHeader(), startTable);
         }
         finish(printPDF, savePDF);
     }
 
-    private float drawTable(PDDocument document, List<? extends Result> resultsList,
-                            Header header, float yStart) throws IOException {
+    private float drawTable(PDDocument document, List<? extends Result> resultsList, Header header, float yStart) throws IOException  {
+
         if (resultsList != null && !resultsList.isEmpty()) {
             BaseTable baseTable = createTable(document, yStart);
             drawHeader(header, baseTable);
 
-            drawData(baseTable, resultsList);
+            if (header instanceof PumpHeader) {
+                drawPumpFlowData(baseTable);
+            }else {
+                drawData(baseTable, resultsList);
+            }
 
             float newStartY = baseTable.draw() - CELL_HEIGHT;
             checkForNewPage(baseTable);
             return newStartY;
-        }
-        return yStart;
-    }
-
-    private float drawFlowTable(PDDocument document, Header header, float yStart, List result) throws IOException  {
-
-        if (result != null && !result.isEmpty()) {
-            BaseTable baseTable = createTable(document, yStart);
-            drawHeader(header, baseTable);
-
-            try {
-                if (header instanceof FlowHeader) {
-                    drawInjectorFlowData(baseTable);
-                }else if(header instanceof PumpHeader){
-                    drawPumpFlowData(baseTable);
-                } else if (header instanceof UisFlowHeader) {
-                    drawUisFlowData(baseTable);
-                } else {
-                    logger.error("Unknown header class, impossible to define FlowTable type");
-                    throw new RuntimeException("Unknown header class, impossible to define FlowTable type");
-                }
-                float newStartY = baseTable.draw() - CELL_HEIGHT;
-                checkForNewPage(baseTable);
-                return newStartY;
-            } catch (RuntimeException e) {
-                e.printStackTrace();
-                return yStart;
-            }
         }
         return yStart;
     }
@@ -360,47 +324,30 @@ public class PDFService {
         baseTable.addHeaderRow(headerRow);
     }
 
-    private void drawData(BaseTable baseTable, List<? extends Result> resultsStorage) {
+    private void drawData(BaseTable baseTable, List<? extends Result> resultsList) {
 
-        for (Result result : resultsStorage) {
-            if(result == null)
-                continue;
+        for (Result result : resultsList) {
+            if(result == null) continue;
 
             Row<PDPage> row = baseTable.createRow(CELL_HEIGHT);
             Cell<PDPage> cell = result.getMainColumn() == null ? null : row.createCell(result.getMainColumn());
             cell = result.getSubColumn1() == null ? null : row.createCell(result.getSubColumn1());
             cell = result.getSubColumn2() == null ? null : row.createCell(result.getSubColumn2());
-            if (null != result.getValueColumns()) {
-                for (String value : result.getValueColumns()) {
-                    row.createCell(value);
+            List<String> textColumns = result.getValueColumns();
+            List<Double> numericDataColumns = result.getNumericDataColumns();
+
+            for (String textResult : textColumns) {
+                cell = row.createCell(textResult);
+                if (numericDataColumns != null) {
+                    int i = textColumns.indexOf(textResult);
+                    Color color = getColorCellOfResult(numericDataColumns.get(i), result);
+                    cell.setFillColor(color);
                 }
             }
-        }
-        setCellSettings(baseTable);
-    }
-
-    private void drawInjectorFlowData(BaseTable baseTable) {
-
-        for (FlowResult result: flowResultsList) {
-            Row<PDPage> row = baseTable.createRow(CELL_HEIGHT);
-            Cell<PDPage> cell = row.createCell(result.getMainColumn());
-            row.createCell(result.getSubColumn1());
-            row.createCell(result.getSubColumn2());
-            cell = row.createCell(result.getFlow1());
-            Color color = getColorCellOfResult(result.getFlow1_double(), result);
-            cell.setFillColor(color);
-            cell = row.createCell(result.getFlow2());
-            color = getColorCellOfResult(result.getFlow2_double(), result);
-            cell.setFillColor(color);
-            cell = row.createCell(result.getFlow3());
-            color = getColorCellOfResult(result.getFlow3_double(), result);
-            cell.setFillColor(color);
-            cell = row.createCell(result.getFlow4());
-            color = getColorCellOfResult(result.getFlow4_double(), result);
-            cell.setFillColor(color);
             setCellSettings(baseTable);
         }
     }
+
     private void drawPumpFlowData(BaseTable baseTable) {
 
         String nominal;
@@ -436,39 +383,24 @@ public class PDFService {
         }
     }
 
-    private void drawUisFlowData(BaseTable baseTable) {
+    private Color getColorCellOfResult(double flow, Result result){
 
-        for (UisFlowResult result : uisFlowResultsList) {
+        double nominalRight = result.getRangeRight();
+        double nominalLeft = result.getRangeLeft();
+        double acceptableRight = result.getAcceptableRangeRight();
+        double acceptableLeft = result.getAcceptableRangeLeft();
 
-            Row<PDPage> row = baseTable.createRow(CELL_HEIGHT);
-            Cell<PDPage> cell = row.createCell(result.getMainColumn());
-            row.createCell(result.getSubColumn1());
-            cell = row.createCell(result.flow1Property().get());
-            Color color = getColorCellOfResult(result.getFlow_1double(), result);
-            cell.setFillColor(color);
-            cell = row.createCell(result.flow2Property().get());
-            color = getColorCellOfResult(result.getFlow_2double(), result);
-            cell.setFillColor(color);
-            cell = row.createCell(result.flow3Property().get());
-            color = getColorCellOfResult(result.getFlow_3double(), result);
-            cell.setFillColor(color);
-            cell = row.createCell(result.flow4Property().get());
-            color = getColorCellOfResult(result.getFlow_4double(), result);
-            cell.setFillColor(color);
-            cell = row.createCell(result.flow5Property().get());
-            color = getColorCellOfResult(result.getFlow_5double(), result);
-            cell.setFillColor(color);
-            cell = row.createCell(result.flow6Property().get());
-            color = getColorCellOfResult(result.getFlow_6double(), result);
-            cell.setFillColor(color);
-            cell = row.createCell(result.flow7Property().get());
-            color = getColorCellOfResult(result.getFlow_7double(), result);
-            cell.setFillColor(color);
-            cell = row.createCell(result.flow8Property().get());
-            color = getColorCellOfResult(result.getFlow_8double(), result);
-            cell.setFillColor(color);
-            setCellSettings(baseTable);
-        }
+        return getGolor(flow, nominalLeft, nominalRight, acceptableLeft, acceptableRight);
+    }
+
+    private Color getColorCellOfResult(double flow, PumpFlowResult result, Measurement flowType){
+
+        double nominalRight = result.getRangeRight(flowType);
+        double nominalLeft = result.getRangeLeft(flowType);
+        double acceptableRight = result.getAcceptableRangeRight(flowType);
+        double acceptableLeft = result.getAcceptableRangeLeft(flowType);
+
+        return getGolor(flow, nominalLeft, nominalRight, acceptableLeft, acceptableRight);
     }
 
     private void setCellSettings(BaseTable baseTable) {
@@ -712,75 +644,25 @@ public class PDFService {
         contentStream.fill();
     }
 
-    private Color getColorCellOfResult(double flow, FlowResult result){
 
-        double nominalRight = result.getFlowRangeRight();
-        double nominalLeft = result.getFlowRangeLeft();
-        double nominalExceptRight = result.getAcceptableFlowRangeRight();
-        double nominalExceptLeft = result.getAcceptableFlowRangeLeft();
+    /** Change color if data out of borders : 5% - in borders - yellow, out of borders - red*/
+    private Color getGolor(double value, double nominalLeft, double nominalRight, double acceptableLeft, double acceptableRight) {
 
-        /** Change color if data out of borders : 5% - in borders - yellow, out of borders - red*/
         Color cellColor = Color.WHITE;
 
-        if(Double.compare(flow, nominalRight) == 0 || flow > nominalRight || Double.compare(flow, nominalLeft) == 0 || flow < nominalLeft){
+        if(Double.compare(value, nominalRight) == 0 || value > nominalRight || Double.compare(value, nominalLeft) == 0 || value < nominalLeft){
             cellColor = Color.ORANGE;
         }
-        if(Double.compare(flow, nominalExceptRight) == 0 || flow > nominalExceptRight || Double.compare(flow, nominalExceptLeft) == 0 || flow < nominalExceptLeft) {
+        if(Double.compare(value, acceptableRight) == 0 || value > acceptableRight || Double.compare(value, acceptableLeft) == 0 || value < acceptableLeft) {
             cellColor = Color.RED;
         }
-        if(flow < 0){
+        if(value < 0){
             cellColor = Color.WHITE;
         }
         return cellColor;
     }
 
-    private Color getColorCellOfResult(double flow, PumpFlowResult result, Measurement flowType){
 
-        double nominalRight = result.getFlowRangeRight(flowType);
-        double nominalLeft = result.getFlowRangeLeft(flowType);
-        double nominalExceptRight = result.getAcceptableFlowRangeRight(flowType);
-        double nominalExceptLeft = result.getAcceptableFlowRangeLeft(flowType);
-
-        /** Change color if data out of borders : 5% - in borders - yellow, out of borders - red*/
-        Color cellColor = Color.WHITE;
-
-        if (nominalRight == 0 && nominalLeft == 0) {
-            return cellColor;
-        }
-
-        if(Double.compare(flow, nominalRight) == 0 || flow > nominalRight || Double.compare(flow, nominalLeft) == 0 || flow < nominalLeft){
-            cellColor = Color.ORANGE;
-        }
-        if(Double.compare(flow, nominalExceptRight) == 0 || flow > nominalExceptRight || Double.compare(flow, nominalExceptLeft) == 0 || flow < nominalExceptLeft) {
-            cellColor = Color.RED;
-        }
-        if(flow < 0){
-            cellColor = Color.WHITE;
-        }
-        return cellColor;
-    }
-
-    private Color getColorCellOfResult(double flow, UisFlowResult result) {
-
-        double nominalRight = result.getFlowRangeRight();
-        double nominalLeft = result.getFlowRangeLeft();
-        double nominalExceptRight = result.getAcceptableFlowRangeRight();
-        double nominalExceptLeft = result.getAcceptableFlowRangeLeft();
-
-        /** Change color if data out of borders : 5% - in borders - yellow, out of borders - red*/
-        Color cellColor = Color.WHITE;
-
-        if(Double.compare(flow, nominalRight) == 0 || flow > nominalRight || Double.compare(flow, nominalLeft) == 0 || flow < nominalLeft){
-            cellColor = Color.ORANGE;
-        }
-        if(Double.compare(flow, nominalExceptRight) == 0 || flow > nominalExceptRight || Double.compare(flow, nominalExceptLeft) == 0 || flow < nominalExceptLeft) {
-            cellColor = Color.RED;
-        }
-        if(flow < 0){
-            cellColor = Color.WHITE;
-        }
-        return cellColor;
-    }
 
     private void bindingI18N(){
 
@@ -812,6 +694,7 @@ public class PDFService {
         codingResults = new SimpleStringProperty();
         injectionDelayMeasurementResults = new SimpleStringProperty();
         flowMeasurementResults = new SimpleStringProperty();
+        bipMeasurementRepults = new SimpleStringProperty();
         electricalCharacteristics = new SimpleStringProperty();
         pumpFlowMeasurementResults = new SimpleStringProperty();
         injectorNumber = new SimpleStringProperty();
@@ -842,6 +725,7 @@ public class PDFService {
         codingResults.bind((i18N.createStringBinding("h4.report.table.label.codingResults")));
         injectionDelayMeasurementResults.bind(i18N.createStringBinding("h4.report.table.label.injectionDelayMeasurementResults"));
         flowMeasurementResults.bind(i18N.createStringBinding("h4.report.table.label.flowMeasurementResults"));
+        bipMeasurementRepults.bind(i18N.createStringBinding("h4.report.table.label.bipMeasurementResults"));
         electricalCharacteristics.bind(i18N.createStringBinding("h4.report.table.label.electricalCharacteristics"));
         pumpFlowMeasurementResults.bind(i18N.createStringBinding("h4.report.table.label.pumpFlowMeasurementResults"));
         injectorNumber.bind(i18N.createStringBinding("h4.report.table.label.injectorNumber"));
@@ -937,6 +821,30 @@ public class PDFService {
         }
     }
 
+    private class BipHeader implements Header {
+        @Override
+        public String getMainHeader() {
+            return bipMeasurementRepults.getValue();
+        }
+
+        @Override
+        public List<HeaderCell> getHeaderCells() {
+            return new ArrayList<>(Arrays.asList(
+                    new HeaderCell(18, testName.getValue()),
+                    new HeaderCell(18, deliveryLH.get()),
+                    new HeaderCell(8, "(1)"),
+                    new HeaderCell(8, "(2)"),
+                    new HeaderCell(8, "(3)"),
+                    new HeaderCell(8, "(4)"),
+                    new HeaderCell(8, "(5)"),
+                    new HeaderCell(8, "(6)"),
+                    new HeaderCell(8, "(7)"),
+                    new HeaderCell(8, "(8)"))
+            );
+        }
+    }
+
+
     private class UisMeasurementHeader implements Header{
 
         @Override
@@ -984,13 +892,13 @@ public class PDFService {
         public List<HeaderCell> getHeaderCells() {
             return new ArrayList<>(Arrays.asList(
                 new HeaderCell(18, testName.get()),
-                new HeaderCell(8, "RPM"),
-                new HeaderCell(8, "Bar"),
-                new HeaderCell(8, "SCV"),
-                new HeaderCell(8, "PCV"),
-                new HeaderCell(14, deliveryLH.get()),
+                new HeaderCell(7, "RPM"),
+                new HeaderCell(7, "Bar"),
+                new HeaderCell(7, "SCV"),
+                new HeaderCell(7, "PCV"),
+                new HeaderCell(16, deliveryLH.get()),
                 new HeaderCell(11, delivery.get()),
-                new HeaderCell(14, deliveryLH.get()),
+                new HeaderCell(16, deliveryLH.get()),
                 new HeaderCell(11, backFlow.get())));
         }
     }

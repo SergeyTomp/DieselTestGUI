@@ -66,10 +66,10 @@ public class DensoCodingDataStorage {
 
         InjectorTest injectorTest = flowTestResult.getInjectorTest();
 
-        Optional.ofNullable(led1DataStorage).ifPresent(data -> data.get(injectorTest).put(width, flowTestResult.getFlow1_double()));
-        Optional.ofNullable(led2DataStorage).ifPresent(data -> data.get(injectorTest).put(width, flowTestResult.getFlow2_double()));
-        Optional.ofNullable(led3DataStorage).ifPresent(data -> data.get(injectorTest).put(width, flowTestResult.getFlow3_double()));
-        Optional.ofNullable(led4DataStorage).ifPresent(data -> data.get(injectorTest).put(width, flowTestResult.getFlow4_double()));
+        Optional.ofNullable(led1DataStorage).ifPresent(data -> data.get(injectorTest).put(width, flowTestResult.getDoubleValue_1()));
+        Optional.ofNullable(led2DataStorage).ifPresent(data -> data.get(injectorTest).put(width, flowTestResult.getDoubleValue_2()));
+        Optional.ofNullable(led3DataStorage).ifPresent(data -> data.get(injectorTest).put(width, flowTestResult.getDoubleValue_3()));
+        Optional.ofNullable(led4DataStorage).ifPresent(data -> data.get(injectorTest).put(width, flowTestResult.getDoubleValue_4()));
 
     }
 

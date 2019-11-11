@@ -66,5 +66,30 @@ public class CodingReportModel {
         public List<String> getValueColumns() {
             return null;
         }
+
+        @Override
+        public double getRangeLeft() {
+            return 0;
+        }
+
+        @Override
+        public double getRangeRight() {
+            return 0;
+        }
+
+        @Override
+        public double getAcceptableRangeLeft() {
+            return 0;
+        }
+
+        @Override
+        public double getAcceptableRangeRight() {
+            return 0;
+        }
+
+        @Override
+        public List<Double> getNumericDataColumns() {
+            return null;
+        }
     }
 }

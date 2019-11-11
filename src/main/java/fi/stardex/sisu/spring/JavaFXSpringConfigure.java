@@ -1285,7 +1285,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                              TabSectionModel tabSectionModel,
                                                              PiezoRepairModel piezoRepairModel,
                                                              UisFlowModel uisFlowModel,
-                                                             UisRlcModel uisRlcModel) {
+                                                             UisRlcModel uisRlcModel,
+                                                             UisBipModel uisBipModel) {
         MainSectionUisController mainSectionUisController = (MainSectionUisController)mainSectionUIS().getController();
         mainSectionUisController.setMainSectionUisModel(mainSectionUisModel);
         mainSectionUisController.setPrintDialogPanel(printDialogPanel());
@@ -1305,6 +1306,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         mainSectionUisController.setPiezoRepairModel(piezoRepairModel);
         mainSectionUisController.setUisFlowModel(uisFlowModel);
         mainSectionUisController.setUisRlcModel(uisRlcModel);
+        mainSectionUisController.setUisBipModel(uisBipModel);
         return mainSectionUisController;
     }
 
@@ -1620,5 +1622,18 @@ public class JavaFXSpringConfigure extends ViewLoader{
         mechanicalController.setUisHardwareUpdateModel(uisHardwareUpdateModel);
         mechanicalController.setI18N(i18N);
         return mechanicalController;
+    }
+
+    @Bean
+    @Autowired
+    public UisBipReportController uisBipReportController(UisReportController uisReportController,
+                                                         MainSectionUisModel mainSectionUisModel,
+                                                         UisBipModel uisBipModel,
+                                                         I18N i18N) {
+        UisBipReportController uisBipReportController = uisReportController.getUisBipReportController();
+        uisBipReportController.setI18N(i18N);
+        uisBipReportController.setMainSectionUisModel(mainSectionUisModel);
+        uisBipReportController.setUisBipModel(uisBipModel);
+        return uisBipReportController;
     }
 }

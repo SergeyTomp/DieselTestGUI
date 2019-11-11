@@ -11,10 +11,12 @@ public class UisReportController {
     @FXML private Tab tabFlowReport;
     @FXML private Tab tabRLCReport;
     @FXML private Tab tabDelayReport;
+    @FXML private Tab tabBipReport;
 
     @FXML private UisRlcReportController uisRlcReportController;
     @FXML private UisDelayReportController uisDelayReportController;
     @FXML private UisFlowReportController uisFlowReportController;
+    @FXML private UisBipReportController uisBipReportController;
 
     private I18N i18N;
 
@@ -26,6 +28,9 @@ public class UisReportController {
     }
     public UisFlowReportController getUisFlowReportController() {
         return uisFlowReportController;
+    }
+    public UisBipReportController getUisBipReportController() {
+        return uisBipReportController;
     }
 
     public void setI18N(I18N i18N) {

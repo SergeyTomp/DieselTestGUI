@@ -9,13 +9,13 @@
       <TableView fx:id="flowTableView">
          <columns>
             <TableColumn fx:id="testNameColumn" prefWidth="120.0" text="%h4.report.table.label.testName" />
-            <TableColumn fx:id="rpmColumn" prefWidth="60.0" text="%h4.report.table.label.motorSpeed" />
-            <TableColumn fx:id="pressColumn" prefWidth="60.0" text="%h4.report.table.label.pressure" />
-            <TableColumn fx:id="scvColumn" prefWidth="60.0" text="SCV" />
-            <TableColumn fx:id="pcvColumn" prefWidth="60.0" text="PCV" />
-            <TableColumn fx:id="deliveryNominalColumn" minWidth="0.0" prefWidth="130.0" text="%flow.label.deliveryNominal" />
+            <TableColumn fx:id="rpmColumn" prefWidth="50.0" text="%h4.report.table.label.motorSpeed" />
+            <TableColumn fx:id="pressColumn" prefWidth="50.0" text="%h4.report.table.label.pressure" />
+            <TableColumn fx:id="scvColumn" prefWidth="50.0" text="SCV" />
+            <TableColumn fx:id="pcvColumn" prefWidth="50.0" text="PCV" />
+            <TableColumn fx:id="deliveryNominalColumn" minWidth="0.0" prefWidth="170.0" text="%flow.label.deliveryNominal" />
             <TableColumn fx:id="deliveryFlowColumn" minWidth="0.0" prefWidth="80.0" text="%flow.label.delivery" />
-            <TableColumn fx:id="backFlowNominalColumn" minWidth="0.0" prefWidth="130.0" text="%flow.label.backFlowNominal" />
+            <TableColumn fx:id="backFlowNominalColumn" minWidth="0.0" prefWidth="170.0" text="%flow.label.backFlowNominal" />
             <TableColumn fx:id="backFlowColumn" minWidth="0.0" prefWidth="80.0" text="%flow.label.backflow" />
             <TableColumn fx:id="deleteColumn" minWidth="75.0" prefWidth="-1.0" />
             <TableColumn fx:id="passedColumn" minWidth="25.0" prefWidth="-1.0" />

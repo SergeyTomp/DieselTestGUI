@@ -70,10 +70,10 @@ public class DelphiC2ICodingDataStorage {
 
         String testName = injectorTest.getTestName().toString();
 
-        Optional.ofNullable(led1DataStorage).ifPresent(data -> data.put(testName, calculateCoefficient(injectorTest, flowTestResult.getFlow1_double())));
-        Optional.ofNullable(led2DataStorage).ifPresent(data -> data.put(testName, calculateCoefficient(injectorTest, flowTestResult.getFlow2_double())));
-        Optional.ofNullable(led3DataStorage).ifPresent(data -> data.put(testName, calculateCoefficient(injectorTest, flowTestResult.getFlow3_double())));
-        Optional.ofNullable(led4DataStorage).ifPresent(data -> data.put(testName, calculateCoefficient(injectorTest, flowTestResult.getFlow4_double())));
+        Optional.ofNullable(led1DataStorage).ifPresent(data -> data.put(testName, calculateCoefficient(injectorTest, flowTestResult.getDoubleValue_1())));
+        Optional.ofNullable(led2DataStorage).ifPresent(data -> data.put(testName, calculateCoefficient(injectorTest, flowTestResult.getDoubleValue_2())));
+        Optional.ofNullable(led3DataStorage).ifPresent(data -> data.put(testName, calculateCoefficient(injectorTest, flowTestResult.getDoubleValue_3())));
+        Optional.ofNullable(led4DataStorage).ifPresent(data -> data.put(testName, calculateCoefficient(injectorTest, flowTestResult.getDoubleValue_4())));
 
     }
 

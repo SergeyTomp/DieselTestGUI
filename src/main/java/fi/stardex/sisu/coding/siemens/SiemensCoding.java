@@ -35,10 +35,10 @@ public class SiemensCoding {
             FlowReportModel.FlowResult flowTestResult = entry.getValue();
 
             temp.put(entry.getKey(), Arrays.asList(
-                    flowTestResult.getFlow1_double(),
-                    flowTestResult.getFlow2_double(),
-                    flowTestResult.getFlow3_double(),
-                    flowTestResult.getFlow4_double()));
+                    flowTestResult.getDoubleValue_1(),
+                    flowTestResult.getDoubleValue_2(),
+                    flowTestResult.getDoubleValue_3(),
+                    flowTestResult.getDoubleValue_4()));
 
         }
 

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.layout.StackPane?>
+
+<StackPane xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.uis.tabs.UisBipReportController">
+    <children>
+        <TableView fx:id="bipTableView" prefHeight="400.0">
+            <columns>
+                <TableColumn fx:id="testNameColumn" prefWidth="150.0" text="%h4.report.table.label.testName" />
+                <TableColumn fx:id="bipNominalColumn" minWidth="0.0" prefWidth="110.0" style="-fx-alignment: CENTER" text="%h4.report.table.label.nominal" />
+                <TableColumn fx:id="bip1Column" prefWidth="70.0" text="1" />
+                <TableColumn fx:id="bip2Column" prefWidth="70.0" text="2" />
+                <TableColumn fx:id="bip3Column" prefWidth="70.0" text="3" />
+                <TableColumn fx:id="bip4Column" prefWidth="70.0" text="4" />
+                <TableColumn fx:id="bip5Column" prefWidth="70.0" text="5" />
+                <TableColumn fx:id="bip6Column" prefWidth="70.0" text="6" />
+                <TableColumn fx:id="bip7Column" prefWidth="70.0" text="7" />
+                <TableColumn fx:id="bip8Column" prefWidth="70.0" text="8" />
+                <TableColumn fx:id="deleteColumn" prefWidth="100.0" style="-fx-alignment: CENTER" />
+            </columns>
+        </TableView>
+    </children>
+</StackPane>

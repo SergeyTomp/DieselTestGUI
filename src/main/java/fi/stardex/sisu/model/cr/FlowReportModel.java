@@ -49,7 +49,7 @@ public class FlowReportModel {
 
     }
 
-    public List<FlowResult> getResultsList(){
+    public List<Result> getResultsList(){
         return new ArrayList<>(resultObservableMap.values());
     }
 
@@ -186,35 +186,36 @@ public class FlowReportModel {
             return flow4;
         }
 
-        public double getFlow1_double() {
+        public double getDoubleValue_1() {
             return flow1_double;
         }
 
-        public double getFlow2_double() {
+        public double getDoubleValue_2() {
             return flow2_double;
         }
 
-        public double getFlow3_double() {
+        public double getDoubleValue_3() {
             return flow3_double;
         }
 
-        public double getFlow4_double() {
+        public double getDoubleValue_4() {
             return flow4_double;
         }
 
-        public double getFlowRangeLeft() {
+        @Override
+        public double getRangeLeft() {
             return flowRangeLeft;
         }
-
-        public double getFlowRangeRight() {
+        @Override
+        public double getRangeRight() {
             return flowRangeRight;
         }
-
-        public double getAcceptableFlowRangeLeft() {
+        @Override
+        public double getAcceptableRangeLeft() {
             return acceptableFlowRangeLeft;
         }
-
-        public double getAcceptableFlowRangeRight() {
+        @Override
+        public double getAcceptableRangeRight() {
             return acceptableFlowRangeRight;
         }
 
@@ -325,6 +326,11 @@ public class FlowReportModel {
         @Override
         public List<String> getValueColumns() {
             return new ArrayList<>(Arrays.asList(getFlow1(), getFlow2(), getFlow3(), getFlow4()));
+        }
+
+        @Override
+        public List<Double> getNumericDataColumns() {
+            return new ArrayList<>(Arrays.asList(flow1_double, flow2_double, flow3_double, flow4_double));
         }
     }
 }

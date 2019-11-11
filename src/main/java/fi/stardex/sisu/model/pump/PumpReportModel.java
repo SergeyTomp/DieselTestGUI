@@ -154,7 +154,7 @@ public class PumpReportModel {
             return pumpTest.get();
         }
 
-        public double getFlowRangeLeft(Measurement flowType) {
+        public double getRangeLeft(Measurement flowType) {
             switch (flowType) {
                 case DELIVERY:
                     return deliveryFlowRangeLeft;
@@ -165,7 +165,7 @@ public class PumpReportModel {
             }
         }
 
-        public double getFlowRangeRight(Measurement flowType) {
+        public double getRangeRight(Measurement flowType) {
             switch (flowType) {
                 case DELIVERY:
                     return deliveryFlowRangeRight;
@@ -176,7 +176,7 @@ public class PumpReportModel {
             }
         }
 
-        public double getAcceptableFlowRangeLeft(Measurement flowType) {
+        public double getAcceptableRangeLeft(Measurement flowType) {
             switch (flowType) {
                 case DELIVERY:
                     return acceptableDeliveryFlowRangeLeft;
@@ -187,7 +187,7 @@ public class PumpReportModel {
             }
         }
 
-        public double getAcceptableFlowRangeRight(Measurement flowType) {
+        public double getAcceptableRangeRight(Measurement flowType) {
             switch (flowType) {
                 case DELIVERY:
                     return acceptableDeliveryFlowRangeRight;
@@ -319,6 +319,31 @@ public class PumpReportModel {
 
         @Override
         public List<String> getValueColumns() {
+            return null;
+        }
+
+        @Override
+        public double getRangeLeft() {
+            return 0;
+        }
+
+        @Override
+        public double getRangeRight() {
+            return 0;
+        }
+
+        @Override
+        public double getAcceptableRangeLeft() {
+            return 0;
+        }
+
+        @Override
+        public double getAcceptableRangeRight() {
+            return 0;
+        }
+
+        @Override
+        public List<Double> getNumericDataColumns() {
             return null;
         }
     }

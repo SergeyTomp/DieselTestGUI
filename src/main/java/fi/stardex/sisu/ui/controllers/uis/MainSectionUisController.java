@@ -125,6 +125,7 @@ public class MainSectionUisController {
     private TabSectionModel tabSectionModel;
     private PiezoRepairModel piezoRepairModel;
     private UisFlowModel uisFlowModel;
+    private UisBipModel uisBipModel;
     private UisModelService uisModelService;
     private UisProducerService uisProducerService;
     private UisTestService uisTestService;
@@ -196,6 +197,9 @@ public class MainSectionUisController {
     public void setUisRlcModel(UisRlcModel uisRlcModel) {
         this.uisRlcModel = uisRlcModel;
     }
+    public void setUisBipModel(UisBipModel uisBipModel) {
+        this.uisBipModel = uisBipModel;
+    }
 
     @PostConstruct
     public void init() {
@@ -234,7 +238,7 @@ public class MainSectionUisController {
 
             if(modelAlertProcessing)return;
 
-            if (!uisFlowModel.getResultObservableMap().isEmpty()) {
+            if (!uisFlowModel.getResultObservableMap().isEmpty() || !uisBipModel.getResultObservableMap().isEmpty()) {
 
                 showAlert();
                 if (alert.getResult() != ButtonType.YES) {
@@ -452,17 +456,17 @@ public class MainSectionUisController {
 
             if(oemAlertProcessing) return;
 
-//            if (!flowReportModel.getResultObservableMap().isEmpty()) {
-//
-//                showAlert();
-//                if (alert.getResult() != ButtonType.YES) {
-//
-//                    oemAlertProcessing = true;
-//                    manufacturerListView.getSelectionModel().select(oldValue);
-//                    oemAlertProcessing = false;
-//                    return;
-//                }
-//            }
+            if (!uisFlowModel.getResultObservableMap().isEmpty() || !uisBipModel.getResultObservableMap().isEmpty()) {
+
+                showAlert();
+                if (alert.getResult() != ButtonType.YES) {
+
+                    oemAlertProcessing = true;
+                    manufacturerListView.getSelectionModel().select(oldValue);
+                    oemAlertProcessing = false;
+                    return;
+                }
+            }
 
             resetButton.fire();
             disableNode(newValue == null, injectorsVBox);

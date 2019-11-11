@@ -75,10 +75,10 @@ public class DelphiC3ICodingDataStorage {
 
         InjectorTest injectorTest = flowTestResult.getInjectorTest();
 
-        Optional.ofNullable(led1DataStorage).ifPresent(data -> storeCoefficient(injectorTest, flowTestResult.getFlow1_double(), data));
-        Optional.ofNullable(led2DataStorage).ifPresent(data -> storeCoefficient(injectorTest, flowTestResult.getFlow2_double(), data));
-        Optional.ofNullable(led3DataStorage).ifPresent(data -> storeCoefficient(injectorTest, flowTestResult.getFlow3_double(), data));
-        Optional.ofNullable(led4DataStorage).ifPresent(data -> storeCoefficient(injectorTest, flowTestResult.getFlow4_double(), data));
+        Optional.ofNullable(led1DataStorage).ifPresent(data -> storeCoefficient(injectorTest, flowTestResult.getDoubleValue_1(), data));
+        Optional.ofNullable(led2DataStorage).ifPresent(data -> storeCoefficient(injectorTest, flowTestResult.getDoubleValue_2(), data));
+        Optional.ofNullable(led3DataStorage).ifPresent(data -> storeCoefficient(injectorTest, flowTestResult.getDoubleValue_3(), data));
+        Optional.ofNullable(led4DataStorage).ifPresent(data -> storeCoefficient(injectorTest, flowTestResult.getDoubleValue_4(), data));
 
     }
 

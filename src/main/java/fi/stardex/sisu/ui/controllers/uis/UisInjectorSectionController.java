@@ -33,6 +33,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -187,6 +188,7 @@ public class UisInjectorSectionController {
         setToggleGroupToLeds(toggleGroup);
         setupTimelines();
         setupModelToControlsBinding();
+        setupBipSaveInvocation();
         setupInjectorErrorListener();
         setupWidthSpinnersStyleChange();
         setupModelListener();
@@ -200,6 +202,7 @@ public class UisInjectorSectionController {
         setupStartButtonListener();
         lcd.valueProperty().bind(uisHardwareUpdateModel.lcdPressureProperty());
         bipLabel.setText("BIP(\u00B5s)");
+        saveBipButton.setDisable(true);
     }
 
     private void configureModeControls(InjectorSubType injectorSubType) {
@@ -365,6 +368,18 @@ public class UisInjectorSectionController {
         uisInjectorSectionModel.shiftProperty().bind(offsetSpinner.valueProperty());
         uisInjectorSectionModel.angle_1Property().bind(angle1Spinner.valueProperty());
         uisInjectorSectionModel.angle_2Property().bind(angle2Spinner.valueProperty());
+
+
+    }
+
+    private void setupBipSaveInvocation() {
+
+        saveBipButton.setOnMouseClicked(mouseEvent -> uisInjectorSectionModel.getSaveBipButton().fire());
+        mainSectionUisModel.getStoreButton().addEventHandler(ActionEvent.ACTION, event -> {
+            if (!saveBipButton.isDisabled()) {
+                uisInjectorSectionModel.getSaveBipButton().fire();
+            }
+        });
     }
 
     private void pressureSensorSelectionListener() {
@@ -437,6 +452,8 @@ public class UisInjectorSectionController {
                 bipGauge.setBipMode(false);
                 Platform.runLater(bipGauge);
                 bipTaskLabel.setText("");
+                uisInjectorSectionModel.bipRangeLabelProperty().setValue("");
+                saveBipButton.setDisable(true);
                 return;
             }
 
@@ -467,16 +484,22 @@ public class UisInjectorSectionController {
             }
 
             if (isBipTest(newValue)) {
-                bipTaskLabel.setText("\u0020" + test.getBip() + "\u00B1" + test.getBipRange());
+                saveBipButton.setDisable(false);
+
+                String bipRangeLabel = "\u0020" + test.getBip() + "\u00B1" + test.getBipRange();
+                bipTaskLabel.setText(bipRangeLabel);
+                uisInjectorSectionModel.bipRangeLabelProperty().setValue(bipRangeLabel);
                 bipGauge.setParameters(test.getBip(), vap.getBipWindow(), vap.getFirstW(), test.getBipRange());
                 ultimaModbusWriter.add(BipModeOn_1, true);
                 ultimaModbusWriter.add(BipModeOn_2, true);
             } else {
+                saveBipButton.setDisable(true);
                 ultimaModbusWriter.add(BipModeOn_1, false);
                 ultimaModbusWriter.add(BipModeOn_2, false);
                 bipGauge.setBipMode(false);
                 Platform.runLater(bipGauge);
                 bipTaskLabel.setText("");
+                uisInjectorSectionModel.bipRangeLabelProperty().setValue("");
             }
         });
     }
@@ -549,6 +572,7 @@ public class UisInjectorSectionController {
     private void setupCharTaskListener() {
 
         chartTaskDataModel.bipSignalValueProperty().addListener((observableValue, oldValue, newValue) -> bipGauge.setValue(newValue.doubleValue()));
+        uisInjectorSectionModel.bipValueProperty().bind(chartTaskDataModel.bipSignalValueProperty());
         chartTaskDataModel.delayValueProperty().addListener((observableValue, oldValue, newValue) -> delayGauge.setValue(newValue.doubleValue()));
     }
 
@@ -732,23 +756,6 @@ public class UisInjectorSectionController {
     private void getLoggingInjectorSelection(Boolean value, ToggleButton ledController) {
         String s = String.format("LedBeaker %s selected: %s", ledController.getText(), value);
         logger.info(s);
-    }
-
-    private class LedParametersChangeListener implements ChangeListener<Object> {
-
-        public LedParametersChangeListener() {
-
-//            ledToggleButtons.forEach(s -> s.selectedProperty().addListener(this));
-        }
-
-        @Override
-        public void changed(ObservableValue<?> observableValue, Object oldValue, Object newValue) {
-
-            if (newValue instanceof Toggle) {
-
-            }
-
-        }
     }
 
     private double calcTargetPress(Integer target){
