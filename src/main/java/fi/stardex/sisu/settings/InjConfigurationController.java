@@ -1,9 +1,10 @@
 package fi.stardex.sisu.settings;
 
-import fi.stardex.sisu.util.enums.InjectorChannel;
 import fi.stardex.sisu.model.cr.InjConfigurationModel;
 import fi.stardex.sisu.model.cr.InjectorTypeModel;
+import fi.stardex.sisu.model.cr.MainSectionModel;
 import fi.stardex.sisu.states.VoltAmpereProfileDialogModel;
+import fi.stardex.sisu.util.enums.InjectorChannel;
 import fi.stardex.sisu.util.enums.InjectorType;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
@@ -23,6 +24,8 @@ public class InjConfigurationController {
     private InjConfigurationModel injConfigurationModel;
 
     private VoltAmpereProfileDialogModel voltAmpereProfileDialogModel;
+
+    private MainSectionModel mainSectionModel;
 
     private Preferences rootPrefs;
 
@@ -44,6 +47,10 @@ public class InjConfigurationController {
 
     public void setVoltAmpereProfileDialogModel(VoltAmpereProfileDialogModel voltAmpereProfileDialogModel) {
         this.voltAmpereProfileDialogModel = voltAmpereProfileDialogModel;
+    }
+
+    public void setMainSectionModel(MainSectionModel mainSectionModel) {
+        this.mainSectionModel = mainSectionModel;
     }
 
     @PostConstruct
@@ -69,16 +76,67 @@ public class InjConfigurationController {
                 restoreChannelMode();
             }
         });
+        /**Old version of ChannelMode restore listener. Has a bug of incorrect return to previously selected SingleChannel mode.
+         * If SINGLE_CHANNEL mode is selected as main mode and 2Coil injector selection is made after previously selected another 2Coil,
+         * lastValue variable of MULTI_CHANNEL constant will be overridden by MULTI_CHANNEL value instead of SingleChannel value, written there after first 2Coil selection.
+         *  Hence of this if further selection will be not 2Coil injector, channel mode will be restored to MULTI_CHANNEL but not to SINGLE_CHANNEL.
+         *  Another bug was just a visual: if after first time 2Coil selected injector the next one was not 2Coil and first test in the testList of newly selected is of Measurement.NO type,
+         *  channel mode restore was done only after not Measurement.NO test selection and hence user has possibility to switch additional channels in in fact SingleChannel mode.
+         *  Leaved here as a reminder.*/
+//        voltAmpereProfileDialogModel.isDoubleCoilProperty().addListener((observableValue, oldValue, newValue) -> {
+//
+//            if (newValue) {
+//                selectChannelMode(MULTI_CHANNEL);
+//            } else {
+//                restoreChannelMode();
+//            }
+//        });
 
-        voltAmpereProfileDialogModel.isDoubleCoilProperty().addListener((observableValue, oldValue, newValue) -> {
+        /**New version of ChannelMode restore listener instead of old one above. */
+        mainSectionModel.injectorProperty().addListener((observableValue, oldValue, newValue) -> {
 
-            if (newValue) {
-                selectChannelMode(MULTI_CHANNEL);
+            if (newValue != null) {
+
+                if (oldValue != null) {
+                    if (oldValue.getVoltAmpereProfile().isDoubleCoil() && !newValue.getVoltAmpereProfile().isDoubleCoil()) {
+                        restoreChannelMode();
+                    } else if (!oldValue.getVoltAmpereProfile().isDoubleCoil() && newValue.getVoltAmpereProfile().isDoubleCoil()) {
+                        selectChannelMode(MULTI_CHANNEL);
+                    }
+                }
+                else {
+                    if (newValue.getVoltAmpereProfile().isDoubleCoil()) {
+                        selectChannelMode(MULTI_CHANNEL);
+                    }
+                }
             } else {
-                restoreChannelMode();
+                if (oldValue.getVoltAmpereProfile().isDoubleCoil()) {
+                    restoreChannelMode();
+                }
             }
         });
     }
+
+        //Another variant of the listener above
+//        mainSectionModel.injectorProperty().addListener((observableValue, oldValue, newValue) -> {
+//
+//            if (newValue != null) {
+//
+//                if (oldValue != null && oldValue.getVoltAmpereProfile().isDoubleCoil() && newValue.getVoltAmpereProfile().isDoubleCoil()) {
+//                    return;
+//                }
+//
+//                if (newValue.getVoltAmpereProfile().isDoubleCoil()) {
+//                    selectChannelMode(MULTI_CHANNEL);
+//                } else if (oldValue != null && oldValue.getVoltAmpereProfile().isDoubleCoil() && !newValue.getVoltAmpereProfile().isDoubleCoil()) {
+//                    restoreChannelMode();
+//                }
+//            } else {
+//                if (oldValue.getVoltAmpereProfile().isDoubleCoil()) {
+//                    restoreChannelMode();
+//                }
+//            }
+//        });
 
     private void selectChannelMode(InjectorChannel mode) {
 

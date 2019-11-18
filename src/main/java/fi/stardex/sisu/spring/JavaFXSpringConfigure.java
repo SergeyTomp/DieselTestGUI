@@ -1122,12 +1122,14 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                                  Preferences preferences,
                                                                  InjectorTypeModel injectorTypeModel,
                                                                  SettingsController settingsController,
-                                                                 VoltAmpereProfileDialogModel voltAmpereProfileDialogModel){
+                                                                 VoltAmpereProfileDialogModel voltAmpereProfileDialogModel,
+                                                                 MainSectionModel mainSectionModel){
         InjConfigurationController injConfigurationController = settingsController.getInjConfigurationController();
         injConfigurationController.setInjConfigurationModel(injConfigurationModel);
         injConfigurationController.setRootPrefs(preferences);
         injConfigurationController.setInjectorTypeModel(injectorTypeModel);
         injConfigurationController.setVoltAmpereProfileDialogModel(voltAmpereProfileDialogModel);
+        injConfigurationController.setMainSectionModel(mainSectionModel);
         return injConfigurationController;
     }
 

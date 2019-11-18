@@ -191,6 +191,10 @@ public class VoltAmpereProfileController {
         injectorTestModel.injectorTestProperty().addListener((observableValue, oldValue, newValue) -> {
 
             if (newValue != null && newValue.getTestName().getMeasurement() != Measurement.NO) {
+            /**Use commented string if necessary to allow VAP sending in case Measurement.NO test type
+             * In this case there is necessary to investigate unstable first time pulse switch on
+             * if Measurement.NO test type was previous to any other measuring tests*/
+//            if (newValue != null) {
 
                 currentVAP = newValue.getVoltAmpereProfile();
 
@@ -210,8 +214,10 @@ public class VoltAmpereProfileController {
                 setValuesToVapSpinners();
                 sendVAPRegisters(Invocator.TEST);
             }
-            else if(newValue == null){
 
+            else if(newValue == null){
+            /**Use commented string if necessary to allow VAP sending in case Measurement.NO test type (see note above)*/
+//            else{
                 currentVAP = null;
                 setInitialsToVapSpinners();
             }
