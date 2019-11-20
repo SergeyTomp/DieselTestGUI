@@ -18,7 +18,7 @@ import javafx.stage.Stage;
 
 import javax.annotation.PostConstruct;
 
-import static fi.stardex.sisu.ui.controllers.common.GUI_TypeController.GUIType.UIS;
+import static fi.stardex.sisu.util.enums.GUI_type.UIS;
 
 public class CustomManufacturerUisDialogController {
 

@@ -30,9 +30,9 @@ import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static fi.stardex.sisu.ui.controllers.common.GUI_TypeController.GUIType.UIS;
 import static fi.stardex.sisu.util.converters.DataConverter.convertDataToDouble;
 import static fi.stardex.sisu.util.converters.DataConverter.convertDataToInt;
+import static fi.stardex.sisu.util.enums.GUI_type.UIS;
 import static fi.stardex.sisu.util.enums.InjectorSubType.SINGLE_COIL;
 
 public class CustomTestUisDialogController {

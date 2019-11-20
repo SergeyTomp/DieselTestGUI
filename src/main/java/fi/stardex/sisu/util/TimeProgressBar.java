@@ -20,8 +20,10 @@ public class TimeProgressBar {
         progressBar.setProgress(initialTime == 0 ? 0 : 1);
     }
 
-    public void refreshProgress() {
-        setProgress(initialTime);
+    public void refreshProgress(double initial, double current) {
+
+        progressBar.setProgress(current / initial);
+        text.setText(String.valueOf((int)current));
     }
 
     public int tick() {

@@ -1,14 +1,21 @@
 package fi.stardex.sisu.settings;
 
+import fi.stardex.sisu.connect.ModbusConnect;
 import fi.stardex.sisu.model.cr.InjConfigurationModel;
 import fi.stardex.sisu.model.cr.InjectorTypeModel;
 import fi.stardex.sisu.model.cr.MainSectionModel;
+import fi.stardex.sisu.registers.RegisterProvider;
+import fi.stardex.sisu.registers.flow.ModbusMapFlow;
 import fi.stardex.sisu.states.VoltAmpereProfileDialogModel;
 import fi.stardex.sisu.util.enums.InjectorChannel;
 import fi.stardex.sisu.util.enums.InjectorType;
+import fi.stardex.sisu.version.FirmwareVersion;
+import fi.stardex.sisu.version.FlowFirmwareVersion;
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
 import java.util.prefs.Preferences;
@@ -32,6 +39,12 @@ public class InjConfigurationController {
     private static final String PREF_KEY = "injectorsConfigSelected";
 
     private InjectorTypeModel injectorTypeModel;
+
+//    @Autowired
+//    private ModbusConnect flowModbusConnect;
+//
+//    @Autowired
+//    private RegisterProvider flowRegisterProvider;
 
     public void setInjConfigurationModel(InjConfigurationModel injConfigurationModel) {
         this.injConfigurationModel = injConfigurationModel;
@@ -115,7 +128,6 @@ public class InjConfigurationController {
                 }
             }
         });
-    }
 
         //Another variant of the listener above
 //        mainSectionModel.injectorProperty().addListener((observableValue, oldValue, newValue) -> {
@@ -137,6 +149,34 @@ public class InjConfigurationController {
 //                }
 //            }
 //        });
+
+        /** Listener below could be activated to prohibit switching of multi channel mode in case of single channel flow-meter hardware connected (MACTER, STAND_FM)
+         * Do not forget to uncomment autowired ModbusConnect flowModbusConnect and RegisterProvider flowRegisterProvider in the header above*/
+//        flowModbusConnect.connectedProperty().addListener((observableValue, oldValue, newValue) -> {
+//
+//            if (newValue) {
+//                int firmwareVersionNumber = (int) flowRegisterProvider.read(ModbusMapFlow.FirmwareVersion);
+//                switch (firmwareVersionNumber) {
+//                    case 0xAACC:
+//                    case 0xDDFF:
+//                    case 0xBBCC:
+//                        Platform.runLater(()->{
+//                            injectorsConfigComboBox.getSelectionModel().select(SINGLE_CHANNEL);
+//                            injectorsConfigComboBox.setVisible(false);
+//                        });
+//                        break;
+//
+//                    default:
+//                        Platform.runLater(()-> injectorsConfigComboBox.setVisible(true));
+//
+//                    break;
+//                }
+//            }
+//            else injectorsConfigComboBox.setVisible(true);
+//        });
+    }
+
+
 
     private void selectChannelMode(InjectorChannel mode) {
 

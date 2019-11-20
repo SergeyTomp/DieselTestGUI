@@ -1,9 +1,7 @@
 package fi.stardex.sisu.ui.controllers.uis;
 
-import fi.stardex.sisu.model.GUI_TypeModel;
-import fi.stardex.sisu.model.PiezoRepairModel;
-import fi.stardex.sisu.model.Step3Model;
-import fi.stardex.sisu.model.TabSectionModel;
+import fi.stardex.sisu.measurement.Timing;
+import fi.stardex.sisu.model.*;
 import fi.stardex.sisu.model.uis.*;
 import fi.stardex.sisu.persistence.orm.interfaces.*;
 import fi.stardex.sisu.persistence.repos.uis.UisModelService;
@@ -13,16 +11,15 @@ import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.BoostUadjustmentState;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.util.TimeProgressBar;
-import fi.stardex.sisu.util.enums.Move;
-import fi.stardex.sisu.util.enums.Operation;
-import fi.stardex.sisu.util.enums.TestSpeed;
-import fi.stardex.sisu.util.enums.Tests;
+import fi.stardex.sisu.util.enums.*;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.listeners.PrintButtonHandler;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -30,6 +27,7 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -55,7 +53,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import static fi.stardex.sisu.registers.flow.ModbusMapFlow.StartMeasurementCycle;
-import static fi.stardex.sisu.ui.controllers.common.GUI_TypeController.GUIType.UIS;
+import static fi.stardex.sisu.util.enums.GUI_type.UIS;
 import static fi.stardex.sisu.util.enums.Measurement.DELIVERY;
 import static fi.stardex.sisu.util.enums.Measurement.VISUAL;
 import static fi.stardex.sisu.util.enums.Move.DOWN;
@@ -131,6 +129,8 @@ public class MainSectionUisController {
     private UisTestService uisTestService;
     private ModelService modelService;
     private ProducerService producerService;
+    private TimingModelFactory timingModelFactory;
+    private Timing timingModel;
     private TestService testService;
     private boolean oemAlertProcessing;
     private boolean modelAlertProcessing;
@@ -138,7 +138,19 @@ public class MainSectionUisController {
     private StringProperty alertString = new SimpleStringProperty();
     private StringProperty yesButton = new SimpleStringProperty();
     private StringProperty noButton = new SimpleStringProperty();
+    private IntegerProperty adjustingTimeProperty = new SimpleIntegerProperty();
+    private IntegerProperty measuringTimeProperty = new SimpleIntegerProperty();
     private static final ObservableList<Test> listOfNonIncludedTests = FXCollections.observableArrayList();
+
+    public ToggleButton getStartToggleButton() {
+        return startToggleButton;
+    }
+    public ListView<Test> getTestListView() {
+        return testListView;
+    }
+    public Button getStoreButton() {
+        return storeButton;
+    }
 
     public void setFlowModbusWriter(ModbusRegisterProcessor flowModbusWriter) {
         this.flowModbusWriter = flowModbusWriter;
@@ -200,6 +212,9 @@ public class MainSectionUisController {
     public void setUisBipModel(UisBipModel uisBipModel) {
         this.uisBipModel = uisBipModel;
     }
+    public void setTimingModelFactory(TimingModelFactory timingModelFactory) {
+        this.timingModelFactory = timingModelFactory;
+    }
 
     @PostConstruct
     public void init() {
@@ -230,6 +245,7 @@ public class MainSectionUisController {
         setupPrintButton();
         testListView.setCellFactory(CheckBoxListCell.forListView(Test::includedProperty));
         showButtons(true, false);
+        setupTimingsListeners();
     }
 
     private void setupModelListViewListener() {
@@ -344,23 +360,20 @@ public class MainSectionUisController {
 //                measurements.start();
             }
 
-            currentAdjustingTime = newValue.getAdjustingTime();
-//            currentAdjustingTime = 5;
-
-            currentMeasuringTime = newValue.getMeasurementTime();
-//            currentMeasuringTime = 5;
-
-            setProgress(speedComboBox.getSelectionModel().getSelectedItem().getMultiplier());
             mainSectionUisModel.setTestIsChanging(false);
         });
         tabSectionModel.step3TabIsShowingProperty().addListener((observableValue, oldValue, newValue) -> testListView.setDisable(newValue));
         tabSectionModel.piezoTabIsShowingProperty().addListener((observableValue, oldValue, newValue) -> testListView.setDisable(newValue));
     }
 
-    private void setProgress(double multiplier) {
 
-        adjustingTime.setProgress((int)(currentAdjustingTime * multiplier));
-        measuringTime.setProgress((int)(currentMeasuringTime * multiplier));
+    private void setupTimingsListeners() {
+
+        adjustingTimeProperty.addListener((observableValue, oldValue, newValue)
+                -> adjustingTime.refreshProgress(timingModel.getInitialAdjustingTime().get(), newValue.doubleValue()));
+
+        measuringTimeProperty.addListener((observableValue, oldValue, newValue)
+                -> measuringTime.refreshProgress(timingModel.getInitialMeasuringTime().get(), newValue.doubleValue()));
     }
 
     private void setupTestsToggleGroupListener() {
@@ -720,8 +733,8 @@ public class MainSectionUisController {
 
     private void setupSpeedComboBox() {
         speedComboBox.getItems().setAll(TestSpeed.values());
+        mainSectionUisModel.multiplierProperty().bind(speedComboBox.getSelectionModel().selectedItemProperty());
         speedComboBox.getSelectionModel().selectFirst();
-        speedComboBox.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> setProgress(newValue.getMultiplier()));
     }
 
     private void setupGuiTypeModelListener() {
@@ -732,11 +745,13 @@ public class MainSectionUisController {
                 startToggleButton.setSelected(false);
             }
 
+            //TODO: add cases for other GUI types after implementation of this controller as unique for them and move updateTimingModelListeners(newValue) outside of if-else
             if (newValue == UIS) {
 
                 modelService = uisModelService;
                 producerService = uisProducerService;
                 testService = uisTestService;
+                updateTimingModelListeners(newValue);
 
                 manufacturerListView.getItems().setAll(new ArrayList<>(producerService.findAll()));
                 manufacturerListView.refresh();
@@ -760,6 +775,13 @@ public class MainSectionUisController {
         });
     }
 
+    private void updateTimingModelListeners(GUI_type guiType) {
+
+        timingModel = timingModelFactory.getTimingModel(guiType);
+        adjustingTimeProperty.bind(timingModel.getAdjustingTime());
+        measuringTimeProperty.bind(timingModel.getMeasuringTime());
+    }
+
     private  void setupResetButton() {
          resetButton.setOnAction(event -> flowModbusWriter.add(StartMeasurementCycle, true));
     }
@@ -769,7 +791,7 @@ public class MainSectionUisController {
     }
 
     private void setupStoreButton() {
-        storeButton.setOnMouseClicked(mouseEvent -> mainSectionUisModel.getStoreButton().fire());
+        storeButton.setOnAction(actionEvent -> mainSectionUisModel.getStoreButton().fire());
     }
 
     private void showAlert() {

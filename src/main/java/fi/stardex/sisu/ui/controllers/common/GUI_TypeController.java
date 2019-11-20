@@ -9,6 +9,7 @@ import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.DimasGUIEditionState;
 import fi.stardex.sisu.states.InjectorSectionPwrState;
 import fi.stardex.sisu.states.PumpsStartButtonState;
+import fi.stardex.sisu.util.enums.GUI_type;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.ComboBox;
@@ -25,12 +26,8 @@ public class GUI_TypeController {
 
     private final Logger logger = LoggerFactory.getLogger(GUI_TypeController.class);
 
-    public enum GUIType {
-        CR_Inj, CR_Pump, UIS, HEUI
-    }
-
     @FXML
-    private ComboBox<GUIType> gui_typeComboBox;
+    private ComboBox<GUI_type> gui_typeComboBox;
     private Preferences rootPreferences;
     private Parent mainSection;
     private Parent mainSectionPumps;
@@ -147,7 +144,7 @@ public class GUI_TypeController {
     @PostConstruct
     private void init() {
 
-        gui_typeComboBox.getItems().addAll(GUIType.values());
+        gui_typeComboBox.getItems().addAll(GUI_type.values());
 
         gui_typeComboBox.valueProperty().addListener((observable, oldValue, newValue) -> {
 
@@ -173,7 +170,7 @@ public class GUI_TypeController {
             }
         });
 
-        GUIType currentGUIType = GUIType.valueOf(rootPreferences.get("GUI_Type", GUIType.CR_Inj.toString()));
+        GUI_type currentGUIType = GUI_type.valueOf(rootPreferences.get("GUI_Type", GUI_type.CR_Inj.toString()));
 
         gui_typeComboBox.getSelectionModel().select(currentGUIType);
         gui_typeComboBox.visibleProperty().bind(dimasGUIEditionState.isDimasGuiEditionProperty().not());

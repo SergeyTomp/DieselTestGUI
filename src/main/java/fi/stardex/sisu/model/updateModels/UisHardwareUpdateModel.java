@@ -15,9 +15,9 @@ import fi.stardex.sisu.util.enums.RegActive;
 import javafx.beans.property.*;
 
 import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.*;
-import static fi.stardex.sisu.ui.controllers.common.GUI_TypeController.GUIType.UIS;
 import static fi.stardex.sisu.util.SpinnerDefaults.*;
 import static fi.stardex.sisu.util.converters.DataConverter.*;
+import static fi.stardex.sisu.util.enums.GUI_type.UIS;
 import static fi.stardex.sisu.util.enums.InjectorSubType.*;
 
 @Module(value = Device.ULTIMA)

@@ -12,7 +12,6 @@ import fi.stardex.sisu.persistence.repos.cr.InjectorTestRepository;
 import fi.stardex.sisu.persistence.repos.cr.InjectorsRepository;
 import fi.stardex.sisu.persistence.repos.cr.VoltAmpereProfileRepository;
 import fi.stardex.sisu.ui.ViewHolder;
-import fi.stardex.sisu.ui.controllers.common.GUI_TypeController;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -29,6 +28,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
 
+import static fi.stardex.sisu.util.enums.GUI_type.HEUI;
 import static fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer.getInjector;
 import static fi.stardex.sisu.util.obtainers.CurrentManufacturerObtainer.getManufacturer;
 
@@ -209,7 +209,7 @@ public class NewEditInjectorDialogController {
         noUniqueLabel.setVisible(false);
         Injector newInj = new Injector(injectorCodeTF.getText(), getManufacturer(),
                 voapListView.getSelectionModel().getSelectedItem(), true, -1);
-        if (gui_typeModel.guiTypeProperty().get() == GUI_TypeController.GUIType.HEUI) {
+        if (gui_typeModel.guiTypeProperty().get() == HEUI) {
             newInj.setHeui(true);
         }
         else newInj.setHeui(false);
@@ -360,7 +360,7 @@ public class NewEditInjectorDialogController {
         private String title;
         private Consumer<NewEditVOAPDialogController> dialogType;
 
-        public VoapListEventHandler(String title, Consumer<NewEditVOAPDialogController> dialogType) {
+        VoapListEventHandler(String title, Consumer<NewEditVOAPDialogController> dialogType) {
             this.title = title;
             this.dialogType = dialogType;
         }

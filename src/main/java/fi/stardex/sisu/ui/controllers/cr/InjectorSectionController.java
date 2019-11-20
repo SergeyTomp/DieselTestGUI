@@ -1,11 +1,12 @@
 package fi.stardex.sisu.ui.controllers.cr;
 
 import fi.stardex.sisu.charts.TimerTasksManager;
-import fi.stardex.sisu.model.cr.*;
-import fi.stardex.sisu.util.enums.InjectorChannel;
 import fi.stardex.sisu.devices.Device;
 import fi.stardex.sisu.devices.Devices;
-import fi.stardex.sisu.model.*;
+import fi.stardex.sisu.model.GUI_TypeModel;
+import fi.stardex.sisu.model.Step3Model;
+import fi.stardex.sisu.model.TabSectionModel;
+import fi.stardex.sisu.model.cr.*;
 import fi.stardex.sisu.model.updateModels.InjectorSectionUpdateModel;
 import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
@@ -15,8 +16,8 @@ import fi.stardex.sisu.states.BoostUadjustmentState;
 import fi.stardex.sisu.states.InjectorControllersState;
 import fi.stardex.sisu.states.InjectorSectionPwrState;
 import fi.stardex.sisu.states.VoltAmpereProfileDialogModel;
-import fi.stardex.sisu.ui.controllers.common.GUI_TypeController;
 import fi.stardex.sisu.ui.controllers.cr.tabs.DelayController;
+import fi.stardex.sisu.util.enums.InjectorChannel;
 import fi.stardex.sisu.util.enums.InjectorType;
 import fi.stardex.sisu.util.enums.Measurement;
 import fi.stardex.sisu.util.i18n.I18N;
@@ -51,6 +52,7 @@ import java.util.*;
 import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.*;
 import static fi.stardex.sisu.util.SpinnerDefaults.*;
 import static fi.stardex.sisu.util.converters.DataConverter.convertDataToInt;
+import static fi.stardex.sisu.util.enums.GUI_type.HEUI;
 
 public class InjectorSectionController {
 
@@ -484,7 +486,7 @@ public class InjectorSectionController {
         });
 
         gui_typeModel.guiTypeProperty().addListener((observableValue, oldValue, newValue) -> showNode(
-                newValue != GUI_TypeController.GUIType.HEUI,
+                newValue != HEUI,
                 width2CurrentSignalSpinner, offset2CurrentSignalSpinner, coil2Label, width2Label, offsetLabel));
 
         injectorControllersState.getLedBeaker1ToggleButton().selectedProperty().bind(led1ToggleButton.selectedProperty());
@@ -765,7 +767,7 @@ public class InjectorSectionController {
 
         final AnchorPane ledAnchorPane;
 
-        public StackPaneWidthListener(AnchorPane ledAnchorPane){
+        StackPaneWidthListener(AnchorPane ledAnchorPane){
             this.ledAnchorPane = ledAnchorPane;
         }
 

@@ -8,7 +8,6 @@ import fi.stardex.sisu.pdf.Customer;
 import fi.stardex.sisu.pdf.ExceptionalConsumer;
 import fi.stardex.sisu.pdf.PDFService;
 import fi.stardex.sisu.persistence.orm.uis.InjectorUIS;
-import fi.stardex.sisu.ui.controllers.common.GUI_TypeController;
 import fi.stardex.sisu.util.EmptyObjectDefaultChecker;
 import fi.stardex.sisu.util.enums.Tests;
 import fi.stardex.sisu.util.i18n.I18N;
@@ -36,6 +35,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import static fi.stardex.sisu.company.CompanyDetails.*;
+import static fi.stardex.sisu.util.enums.GUI_type.*;
 
 
 public class PrintDialogPanelController{
@@ -228,15 +228,15 @@ public class PrintDialogPanelController{
                             ExceptionalConsumer<Customer, IOException> processUis){
         Customer customer = prepareDocument();
         try {
-            if (gui_typeModel.guiTypeProperty().get() == GUI_TypeController.GUIType.CR_Inj && CurrentInjectorObtainer.getInjector() != null) {
+            if (gui_typeModel.guiTypeProperty().get() == CR_Inj && CurrentInjectorObtainer.getInjector() != null) {
                     if (mainSectionModel.testTypeProperty().get() == Tests.TestType.CODING) {
                         processInjectorCoding.accept(customer);
                     } else {
                         processInjector.accept(customer);
                     }
-            }else if (gui_typeModel.guiTypeProperty().get() == GUI_TypeController.GUIType.CR_Pump && pumpModel.pumpProperty().get() != null) {
+            }else if (gui_typeModel.guiTypeProperty().get() == CR_Pump && pumpModel.pumpProperty().get() != null) {
                 processPump.accept(customer);
-            }else if (gui_typeModel.guiTypeProperty().get() == GUI_TypeController.GUIType.UIS && mainSectionUisModel.modelProperty().get() != null) {
+            }else if (gui_typeModel.guiTypeProperty().get() == UIS && mainSectionUisModel.modelProperty().get() != null) {
                 processUis.accept(customer);
             }
 

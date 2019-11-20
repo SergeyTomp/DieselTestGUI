@@ -2,12 +2,13 @@ package fi.stardex.sisu.ui.controllers.pumps.pressure;
 
 import fi.stardex.sisu.model.GUI_TypeModel;
 import fi.stardex.sisu.states.PumpHighPressureSectionPwrState;
-import fi.stardex.sisu.ui.controllers.common.GUI_TypeController;
 import javafx.fxml.FXML;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.StackPane;
 
 import javax.annotation.PostConstruct;
+
+import static fi.stardex.sisu.util.enums.GUI_type.CR_Pump;
 
 public class PumpHighPressureSectionPwrController {
     @FXML private StackPane pwrButtonStackPane;
@@ -36,7 +37,7 @@ public class PumpHighPressureSectionPwrController {
         pumpHighPressureSectionPwrState.powerButtonProperty().bindBidirectional(pwrButtonToggleButton.selectedProperty());
 
         gui_typeModel.guiTypeProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue == GUI_TypeController.GUIType.CR_Pump) {
+            if (oldValue == CR_Pump) {
                 pwrButtonToggleButton.setSelected(false);
             }
         });

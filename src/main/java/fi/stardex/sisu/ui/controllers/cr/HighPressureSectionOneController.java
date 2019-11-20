@@ -29,6 +29,8 @@ import javax.annotation.PostConstruct;
 
 import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.*;
 import static fi.stardex.sisu.util.SpinnerDefaults.*;
+import static fi.stardex.sisu.util.enums.GUI_type.CR_Inj;
+import static fi.stardex.sisu.util.enums.GUI_type.HEUI;
 import static fi.stardex.sisu.util.enums.RegActive.*;
 
 public class HighPressureSectionOneController {
@@ -173,12 +175,12 @@ public class HighPressureSectionOneController {
          * Запрос фокуса на регулирующий спиннер работает только при открытии GUI - добавлен блок else if(){} для включения режима регулирования и визуализации его зелёной рамкой.*/
         gui_typeModel.guiTypeProperty().addListener((observable, oldValue, newValue) -> {
 
-            if (oldValue == GUI_TypeController.GUIType.CR_Inj || oldValue == GUI_TypeController.GUIType.HEUI) {
+            if (oldValue == CR_Inj || oldValue == HEUI) {
 
                 regToggleButton.setSelected(false);
             }
 
-            else if(newValue == GUI_TypeController.GUIType.CR_Inj || newValue == GUI_TypeController.GUIType.HEUI){
+            else if(newValue == CR_Inj || newValue == HEUI){
 
                 pressSpinner.requestFocus();
                 rootStackPane.requestFocus();

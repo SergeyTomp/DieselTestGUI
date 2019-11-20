@@ -4,11 +4,9 @@ import fi.stardex.sisu.persistence.orm.interfaces.Model;
 import fi.stardex.sisu.persistence.orm.interfaces.Producer;
 import fi.stardex.sisu.persistence.orm.interfaces.Test;
 import fi.stardex.sisu.util.enums.Operation;
+import fi.stardex.sisu.util.enums.TestSpeed;
 import fi.stardex.sisu.util.enums.Tests;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
+import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.control.Button;
@@ -38,6 +36,8 @@ public class MainSectionUisModel {
     private BooleanProperty startButton = new SimpleBooleanProperty();
 
     // adjustment/measuring timers part
+    private BooleanProperty measurementTimeEnabled = new SimpleBooleanProperty();
+    private ObjectProperty<TestSpeed> multiplierProperty = new SimpleObjectProperty<>();
 
     // reset/store/print button part
     private Button storeButton = new Button();
@@ -80,6 +80,12 @@ public class MainSectionUisModel {
     }
     public ObservableList<Test> getTestObservableList() {
         return testObservableList;
+    }
+    public ObjectProperty<TestSpeed> multiplierProperty() {
+        return multiplierProperty;
+    }
+    public BooleanProperty measurementTimeEnabledProperty() {
+        return measurementTimeEnabled;
     }
 
     public void setModelIsChanging(boolean modelIsChanging) {

@@ -4,7 +4,10 @@ import fi.stardex.sisu.coding.delphi.c2i.DelphiC2ICodingDataStorage;
 import fi.stardex.sisu.coding.delphi.c3i.DelphiC3ICodingDataStorage;
 import fi.stardex.sisu.coding.denso.DensoCodingDataStorage;
 import fi.stardex.sisu.measurement.Measurements;
-import fi.stardex.sisu.model.*;
+import fi.stardex.sisu.model.GUI_TypeModel;
+import fi.stardex.sisu.model.PiezoRepairModel;
+import fi.stardex.sisu.model.Step3Model;
+import fi.stardex.sisu.model.TabSectionModel;
 import fi.stardex.sisu.model.cr.*;
 import fi.stardex.sisu.persistence.orm.Manufacturer;
 import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
@@ -19,7 +22,6 @@ import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.BoostUadjustmentState;
 import fi.stardex.sisu.states.InjectorSectionPwrState;
 import fi.stardex.sisu.ui.ViewHolder;
-import fi.stardex.sisu.ui.controllers.common.GUI_TypeController;
 import fi.stardex.sisu.ui.controllers.cr.dialogs.NewEditInjectorDialogController;
 import fi.stardex.sisu.ui.controllers.cr.dialogs.NewEditTestDialogController;
 import fi.stardex.sisu.ui.controllers.cr.dialogs.PrintDialogPanelController;
@@ -67,10 +69,11 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import static fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest.getListOfNonIncludedTests;
-import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.UIS_to_CR_pulseControlSwitch;
 import static fi.stardex.sisu.ui.controllers.cr.dialogs.ManufacturerMenuDialogController.State;
 import static fi.stardex.sisu.ui.controllers.cr.dialogs.ManufacturerMenuDialogController.State.DELETE;
 import static fi.stardex.sisu.ui.controllers.cr.dialogs.ManufacturerMenuDialogController.State.NEW;
+import static fi.stardex.sisu.util.enums.GUI_type.CR_Inj;
+import static fi.stardex.sisu.util.enums.GUI_type.HEUI;
 import static fi.stardex.sisu.util.enums.Measurement.DELIVERY;
 import static fi.stardex.sisu.util.enums.Measurement.VISUAL;
 import static fi.stardex.sisu.util.enums.Move.DOWN;
@@ -457,9 +460,9 @@ public class MainSectionController {
 
             manufacturerListView.getSelectionModel().clearSelection();
             baseTypeToggleGroup.selectToggle(defaultRadioButton);
-            if (newValue == GUI_TypeController.GUIType.HEUI) {
+            if (newValue == HEUI) {
                 setHEUIManufacturerListView();
-            } else if (newValue == GUI_TypeController.GUIType.CR_Inj) {
+            } else if (newValue == CR_Inj) {
                 setCRManufacturerListView();
             }
         });
@@ -536,7 +539,7 @@ public class MainSectionController {
         List<Injector> modelsByManufacturers = injectorsRepository.findByManufacturerAndIsCustomAndIsHeui(
                 manufacturer,
                 customRadioButton.isSelected(),
-                gui_typeModel.guiTypeProperty().get() == GUI_TypeController.GUIType.HEUI);
+                gui_typeModel.guiTypeProperty().get() == HEUI);
 
         ObservableList<Model> injectors = FXCollections.observableArrayList(modelsByManufacturers);
         filteredModelList = new FilteredList<>(injectors, model -> true);

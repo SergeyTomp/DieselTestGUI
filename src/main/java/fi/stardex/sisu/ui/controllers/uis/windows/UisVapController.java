@@ -26,10 +26,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.*;
-import static fi.stardex.sisu.ui.controllers.common.GUI_TypeController.GUIType.UIS;
 import static fi.stardex.sisu.util.SpinnerDefaults.*;
 import static fi.stardex.sisu.util.converters.DataConverter.convertDataToInt;
 import static fi.stardex.sisu.util.converters.DataConverter.round;
+import static fi.stardex.sisu.util.enums.GUI_type.UIS;
 import static fi.stardex.sisu.util.enums.InjectorSubType.*;
 
 public class UisVapController {

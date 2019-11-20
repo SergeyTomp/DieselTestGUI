@@ -9,6 +9,7 @@ import fi.stardex.sisu.devices.Device;
 import fi.stardex.sisu.devices.Devices;
 import fi.stardex.sisu.measurement.Measurements;
 import fi.stardex.sisu.measurement.PumpMeasurementManager;
+import fi.stardex.sisu.measurement.UisTestManager;
 import fi.stardex.sisu.model.*;
 import fi.stardex.sisu.model.cr.*;
 import fi.stardex.sisu.model.pump.*;
@@ -44,6 +45,8 @@ import fi.stardex.sisu.ui.controllers.pumps.main.PumpTestListController;
 import fi.stardex.sisu.ui.controllers.pumps.main.StartButtonController;
 import fi.stardex.sisu.ui.controllers.pumps.pressure.PumpHighPressureSectionPwrController;
 import fi.stardex.sisu.ui.controllers.pumps.pressure.PumpRegulatorSectionTwoController;
+import fi.stardex.sisu.ui.controllers.uis.MainSectionUisController;
+import fi.stardex.sisu.ui.controllers.uis.UisInjectorSectionController;
 import fi.stardex.sisu.ui.updaters.*;
 import fi.stardex.sisu.util.DelayCalculator;
 import fi.stardex.sisu.util.DesktopFiles;
@@ -1244,6 +1247,57 @@ public class SpringJavaConfig {
         uisBipModel.setMainSectionUisModel(mainSectionUisModel);
         uisBipModel.setUisInjectorSectionModel(uisInjectorSectionModel);
         return uisBipModel;
+    }
+
+    @Bean
+    @Autowired
+    public UisTestManager uisTestManager(MainSectionUisController mainSectionUisController,
+                                         UisInjectorSectionController uisInjectorSectionController,
+                                         TestBenchSectionController testBenchSectionController,
+                                         MainSectionUisModel mainSectionUisModel,
+                                         UisInjectorSectionModel uisInjectorSectionModel,
+                                         TestBenchSectionModel testBenchSectionModel,
+                                         UisHardwareUpdateModel uisHardwareUpdateModel,
+                                         ModbusRegisterProcessor flowModbusWriter,
+                                         UisTestTimingModel uisTestTimingModel) {
+        UisTestManager uisTestManager = new UisTestManager();
+        uisTestManager.setMainSectionUisController(mainSectionUisController);
+        uisTestManager.setUisInjectorSectionController(uisInjectorSectionController);
+        uisTestManager.setTestBenchSectionController(testBenchSectionController);
+        uisTestManager.setMainSectionUisModel(mainSectionUisModel);
+        uisTestManager.setUisInjectorSectionModel(uisInjectorSectionModel);
+        uisTestManager.setTestBenchSectionModel(testBenchSectionModel);
+        uisTestManager.setUisHardwareUpdateModel(uisHardwareUpdateModel);
+        uisTestManager.setFlowModbusWriter(flowModbusWriter);
+        uisTestManager.setUisTestTimingModel(uisTestTimingModel);
+        return uisTestManager;
+    }
+
+    @Bean
+    public UisTestTimingModel uisTestTimingModel() {
+        return new UisTestTimingModel();
+    }
+
+    @Bean
+    public CrTestTimingModel crTestTimingModel() {
+        return new CrTestTimingModel();
+    }
+
+    @Bean
+    public PumpTestTimingModel pumpTestTimingModel() {
+        return new PumpTestTimingModel();
+    }
+
+    @Bean
+    @Autowired
+    public TimingModelFactory timingModelFactory(CrTestTimingModel crTestTimingModel,
+                                                 PumpTestTimingModel pumpTestTimingModel,
+                                                 UisTestTimingModel uisTestTimingModel) {
+        TimingModelFactory timingModelFactory = new TimingModelFactory();
+        timingModelFactory.setCrTestTimingModel(crTestTimingModel);
+        timingModelFactory.setPumpTestTimingModel(pumpTestTimingModel);
+        timingModelFactory.setUisTestTimingModel(uisTestTimingModel);
+        return timingModelFactory;
     }
 
 //    @Bean

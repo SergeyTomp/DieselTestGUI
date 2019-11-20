@@ -30,11 +30,10 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import javax.annotation.PostConstruct;
-
 import java.util.LinkedList;
 import java.util.List;
 
-import static fi.stardex.sisu.ui.controllers.common.GUI_TypeController.GUIType.UIS;
+import static fi.stardex.sisu.util.enums.GUI_type.UIS;
 import static fi.stardex.sisu.util.enums.Operation.*;
 
 public class CustomInjectorUisDialogController {

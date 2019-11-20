@@ -2,14 +2,13 @@ package fi.stardex.sisu.ui.controllers.pumps.pressure;
 
 import eu.hansolo.medusa.Gauge;
 import fi.stardex.sisu.model.GUI_TypeModel;
+import fi.stardex.sisu.model.RegulationModesModel;
 import fi.stardex.sisu.model.pump.PumpModel;
 import fi.stardex.sisu.model.pump.PumpTestModel;
-import fi.stardex.sisu.model.RegulationModesModel;
 import fi.stardex.sisu.model.updateModels.HighPressureSectionUpdateModel;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.PumpHighPressureSectionPwrState;
-import fi.stardex.sisu.ui.controllers.common.GUI_TypeController;
 import fi.stardex.sisu.util.GaugeCreator;
 import fi.stardex.sisu.util.enums.RegActive;
 import fi.stardex.sisu.util.i18n.I18N;
@@ -32,6 +31,7 @@ import java.util.Optional;
 
 import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.*;
 import static fi.stardex.sisu.util.SpinnerDefaults.*;
+import static fi.stardex.sisu.util.enums.GUI_type.CR_Pump;
 import static fi.stardex.sisu.util.enums.RegActive.*;
 
 public class PumpRegulatorSectionThreeController {
@@ -154,11 +154,11 @@ public class PumpRegulatorSectionThreeController {
          * Запрос фокуса на регулирующий спиннер работает только при открытии GUI - добавлен блок else if(){} для включения режима регулирования и визуализации его зелёной рамкой.*/
         gui_typeModel.guiTypeProperty().addListener((observable, oldValue, newValue) -> {
 
-            if (oldValue == GUI_TypeController.GUIType.CR_Pump) {
+            if (oldValue == CR_Pump) {
 
                 regToggleButton.setSelected(false);
             }
-            else if(newValue == GUI_TypeController.GUIType.CR_Pump){
+            else if(newValue == CR_Pump){
 
                 currentSpinner.requestFocus();
                 rootStackPane.requestFocus();

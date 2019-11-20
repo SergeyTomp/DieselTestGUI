@@ -3,14 +3,14 @@ package fi.stardex.sisu.ui.controllers.cr;
 import fi.stardex.sisu.model.GUI_TypeModel;
 import fi.stardex.sisu.model.TabSectionModel;
 import fi.stardex.sisu.states.HighPressureSectionPwrState;
-import fi.stardex.sisu.ui.controllers.common.GUI_TypeController;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.StackPane;
 
 import javax.annotation.PostConstruct;
+
+import static fi.stardex.sisu.util.enums.GUI_type.CR_Inj;
+import static fi.stardex.sisu.util.enums.GUI_type.HEUI;
 
 public class HighPressureSectionPwrController {
 
@@ -55,7 +55,7 @@ public class HighPressureSectionPwrController {
         });
 
         gui_typeModel.guiTypeProperty().addListener((observable, oldValue, newValue) -> {
-            if (oldValue == GUI_TypeController.GUIType.CR_Inj || oldValue == GUI_TypeController.GUIType.HEUI) {
+            if (oldValue == CR_Inj || oldValue == HEUI) {
                 pwrButtonToggleButton.setSelected(false);
             }
         });

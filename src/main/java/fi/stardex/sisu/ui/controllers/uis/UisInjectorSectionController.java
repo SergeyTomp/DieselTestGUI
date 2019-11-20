@@ -17,7 +17,6 @@ import fi.stardex.sisu.persistence.orm.uis.InjectorUisTest;
 import fi.stardex.sisu.persistence.orm.uis.InjectorUisVAP;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
-import fi.stardex.sisu.ui.controllers.common.GUI_TypeController;
 import fi.stardex.sisu.util.GaugeCreator;
 import fi.stardex.sisu.util.enums.InjectorSubType;
 import fi.stardex.sisu.util.enums.InjectorType;
@@ -28,7 +27,6 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.beans.Observable;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -46,18 +44,15 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
 import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.*;
-import static fi.stardex.sisu.ui.controllers.common.GUI_TypeController.GUIType.UIS;
 import static fi.stardex.sisu.util.SpinnerDefaults.*;
+import static fi.stardex.sisu.util.enums.GUI_type.UIS;
 import static fi.stardex.sisu.util.enums.InjectorSubType.*;
 import static fi.stardex.sisu.util.enums.InjectorType.COIL;
-import static fi.stardex.sisu.util.enums.RegActive.CURRENT;
-import static fi.stardex.sisu.util.enums.RegActive.DUTY;
-import static fi.stardex.sisu.util.enums.RegActive.PRESSURE;
+import static fi.stardex.sisu.util.enums.RegActive.*;
 
 public class UisInjectorSectionController {
 
@@ -136,6 +131,10 @@ public class UisInjectorSectionController {
 
     private ModbusRegisterProcessor ultimaModbusWriter;
     private Logger logger = LoggerFactory.getLogger(UisInjectorSectionController.class);
+
+    public ToggleButton getRegulatorToggleButton() {
+        return regulatorToggleButton;
+    }
 
     public void setMainSectionUisModel(MainSectionUisModel mainSectionUisModel) {
         this.mainSectionUisModel = mainSectionUisModel;
@@ -544,7 +543,7 @@ public class UisInjectorSectionController {
          * Запрос фокуса на регулирующий спиннер работает только при открытии GUI - добавлен блок else if(){} для включения режима регулирования и визуализации его зелёной рамкой.*/
         gui_typeModel.guiTypeProperty().addListener((observable, oldValue, newValue) -> {
 
-            if (oldValue == GUI_TypeController.GUIType.UIS) {
+            if (oldValue == UIS) {
 
                 regulatorToggleButton.setSelected(false);
                 ultimaModbusWriter.add(BipModeOn_1, false);
@@ -556,7 +555,7 @@ public class UisInjectorSectionController {
                 ultimaModbusWriter.add(DoubleSignalModeOn_2, false);
             }
 
-            else if(newValue == GUI_TypeController.GUIType.UIS){
+            else if(newValue == UIS){
 
                 regulationModesModel.regulatorOneModeProperty().setValue(PRESSURE);
                 pressureSpinner.getValueFactory().setValue(0);
