@@ -17,6 +17,7 @@ import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.ToggleButton;
@@ -27,7 +28,7 @@ import javax.annotation.PostConstruct;
 import static fi.stardex.sisu.util.enums.Tests.TestType.AUTO;
 import static fi.stardex.sisu.util.enums.Tests.TestType.TESTPLAN;
 
-public class PumpMeasurementManager {
+public class PumpTestManager implements TestManager{
 
     private Timeline motorPreparationTimeline;
     private Timeline pressurePreparationTimeline;
@@ -204,18 +205,22 @@ public class PumpMeasurementManager {
         }else{
 
             String testName = pumpTestModel.pumpTestProperty().get().getPumpTestName().toString();
-            if (testName.equals("SCV Calibration")) {
-                runScvCalibrationTest();
+            switch (testName) {
+                case "SCV Calibration":
+                    runScvCalibrationTest();
+                    break;
+                case "Calibration test":
+                    if (scvCalibrationModel.isSuccessfulProperty().get()) {
+                        runCalibrationTest();
+                    } else {
+                        calibrationTestErrorController.initErrorStage();
+                        Platform.runLater(() -> startButton.setSelected(false));
+                    }
+                    break;
+                default:
+                    start();
+                    break;
             }
-            else if (testName.equals("Calibration test")) {
-                if (scvCalibrationModel.isSuccessfulProperty().get()) {
-                    runCalibrationTest();
-                }else{
-                    calibrationTestErrorController.initErrorStage();
-                    Platform.runLater(()-> startButton.setSelected(false));
-                }
-            }
-            else{ start(); }
         }
     }
 
@@ -319,7 +324,7 @@ public class PumpMeasurementManager {
         measurementTimeline.stop();
     }
 
-    public void runNextTest() {
+    private void runNextTest() {
 
         if (pumpTestModeModel.testModeProperty().get() == AUTO) {
 
@@ -330,17 +335,18 @@ public class PumpMeasurementManager {
                 selectNextTest(selectedTestIndex);
                 String testName = pumpTestModel.pumpTestProperty().get().getPumpTestName().toString();
 
-                if (testName.equals("SCV Calibration")) {
-                    runScvCalibrationTest();
-                }
-                else if (testName.equals("Calibration test")) {
+                switch (testName) {
+                    case "SCV Calibration":
+                        runScvCalibrationTest();
+                        break;
+                    case "Calibration test":
 
-                    if (scvCalibrationModel.isSuccessfulProperty().get()) {
-                        runCalibrationTest();
-                    }else{
-                        calibrationTestErrorController.initErrorStage();
-                        runNextTest();
-                    }
+                        if (scvCalibrationModel.isSuccessfulProperty().get()) {
+                            runCalibrationTest();
+                        } else {
+                            calibrationTestErrorController.initErrorStage();
+                            runNextTest();
+                        }
 //                    selectedTestIndex = testListView.getSelectionModel().getSelectedIndex();
 //                    if(selectedTestIndex < includedAutoTestsLength - 1){
 //                        calibrationTestErrorController.initErrorStage();
@@ -350,8 +356,10 @@ public class PumpMeasurementManager {
 //                    else {
 //                        Platform.runLater(()-> startButton.setSelected(false));
 //                    }
-                } else {
-                    start();
+                        break;
+                    default:
+                        start();
+                        break;
                 }
             }
             else{
@@ -376,7 +384,7 @@ public class PumpMeasurementManager {
         flowModbusWriter.add(ModbusMapFlow.StartMeasurementCycle, true);
     }
 
-    public int tick(IntegerProperty timeProperty) {
+    private int tick(IntegerProperty timeProperty) {
 
         int time = timeProperty.get();
 
@@ -385,5 +393,15 @@ public class PumpMeasurementManager {
             timeProperty.setValue(--time);
         }
         return time;
+    }
+
+    @Override
+    public void changed(ObservableValue<? extends Boolean> observableValue, Boolean oldValue, Boolean newValue) {
+
+        if (newValue)
+            startMeasurements();
+        else
+            stopMeasurements();
+
     }
 }

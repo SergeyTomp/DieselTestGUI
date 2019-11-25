@@ -38,7 +38,7 @@ public class TimingModelFactory {
                 timingModel = uisTestTimingModel;
                 break;
                 default:
-                    throw new RuntimeException(" Unknown GUI type selected!");
+                    throw new RuntimeException(" In TimingModelFactory: unknown GUI type selected!");
         }
         return timingModel;
     }

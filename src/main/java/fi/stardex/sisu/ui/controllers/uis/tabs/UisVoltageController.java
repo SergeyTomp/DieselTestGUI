@@ -300,8 +300,8 @@ public class UisVoltageController {
         mainSectionUisModel.modelProperty().addListener((observableValue, oldValue, newValue) -> {
 
             if (newValue != null && newValue.getVAP().getInjectorType() == InjectorType.COIL) {
-
-                if (newValue.getVAP().getInjectorSubType() == InjectorSubType.HPI) {
+                InjectorSubType injectorSubType = newValue.getVAP().getInjectorSubType();
+                if (injectorSubType == InjectorSubType.HPI || injectorSubType == InjectorSubType.MECHANIC) {
                     yAxis.setUpperBound(6);
                     yAxis.setLowerBound(-2);
                     yAxis.setTickUnit(2);

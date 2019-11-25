@@ -5,6 +5,7 @@ import javafx.beans.property.*;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 
+import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -41,6 +42,12 @@ public class UisDelayModel {
     }
     public IntegerProperty addingTimeProperty() {
         return addingTime;
+    }
+
+    @PostConstruct
+    public void init() {
+        mainSectionUisModel.modelProperty().addListener((observableValue, oldValue, newValue) -> clearResults());
+        mainSectionUisModel.manufacturerObjectProperty().addListener((observableValue, oldValue, newValue) -> clearResults());
     }
 
     public void storeResult() {

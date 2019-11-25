@@ -67,6 +67,7 @@ public class UisFlowModel {
     public void init() {
         mainSectionUisModel.getStoreButton().addEventHandler(ActionEvent.ACTION, event -> storeResult());
         mainSectionUisModel.modelProperty().addListener((observableValue, oldValue, newValue) -> clearResults());
+        mainSectionUisModel.manufacturerObjectProperty().addListener((observableValue, oldValue, newValue) -> clearResults());
     }
 
     public void storeResult(){

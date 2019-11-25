@@ -54,7 +54,7 @@ public class PumpReportModel {
     /** Metod invoked from PumpBeakerController upon flowTextField changes.
     * It set values into this.deliveryValue and this.backFlowValue for reports generation.
     * This is necessary to have values in the report in case manual input into flowTextField of PumpBeakerController,
-    * but not only in automatic measurements mode.
+    * but not only in automatic crTestManager mode.
     * Otherwise it would have been necessary to have PumpFlowValuesModel to be controlled by two different controllers.*/
     public void setFlowValues(String value, BeakerType flowType) {
 

@@ -10,7 +10,11 @@ import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 
-import java.util.*;
+import javax.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.List;
 
 public class UisRlcModel {
 
@@ -57,6 +61,12 @@ public class UisRlcModel {
     }
     public void setUisInjectorSectionModel(UisInjectorSectionModel uisInjectorSectionModel) {
         this.uisInjectorSectionModel = uisInjectorSectionModel;
+    }
+
+    @PostConstruct
+    public void init() {
+        mainSectionUisModel.modelProperty().addListener((observableValue, oldValue, newValue) -> clearResults());
+        mainSectionUisModel.manufacturerObjectProperty().addListener((observableValue, oldValue, newValue) -> clearResults());
     }
 
     public void storeResult() {

@@ -3,7 +3,7 @@ package fi.stardex.sisu.ui.controllers.cr;
 import fi.stardex.sisu.coding.delphi.c2i.DelphiC2ICodingDataStorage;
 import fi.stardex.sisu.coding.delphi.c3i.DelphiC3ICodingDataStorage;
 import fi.stardex.sisu.coding.denso.DensoCodingDataStorage;
-import fi.stardex.sisu.measurement.Measurements;
+import fi.stardex.sisu.measurement.CrTestManager;
 import fi.stardex.sisu.model.GUI_TypeModel;
 import fi.stardex.sisu.model.PiezoRepairModel;
 import fi.stardex.sisu.model.Step3Model;
@@ -174,7 +174,7 @@ public class MainSectionController {
 
     private int currentMeasuringTime;
 
-    private Measurements measurements;
+    private CrTestManager crTestManager;
 
     private FlowReportModel flowReportModel;
 
@@ -304,8 +304,8 @@ public class MainSectionController {
         this.injectorTestRepository = injectorTestRepository;
     }
 
-    public void setMeasurements(Measurements measurements) {
-        this.measurements = measurements;
+    public void setCrTestManager(CrTestManager crTestManager) {
+        this.crTestManager = crTestManager;
     }
 
     public void setFlowReportModel(FlowReportModel flowReportModel) {
@@ -991,8 +991,8 @@ public class MainSectionController {
 
             } else if (testPlanTestRadioButton.isSelected() && startToggleButton.isSelected()) {
 
-                measurements.switchOffInjectorSection();
-                measurements.start();
+                crTestManager.switchOffInjectorSection();
+                crTestManager.start();
             }
 
             currentAdjustingTime = newValue.getAdjustingTime();

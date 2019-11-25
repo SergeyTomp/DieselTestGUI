@@ -1,7 +1,7 @@
 package fi.stardex.sisu.ui.controllers.cr.windows;
 
 import eu.hansolo.enzo.lcd.Lcd;
-import fi.stardex.sisu.measurement.Measurements;
+import fi.stardex.sisu.measurement.CrTestManager;
 import fi.stardex.sisu.model.cr.InjectorTestModel;
 import fi.stardex.sisu.model.cr.PressureRegulatorOneModel;
 import fi.stardex.sisu.model.updateModels.HighPressureSectionUpdateModel;
@@ -59,7 +59,7 @@ public class ISADetectionController {
 
     private Timeline measurementTimeline;
 
-    private Measurements measurements;
+    private CrTestManager crTestManager;
 
     private ToggleButton mainSectionStartToggleButton;
 
@@ -135,8 +135,8 @@ public class ISADetectionController {
         this.pressureRegulatorOneModel = pressureRegulatorOneModel;
     }
 
-    public void setMeasurements(Measurements measurements) {
-        this.measurements = measurements;
+    public void setCrTestManager(CrTestManager crTestManager) {
+        this.crTestManager = crTestManager;
     }
 
     public void setMainSectionStartToggleButton(ToggleButton mainSectionStartToggleButton) {
@@ -295,12 +295,12 @@ public class ISADetectionController {
                 case NO_ACTIVE_LEDS:
                 case PRESSURE_NOT_DIALED:
                     isaStage.close();
-                    measurements.setCodingComplete(false);
+                    crTestManager.setCodingComplete(false);
                     mainSectionStartToggleButton.setSelected(false);
                     break;
                 case FINISHED:
                     isaStage.close();
-                    measurements.runNextTest();
+                    crTestManager.runNextTest();
                     break;
 
             }

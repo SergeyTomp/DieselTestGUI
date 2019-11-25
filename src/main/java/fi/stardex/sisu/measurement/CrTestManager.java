@@ -47,7 +47,7 @@ import static fi.stardex.sisu.util.enums.Tests.TestType.TESTPLAN;
 import static fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer.getInjector;
 import static fi.stardex.sisu.util.obtainers.CurrentManufacturerObtainer.getManufacturer;
 
-public class Measurements implements ChangeListener<Boolean> {
+public class CrTestManager implements TestManager {
 
     private ListView<InjectorTest> testListView;
 
@@ -117,18 +117,18 @@ public class Measurements implements ChangeListener<Boolean> {
         this.codingComplete = codingComplete;
     }
 
-    public Measurements(MainSectionController mainSectionController,
-                        TestBenchSectionController testBenchSectionController,
-                        InjectorSectionController injectorSectionController,
-                        ISADetectionController isaDetectionController,
-                        CodingReportModel codingReportModel,
-                        FlowReportModel flowReportModel,
-                        HighPressureSectionPwrState highPressureSectionPwrState,
-                        PressureRegulatorOneModel pressureRegulatorOneModel,
-                        HighPressureSectionUpdateModel highPressureSectionUpdateModel,
-                        MainSectionModel mainSectionModel,
-                        InjectorControllersState injectorControllersState,
-                        TestBenchSectionModel testBenchSectionModel) {
+    public CrTestManager(MainSectionController mainSectionController,
+                         TestBenchSectionController testBenchSectionController,
+                         InjectorSectionController injectorSectionController,
+                         ISADetectionController isaDetectionController,
+                         CodingReportModel codingReportModel,
+                         FlowReportModel flowReportModel,
+                         HighPressureSectionPwrState highPressureSectionPwrState,
+                         PressureRegulatorOneModel pressureRegulatorOneModel,
+                         HighPressureSectionUpdateModel highPressureSectionUpdateModel,
+                         MainSectionModel mainSectionModel,
+                         InjectorControllersState injectorControllersState,
+                         TestBenchSectionModel testBenchSectionModel) {
 
         this.flowReportModel = flowReportModel;
         this.mainSectionController = mainSectionController;

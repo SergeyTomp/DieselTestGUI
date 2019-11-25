@@ -122,7 +122,7 @@ public class UisBeakerController {
     }
 
     /** # 1 listens for flowField value changes and set fuel level in corresponding beaker and into UisFlowModel for reports generation
-     * (this provide values in the report in case manual input, not only in automatic measurements mode)
+     * (this provide values in the report in case manual input, not only in automatic crTestManager mode)
      * ## 2, 3, 4 listens for injectorTestProperty, flowRangeViewProperty, flowUnitsProperty and set flowRangeLabel text upon
      * - injectorTestProperty -> test choice
      * - flowRangeViewProperty -> LIMIT or PLUS_OR_MINUS choice

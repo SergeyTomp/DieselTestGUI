@@ -27,6 +27,8 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -128,12 +130,16 @@ public class UisInjectorSectionController {
     private UisVapModel uisVapModel;
     private ChartTaskDataModel chartTaskDataModel;
     private TimerTasksManager timerTasksManager;
+    private BooleanProperty sectionStart = new SimpleBooleanProperty();
 
     private ModbusRegisterProcessor ultimaModbusWriter;
     private Logger logger = LoggerFactory.getLogger(UisInjectorSectionController.class);
 
     public ToggleButton getRegulatorToggleButton() {
         return regulatorToggleButton;
+    }
+    public BooleanProperty sectionStartProperty() {
+        return sectionStart;
     }
 
     public void setMainSectionUisModel(MainSectionUisModel mainSectionUisModel) {
@@ -577,7 +583,7 @@ public class UisInjectorSectionController {
 
     private void setupStartButtonListener() {
 
-        mainSectionUisModel.startButtonProperty().addListener((observableValue, oldValue, newValue) -> {
+        sectionStart.addListener((observableValue, oldValue, newValue) -> {
 
             ultimaModbusWriter.add(Injectors_Running_En, newValue);
             if (newValue) {

@@ -7,8 +7,9 @@ import fi.stardex.sisu.connect.InetAddressWrapper;
 import fi.stardex.sisu.connect.ModbusConnect;
 import fi.stardex.sisu.devices.Device;
 import fi.stardex.sisu.devices.Devices;
-import fi.stardex.sisu.measurement.Measurements;
-import fi.stardex.sisu.measurement.PumpMeasurementManager;
+import fi.stardex.sisu.measurement.CrTestManager;
+import fi.stardex.sisu.measurement.PumpTestManager;
+import fi.stardex.sisu.measurement.TestManagerFactory;
 import fi.stardex.sisu.measurement.UisTestManager;
 import fi.stardex.sisu.model.*;
 import fi.stardex.sisu.model.cr.*;
@@ -619,19 +620,19 @@ public class SpringJavaConfig {
 
     @Bean
     @Autowired
-    public Measurements measurements(MainSectionController mainSectionController,
-                                     TestBenchSectionController testBenchSectionController,
-                                     InjectorSectionController injectorSectionController,
-                                     ISADetectionController isaDetectionController,
-                                     CodingReportModel codingReportModel,
-                                     FlowReportModel flowReportModel,
-                                     HighPressureSectionPwrState highPressureSectionPwrState,
-                                     PressureRegulatorOneModel pressureRegulatorOneModel,
-                                     HighPressureSectionUpdateModel highPressureSectionUpdateModel,
-                                     MainSectionModel mainSectionModel,
-                                     InjectorControllersState injectorControllersState,
-                                     TestBenchSectionModel testBenchSectionModel) {
-        return new Measurements(mainSectionController, testBenchSectionController,
+    public CrTestManager crTestManager(MainSectionController mainSectionController,
+                                       TestBenchSectionController testBenchSectionController,
+                                       InjectorSectionController injectorSectionController,
+                                       ISADetectionController isaDetectionController,
+                                       CodingReportModel codingReportModel,
+                                       FlowReportModel flowReportModel,
+                                       HighPressureSectionPwrState highPressureSectionPwrState,
+                                       PressureRegulatorOneModel pressureRegulatorOneModel,
+                                       HighPressureSectionUpdateModel highPressureSectionUpdateModel,
+                                       MainSectionModel mainSectionModel,
+                                       InjectorControllersState injectorControllersState,
+                                       TestBenchSectionModel testBenchSectionModel) {
+        return new CrTestManager(mainSectionController, testBenchSectionController,
                 injectorSectionController,
                 isaDetectionController, codingReportModel, flowReportModel,
                 highPressureSectionPwrState,
@@ -692,46 +693,46 @@ public class SpringJavaConfig {
 
     @Bean
     @Autowired
-    public PumpMeasurementManager pumpMeasurementManager(PumpTestListModel pumpTestListModel,
-                                                         PumpsStartButtonState pumpsStartButtonState,
-                                                         PumpTestModel pumpTestModel,
-                                                         ModbusRegisterProcessor flowModbusWriter,
-                                                         PumpReportModel pumpReportModel,
-                                                         PumpTestModeModel pumpTestModeModel,
-                                                         HighPressureSectionUpdateModel highPressureSectionUpdateModel,
-                                                         PumpTimeProgressModel pumpTimeProgressModel,
-                                                         PumpPressureRegulatorOneModel pumpPressureRegulatorOneModel,
-                                                         PumpTestListController pumpTestListController,
-                                                         SCVCalibrationModel scvCalibrationModel,
-                                                         SCVCalibrationController scvCalibrationController,
-                                                         PumpRegulatorSectionTwoController pumpRegulatorSectionTwoController,
-                                                         CalibrationTestErrorController calibrationTestErrorController,
-                                                         PumpModel pumpModel,
-                                                         StartButtonController startButtonController,
-                                                         PumpHighPressureSectionPwrController pumpHighPressureSectionPwrController,
-                                                         TestBenchSectionController testBenchSectionController,
-                                                         TestBenchSectionModel testBenchSectionModel) {
-        PumpMeasurementManager pumpMeasurementManager = new PumpMeasurementManager();
-        pumpMeasurementManager.setPumpsStartButtonState(pumpsStartButtonState);
-        pumpMeasurementManager.setPumpTestListModel(pumpTestListModel);
-        pumpMeasurementManager.setPumpTestModel(pumpTestModel);
-        pumpMeasurementManager.setFlowModbusWriter(flowModbusWriter);
-        pumpMeasurementManager.setPumpReportModel(pumpReportModel);
-        pumpMeasurementManager.setPumpTestModeModel(pumpTestModeModel);
-        pumpMeasurementManager.setHighPressureSectionUpdateModel(highPressureSectionUpdateModel);
-        pumpMeasurementManager.setPumpTimeProgressModel(pumpTimeProgressModel);
-        pumpMeasurementManager.setPumpPressureRegulatorOneModel(pumpPressureRegulatorOneModel);
-        pumpMeasurementManager.setTestListView(pumpTestListController.getTestListView());
-        pumpMeasurementManager.setScvCalibrationModel(scvCalibrationModel);
-        pumpMeasurementManager.setScvCalibrationController(scvCalibrationController);
-        pumpMeasurementManager.setPumpRegulatorSectionTwoController(pumpRegulatorSectionTwoController);
-        pumpMeasurementManager.setCalibrationTestErrorController(calibrationTestErrorController);
-        pumpMeasurementManager.setPumpModel(pumpModel);
-        pumpMeasurementManager.setStartButtonController(startButtonController);
-        pumpMeasurementManager.setPumpHighPressureSectionPwrController(pumpHighPressureSectionPwrController);
-        pumpMeasurementManager.setTestBenchSectionController(testBenchSectionController);
-        pumpMeasurementManager.setTestBenchSectionModel(testBenchSectionModel);
-        return pumpMeasurementManager;
+    public PumpTestManager pumpTestManager(PumpTestListModel pumpTestListModel,
+                                           PumpsStartButtonState pumpsStartButtonState,
+                                           PumpTestModel pumpTestModel,
+                                           ModbusRegisterProcessor flowModbusWriter,
+                                           PumpReportModel pumpReportModel,
+                                           PumpTestModeModel pumpTestModeModel,
+                                           HighPressureSectionUpdateModel highPressureSectionUpdateModel,
+                                           PumpTimeProgressModel pumpTimeProgressModel,
+                                           PumpPressureRegulatorOneModel pumpPressureRegulatorOneModel,
+                                           PumpTestListController pumpTestListController,
+                                           SCVCalibrationModel scvCalibrationModel,
+                                           SCVCalibrationController scvCalibrationController,
+                                           PumpRegulatorSectionTwoController pumpRegulatorSectionTwoController,
+                                           CalibrationTestErrorController calibrationTestErrorController,
+                                           PumpModel pumpModel,
+                                           StartButtonController startButtonController,
+                                           PumpHighPressureSectionPwrController pumpHighPressureSectionPwrController,
+                                           TestBenchSectionController testBenchSectionController,
+                                           TestBenchSectionModel testBenchSectionModel) {
+        PumpTestManager pumpTestManager = new PumpTestManager();
+        pumpTestManager.setPumpsStartButtonState(pumpsStartButtonState);
+        pumpTestManager.setPumpTestListModel(pumpTestListModel);
+        pumpTestManager.setPumpTestModel(pumpTestModel);
+        pumpTestManager.setFlowModbusWriter(flowModbusWriter);
+        pumpTestManager.setPumpReportModel(pumpReportModel);
+        pumpTestManager.setPumpTestModeModel(pumpTestModeModel);
+        pumpTestManager.setHighPressureSectionUpdateModel(highPressureSectionUpdateModel);
+        pumpTestManager.setPumpTimeProgressModel(pumpTimeProgressModel);
+        pumpTestManager.setPumpPressureRegulatorOneModel(pumpPressureRegulatorOneModel);
+        pumpTestManager.setTestListView(pumpTestListController.getTestListView());
+        pumpTestManager.setScvCalibrationModel(scvCalibrationModel);
+        pumpTestManager.setScvCalibrationController(scvCalibrationController);
+        pumpTestManager.setPumpRegulatorSectionTwoController(pumpRegulatorSectionTwoController);
+        pumpTestManager.setCalibrationTestErrorController(calibrationTestErrorController);
+        pumpTestManager.setPumpModel(pumpModel);
+        pumpTestManager.setStartButtonController(startButtonController);
+        pumpTestManager.setPumpHighPressureSectionPwrController(pumpHighPressureSectionPwrController);
+        pumpTestManager.setTestBenchSectionController(testBenchSectionController);
+        pumpTestManager.setTestBenchSectionModel(testBenchSectionModel);
+        return pumpTestManager;
     }
 
     // --------------------------------------State-----------------------------------------------
@@ -1259,7 +1260,8 @@ public class SpringJavaConfig {
                                          TestBenchSectionModel testBenchSectionModel,
                                          UisHardwareUpdateModel uisHardwareUpdateModel,
                                          ModbusRegisterProcessor flowModbusWriter,
-                                         UisTestTimingModel uisTestTimingModel) {
+                                         UisTestTimingModel uisTestTimingModel,
+                                         I18N i18N) {
         UisTestManager uisTestManager = new UisTestManager();
         uisTestManager.setMainSectionUisController(mainSectionUisController);
         uisTestManager.setUisInjectorSectionController(uisInjectorSectionController);
@@ -1270,6 +1272,7 @@ public class SpringJavaConfig {
         uisTestManager.setUisHardwareUpdateModel(uisHardwareUpdateModel);
         uisTestManager.setFlowModbusWriter(flowModbusWriter);
         uisTestManager.setUisTestTimingModel(uisTestTimingModel);
+        uisTestManager.setI18N(i18N);
         return uisTestManager;
     }
 
@@ -1298,6 +1301,18 @@ public class SpringJavaConfig {
         timingModelFactory.setPumpTestTimingModel(pumpTestTimingModel);
         timingModelFactory.setUisTestTimingModel(uisTestTimingModel);
         return timingModelFactory;
+    }
+
+    @Bean
+    @Autowired
+    public TestManagerFactory testManagerFactory(CrTestManager crTestManager,
+                                                 PumpTestManager pumpTestManager,
+                                                 UisTestManager uisTestManager) {
+        TestManagerFactory testManagerFactory = new TestManagerFactory();
+        testManagerFactory.setCrTestManager(crTestManager);
+        testManagerFactory.setPumpTestManager(pumpTestManager);
+        testManagerFactory.setUisTestManager(uisTestManager);
+        return testManagerFactory;
     }
 
 //    @Bean

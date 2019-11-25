@@ -1,5 +1,7 @@
 package fi.stardex.sisu.ui.controllers.uis;
 
+import fi.stardex.sisu.measurement.TestManager;
+import fi.stardex.sisu.measurement.TestManagerFactory;
 import fi.stardex.sisu.measurement.Timing;
 import fi.stardex.sisu.model.*;
 import fi.stardex.sisu.model.uis.*;
@@ -27,7 +29,6 @@ import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.concurrent.Task;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -46,10 +47,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static fi.stardex.sisu.registers.flow.ModbusMapFlow.StartMeasurementCycle;
@@ -141,6 +139,8 @@ public class MainSectionUisController {
     private IntegerProperty adjustingTimeProperty = new SimpleIntegerProperty();
     private IntegerProperty measuringTimeProperty = new SimpleIntegerProperty();
     private static final ObservableList<Test> listOfNonIncludedTests = FXCollections.observableArrayList();
+    private TestManager testManager;
+    private TestManagerFactory testManagerFactory;
 
     public ToggleButton getStartToggleButton() {
         return startToggleButton;
@@ -215,6 +215,9 @@ public class MainSectionUisController {
     public void setTimingModelFactory(TimingModelFactory timingModelFactory) {
         this.timingModelFactory = timingModelFactory;
     }
+    public void setTestManagerFactory(TestManagerFactory testManagerFactory) {
+        this.testManagerFactory = testManagerFactory;
+    }
 
     @PostConstruct
     public void init() {
@@ -246,6 +249,15 @@ public class MainSectionUisController {
         testListView.setCellFactory(CheckBoxListCell.forListView(Test::includedProperty));
         showButtons(true, false);
         setupTimingsListeners();
+    }
+
+    public void setTestManager(TestManager testManager) {
+
+        if (this.testManager != null) {
+            startToggleButton.selectedProperty().removeListener(this.testManager);
+        }
+        this.testManager = testManager;
+        startToggleButton.selectedProperty().addListener(testManager);
     }
 
     private void setupModelListViewListener() {
@@ -354,10 +366,9 @@ public class MainSectionUisController {
                         || tabSectionModel.step3TabIsShowingProperty().get()
                         || tabSectionModel.piezoTabIsShowingProperty().get(), startToggleButton);
 
-            } else if (testPlanTestRadioButton.isSelected() && startToggleButton.isSelected()) {
-
-//                measurements.switchOffInjectorSection();
-//                measurements.start();
+                /**MeasurementTime availability check below is necessary for further Pump_GUI covering - measurement period is not used for some Pump tests */
+                Optional.ofNullable(newValue.getMeasurementTime()).ifPresentOrElse(initialTime
+                        -> showMeasurementTime(true), () -> showMeasurementTime(false));
             }
 
             mainSectionUisModel.setTestIsChanging(false);
@@ -745,18 +756,27 @@ public class MainSectionUisController {
                 startToggleButton.setSelected(false);
             }
 
-            //TODO: add cases for other GUI types after implementation of this controller as unique for them and move updateTimingModelListeners(newValue) outside of if-else
+            /*TODO: add if-cases for other GUI types after implementation of this controller as unique for them and move outside of if-else:
+            * updateTimingModelListeners(newValue)
+            * manufacturerListView.getItems().setAll(.....)
+            * manufacturerListView.refresh();*/
             if (newValue == UIS) {
 
                 modelService = uisModelService;
                 producerService = uisProducerService;
                 testService = uisTestService;
-                updateTimingModelListeners(newValue);
 
+                updateTimingModelListeners(newValue);
                 manufacturerListView.getItems().setAll(new ArrayList<>(producerService.findAll()));
                 manufacturerListView.refresh();
             }
+
             baseTypeToggleGroup.selectToggle(defaultRadioButton);
+
+            if (testManager != null) {
+                startToggleButton.selectedProperty().removeListener(testManager);
+            }
+            startToggleButton.selectedProperty().addListener(testManagerFactory.getTestManager(newValue));
         });
 
     }
@@ -885,6 +905,15 @@ public class MainSectionUisController {
         showNode(show && (testType == AUTO), timingGridPane);
         showNode(show, injectorTestsVBox, startStackPane);
     }
+
+    private void showMeasurementTime(boolean show) {
+
+        labelMeasureTime.setVisible(show);
+        measuringTimeProgressBar.setVisible(show);
+        measuringText.setVisible(show);
+        mainSectionUisModel.measurementTimeEnabledProperty().setValue(show);
+    }
+
     private  void enableUpDownButtons(int selectedIndex, int includedTestsSize){
 
         if (selectedIndex == 0 && selectedIndex == includedTestsSize - 1)

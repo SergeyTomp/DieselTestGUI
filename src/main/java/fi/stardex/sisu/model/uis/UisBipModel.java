@@ -39,6 +39,7 @@ public class UisBipModel {
     public void init() {
         uisInjectorSectionModel.getSaveBipButton().addEventHandler(ActionEvent.ACTION, event -> storeResult());
         mainSectionUisModel.modelProperty().addListener((observableValue, oldValue, newValue) -> clearResults());
+        mainSectionUisModel.manufacturerObjectProperty().addListener((observableValue, oldValue, newValue) -> clearResults());
     }
 
     public void storeResult(){

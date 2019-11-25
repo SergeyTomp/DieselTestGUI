@@ -6,19 +6,26 @@ import fi.stardex.sisu.model.uis.UisInjectorSectionModel;
 import fi.stardex.sisu.model.uis.UisTestTimingModel;
 import fi.stardex.sisu.model.updateModels.UisHardwareUpdateModel;
 import fi.stardex.sisu.persistence.orm.interfaces.Test;
+import fi.stardex.sisu.persistence.orm.uis.InjectorUisTest;
 import fi.stardex.sisu.registers.flow.ModbusMapFlow;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.controllers.common.TestBenchSectionController;
 import fi.stardex.sisu.ui.controllers.uis.MainSectionUisController;
 import fi.stardex.sisu.ui.controllers.uis.UisInjectorSectionController;
+import fi.stardex.sisu.util.enums.InjectorSubType;
+import fi.stardex.sisu.util.i18n.I18N;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
-import javafx.scene.control.Button;
-import javafx.scene.control.ListView;
-import javafx.scene.control.ToggleButton;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
+import javafx.beans.value.ObservableValue;
+import javafx.scene.control.*;
+import javafx.scene.layout.Region;
+import javafx.stage.StageStyle;
 import javafx.util.Duration;
 
 import javax.annotation.PostConstruct;
@@ -26,7 +33,7 @@ import javax.annotation.PostConstruct;
 import static fi.stardex.sisu.util.enums.Tests.TestType.AUTO;
 import static fi.stardex.sisu.util.enums.Tests.TestType.TESTPLAN;
 
-public class UisTestManager {
+public class UisTestManager implements TestManager {
 
     private MainSectionUisController mainSectionUisController;
     private UisInjectorSectionController uisInjectorSectionController;
@@ -53,6 +60,11 @@ public class UisTestManager {
     private IntegerProperty initialAdjustingTime;
     private IntegerProperty initialMeasuringTime;
     private int includedAutoTestsLength;
+    private BooleanProperty injectorSectionStart;
+    private Alert settingsAlert;
+    private StringProperty alertString = new SimpleStringProperty();
+    private StringProperty applyButton = new SimpleStringProperty();
+    private I18N i18N;
 
     public void setMainSectionUisController(MainSectionUisController mainSectionUisController) {
         this.mainSectionUisController = mainSectionUisController;
@@ -83,25 +95,31 @@ public class UisTestManager {
         this.uisTestTimingModel = uisTestTimingModel;
     }
 
+    public void setI18N(I18N i18N) {
+        this.i18N = i18N;
+    }
+
     @PostConstruct
     public void init() {
+
+        setupReferences();
+        setupTimeLines();
+        setupListeners();
+        bindingI18N();
+    }
+
+    private void setupReferences() {
 
         adjustingTimeProperty = uisTestTimingModel.getAdjustingTime();
         measuringTimeProperty = uisTestTimingModel.getMeasuringTime();
         initialAdjustingTime = uisTestTimingModel.getInitialAdjustingTime();
         initialMeasuringTime = uisTestTimingModel.getInitialMeasuringTime();
-        setupReferences();
-        setupTimeLines();
-        setupListeners();
-    }
-
-    private void setupReferences() {
-
         mainSectionStartToggleButton = mainSectionUisController.getStartToggleButton();
         storeButton = mainSectionUisController.getStoreButton();
         testListView = mainSectionUisController.getTestListView();
         testBenchStartToggleButton = testBenchSectionController.getTestBenchStartToggleButton();
         regulatorToggleButton = uisInjectorSectionController.getRegulatorToggleButton();
+        injectorSectionStart = uisInjectorSectionController.sectionStartProperty();
     }
 
     private void setupTimeLines() {
@@ -123,16 +141,22 @@ public class UisTestManager {
 
     private void setupListeners() {
 
-        mainSectionUisModel.startButtonProperty().addListener((observableValue, oldValue, newValue) -> {
+//        mainSectionUisModel.startButtonProperty().addListener((observableValue, oldValue, newValue) -> {
+//
+//            if (newValue)
+//                startMeasurements();
+//            else
+//                stopMeasurements();
+//        });
 
-            if (newValue)
-                startMeasurements();
-            else
-                stopMeasurements();
+        mainSectionUisModel.injectorTestProperty().addListener((observableValue, oldValue, newValue) -> {
+
+            setTimings(newValue);
+            if (mainSectionUisModel.testTypeProperty().get() == TESTPLAN && mainSectionUisModel.startButtonProperty().get()) {
+
+                checkInjectorTypeAndStart();
+            }
         });
-
-        mainSectionUisModel.injectorTestProperty().addListener((observableValue, oldValue, newValue)
-                -> setTimings(newValue));
 
         mainSectionUisModel.multiplierProperty().addListener((observableValue, oldValue, newValue)
                 -> setTimings(mainSectionUisModel.injectorTestProperty().get()));
@@ -166,11 +190,11 @@ public class UisTestManager {
             if (selectedTestIndex < includedAutoTestsLength - 1) {
 
                 selectNextTest(selectedTestIndex);
-                start();
-            }else{
-                Platform.runLater(()-> mainSectionStartToggleButton.setSelected(false));
-            }
+                checkInjectorTypeAndStart();
 
+            } else {
+                Platform.runLater(() -> mainSectionStartToggleButton.setSelected(false));
+            }
         }
     }
 
@@ -186,10 +210,13 @@ public class UisTestManager {
     private void startPressure() {
 
         if (!regulatorToggleButton.isDisabled()) {
+            injectorSectionStart.setValue(false);
             regulatorToggleButton.setSelected(true);
             pressurePreparationTimeline.play();
+        } else {
+            injectorSectionStart.setValue(true);
+            adjustingTimeline.play();
         }
-        adjustingTimeline.play();
     }
 
     private void pressurePreparation() {
@@ -200,6 +227,7 @@ public class UisTestManager {
         if(isSectionReady(targetValue, lcdValue, 0.2) || targetValue == 0){
             pressurePreparationTimeline.stop();
             resetFlowData();
+            injectorSectionStart.setValue(true);
 
             if (mainSectionUisModel.testTypeProperty().get() != TESTPLAN) {
                 adjustingTimeline.play();
@@ -213,8 +241,13 @@ public class UisTestManager {
         if (tick(adjustingTimeProperty) == 0) {
 
             adjustingTimeline.stop();
-            measurementTimeline.play();
-            autoResetTimeline.play();
+            if (mainSectionUisModel.measurementTimeEnabledProperty().get()) {
+                measurementTimeline.play();
+                autoResetTimeline.play();
+            } else {
+                storeButton.fire();
+                runNextTest();
+            }
         }
     }
 
@@ -262,7 +295,19 @@ public class UisTestManager {
 
             testListView.getSelectionModel().clearSelection();
             runNextTest();
-        }else{ start(); }
+        }else{
+            checkInjectorTypeAndStart();
+        }
+    }
+
+    private void checkInjectorTypeAndStart() {
+
+        if (mainSectionUisModel.modelProperty().get().getVAP().getInjectorSubType() == InjectorSubType.MECHANIC) {
+            injectorSectionStart.setValue(false);
+            showAlert();
+        } else {
+            start();
+        }
     }
 
     private void stopMeasurements() {
@@ -271,7 +316,9 @@ public class UisTestManager {
         resetFlowData();
         regulatorToggleButton.setSelected(false);
         testBenchStartToggleButton.setSelected(false);
+        injectorSectionStart.setValue(false);
         flowModbusWriter.add(ModbusMapFlow.StopMeasurementCycle, true);
+        setTimings(mainSectionUisModel.injectorTestProperty().get());
     }
 
     private void stopTimers() {
@@ -286,6 +333,7 @@ public class UisTestManager {
 
         testListView.getSelectionModel().select(++testIndex);
         testListView.scrollTo(testIndex);
+
     }
 
     private void resetFlowData() {
@@ -298,4 +346,38 @@ public class UisTestManager {
         return Math.abs((targetValue - lcdValue) / targetValue) < margin;
     }
 
+    private void showAlert() {
+
+        if (settingsAlert == null) {
+            settingsAlert = new Alert(Alert.AlertType.NONE, "", ButtonType.APPLY);
+            settingsAlert.initStyle(StageStyle.UNDECORATED);
+            settingsAlert.getDialogPane().getStylesheets().add(getClass().getResource("/css/Styling.css").toExternalForm());
+            settingsAlert.getDialogPane().getStyleClass().add("alertDialog");
+            settingsAlert.setResizable(true);
+            settingsAlert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+            settingsAlert.getDialogPane().setMinWidth(550);
+            Button button = (Button) settingsAlert.getDialogPane().lookupButton(ButtonType.APPLY);
+            button.setDefaultButton(true);
+            button.setOnAction(event -> start());
+        }
+        int rackPosition = ((InjectorUisTest) (mainSectionUisModel.injectorTestProperty().get())).getRackPosition();
+        ((Button)settingsAlert.getDialogPane().lookupButton(ButtonType.APPLY)).textProperty().setValue(applyButton.get());
+        settingsAlert.setContentText(alertString.get() + " " + rackPosition + " mm");
+        settingsAlert.show();
+    }
+
+    private void bindingI18N() {
+        alertString.bind(i18N.createStringBinding("alert.rackSettings"));
+        applyButton.bind((i18N.createStringBinding("alert.applyButton")));
+    }
+
+    @Override
+    public void changed(ObservableValue<? extends Boolean> observableValue, Boolean oldValue, Boolean newValue) {
+
+        if (newValue)
+            startMeasurements();
+        else
+            stopMeasurements();
+
+    }
 }

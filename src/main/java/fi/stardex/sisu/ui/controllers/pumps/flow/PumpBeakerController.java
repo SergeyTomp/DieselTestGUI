@@ -87,10 +87,10 @@ public class PumpBeakerController {
     private final static double PERCENT_025 = 0.25;
     private final static int TEXT_DEVIATION = 3;
     private static final String REGEX = "[0-9.]*[^.]";
-    public static final String MILLILITRE_PER_MINUTE = "ml/min";
-    public static final String LITRE_PER_HOUR = "l/h";
+    private static final String MILLILITRE_PER_MINUTE = "ml/min";
+    private static final String LITRE_PER_HOUR = "l/h";
     private static final int TEXT_FIELD_MAX_LENGTH = 7;
-    protected static final String DEGREES_CELSIUS = " \u2103";
+    private static final String DEGREES_CELSIUS = " \u2103";
 
     public void setRescaler(Rescaler rescaler) {
         this.rescaler = rescaler;
@@ -188,7 +188,7 @@ public class PumpBeakerController {
      * - flowViewModel -> LIMIT or PLUS_OR_MINUS choice
      * - flowComboBox -> UoM changes
      * # 6 listens for textField changes and set values into PumpReportModel for reports generation
-     * (this is necessary to have values in the report in case manual input, not only in automatic measurements mode)*/
+     * (this is necessary to have values in the report in case manual input, not only in automatic crTestManager mode)*/
     private void setupListeners() {
         // #1
         flowTextField.textProperty().addListener(new FlowFieldListener());
@@ -330,7 +330,7 @@ public class PumpBeakerController {
         }else changeFlow(null);
     }
 
-    public void changeFlow(String value) {
+    private void changeFlow(String value) {
 
         if (value == null)
             flowTextField.setText(null);

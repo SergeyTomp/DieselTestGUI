@@ -3,7 +3,8 @@ package fi.stardex.sisu.spring;
 import fi.stardex.sisu.charts.TimerTasksManager;
 import fi.stardex.sisu.connect.ModbusConnect;
 import fi.stardex.sisu.devices.Devices;
-import fi.stardex.sisu.measurement.Measurements;
+import fi.stardex.sisu.measurement.CrTestManager;
+import fi.stardex.sisu.measurement.TestManagerFactory;
 import fi.stardex.sisu.model.*;
 import fi.stardex.sisu.model.cr.*;
 import fi.stardex.sisu.model.pump.*;
@@ -170,7 +171,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
     public MainSectionController mainSectionController(InjectorsRepository injectorsRepository,
                                                        InjectorTestRepository injectorTestRepository,
                                                        @Lazy ModbusRegisterProcessor flowModbusWriter,
-                                                       @Lazy Measurements measurements,
+                                                       @Lazy CrTestManager crTestManager,
                                                        BoostUadjustmentState boostUadjustmentState,
                                                        CodingReportModel codingReportModel,
                                                        DelayReportModel delayReportModel,
@@ -195,7 +196,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         mainSectionController.setInjectorTestRepository(injectorTestRepository);
         mainSectionController.setFlowModbusWriter(flowModbusWriter);
         mainSectionController.setI18N(i18N);
-        mainSectionController.setMeasurements(measurements);
+        mainSectionController.setCrTestManager(crTestManager);
         mainSectionController.setPrintDialogPanel(printDialogPanel());
         mainSectionController.setBoostUadjustmentState(boostUadjustmentState);
         mainSectionController.setDelayReportModel(delayReportModel);
@@ -424,7 +425,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
     @Bean
     @Autowired
     public ISADetectionController isaDetectionController(@Lazy ViewHolder rootLayout, InjectorSectionController injectorSectionController,
-                                                         @Lazy Measurements measurements, MainSectionController mainSectionController,
+                                                         @Lazy CrTestManager crTestManager, MainSectionController mainSectionController,
                                                          ISADetectionRepository isaDetectionRepository,
                                                          VoltAmpereProfileController voltAmpereProfileController,
                                                          FlowController flowController,
@@ -436,7 +437,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         isaDetectionController.setISAParent(isaDetection().getView());
         isaDetectionController.setRootParent(rootLayout.getView());
         isaDetectionController.setInjectorSectionController(injectorSectionController);
-        isaDetectionController.setMeasurements(measurements);
+        isaDetectionController.setCrTestManager(crTestManager);
         isaDetectionController.setMainSectionStartToggleButton(mainSectionController.getStartToggleButton());
         isaDetectionController.setResetButton(mainSectionController.getResetButton());
         isaDetectionController.setISADetectionRepository(isaDetectionRepository);
@@ -1289,7 +1290,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                              UisFlowModel uisFlowModel,
                                                              UisRlcModel uisRlcModel,
                                                              UisBipModel uisBipModel,
-                                                             TimingModelFactory timingModelFactory) {
+                                                             TimingModelFactory timingModelFactory,
+                                                             @Lazy TestManagerFactory testManagerFactory) {
         MainSectionUisController mainSectionUisController = (MainSectionUisController)mainSectionUIS().getController();
         mainSectionUisController.setMainSectionUisModel(mainSectionUisModel);
         mainSectionUisController.setPrintDialogPanel(printDialogPanel());
@@ -1311,6 +1313,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         mainSectionUisController.setUisRlcModel(uisRlcModel);
         mainSectionUisController.setUisBipModel(uisBipModel);
         mainSectionUisController.setTimingModelFactory(timingModelFactory);
+        mainSectionUisController.setTestManagerFactory(testManagerFactory);
         return mainSectionUisController;
     }
 
@@ -1398,7 +1401,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
     public UisInjectorSectionController uisInjectorSectionController(MainSectionUisModel mainSectionUisModel,
                                                                      UisInjectorSectionModel uisInjectorSectionModel,
                                                                      UisHardwareUpdateModel uisHardwareUpdateModel,
-                                                                     ModbusRegisterProcessor ultimaModbusWriter,
+                                                                     @Lazy ModbusRegisterProcessor ultimaModbusWriter,
                                                                      GUI_TypeModel gui_typeModel,
                                                                      UisSettingsModel uisSettingsModel,
                                                                      TestBenchSectionModel testBenchSectionModel,
