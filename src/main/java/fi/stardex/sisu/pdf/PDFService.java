@@ -656,7 +656,7 @@ public class PDFService {
         if(Double.compare(value, acceptableRight) == 0 || value > acceptableRight || Double.compare(value, acceptableLeft) == 0 || value < acceptableLeft) {
             cellColor = Color.RED;
         }
-        if(value < 0){
+        if(value < 0 || (nominalLeft == 0 && nominalRight == 0 && acceptableLeft == 0 && acceptableRight == 0)){
             cellColor = Color.WHITE;
         }
         return cellColor;
