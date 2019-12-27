@@ -461,7 +461,7 @@ public class BeakerController {
     }
     /** Listens for Rescaler's MapOfLevels changes and set level in corresponding beaker
      * in relation with other beakers levels in the same beaker set
-     * in case corresponding range label is empty
+     * in case corresponding range label is empty and if channel is selected
      * Double.isNaN check is used to avoid color artifacts on fuel cylinder elements in case value.isNaN*/
     private class MapOfLevelsListener implements MapChangeListener<String, Float>{
 
@@ -473,8 +473,13 @@ public class BeakerController {
 
         @Override
         public void onChanged(Change<? extends String, ? extends Float> change) {
-            currentMaxLevel = rescaler.getMapOfLevels().values().stream().max(Float::compare).get();
+
+            if (!ledButton.isSelected()) {
+                return;
+            }
+
             if (rangeLabel.getText().isEmpty()) {
+                currentMaxLevel = rescaler.getMapOfLevels().values().stream().max(Float::compare).orElse(0f);
                 double value = (rectangleBeaker.getHeight() / 2) * (rescaler.getMapOfLevels().get(name) / currentMaxLevel);
                 Platform.runLater(() -> BeakerController.this.setLevel(Double.isNaN(value) ? 0f : value));
             }

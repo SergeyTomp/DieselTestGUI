@@ -8,6 +8,7 @@ import fi.stardex.sisu.persistence.orm.uis.InjectorUisTest;
 import fi.stardex.sisu.persistence.orm.uis.InjectorUisVAP;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
+import fi.stardex.sisu.util.enums.InjectorSubType;
 import fi.stardex.sisu.util.enums.InjectorType;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.spinners.SpinnerManager;
@@ -586,7 +587,9 @@ public class UisVapController {
 
         if (currentVAP != null) {
 
-            if (currentVAP.getInjectorSubType() == DOUBLE_COIL || currentVAP.getInjectorSubType() == HPI) {
+            InjectorSubType injectorSubType = currentVAP.getInjectorSubType();
+
+            if (injectorSubType == DOUBLE_COIL || injectorSubType == HPI) {
 
                 double boostI2Value = boostI2Spinner.getValue();
                 double firstI2Value = firstI2Spinner.getValue();
@@ -595,10 +598,10 @@ public class UisVapController {
                 int width2Value;
                 switch (who) {
                     case TEST:
-                        width2Value = currentVAP.getInjectorSubType() == DOUBLE_COIL ? currentTest.getTotalPulseTime1() : currentTest.getTotalPulseTime2();
+                        width2Value = injectorSubType == DOUBLE_COIL ? currentTest.getTotalPulseTime1() : currentTest.getTotalPulseTime2();
                         break;
                     case SPINNER:
-                        width2Value = uisInjectorSectionModel.width_2Property().get();
+                        width2Value = injectorSubType == DOUBLE_COIL ? uisInjectorSectionModel.width_1Property().get() : uisInjectorSectionModel.width_2Property().get();
                         break;
                     default:
                         width2Value = uisInjectorSectionModel.width_1Property().get();

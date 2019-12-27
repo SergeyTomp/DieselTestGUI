@@ -274,15 +274,16 @@ public class UisTestManager implements TestManager {
 
     public void start(){
 
-        if (testBenchSectionModel.isPowerButtonDisabledProperty().get())
-            startPressure();
-        else
+//        if (testBenchSectionModel.isPowerButtonDisabledProperty().get())
+//            startPressure();
+//        else
             startMotor();
     }
 
     private void startMotor() {
-
-        testBenchStartToggleButton.setSelected(true);
+        if (!testBenchSectionModel.isPowerButtonDisabledProperty().get()) {
+            testBenchStartToggleButton.setSelected(true);
+        }
         motorPreparationTimeline.play();
     }
 
