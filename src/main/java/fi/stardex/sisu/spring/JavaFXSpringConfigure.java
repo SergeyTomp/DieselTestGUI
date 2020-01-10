@@ -1398,6 +1398,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
 
     @Bean
     @Autowired
+    @DependsOn("uisSettingsController")
     public UisInjectorSectionController uisInjectorSectionController(MainSectionUisModel mainSectionUisModel,
                                                                      UisInjectorSectionModel uisInjectorSectionModel,
                                                                      UisHardwareUpdateModel uisHardwareUpdateModel,

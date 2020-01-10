@@ -1110,8 +1110,9 @@ public class SpringJavaConfig {
 
     @Bean
     @Autowired
-    public UisModelService uisModelService(InjectorUisRepository injectorUisRepository) {
-        return new UisModelService(injectorUisRepository);
+    public UisModelService uisModelService(InjectorUisRepository injectorUisRepository,
+                                           ReferenceUisRepository referenceUisRepository) {
+        return new UisModelService(injectorUisRepository, referenceUisRepository);
     }
 
     @Bean
