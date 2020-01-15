@@ -4,6 +4,7 @@ import fi.stardex.sisu.model.*;
 import fi.stardex.sisu.model.pump.*;
 import fi.stardex.sisu.model.uis.UisFlowModel;
 import fi.stardex.sisu.model.uis.UisInjectorSectionModel;
+import fi.stardex.sisu.model.updateModels.DifferentialFmUpdateModel;
 import fi.stardex.sisu.model.updateModels.HighPressureSectionUpdateModel;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.CustomPumpState;
@@ -201,8 +202,15 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
 
     @Bean
     @Autowired
-    public PumpFlowController pumpFlowController(PumpTabSectionController pumpTabSectionController) {
-        return pumpTabSectionController.getPumpFlowController();
+    public PumpFlowController pumpFlowController(PumpTabSectionController pumpTabSectionController,
+                                                 DifferentialFmUpdateModel differentialFmUpdateModel,
+                                                 I18N i18N,
+                                                 GUI_TypeModel gui_typeModel) {
+        PumpFlowController pumpFlowController = pumpTabSectionController.getPumpFlowController();
+        pumpFlowController.setDifferentialFmUpdateModel(differentialFmUpdateModel);
+        pumpFlowController.setI18N(i18N);
+        pumpFlowController.setGui_typeModel(gui_typeModel);
+        return pumpFlowController;
     }
 
     @Bean
@@ -390,10 +398,14 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
     @Autowired
     public UisFlowController uisFlowController(UisTabSectionController uisTabSectionController,
                                                I18N i18N,
-                                               UisFlowModel uisFlowModel){
+                                               UisFlowModel uisFlowModel,
+                                               DifferentialFmUpdateModel differentialFmUpdateModel,
+                                               GUI_TypeModel gui_typeModel){
         UisFlowController uisFlowController = uisTabSectionController.getUisFlowController();
         uisFlowController.setI18N(i18N);
         uisFlowController.setUisFlowModel(uisFlowModel);
+        uisFlowController.setDifferentialFmUpdateModel(differentialFmUpdateModel);
+        uisFlowController.setGui_typeModel(gui_typeModel);
         return uisFlowController;
     }
 

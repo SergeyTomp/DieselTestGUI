@@ -274,7 +274,7 @@ public class PumpTestManager implements TestManager{
             if (pumpTestModeModel.testModeProperty().get() != TESTPLAN) {
                 adjustingTimeline.play();
             }
-            autoResetTimeline.play();
+//            autoResetTimeline.play();
         }
     }
 
@@ -291,7 +291,7 @@ public class PumpTestManager implements TestManager{
 
             if (pumpTimeProgressModel.measurementTimeEnabledProperty().get()) {
                 measurementTimeline.play();
-                autoResetTimeline.play();
+//                autoResetTimeline.play();
             }
             else{
                 pumpReportModel.storeResult();

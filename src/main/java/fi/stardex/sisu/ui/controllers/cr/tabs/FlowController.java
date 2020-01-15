@@ -1,8 +1,12 @@
 package fi.stardex.sisu.ui.controllers.cr.tabs;
 
+import fi.stardex.sisu.model.GUI_TypeModel;
 import fi.stardex.sisu.model.cr.*;
+import fi.stardex.sisu.model.updateModels.DifferentialFmUpdateModel;
 import fi.stardex.sisu.ui.controllers.common.BeakerController;
+import fi.stardex.sisu.util.ProgressIndicator;
 import fi.stardex.sisu.util.InputController;
+import fi.stardex.sisu.util.enums.GUI_type;
 import fi.stardex.sisu.util.i18n.I18N;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
@@ -10,6 +14,7 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.ProgressBar;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.AnchorPane;
 
@@ -18,6 +23,14 @@ import javax.annotation.PostConstruct;
 import static fi.stardex.sisu.util.FlowUnitObtainer.*;
 
 public class FlowController {
+
+    @FXML private Label percentLabel;
+
+    @FXML private Label calibrationPercentLabel;
+
+    @FXML private Label calibrationProgressLabel;
+
+    @FXML private ProgressBar calibrationProgressBar;
 
     @FXML private Label backFlowLabel;
 
@@ -123,6 +136,9 @@ public class FlowController {
     private DeliveryFlowRangeModel deliveryFlowRangeModel;
     private DeliveryFlowUnitsModel deliveryFlowUnitsModel;
     private MainSectionModel mainSectionModel;
+    private DifferentialFmUpdateModel differentialFmUpdateModel;
+    private ProgressIndicator progressIndicator;
+    private GUI_TypeModel gui_typeModel;
 
     private static final int TEXT_FIELD_MAX_LENGTH = 7;
 
@@ -305,37 +321,35 @@ public class FlowController {
     public void setCurrentDeliveryFlowLevels(double[] currentDeliveryFlowLevels) {
         this.currentDeliveryFlowLevels = currentDeliveryFlowLevels;
     }
-
     public void setCurrentBackFlowLevels(double[] currentBackFlowLevels) {
         this.currentBackFlowLevels = currentBackFlowLevels;
     }
-
     public void setI18N(I18N i18N) {
         this.i18N = i18N;
     }
-
     public void setFlowValuesModel(FlowValuesModel flowValuesModel) {
         this.flowValuesModel = flowValuesModel;
     }
-
     public void setBackFlowRangeModel(BackFlowRangeModel backFlowRangeModel) {
         this.backFlowRangeModel = backFlowRangeModel;
     }
-
     public void setBackFlowUnitsModel(BackFlowUnitsModel backFlowUnitsModel) {
         this.backFlowUnitsModel = backFlowUnitsModel;
     }
-
     public void setDeliveryFlowRangeModel(DeliveryFlowRangeModel deliveryFlowRangeModel) {
         this.deliveryFlowRangeModel = deliveryFlowRangeModel;
     }
-
     public void setDeliveryFlowUnitsModel(DeliveryFlowUnitsModel deliveryFlowUnitsModel) {
         this.deliveryFlowUnitsModel = deliveryFlowUnitsModel;
     }
-
     public void setMainSectionModel(MainSectionModel mainSectionModel) {
         this.mainSectionModel = mainSectionModel;
+    }
+    public void setDifferentialFmUpdateModel(DifferentialFmUpdateModel differentialFmUpdateModel) {
+        this.differentialFmUpdateModel = differentialFmUpdateModel;
+    }
+    public void setGui_typeModel(GUI_TypeModel gui_typeModel) {
+        this.gui_typeModel = gui_typeModel;
     }
 
     @PostConstruct
@@ -372,6 +386,7 @@ public class FlowController {
         backFlowRangeModel.backFlowRangeProperty().bind(backFlowRangeLabel.textProperty());
 
         setupTestModeListener();
+        setupCalibrationProgressBar();
     }
 
     private void setupDeliveryFlowComboBox() {
@@ -390,9 +405,39 @@ public class FlowController {
 
     }
 
+    private void setupCalibrationProgressBar() {
+
+        showNode(false, calibrationPercentLabel, calibrationProgressBar, calibrationProgressLabel, percentLabel);
+
+        progressIndicator = ProgressIndicator
+                .create()
+                .progressBar(calibrationProgressBar)
+                .progressLabel(calibrationPercentLabel)
+                .progressValue(differentialFmUpdateModel.progressProperty())
+                .showProgress(differentialFmUpdateModel.showProgressProperty())
+                .hide(calibrationProgressBar, calibrationPercentLabel, calibrationProgressLabel, percentLabel)
+                .build();
+
+        gui_typeModel.guiTypeProperty().addListener((observableValue, oldValue, newValue) -> {
+
+            if (oldValue == GUI_type.CR_Inj || oldValue == GUI_type.HEUI) {
+                progressIndicator.stopIndication();
+            }
+            if (newValue == GUI_type.CR_Inj || newValue == GUI_type.HEUI) {
+                progressIndicator.startIndication();
+            }
+        });
+
+        if (gui_typeModel.guiTypeProperty().get() == GUI_type.CR_Inj
+                ||gui_typeModel.guiTypeProperty().get() == GUI_type.HEUI) {
+            progressIndicator.startIndication();
+        }
+    }
+
     private void bindingI18N() {
         deliveryLabel.textProperty().bind(i18N.createStringBinding("h4.flow.label.delivery"));
         backFlowLabel.textProperty().bind(i18N.createStringBinding("h4.flow.label.backflow"));
+        calibrationProgressLabel.textProperty().bind(i18N.createStringBinding("differentialFM.calibrationLabel"));
     }
 
     private void bindProperties() {

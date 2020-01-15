@@ -15,6 +15,7 @@ public class UisSettingsModel {
     private final BooleanProperty instantFlowProperty = new SimpleBooleanProperty();
     private final ObjectProperty<Dimension> flowRangeViewProperty = new SimpleObjectProperty<>();
     private final Button firmwareVersionButton = new Button();
+    private Button differentialFmSettingsButton = new Button();
 
     public ObjectProperty<Locales> languageProperty() {
         return languageProperty;
@@ -36,5 +37,8 @@ public class UisSettingsModel {
     }
     public Button getFirmwareVersionButton() {
         return firmwareVersionButton;
+    }
+    public Button getDifferentialFmSettingsButton() {
+        return differentialFmSettingsButton;
     }
 }

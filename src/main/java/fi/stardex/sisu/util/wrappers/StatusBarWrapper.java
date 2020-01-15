@@ -116,6 +116,9 @@ public class StatusBarWrapper {
             case MASTER:
                 sb.append(device.getLabel()).append(" CH04");
                 break;
+            case MASTER_DF:
+                sb.append(device.getLabel()).append(" CH04 DF");
+                break;
             case STREAM:
                 sb.append(device.getLabel()).append(" CH10");
                 break;

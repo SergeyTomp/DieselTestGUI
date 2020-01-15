@@ -441,10 +441,10 @@ public class CrTestManager implements TestManager {
 
         Integer testId = testsSelectionModel.getSelectedItem().getTestName().getId();
         if (testId == 11 || testId == 12 || testId == 33) {
-            preInjectionAutoResetTimeline.play();
+//            preInjectionAutoResetTimeline.play();
             return;
         }
-        autoResetTimeline.play();
+//        autoResetTimeline.play();
     }
 
     private boolean isSectionReady(double currentValue, double lcdValue, double margin) {

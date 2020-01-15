@@ -8,7 +8,7 @@ public class FlowFirmwareVersion<T extends Versions> extends FirmwareVersion<T> 
 
     public enum FlowVersions implements Versions {
 
-        MASTER, STREAM, STAND_FM, STAND_FM_4_CH, NO_VERSION
+        MASTER, STREAM, STAND_FM, STAND_FM_4_CH, NO_VERSION, MASTER_DF
 
     }
 

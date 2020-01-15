@@ -200,6 +200,20 @@ public class GUI_TypeController {
                 .findAny()
                 .ifPresent(c -> c.setVisible(true));
 
+        settings.getChildrenUnmodifiable()
+                .stream()
+                .filter(node -> node.getId() != null)
+                .filter(node -> node.getId().equals("differentialFlowMeterButton"))
+                .findAny()
+                .ifPresent(c -> c.setVisible(true));
+
+        settings.getChildrenUnmodifiable()
+                .stream()
+                .filter(node -> node.getId() != null)
+                .filter(node -> node.getId().equals("diffFmSettingsLabel"))
+                .findAny()
+                .ifPresent(c -> c.setVisible(true));
+
         activeMainSection = mainSection;
         activeChangeableSection = crSection;
         activeTabSection = tabSection;
@@ -225,6 +239,20 @@ public class GUI_TypeController {
                 .stream()
                 .filter(node -> node.getId() != null)
                 .filter(node -> node.getId().equals("isDIMASCheckBox"))
+                .findAny()
+                .ifPresent(c -> c.setVisible(false));
+
+        settings.getChildrenUnmodifiable()
+                .stream()
+                .filter(node -> node.getId() != null)
+                .filter(node -> node.getId().equals("differentialFlowMeterButton"))
+                .findAny()
+                .ifPresent(c -> c.setVisible(false));
+
+        settings.getChildrenUnmodifiable()
+                .stream()
+                .filter(node -> node.getId() != null)
+                .filter(node -> node.getId().equals("diffFmSettingsLabel"))
                 .findAny()
                 .ifPresent(c -> c.setVisible(false));
 

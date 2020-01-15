@@ -21,10 +21,9 @@ import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.settings.*;
 import fi.stardex.sisu.states.*;
 import fi.stardex.sisu.ui.ViewHolder;
-import fi.stardex.sisu.ui.controllers.common.GUI_TypeController;
-import fi.stardex.sisu.ui.controllers.common.TestBenchSectionController;
+import fi.stardex.sisu.ui.controllers.common.*;
+import fi.stardex.sisu.ui.controllers.cr.tabs.settings.DifferentialFlowMeterButtonController;
 import fi.stardex.sisu.ui.controllers.cr.windows.ISADetectionController;
-import fi.stardex.sisu.ui.controllers.common.BeakerController;
 import fi.stardex.sisu.ui.controllers.cr.TabSectionController;
 import fi.stardex.sisu.ui.controllers.cr.windows.FirmwareDialogController;
 import fi.stardex.sisu.ui.controllers.cr.windows.VoltAmpereProfileController;
@@ -45,7 +44,6 @@ import fi.stardex.sisu.ui.controllers.pumps.PumpTabSectionController;
 import fi.stardex.sisu.ui.controllers.pumps.SCVCalibrationController;
 import fi.stardex.sisu.ui.controllers.pumps.pressure.PumpHighPressureSectionPwrController;
 import fi.stardex.sisu.ui.controllers.pumps.pressure.PumpRegulatorSectionTwoController;
-import fi.stardex.sisu.ui.controllers.common.RootLayoutController;
 import fi.stardex.sisu.ui.controllers.uis.MainSectionUisController;
 import fi.stardex.sisu.ui.controllers.uis.UisInjectorSectionController;
 import fi.stardex.sisu.ui.controllers.uis.UisSettingsController;
@@ -520,7 +518,9 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                          DeliveryFlowRangeModel deliveryFlowRangeModel,
                                          BackFlowUnitsModel backFlowUnitsModel,
                                          BackFlowRangeModel backFlowRangeModel,
-                                         MainSectionModel mainSectionModel) {
+                                         MainSectionModel mainSectionModel,
+                                         DifferentialFmUpdateModel differentialFmUpdateModel,
+                                         GUI_TypeModel gui_typeModel) {
         FlowController flowController = tabSectionController.getFlowController();
         flowController.setI18N(i18N);
         flowController.setFlowValuesModel(flowValuesModel);
@@ -529,6 +529,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
         flowController.setBackFlowUnitsModel(backFlowUnitsModel);
         flowController.setBackFlowRangeModel(backFlowRangeModel);
         flowController.setMainSectionModel(mainSectionModel);
+        flowController.setDifferentialFmUpdateModel(differentialFmUpdateModel);
+        flowController.setGui_typeModel(gui_typeModel);
         return flowController;
     }
 
@@ -740,9 +742,13 @@ public class JavaFXSpringConfigure extends ViewLoader{
 
     @Bean
     @Autowired
-    SettingsController settingsController(ViewHolder settings){
+    SettingsController settingsController(ViewHolder settings,
+                                          ModbusConnect flowModbusConnect,
+                                          FirmwareVersion<FlowVersions> flowFirmwareVersion){
         SettingsController settingsController = (SettingsController)settings.getController();
         settingsController.setI18N(i18N);
+        settingsController.setFlowModbusConnect(flowModbusConnect);
+        settingsController.setFlowFirmwareVersion(flowFirmwareVersion);
         return settingsController;
     }
 
@@ -1179,6 +1185,16 @@ public class JavaFXSpringConfigure extends ViewLoader{
         return firmwareButtonController;
     }
 
+    @Bean
+    @Autowired
+    public DifferentialFlowMeterButtonController differentialFlowMeterButtonController(I18N i18N,
+                                                                                       SettingsController settingsController,
+                                                                                       CrSettingsModel crSettingsModel) {
+        DifferentialFlowMeterButtonController differentialFlowMeterButtonController = settingsController.getDifferentialFlowMeterButtonController();
+        differentialFlowMeterButtonController.setI18N(i18N);
+        differentialFlowMeterButtonController.setCrSettingsModel(crSettingsModel);
+        return differentialFlowMeterButtonController;
+    }
 
     @Bean
     @Autowired
@@ -1197,6 +1213,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         firmwareDialogController.setI18N(i18N);
         return firmwareDialogController;
     }
+
 
     @Bean
     public ViewHolder scvCalibration() {
@@ -1434,11 +1451,15 @@ public class JavaFXSpringConfigure extends ViewLoader{
     @Autowired
     public UisSettingsController uisSettingsController(Preferences rootPrefs,
                                                        I18N i18N,
-                                                       UisSettingsModel uisSettingsModel) {
+                                                       UisSettingsModel uisSettingsModel,
+                                                       ModbusConnect flowModbusConnect,
+                                                       RegisterProvider flowRegisterProvider) {
         UisSettingsController uisSettingsController = (UisSettingsController) uisSettings().getController();
         uisSettingsController.setI18N(i18N);
         uisSettingsController.setRootPrefs(rootPrefs);
         uisSettingsController.setUisSettingsModel(uisSettingsModel);
+        uisSettingsController.setFlowModbusConnect(flowModbusConnect);
+        uisSettingsController.setFlowRegisterProvider(flowRegisterProvider);
         return uisSettingsController;
     }
 
@@ -1643,5 +1664,45 @@ public class JavaFXSpringConfigure extends ViewLoader{
         uisBipReportController.setMainSectionUisModel(mainSectionUisModel);
         uisBipReportController.setUisBipModel(uisBipModel);
         return uisBipReportController;
+    }
+
+    @Bean
+    public ViewHolder differentialFM() {
+        return loadView("/fxml/common/DifferentialFM.fxml");
+    }
+
+    @Bean
+    @Autowired
+    public DifferentialFMController differentialFMController(I18N i18N,
+                                                             ModbusRegisterProcessor flowModbusWriter,
+                                                             CrSettingsModel crSettingsModel,
+                                                             UisSettingsModel uisSettingsModel,
+                                                             DifferentialFmUpdateModel differentialFmUpdateModel,
+                                                             MainSectionUisModel mainSectionUisModel,
+                                                             MainSectionModel mainSectionModel,
+                                                             PumpTestModel pumpTestModel,
+                                                             Preferences rootPreferences,
+                                                             InjectorSectionPwrState injectorSectionPwrState,
+                                                             UisInjectorSectionModel uisInjectorSectionModel,
+                                                             GUI_TypeModel gui_typeModel,
+                                                             ModbusConnect flowModbusConnect,
+                                                             FirmwareVersion<FlowVersions> flowFirmwareVersion) {
+        DifferentialFMController differentialFMController = (DifferentialFMController)differentialFM().getController();
+        differentialFMController.setI18N(i18N);
+        differentialFMController.setCalibrationDialogView(differentialFM().getView());
+        differentialFMController.setFlowModbusWriter(flowModbusWriter);
+        differentialFMController.setCrSettingsModel(crSettingsModel);
+        differentialFMController.setUisSettingsModel(uisSettingsModel);
+        differentialFMController.setDifferentialFmUpdateModel(differentialFmUpdateModel);
+        differentialFMController.setMainSectionUisModel(mainSectionUisModel);
+        differentialFMController.setMainSectionModel(mainSectionModel);
+        differentialFMController.setPumpTestModel(pumpTestModel);
+        differentialFMController.setPreferences(rootPreferences);
+        differentialFMController.setInjectorSectionPwrState(injectorSectionPwrState);
+        differentialFMController.setUisInjectorSectionModel(uisInjectorSectionModel);
+        differentialFMController.setGui_typeModel(gui_typeModel);
+        differentialFMController.setFlowModbusConnect(flowModbusConnect);
+        differentialFMController.setFlowFirmwareVersion(flowFirmwareVersion);
+        return differentialFMController;
     }
 }

@@ -232,7 +232,7 @@ public class UisTestManager implements TestManager {
             if (mainSectionUisModel.testTypeProperty().get() != TESTPLAN) {
                 adjustingTimeline.play();
             }
-            autoResetTimeline.play();
+//            autoResetTimeline.play();
         }
     }
 
@@ -243,7 +243,7 @@ public class UisTestManager implements TestManager {
             adjustingTimeline.stop();
             if (mainSectionUisModel.measurementTimeEnabledProperty().get()) {
                 measurementTimeline.play();
-                autoResetTimeline.play();
+//                autoResetTimeline.play();
             } else {
                 storeButton.fire();
                 runNextTest();

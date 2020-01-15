@@ -1,6 +1,9 @@
 package fi.stardex.sisu.ui.controllers.uis;
 
+import fi.stardex.sisu.connect.ModbusConnect;
 import fi.stardex.sisu.model.uis.UisSettingsModel;
+import fi.stardex.sisu.registers.RegisterProvider;
+import fi.stardex.sisu.registers.flow.ModbusMapFlow;
 import fi.stardex.sisu.util.enums.Dimension;
 import fi.stardex.sisu.util.enums.uis.RpmSource;
 import fi.stardex.sisu.util.i18n.I18N;
@@ -36,10 +39,14 @@ public class UisSettingsController {
     @FXML private Spinner<Integer> sensorAngleSpinner;
     @FXML private ComboBox<RpmSource> rpmSourceComboBox;
     @FXML private CheckBox instantFlowCheckBox;
+    @FXML private Label diffFmSettingsLabel;
+    @FXML private Button diffFmSettingsButton;
 
     private Preferences rootPrefs;
     private I18N i18N;
     private UisSettingsModel uisSettingsModel;
+    private ModbusConnect flowModbusConnect;
+    private RegisterProvider flowRegisterProvider;
     private static final String PREF_KEY_FLOW = "checkBoxFlowVisibleSelected";
     private static final String PREF_KEY_PRESSURE = "pressureSensorSelected";
     private static final String PREF_KEY_OFFSET = "angleOffsetSelected";
@@ -60,6 +67,12 @@ public class UisSettingsController {
     }
     public void setUisSettingsModel(UisSettingsModel uisSettingsModel) {
         this.uisSettingsModel = uisSettingsModel;
+    }
+    public void setFlowModbusConnect(ModbusConnect flowModbusConnect) {
+        this.flowModbusConnect = flowModbusConnect;
+    }
+    public void setFlowRegisterProvider(RegisterProvider flowRegisterProvider) {
+        this.flowRegisterProvider = flowRegisterProvider;
     }
 
     @PostConstruct
@@ -113,6 +126,16 @@ public class UisSettingsController {
         sensorAngleSpinner.getValueFactory().setValue(rootPrefs.getInt(PREF_KEY_OFFSET, 70));
         sensorAngleSpinner.valueProperty().addListener((observableValue, oldValue, newValue) -> rootPrefs.putInt(PREF_KEY_OFFSET, newValue));
         firmwareButton.setOnAction(actionEvent -> uisSettingsModel.getFirmwareVersionButton().fire());
+        diffFmSettingsButton.setOnAction(actionEvent -> uisSettingsModel.getDifferentialFmSettingsButton().fire());
+        diffFmSettingsButton.setDisable(true);
+        flowModbusConnect.connectedProperty().addListener((observableValue, oldValue, newValue) -> {
+
+            if (newValue) {
+                diffFmSettingsButton.setDisable(!((int) flowRegisterProvider.read(ModbusMapFlow.FirmwareVersion) == 0xDDFF));
+            } else {
+                diffFmSettingsButton.setDisable(true);
+            }
+        });
         bindingI18N();
     }
 
@@ -144,5 +167,8 @@ public class UisSettingsController {
         alertString.bind(i18N.createStringBinding("alert.pressureSensorChange"));
         yesButton.bind((i18N.createStringBinding("alert.yesButton")));
         noButton.bind((i18N.createStringBinding("alert.noButton")));
+        diffFmSettingsLabel.textProperty().bind((i18N.createStringBinding("differentialFM.calibrationButton")));
+        diffFmSettingsButton.textProperty().bind((i18N.createStringBinding("h4.tab.settings")));
+        rangeViewLabel.textProperty().bind((i18N.createStringBinding("settings.FlowOutputDimension.ComboBox")));
     }
 }

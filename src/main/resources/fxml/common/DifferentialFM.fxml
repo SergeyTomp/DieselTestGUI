@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Spinner?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="180.0" prefWidth="470.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.common.DifferentialFMController">
+    <children>
+        <HBox styleClass="alertDialog" stylesheets="@../../css/Styling.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+            <children>
+                <VBox prefHeight="200.0" prefWidth="500.0" spacing="12.0">
+                    <children>
+                        <HBox alignment="CENTER_LEFT" spacing="10.0">
+                            <children>
+                                <VBox alignment="CENTER">
+                                    <children>
+                                        <Label fx:id="timeLabel" text="%differentialFM.calibrationTime">
+                                            <VBox.margin>
+                                                <Insets right="70.0" />
+                                            </VBox.margin>
+                                        </Label>
+                                        <HBox alignment="CENTER" spacing="5.0">
+                                            <children>
+                                                <Spinner fx:id="shiftingTimeSpinner" editable="true" prefHeight="50.0" prefWidth="170.0" styleClass="repair-spinner" stylesheets="@../../css/Styling.css" />
+                                                <Label text="s">
+                                                    <font>
+                                                        <Font size="24.0" />
+                                                    </font>
+                                                    <HBox.margin>
+                                                        <Insets right="20.0" />
+                                                    </HBox.margin>
+                                                </Label>
+                                            </children>
+                                        </HBox>
+                                    </children>
+                                </VBox>
+                                <VBox alignment="CENTER">
+                                    <children>
+                                        <Label fx:id="periodLabel" text="%differentialFM.calibrationPeriod">
+                                            <VBox.margin>
+                                                <Insets right="50.0" />
+                                            </VBox.margin>
+                                        </Label>
+                                        <HBox alignment="CENTER" spacing="5.0">
+                                            <children>
+                                                <Spinner fx:id="shiftingPeriodSpinner" editable="true" prefHeight="50.0" prefWidth="170.0" styleClass="repair-spinner" stylesheets="@../../css/Styling.css" />
+                                                <Label text="s">
+                                                    <font>
+                                                        <Font size="24.0" />
+                                                    </font>
+                                                </Label>
+                                            </children>
+                                        </HBox>
+                                    </children>
+                                </VBox>
+                            </children>
+                        </HBox>
+                        <HBox alignment="CENTER" spacing="70.0">
+                            <children>
+                                <Button fx:id="closeButton" alignment="CENTER" mnemonicParsing="false" prefHeight="55.0" prefWidth="170.0" stylesheets="@../../css/Styling.css" text="%dialog.customer.close" />
+                            </children>
+                        </HBox>
+                    </children>
+                    <padding>
+                        <Insets left="20.0" top="20.0" />
+                    </padding>
+                </VBox>
+            </children>
+        </HBox>
+    </children>
+</AnchorPane>

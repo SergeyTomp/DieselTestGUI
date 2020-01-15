@@ -191,8 +191,12 @@ public class SpringJavaConfig {
                         int firmwareVersionNumber = (int) read(ModbusMapFlow.FirmwareVersion);
                         switch (firmwareVersionNumber) {
                             case 0xAACC:
-                            case 0xDDFF:
                                 flowFirmwareVersion.setVersions(MASTER);
+                                standIPField.setDisable(false);
+                                standPortField.setDisable(false);
+                                break;
+                            case 0xDDFF:
+                                flowFirmwareVersion.setVersions(MASTER_DF);
                                 standIPField.setDisable(false);
                                 standPortField.setDisable(false);
                                 break;
@@ -336,25 +340,45 @@ public class SpringJavaConfig {
                         FlowVersions version = flowFirmwareVersion.getVersions();
                         switch (version) {
                             case MASTER:
-                                updaters.stream().filter(updater -> updater instanceof FlowMasterUpdater
+                                updaters.stream()
+                                        .filter(updater ->
+                                        updater instanceof FlowMasterUpdater
                                         || updater instanceof PumpFlowUpdater
-                                        || updater instanceof UisFlowUpdater
-                                        || updater instanceof DiffFlowUpdateModel).forEach(Platform::runLater);
+                                        || updater instanceof UisFlowUpdater)
+                                        .forEach(Platform::runLater);
+                                break;
+                            case MASTER_DF:
+                                updaters.stream()
+                                        .filter(updater ->
+                                                updater instanceof FlowMasterUpdater
+                                                        || updater instanceof PumpFlowUpdater
+                                                        || updater instanceof UisFlowUpdater
+                                                        || updater instanceof DifferentialFmUpdateModel)
+                                        .forEach(Platform::runLater);
                                 break;
                             case STREAM:
-                                updaters.stream().filter(updater -> updater instanceof FlowStreamUpdater
+                                updaters.stream()
+                                        .filter(updater ->
+                                        updater instanceof FlowStreamUpdater
                                         || updater instanceof UisFlowUpdater
-                                        || updater instanceof PumpFlowUpdater).forEach(Platform::runLater);
+                                        || updater instanceof PumpFlowUpdater)
+                                        .forEach(Platform::runLater);
                                 break;
                             case STAND_FM:
-                                updaters.stream().filter(updater -> updater instanceof FlowMasterUpdater
+                                updaters.stream()
+                                        .filter(updater ->
+                                        updater instanceof FlowMasterUpdater
                                         || updater instanceof UisFlowUpdater
-                                        || updater instanceof TestBenchSectionUpdateModel).forEach(Platform::runLater);
+                                        || updater instanceof TestBenchSectionUpdateModel)
+                                        .forEach(Platform::runLater);
                                 break;
                             case STAND_FM_4_CH:
-                                updaters.stream().filter(updater -> updater instanceof FlowStreamUpdater
+                                updaters.stream()
+                                        .filter(updater ->
+                                        updater instanceof FlowStreamUpdater
                                         || updater instanceof UisFlowUpdater
-                                        || updater instanceof TestBenchSectionUpdateModel).forEach(Platform::runLater);
+                                        || updater instanceof TestBenchSectionUpdateModel)
+                                        .forEach(Platform::runLater);
                                 break;
                             default:
                                 break;
@@ -1314,6 +1338,16 @@ public class SpringJavaConfig {
         testManagerFactory.setPumpTestManager(pumpTestManager);
         testManagerFactory.setUisTestManager(uisTestManager);
         return testManagerFactory;
+    }
+
+    @Bean
+    public CrSettingsModel crSettingsModel() {
+        return new CrSettingsModel();
+    }
+
+    @Bean
+    public DifferentialFmUpdateModel differentialFmUpdateModel() {
+        return new DifferentialFmUpdateModel();
     }
 
 //    @Bean

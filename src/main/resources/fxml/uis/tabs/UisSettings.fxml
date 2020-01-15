@@ -23,6 +23,7 @@
       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
   </rowConstraints>
    <children>
       <Label fx:id="pressureSensorLabel" stylesheets="@../../../css/Styling.css" text="%settings.pressureSensor.Label">
@@ -46,8 +47,11 @@
             <Insets />
          </GridPane.margin>
       </Spinner>
-      <CheckBox fx:id="instantFlowCheckBox" mnemonicParsing="false" selected="true" styleClass="checkBox" stylesheets="@../../../css/Styling.css" text="%h4.settings.label.flowVisible" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-      <Button fx:id="firmwareButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" prefWidth="150.0" text="%settings.firmware.Button" GridPane.halignment="CENTER" GridPane.rowIndex="5" />
+      <CheckBox fx:id="instantFlowCheckBox" mnemonicParsing="false" selected="true" styleClass="checkBox" stylesheets="@../../../css/Styling.css" text="%h4.settings.label.flowVisible" GridPane.rowIndex="6">
+         <GridPane.margin>
+            <Insets left="10.0" />
+         </GridPane.margin></CheckBox>
+      <Button fx:id="firmwareButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" prefWidth="150.0" text="%settings.firmware.Button" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="6" />
       <ComboBox fx:id="pressureSensorComboBox" prefWidth="170.0" GridPane.columnIndex="1" />
       <ComboBox fx:id="languagesComboBox" prefWidth="170.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
       <ComboBox fx:id="rpmSourceComboBox" prefWidth="170.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
@@ -57,5 +61,11 @@
             <Insets left="10.0" />
          </GridPane.margin>
       </Label>
+      <Label fx:id="diffFmSettingsLabel" text="%differentialFM.calibrationButton" GridPane.rowIndex="5">
+         <GridPane.margin>
+            <Insets left="10.0" />
+         </GridPane.margin>
+      </Label>
+      <Button fx:id="diffFmSettingsButton" mnemonicParsing="false" prefHeight="30.0" prefWidth="150.0" text="%h4.tab.settings" GridPane.columnIndex="1" GridPane.rowIndex="5" />
    </children>
 </GridPane>
