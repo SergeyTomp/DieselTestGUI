@@ -7,10 +7,7 @@ import fi.stardex.sisu.model.ChartTaskDataModel;
 import fi.stardex.sisu.model.GUI_TypeModel;
 import fi.stardex.sisu.model.RegulationModesModel;
 import fi.stardex.sisu.model.TestBenchSectionModel;
-import fi.stardex.sisu.model.uis.MainSectionUisModel;
-import fi.stardex.sisu.model.uis.UisInjectorSectionModel;
-import fi.stardex.sisu.model.uis.UisSettingsModel;
-import fi.stardex.sisu.model.uis.UisVapModel;
+import fi.stardex.sisu.model.uis.*;
 import fi.stardex.sisu.model.updateModels.UisHardwareUpdateModel;
 import fi.stardex.sisu.persistence.orm.interfaces.Test;
 import fi.stardex.sisu.persistence.orm.uis.InjectorUisTest;
@@ -58,8 +55,6 @@ import static fi.stardex.sisu.util.enums.RegActive.*;
 
 public class UisInjectorSectionController {
 
-    @FXML private Label bipLabel;
-    @FXML private Label bipTaskLabel;
     @FXML private ToggleButton led1ToggleButton;
     @FXML private ToggleButton led2ToggleButton;
     @FXML private ToggleButton led3ToggleButton;
@@ -68,6 +63,10 @@ public class UisInjectorSectionController {
     @FXML private ToggleButton led6ToggleButton;
     @FXML private ToggleButton led7ToggleButton;
     @FXML private ToggleButton led8ToggleButton;
+    @FXML private ToggleButton pressureToggleButton;
+    @FXML private ToggleButton injectorToggleButton;
+    @FXML private Button saveBipButton;
+    @FXML private Button saveDelayButton;
     @FXML private Spinner<Integer> widthSpinner;
     @FXML private Spinner<Integer> width2Spinner;
     @FXML private Spinner<Integer> offsetSpinner;
@@ -77,6 +76,8 @@ public class UisInjectorSectionController {
     @FXML private Spinner<Double> currentSpinner;
     @FXML private Spinner<Double> dutySpinner;
     @FXML private TextField typeTextField;
+    @FXML private Label bipLabel;
+    @FXML private Label bipTaskLabel;
     @FXML private Label offsetLabel;
     @FXML private Label width2Label;
     @FXML private Label angle2Label;
@@ -103,11 +104,9 @@ public class UisInjectorSectionController {
     @FXML private StackPane led8StackPane;
     @FXML private StackPane bipStackPane;
     @FXML private StackPane delayStackPane;
-    @FXML private Button saveBipButton;
-    @FXML private Button saveDelayButton;
     @FXML private StackPane lcdStackPane;
-    @FXML private ToggleButton regulatorToggleButton;
     @FXML private StackPane rootStackPane;
+    @FXML private StackPane pressureButtonStackPane;
 
     private Lcd lcd;
     private GaugeCreator.BipGauge bipGauge;
@@ -129,17 +128,21 @@ public class UisInjectorSectionController {
     private RegulationModesModel regulationModesModel;
     private UisVapModel uisVapModel;
     private ChartTaskDataModel chartTaskDataModel;
+    private UisRlcModel uisRlcModel;
     private TimerTasksManager timerTasksManager;
-    private BooleanProperty sectionStart = new SimpleBooleanProperty();
+    private BooleanProperty injectorStart = new SimpleBooleanProperty();
 
     private ModbusRegisterProcessor ultimaModbusWriter;
     private Logger logger = LoggerFactory.getLogger(UisInjectorSectionController.class);
 
-    public ToggleButton getRegulatorToggleButton() {
-        return regulatorToggleButton;
+    public ToggleButton getInjectorToggleButton() {
+        return injectorToggleButton;
     }
-    public BooleanProperty sectionStartProperty() {
-        return sectionStart;
+    public ToggleButton getPressureToggleButton() {
+        return pressureToggleButton;
+    }
+    public BooleanProperty injectorStartProperty() {
+        return injectorStart;
     }
 
     public void setMainSectionUisModel(MainSectionUisModel mainSectionUisModel) {
@@ -175,6 +178,9 @@ public class UisInjectorSectionController {
     public void setTimerTasksManager(TimerTasksManager timerTasksManager) {
         this.timerTasksManager = timerTasksManager;
     }
+    public void setUisRlcModel(UisRlcModel uisRlcModel) {
+        this.uisRlcModel = uisRlcModel;
+    }
 
     @PostConstruct
     public void init() {
@@ -204,7 +210,9 @@ public class UisInjectorSectionController {
         setupGUI_TypeSwitchListener();
         setupCharTaskListener();
         setupF2eSpinnerListeners();
-        setupStartButtonListener();
+        setupInjectorButtonListener();
+        setupPressureStackPaneListener();
+        setupRlcMeasureButtonListener();
         lcd.valueProperty().bind(uisHardwareUpdateModel.lcdPressureProperty());
         bipLabel.setText("BIP(\u00B5s)");
         saveBipButton.setDisable(true);
@@ -236,8 +244,8 @@ public class UisInjectorSectionController {
                 pressureSpinner.setVisible(true);
                 currentSpinner.setVisible(true);
                 dutySpinner.setVisible(true);
-                regulatorToggleButton.setDisable(false);
-                lcd.setOpacity(1);
+                pressureToggleButton.setVisible(true);
+                pressureToggleButton.setSelected(true);
                 break;
         }
         injectorSubType.getModeSwitchRegisters().forEach((k, v) -> ultimaModbusWriter.add(k, v));
@@ -258,9 +266,9 @@ public class UisInjectorSectionController {
         pressureSpinner.setVisible(false);
         currentSpinner.setVisible(false);
         dutySpinner.setVisible(false);
-        regulatorToggleButton.setSelected(false);
-        regulatorToggleButton.setDisable(true);
-        lcd.setOpacity(0.4);
+        injectorToggleButton.setSelected(false);
+        pressureToggleButton.setVisible(false);
+        pressureToggleButton.setSelected(false);
     }
 
     private void setupSpinners() {
@@ -315,6 +323,11 @@ public class UisInjectorSectionController {
         dutySpinner.getStyleClass().add(1, "");
     }
 
+    private void setupPressureStackPaneListener() {
+
+        pressureButtonStackPane.widthProperty().addListener(new StackPanePowerButtonWidthListener(pressureButtonStackPane, pressureToggleButton));
+    }
+
     private void setupLedControllers() {
 
         setNumber(1, led1ToggleButton);
@@ -367,7 +380,8 @@ public class UisInjectorSectionController {
         uisInjectorSectionModel.getLedBeaker7ToggleButton().selectedProperty().bind(led7ToggleButton.selectedProperty());
         uisInjectorSectionModel.getLedBeaker8ToggleButton().selectedProperty().bind(led8ToggleButton.selectedProperty());
 
-        uisInjectorSectionModel.powerButtonProperty().bind(regulatorToggleButton.selectedProperty());
+        uisInjectorSectionModel.injectorButtonProperty().bind(injectorToggleButton.selectedProperty());
+        uisInjectorSectionModel.pressureButtonProperty().bind(pressureToggleButton.selectedProperty());
         uisInjectorSectionModel.width_1Property().bind(widthSpinner.valueProperty());
         uisInjectorSectionModel.width_2Property().bind(width2Spinner.valueProperty());
         uisInjectorSectionModel.shiftProperty().bind(offsetSpinner.valueProperty());
@@ -459,6 +473,7 @@ public class UisInjectorSectionController {
                 bipTaskLabel.setText("");
                 uisInjectorSectionModel.bipRangeLabelProperty().setValue("");
                 saveBipButton.setDisable(true);
+                regulator1pressModeOFF();
                 return;
             }
 
@@ -476,7 +491,6 @@ public class UisInjectorSectionController {
 
             InjectorSubType injectorSubType = newValue.getVoltAmpereProfile().getInjectorSubType();
 
-            //TODO: черновой вариант, нужно вдумчиво привести в соответствие с требованиями железа т.к. в работающей старой версии всё неоптимально
             if (injectorSubType == DOUBLE_COIL || injectorSubType == HPI || injectorSubType == DOUBLE_SIGNAL) {
                 width2Spinner.getValueFactory().setValue(injectorSubType == DOUBLE_COIL ? totalPulseTime1 : totalPulseTime2);
                 if (injectorSubType != DOUBLE_COIL) {
@@ -485,7 +499,9 @@ public class UisInjectorSectionController {
                     offsetSpinner.getValueFactory().setValue(shift);
                 }
             } else if (injectorSubType == F2E) {
-                pressureSpinner.getValueFactory().setValue(settedPressure);
+                regulator1pressModeON(settedPressure);
+            }else{
+                width2Spinner.getValueFactory().setValue(totalPulseTime2);
             }
 
             if (isBipTest(newValue)) {
@@ -551,7 +567,8 @@ public class UisInjectorSectionController {
 
             if (oldValue == UIS) {
 
-                regulatorToggleButton.setSelected(false);
+                injectorToggleButton.setSelected(false);
+                pressureToggleButton.setSelected(false);
                 ultimaModbusWriter.add(BipModeOn_1, false);
                 ultimaModbusWriter.add(BipModeOn_2, false);
                 ultimaModbusWriter.add(DoubleSignalModeOn_1, false);
@@ -581,9 +598,9 @@ public class UisInjectorSectionController {
         chartTaskDataModel.delayValueProperty().addListener((observableValue, oldValue, newValue) -> delayGauge.setValue(newValue.doubleValue()));
     }
 
-    private void setupStartButtonListener() {
+    private void setupInjectorButtonListener() {
 
-        sectionStart.addListener((observableValue, oldValue, newValue) -> {
+        injectorToggleButton.selectedProperty().addListener((observableValue, oldValue, newValue) -> {
 
             ultimaModbusWriter.add(Injectors_Running_En, newValue);
             if (newValue) {
@@ -597,6 +614,11 @@ public class UisInjectorSectionController {
                 Platform.runLater(bipGauge);
             }
         });
+    }
+
+    private void setupRlcMeasureButtonListener() {
+
+        injectorToggleButton.visibleProperty().bind(uisRlcModel.isMeasuringProperty().not());
     }
 
     private void setupF2eSpinnerListeners() {
@@ -617,7 +639,7 @@ public class UisInjectorSectionController {
         //откл.режим давления, откл.режим тока, вкл.режим скважности
         dutySpinner.focusedProperty().addListener(new ThreeSpinnerFocusListener(DUTY, PressureReg1_PressMode, false, PressureReg1_I_Mode, false));
 
-        /** изменение цвета рамки спиннера на зелёный при переходе в спиннер другого рекулятора*/
+        /** изменение цвета рамки спиннера на зелёный при переходе в спиннер другого регулятора*/
         pressureSpinner.focusedProperty().addListener(new ThreeSpinnerStyleChangeListener(pressureSpinner, currentSpinner, dutySpinner, PRESSURE));
         currentSpinner.focusedProperty().addListener(new ThreeSpinnerStyleChangeListener(pressureSpinner, currentSpinner, dutySpinner, CURRENT));
         dutySpinner.focusedProperty().addListener(new ThreeSpinnerStyleChangeListener(pressureSpinner, currentSpinner, dutySpinner, DUTY));
@@ -628,12 +650,42 @@ public class UisInjectorSectionController {
         currentSpinner.valueProperty().addListener(new ParameterChangeListener(CURRENT));
         dutySpinner.valueProperty().addListener(new ParameterChangeListener(DUTY));
 
-        /** слушаем кнопку включения секции регуляторов*/
-        uisInjectorSectionModel.powerButtonProperty().addListener(new HighPressureSectionPwrListener());
+        /** слушаем кнопку включения регулятора*/
+        uisInjectorSectionModel.pressureButtonProperty().addListener(new RegulatorButtonListener());
 
-        /** слушаем изменения в модели данных, полученных из прошивки (значения полей в модели данных изменяются только для "наблюдающих" спиннеров)*/
+        /** слушаем кнопку включения инжектора*/
+        uisInjectorSectionModel.injectorButtonProperty().addListener(new InjectorButtonListener());
+
+        /** слушаем изменения данных, полученных из прошивки (значения полей в модели данных изменяются только для "наблюдающих" спиннеров)*/
         uisHardwareUpdateModel.currentProperty().addListener((observableValue, oldValue, newValue) -> currentSpinner.getValueFactory().setValue((Double) newValue));
         uisHardwareUpdateModel.dutyProperty().addListener((observableValue, oldValue, newValue) -> dutySpinner.getValueFactory().setValue((Double)newValue));
+    }
+
+    private class StackPanePowerButtonWidthListener implements ChangeListener<Number> {
+
+        private final StackPane stackPWB;
+        private final ToggleButton powerButton;
+
+        StackPanePowerButtonWidthListener(StackPane stackPWB, ToggleButton powerButton) {
+            this.stackPWB = stackPWB;
+            this.powerButton = powerButton;
+        }
+
+        @Override
+        public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+            if(stackPWB.getWidth()> 100 ) {
+                if(stackPWB.getWidth()<120){
+                    powerButton.setPrefWidth(stackPWB.widthProperty().get() * 0.7);
+                    powerButton.setPrefHeight(stackPWB.widthProperty().get() * 0.7 + 5);
+                } else {
+                    powerButton.setPrefWidth(80.0);
+                    powerButton.setPrefHeight(89.0);
+                }
+            } else {
+                powerButton.setPrefWidth(60.0);
+                powerButton.setPrefHeight(65.0);
+            }
+        }
     }
 
     private void setNumber(int number, ToggleButton ledToggleButton) {
@@ -789,6 +841,20 @@ public class UisInjectorSectionController {
         }
     }
 
+    private void regulator1pressModeON(Integer targetPress){
+        regulationModesModel.regulatorOneModeProperty().setValue(PRESSURE);
+        ultimaModbusWriter.add(PressureReg1_PressMode, true);   //вкл.режим давления
+        ultimaModbusWriter.add(PressureReg1_I_Mode, false);     //откл.режим тока
+        pressureSpinner.getValueFactory().setValue(targetPress);
+        pressureToggleButton.setSelected(true);
+    }
+
+    private void regulator1pressModeOFF(){
+        ultimaModbusWriter.add(PressureReg1_ON, false);
+        pressureToggleButton.setSelected(false);
+        pressureSpinner.getValueFactory().setValue(0);
+    }
+
     private void disableNode(boolean disable, Node... nodes) {
         for (Node node : nodes)
             node.setDisable(disable);
@@ -854,7 +920,7 @@ public class UisInjectorSectionController {
                 regulationModesModel.regulatorOneModeProperty().setValue(activeParam);
                 ultimaModbusWriter.add(mapParam_1, mapParam_1_ON);
                 ultimaModbusWriter.add(mapParam_2, mapParam_2_ON);
-                if(uisInjectorSectionModel.powerButtonProperty().get()){
+                if(uisInjectorSectionModel.injectorButtonProperty().get() && uisInjectorSectionModel.pressureButtonProperty().get()){
                     switch (activeParam){
                         case PRESSURE:
                             ultimaModbusWriter.add(PressureReg1_PressTask, calcTargetPress(pressureSpinner.getValue()));
@@ -882,7 +948,9 @@ public class UisInjectorSectionController {
         @Override
         public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
 
-            if((uisInjectorSectionModel.powerButtonProperty().get() && activeParam == regulationModesModel.regulatorOneModeProperty().get())){
+            if((uisInjectorSectionModel.pressureButtonProperty().get()
+                    && activeParam == regulationModesModel.regulatorOneModeProperty().get()
+                    && uisInjectorSectionModel.pressureButtonProperty().get())){
 
                 switch (regulationModesModel.regulatorOneModeProperty().get()){
                     case PRESSURE:
@@ -903,16 +971,32 @@ public class UisInjectorSectionController {
         }
     }
 
-    private class HighPressureSectionPwrListener implements ChangeListener<Boolean>{
+    private class InjectorButtonListener implements ChangeListener<Boolean>{
         @Override
         public void changed(ObservableValue<? extends Boolean> observableValue, Boolean oldValue, Boolean newValue) {
             if (newValue) {
-                if (regulatorToggleButton.isSelected()) {
+                if (uisInjectorSectionModel.pressureButtonProperty().get()) {
                     regulator_ON();
                 }
             }
             else {
                 ultimaModbusWriter.add(PressureReg1_ON, false);
+            }
+        }
+    }
+
+    private class RegulatorButtonListener implements ChangeListener<Boolean>{
+
+        @Override
+        public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+            if(uisInjectorSectionModel.injectorButtonProperty().get()){
+                if(newValue){
+                    regulator_ON();
+
+                }
+                else{
+                    ultimaModbusWriter.add(PressureReg1_ON, false);
+                }
             }
         }
     }

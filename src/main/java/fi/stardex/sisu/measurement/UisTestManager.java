@@ -18,7 +18,6 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.application.Platform;
-import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -47,7 +46,8 @@ public class UisTestManager implements TestManager {
 
     private ToggleButton mainSectionStartToggleButton;
     private ToggleButton testBenchStartToggleButton;
-    private ToggleButton regulatorToggleButton;
+    private ToggleButton pressureToggleButton;
+    private ToggleButton injectorToggleButton;
     private Button storeButton;
     private ListView<Test> testListView;
     private Timeline motorPreparationTimeline;
@@ -60,7 +60,6 @@ public class UisTestManager implements TestManager {
     private IntegerProperty initialAdjustingTime;
     private IntegerProperty initialMeasuringTime;
     private int includedAutoTestsLength;
-    private BooleanProperty injectorSectionStart;
     private Alert settingsAlert;
     private StringProperty alertString = new SimpleStringProperty();
     private StringProperty applyButton = new SimpleStringProperty();
@@ -118,8 +117,8 @@ public class UisTestManager implements TestManager {
         storeButton = mainSectionUisController.getStoreButton();
         testListView = mainSectionUisController.getTestListView();
         testBenchStartToggleButton = testBenchSectionController.getTestBenchStartToggleButton();
-        regulatorToggleButton = uisInjectorSectionController.getRegulatorToggleButton();
-        injectorSectionStart = uisInjectorSectionController.sectionStartProperty();
+        pressureToggleButton = uisInjectorSectionController.getPressureToggleButton();
+        injectorToggleButton = uisInjectorSectionController.getInjectorToggleButton();
     }
 
     private void setupTimeLines() {
@@ -150,6 +149,8 @@ public class UisTestManager implements TestManager {
 //        });
 
         mainSectionUisModel.injectorTestProperty().addListener((observableValue, oldValue, newValue) -> {
+
+            injectorToggleButton.setSelected(false);
 
             setTimings(newValue);
             if (mainSectionUisModel.testTypeProperty().get() == TESTPLAN && mainSectionUisModel.startButtonProperty().get()) {
@@ -201,7 +202,6 @@ public class UisTestManager implements TestManager {
     private void motorPreparation() {
 
         if (isSectionReady(testBenchSectionModel.targetRPMProperty().get(), testBenchSectionModel.currentRPMProperty().get(), 0.1)) {
-
             motorPreparationTimeline.stop();
             startPressure();
         }
@@ -209,25 +209,31 @@ public class UisTestManager implements TestManager {
 
     private void startPressure() {
 
-        if (!regulatorToggleButton.isDisabled()) {
-            injectorSectionStart.setValue(false);
-            regulatorToggleButton.setSelected(true);
-            pressurePreparationTimeline.play();
-        } else {
-            injectorSectionStart.setValue(true);
+        if (pressureToggleButton.isVisible()) {
+            pressureToggleButton.setSelected(true);
+        }
+//        else {
+//            adjustingTimeline.play();
+//        }
+        if (mainSectionUisModel.testTypeProperty().get() != TESTPLAN) {
             adjustingTimeline.play();
         }
+        resetFlowData();
+        injectorToggleButton.setSelected(true);
+//        pressurePreparationTimeline.play();
     }
 
+    // временно деактивирован pressurePreparationTimeline в startPressure(), поэтому этот блок не сработает
+    // по результатам теста можно будет удалить
     private void pressurePreparation() {
 
         int targetValue = uisInjectorSectionModel.pressureSpinnerProperty().get();
         int lcdValue = uisHardwareUpdateModel.lcdPressureProperty().get();
 
-        if(isSectionReady(targetValue, lcdValue, 0.2) || targetValue == 0){
+        if(isSectionReady(targetValue, lcdValue, 0.2)){
             pressurePreparationTimeline.stop();
             resetFlowData();
-            injectorSectionStart.setValue(true);
+            injectorToggleButton.setSelected(true);
 
             if (mainSectionUisModel.testTypeProperty().get() != TESTPLAN) {
                 adjustingTimeline.play();
@@ -304,7 +310,7 @@ public class UisTestManager implements TestManager {
     private void checkInjectorTypeAndStart() {
 
         if (mainSectionUisModel.modelProperty().get().getVAP().getInjectorSubType() == InjectorSubType.MECHANIC) {
-            injectorSectionStart.setValue(false);
+            injectorToggleButton.setSelected(false);
             showAlert();
         } else {
             start();
@@ -315,9 +321,9 @@ public class UisTestManager implements TestManager {
 
         stopTimers();
         resetFlowData();
-        regulatorToggleButton.setSelected(false);
+//        pressureToggleButton.setSelected(false);
         testBenchStartToggleButton.setSelected(false);
-        injectorSectionStart.setValue(false);
+        injectorToggleButton.setSelected(false);
         flowModbusWriter.add(ModbusMapFlow.StopMeasurementCycle, true);
         setTimings(mainSectionUisModel.injectorTestProperty().get());
     }
@@ -344,6 +350,8 @@ public class UisTestManager implements TestManager {
 
     private boolean isSectionReady(double targetValue, double lcdValue, double margin) {
 
+        /**for debugging uncomment line below*/
+//        if(targetValue == 0) return true;
         return Math.abs((targetValue - lcdValue) / targetValue) < margin;
     }
 

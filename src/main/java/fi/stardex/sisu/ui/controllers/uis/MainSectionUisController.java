@@ -122,6 +122,7 @@ public class MainSectionUisController {
     private PiezoRepairModel piezoRepairModel;
     private UisFlowModel uisFlowModel;
     private UisBipModel uisBipModel;
+    private UisInjectorSectionModel uisInjectorSectionModel;
     private UisModelService uisModelService;
     private UisProducerService uisProducerService;
     private UisTestService uisTestService;
@@ -218,6 +219,9 @@ public class MainSectionUisController {
     public void setTestManagerFactory(TestManagerFactory testManagerFactory) {
         this.testManagerFactory = testManagerFactory;
     }
+    public void setUisInjectorSectionModel(UisInjectorSectionModel uisInjectorSectionModel) {
+        this.uisInjectorSectionModel = uisInjectorSectionModel;
+    }
 
     @PostConstruct
     public void init() {
@@ -242,22 +246,14 @@ public class MainSectionUisController {
         setupGuiTypeModelListener();
         setupCustomProducerDialogModelListener();
         setupCustomModelDialogModelListener();
-//        setupInjectorSectionPwrButtonListener();
+        setupInjectorSectionPwrButtonListener();
         setupStep3StartListener();
         setupStartButtonListener();
+        setupRlcMeasureButtonListener();
         setupPrintButton();
         testListView.setCellFactory(CheckBoxListCell.forListView(Test::includedProperty));
         showButtons(true, false);
         setupTimingsListeners();
-    }
-
-    public void setTestManager(TestManager testManager) {
-
-        if (this.testManager != null) {
-            startToggleButton.selectedProperty().removeListener(this.testManager);
-        }
-        this.testManager = testManager;
-        startToggleButton.selectedProperty().addListener(testManager);
     }
 
     private void setupModelListViewListener() {
@@ -736,6 +732,20 @@ public class MainSectionUisController {
                         startToggleButton));
     }
 
+    private void setupInjectorSectionPwrButtonListener() {
+
+        uisInjectorSectionModel.injectorButtonProperty().addListener((observableValue, oldValue, newValue) -> {
+            if (mainSectionUisModel.injectorTestProperty().get() == null) {
+                disableNode(newValue, injectorsVBox);
+            }
+            disableNode(isStarted(), injectorsVBox, manufacturerListView);
+        });
+    }
+
+    private void setupRlcMeasureButtonListener() {
+        startToggleButton.visibleProperty().bind(uisRlcModel.isMeasuringProperty().not());
+    }
+
     private void setupTimeProgressBars() {
 
         adjustingTime = new TimeProgressBar(adjustingTimeProgressBar, adjustingText);
@@ -894,9 +904,8 @@ public class MainSectionUisController {
         isFocusMoved = false;
     }
 
-    //TODO do not forget to add UIS section started condition check ( + ||)
     private boolean isStarted() {
-        return mainSectionUisModel.startButtonProperty().get();
+        return mainSectionUisModel.startButtonProperty().get() || uisInjectorSectionModel.injectorButtonProperty().get();
     }
 
     private void showInjectorTests(boolean show) {

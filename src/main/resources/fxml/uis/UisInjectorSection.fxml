@@ -182,6 +182,7 @@
                         </GridPane>
                         <GridPane alignment="TOP_RIGHT" prefHeight="172.0" prefWidth="644.0">
                             <columnConstraints>
+                        <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" maxWidth="120.0" minWidth="-Infinity" prefWidth="80.0" />
                                 <ColumnConstraints halignment="CENTER" hgrow="ALWAYS" />
                                 <ColumnConstraints fillWidth="false" halignment="RIGHT" hgrow="ALWAYS" maxWidth="200.0" />
                                 <ColumnConstraints fillWidth="false" halignment="RIGHT" hgrow="ALWAYS" maxWidth="67.0" minWidth="42.0" prefWidth="61.0" />
@@ -192,7 +193,7 @@
                         <RowConstraints />
                             </rowConstraints>
                             <children>
-                                <GridPane alignment="CENTER" GridPane.columnIndex="0">
+                                <GridPane alignment="CENTER" GridPane.columnIndex="1">
                                     <columnConstraints>
                                         <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" />
                                         <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" />
@@ -201,7 +202,7 @@
                                         <RowConstraints valignment="CENTER" vgrow="ALWAYS" />
                                     </rowConstraints>
                                     <children>
-                                        <StackPane fx:id="bipStackPane">
+                                        <StackPane fx:id="bipStackPane" maxWidth="190.0">
                                             <GridPane.margin>
                                                 <Insets />
                                             </GridPane.margin>
@@ -222,7 +223,7 @@
                                               <Button fx:id="saveBipButton" disable="true" mnemonicParsing="false" prefHeight="25.0" prefWidth="65.0" text="Save" StackPane.alignment="BOTTOM_CENTER" />
                                  </children>
                                         </StackPane>
-                                        <StackPane fx:id="delayStackPane" GridPane.columnIndex="1">
+                                        <StackPane fx:id="delayStackPane" maxWidth="190.0" GridPane.columnIndex="1">
                                             <GridPane.margin>
                                                 <Insets />
                                             </GridPane.margin>
@@ -233,20 +234,29 @@
                                     </children>
                                 </GridPane>
                                 <!--LCD-->
-                                <StackPane fx:id="lcdStackPane" GridPane.columnIndex="1" GridPane.halignment="RIGHT" GridPane.hgrow="NEVER" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                                <StackPane fx:id="lcdStackPane" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.hgrow="NEVER" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                            <GridPane.margin>
                               <Insets />
                            </GridPane.margin></StackPane>
                                 <!--InjectorSwitch-->
-                                <ToggleButton fx:id="regulatorToggleButton" minHeight="90.0" minWidth="50.0" prefWidth="50.0" styleClass="switcher" stylesheets="@../../css/Styling.css" GridPane.columnIndex="2" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS" GridPane.rowSpan="2" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+                                <ToggleButton fx:id="injectorToggleButton" minHeight="90.0" minWidth="50.0" prefWidth="50.0" styleClass="switcher" stylesheets="@../../css/Styling.css" GridPane.columnIndex="3" GridPane.halignment="RIGHT" GridPane.hgrow="ALWAYS" GridPane.rowSpan="2" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
                            <GridPane.margin>
                               <Insets bottom="2.0" left="2.0" right="10.0" top="2.0" />
                            </GridPane.margin></ToggleButton>
-                        <ProgressBar maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="8.0" progress="0.0" visible="false" GridPane.columnSpan="3" GridPane.rowIndex="1">
+                        <ProgressBar maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" prefHeight="8.0" progress="0.0" visible="false" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="1">
                            <padding>
                               <Insets left="10.0" right="10.0" />
                            </padding>
                         </ProgressBar>
+                        <StackPane fx:id="pressureButtonStackPane" prefHeight="150.0" prefWidth="200.0">
+                           <children>
+                              <ToggleButton fx:id="pressureToggleButton" mnemonicParsing="false" prefHeight="65.0" prefWidth="60.0" styleClass="button-power" stylesheets="@../../css/Styling.css" StackPane.alignment="CENTER">
+                                 <StackPane.margin>
+                                    <Insets />
+                                 </StackPane.margin>
+                              </ToggleButton>
+                           </children>
+                        </StackPane>
 
                             </children>
                         </GridPane>

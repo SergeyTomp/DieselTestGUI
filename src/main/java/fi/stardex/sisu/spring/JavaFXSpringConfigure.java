@@ -60,6 +60,7 @@ import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.rescalers.Rescaler;
 import fi.stardex.sisu.util.wrappers.StatusBarWrapper;
 import fi.stardex.sisu.version.FirmwareVersion;
+import fi.stardex.sisu.version.FlowFirmwareVersion;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
@@ -1309,7 +1310,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                              UisRlcModel uisRlcModel,
                                                              UisBipModel uisBipModel,
                                                              TimingModelFactory timingModelFactory,
-                                                             @Lazy TestManagerFactory testManagerFactory) {
+                                                             @Lazy TestManagerFactory testManagerFactory,
+                                                             UisInjectorSectionModel uisInjectorSectionModel) {
         MainSectionUisController mainSectionUisController = (MainSectionUisController)mainSectionUIS().getController();
         mainSectionUisController.setMainSectionUisModel(mainSectionUisModel);
         mainSectionUisController.setPrintDialogPanel(printDialogPanel());
@@ -1332,6 +1334,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         mainSectionUisController.setUisBipModel(uisBipModel);
         mainSectionUisController.setTimingModelFactory(timingModelFactory);
         mainSectionUisController.setTestManagerFactory(testManagerFactory);
+        mainSectionUisController.setUisInjectorSectionModel(uisInjectorSectionModel);
         return mainSectionUisController;
     }
 
@@ -1427,7 +1430,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                                      RegulationModesModel regulationModesModel,
                                                                      UisVapModel uisVapModel,
                                                                      ChartTaskDataModel chartTaskDataModel,
-                                                                     TimerTasksManager timerTasksManager) {
+                                                                     TimerTasksManager timerTasksManager,
+                                                                     UisRlcModel uisRlcModel) {
         UisInjectorSectionController uisInjectorSectionController = (UisInjectorSectionController)uisInjectorSection().getController();
         uisInjectorSectionController.setMainSectionUisModel(mainSectionUisModel);
         uisInjectorSectionController.setUisInjectorSectionModel(uisInjectorSectionModel);
@@ -1440,6 +1444,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         uisInjectorSectionController.setUisVapModel(uisVapModel);
         uisInjectorSectionController.setChartTaskDataModel(chartTaskDataModel);
         uisInjectorSectionController.setTimerTasksManager(timerTasksManager);
+        uisInjectorSectionController.setUisRlcModel(uisRlcModel);
         return uisInjectorSectionController;
     }
 
@@ -1454,13 +1459,15 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                        I18N i18N,
                                                        UisSettingsModel uisSettingsModel,
                                                        ModbusConnect flowModbusConnect,
-                                                       RegisterProvider flowRegisterProvider) {
+                                                       FirmwareVersion<FlowFirmwareVersion.FlowVersions> flowFirmwareVersion,
+                                                       ModbusRegisterProcessor ultimaModbusWriter) {
         UisSettingsController uisSettingsController = (UisSettingsController) uisSettings().getController();
         uisSettingsController.setI18N(i18N);
         uisSettingsController.setRootPrefs(rootPrefs);
         uisSettingsController.setUisSettingsModel(uisSettingsModel);
         uisSettingsController.setFlowModbusConnect(flowModbusConnect);
-        uisSettingsController.setFlowRegisterProvider(flowRegisterProvider);
+        uisSettingsController.setUltimaModbusWriter(ultimaModbusWriter);
+        uisSettingsController.setFlowFirmwareVersion(flowFirmwareVersion);
         return uisSettingsController;
     }
 

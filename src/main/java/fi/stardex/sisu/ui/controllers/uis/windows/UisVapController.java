@@ -595,6 +595,7 @@ public class UisVapController {
                 double firstI2Value = firstI2Spinner.getValue();
                 double secondI2Value = secondI2Spinner.getValue();
                 int firstW2Value = firstW2Spinner.getValue();
+                int shift = uisInjectorSectionModel.shiftProperty().get();
                 int width2Value;
                 switch (who) {
                     case TEST:
@@ -620,6 +621,7 @@ public class UisVapController {
                 ultimaModbusWriter.add(FirstWBoardTwo, firstW2Value);
                 ultimaModbusWriter.add(WidthBoardTwo, width2Value);
                 ultimaModbusWriter.add(StartOnBatteryUTwo, boostToggleButtonSelected);
+                ultimaModbusWriter.add(SecondCoilShiftTime, shift);
 
                 log.info((char)27 + "[31mBoostIBoardTwo " + boostIValue);
                 log.info((char)27 + "[31mFirstIBoardTwo " + firstIValue);

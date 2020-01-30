@@ -432,7 +432,7 @@ public abstract class ChartTask extends TimerTask {
                 break;
             case UIS:
                 Platform.runLater(() -> {
-                    if(mainSectionUisModel.startButtonProperty().get()){
+                    if(uisInjectorSectionModel.injectorButtonProperty().get()){
                         ChartTask.this.addData(resultDataList, ChartTask.this.getChartDataList());
                     }
                 });

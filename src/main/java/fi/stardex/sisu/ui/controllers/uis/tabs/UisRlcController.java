@@ -101,7 +101,7 @@ public class UisRlcController {
 
         measureButton.setOnAction(event -> new Thread(this::measure).start());
         storeButton.setOnAction(event -> uisRlcModel.storeResult());
-        mainSectionUisModel.startButtonProperty().addListener((observableValue, oldValue, newValue) -> measureButton.setDisable(newValue));
+        uisInjectorSectionModel.injectorButtonProperty().addListener((observableValue, oldValue, newValue) -> measureButton.setDisable(newValue));
     }
 
     private void setupModelsListeners() {

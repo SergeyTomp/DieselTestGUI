@@ -253,7 +253,7 @@ public class UisVoltageController {
                 voltage.setVisible(true);
             }
         });
-        pulseSettingsButton.disableProperty().bindBidirectional(uisInjectorSectionModel.powerButtonProperty());
+        pulseSettingsButton.disableProperty().bindBidirectional(uisInjectorSectionModel.injectorButtonProperty());
         chartTaskDataModel.getChartOneDataList().addListener((ListChangeListener<XYChart.Data<Double, Double>>) change -> {
             data1.clear();
             data1.addAll(change.getList());

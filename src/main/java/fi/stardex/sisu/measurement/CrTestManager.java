@@ -437,6 +437,7 @@ public class CrTestManager implements TestManager {
         }
     }
 
+    //не стал удалять пока этот метод, просто деактивировал сброс, возможно надо будет вернуть всё обратно.
     private void playResetTimeLine() {
 
         Integer testId = testsSelectionModel.getSelectedItem().getTestName().getId();

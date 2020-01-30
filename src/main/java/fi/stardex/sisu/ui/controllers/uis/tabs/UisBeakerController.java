@@ -235,7 +235,7 @@ public class UisBeakerController {
 
     private void showOnChosenFlowUnit(String value) {
 
-        if (value != null && !uisFlowModel.getFlowRangeLabelProperty().get().isEmpty()) {
+        if (value != null) {
             double coefficient = getUisDeliveryCoefficient();
             double convertedValue = round(convertDataToDouble(value) * coefficient);
             changeFlow(String.valueOf(convertedValue));
@@ -296,11 +296,12 @@ public class UisBeakerController {
 
     private void setNewLevel(String value) {
 
-        double currentVal;
         if (uisFlowModel.getFlowRangeLabelProperty().get().isEmpty()){
+
+            setLevel(rectangleBeaker.getHeight() / 2);
             return;
         }
-        currentVal = round(convertDataToDouble(value));
+        double currentVal = round(convertDataToDouble(value));
         setBeakerLevel(currentVal, currentFlowLevels[0], currentFlowLevels[1]);
     }
 

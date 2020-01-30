@@ -2,12 +2,13 @@ package fi.stardex.sisu.ui.controllers.uis;
 
 import fi.stardex.sisu.connect.ModbusConnect;
 import fi.stardex.sisu.model.uis.UisSettingsModel;
-import fi.stardex.sisu.registers.RegisterProvider;
-import fi.stardex.sisu.registers.flow.ModbusMapFlow;
+import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.util.enums.Dimension;
 import fi.stardex.sisu.util.enums.uis.RpmSource;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.i18n.Locales;
+import fi.stardex.sisu.version.FirmwareVersion;
+import fi.stardex.sisu.version.FlowFirmwareVersion;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.collections.FXCollections;
@@ -21,8 +22,10 @@ import javax.annotation.PostConstruct;
 import java.util.Comparator;
 import java.util.prefs.Preferences;
 
+import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.UIS_to_CR_pulseControlSwitch;
 import static fi.stardex.sisu.util.SpinnerDefaults.*;
 import static fi.stardex.sisu.util.enums.uis.RpmSource.EXTERNAL;
+import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions.MASTER_DF;
 
 public class UisSettingsController {
 
@@ -46,7 +49,9 @@ public class UisSettingsController {
     private I18N i18N;
     private UisSettingsModel uisSettingsModel;
     private ModbusConnect flowModbusConnect;
-    private RegisterProvider flowRegisterProvider;
+    private FirmwareVersion<FlowFirmwareVersion.FlowVersions> flowFirmwareVersion;
+    private ModbusRegisterProcessor ultimaModbusWriter;
+
     private static final String PREF_KEY_FLOW = "checkBoxFlowVisibleSelected";
     private static final String PREF_KEY_PRESSURE = "pressureSensorSelected";
     private static final String PREF_KEY_OFFSET = "angleOffsetSelected";
@@ -71,8 +76,11 @@ public class UisSettingsController {
     public void setFlowModbusConnect(ModbusConnect flowModbusConnect) {
         this.flowModbusConnect = flowModbusConnect;
     }
-    public void setFlowRegisterProvider(RegisterProvider flowRegisterProvider) {
-        this.flowRegisterProvider = flowRegisterProvider;
+    public void setFlowFirmwareVersion(FirmwareVersion<FlowFirmwareVersion.FlowVersions> flowFirmwareVersion) {
+        this.flowFirmwareVersion = flowFirmwareVersion;
+    }
+    public void setUltimaModbusWriter(ModbusRegisterProcessor ultimaModbusWriter) {
+        this.ultimaModbusWriter = ultimaModbusWriter;
     }
 
     @PostConstruct
@@ -85,9 +93,11 @@ public class UisSettingsController {
 
         rpmSourceComboBox.getItems().setAll(RpmSource.values());
         rpmSourceComboBox.getItems().sort(Comparator.comparingInt(RpmSource::getOrder));
+        rpmSourceComboBox.getSelectionModel().select(RpmSource.valueOf(rootPrefs.get(PREF_KEY_RPM, EXTERNAL.name())));
+        uisSettingsModel.rpmSourceProperty().setValue(rpmSourceComboBox.getSelectionModel().getSelectedItem());
         rpmSourceComboBox.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> rootPrefs.put(PREF_KEY_RPM, newValue.name()));
         uisSettingsModel.rpmSourceProperty().bind(rpmSourceComboBox.getSelectionModel().selectedItemProperty());
-        rpmSourceComboBox.getSelectionModel().select(RpmSource.valueOf(rootPrefs.get(PREF_KEY_RPM, EXTERNAL.name())));
+        ultimaModbusWriter.add(UIS_to_CR_pulseControlSwitch, uisSettingsModel.rpmSourceProperty().get().getSourceId());
 
         languagesComboBox.setItems(FXCollections.observableArrayList(Locales.values()));
         uisSettingsModel.languageProperty().bind(languagesComboBox.getSelectionModel().selectedItemProperty());
@@ -131,7 +141,7 @@ public class UisSettingsController {
         flowModbusConnect.connectedProperty().addListener((observableValue, oldValue, newValue) -> {
 
             if (newValue) {
-                diffFmSettingsButton.setDisable(!((int) flowRegisterProvider.read(ModbusMapFlow.FirmwareVersion) == 0xDDFF));
+                diffFmSettingsButton.setDisable(!(flowFirmwareVersion.getVersions() == MASTER_DF));
             } else {
                 diffFmSettingsButton.setDisable(true);
             }

@@ -34,6 +34,7 @@ public class UisInjectorSectionModel {
     private DoubleProperty bipValue = new SimpleDoubleProperty(0);
     private Button saveBipButton = new Button();
     private StringProperty bipRangeLabel = new SimpleStringProperty("");
+    private BooleanProperty pressureButtonProperty = new SimpleBooleanProperty();
 
     public ToggleButton getLedBeaker1ToggleButton() {
         return ledBeaker1ToggleButton;
@@ -59,11 +60,14 @@ public class UisInjectorSectionModel {
     public ToggleButton getLedBeaker8ToggleButton() {
         return ledBeaker8ToggleButton;
     }
-    public BooleanProperty powerButtonProperty() {
-        return powerButton;
-    }
     public IntegerProperty pressureSpinnerProperty() {
         return pressureSpinner;
+    }
+    public BooleanProperty injectorButtonProperty() {
+        return powerButton;
+    }
+    public BooleanProperty pressureButtonProperty() {
+        return pressureButtonProperty;
     }
 
     public IntegerProperty width_1Property() {

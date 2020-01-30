@@ -244,7 +244,7 @@ public class DifferentialFMController {
                 calibrationPermittedProperty = injectorSectionPwrState.powerButtonProperty();
                 break;
             case UIS:
-                calibrationPermittedProperty = uisInjectorSectionModel.powerButtonProperty();
+                calibrationPermittedProperty = uisInjectorSectionModel.injectorButtonProperty();
         }
     }
 
