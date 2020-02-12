@@ -306,6 +306,8 @@ public class InjectorSectionController {
         setupSpinners();
         setupListeners();
         setupTimelines();
+        injectorSectionStartToggleButton.setDisable(true);
+
 
     }
 
@@ -404,8 +406,8 @@ public class InjectorSectionController {
 
             if (newValue == null) {
                 setDefaultSpinnerValueFactories(true);
-                disableNode(false, widthCurrentSignalSpinner, freqCurrentSignalSpinner, injectorSectionStartToggleButton, led1ToggleButton, led2ToggleButton, led3ToggleButton, led4ToggleButton);
-                disableNode(true, width2CurrentSignalSpinner, offset2CurrentSignalSpinner);
+                disableNode(false, widthCurrentSignalSpinner, freqCurrentSignalSpinner, led1ToggleButton, led2ToggleButton, led3ToggleButton, led4ToggleButton);
+                disableNode(true, width2CurrentSignalSpinner, offset2CurrentSignalSpinner, injectorSectionStartToggleButton);
                 return;
             }
             Measurement measurementType = newValue.getTestName().getMeasurement();

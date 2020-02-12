@@ -5,6 +5,8 @@ import fi.stardex.sisu.model.PiezoRepairModel;
 import fi.stardex.sisu.model.Step3Model;
 import fi.stardex.sisu.model.cr.MainSectionModel;
 import fi.stardex.sisu.model.pump.ManufacturerPumpModel;
+import fi.stardex.sisu.model.uis.MainSectionUisModel;
+import fi.stardex.sisu.model.uis.UisInjectorSectionModel;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.DimasGUIEditionState;
 import fi.stardex.sisu.states.InjectorSectionPwrState;
@@ -55,6 +57,8 @@ public class GUI_TypeController {
     private PumpsStartButtonState pumpsStartButtonState;
     private MainSectionModel mainSectionModel;
     private InjectorSectionPwrState injectorSectionPwrState;
+    private MainSectionUisModel mainSectionUisModel;
+    private UisInjectorSectionModel uisInjectorSectionModel;
     private Step3Model step3Model;
     private PiezoRepairModel piezoRepairModel;
     private ModbusRegisterProcessor ultimaModbusWriter;
@@ -141,6 +145,14 @@ public class GUI_TypeController {
         this.ultimaModbusWriter = ultimaModbusWriter;
     }
 
+    public void setMainSectionUisModel(MainSectionUisModel mainSectionUisModel) {
+        this.mainSectionUisModel = mainSectionUisModel;
+    }
+
+    public void setUisInjectorSectionModel(UisInjectorSectionModel uisInjectorSectionModel) {
+        this.uisInjectorSectionModel = uisInjectorSectionModel;
+    }
+
     @PostConstruct
     private void init() {
 
@@ -179,6 +191,8 @@ public class GUI_TypeController {
         pumpsStartButtonState.startButtonProperty().addListener((observableValue, oldValue, newValue) -> gui_typeComboBox.setDisable(newValue));
         mainSectionModel.startButtonProperty().addListener((observableValue, oldValue, newValue) -> gui_typeComboBox.setDisable(isStarted()));
         injectorSectionPwrState.powerButtonProperty().addListener((observableValue, oldValue, newValue) -> gui_typeComboBox.setDisable(isStarted()));
+        mainSectionUisModel.startButtonProperty().addListener((observableValue, oldValue, newValue) -> gui_typeComboBox.setDisable(isStarted()));
+        uisInjectorSectionModel.injectorButtonProperty().addListener((observableValue, oldValue, newValue) -> gui_typeComboBox.setDisable(isStarted()));
     }
 
     private void changeToCRInj() {
@@ -302,6 +316,9 @@ public class GUI_TypeController {
     }
 
     private boolean isStarted() {
-        return mainSectionModel.startButtonProperty().get() || injectorSectionPwrState.powerButtonProperty().get();
+        return mainSectionModel.startButtonProperty().get()
+                || injectorSectionPwrState.powerButtonProperty().get()
+                || mainSectionUisModel.startButtonProperty().get()
+                || uisInjectorSectionModel.injectorButtonProperty().get();
     }
 }

@@ -1,6 +1,7 @@
 package fi.stardex.sisu.ui.controllers.cr.windows;
 
 import fi.stardex.sisu.connect.ModbusConnect;
+import fi.stardex.sisu.model.uis.UisSettingsModel;
 import fi.stardex.sisu.registers.ModbusMap;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.ui.ViewHolder;
@@ -46,51 +47,38 @@ public class FirmwareDialogController {
     @FXML private Button okButton;
 
     private Stage windowStage;
-
     private I18N i18N;
-
     private ViewHolder firmwareDialog;
-
     private final StringProperty windowTitle = new SimpleStringProperty();
-
     private Map<CpuType, Label> versionsMap = new EnumMap<>(CpuType.class);
-
     private List<Label> ultimaFirmwareLabels = new ArrayList<>();
-
     private List<Label> flowFirmwareLabels = new ArrayList<>();
-
     private List<Label> standFirmwareLabels = new ArrayList<>();
-
     private RegisterProvider ultimaRegisterProvider;
-
     private ModbusConnect ultimaModbusConnect;
-
     private ModbusConnect flowModbusConnect;
-
     private ModbusConnect standModbusConnect;
-
+    private UisSettingsModel uisSettingsModel;
     public void setUltimaRegisterProvider(RegisterProvider ultimaRegisterProvider) {
         this.ultimaRegisterProvider = ultimaRegisterProvider;
     }
-
     public void setUltimaModbusConnect(ModbusConnect ultimaModbusConnect) {
         this.ultimaModbusConnect = ultimaModbusConnect;
     }
-
     public void setFlowModbusConnect(ModbusConnect flowModbusConnect) {
         this.flowModbusConnect = flowModbusConnect;
     }
-
     public void setStandModbusConnect(ModbusConnect standModbusConnect) {
         this.standModbusConnect = standModbusConnect;
     }
-
     public void setFirmwareDialog(ViewHolder firmwareDialog) {
         this.firmwareDialog = firmwareDialog;
     }
-
     public void setI18N(I18N i18N) {
         this.i18N = i18N;
+    }
+    public void setUisSettingsModel(UisSettingsModel uisSettingsModel) {
+        this.uisSettingsModel = uisSettingsModel;
     }
 
     enum CpuType{
@@ -161,6 +149,7 @@ public class FirmwareDialogController {
         standFirmwareLabels.add(benchV2VersionLabel);
 
         okButton.setOnAction(actionEvent -> windowStage.close());
+        uisSettingsModel.getFirmwareVersionButton().setOnAction(actionEvent -> showInfo());
 
         setupFirmwareVersionListener();
 

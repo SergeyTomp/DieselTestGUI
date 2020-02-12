@@ -55,6 +55,7 @@ public class UisHardwareUpdateModel implements Updater {
     private InjectorSubType injectorSubType;
     private Model model;
     private InjectorUisTest test;
+    private int pressureSensor;
 
     public StringProperty widthProperty() {
         return width;
@@ -144,6 +145,7 @@ public class UisHardwareUpdateModel implements Updater {
     public void run() {
 
         RegActive activeRegulatingMode = regulationModesModel.regulatorOneModeProperty().get();
+        pressureSensor = uisSettingsModel.pressureSensorProperty().get();
 
         if (gui_typeModel.guiTypeProperty().get() != UIS) { return; }
 
@@ -179,6 +181,14 @@ public class UisHardwareUpdateModel implements Updater {
         }
         if ((value = Inj_Process_Global_Error.getLastValue().toString()) != null) {
             injectorError.setValue(Boolean.parseBoolean(value));
+        }
+        if(PressureReg1_PressFact.getLastValue() != null){
+            double pressure = uisSettingsModel.pressureSensorProperty().get() * (Double) PressureReg1_PressFact.getLastValue();
+            lcdPressure.setValue(pressure);
+        }
+        if(MaxPressureRegistered.getLastValue() != null){
+            double pressure = pressureSensor * (Double) MaxPressureRegistered.getLastValue();
+            maxLcdPressure.setValue(pressure);
         }
 //        if ((value = Injectors_Running_En.getLastValue().toString()) != null) {
 //            System.err.println("Injectors_Running_En  " + value);
@@ -226,28 +236,11 @@ public class UisHardwareUpdateModel implements Updater {
             }
             if (injectorSubType == F2E) {
 
-                if(PressureReg1_PressFact.getLastValue() != null){
-                    double pressure = uisSettingsModel.pressureSensorProperty().get() * (Double) PressureReg1_PressFact.getLastValue();
-                    lcdPressure.setValue(pressure);
-                }
                 if ((PressureReg1_I_Fact.getLastValue()) != null && activeRegulatingMode != RegActive.CURRENT) {
                     current.setValue(round((double)PressureReg1_I_Fact.getLastValue()));
                 }
                 if ((PressureReg1_DutyFact.getLastValue()) != null && activeRegulatingMode != RegActive.DUTY) {
                     duty.setValue(round((double)PressureReg1_DutyFact.getLastValue()));
-                }
-            }
-
-            if (injectorSubType == MECHANIC) {
-
-                int pressureSensor = uisSettingsModel.pressureSensorProperty().get();
-                if(PressureReg1_PressFact.getLastValue() != null){
-                    double pressure = pressureSensor * (Double) PressureReg1_PressFact.getLastValue();
-                    lcdPressure.setValue(pressure);
-                }
-                if(MaxPressureRegistered.getLastValue() != null){
-                    double pressure = pressureSensor * (Double) MaxPressureRegistered.getLastValue();
-                    maxLcdPressure.setValue(pressure);
                 }
             }
         }

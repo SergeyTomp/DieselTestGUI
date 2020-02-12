@@ -129,7 +129,9 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                  UisTabSectionController uisTabSectionController,
                                                  Step3Model step3Model,
                                                  PiezoRepairModel piezoRepairModel,
-                                                 ModbusRegisterProcessor ultimaModbusWriter) {
+                                                 ModbusRegisterProcessor ultimaModbusWriter,
+                                                 MainSectionUisModel mainSectionUisModel,
+                                                 UisInjectorSectionModel uisInjectorSectionModel) {
         GUI_TypeController gui_typeController = rootLayoutController.getGui_typeController();
         gui_typeController.setRootPreferences(rootPreferences);
         gui_typeController.setMainSection(mainSection().getView());
@@ -158,6 +160,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
         gui_typeController.setStep3Model(step3Model);
         gui_typeController.setPiezoRepairModel(piezoRepairModel);
         gui_typeController.setUltimaModbusWriter(ultimaModbusWriter);
+        gui_typeController.setMainSectionUisModel(mainSectionUisModel);
+        gui_typeController.setUisInjectorSectionModel(uisInjectorSectionModel);
         return gui_typeController;
     }
 
@@ -1205,7 +1209,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                              ModbusConnect ultimaModbusConnect,
                                                              ModbusConnect flowModbusConnect,
                                                              ModbusConnect standModbusConnect,
-                                                             ViewHolder firmwareDialog){
+                                                             ViewHolder firmwareDialog,
+                                                             UisSettingsModel uisSettingsModel){
         FirmwareDialogController firmwareDialogController = (FirmwareDialogController)firmwareDialog.getController();
         firmwareDialogController.setUltimaRegisterProvider(ultimaRegisterProvider);
         firmwareDialogController.setUltimaModbusConnect(ultimaModbusConnect);
@@ -1213,6 +1218,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         firmwareDialogController.setStandModbusConnect(standModbusConnect);
         firmwareDialogController.setFirmwareDialog(firmwareDialog);
         firmwareDialogController.setI18N(i18N);
+        firmwareDialogController.setUisSettingsModel(uisSettingsModel);
         return firmwareDialogController;
     }
 

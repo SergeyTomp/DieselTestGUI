@@ -224,7 +224,7 @@ public abstract class ChartTask extends TimerTask {
                 if (isBipTest(mainSectionUisModel.injectorTestProperty().get())) {
 
                     int reduction = (int)(uisVapModel.bipWindowProperty().get() * 0.05); // BipWindow - 0.05 ; 5% cut of array both sides
-                    int timeStart = uisVapModel.firstWProperty().get() - reduction;
+                    int timeStart = uisVapModel.firstWProperty().get() + reduction;
                     int timeEnd = timeStart + uisVapModel.bipWindowProperty().get() - reduction;
                     double bipSignalValue = getBipSignalValue(data, timeStart, timeEnd);
                     chartTaskDataModel.bipSignalValueProperty().setValue(bipSignalValue);

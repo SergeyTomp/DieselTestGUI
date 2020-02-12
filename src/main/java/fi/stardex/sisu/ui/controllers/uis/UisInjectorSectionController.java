@@ -216,6 +216,7 @@ public class UisInjectorSectionController {
         lcd.valueProperty().bind(uisHardwareUpdateModel.lcdPressureProperty());
         bipLabel.setText("BIP(\u00B5s)");
         saveBipButton.setDisable(true);
+        injectorToggleButton.setDisable(true);
     }
 
     private void configureModeControls(InjectorSubType injectorSubType) {
@@ -474,9 +475,11 @@ public class UisInjectorSectionController {
                 uisInjectorSectionModel.bipRangeLabelProperty().setValue("");
                 saveBipButton.setDisable(true);
                 regulator1pressModeOFF();
+                injectorToggleButton.setDisable(true);
                 return;
             }
 
+            injectorToggleButton.setDisable(false);
             InjectorUisTest test = (InjectorUisTest) newValue;
             InjectorUisVAP vap = (InjectorUisVAP)newValue.getVoltAmpereProfile();
             Integer totalPulseTime1 = newValue.getTotalPulseTime1();
@@ -593,8 +596,10 @@ public class UisInjectorSectionController {
 
     private void setupCharTaskListener() {
 
-        chartTaskDataModel.bipSignalValueProperty().addListener((observableValue, oldValue, newValue) -> bipGauge.setValue(newValue.doubleValue()));
-        uisInjectorSectionModel.bipValueProperty().bind(chartTaskDataModel.bipSignalValueProperty());
+        chartTaskDataModel.bipSignalValueProperty().addListener((observableValue, oldValue, newValue) -> {
+            bipGauge.setValue(newValue.doubleValue());
+            uisInjectorSectionModel.bipValueProperty().setValue(bipGauge.getValue());
+        });
         chartTaskDataModel.delayValueProperty().addListener((observableValue, oldValue, newValue) -> delayGauge.setValue(newValue.doubleValue()));
     }
 

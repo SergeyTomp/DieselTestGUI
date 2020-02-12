@@ -307,6 +307,10 @@ public class GaugeCreator {
             }
         }
 
+        public double getValue() {
+            return bipGauge.getValue();
+        }
+
         void clearAverageValues() {
             currAverageIndex = 0;
             isFirstCycle = true;
