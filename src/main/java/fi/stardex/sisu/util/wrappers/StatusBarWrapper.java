@@ -135,10 +135,12 @@ public class StatusBarWrapper {
     private void doIfDeviceIsStand(StringBuilder sb, Device device) {
 
         StandVersions version = standFirmwareVersion.getVersions();
-
         switch (version) {
             case STAND:
                 sb.append(device.getLabel());
+                break;
+            case STAND_FORTE:
+                sb.append(version.name());
                 break;
             case UNKNOWN:
                 sb.append("Unknown Device");

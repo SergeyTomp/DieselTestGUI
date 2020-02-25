@@ -7,6 +7,7 @@ import fi.stardex.sisu.model.cr.MainSectionModel;
 import fi.stardex.sisu.model.pump.ManufacturerPumpModel;
 import fi.stardex.sisu.model.uis.MainSectionUisModel;
 import fi.stardex.sisu.model.uis.UisInjectorSectionModel;
+import fi.stardex.sisu.model.updateModels.TestBenchSectionUpdateModel;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.DimasGUIEditionState;
 import fi.stardex.sisu.states.InjectorSectionPwrState;
@@ -61,6 +62,7 @@ public class GUI_TypeController {
     private UisInjectorSectionModel uisInjectorSectionModel;
     private Step3Model step3Model;
     private PiezoRepairModel piezoRepairModel;
+    private TestBenchSectionUpdateModel testBenchSectionUpdateModel;
     private ModbusRegisterProcessor ultimaModbusWriter;
 
     public void setManufacturerPumpModel(ManufacturerPumpModel manufacturerPumpModel) {
@@ -144,13 +146,14 @@ public class GUI_TypeController {
     public void setUltimaModbusWriter(ModbusRegisterProcessor ultimaModbusWriter) {
         this.ultimaModbusWriter = ultimaModbusWriter;
     }
-
     public void setMainSectionUisModel(MainSectionUisModel mainSectionUisModel) {
         this.mainSectionUisModel = mainSectionUisModel;
     }
-
     public void setUisInjectorSectionModel(UisInjectorSectionModel uisInjectorSectionModel) {
         this.uisInjectorSectionModel = uisInjectorSectionModel;
+    }
+    public void setTestBenchSectionUpdateModel(TestBenchSectionUpdateModel testBenchSectionUpdateModel) {
+        this.testBenchSectionUpdateModel = testBenchSectionUpdateModel;
     }
 
     @PostConstruct
@@ -193,6 +196,7 @@ public class GUI_TypeController {
         injectorSectionPwrState.powerButtonProperty().addListener((observableValue, oldValue, newValue) -> gui_typeComboBox.setDisable(isStarted()));
         mainSectionUisModel.startButtonProperty().addListener((observableValue, oldValue, newValue) -> gui_typeComboBox.setDisable(isStarted()));
         uisInjectorSectionModel.injectorButtonProperty().addListener((observableValue, oldValue, newValue) -> gui_typeComboBox.setDisable(isStarted()));
+        testBenchSectionUpdateModel.sectionStartedProperty().addListener((observable, oldValue, newValue) -> gui_typeComboBox.setDisable(isStarted()));
     }
 
     private void changeToCRInj() {
@@ -304,7 +308,7 @@ public class GUI_TypeController {
 
         /**We do not need here to send UIS_to_CR_pulseControlSwitch == 1 to hardware due to not defined mode indeed.
          * In case INTERNAL RPM mode selected at settings tab UIS_to_CR_pulseControlSwitch == 0 should be sent despite UIS is chosen.
-         * Correct value is sent directly from UisSettingsController*/
+         * Correct value is sent directly from UisInjectorSectionController*/
 
         logger.info("Changed to UIS");
     }
@@ -319,6 +323,7 @@ public class GUI_TypeController {
         return mainSectionModel.startButtonProperty().get()
                 || injectorSectionPwrState.powerButtonProperty().get()
                 || mainSectionUisModel.startButtonProperty().get()
-                || uisInjectorSectionModel.injectorButtonProperty().get();
+                || uisInjectorSectionModel.injectorButtonProperty().get()
+                || testBenchSectionUpdateModel.sectionStartedProperty().get();
     }
 }

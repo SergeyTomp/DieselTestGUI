@@ -1,7 +1,10 @@
 package fi.stardex.sisu.spring;
 
 import fi.stardex.sisu.annotations.Module;
-import fi.stardex.sisu.charts.*;
+import fi.stardex.sisu.charts.ChartTaskFour;
+import fi.stardex.sisu.charts.ChartTaskOne;
+import fi.stardex.sisu.charts.ChartTaskThree;
+import fi.stardex.sisu.charts.ChartTaskTwo;
 import fi.stardex.sisu.connect.ConnectProcessor;
 import fi.stardex.sisu.connect.InetAddressWrapper;
 import fi.stardex.sisu.connect.ModbusConnect;
@@ -29,17 +32,18 @@ import fi.stardex.sisu.persistence.repos.pump.PumpTestRepository;
 import fi.stardex.sisu.persistence.repos.uis.*;
 import fi.stardex.sisu.registers.ModbusMap;
 import fi.stardex.sisu.registers.RegisterProvider;
+import fi.stardex.sisu.registers.StandControlsService;
 import fi.stardex.sisu.registers.flow.ModbusMapFlow;
 import fi.stardex.sisu.registers.stand.ModbusMapStand;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.*;
-import fi.stardex.sisu.ui.controllers.cr.windows.ISADetectionController;
+import fi.stardex.sisu.ui.controllers.common.TestBenchSectionController;
+import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
+import fi.stardex.sisu.ui.controllers.cr.MainSectionController;
 import fi.stardex.sisu.ui.controllers.cr.tabs.FlowController;
 import fi.stardex.sisu.ui.controllers.cr.tabs.settings.ConnectionController;
-import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
-import fi.stardex.sisu.ui.controllers.common.TestBenchSectionController;
-import fi.stardex.sisu.ui.controllers.cr.MainSectionController;
+import fi.stardex.sisu.ui.controllers.cr.windows.ISADetectionController;
 import fi.stardex.sisu.ui.controllers.pumps.CalibrationTestErrorController;
 import fi.stardex.sisu.ui.controllers.pumps.SCVCalibrationController;
 import fi.stardex.sisu.ui.controllers.pumps.main.PumpTestListController;
@@ -74,13 +78,13 @@ import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.prefs.Preferences;
+import java.util.stream.Collectors;
 
 import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.FirmwareVersion;
 import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions;
 import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions.*;
 import static fi.stardex.sisu.version.StandFirmwareVersion.StandVersions;
-import static fi.stardex.sisu.version.StandFirmwareVersion.StandVersions.STAND;
-import static fi.stardex.sisu.version.StandFirmwareVersion.StandVersions.UNKNOWN;
+import static fi.stardex.sisu.version.StandFirmwareVersion.StandVersions.*;
 import static fi.stardex.sisu.version.UltimaFirmwareVersion.UltimaVersions;
 import static fi.stardex.sisu.version.UltimaFirmwareVersion.UltimaVersions.*;
 
@@ -242,10 +246,17 @@ public class SpringJavaConfig {
                 connectedProperty.addListener((observable, oldValue, newValue) -> {
                     if (newValue) {
                         int firmwareVersionNumber = (int) read(ModbusMapStand.FirmwareVersion);
-                        if (firmwareVersionNumber == 0x1122) {
-                            standFirmwareVersion.setVersions(STAND);
-                        } else {
-                            standFirmwareVersion.setVersions(UNKNOWN);
+                        switch (firmwareVersionNumber) {
+
+                            case 0x1122:
+                                standFirmwareVersion.setVersions(STAND);
+                                break;
+                            case 0x2233:
+                                standFirmwareVersion.setVersions(STAND_FORTE);
+                                break;
+                            default:
+                                standFirmwareVersion.setVersions(UNKNOWN);
+                                break;
                         }
                     } else {
                         standFirmwareVersion.setVersions(StandVersions.NO_VERSION);
@@ -260,6 +271,7 @@ public class SpringJavaConfig {
     public ModbusRegisterProcessor ultimaModbusWriter(List<Updater> updatersList,
                                                       RegisterProvider ultimaRegisterProvider) {
         return new ModbusRegisterProcessor(ultimaRegisterProvider, ModbusMapUltima.values()) {
+
             @Override
             protected void initThread() {
                 List<Updater> updaters = addUpdaters(updatersList, Device.ULTIMA);
@@ -281,58 +293,52 @@ public class SpringJavaConfig {
     @Autowired
     public ModbusRegisterProcessor flowModbusWriter(List<Updater> updatersList,
                                                     RegisterProvider flowRegisterProvider,
-                                                    FirmwareVersion<FlowVersions> flowFirmwareVersion) {
-        return new ModbusRegisterProcessor(flowRegisterProvider, ModbusMapFlow.values()) {
+                                                    FirmwareVersion<FlowVersions> flowFirmwareVersion,
+                                                    StandControlsService standControlsService) {
+        return new ModbusRegisterProcessor(flowRegisterProvider, ModbusMapFlow.values(), standControlsService) {
 
             @Override
-            public boolean add(ModbusMap reg, Object value) {
+            protected void setRegisterSetChangeListener(){
 
-                boolean added = super.add(reg, value);
+                controlsService.controlsChangeProperty().addListener((observableValue, oldValue, newValue) -> {
 
-                if (reg instanceof ModbusMapStand) {
+                        isPaused = true;
 
-                    switch ((ModbusMapStand) reg) {
+                        List<ModbusMap> standFmRegisters = controlsService.getControls().stream()
+                                .map(c -> (ModbusMapStand)c.getRegister())
+                                .filter(ModbusMapStand::isStandFMRegister)
+                                .collect(Collectors.toList());
 
-                        case TargetRPMStandFM:
-                        case RotationDirectionStandFM:
-                        case RotationStandFM:
-                        case FanTurnOnStandFM:
-                            ((ModbusMapStand) reg).setSyncWriteRead(true);
-                            break;
-                        default:
-                            break;
-
-                    }
-
-                }
-
-                return added;
-
+                        standFmRegisters.addAll(Arrays.asList(ModbusMapFlow.values()));
+                        readArray = standFmRegisters.toArray(ModbusMap[]::new);
+                        isPaused = false;
+                 });
             }
 
             @Override
             protected void initThread() {
 
                 List<Updater> updaters = addUpdaters(updatersList, Device.MODBUS_FLOW);
+                setRegisterSetChangeListener();
                 Thread loopThread = new Thread(new ProcessExecutor() {
 
-                    ModbusMapStand[] standRegisters = ModbusMapStand.values();
+//                    ModbusMapStand[] standRegisters = ModbusMapStand.values();
 
-                    @Override
-                    protected boolean isStand(ModbusMap register) {
-                        return register.isAutoUpdate() && ((ModbusMapStand) register).isStandFMRegister();
-                    }
+//                    @Override
+//                    protected boolean isStand(ModbusMap register) {
+//                        return register.isAutoUpdate() && ((ModbusMapStand) register).isStandFMRegister();
+//                    }
 
-                    @Override
-                    protected void readAll() {
+//                    @Override
+//                    protected void readAll() {
 
-                        FlowVersions version = flowFirmwareVersion.getVersions();
+//                        FlowVersions version = flowFirmwareVersion.getVersions();
+//
+//                        if (version == STAND_FM || version == STAND_FM_4_CH)
+//                            Arrays.stream(standRegisters).filter(this::isStand).forEach(registerProvider::read);
 
-                        if (version == STAND_FM || version == STAND_FM_4_CH)
-                            Arrays.stream(standRegisters).filter(this::isStand).forEach(registerProvider::read);
-
-                        super.readAll();
-                    }
+//                        super.readAll();
+//                    }
 
                     @Override
                     protected void updateAll() {
@@ -398,56 +404,53 @@ public class SpringJavaConfig {
     @Autowired
     public ModbusRegisterProcessor standModbusWriter(List<Updater> updatersList,
                                                      RegisterProvider standRegisterProvider,
-                                                     FirmwareVersion<FlowVersions> flowFirmwareVersion) {
-        return new ModbusRegisterProcessor(standRegisterProvider, ModbusMapStand.values()) {
+                                                     StandControlsService standControlsService) {
+        return new ModbusRegisterProcessor(standRegisterProvider, ModbusMapStand.values(), standControlsService) {
 
             @Override
-            public boolean add(ModbusMap reg, Object value) {
+            protected void setRegisterSetChangeListener(){
 
-                boolean added = super.add(reg, value);
-
-                switch ((ModbusMapStand) reg) {
-
-                    case TargetRPM:
-                    case RotationDirection:
-                    case Rotation:
-                    case FanTurnOn:
-                        ((ModbusMapStand) reg).setSyncWriteRead(true);
-                        break;
-                    default:
-                        break;
-
-                }
-
-                return added;
-
+                controlsService.controlsChangeProperty().addListener((observableValue, oldValue, newValue) -> {
+                        isPaused = true;
+                        readArray = controlsService.getControls().stream()
+                                .map(c -> (ModbusMapStand)c.getRegister())
+                                .filter(modbusMapStand -> !modbusMapStand.isStandFMRegister()).toArray(ModbusMap[]::new);
+                        isPaused = false;
+                });
             }
 
             @Override
             protected void initThread() {
                 List<Updater> updaters = addUpdaters(updatersList, Device.MODBUS_STAND);
+
+                setRegisterSetChangeListener();
+
                 Thread loopThread = new Thread(new ProcessExecutor() {
 
-                    private boolean isNotStand(ModbusMap register) {
-                        return !isStand(register);
-                    }
+//                    private boolean isNotStand(ModbusMap register) {
+//                        return !isStand(register);
+//                    }
 
-                    @Override
-                    protected boolean isStand(ModbusMap register) {
-                        return register.isAutoUpdate() && ((ModbusMapStand) register).isStandFMRegister();
-                    }
+//                    @Override
+//                    protected boolean isStand(ModbusMap register) {
+//                        return register.isAutoUpdate() && ((ModbusMapStand) register).isStandFMRegister();
+//                    }
 
-                    @Override
-                    protected void readAll() {
+//                    @Override
+//                    protected void readAll() {
 
-                        FlowVersions version = flowFirmwareVersion.getVersions();
+//                        FlowVersions version = flowFirmwareVersion.getVersions();
+//
+//                        if (version == STAND_FM || version == STAND_FM_4_CH){
+//                            Arrays.stream(readArray).filter(this::isStand).forEach(registerProvider::read);
+//                        }
+//
+//                        else{
+//                            Arrays.stream(readArray).filter(this::isNotStand).forEach(registerProvider::read);
+//                        }
+//                        Arrays.stream(readArray).filter(reg -> !isStand(reg)).forEach(registerProvider::read);
 
-                        if (version == STAND_FM || version == STAND_FM_4_CH)
-                            Arrays.stream(readArray).filter(this::isStand).forEach(registerProvider::read);
-                        else
-                            Arrays.stream(readArray).filter(this::isNotStand).forEach(registerProvider::read);
-
-                    }
+//                    }
 
                     @Override
                     protected void updateAll() {
@@ -528,8 +531,10 @@ public class SpringJavaConfig {
 
     @Bean
     @Autowired
-    public TestBenchSectionUpdateModel testBenchSectionUpdateModel(FirmwareVersion<FlowVersions> flowFirmwareVersion) {
-        return new TestBenchSectionUpdateModel(flowFirmwareVersion);
+    public TestBenchSectionUpdateModel testBenchSectionUpdateModel(StandControlsService standControlsService) {
+        TestBenchSectionUpdateModel testBenchSectionUpdateModel = new TestBenchSectionUpdateModel();
+        testBenchSectionUpdateModel.setControlsService(standControlsService);
+        return testBenchSectionUpdateModel;
     }
 
     @Bean
@@ -1348,6 +1353,18 @@ public class SpringJavaConfig {
     @Bean
     public DifferentialFmUpdateModel differentialFmUpdateModel() {
         return new DifferentialFmUpdateModel();
+    }
+
+    @Bean
+    @Autowired
+    public StandControlsService standControlsService(FirmwareVersion<StandVersions> standFirmwareVersion,
+                                                     FirmwareVersion<FlowVersions> flowFirmwareVersion,
+                                                     GUI_TypeModel gui_typeModel) {
+        StandControlsService standControlsFactory = new StandControlsService();
+        standControlsFactory.setStandFirmwareVersion(standFirmwareVersion);
+        standControlsFactory.setFlowFirmwareVersion(flowFirmwareVersion);
+        standControlsFactory.setGui_typeModel(gui_typeModel);
+        return standControlsFactory;
     }
 
 //    @Bean

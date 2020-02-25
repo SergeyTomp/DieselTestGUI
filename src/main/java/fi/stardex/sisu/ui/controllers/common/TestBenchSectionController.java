@@ -2,17 +2,22 @@ package fi.stardex.sisu.ui.controllers.common;
 
 import eu.hansolo.enzo.lcd.Lcd;
 import fi.stardex.sisu.connect.ModbusConnect;
+import fi.stardex.sisu.model.GUI_TypeModel;
 import fi.stardex.sisu.model.TabSectionModel;
+import fi.stardex.sisu.model.TestBenchSectionModel;
 import fi.stardex.sisu.model.cr.InjectorTestModel;
 import fi.stardex.sisu.model.pump.PumpModel;
 import fi.stardex.sisu.model.pump.PumpTestModel;
-import fi.stardex.sisu.model.TestBenchSectionModel;
 import fi.stardex.sisu.model.uis.MainSectionUisModel;
+import fi.stardex.sisu.model.uis.UisSettingsModel;
 import fi.stardex.sisu.model.updateModels.TachometerUltimaUpdateModel;
 import fi.stardex.sisu.model.updateModels.TestBenchSectionUpdateModel;
+import fi.stardex.sisu.persistence.orm.interfaces.Test;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.DimasGUIEditionState;
 import fi.stardex.sisu.util.GaugeCreator;
+import fi.stardex.sisu.util.enums.GUI_type;
+import fi.stardex.sisu.util.enums.InjectorSubType;
 import fi.stardex.sisu.util.enums.pump.PumpRotation;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.spinners.SpinnerManager;
@@ -33,102 +38,66 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 
-import static fi.stardex.sisu.registers.stand.ModbusMapStand.*;
+import static fi.stardex.sisu.registers.StandControlsService.StandControls.*;
 import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions;
 import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions.STAND_FM;
 import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions.STAND_FM_4_CH;
 import static fi.stardex.sisu.version.StandFirmwareVersion.StandVersions;
 import static fi.stardex.sisu.version.StandFirmwareVersion.StandVersions.STAND;
+import static fi.stardex.sisu.version.StandFirmwareVersion.StandVersions.STAND_FORTE;
 
 public class TestBenchSectionController {
 
     private Logger logger = LoggerFactory.getLogger(TestBenchSectionController.class);
 
     @FXML private Label fuelLevelLabel;
-
     @FXML private StackPane lcdStackPane;
-
     @FXML private Spinner<Integer> targetRPMSpinner;
-
     @FXML private ToggleButton leftDirectionRotationToggleButton;
-
     @FXML private ToggleGroup rotationDirectionToggleGroup;
-
     @FXML private ToggleButton rightDirectionRotationToggleButton;
-
     @FXML private ToggleButton testBenchStartToggleButton;
-
     @FXML private ToggleButton pumpControlToggleButton;
-
     @FXML private ToggleButton fanControlToggleButton;
-
     @FXML private ProgressBar tempProgressBar1;
-
     @FXML private ProgressBar tempProgressBar2;
-
     @FXML private ProgressBar pressProgressBar1;
-
     @FXML private ProgressBar tankOil;
-
     @FXML private Text tankOilText;
-
     @FXML private Text tempText1;
-
     @FXML private Text pressText1;
-
     @FXML private Text tempText2;
-
     @FXML private Label labelTemp1;
-
     @FXML private Label labelTemp2;
-
     @FXML private Label labelPressure1;
-
     @FXML private Label labelRPM;
-
     @FXML private HBox rootHbox;
 
     private I18N i18N;
-
     private DimasGUIEditionState dimasGUIEditionState;
-
     private PumpTestModel pumpTestModel;
-
     private PumpModel pumpModel;
-
     private InjectorTestModel injectorTestModel;
-
     private TestBenchSectionUpdateModel testBenchSectionUpdateModel;
-
     private TachometerUltimaUpdateModel tachometerUltimaUpdateModel;
-
     private TestBenchSectionModel testBenchSectionModel;
-
     private MainSectionUisModel mainSectionUisModel;
-
     private TabSectionModel tabSectionModel;
-
+    private GUI_TypeModel gui_typeModel;
     private static final String PUMP_BUTTON_ON = "pump-button-on";
-
     private static final String PUMP_BUTTON_OFF = "pump-button-off";
-
     private StatePump pumpState;
-
     private ModbusRegisterProcessor flowModbusWriter;
-
     private ModbusRegisterProcessor standModbusWriter;
-
+    private ModbusRegisterProcessor modBusWriter;
     private Lcd currentRPMLcd;
-
     private FirmwareVersion<FlowVersions> flowFirmwareVersion;
-
     private FirmwareVersion<StandVersions> standFirmwareVersion;
-
     private ModbusConnect flowModbusConnect;
-
     private ModbusConnect standModbusConnect;
-
+    private UisSettingsModel uisSettingsModel;
     private ChangeListener<Boolean> pumpTurnOnListener;
+    private ChangeListener<GUI_type> guiTypeListener = (observableValue, oldValue, newValue) -> setArrowsVisibility();
 
     public Spinner<Integer> getTargetRPMSpinner() {
         return targetRPMSpinner;
@@ -173,42 +142,38 @@ public class TestBenchSectionController {
     public void setPumpTestModel(PumpTestModel pumpTestModel) {
         this.pumpTestModel = pumpTestModel;
     }
-
     public void setPumpModel(PumpModel pumpModel) {
         this.pumpModel = pumpModel;
     }
-
-
     public void setInjectorTestModel(InjectorTestModel injectorTestModel) {
         this.injectorTestModel = injectorTestModel;
     }
-
     public void setTestBenchSectionUpdateModel(TestBenchSectionUpdateModel testBenchSectionUpdateModel) {
         this.testBenchSectionUpdateModel = testBenchSectionUpdateModel;
     }
-
     public void setTachometerUltimaUpdateModel(TachometerUltimaUpdateModel tachometerUltimaUpdateModel) {
         this.tachometerUltimaUpdateModel = tachometerUltimaUpdateModel;
     }
-
     public void setTestBenchSectionModel(TestBenchSectionModel testBenchSectionModel) {
         this.testBenchSectionModel = testBenchSectionModel;
     }
-
     public void setFlowModbusConnect(ModbusConnect flowModbusConnect) {
         this.flowModbusConnect = flowModbusConnect;
     }
-
     public void setStandModbusConnect(ModbusConnect standModbusConnect) {
         this.standModbusConnect = standModbusConnect;
     }
-
     public void setMainSectionUisModel(MainSectionUisModel mainSectionUisModel) {
         this.mainSectionUisModel = mainSectionUisModel;
     }
-
     public void setTabSectionModel(TabSectionModel tabSectionModel) {
         this.tabSectionModel = tabSectionModel;
+    }
+    public void setUisSettingsModel(UisSettingsModel uisSettingsModel) {
+        this.uisSettingsModel = uisSettingsModel;
+    }
+    public void setGui_typeModel(GUI_TypeModel gui_typeModel) {
+        this.gui_typeModel = gui_typeModel;
     }
 
     public enum StatePump {
@@ -246,34 +211,22 @@ public class TestBenchSectionController {
     private void init() {
 
         bindingI18N();
-
+        modBusWriter = standModbusWriter;
         setupFlowFirmwareVersionListener();
-
         setupStandFirmwareVersionListener();
-
         setupLCD();
-
         setupRotationDirectionToggleButton();
-
         setupTargetRPMSpinner();
-
         setupTestBenchStartToggleButton();
-
         setupPumpControlToggleButton();
-
         setupFanControlToggleButton();
-
         rootHbox.widthProperty().addListener(new HboxWidthListener(rootHbox, lcdStackPane));
-
         setupDimasGuiBinding();
-
         setupTestListener();
-
         setupUpdatersListeners();
-
         setupConnectionListeners();
-
         setupTabSectionListeners();
+        setupSlaveMotorSpinnerListener();
     }
 
     private void bindingI18N() {
@@ -292,7 +245,8 @@ public class TestBenchSectionController {
             }
             testBenchStartToggleButton.setDisable(newValue || (flowFirmwareVersion.getVersions() != STAND_FM
                     && flowFirmwareVersion.getVersions() != STAND_FM_4_CH
-                    && standFirmwareVersion.versionProperty().get() != STAND));
+                    && standFirmwareVersion.versionProperty().get() != STAND
+                    && standFirmwareVersion.versionProperty().get() != STAND_FORTE));
         });
 
         tabSectionModel.piezoTabIsShowingProperty().addListener((observableValue, oldValue, newValue) -> {
@@ -301,7 +255,8 @@ public class TestBenchSectionController {
             }
             testBenchStartToggleButton.setDisable(newValue || (flowFirmwareVersion.getVersions() != STAND_FM
                     && flowFirmwareVersion.getVersions() != STAND_FM_4_CH
-                    && standFirmwareVersion.versionProperty().get() != STAND));
+                    && standFirmwareVersion.versionProperty().get() != STAND
+                    && standFirmwareVersion.versionProperty().get() != STAND_FORTE));
         });
     }
 
@@ -334,6 +289,9 @@ public class TestBenchSectionController {
             if (newValue != null) {
 
                 targetRPMSpinner.getValueFactory().setValue(newValue.getMotorSpeed());
+                if (newValue.getVoltAmpereProfile().getInjectorSubType() == InjectorSubType.HPI) {
+                    modBusWriter.add(SLAVE_TARGET_RPM.getRegister(), uisSettingsModel.slaveMotorRPMProperty().get());
+                }
             }
             else{
                 targetRPMSpinner.getValueFactory().setValue(0);
@@ -345,13 +303,21 @@ public class TestBenchSectionController {
 
         flowFirmwareVersion.versionProperty().addListener((observableValue, oldValue, newValue) -> {
 
-            if (newValue == STAND_FM || newValue == STAND_FM_4_CH || standFirmwareVersion.versionProperty().get() == STAND)
+            if (newValue == STAND_FM
+                    || newValue == STAND_FM_4_CH
+                    || standFirmwareVersion.versionProperty().get() == STAND
+                    || standFirmwareVersion.versionProperty().get() == STAND_FORTE)
                 testBenchStartToggleButton.setDisable(false);
             else{
                 testBenchStartToggleButton.setDisable(true);
                 resetNodes();
             }
+            modBusWriter = (newValue == STAND_FM || newValue == STAND_FM_4_CH) ? flowModbusWriter : standModbusWriter;
 
+            if (newValue == STAND_FM || newValue == STAND_FM_4_CH) {
+                gui_typeModel.guiTypeProperty().removeListener(guiTypeListener);
+                setArrowsVisibility();
+            }
         });
 
     }
@@ -360,13 +326,25 @@ public class TestBenchSectionController {
 
         standFirmwareVersion.versionProperty().addListener((observableValue, oldValue, newValue) -> {
 
-            if (newValue == STAND || flowFirmwareVersion.versionProperty().get() == STAND_FM || flowFirmwareVersion.versionProperty().get() == STAND_FM_4_CH)
+            if (newValue == STAND
+                    || newValue == STAND_FORTE
+                    || flowFirmwareVersion.versionProperty().get() == STAND_FM
+                    || flowFirmwareVersion.versionProperty().get() == STAND_FM_4_CH)
                 testBenchStartToggleButton.setDisable(false);
             else{
                 testBenchStartToggleButton.setDisable(true);
                 resetNodes();
             }
 
+            if (newValue == STAND_FORTE) {
+                gui_typeModel.guiTypeProperty().removeListener(guiTypeListener);
+                gui_typeModel.guiTypeProperty().addListener(guiTypeListener);
+                setArrowsVisibility();
+
+            }else{
+                gui_typeModel.guiTypeProperty().removeListener(guiTypeListener);
+                setArrowsVisibility();
+            }
         });
 
     }
@@ -413,10 +391,8 @@ public class TestBenchSectionController {
         rotationDirectionToggleGroup.selectedToggleProperty().addListener((observable, oldValue, newValue) -> {
 
             if (newValue != null) {
-                if ((flowFirmwareVersion.getVersions() == STAND_FM) || (flowFirmwareVersion.getVersions() == STAND_FM_4_CH))
-                    flowModbusWriter.add(RotationDirectionStandFM, newValue.getUserData());
-                else
-                    standModbusWriter.add(RotationDirection, newValue.getUserData());
+
+                modBusWriter.add(DRIVE_DIRECTION.getRegister(), newValue.getUserData());
             }
 
         });
@@ -430,6 +406,12 @@ public class TestBenchSectionController {
                 }
             }
         });
+
+        testBenchStartToggleButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
+
+            leftDirectionRotationToggleButton.setDisable(newValue && !leftDirectionRotationToggleButton.isSelected());
+            rightDirectionRotationToggleButton.setDisable(newValue && !rightDirectionRotationToggleButton.isSelected());
+        });
     }
 
     private void setupTargetRPMSpinner() {
@@ -440,14 +422,8 @@ public class TestBenchSectionController {
 
         targetRPMSpinner.valueProperty().addListener((observable, oldValue, newValue) -> {
 
-            if ((flowFirmwareVersion.getVersions() == STAND_FM) || (flowFirmwareVersion.getVersions() == STAND_FM_4_CH)){
+            modBusWriter.add(MAIN_TARGET_RPM.getRegister(), newValue);
 
-                flowModbusWriter.add(TargetRPMStandFM, newValue);
-            }
-            else{
-
-                standModbusWriter.add(TargetRPM, newValue);
-            }
             testBenchSectionModel.targetRPMProperty().setValue(newValue);
         });
 
@@ -457,10 +433,16 @@ public class TestBenchSectionController {
 
         testBenchStartToggleButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
 
-            if ((flowFirmwareVersion.getVersions() == STAND_FM) || (flowFirmwareVersion.getVersions() == STAND_FM_4_CH))
-                flowModbusWriter.add(RotationStandFM, newValue);
-            else
-                standModbusWriter.add(Rotation, newValue);
+            modBusWriter.add(MAIN_DRIVE_ON.getRegister(), newValue);
+
+            Test test = mainSectionUisModel.injectorTestProperty().get();
+
+            if (MAIN_DRIVE_ON.getRegister() != SLAVE_DRIVE_ON.getRegister()
+                    && test != null
+                    && test.getVoltAmpereProfile().getInjectorSubType() == InjectorSubType.HPI) {
+                modBusWriter.add(SLAVE_DRIVE_ON.getRegister(), newValue);
+                modBusWriter.add(SLAVE_TARGET_RPM.getRegister(), uisSettingsModel.slaveMotorRPMProperty().get());
+            }
 
             if (StatePump.isAuto(pumpState))
                 setPumpAuto(newValue);
@@ -470,11 +452,25 @@ public class TestBenchSectionController {
         testBenchStartToggleButton.selectedProperty().bindBidirectional(testBenchSectionModel.isPowerButtonOnProperty());
         testBenchSectionModel.isPowerButtonDisabledProperty().bind(testBenchStartToggleButton.disableProperty());
 
-        if (flowFirmwareVersion.getVersions() == STAND_FM || flowFirmwareVersion.getVersions() == STAND_FM_4_CH || standFirmwareVersion.versionProperty().get() == STAND)
+        if (flowFirmwareVersion.getVersions() == STAND_FM
+                || flowFirmwareVersion.getVersions() == STAND_FM_4_CH
+                || standFirmwareVersion.versionProperty().get() == STAND
+                ||standFirmwareVersion.versionProperty().get() == STAND_FORTE)
             testBenchStartToggleButton.setDisable(false);
         else
             testBenchStartToggleButton.setDisable(true);
 
+    }
+
+    private void setupSlaveMotorSpinnerListener() {
+
+        uisSettingsModel.slaveMotorRPMProperty().addListener((observable, oldValue, newValue) -> {
+
+            Test test = mainSectionUisModel.injectorTestProperty().get();
+            if (test != null && test.getVoltAmpereProfile().getInjectorSubType() == InjectorSubType.HPI) {
+                standModbusWriter.add(SLAVE_TARGET_RPM.getRegister(), newValue);
+            }
+        });
     }
 
     private void setupPumpControlToggleButton() {
@@ -499,11 +495,7 @@ public class TestBenchSectionController {
 
         fanControlToggleButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
 
-            if ((flowFirmwareVersion.getVersions() == STAND_FM) || (flowFirmwareVersion.getVersions() == STAND_FM_4_CH))
-                flowModbusWriter.add(FanTurnOnStandFM, newValue);
-            else
-                standModbusWriter.add(FanTurnOn, newValue);
-
+            modBusWriter.add(FAN_ON.getRegister(), newValue);
         });
 
     }
@@ -515,17 +507,12 @@ public class TestBenchSectionController {
                 logger.warn("Double clicked");
                 if (isAuto()) {
                     setPumpState(TestBenchSectionController.StatePump.OFF);
-                    if ((flowFirmwareVersion.getVersions() == STAND_FM) || (flowFirmwareVersion.getVersions() == STAND_FM_4_CH))
-                        flowModbusWriter.add(PumpAutoModeStandFM, false);
-                    else
-                        standModbusWriter.add(PumpAutoMode, false);
+                    modBusWriter.add(PUMP_AUTO.getRegister(), false);
                 } else {
                     setPumpState(testBenchStartToggleButton.isSelected() ?
                             TestBenchSectionController.StatePump.AUTO_ON : TestBenchSectionController.StatePump.AUTO_OFF);
-                    if ((flowFirmwareVersion.getVersions() == STAND_FM) || (flowFirmwareVersion.getVersions() == STAND_FM_4_CH))
-                        flowModbusWriter.add(PumpAutoModeStandFM, true);
-                    else
-                        standModbusWriter.add(PumpAutoMode, true);
+
+                    modBusWriter.add(PUMP_AUTO.getRegister(), true);
                 }
             } else if (mouseEvent.getClickCount() == 1) {
                 if (pumpState == TestBenchSectionController.StatePump.OFF)
@@ -542,15 +529,20 @@ public class TestBenchSectionController {
 
         BooleanProperty dimasGuiEditionProperty = dimasGUIEditionState.isDimasGuiEditionProperty();
 
-        leftDirectionRotationToggleButton.visibleProperty().bind(dimasGuiEditionProperty.not());
-        rightDirectionRotationToggleButton.visibleProperty().bind(dimasGuiEditionProperty.not());
         pressText1.visibleProperty().bind(dimasGuiEditionProperty.not());
         labelPressure1.visibleProperty().bind(dimasGuiEditionProperty.not());
         pressProgressBar1.visibleProperty().bind(dimasGuiEditionProperty.not());
 
         dimasGuiEditionProperty.addListener((observableValue, oldValue, newValue) -> {
+
             if(newValue){
-                rightDirectionRotationToggleButton.setSelected(true);}
+                rightDirectionRotationToggleButton.setSelected(true);
+                leftDirectionRotationToggleButton.setVisible(false);
+                rightDirectionRotationToggleButton.setVisible(false);
+            }
+            else{
+                setArrowsVisibility();
+            }
         });
 
     }
@@ -561,11 +553,7 @@ public class TestBenchSectionController {
 
         pumpControlToggleButton.setText(pumpState.getText());
 
-        if ((flowFirmwareVersion.getVersions() == STAND_FM) || (flowFirmwareVersion.getVersions() == STAND_FM_4_CH))
-            flowModbusWriter.add(PumpTurnOnStandFM, pumpState.isActive);
-        else
-            standModbusWriter.add(PumpTurnOn, pumpState.isActive);
-
+        modBusWriter.add(PUMP_ON.getRegister(), pumpState.isActive);
     }
 
     private void setPumpAuto(boolean deviceStateOn) {
@@ -592,8 +580,14 @@ public class TestBenchSectionController {
                 fanControlToggleButton.setSelected(newValue));
 
         testBenchSectionUpdateModel.rotationDirectionProperty().addListener((observableValue, oldValue, newValue) -> {
-            if (newValue) rightDirectionRotationToggleButton.setSelected(true);
-            else leftDirectionRotationToggleButton.setSelected(true);
+            if (newValue){
+                rightDirectionRotationToggleButton.setSelected(true);
+                rightDirectionRotationToggleButton.requestFocus();
+            }
+            else{
+                leftDirectionRotationToggleButton.setSelected(true);
+                leftDirectionRotationToggleButton.requestFocus();
+            }
         });
 
         testBenchSectionUpdateModel.pumpAutoModeProperty().addListener((observableValue, oldValue, newValue) -> {
@@ -704,12 +698,38 @@ public class TestBenchSectionController {
         progressBar.setProgress(value < 1 ? 1.0 : value);
     }
 
+    private void setArrowsVisibility() {
+
+        if (flowFirmwareVersion.getVersions() == STAND_FM || flowFirmwareVersion.getVersions() == STAND_FM_4_CH) {
+            leftDirectionRotationToggleButton.setVisible(true);
+            rightDirectionRotationToggleButton.setVisible(true);
+            return;
+        }
+
+        if (standFirmwareVersion.getVersions() != STAND_FORTE) {
+            leftDirectionRotationToggleButton.setVisible(true);
+            rightDirectionRotationToggleButton.setVisible(true);
+            return;
+        }
+
+        if (MAIN_DRIVE_ON.getRegister() != SLAVE_DRIVE_ON.getRegister()) {
+
+            leftDirectionRotationToggleButton.setVisible(true);
+            rightDirectionRotationToggleButton.setVisible(true);
+        }
+        else{
+
+            rightDirectionRotationToggleButton.setVisible(false);
+            leftDirectionRotationToggleButton.setVisible(false);
+        }
+    }
+
     private class HboxWidthListener implements ChangeListener<Number> {
 
         private final HBox rootHbox;
         private final StackPane stackPaneLCD;
 
-        public HboxWidthListener(HBox rootHbox, StackPane stackPaneLCD) {
+        HboxWidthListener(HBox rootHbox, StackPane stackPaneLCD) {
             this.rootHbox = rootHbox;
             this.stackPaneLCD = stackPaneLCD;
         }

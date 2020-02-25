@@ -16,6 +16,7 @@ public class UisSettingsModel {
     private final ObjectProperty<Dimension> flowRangeViewProperty = new SimpleObjectProperty<>();
     private final Button firmwareVersionButton = new Button();
     private Button differentialFmSettingsButton = new Button();
+    private final IntegerProperty slaveMotorRPM = new SimpleIntegerProperty();
 
     public ObjectProperty<Locales> languageProperty() {
         return languageProperty;
@@ -40,5 +41,8 @@ public class UisSettingsModel {
     }
     public Button getDifferentialFmSettingsButton() {
         return differentialFmSettingsButton;
+    }
+    public IntegerProperty slaveMotorRPMProperty() {
+        return slaveMotorRPM;
     }
 }

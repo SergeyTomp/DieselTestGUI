@@ -14,4 +14,9 @@ public interface ModbusMap {
 
     boolean isAutoUpdate();
 
+    boolean isIgnoreFirstRead();
+
+    void setFirstRead(boolean firstRead);
+
+    boolean isFirstRead();
 }

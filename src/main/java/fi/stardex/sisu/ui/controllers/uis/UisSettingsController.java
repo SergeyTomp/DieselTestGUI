@@ -1,9 +1,10 @@
 package fi.stardex.sisu.ui.controllers.uis;
 
 import fi.stardex.sisu.connect.ModbusConnect;
+import fi.stardex.sisu.model.uis.MainSectionUisModel;
 import fi.stardex.sisu.model.uis.UisSettingsModel;
-import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.util.enums.Dimension;
+import fi.stardex.sisu.util.enums.InjectorSubType;
 import fi.stardex.sisu.util.enums.uis.RpmSource;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.i18n.Locales;
@@ -22,13 +23,14 @@ import javax.annotation.PostConstruct;
 import java.util.Comparator;
 import java.util.prefs.Preferences;
 
-import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.UIS_to_CR_pulseControlSwitch;
 import static fi.stardex.sisu.util.SpinnerDefaults.*;
 import static fi.stardex.sisu.util.enums.uis.RpmSource.EXTERNAL;
 import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions.MASTER_DF;
 
 public class UisSettingsController {
 
+    @FXML private  Spinner<Integer> slaveMotorSpinner;
+    @FXML private  Label slaveMotorLabel;
     @FXML private ComboBox <Dimension>  rangeViewComboBox;
     @FXML private Label rangeViewLabel;
     @FXML private Button firmwareButton;
@@ -50,13 +52,14 @@ public class UisSettingsController {
     private UisSettingsModel uisSettingsModel;
     private ModbusConnect flowModbusConnect;
     private FirmwareVersion<FlowFirmwareVersion.FlowVersions> flowFirmwareVersion;
-    private ModbusRegisterProcessor ultimaModbusWriter;
+    private MainSectionUisModel mainSectionUisModel;
 
     private static final String PREF_KEY_FLOW = "checkBoxFlowVisibleSelected";
     private static final String PREF_KEY_PRESSURE = "pressureSensorSelected";
     private static final String PREF_KEY_OFFSET = "angleOffsetSelected";
     private static final String PREF_KEY_RPM = "rpmSourceSelected";
     private static final String PREF_KEY_RANGE_VIEW = "flowOutputDimensionSelected";
+    private static final String PREF_KEY_SLAVE_RPM = "slaveRpmSelected";
 
     private Alert alert;
     private StringProperty yesButton = new SimpleStringProperty();
@@ -79,8 +82,8 @@ public class UisSettingsController {
     public void setFlowFirmwareVersion(FirmwareVersion<FlowFirmwareVersion.FlowVersions> flowFirmwareVersion) {
         this.flowFirmwareVersion = flowFirmwareVersion;
     }
-    public void setUltimaModbusWriter(ModbusRegisterProcessor ultimaModbusWriter) {
-        this.ultimaModbusWriter = ultimaModbusWriter;
+    public void setMainSectionUisModel(MainSectionUisModel mainSectionUisModel) {
+        this.mainSectionUisModel = mainSectionUisModel;
     }
 
     @PostConstruct
@@ -97,7 +100,6 @@ public class UisSettingsController {
         uisSettingsModel.rpmSourceProperty().setValue(rpmSourceComboBox.getSelectionModel().getSelectedItem());
         rpmSourceComboBox.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> rootPrefs.put(PREF_KEY_RPM, newValue.name()));
         uisSettingsModel.rpmSourceProperty().bind(rpmSourceComboBox.getSelectionModel().selectedItemProperty());
-        ultimaModbusWriter.add(UIS_to_CR_pulseControlSwitch, uisSettingsModel.rpmSourceProperty().get().getSourceId());
 
         languagesComboBox.setItems(FXCollections.observableArrayList(Locales.values()));
         uisSettingsModel.languageProperty().bind(languagesComboBox.getSelectionModel().selectedItemProperty());
@@ -135,6 +137,15 @@ public class UisSettingsController {
         uisSettingsModel.angleOffsetProperty().bind(sensorAngleSpinner.valueProperty());
         sensorAngleSpinner.getValueFactory().setValue(rootPrefs.getInt(PREF_KEY_OFFSET, 70));
         sensorAngleSpinner.valueProperty().addListener((observableValue, oldValue, newValue) -> rootPrefs.putInt(PREF_KEY_OFFSET, newValue));
+
+        slaveMotorSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 3000, 1000, 50));
+        uisSettingsModel.slaveMotorRPMProperty().bind(slaveMotorSpinner.valueProperty());
+        slaveMotorSpinner.getValueFactory().setValue(rootPrefs.getInt(PREF_KEY_SLAVE_RPM, 1000));
+        slaveMotorSpinner.valueProperty().addListener((observableValue, oldValue, newValue) -> rootPrefs.putInt(PREF_KEY_SLAVE_RPM, newValue));
+        slaveMotorSpinner.setDisable(true);
+        mainSectionUisModel.injectorTestProperty().addListener((observableValue, oldValue, newValue)
+                -> slaveMotorSpinner.setDisable(newValue == null || newValue.getVoltAmpereProfile().getInjectorSubType() != InjectorSubType.HPI));
+
         firmwareButton.setOnAction(actionEvent -> uisSettingsModel.getFirmwareVersionButton().fire());
         diffFmSettingsButton.setOnAction(actionEvent -> uisSettingsModel.getDifferentialFmSettingsButton().fire());
         diffFmSettingsButton.setDisable(true);
@@ -180,5 +191,6 @@ public class UisSettingsController {
         diffFmSettingsLabel.textProperty().bind((i18N.createStringBinding("differentialFM.calibrationButton")));
         diffFmSettingsButton.textProperty().bind((i18N.createStringBinding("h4.tab.settings")));
         rangeViewLabel.textProperty().bind((i18N.createStringBinding("settings.FlowOutputDimension.ComboBox")));
+        slaveMotorLabel.textProperty().bind((i18N.createStringBinding("settings.slaveMotor.Spinner")));
     }
 }

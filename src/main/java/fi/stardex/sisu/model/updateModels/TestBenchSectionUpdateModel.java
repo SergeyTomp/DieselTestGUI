@@ -4,18 +4,15 @@ import fi.stardex.sisu.annotations.Module;
 import fi.stardex.sisu.devices.Device;
 import fi.stardex.sisu.registers.stand.ModbusMapStand;
 import fi.stardex.sisu.ui.updaters.Updater;
-import fi.stardex.sisu.version.FirmwareVersion;
+import fi.stardex.sisu.util.enums.ControlsService;
 import javafx.beans.property.*;
 
-import static fi.stardex.sisu.registers.stand.ModbusMapStand.*;
-import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions;
-import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions.STAND_FM;
-import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions.STAND_FM_4_CH;
+import javax.annotation.PostConstruct;
+
+import static fi.stardex.sisu.registers.StandControlsService.StandControls.*;
 
 @Module(value = {Device.MODBUS_FLOW, Device.MODBUS_STAND})
 public class TestBenchSectionUpdateModel implements Updater {
-
-    private FirmwareVersion<FlowVersions> flowFirmwareVersion;
 
     private BooleanProperty sectionStarted = new SimpleBooleanProperty();
     private BooleanProperty fanTurnOn = new SimpleBooleanProperty();
@@ -28,6 +25,21 @@ public class TestBenchSectionUpdateModel implements Updater {
     private DoubleProperty pressure = new SimpleDoubleProperty(4d);
     private DoubleProperty backFlowOilTemperature = new SimpleDoubleProperty();
     private DoubleProperty tankOilTemperature = new SimpleDoubleProperty();
+    
+    private boolean isPaused;
+    private ControlsService controlsService;
+
+    private ModbusMapStand pumpON;
+    private ModbusMapStand pumpAuto;
+    private ModbusMapStand fanON;
+    private ModbusMapStand pressureValue;
+    private ModbusMapStand oilValue;
+    private ModbusMapStand temp_1Value;
+    private ModbusMapStand temp_2Value;
+    private ModbusMapStand targetRpmValue;
+    private ModbusMapStand factRpmValue;
+    private ModbusMapStand direction;
+    private ModbusMapStand driveON;
 
     public BooleanProperty sectionStartedProperty() {
         return sectionStarted;
@@ -63,9 +75,19 @@ public class TestBenchSectionUpdateModel implements Updater {
         return tankOilTemperature;
     }
 
-    public TestBenchSectionUpdateModel(FirmwareVersion<FlowVersions> flowFirmwareVersion) {
+    public void setControlsService(ControlsService controlsService) {
+        this.controlsService = controlsService;
+    }
 
-        this.flowFirmwareVersion = flowFirmwareVersion;
+    @PostConstruct
+    public void init() {
+
+        controlsService.controlsChangeProperty().addListener((observableValue, oldValue, newValue) -> {
+
+                isPaused = true;
+                updateRegisters();
+                isPaused = false;
+        });
     }
 
     @Override
@@ -76,84 +98,71 @@ public class TestBenchSectionUpdateModel implements Updater {
     @Override
     public void run() {
 
-        boolean isStandFMVersion = (flowFirmwareVersion.getVersions() == STAND_FM) || (flowFirmwareVersion.getVersions() == STAND_FM_4_CH);
+        if (isPaused) {
+            return;
+        }
 
-        runSyncWriteReadBooleanRegisters(isStandFMVersion ? RotationStandFM : Rotation, sectionStarted);
-
-        runSyncWriteReadBooleanRegisters(isStandFMVersion ? FanTurnOnStandFM : FanTurnOn, fanTurnOn);
-
-        runPressureRegister(isStandFMVersion ? Pressure1StandFM : Pressure1, pressure);
-
-        runTemperatureRegister(isStandFMVersion ? Temperature1StandFM : Temperature1, tankOilTemperature);
-
-        runTemperatureRegister(isStandFMVersion ? Temperature2StandFM : Temperature2, backFlowOilTemperature);
-
-        runTargetRPMRegister(isStandFMVersion ? TargetRPMStandFM : TargetRPM, targetRPM);
-
-        runRotationDirectionRegister(isStandFMVersion ? RotationDirectionStandFM : RotationDirection, rotationDirection);
-
-        runPumpRegisters(isStandFMVersion ? PumpTurnOnStandFM : PumpTurnOn, isStandFMVersion ? PumpAutoModeStandFM : PumpAutoMode, pumpAutoMode, pumpTurnOn);
-
-        runCurrentRPMRegister(isStandFMVersion ? CurrentRPMStandFM : CurrentRPM, currentRPM);
-
-        runTankOilRegister(isStandFMVersion ? TankOilLevelStandFM : TankOilLevel, tankOilLevel);
+        runBooleanRegister(driveON, sectionStarted);
+        runBooleanRegister(fanON, fanTurnOn);
+        runBooleanRegister(direction, rotationDirection);
+        runDoubleRegister(pressureValue, pressure);
+        runDoubleRegister(temp_1Value, tankOilTemperature);
+        runDoubleRegister(temp_2Value, backFlowOilTemperature);
+        runIntegerRegister(targetRpmValue, targetRPM);
+        runIntegerRegister(factRpmValue, currentRPM);
+        runIntegerRegister(oilValue, tankOilLevel);
+        runPumpButtonRegisters(pumpAuto, pumpAutoMode, pumpON, pumpTurnOn);
     }
 
-    private void runSyncWriteReadBooleanRegisters(ModbusMapStand register, BooleanProperty started) {
 
-        Boolean registerLastValue = (Boolean) register.getLastValue();
+    private void runBooleanRegister(ModbusMapStand register, BooleanProperty valueProperty) {
 
-        if (register.isSyncWriteRead())
-            register.setSyncWriteRead(false);
-        else if (registerLastValue != null){
-            started.setValue(registerLastValue);
+        if (checkIgnoreFirstRead(register)) {
+            return;
+        }
+
+        Boolean lastValue = (Boolean) register.getLastValue();
+
+        if (lastValue != null) {
+            valueProperty.setValue(lastValue);
+        }
+
+    }
+
+    private void runIntegerRegister(ModbusMapStand register, IntegerProperty valueProperty) {
+
+        if (checkIgnoreFirstRead(register)) {
+            return;
+        }
+
+        Integer lastValue = (Integer) register.getLastValue();
+
+        if (lastValue != null) {
+            valueProperty.setValue(lastValue);
         }
     }
 
-    private void runPressureRegister(ModbusMapStand register, DoubleProperty pressure) {
+    private void runDoubleRegister(ModbusMapStand register, DoubleProperty valueProperty) {
 
-        Double registerLastValue = (Double) register.getLastValue();
+        if (checkIgnoreFirstRead(register)) {
+            return;
+        }
 
-        if (registerLastValue != null) {
-            pressure.setValue(registerLastValue);
+        Double lastValue = (Double) register.getLastValue();
+
+        if (lastValue != null) {
+            valueProperty.setValue(lastValue);
         }
     }
 
-    private void runTemperatureRegister(ModbusMapStand register, DoubleProperty oilTemperature){
+    private void runPumpButtonRegisters(ModbusMapStand pumpAutoModeRegister, BooleanProperty pumpAutoMode, ModbusMapStand pumpTurnOnRegister, BooleanProperty pumpTurnOn) {
 
-        Double registerLastValue = (Double) register.getLastValue();
-
-        if (registerLastValue != null) {
-            oilTemperature.setValue(registerLastValue);
+        if (checkIgnoreFirstRead(pumpAutoModeRegister, pumpTurnOnRegister)) {
+            return;
         }
-    }
 
-    private void runTargetRPMRegister(ModbusMapStand register, IntegerProperty targetRPM) {
-
-        Integer targetRPMLastValue = (Integer) register.getLastValue();
-
-        if (register.isSyncWriteRead())
-            register.setSyncWriteRead(false);
-        else if (targetRPMLastValue != null) {
-            targetRPM.setValue(targetRPMLastValue);
-        }
-    }
-
-    private void runRotationDirectionRegister(ModbusMapStand register, BooleanProperty rotationDirection) {
-
-        Boolean rotationDirectionLastValue = (Boolean) register.getLastValue();
-
-        if (register.isSyncWriteRead())
-            register.setSyncWriteRead(false);
-        else if (rotationDirectionLastValue != null) {
-            rotationDirection.setValue(rotationDirectionLastValue);
-        }
-    }
-
-    private void runPumpRegisters(ModbusMapStand pumpTurnOnRegister, ModbusMapStand pumpAutoModeRegister, BooleanProperty pumpAutoMode, BooleanProperty pumpTurnOn) {
-
-        Boolean pumpTurnOnLastValue = (Boolean) pumpTurnOnRegister.getLastValue();
         Boolean pumpAutoModeLastValue = (Boolean) pumpAutoModeRegister.getLastValue();
+        Boolean pumpTurnOnLastValue = (Boolean) pumpTurnOnRegister.getLastValue();
 
         if (pumpAutoModeLastValue != null) {
             pumpAutoMode.setValue(pumpAutoModeLastValue);
@@ -165,21 +174,29 @@ public class TestBenchSectionUpdateModel implements Updater {
         }
     }
 
-    private void runCurrentRPMRegister(ModbusMapStand register, IntegerProperty currentRPM) {
+    private boolean checkIgnoreFirstRead(ModbusMapStand ... registers) {
 
-        Integer currentRPMLastValue = (Integer) register.getLastValue();
-
-        if (currentRPMLastValue != null) {
-            currentRPM.setValue(currentRPMLastValue);
+        for (ModbusMapStand reg: registers) {
+            if (reg.isFirstRead()) {
+                reg.setFirstRead(false);
+                return true;
+            }
         }
+        return false;
     }
 
-    private void runTankOilRegister(ModbusMapStand register, IntegerProperty tankOilLevel) {
+    private void updateRegisters() {
 
-        Integer tankOilLevelLastValue = (Integer) register.getLastValue();
-
-        if (tankOilLevelLastValue != null) {
-            tankOilLevel.setValue(tankOilLevelLastValue);
-        }
+        pumpON = PUMP_ON.getRegister();
+        pumpAuto = PUMP_AUTO.getRegister();
+        fanON = FAN_ON.getRegister();
+        pressureValue = PRESSURE.getRegister();
+        oilValue = OIL.getRegister();
+        temp_1Value = TEMP_1.getRegister();
+        temp_2Value = TEMP_1.getRegister();
+        targetRpmValue = MAIN_TARGET_RPM.getRegister();
+        factRpmValue = FACT_RPM.getRegister();
+        direction = DRIVE_DIRECTION.getRegister();
+        driveON = MAIN_DRIVE_ON.getRegister();
     }
 }

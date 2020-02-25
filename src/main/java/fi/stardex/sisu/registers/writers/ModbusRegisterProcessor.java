@@ -3,6 +3,7 @@ package fi.stardex.sisu.registers.writers;
 import fi.stardex.sisu.registers.ModbusMap;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.util.Pair;
+import fi.stardex.sisu.util.enums.ControlsService;
 import net.wimpi.modbus.ModbusException;
 
 import javax.annotation.PreDestroy;
@@ -18,7 +19,11 @@ public abstract class ModbusRegisterProcessor {
 
     protected ModbusMap[] readArray;
 
+    protected ControlsService controlsService;
+
     private Thread loopThread;
+
+    protected boolean isPaused;
 
     protected void setLoopThread(Thread loopThread) {
         this.loopThread = loopThread;
@@ -30,15 +35,27 @@ public abstract class ModbusRegisterProcessor {
         initThread();
     }
 
+    public ModbusRegisterProcessor(RegisterProvider registerProvider, ModbusMap[] readList, ControlsService controlsService) {
+        this.registerProvider = registerProvider;
+        this.readArray = readList;
+        this.controlsService = controlsService;
+        initThread();
+    }
+
     public RegisterProvider getRegisterProvider() {
         return registerProvider;
     }
 
     public boolean add(ModbusMap reg, Object value) {
+        if (reg.isIgnoreFirstRead()) {
+            reg.setFirstRead(true);
+        }
         return writeQueue.add(new Pair<>(reg, value));
     }
 
     protected abstract void initThread();
+
+    protected void setRegisterSetChangeListener(){}
 
     @PreDestroy
     private void preDestroy() {
@@ -49,8 +66,12 @@ public abstract class ModbusRegisterProcessor {
         @Override
         public void run() {
             while (!Thread.currentThread().isInterrupted()) {
-                if (!registerProvider.isConnected())
+                if (!registerProvider.isConnected()) {
                     continue;
+                }
+                if (isPaused) {
+                    continue;
+                }
                 try {
                     writeAll();
                     readAll();

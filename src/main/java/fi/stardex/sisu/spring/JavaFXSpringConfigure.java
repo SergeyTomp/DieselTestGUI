@@ -61,6 +61,7 @@ import fi.stardex.sisu.util.rescalers.Rescaler;
 import fi.stardex.sisu.util.wrappers.StatusBarWrapper;
 import fi.stardex.sisu.version.FirmwareVersion;
 import fi.stardex.sisu.version.FlowFirmwareVersion;
+import fi.stardex.sisu.version.StandFirmwareVersion;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
@@ -131,7 +132,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                  PiezoRepairModel piezoRepairModel,
                                                  ModbusRegisterProcessor ultimaModbusWriter,
                                                  MainSectionUisModel mainSectionUisModel,
-                                                 UisInjectorSectionModel uisInjectorSectionModel) {
+                                                 UisInjectorSectionModel uisInjectorSectionModel,
+                                                 TestBenchSectionUpdateModel testBenchSectionUpdateModel) {
         GUI_TypeController gui_typeController = rootLayoutController.getGui_typeController();
         gui_typeController.setRootPreferences(rootPreferences);
         gui_typeController.setMainSection(mainSection().getView());
@@ -162,6 +164,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         gui_typeController.setUltimaModbusWriter(ultimaModbusWriter);
         gui_typeController.setMainSectionUisModel(mainSectionUisModel);
         gui_typeController.setUisInjectorSectionModel(uisInjectorSectionModel);
+        gui_typeController.setTestBenchSectionUpdateModel(testBenchSectionUpdateModel);
         return gui_typeController;
     }
 
@@ -249,7 +252,9 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                                  ModbusConnect flowModbusConnect,
                                                                  ModbusConnect standModbusConnect,
                                                                  MainSectionUisModel mainSectionUisModel,
-                                                                 TabSectionModel tabSectionModel) {
+                                                                 TabSectionModel tabSectionModel,
+                                                                 UisSettingsModel uisSettingsModel,
+                                                                 GUI_TypeModel gui_typeModel) {
         TestBenchSectionController testBenchSectionController = rootLayoutController.getTestBenchSectionController();
         testBenchSectionController.setFlowModbusWriter(flowModbusWriter);
         testBenchSectionController.setStandModbusWriter(standModbusWriter);
@@ -267,6 +272,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
         testBenchSectionController.setStandModbusConnect(standModbusConnect);
         testBenchSectionController.setMainSectionUisModel(mainSectionUisModel);
         testBenchSectionController.setTabSectionModel(tabSectionModel);
+        testBenchSectionController.setUisSettingsModel(uisSettingsModel);
+        testBenchSectionController.setGui_typeModel(gui_typeModel);
         return testBenchSectionController;
     }
 
@@ -1086,11 +1093,15 @@ public class JavaFXSpringConfigure extends ViewLoader{
     @Autowired
     public DimasGuiEditionController dimasGuiEditionController(DimasGUIEditionState dimasGUIEditionState,
                                                                Preferences preferences,
-                                                               SettingsController settingsController){
+                                                               SettingsController settingsController,
+                                                               FirmwareVersion<FlowFirmwareVersion.FlowVersions> flowFirmwareVersion,
+                                                               FirmwareVersion<StandFirmwareVersion.StandVersions> standFirmwareVersion){
         DimasGuiEditionController dimasGuiEditionController = settingsController.getDimasGuiEditionController();
         dimasGuiEditionController.setDimasGUIEditionState(dimasGUIEditionState);
         dimasGuiEditionController.setI18N(i18N);
         dimasGuiEditionController.setRootPrefs(preferences);
+        dimasGuiEditionController.setFlowFirmwareVersion(flowFirmwareVersion);
+        dimasGuiEditionController.setStandFirmwareVersion(standFirmwareVersion);
         return dimasGuiEditionController;
     }
 
@@ -1466,14 +1477,14 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                        UisSettingsModel uisSettingsModel,
                                                        ModbusConnect flowModbusConnect,
                                                        FirmwareVersion<FlowFirmwareVersion.FlowVersions> flowFirmwareVersion,
-                                                       ModbusRegisterProcessor ultimaModbusWriter) {
+                                                       MainSectionUisModel mainSectionUisModel) {
         UisSettingsController uisSettingsController = (UisSettingsController) uisSettings().getController();
         uisSettingsController.setI18N(i18N);
         uisSettingsController.setRootPrefs(rootPrefs);
         uisSettingsController.setUisSettingsModel(uisSettingsModel);
         uisSettingsController.setFlowModbusConnect(flowModbusConnect);
-        uisSettingsController.setUltimaModbusWriter(ultimaModbusWriter);
         uisSettingsController.setFlowFirmwareVersion(flowFirmwareVersion);
+        uisSettingsController.setMainSectionUisModel(mainSectionUisModel);
         return uisSettingsController;
     }
 

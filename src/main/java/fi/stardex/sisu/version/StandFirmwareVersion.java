@@ -8,8 +8,6 @@ public class StandFirmwareVersion<T extends Versions> extends FirmwareVersion<T>
 
     public enum StandVersions implements Versions {
 
-        STAND, UNKNOWN, NO_VERSION
-
+        STAND, STAND_FORTE, UNKNOWN, NO_VERSION
     }
-
 }
