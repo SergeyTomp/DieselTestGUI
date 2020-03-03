@@ -66,6 +66,10 @@ class DensoCodingDataHandler {
 
         Double flowInitial = initialValues.getValue();
 
+        int minWidth = widthInitial;
+        
+        boolean overFlow = false;
+
         logger.error("4. widthInitial: {}", widthInitial);
 
         logger.error("5. flowInitial: {}", flowInitial);
@@ -92,14 +96,24 @@ class DensoCodingDataHandler {
             widthInitial = widthToCompare;
             flowInitial = flowToCompare;
 
+            if (flowToCompare > nominalFlow) { overFlow = true; }
         }
+
+        int codingPoint;
 
         if (width1 == null || width2 == null) {
-            logger.error("Return");
-            return RANDOM.nextInt(15) - 7;
-        }
 
-        int codingPoint = (int) (width1 + (nominalFlow - flow1) * (width2 - width1) / (flow2 - flow1)) - totalPulseTime;
+            codingPoint = totalPulseTime - minWidth;
+
+            if (overFlow) {
+                codingPoint = - codingPoint;
+            }
+//            logger.error("Return");
+//            return RANDOM.nextInt(15) - 7;
+        }else {
+
+            codingPoint = (int) (width1 + (nominalFlow - flow1) * (width2 - width1) / (flow2 - flow1)) - totalPulseTime;
+        }
 
         logger.error("7. codingPoint: {}", codingPoint);
 
