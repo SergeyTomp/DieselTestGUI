@@ -82,7 +82,7 @@ class DensoCodingDataHandler {
 
             logger.error("6. flowToCompare: {}", flowToCompare);
 
-            if (flowInitial < nominalFlow && flowToCompare > nominalFlow) {
+            if (flowInitial <= nominalFlow && flowToCompare >= nominalFlow) {
                 logger.error("If statement");
                 width1 = widthInitial;
                 width2 = widthToCompare;
