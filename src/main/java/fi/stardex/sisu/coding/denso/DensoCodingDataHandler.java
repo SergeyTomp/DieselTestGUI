@@ -67,7 +67,7 @@ class DensoCodingDataHandler {
         Double flowInitial = initialValues.getValue();
 
         int minWidth = widthInitial;
-        
+
         boolean overFlow = false;
 
         logger.error("4. widthInitial: {}", widthInitial);

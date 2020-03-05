@@ -255,7 +255,7 @@ public class CrTestManager implements TestManager {
                 setCodingResults(BoschCoding.calculate(flowReportModel.getResultObservableMap()));
                 break;
             case "Siemens":
-                setCodingResults(SiemensCoding.calculate(flowReportModel.getResultObservableMap()));
+                setCodingResults(SiemensCoding.calculate(flowReportModel.getResultObservableMap(), mainSectionModel.injectorProperty().get()));
                 break;
             case "Denso":
                 setCodingResults(DensoCoding.calculate());

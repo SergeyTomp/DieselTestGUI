@@ -1,6 +1,7 @@
 package fi.stardex.sisu.coding.siemens;
 
 import fi.stardex.sisu.model.cr.FlowReportModel;
+import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import javafx.collections.ObservableMap;
 import org.slf4j.Logger;
@@ -17,15 +18,32 @@ public class SiemensCoding {
     private static final String NO_CODING = "NO_CODING";
     private static Map<InjectorTest, List<Double>> mapOfResults = new HashMap<>();
 
-    private static final Map<String, Integer> TEST_COEFF = new HashMap<>() {{
-        put("Maximum Load", 1);
-        put("Part Load", 2);
-        put("Idle", 3);
-        put("Pre-injection", 4);
-        put("Check Sum", 5);
-    }};
+    private static final String MAXIMUM_LOAD = "Maximum Load";
+    private static final String PART_LOAD = "Part Load";
+    private static final String IDLE = "Idle";
+    private static final String PRE_INJECTION = "Pre-injection";
+    private static final String CHECK_SUM = "Check Sum";
 
-    public static List<String> calculate(ObservableMap<InjectorTest, FlowReportModel.FlowResult> mapOfFlowTestResults) {
+    private static final Map<String, Integer> TEST_COEFF = new HashMap<>();
+    static{ TEST_COEFF.put(CHECK_SUM, 5); }
+
+    public static List<String> calculate(ObservableMap<InjectorTest, FlowReportModel.FlowResult> mapOfFlowTestResults, Injector injector) {
+
+        switch (injector.getCodetype()) {
+
+            case 2:
+                TEST_COEFF.put(MAXIMUM_LOAD, 1);
+                TEST_COEFF.put(PRE_INJECTION, 2);
+                TEST_COEFF.put(PART_LOAD, 3);
+                TEST_COEFF.put(IDLE, 4);
+                break;
+            case 1:
+            default:
+                TEST_COEFF.put(MAXIMUM_LOAD, 1);
+                TEST_COEFF.put(PART_LOAD, 2);
+                TEST_COEFF.put(IDLE, 3);
+                TEST_COEFF.put(PRE_INJECTION, 4);
+        }
 
 
         Map<InjectorTest, List<Double>> temp = new HashMap<>();
@@ -71,7 +89,7 @@ public class SiemensCoding {
 
         List<Integer> checkSum = addCheckSum(convertedMap);
 
-        convertedMap.put("Check Sum", checkSum);
+        convertedMap.put(CHECK_SUM, checkSum);
 
         logger.debug("4. Check Sum added: {}", convertedMap);
 
@@ -144,27 +162,23 @@ public class SiemensCoding {
 
         List<String> codeResult = new ArrayList<>();
 
+        TreeMap<String, List<Integer>> sortedMap = new TreeMap<>(Comparator.comparingInt(TEST_COEFF::get));
+        sortedMap.putAll(preparedMap);
+        sortedMap.remove(CHECK_SUM);
+        StringBuilder codeString = new StringBuilder();
+
         for (int i = 0; i < 4; i++) {
 
-            StringBuilder codeString = new StringBuilder();
-            boolean allTestsPased = allTestPassed(i);
+            codeString.append(getCheckSumCode(preparedMap.get(CHECK_SUM).get(i)));
 
-            int maximumLoadValue = preparedMap.get("Maximum Load").get(i);
-            int emissionPointValue = preparedMap.get("Part Load").get(i);
-            int idleValue = preparedMap.get("Idle").get(i);
-            int preInjectionValue = preparedMap.get("Pre-injection").get(i);
-            int checkSum = preparedMap.get("Check Sum").get(i);
+            for (Map.Entry<String, List<Integer>> entry : sortedMap.entrySet()) {
 
-            String checkSumCode = getCheckSumCode(checkSum);
-
-            codeString.append(checkSumCode)
-                    .append(maximumLoadValue != -99 ? getResultSymbol(maximumLoadValue) : "")
-                    .append(emissionPointValue != -99 ? getResultSymbol(emissionPointValue) : "")
-                    .append(idleValue != -99 ? getResultSymbol(idleValue) : "")
-                    .append(preInjectionValue != -99  ? getResultSymbol(preInjectionValue) : "")
-                    .append(!allTestsPased ? " *" : "");
-
+                Integer flowValue = entry.getValue().get(i);
+                codeString.append(flowValue != -99 ? getResultSymbol(flowValue) : "");
+            }
+            codeString.append(!allTestPassed(i) ? " *" : "");
             codeResult.add(codeString.toString());
+            codeString.setLength(0);
         }
         return getCode(codeResult);
     }
