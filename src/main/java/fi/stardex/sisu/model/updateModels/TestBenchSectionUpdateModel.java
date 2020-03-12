@@ -193,7 +193,7 @@ public class TestBenchSectionUpdateModel implements Updater {
         pressureValue = PRESSURE.getRegister();
         oilValue = OIL.getRegister();
         temp_1Value = TEMP_1.getRegister();
-        temp_2Value = TEMP_1.getRegister();
+        temp_2Value = TEMP_2.getRegister();
         targetRpmValue = MAIN_TARGET_RPM.getRegister();
         factRpmValue = FACT_RPM.getRegister();
         direction = DRIVE_DIRECTION.getRegister();
