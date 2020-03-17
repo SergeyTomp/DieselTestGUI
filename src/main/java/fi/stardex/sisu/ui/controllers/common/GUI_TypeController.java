@@ -289,7 +289,7 @@ public class GUI_TypeController {
 
         changeToCRInj();
     }
-    //TODO do not forget to hide/show DIMASCheckBox after implementation
+
     private void changeToUIS() {
 
         clearSections();
@@ -306,9 +306,7 @@ public class GUI_TypeController {
         activeChangeableSection = injectorSectionUis;
         activeTabSection = uisTabSection;
 
-        /**We do not need here to send UIS_to_CR_pulseControlSwitch == 1 to hardware due to not defined mode indeed.
-         * In case INTERNAL RPM mode selected at settings tab UIS_to_CR_pulseControlSwitch == 0 should be sent despite UIS is chosen.
-         * Correct value is sent directly from UisInjectorSectionController*/
+        ultimaModbusWriter.add(UIS_to_CR_pulseControlSwitch, 1);
 
         logger.info("Changed to UIS");
     }

@@ -57,7 +57,6 @@ public class UisSettingsController {
     private static final String PREF_KEY_FLOW = "checkBoxFlowVisibleSelected";
     private static final String PREF_KEY_PRESSURE = "pressureSensorSelected";
     private static final String PREF_KEY_OFFSET = "angleOffsetSelected";
-    private static final String PREF_KEY_RPM = "rpmSourceSelected";
     private static final String PREF_KEY_RANGE_VIEW = "flowOutputDimensionSelected";
     private static final String PREF_KEY_SLAVE_RPM = "slaveRpmSelected";
 
@@ -96,9 +95,8 @@ public class UisSettingsController {
 
         rpmSourceComboBox.getItems().setAll(RpmSource.values());
         rpmSourceComboBox.getItems().sort(Comparator.comparingInt(RpmSource::getOrder));
-        rpmSourceComboBox.getSelectionModel().select(RpmSource.valueOf(rootPrefs.get(PREF_KEY_RPM, EXTERNAL.name())));
-        uisSettingsModel.rpmSourceProperty().setValue(rpmSourceComboBox.getSelectionModel().getSelectedItem());
-        rpmSourceComboBox.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> rootPrefs.put(PREF_KEY_RPM, newValue.name()));
+        rpmSourceComboBox.getSelectionModel().select(EXTERNAL);
+        uisSettingsModel.rpmSourceProperty().setValue(EXTERNAL);
         uisSettingsModel.rpmSourceProperty().bind(rpmSourceComboBox.getSelectionModel().selectedItemProperty());
 
         languagesComboBox.setItems(FXCollections.observableArrayList(Locales.values()));
