@@ -38,7 +38,7 @@ public class PumpModel {
 
     public void initPumpList() {
 
-        pumpObservableListProperty.setValue(FXCollections.observableArrayList(pumpRepository.findAllByManufacturerPumpAndCustom(
+        pumpObservableListProperty.setValue(FXCollections.observableArrayList(pumpRepository.findAllByManufacturerAndCustom(
                 manufacturerPumpModel.manufacturerPumpProperty().get(),
                 customPumpState.customPumpProperty().get()
         )));

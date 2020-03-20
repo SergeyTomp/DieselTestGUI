@@ -151,7 +151,7 @@ public class InjectorUisTest implements Test, ChangeListener<Boolean> {
     @Override public Integer getId() {
         return id;
     }
-    @Override public InjectorUIS getInjector() {
+    @Override public InjectorUIS getModel() {
         return injector;
     }
     @Override public InjectorUisTestName getTestName() {
@@ -163,13 +163,13 @@ public class InjectorUisTest implements Test, ChangeListener<Boolean> {
     @Override public Integer getMotorSpeed() {
         return motorSpeed;
     }
-    @Override public Integer getSettedPressure() {
+    @Override public Integer getTargetPressure() {
         return settedPressure;
     }
     @Override public Integer getAdjustingTime() {
         return adjustingTime;
     }
-    @Override public Integer getMeasurementTime() {
+    @Override public Integer getMeasuringTime() {
         return measurementTime;
     }
     @Override public Integer getTotalPulseTime1() {
@@ -219,13 +219,13 @@ public class InjectorUisTest implements Test, ChangeListener<Boolean> {
     @Override public void setVAP(VAP vap) {
         this.voltAmpereProfile = (InjectorUisVAP)vap;
     }
-    @Override public void setSettedPressure(Integer settedPressure) {
+    @Override public void setTargetPressure(Integer settedPressure) {
         this.settedPressure =settedPressure;
     }
     @Override public void setAdjustingTime(Integer adjustingTime) {
         this.adjustingTime = adjustingTime;
     }
-    @Override public void setMeasurementTime(Integer measurementTime) {
+    @Override public void setMeasuringTime(Integer measurementTime) {
         this.measurementTime = measurementTime;
     }
     @Override public void setTotalPulseTime1(Integer totalPulseTime1) {

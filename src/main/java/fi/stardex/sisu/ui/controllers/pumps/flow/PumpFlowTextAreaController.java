@@ -103,7 +103,7 @@ public class PumpFlowTextAreaController {
         Pump pump = pumpModel.pumpProperty().get();
         PumpTest pumpTest = pumpTestModel.pumpTestProperty().get();
 
-        sb.append(oem.get()).append(pump.getManufacturerPump()).append(NEW_LINE)
+        sb.append(oem.get()).append(pump.getManufacturer()).append(NEW_LINE)
                 .append(this.pump.get()).append(pump.getPumpCode()).append(NEW_LINE)
                 .append(type.get()).append(pump.getPumpInfo()).append(NEW_LINE)
                 .append(car.get());

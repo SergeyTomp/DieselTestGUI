@@ -16,7 +16,7 @@ public class UisTestService implements TestService {
     }
 
     @Override
-    public List<InjectorUisTest> findAllByInjector(Model model) {
+    public List<InjectorUisTest> findAllByModel(Model model) {
         return injectorUisTestRepository.findAllByInjector(model);
     }
 

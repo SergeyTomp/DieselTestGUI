@@ -296,7 +296,7 @@ public class PumpReportModel {
 
         @Override
         public String getMainColumn() {
-            return pumpTest.get().getPumpTestName().toString();
+            return pumpTest.get().getTestName().toString();
         }
 
         @Override

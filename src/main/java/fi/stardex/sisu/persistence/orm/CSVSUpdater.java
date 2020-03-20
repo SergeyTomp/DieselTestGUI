@@ -5,7 +5,6 @@ import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.persistence.orm.cr.inj.VoltAmpereProfile;
 import fi.stardex.sisu.persistence.orm.interfaces.*;
-import fi.stardex.sisu.persistence.orm.uis.InjectorUIS;
 import fi.stardex.sisu.persistence.orm.uis.InjectorUisTest;
 import fi.stardex.sisu.persistence.orm.uis.InjectorUisVAP;
 import fi.stardex.sisu.persistence.repos.ManufacturerRepository;
@@ -20,7 +19,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 
 import javax.annotation.PreDestroy;
-import javax.sql.rowset.spi.SyncResolver;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
@@ -183,10 +181,10 @@ public class CSVSUpdater {
                     try{
                         String vap = test.getVoltAmpereProfile() == null ? "" : test.getVoltAmpereProfile().getProfileName();
                         writer.append(test.getId().toString()).append(COMMA_DELIMITER)
-                                .append(test.getInjector().getModelCode()).append(COMMA_DELIMITER)
+                                .append(test.getModel().getModelCode()).append(COMMA_DELIMITER)
                                 .append(test.getTestName().getName()).append(COMMA_DELIMITER)
                                 .append(test.getMotorSpeed() == null ? "" : test.getMotorSpeed().toString()).append(COMMA_DELIMITER)
-                                .append(test.getSettedPressure() == null ? "" : test.getSettedPressure().toString()).append(COMMA_DELIMITER)
+                                .append(test.getTargetPressure() == null ? "" : test.getTargetPressure().toString()).append(COMMA_DELIMITER)
                                 .append(test.getAngle_1() == null ? "" : test.getAngle_1().toString()).append(COMMA_DELIMITER)
                                 .append(test.getAngle_2() == null ? "" : test.getAngle_2().toString()).append(COMMA_DELIMITER)
                                 .append(test.getDoubleCoilOffset() == null ? "" : test.getDoubleCoilOffset().toString()).append(COMMA_DELIMITER)
@@ -195,7 +193,7 @@ public class CSVSUpdater {
                                 .append(test.getNominalFlow() == null ? "" : test.getNominalFlow().toString()).append(COMMA_DELIMITER)
                                 .append(test.getFlowRange() == null ? "" : test.getFlowRange().toString()).append(COMMA_DELIMITER)
                                 .append(test.getAdjustingTime() == null ? "" : test.getAdjustingTime().toString()).append(COMMA_DELIMITER)
-                                .append(test.getMeasurementTime() == null ? "" : test.getMeasurementTime().toString()).append(COMMA_DELIMITER)
+                                .append(test.getMeasuringTime() == null ? "" : test.getMeasuringTime().toString()).append(COMMA_DELIMITER)
                                 .append(vap).append(COMMA_DELIMITER)
                                 .append(test.getBip() == null ? "" : test.getBip().toString()).append(COMMA_DELIMITER)
                                 .append(test.getBipRange() == null ? "" : test.getBipRange().toString()).append(COMMA_DELIMITER)

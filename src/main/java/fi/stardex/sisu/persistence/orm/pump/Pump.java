@@ -22,7 +22,7 @@ public class Pump implements Model {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "manufacturer")
-    private ManufacturerPump manufacturerPump;
+    private ManufacturerPump manufacturer;
 
     @Column
     private boolean custom;
@@ -87,10 +87,6 @@ public class Pump implements Model {
         return pumpRegulatorConfig;
     }
 
-    public ManufacturerPump getManufacturerPump() {
-        return manufacturerPump;
-    }
-
     public PumpPressureControl getPumpPressureControl() {
         return pumpPressureControl;
     }
@@ -115,7 +111,7 @@ public class Pump implements Model {
     }
 
     @Override
-    public Manufacturer getManufacturer() {
-        return null;
+    public ManufacturerPump getManufacturer() {
+        return manufacturer;
     }
 }

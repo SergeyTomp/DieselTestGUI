@@ -168,7 +168,7 @@ public class UisTestManager implements TestManager {
         if (test != null) {
             double multiplier = mainSectionUisModel.multiplierProperty().get().getMultiplier();
             int adjustingTime = (int)(test.getAdjustingTime() * multiplier);
-            int measurementTime = (int)(test.getMeasurementTime() * multiplier);
+            int measurementTime = (int)(test.getMeasuringTime() * multiplier);
             /**Uncomment string below to set short timings for debugging */
 //            adjustingTime = measurementTime = (int)(5 * multiplier);
             initialAdjustingTime.setValue(adjustingTime);

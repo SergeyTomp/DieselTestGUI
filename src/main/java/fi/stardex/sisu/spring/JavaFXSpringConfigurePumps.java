@@ -1,11 +1,14 @@
 package fi.stardex.sisu.spring;
 
-import fi.stardex.sisu.model.*;
+import fi.stardex.sisu.model.GUI_TypeModel;
+import fi.stardex.sisu.model.LanguageModel;
+import fi.stardex.sisu.model.PressureSensorModel;
+import fi.stardex.sisu.model.RegulationModesModel;
 import fi.stardex.sisu.model.pump.*;
-import fi.stardex.sisu.model.uis.UisFlowModel;
-import fi.stardex.sisu.model.uis.UisInjectorSectionModel;
+import fi.stardex.sisu.model.uis.CustomProducerDialogModel;
 import fi.stardex.sisu.model.updateModels.DifferentialFmUpdateModel;
 import fi.stardex.sisu.model.updateModels.HighPressureSectionUpdateModel;
+import fi.stardex.sisu.persistence.repos.pump.PumpProducerService;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.CustomPumpState;
 import fi.stardex.sisu.states.PumpHighPressureSectionPwrState;
@@ -14,15 +17,12 @@ import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.ui.controllers.pumps.PumpInfoController;
 import fi.stardex.sisu.ui.controllers.pumps.PumpReportController;
 import fi.stardex.sisu.ui.controllers.pumps.PumpTabSectionController;
+import fi.stardex.sisu.ui.controllers.pumps.dialogs.CustomProducerPumpDialogController;
 import fi.stardex.sisu.ui.controllers.pumps.flow.PumpBeakerController;
 import fi.stardex.sisu.ui.controllers.pumps.flow.PumpFlowController;
 import fi.stardex.sisu.ui.controllers.pumps.flow.PumpFlowTextAreaController;
 import fi.stardex.sisu.ui.controllers.pumps.main.*;
 import fi.stardex.sisu.ui.controllers.pumps.pressure.*;
-import fi.stardex.sisu.ui.controllers.uis.tabs.UisBeakerController;
-import fi.stardex.sisu.ui.controllers.uis.tabs.UisFlowController;
-import fi.stardex.sisu.ui.controllers.uis.tabs.UisTabSectionController;
-import fi.stardex.sisu.ui.updaters.UisFlowUpdater;
 import fi.stardex.sisu.util.enums.BeakerType;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.rescalers.Rescaler;
@@ -72,13 +72,17 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
                                                          PumpModel pumpModel,
                                                          PumpReportModel pumpReportModel,
                                                          PumpsStartButtonState pumpsStartButtonState,
-                                                         GUI_TypeModel gui_typeModel) {
+                                                         GUI_TypeModel gui_typeModel,
+                                                         CustomPumpProducerDialogModel customPumpProducerDialogModel,
+                                                         PumpProducerService pumpProducerService) {
         PumpsOEMListController pumpsOEMListController = mainSectionPumpsController.getPumpsOEMListController();
         pumpsOEMListController.setManufacturerPumpModel(manufacturerPumpModel);
         pumpsOEMListController.setPumpModel(pumpModel);
         pumpsOEMListController.setPumpReportModel(pumpReportModel);
         pumpsOEMListController.setPumpsStartButtonState(pumpsStartButtonState);
         pumpsOEMListController.setGui_typeModel(gui_typeModel);
+        pumpsOEMListController.setCustomPumpProducerDialogModel(customPumpProducerDialogModel);
+        pumpsOEMListController.setProducerService(pumpProducerService);
         return pumpsOEMListController;
     }
 
@@ -392,5 +396,27 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
         pumpHighPressureSectionPwrController.setPumpHighPressureSectionPwrState(pumpHighPressureSectionPwrState);
         pumpHighPressureSectionPwrController.setGui_typeModel(gui_typeModel);
         return pumpHighPressureSectionPwrController;
+    }
+
+    @Bean
+    public ViewHolder customProducerPumpDialog() {
+        return loadView("/fxml/pumps/dialogs/CustomProducerPumpDialog.fxml");
+    }
+
+    @Bean
+    @Autowired
+    public CustomProducerPumpDialogController customProducerPumpDialogController(GUI_TypeModel guiTypeModel,
+                                                                                 I18N i18N,
+                                                                                 PumpProducerService pumpProducerService,
+                                                                                 CustomPumpProducerDialogModel customPumpProducerDialogModel,
+                                                                                 ManufacturerPumpModel manufacturerPumpModel) {
+        CustomProducerPumpDialogController customProducerPumpDialogController = (CustomProducerPumpDialogController)customProducerPumpDialog().getController();
+        customProducerPumpDialogController.setCustomPumpProducerDialogModel(customPumpProducerDialogModel);
+        customProducerPumpDialogController.setGuiTypeModel(guiTypeModel);
+        customProducerPumpDialogController.setI18N(i18N);
+        customProducerPumpDialogController.setPumpProducerService(pumpProducerService);
+        customProducerPumpDialogController.setDialogViev(customProducerPumpDialog().getView());
+        customProducerPumpDialogController.setManufacturerPumpModel(manufacturerPumpModel);
+        return customProducerPumpDialogController;
     }
 }

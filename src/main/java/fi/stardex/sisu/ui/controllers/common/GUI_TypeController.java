@@ -278,8 +278,6 @@ public class GUI_TypeController {
         activeChangeableSection = pumpSection;
         activeTabSection = tabSectionPumps;
 
-        manufacturerPumpModel.initManufacturerPumpList();
-
         ultimaModbusWriter.add(UIS_to_CR_pulseControlSwitch, 0);
 
         logger.info("Changed to CrPump");

@@ -487,7 +487,7 @@ public class UisInjectorSectionController {
             Integer angle_1 = test.getAngle_1();
             Integer angle_2 = test.getAngle_2();
             Integer shift = newValue.getShift();
-            Integer settedPressure = newValue.getSettedPressure();
+            Integer settedPressure = newValue.getTargetPressure();
 
             widthSpinner.getValueFactory().setValue(totalPulseTime1);
             angle1Spinner.getValueFactory().setValue(angle_1);

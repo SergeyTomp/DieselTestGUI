@@ -263,7 +263,7 @@ public class CustomInjectorUisDialogController {
 
         Model injectorForUpdate = mainSectionUisModel.modelProperty().get();
         injectorForUpdate.setVAP(voapListView.getSelectionModel().getSelectedItem());
-        List<InjectorUisTest> injectorTests = uisTestService.findAllByInjector(injectorForUpdate);
+        List<InjectorUisTest> injectorTests = uisTestService.findAllByModel(injectorForUpdate);
         injectorTests.clear();
         injectorTests.addAll(new LinkedList<>());
         uisModelService.save(injectorForUpdate);

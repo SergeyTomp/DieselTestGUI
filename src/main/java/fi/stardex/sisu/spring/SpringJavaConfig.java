@@ -26,9 +26,7 @@ import fi.stardex.sisu.persistence.repos.ManufacturerRepository;
 import fi.stardex.sisu.persistence.repos.cr.InjectorTestRepository;
 import fi.stardex.sisu.persistence.repos.cr.InjectorsRepository;
 import fi.stardex.sisu.persistence.repos.cr.VoltAmpereProfileRepository;
-import fi.stardex.sisu.persistence.repos.pump.ManufacturerPumpRepository;
-import fi.stardex.sisu.persistence.repos.pump.PumpRepository;
-import fi.stardex.sisu.persistence.repos.pump.PumpTestRepository;
+import fi.stardex.sisu.persistence.repos.pump.*;
 import fi.stardex.sisu.persistence.repos.uis.*;
 import fi.stardex.sisu.registers.ModbusMap;
 import fi.stardex.sisu.registers.RegisterProvider;
@@ -764,6 +762,24 @@ public class SpringJavaConfig {
         return pumpTestManager;
     }
 
+    @Bean
+    @Autowired
+    public PumpModelService pumpModelService(PumpRepository pumpRepository) {
+        return new PumpModelService(pumpRepository);
+    }
+
+    @Bean
+    @Autowired
+    public PumpProducerService pumpProducerService(ManufacturerPumpRepository manufacturerPumpRepository) {
+        return new PumpProducerService(manufacturerPumpRepository);
+    }
+
+    @Bean
+    @Autowired
+    public PumpTestService pumpTestService(PumpTestRepository pumpTestRepository) {
+        return new PumpTestService(pumpTestRepository);
+    }
+
     // --------------------------------------State-----------------------------------------------
 
     @Bean
@@ -814,9 +830,8 @@ public class SpringJavaConfig {
     // --------------------------------------Model-----------------------------------------------
 
     @Bean
-    @Autowired
-    public ManufacturerPumpModel manufacturerPumpModel(ManufacturerPumpRepository manufacturerPumpRepository) {
-        return new ManufacturerPumpModel(manufacturerPumpRepository);
+    public ManufacturerPumpModel manufacturerPumpModel() {
+        return new ManufacturerPumpModel();
     }
 
     @Bean
@@ -1014,6 +1029,11 @@ public class SpringJavaConfig {
     @Bean
     public PumpFlowTemperaturesModel pumpBackFlowTemperaturesModel(){
         return new PumpFlowTemperaturesModel();
+    }
+
+    @Bean
+    public CustomPumpProducerDialogModel customPumpProducerDialogModel() {
+        return new CustomPumpProducerDialogModel();
     }
 
     @Bean

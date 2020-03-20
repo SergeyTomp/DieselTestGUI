@@ -468,7 +468,7 @@ public class PDFService {
         }
 
         if (model instanceof Pump) {
-            manufacturer = ((Pump) model).getManufacturerPump().toString();
+            manufacturer = ((Pump) model).getManufacturer().toString();
             infoLine = pumpInfoTitle.getValue();
         }
         /*

@@ -24,7 +24,7 @@ class PumpModelTest extends ModelTest{
                       @Autowired PumpModel pumpModel,
                       TestReporter testReporter) {
 
-        List<Pump> temp = pumpRepository.findAllByManufacturerPumpAndCustom(new ManufacturerPump("Delphi", false), false);
+        List<Pump> temp = pumpRepository.findAllByManufacturerAndCustom(new ManufacturerPump("Delphi", false), false);
 
         assumeFalse(temp.isEmpty());
 

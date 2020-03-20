@@ -363,7 +363,7 @@ public class MainSectionUisController {
                         || tabSectionModel.piezoTabIsShowingProperty().get(), startToggleButton);
 
                 /**MeasurementTime availability check below is necessary for further Pump_GUI covering - measurement period is not used for some Pump tests */
-                Optional.ofNullable(newValue.getMeasurementTime()).ifPresentOrElse(initialTime
+                Optional.ofNullable(newValue.getMeasuringTime()).ifPresentOrElse(initialTime
                         -> showMeasurementTime(true), () -> showMeasurementTime(false));
             }
 
@@ -537,7 +537,7 @@ public class MainSectionUisController {
         Task<List<? extends Test>> task = new Task<>() {
             @Override
             protected List<? extends Test> call() {
-                return uisTestService.findAllByInjector(mainSectionUisModel.modelProperty().get());
+                return uisTestService.findAllByModel(mainSectionUisModel.modelProperty().get());
             }
         };
 

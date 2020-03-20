@@ -204,7 +204,7 @@ public class PumpTestManager implements TestManager{
             runNextTest();
         }else{
 
-            String testName = pumpTestModel.pumpTestProperty().get().getPumpTestName().toString();
+            String testName = pumpTestModel.pumpTestProperty().get().getTestName().toString();
             switch (testName) {
                 case "SCV Calibration":
                     runScvCalibrationTest();
@@ -333,7 +333,7 @@ public class PumpTestManager implements TestManager{
             if (selectedTestIndex < includedAutoTestsLength - 1) {
 
                 selectNextTest(selectedTestIndex);
-                String testName = pumpTestModel.pumpTestProperty().get().getPumpTestName().toString();
+                String testName = pumpTestModel.pumpTestProperty().get().getTestName().toString();
 
                 switch (testName) {
                     case "SCV Calibration":

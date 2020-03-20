@@ -222,9 +222,9 @@ public class CustomTestUisDialogController {
         InjectorUisTest test = (InjectorUisTest)mainSectionUisModel.injectorTestProperty().get();
 
         test.setMotorSpeed(getInteger(rpmTF));
-        test.setSettedPressure(getInteger(barTF));
+        test.setTargetPressure(getInteger(barTF));
         test.setAdjustingTime(getInteger(adjTimeTF));
-        test.setMeasurementTime(getInteger(measureTimeTF));
+        test.setMeasuringTime(getInteger(measureTimeTF));
         test.setTotalPulseTime1(getInteger(width_1_TF));
         test.setTotalPulseTime2(getInteger(width_2_TF));
         test.setNominalFlow(getDouble(nominalTF));
@@ -268,7 +268,7 @@ public class CustomTestUisDialogController {
                     .filter(testName -> (!testName.getName().equals("BIP test")) || (injectorSubType == SINGLE_COIL))
                     .collect(Collectors.toList()));
 
-            List<InjectorUisTest> injectorTests = uisTestService.findAllByInjector(mainSectionUisModel.modelProperty().get());
+            List<InjectorUisTest> injectorTests = uisTestService.findAllByModel(mainSectionUisModel.modelProperty().get());
 
             if (injectorTests != null) {
                 injectorTests.forEach(injectorTest -> testComboBox.getItems().remove(injectorTest.getTestName())); }
@@ -283,10 +283,10 @@ public class CustomTestUisDialogController {
             InjectorUisTest injectorTest = (InjectorUisTest)mainSectionUisModel.injectorTestProperty().get();
 
             rpmTF.setText(getStringFromInteger(InjectorUisTest::getMotorSpeed, injectorTest));
-            barTF.setText(getStringFromInteger(InjectorUisTest::getSettedPressure, injectorTest));
+            barTF.setText(getStringFromInteger(InjectorUisTest::getTargetPressure, injectorTest));
             rackPositionTF.setText(getStringFromInteger(InjectorUisTest::getRackPosition, injectorTest));
             adjTimeTF.setText(getStringFromInteger(InjectorUisTest::getAdjustingTime, injectorTest));
-            measureTimeTF.setText(getStringFromInteger(InjectorUisTest::getMeasurementTime, injectorTest));
+            measureTimeTF.setText(getStringFromInteger(InjectorUisTest::getMeasuringTime, injectorTest));
             width_1_TF.setText(getStringFromInteger(InjectorUisTest::getTotalPulseTime1, injectorTest));
             width_2_TF.setText(getStringFromInteger(InjectorUisTest::getTotalPulseTime2, injectorTest));
             offsetTF.setText(getStringFromInteger(InjectorUisTest::getShift, injectorTest));

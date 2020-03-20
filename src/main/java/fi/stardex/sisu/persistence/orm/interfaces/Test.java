@@ -6,12 +6,12 @@ public interface Test {
 
     Integer getId();
     Name getTestName();
-    Model getInjector();
+    Model getModel();
     VAP getVoltAmpereProfile();
     Integer getMotorSpeed();
-    Integer getSettedPressure();
+    Integer getTargetPressure();
     Integer getAdjustingTime();
-    Integer getMeasurementTime();
+    Integer getMeasuringTime();
     Integer getTotalPulseTime1();
     Integer getTotalPulseTime2();
     Double getNominalFlow();
@@ -21,9 +21,9 @@ public interface Test {
     BooleanProperty includedProperty();
     void setVAP(VAP vap);
     void setMotorSpeed(Integer motorSpeed);
-    void setSettedPressure(Integer settedPressure);
+    void setTargetPressure(Integer settedPressure);
     void setAdjustingTime(Integer adjustingTime);
-    void setMeasurementTime(Integer measurementTime);
+    void setMeasuringTime(Integer measurementTime);
     void setTotalPulseTime1(Integer totalPulseTime1);
     void setTotalPulseTime2(Integer totalPulseTime2);
     void setNominalFlow(Double nominalFlow);
