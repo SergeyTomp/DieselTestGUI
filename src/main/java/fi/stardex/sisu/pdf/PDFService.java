@@ -336,14 +336,17 @@ public class PDFService {
             List<String> textColumns = result.getValueColumns();
             List<Double> numericDataColumns = result.getNumericDataColumns();
 
-            for (String textResult : textColumns) {
-                cell = row.createCell(textResult);
-                if (numericDataColumns != null) {
-                    int i = textColumns.indexOf(textResult);
-                    Color color = getColorCellOfResult(numericDataColumns.get(i), result);
-                    cell.setFillColor(color);
+            if (textColumns != null) {
+                for (String textResult : textColumns) {
+                    cell = row.createCell(textResult);
+                    if (numericDataColumns != null) {
+                        int i = textColumns.indexOf(textResult);
+                        Color color = getColorCellOfResult(numericDataColumns.get(i), result);
+                        cell.setFillColor(color);
+                    }
                 }
             }
+
             setCellSettings(baseTable);
         }
     }
