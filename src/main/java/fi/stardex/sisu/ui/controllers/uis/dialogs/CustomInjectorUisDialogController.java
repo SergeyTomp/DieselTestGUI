@@ -122,7 +122,6 @@ public class CustomInjectorUisDialogController {
                 dialogStage.setScene(new Scene(dialogViev));
                 dialogStage.setResizable(false);
                 dialogStage.initModality(Modality.APPLICATION_MODAL);
-                dialogStage.setTitle(mainSectionUisModel.customModelOperationProperty().get().getTitle() + "injector");
                 dialogStage.setOnCloseRequest(event -> customModelDialogModel.cancelProperty().setValue(new Object()));
             }
             switch (mainSectionUisModel.customModelOperationProperty().get()) {
@@ -136,6 +135,7 @@ public class CustomInjectorUisDialogController {
                     setEdit();
                     break;
             }
+            dialogStage.setTitle(mainSectionUisModel.customModelOperationProperty().get().getTitle() + "injector");
             dialogStage.show();
         });
 

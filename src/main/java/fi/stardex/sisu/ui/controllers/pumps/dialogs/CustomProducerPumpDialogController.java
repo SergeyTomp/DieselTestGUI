@@ -71,7 +71,6 @@ public class CustomProducerPumpDialogController {
                 dialogStage.setScene(new Scene(dialogViev));
                 dialogStage.setResizable(false);
                 dialogStage.initModality(Modality.APPLICATION_MODAL);
-                dialogStage.setTitle(manufacturerPumpModel.customProducerOperationProperty().get().getTitle() + "manufacturer");
                 dialogStage.setOnCloseRequest(event -> customPumpProducerDialogModel.cancelProperty().setValue(new Object()));
             }
             switch (manufacturerPumpModel.customProducerOperationProperty().get()) {
@@ -82,6 +81,7 @@ public class CustomProducerPumpDialogController {
                     setDelete();
                     break;
             }
+            dialogStage.setTitle(manufacturerPumpModel.customProducerOperationProperty().get().getTitle() + "manufacturer");
             dialogStage.show();
         });
 
@@ -111,7 +111,7 @@ public class CustomProducerPumpDialogController {
     private void create() {
 
         ManufacturerPump newManufacturer = new ManufacturerPump();
-        newManufacturer.setManufacturerName(nameTF.getText() + "_U");
+        newManufacturer.setManufacturerName(nameTF.getText() + "_P");
 //        newManufacturer.setDisplayOrder(manufacturerPumpModel.getManufacturerPumpObservableList().size() + 1);
         newManufacturer.setCustom(true);
 
@@ -148,5 +148,6 @@ public class CustomProducerPumpDialogController {
         nameTF.setDisable(true);
         nameLabel.setVisible(false);
         nameTF.setText(manufacturerPumpModel.manufacturerPumpProperty().get().getManufacturerName());
+        notUniqueLabel.setVisible(false);
     }
 }

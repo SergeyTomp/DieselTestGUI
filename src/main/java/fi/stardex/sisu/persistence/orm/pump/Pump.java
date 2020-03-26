@@ -1,8 +1,6 @@
 package fi.stardex.sisu.persistence.orm.pump;
 
-import fi.stardex.sisu.persistence.orm.Manufacturer;
 import fi.stardex.sisu.persistence.orm.interfaces.Model;
-import fi.stardex.sisu.persistence.orm.interfaces.VAP;
 import fi.stardex.sisu.util.enums.pump.PumpPressureControl;
 import fi.stardex.sisu.util.enums.pump.PumpRegulatorConfig;
 import fi.stardex.sisu.util.enums.pump.PumpRegulatorType;
@@ -11,24 +9,26 @@ import fi.stardex.sisu.util.enums.pump.PumpRotation;
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "pump")
+@NamedEntityGraph(name = "Pump.allLazy", attributeNodes = {@NamedAttributeNode("manufacturer")})
 public class Pump implements Model {
 
     @Id
     @Column(name = "pump_code")
     private String pumpCode;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "manufacturer")
     private ManufacturerPump manufacturer;
 
     @Column
-    private boolean custom;
+    private Boolean custom;
 
     @Column(name = "feed_pressure", nullable = false)
-    private double feedPressure;
+    private Double feedPressure;
 
     @Column(name = "rotation", nullable = false)
     @Enumerated(EnumType.STRING)
@@ -62,6 +62,42 @@ public class Pump implements Model {
     @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "pump_code", referencedColumnName = "pump_code")
     private PumpInfo pumpInfo;
+
+    public Pump() { }
+
+    public Pump(String pumpCode,
+                ManufacturerPump manufacturer,
+                Boolean custom,
+                Double feedPressure,
+                PumpRotation pumpRotation,
+                PumpRegulatorConfig pumpRegulatorConfig,
+                PumpPressureControl pumpPressureControl,
+                PumpRegulatorType pumpRegulatorType) {
+        this.pumpCode = pumpCode;
+        this.manufacturer = manufacturer;
+        this.custom = custom;
+        this.feedPressure = feedPressure;
+        this.pumpRotation = pumpRotation;
+        this.pumpRegulatorConfig = pumpRegulatorConfig;
+        this.pumpPressureControl = pumpPressureControl;
+        this.pumpRegulatorType = pumpRegulatorType;
+    }
+
+    public void setFeedPressure(Double feedPressure) {
+        this.feedPressure = feedPressure;
+    }
+    public void setPumpRotation(PumpRotation pumpRotation) {
+        this.pumpRotation = pumpRotation;
+    }
+    public void setPumpRegulatorConfig(PumpRegulatorConfig pumpRegulatorConfig) {
+        this.pumpRegulatorConfig = pumpRegulatorConfig;
+    }
+    public void setPumpPressureControl(PumpPressureControl pumpPressureControl) {
+        this.pumpPressureControl = pumpPressureControl;
+    }
+    public void setPumpRegulatorType(PumpRegulatorType pumpRegulatorType) {
+        this.pumpRegulatorType = pumpRegulatorType;
+    }
 
     public List<PumpCarModel> getPumpCarModelList() {
         return pumpCarModelList;
@@ -113,5 +149,20 @@ public class Pump implements Model {
     @Override
     public ManufacturerPump getManufacturer() {
         return manufacturer;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Pump that = (Pump) o;
+        return Objects.equals(getModelCode(), that.getModelCode());
+    }
+
+    @Override
+    public int hashCode() {
+
+            return Objects.hash(getModelCode());
     }
 }

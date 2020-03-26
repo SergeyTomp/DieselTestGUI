@@ -21,7 +21,7 @@ public class PumpModelService implements ModelService {
     }
 
     @Override
-    public List<? extends Model> findByProducerAndIsCustom(Producer producer, boolean isCustom) {
+    public List<Pump> findByProducerAndIsCustom(Producer producer, boolean isCustom) {
         return pumpRepository.findAllByManufacturerAndCustom(producer, isCustom);
     }
 
@@ -46,6 +46,5 @@ public class PumpModelService implements ModelService {
     }
 
     @Override
-    public void delete(Model model) { pumpRepository.delete((Pump) model);
-    }
+    public void delete(Model model) { pumpRepository.delete((Pump) model); }
 }

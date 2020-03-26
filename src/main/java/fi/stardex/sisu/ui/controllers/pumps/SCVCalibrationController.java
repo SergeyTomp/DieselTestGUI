@@ -356,12 +356,12 @@ public class SCVCalibrationController {
         delta_I = calibrationMaxI - calibrationMinI;
         regulatonDirection = pumpModel.pumpProperty().get().getPumpRegulatorType().getMultiplier();
         changeCalibrationState(CalibrationState.RUNNING);
-        //TODO uncomment below!!!
-//        adjustingTime = pumpTestModel.pumpTestProperty().get().getAdjustingTime();
-//        measuringTime = pumpTestModel.pumpTestProperty().get().getMeasuringTime();
-        //TODO delete test setCycleCounts!!!
-        adjustingTime = 3;
-        measuringTime = 3;
+
+        adjustingTime = pumpTestModel.pumpTestProperty().get().getAdjustingTime();
+        measuringTime = pumpTestModel.pumpTestProperty().get().getMeasuringTime();
+        // uncomment to set test setCycleCounts
+//        adjustingTime = 3;
+//        measuringTime = 3;
 
         adjustingTimeline.setCycleCount(adjustingTime);
         measurementTimeline.setCycleCount(measuringTime);

@@ -16,7 +16,7 @@ public class PumpTestService implements TestService {
     }
 
     @Override
-    public List<? extends Test> findAllByModel(Model model) {
+    public List<PumpTest> findAllByModel(Model model) {
         return pumpTestRepository.findAllByPump(model);
     }
 

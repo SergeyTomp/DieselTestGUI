@@ -73,6 +73,7 @@ public class PumpTestListController {
             }
             else{
                 pumpTestModel.pumpTestProperty().setValue(null);
+                testListView.getItems().clear();
             }
         });
 

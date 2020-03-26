@@ -5,13 +5,11 @@ import fi.stardex.sisu.model.pump.CustomPumpProducerDialogModel;
 import fi.stardex.sisu.model.pump.ManufacturerPumpModel;
 import fi.stardex.sisu.model.pump.PumpModel;
 import fi.stardex.sisu.model.pump.PumpReportModel;
-import fi.stardex.sisu.persistence.orm.interfaces.Producer;
 import fi.stardex.sisu.persistence.orm.pump.ManufacturerPump;
 import fi.stardex.sisu.persistence.repos.pump.PumpProducerService;
 import fi.stardex.sisu.states.PumpsStartButtonState;
 import fi.stardex.sisu.util.enums.GUI_type;
 import fi.stardex.sisu.util.enums.Operation;
-import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ListView;
@@ -69,13 +67,9 @@ public class PumpsOEMListController {
 
     private void setupOemListViewListener() {
 
-        oemListView.getItems().addListener((ListChangeListener<Producer>) change ->
-                manufacturerPumpModel.getManufacturerPumpObservableList().setAll(oemListView.getItems()));
-
         oemListView.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
 
             manufacturerPumpModel.manufacturerPumpProperty().set(newValue);
-            pumpModel.initPumpList();
             pumpReportModel.clearResults();
         });
     }
@@ -98,6 +92,7 @@ public class PumpsOEMListController {
 
             oemListView.getItems().setAll(new ArrayList<>(producerService.findAll()));
             oemListView.refresh();
+            manufacturerPumpModel.getManufacturerPumpObservableList().setAll(oemListView.getItems());
             ManufacturerPump producer = oemListView.getItems().stream().filter(m -> m.equals(customPumpProducerDialogModel.customProducerProperty().get())).findFirst().orElse(null);
             oemListView.getSelectionModel().select(producer);
             manufacturerPumpModel.customProducerOperationProperty().setValue(null);
@@ -126,8 +121,5 @@ public class PumpsOEMListController {
             } else
                 manufacturerMenu.hide();
         });
-
-        customPumpProducerDialogModel.cancelProperty().addListener((observableValue, oldValue, newValue) ->
-                manufacturerPumpModel.customProducerOperationProperty().setValue(null));
     }
 }

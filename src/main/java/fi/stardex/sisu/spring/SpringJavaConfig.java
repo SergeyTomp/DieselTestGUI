@@ -835,11 +835,8 @@ public class SpringJavaConfig {
     }
 
     @Bean
-    @Autowired
-    public PumpModel pumpModel(PumpRepository pumpRepository,
-                               ManufacturerPumpModel manufacturerPumpModel,
-                               CustomPumpState customPumpState) {
-        return new PumpModel(pumpRepository, manufacturerPumpModel, customPumpState);
+    public PumpModel pumpModel() {
+        return new PumpModel();
     }
 
     @Bean
@@ -1385,6 +1382,11 @@ public class SpringJavaConfig {
         standControlsFactory.setFlowFirmwareVersion(flowFirmwareVersion);
         standControlsFactory.setGui_typeModel(gui_typeModel);
         return standControlsFactory;
+    }
+
+    @Bean
+    public CustomPumpDialogModel customPumpDialogModel() {
+        return new CustomPumpDialogModel();
     }
 
 //    @Bean
