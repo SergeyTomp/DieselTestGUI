@@ -1,22 +1,29 @@
 package fi.stardex.sisu.ui.controllers.pumps.main;
 
-import fi.stardex.sisu.model.pump.AutoTestListLastChangeModel;
+import fi.stardex.sisu.model.pump.*;
 import fi.stardex.sisu.model.pump.AutoTestListLastChangeModel.PumpTestWrapper;
-import fi.stardex.sisu.model.pump.PumpTestListModel;
-import fi.stardex.sisu.model.pump.PumpTestModeModel;
-import fi.stardex.sisu.model.pump.PumpTestModel;
+import fi.stardex.sisu.persistence.orm.pump.PumpTest;
+import fi.stardex.sisu.persistence.repos.pump.PumpTestService;
+import fi.stardex.sisu.states.CustomPumpState;
 import fi.stardex.sisu.states.PumpsStartButtonState;
 import fi.stardex.sisu.util.enums.Move;
-import javafx.collections.ListChangeListener;
+import fi.stardex.sisu.util.enums.Operation;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.ListView;
+import javafx.scene.control.MenuItem;
 import javafx.scene.control.cell.CheckBoxListCell;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 
 import javax.annotation.PostConstruct;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static fi.stardex.sisu.util.enums.Move.DOWN;
 import static fi.stardex.sisu.util.enums.Move.UP;
@@ -34,6 +41,10 @@ public class PumpTestListController {
     private PumpTestModeModel pumpTestModeModel;
     private AutoTestListLastChangeModel autoTestListLastChangeModel;
     private PumpsStartButtonState pumpsStartButtonState;
+    private PumpModel pumpModel;
+    private PumpTestService pumpTestService;
+    private CustomPumpState customPumpState;
+    private CustomPumpTestDialogModel customPumpTestDialogModel;
 
     public void setPumpTestModel(PumpTestModel pumpTestModel) {
         this.pumpTestModel = pumpTestModel;
@@ -50,6 +61,19 @@ public class PumpTestListController {
     public void setPumpsStartButtonState(PumpsStartButtonState pumpsStartButtonState) {
         this.pumpsStartButtonState = pumpsStartButtonState;
     }
+    public void setPumpModel(PumpModel pumpModel) {
+        this.pumpModel = pumpModel;
+    }
+    public void setPumpTestService(PumpTestService pumpTestService) {
+        this.pumpTestService = pumpTestService;
+    }
+    public void setCustomPumpState(CustomPumpState customPumpState) {
+        this.customPumpState = customPumpState;
+    }
+    public void setCustomPumpTestDialogModel(CustomPumpTestDialogModel customPumpTestDialogModel) {
+        this.customPumpTestDialogModel = customPumpTestDialogModel;
+    }
+
     public ListView<PumpTestWrapper> getTestListView() {
         return testListView;
     }
@@ -61,21 +85,12 @@ public class PumpTestListController {
 
         setupMoveButtonEventHandlers();
         setupListeners();
+        initTestContextMenu();
     }
 
     private void setupListeners() {
 
-        pumpTestListModel.getPumpTestObservableList().addListener((ListChangeListener<PumpTestWrapper>) change -> {
-            if (!change.getList().isEmpty()) {
-
-                testListView.getItems().setAll(change.getList());
-                setTestMode();
-            }
-            else{
-                pumpTestModel.pumpTestProperty().setValue(null);
-                testListView.getItems().clear();
-            }
-        });
+        pumpModel.pumpProperty().addListener((observableValue, oldValue, newValue) -> fillPumpTestList());
 
         testListView.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
 
@@ -120,6 +135,11 @@ public class PumpTestListController {
 //            reindexWrappers();
 //            testListView.getSelectionModel().select(selectedItem);
 //            testListView.scrollTo(0);
+
+//    private void reindexWrappers(){
+//        testListView.getItems().forEach(wrapper -> wrapper.setListViewIndex(testListView.getItems().indexOf(wrapper)));
+//    }
+
             testListView.getItems().sort((o1, o2) -> Boolean.compare(o2.isIncludedProperty().get(), o1.isIncludedProperty().get()));
             int includedQty = (int)testListView.getItems().stream().filter(t -> t.isIncludedProperty().get()).count();
             testListView.getItems().subList(0, includedQty).sort(Comparator.comparingInt(wrapper -> wrapper.getPumpTest().getId()));
@@ -142,6 +162,66 @@ public class PumpTestListController {
                     showUpDownButtons(false);
                     break;
             }
+        });
+
+        customPumpTestDialogModel.cancelProperty().addListener((observableValue, oldValue, newValue) ->
+                pumpTestListModel.customTestOperationProperty().setValue(null));
+
+        customPumpTestDialogModel.doneProperty().addListener((observable, oldValue, newValue) -> {
+            fillPumpTestList();
+            PumpTestWrapper wrapper = testListView.getItems().stream()
+                    .filter(w -> w.getPumpTest().equals(customPumpTestDialogModel.customTestProperty().get()))
+                    .findFirst()
+                    .orElse(null);
+            testListView.getSelectionModel().select(wrapper);
+            pumpTestListModel.customTestOperationProperty().setValue(null);
+        });
+    }
+
+    private void fillPumpTestList(){
+
+        pumpTestModel.pumpTestProperty().setValue(null);
+        List<PumpTest> allByPump = pumpTestService.findAllByModel(pumpModel.pumpProperty().get());
+
+        allByPump.sort(Comparator.comparingInt(PumpTest::getId));
+
+        List<PumpTestWrapper> pumpTestWrappers = IntStream.rangeClosed(0, allByPump.size()-1)
+                .mapToObj(i -> autoTestListLastChangeModel.new PumpTestWrapper(allByPump.get(i), i))
+                .collect(Collectors.toList());
+
+        pumpTestListModel.getPumpTestObservableList().setAll(pumpTestWrappers);
+
+        if (pumpTestWrappers.size() != 0) {
+            testListView.getItems().setAll(pumpTestWrappers);
+            setTestMode();
+        }else{
+            testListView.getItems().clear();
+        }
+    }
+
+    private void initTestContextMenu() {
+
+        ContextMenu testMenu = new ContextMenu();
+        MenuItem newTest = new MenuItem("New");
+        newTest.setOnAction(actionEvent -> pumpTestListModel.customTestOperationProperty().setValue(Operation.NEW));
+        MenuItem editTest = new MenuItem("Edit");
+        editTest.setOnAction(actionEvent -> pumpTestListModel.customTestOperationProperty().setValue(Operation.EDIT));
+        MenuItem deleteTest = new MenuItem("Delete");
+        deleteTest.setOnAction(actionEvent -> pumpTestListModel.customTestOperationProperty().setValue(Operation.DELETE));
+
+
+        testListView.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
+            if (event.getButton() == MouseButton.SECONDARY) {
+                testMenu.getItems().clear();
+
+                testMenu.getItems().add(newTest);
+                if (customPumpState.customPumpProperty().get() && testListView.getSelectionModel().getSelectedItem() != null) {
+                    testMenu.getItems().add(editTest);
+                    testMenu.getItems().add(deleteTest);
+                }
+                testMenu.show(testListView, event.getScreenX(), event.getScreenY());
+            } else
+                testMenu.hide();
         });
     }
 
@@ -195,10 +275,6 @@ public class PumpTestListController {
         isFocusMoved = false;
 
     }
-
-//    private void reindexWrappers(){
-//        testListView.getItems().forEach(wrapper -> wrapper.setListViewIndex(testListView.getItems().indexOf(wrapper)));
-//    }
 
     private void enableUpDownButtons(int selectedIndex) {
 

@@ -3,14 +3,20 @@ package fi.stardex.sisu.persistence.orm;
 import fi.stardex.sisu.persistence.CheckAndInitializeBD;
 import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
+import fi.stardex.sisu.persistence.orm.cr.inj.Manufacturer;
 import fi.stardex.sisu.persistence.orm.cr.inj.VoltAmpereProfile;
 import fi.stardex.sisu.persistence.orm.interfaces.*;
+import fi.stardex.sisu.persistence.orm.pump.Pump;
+import fi.stardex.sisu.persistence.orm.pump.PumpTest;
 import fi.stardex.sisu.persistence.orm.uis.InjectorUisTest;
 import fi.stardex.sisu.persistence.orm.uis.InjectorUisVAP;
 import fi.stardex.sisu.persistence.repos.ManufacturerRepository;
 import fi.stardex.sisu.persistence.repos.cr.InjectorTestRepository;
 import fi.stardex.sisu.persistence.repos.cr.InjectorsRepository;
 import fi.stardex.sisu.persistence.repos.cr.VoltAmpereProfileRepository;
+import fi.stardex.sisu.persistence.repos.pump.PumpModelService;
+import fi.stardex.sisu.persistence.repos.pump.PumpProducerService;
+import fi.stardex.sisu.persistence.repos.pump.PumpTestService;
 import fi.stardex.sisu.persistence.repos.uis.UisProducerService;
 import fi.stardex.sisu.persistence.repos.uis.UisTestService;
 import org.slf4j.Logger;
@@ -48,6 +54,10 @@ public class CSVSUpdater {
     private TestService testService;
 
     private VapService vapService;
+
+    private PumpProducerService pumpProducerService;
+    private PumpModelService pumpModelService;
+    private PumpTestService pumpTestService;
 
     private static final String NEW_LINE_SEPARATOR = "\n";
 
@@ -107,6 +117,24 @@ public class CSVSUpdater {
     @Value("${stardex.custom_csvs.injectorTestsUis}")
     private String customInjectorUisTests;
 
+    @Value("${stardex.custom_csvs.manufacturersPump}")
+    private String customPumpProducer;
+
+    @Value("${stardex.custom_csvs.manufacturersPump.header}")
+    private String customPumpProducer_header;
+
+    @Value("${stardex.custom_csvs.pumps}")
+    private String customPump;
+
+    @Value("${stardex.custom_csvs.pumps.header}")
+    private String customPump_header;
+
+    @Value("${stardex.custom_csvs.pumpTests}")
+    private String customPumpTest;
+
+    @Value("${stardex.custom_csvs.pumpTests.header}")
+    private String customPumpTest_header;
+
     public CSVSUpdater(ManufacturerRepository manufacturerRepository,
                        VoltAmpereProfileRepository voltAmpereProfileRepository,
                        InjectorsRepository injectorsRepository,
@@ -114,7 +142,10 @@ public class CSVSUpdater {
                        UisProducerService producerService,
                        ModelService modelService,
                        TestService testService,
-                       VapService vapService) {
+                       VapService vapService,
+                       PumpProducerService pumpProducerService,
+                       PumpModelService pumpModelService,
+                       PumpTestService pumpTestService) {
 
         this.manufacturerRepository = manufacturerRepository;
         this.voltAmpereProfileRepository = voltAmpereProfileRepository;
@@ -124,6 +155,9 @@ public class CSVSUpdater {
         this.modelService = modelService;
         this.testService = testService;
         this.vapService = vapService;
+        this.pumpTestService = pumpTestService;
+        this.pumpModelService = pumpModelService;
+        this.pumpProducerService = pumpProducerService;
     }
 
     @PreDestroy
@@ -148,6 +182,7 @@ public class CSVSUpdater {
                         break;
                     case "ManufacturerUIS":
                         updateCustomCSV(new File(pathToCSVSDirectory, customManufacturersUis), custom_manufacturersUis_header, producerService);
+                        break;
                     case "InjectorUIS":
                         updateCustomCSV(new File(pathToCSVSDirectory, customInjectorsUis), custom_injectorUis_header, modelService);
                         break;
@@ -157,11 +192,107 @@ public class CSVSUpdater {
                     case "InjectorUisTest":
                         updateCustomCSV(new File(pathToCSVSDirectory, customInjectorUisTests), custom_injectorUis_tests_header, testService);
                         break;
+                    case "ManufacturerPump":
+                        updateCustomCSV(new File(pathToCSVSDirectory, customPumpProducer), customPumpProducer_header, pumpProducerService);
+                        break;
+                    case "Pump":
+                        updateCustomCSV(new File(pathToCSVSDirectory, customPump), customPump_header, pumpModelService);
+                        break;
+                    case "PumpTest":
+                        updateCustomCSV(new File(pathToCSVSDirectory, customPumpTest), customPumpTest_header, pumpTestService);
+                        break;
                     default:
                         break;
                 }
             }
         }));
+    }
+
+    private void updateCustomCSV(File file, String header, PumpTestService testService) {
+
+        List<? extends Test> testList = testService.findAllByIsCustom(true);
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter((file)))) {
+
+            writer.append(header).append(NEW_LINE_SEPARATOR);
+            if (!testList.isEmpty()) {
+                testList.forEach(test ->{
+
+                    PumpTest pumpTest = (PumpTest) test;
+                    try{
+                        writer.append(test.getId().toString()).append(COMMA_DELIMITER)
+                                .append(pumpTest.getModel().getModelCode()).append(COMMA_DELIMITER)
+                                .append(pumpTest.getTestName().getName()).append(COMMA_DELIMITER)
+                                .append(String.valueOf(pumpTest.isVacuum())).append(COMMA_DELIMITER)
+                                .append(pumpTest.getAdjustingTime().toString()).append(COMMA_DELIMITER)
+                                .append(pumpTest.getMeasuringTime() == null ? "" : pumpTest.getMeasuringTime().toString()).append(COMMA_DELIMITER)
+                                .append(pumpTest.getMotorSpeed().toString()).append(COMMA_DELIMITER)
+                                .append(pumpTest.getTargetPressure().toString()).append(COMMA_DELIMITER)
+                                .append(pumpTest.getMinDirectFlow() == null ? "" : pumpTest.getMinDirectFlow().toString()).append(COMMA_DELIMITER)
+                                .append(pumpTest.getMaxDirectFlow() == null ? "" : pumpTest.getMaxDirectFlow().toString()).append(COMMA_DELIMITER)
+                                .append(pumpTest.getMinBackFlow() == null ? "" : pumpTest.getMinBackFlow().toString()).append(COMMA_DELIMITER)
+                                .append(pumpTest.getMaxBackFlow() == null ? "" : pumpTest.getMaxBackFlow().toString()).append(COMMA_DELIMITER)
+                                .append(pumpTest.getRegulatorCurrent() == null ? "" : pumpTest.getRegulatorCurrent().toString()).append(COMMA_DELIMITER)
+                                .append(pumpTest.getPcvCurrent() == null ? "" : pumpTest.getPcvCurrent().toString()).append(COMMA_DELIMITER)
+                                .append(pumpTest.getCalibrationMinI() == null ? "" : pumpTest.getCalibrationMinI().toString()).append(COMMA_DELIMITER)
+                                .append(pumpTest.getCalibrationMaxI() == null ? "" : pumpTest.getCalibrationMaxI().toString()).append(COMMA_DELIMITER)
+                                .append(pumpTest.getCalibrationI1() == null ? "" : pumpTest.getCalibrationI1().toString()).append(COMMA_DELIMITER)
+                                .append(pumpTest.getCalibrationI2() == null ? "" : pumpTest.getCalibrationI2().toString()).append(COMMA_DELIMITER)
+                                .append(pumpTest.getCalibrationIoffset() == null ? "" : pumpTest.getCalibrationIoffset().toString()).append(COMMA_DELIMITER)
+                                .append(pumpTest.isCustom().toString()).append(NEW_LINE_SEPARATOR);
+                    }catch (IOException ex){logger.error("IO Exception for Test file update process occurred!", ex);}
+                });
+            }
+        }catch (IOException ex) { logger.error("IO Exception for Test file update process occurred!", ex);}
+
+    }
+
+    private void updateCustomCSV(File file, String header, PumpModelService modelService) {
+
+        List<? extends Model> customModelsList = modelService.findByIsCustom(true);
+        try(BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            writer.append(header).append(NEW_LINE_SEPARATOR);
+            if (!customModelsList.isEmpty()) {
+                customModelsList.forEach(( model -> {
+                    try {
+                        Pump pump = (Pump) model;
+                        writer.append(model.getModelCode()).append(COMMA_DELIMITER)
+                                .append(pump.getManufacturer().getManufacturerName()).append(COMMA_DELIMITER)
+                                .append(String.valueOf(pump.isCustom())).append(NEW_LINE_SEPARATOR)
+                                .append(String.valueOf(pump.getFeedPressure())).append(COMMA_DELIMITER)
+                                .append(pump.getPumpRotation().name()).append(COMMA_DELIMITER)
+                                .append(pump.getPumpRegulatorConfig().name()).append(COMMA_DELIMITER)
+                                .append(pump.getPumpPressureControl().name()).append(COMMA_DELIMITER)
+                                .append(pump.getPumpRegulatorType().name()).append(COMMA_DELIMITER)
+                                .append(pump.getScvMaxCurr() == null ? "" : pump.getScvMaxCurr().toString()).append(COMMA_DELIMITER)
+                                .append(pump.getScvMinCurr() == null ? "" : pump.getScvMinCurr().toString()).append(COMMA_DELIMITER)
+                                .append(pump.getScvCurrInj() == null ? "" : pump.getScvCurrInj().toString()).append(NEW_LINE_SEPARATOR);
+                    }catch (IOException ex) { logger.error("IO Exception for Models file update process occurred!", ex); }
+                }));
+            }
+        } catch (IOException ex) { logger.error("IO Exception for Models file update process occurred!", ex); }
+    }
+
+    private void updateCustomCSV(File file, String header, PumpProducerService producerService) {
+
+
+        List<? extends Producer> customProducersList = producerService.findByIsCustom(true);
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(file))) {
+            writer.append(header).append(NEW_LINE_SEPARATOR);
+            if (!customProducersList.isEmpty()) {
+                customProducersList.forEach(manufacturer -> {
+                    try {
+                        writer.append(manufacturer.getManufacturerName()).append(COMMA_DELIMITER)
+                                 .append(String.valueOf(manufacturer.isCustom())).append(NEW_LINE_SEPARATOR);
+                    } catch (IOException ex) {
+                        logger.error("IO Exception occurred!", ex);
+                    }
+                });
+            }
+        } catch (IOException ex) {
+            logger.error("IO Exception occurred!", ex);
+        }
+
     }
 
     private void updateCustomCSV(File file, String header, TestService testService) {

@@ -36,4 +36,20 @@ public class PumpTestName implements Name {
     public Measurement getMeasurement() {
         return null;
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof PumpTestName)) return false;
+
+        PumpTestName that = (PumpTestName) o;
+
+        if (id != that.id) return false;
+        return testName.equals(that.testName);
+    }
+
+    @Override
+    public int hashCode() {
+        return 31 * id + testName.hashCode();
+    }
 }

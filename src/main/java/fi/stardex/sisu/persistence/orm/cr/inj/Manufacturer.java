@@ -1,7 +1,7 @@
-package fi.stardex.sisu.persistence.orm;
+package fi.stardex.sisu.persistence.orm.cr.inj;
 
+import fi.stardex.sisu.persistence.orm.EntityUpdates;
 import fi.stardex.sisu.persistence.orm.interfaces.Producer;
-import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
 
 import javax.persistence.*;
 import java.util.LinkedList;

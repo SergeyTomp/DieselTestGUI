@@ -5,11 +5,11 @@ import fi.stardex.sisu.model.LanguageModel;
 import fi.stardex.sisu.model.PressureSensorModel;
 import fi.stardex.sisu.model.RegulationModesModel;
 import fi.stardex.sisu.model.pump.*;
-import fi.stardex.sisu.model.uis.CustomProducerDialogModel;
 import fi.stardex.sisu.model.updateModels.DifferentialFmUpdateModel;
 import fi.stardex.sisu.model.updateModels.HighPressureSectionUpdateModel;
 import fi.stardex.sisu.persistence.repos.pump.PumpModelService;
 import fi.stardex.sisu.persistence.repos.pump.PumpProducerService;
+import fi.stardex.sisu.persistence.repos.pump.PumpTestNameService;
 import fi.stardex.sisu.persistence.repos.pump.PumpTestService;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.CustomPumpState;
@@ -21,6 +21,7 @@ import fi.stardex.sisu.ui.controllers.pumps.PumpReportController;
 import fi.stardex.sisu.ui.controllers.pumps.PumpTabSectionController;
 import fi.stardex.sisu.ui.controllers.pumps.dialogs.CustomProducerPumpDialogController;
 import fi.stardex.sisu.ui.controllers.pumps.dialogs.CustomPumpDialogController;
+import fi.stardex.sisu.ui.controllers.pumps.dialogs.CustomPumpTestDialogController;
 import fi.stardex.sisu.ui.controllers.pumps.flow.PumpBeakerController;
 import fi.stardex.sisu.ui.controllers.pumps.flow.PumpFlowController;
 import fi.stardex.sisu.ui.controllers.pumps.flow.PumpFlowTextAreaController;
@@ -160,13 +161,21 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
                                                          PumpTestListModel pumpTestListModel,
                                                          PumpTestModeModel pumpTestModeModel,
                                                          AutoTestListLastChangeModel autoTestListLastChangeModel,
-                                                         PumpsStartButtonState pumpsStartButtonState) {
+                                                         PumpsStartButtonState pumpsStartButtonState,
+                                                         PumpModel pumpModel,
+                                                         PumpTestService pumpTestService,
+                                                         CustomPumpState customPumpState,
+                                                         CustomPumpTestDialogModel customPumpTestDialogModel) {
         PumpTestListController pumpTestListController = mainSectionPumpsController.getPumpTestListController();
         pumpTestListController.setPumpTestModel(pumpTestModel);
         pumpTestListController.setPumpTestListModel(pumpTestListModel);
         pumpTestListController.setPumpTestModeModel(pumpTestModeModel);
         pumpTestListController.setAutoTestListLastChangeModel(autoTestListLastChangeModel);
         pumpTestListController.setPumpsStartButtonState(pumpsStartButtonState);
+        pumpTestListController.setPumpModel(pumpModel);
+        pumpTestListController.setPumpTestService(pumpTestService);
+        pumpTestListController.setCustomPumpState(customPumpState);
+        pumpTestListController.setCustomPumpTestDialogModel(customPumpTestDialogModel);
         return pumpTestListController;
     }
 
@@ -449,5 +458,33 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
         customPumpDialogController.setPumpModel(pumpModel);
         customPumpDialogController.setManufacturerPumpModel(manufacturerPumpModel);
         return customPumpDialogController;
+    }
+
+    @Bean
+    public ViewHolder customPumpTestDialog() {
+        return loadView("/fxml/pumps/dialogs/CustomPumpTestDialog.fxml");
+    }
+
+    @Bean
+    @Autowired
+    public CustomPumpTestDialogController customPumpTestDialogController(I18N i18N,
+                                                                         GUI_TypeModel guiTypeModel,
+                                                                         PumpTestService pumpTestService,
+                                                                         CustomPumpTestDialogModel customPumpTestDialogModel,
+                                                                         PumpTestNameService pumpTestNameService,
+                                                                         PumpTestListModel pumpTestListModel,
+                                                                         PumpTestModel pumpTestModel,
+                                                                         PumpModel pumpModel) {
+        CustomPumpTestDialogController customPumpTestDialogController = (CustomPumpTestDialogController)customPumpTestDialog().getController();
+        customPumpTestDialogController.setI18N(i18N);
+        customPumpTestDialogController.setGuiTypeModel(guiTypeModel);
+        customPumpTestDialogController.setPumpTestService(pumpTestService);
+        customPumpTestDialogController.setCustomPumpTestDialogModel(customPumpTestDialogModel);
+        customPumpTestDialogController.setPumpTestNameService(pumpTestNameService);
+        customPumpTestDialogController.setDialogViev(customPumpTestDialog().getView());
+        customPumpTestDialogController.setPumpTestListModel(pumpTestListModel);
+        customPumpTestDialogController.setPumpTestModel(pumpTestModel);
+        customPumpTestDialogController.setPumpModel(pumpModel);
+        return customPumpTestDialogController;
     }
 }

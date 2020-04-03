@@ -1,6 +1,6 @@
 package fi.stardex.sisu.persistence.repos;
 
-import fi.stardex.sisu.persistence.orm.Manufacturer;
+import fi.stardex.sisu.persistence.orm.cr.inj.Manufacturer;
 import org.springframework.data.repository.CrudRepository;
 
 import java.util.List;

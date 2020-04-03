@@ -87,6 +87,24 @@ public class CheckAndInitializeBD {
     @Value("${stardex.custom_csvs.injectorUisTests.header}")
     private String custom_injectorUis_tests_header;
 
+    @Value("${stardex.custom_csvs.manufacturersPump}")
+    private String customPumpProducer;
+
+    @Value("${stardex.custom_csvs.manufacturersPump.header}")
+    private String customPumpProducer_header;
+
+    @Value("${stardex.custom_csvs.pumps}")
+    private String customPump;
+
+    @Value("${stardex.custom_csvs.pumps.header}")
+    private String customPump_header;
+
+    @Value("${stardex.custom_csvs.pumpTests}")
+    private String customPumpTest;
+
+    @Value("${stardex.custom_csvs.pumpTests.header}")
+    private String customPumpTest_header;
+
     public CheckAndInitializeBD(ManufacturerRepository manufacturerRepository, DataSource dataSource) {
 
         this.manufacturerRepository = manufacturerRepository;
@@ -144,6 +162,10 @@ public class CheckAndInitializeBD {
 
         File customTestUisFile = new File(customCSVSDirectory, customInjectorUisTests);
 
+        File customPumpProducerFile = new File(customCSVSDirectory, customPumpProducer);
+        File customPumpFile = new File(customCSVSDirectory, customPump);
+        File customPumpTestFile = new File(customCSVSDirectory, customPumpTest);
+
         if (!customManufacturersFile.exists() || !customManufacturersFile.isFile())
             createCustomCSV(customManufacturersFile, custom_manufacturers_header);
 
@@ -167,6 +189,15 @@ public class CheckAndInitializeBD {
 
         if (!customTestUisFile.exists() || !customTestUisFile.isFile())
             createCustomCSV(customTestUisFile, custom_injectorUis_tests_header);
+
+        if (!customPumpProducerFile.exists() || !customPumpProducerFile.isFile())
+            createCustomCSV(customPumpProducerFile, customPumpProducer_header);
+
+        if (!customPumpFile.exists() || !customPumpFile.isFile())
+            createCustomCSV(customPumpFile, customPump_header);
+
+        if (!customPumpTestFile.exists() || !customPumpTestFile.isFile())
+            createCustomCSV(customPumpTestFile, customPumpTest_header);
     }
 
     private void createCustomCSV(File file, String header) throws IOException {

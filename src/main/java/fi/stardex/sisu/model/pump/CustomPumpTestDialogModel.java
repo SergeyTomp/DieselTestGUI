@@ -1,17 +1,18 @@
-package fi.stardex.sisu.model.cr;
+package fi.stardex.sisu.model.pump;
 
-import fi.stardex.sisu.persistence.orm.cr.inj.Manufacturer;
+import fi.stardex.sisu.persistence.orm.interfaces.Test;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;
 
-public class ManufacturerMenuDialogModel {
+//TODO: delete class after implementation of MainSectionUisController as a unique one for all GUI types.
+public class CustomPumpTestDialogModel {
 
-    private ObjectProperty<Manufacturer> customManufacturer = new SimpleObjectProperty<>();
     private ObjectProperty<Object> done = new SimpleObjectProperty<>();
     private ObjectProperty<Object> cancel = new SimpleObjectProperty<>();
+    private ObjectProperty<Test> customTest = new SimpleObjectProperty<>();
 
-    public ObjectProperty<Manufacturer> customManufacturerProperty() {
-        return customManufacturer;
+    public ObjectProperty<Test> customTestProperty() {
+        return customTest;
     }
     public ObjectProperty<Object> doneProperty() {
         return done;

@@ -1,6 +1,6 @@
 package fi.stardex.sisu.util.obtainers;
 
-import fi.stardex.sisu.persistence.orm.Manufacturer;
+import fi.stardex.sisu.persistence.orm.cr.inj.Manufacturer;
 
 public class CurrentManufacturerObtainer {
 

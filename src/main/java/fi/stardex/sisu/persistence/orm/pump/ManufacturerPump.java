@@ -1,5 +1,6 @@
 package fi.stardex.sisu.persistence.orm.pump;
 
+import fi.stardex.sisu.persistence.orm.EntityUpdates;
 import fi.stardex.sisu.persistence.orm.interfaces.Producer;
 
 import javax.persistence.*;
@@ -56,6 +57,21 @@ public class ManufacturerPump implements Producer {
     @Override
     public String toString() {
         return manufacturerName;
+    }
+
+    @PostPersist
+    private void onPostPersist() {
+        EntityUpdates.getMapOfEntityUpdates().put(this.getClass().getSimpleName(), true);
+    }
+
+    @PostUpdate
+    private void onPostUpdate() {
+        EntityUpdates.getMapOfEntityUpdates().put(this.getClass().getSimpleName(), true);
+    }
+
+    @PostRemove
+    private void onPostRemove() {
+        EntityUpdates.getMapOfEntityUpdates().put(this.getClass().getSimpleName(), true);
     }
 
     @Override

@@ -1,7 +1,6 @@
 package fi.stardex.sisu.persistence.orm.cr.inj;
 
 import fi.stardex.sisu.persistence.orm.EntityUpdates;
-import fi.stardex.sisu.persistence.orm.Manufacturer;
 import fi.stardex.sisu.persistence.orm.interfaces.Model;
 import fi.stardex.sisu.persistence.orm.interfaces.VAP;
 

@@ -109,7 +109,7 @@ public class PumpsModelsListController {
             }
 
             pumpModel.pumpProperty().set(newValue);
-            pumpTestListModel.initPumpTestList();
+//            pumpTestListModel.initPumpTestList();
             pumpReportModel.clearResults();
         });
 
@@ -137,7 +137,7 @@ public class PumpsModelsListController {
         });
     }
 
-    public void initPumpList() {
+    private void initPumpList() {
 
         pumpModel.getPumpObservableListProperty().setValue(FXCollections.observableArrayList(pumpModelService.findByProducerAndIsCustom(
                 manufacturerPumpModel.manufacturerPumpProperty().get(),
@@ -189,9 +189,6 @@ public class PumpsModelsListController {
             } else
                 modelMenu.hide();
         });
-
-        customPumpDialogModel.cancelProperty().addListener((observableValue, oldValue, newValue) ->
-                pumpModel.customPumpOperationProperty().setValue(null));
     }
 
     private void showAlert() {

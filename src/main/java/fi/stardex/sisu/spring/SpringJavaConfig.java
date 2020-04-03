@@ -619,7 +619,10 @@ public class SpringJavaConfig {
                                    UisProducerService producerService,
                                    UisModelService modelService,
                                    UisTestService testService,
-                                   UisVapService vapService) {
+                                   UisVapService vapService,
+                                   PumpProducerService pumpProducerService,
+                                   PumpModelService pumpModelService,
+                                   PumpTestService pumpTestService) {
         return new CSVSUpdater(manufacturerRepository,
                 voltAmpereProfileRepository,
                 injectorsRepository,
@@ -627,7 +630,10 @@ public class SpringJavaConfig {
                 producerService,
                 modelService,
                 testService,
-                vapService);
+                vapService,
+                pumpProducerService,
+                pumpModelService,
+                pumpTestService);
     }
 
     @Bean
@@ -996,6 +1002,11 @@ public class SpringJavaConfig {
         PumpTestListModel pumpTestListModel = new PumpTestListModel(pumpTestRepository, pumpModel);
         pumpTestListModel.setAutoTestListLastChangeModel(autoTestListLastChangeModel);
         return  pumpTestListModel;
+    }
+
+    @Bean
+    public CustomPumpTestDialogModel custompumpTestDialogModel() {
+        return new CustomPumpTestDialogModel();
     }
 
     @Bean
@@ -1387,6 +1398,12 @@ public class SpringJavaConfig {
     @Bean
     public CustomPumpDialogModel customPumpDialogModel() {
         return new CustomPumpDialogModel();
+    }
+
+    @Bean
+    @Autowired
+    public PumpTestNameService pumpTestNameService(PumpTestNameRepository pumpTestNameRepository) {
+        return new PumpTestNameService(pumpTestNameRepository);
     }
 
 //    @Bean

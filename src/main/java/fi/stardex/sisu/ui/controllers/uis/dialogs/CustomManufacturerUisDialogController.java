@@ -71,7 +71,6 @@ public class CustomManufacturerUisDialogController {
                     dialogStage.setScene(new Scene(dialogViev));
                     dialogStage.setResizable(false);
                     dialogStage.initModality(Modality.APPLICATION_MODAL);
-                    dialogStage.setTitle(mainSectionUisModel.customProducerOperationProperty().get().getTitle() + "manufacturer");
                     dialogStage.setOnCloseRequest(event -> customProducerDialogModel.cancelProperty().setValue(new Object()));
                 }
                 switch (mainSectionUisModel.customProducerOperationProperty().get()) {
@@ -82,6 +81,7 @@ public class CustomManufacturerUisDialogController {
                         setDelete();
                         break;
                 }
+                dialogStage.setTitle(mainSectionUisModel.customProducerOperationProperty().get().getTitle() + " manufacturer");
                 dialogStage.show();
         });
 

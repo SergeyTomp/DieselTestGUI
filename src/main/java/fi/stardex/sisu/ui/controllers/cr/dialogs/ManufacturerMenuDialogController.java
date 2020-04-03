@@ -3,7 +3,7 @@ package fi.stardex.sisu.ui.controllers.cr.dialogs;
 import fi.stardex.sisu.model.GUI_TypeModel;
 import fi.stardex.sisu.model.cr.MainSectionModel;
 import fi.stardex.sisu.model.cr.ManufacturerMenuDialogModel;
-import fi.stardex.sisu.persistence.orm.Manufacturer;
+import fi.stardex.sisu.persistence.orm.cr.inj.Manufacturer;
 import fi.stardex.sisu.persistence.repos.ManufacturerRepository;
 import fi.stardex.sisu.ui.ViewHolder;
 import javafx.fxml.FXML;
@@ -138,7 +138,7 @@ public class ManufacturerMenuDialogController {
         stage.close();
     }
 
-    public void setNew() {
+    private void setNew() {
         nameTF.setDisable(false);
         nameLabel.setVisible(true);
         nameTF.setText("");
@@ -146,7 +146,7 @@ public class ManufacturerMenuDialogController {
     }
 
 
-    public void setDelete() {
+    private void setDelete() {
         nameTF.setDisable(true);
         nameLabel.setVisible(false);
         nameTF.setText(mainSectionModel.manufacturerObjectProperty().get().getManufacturerName());

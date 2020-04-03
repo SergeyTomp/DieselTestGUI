@@ -1,6 +1,6 @@
 package fi.stardex.sisu.model.cr;
 
-import fi.stardex.sisu.persistence.orm.Manufacturer;
+import fi.stardex.sisu.persistence.orm.cr.inj.Manufacturer;
 import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.persistence.repos.ManufacturerRepository;

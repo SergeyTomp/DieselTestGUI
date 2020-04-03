@@ -108,9 +108,9 @@ public class CustomTestUisDialogController {
                 dialogStage.setScene(new Scene(dialogView));
                 dialogStage.setResizable(false);
                 dialogStage.initModality(Modality.APPLICATION_MODAL);
-                dialogStage.setTitle(mainSectionUisModel.customTestOperationProperty().get().getTitle() + " test");
                 dialogStage.setOnCloseRequest(event -> customTestDialogModel.cancelProperty().setValue(new Object()));
             }
+            dialogStage.setTitle(mainSectionUisModel.customTestOperationProperty().get().getTitle() + " test");
             setLabels();
             dialogStage.show();
         });

@@ -1,5 +1,6 @@
 package fi.stardex.sisu.persistence.orm.pump;
 
+import fi.stardex.sisu.persistence.orm.EntityUpdates;
 import fi.stardex.sisu.persistence.orm.interfaces.Model;
 import fi.stardex.sisu.util.enums.pump.PumpPressureControl;
 import fi.stardex.sisu.util.enums.pump.PumpRegulatorConfig;
@@ -127,6 +128,18 @@ public class Pump implements Model {
         return pumpPressureControl;
     }
 
+    public Double getScvCurrInj() {
+        return scvCurrInj;
+    }
+
+    public Double getScvMinCurr() {
+        return scvMinCurr;
+    }
+
+    public Double getScvMaxCurr() {
+        return scvMaxCurr;
+    }
+
     @Override
     public Boolean isCustom() {
         return custom;
@@ -149,6 +162,21 @@ public class Pump implements Model {
     @Override
     public ManufacturerPump getManufacturer() {
         return manufacturer;
+    }
+
+    @PostPersist
+    private void onPostPersist() {
+        EntityUpdates.getMapOfEntityUpdates().put(this.getClass().getSimpleName(), true);
+    }
+
+    @PostUpdate
+    private void onPostUpdate() {
+        EntityUpdates.getMapOfEntityUpdates().put(this.getClass().getSimpleName(), true);
+    }
+
+    @PostRemove
+    private void onPostRemove() {
+        EntityUpdates.getMapOfEntityUpdates().put(this.getClass().getSimpleName(), true);
     }
 
     @Override
