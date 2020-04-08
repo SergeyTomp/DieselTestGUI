@@ -9,7 +9,8 @@ public enum Locales {
     ENGLISH(new Locale("en","English")),
     RUSSIAN(new Locale("ru","Russian")),
     KOREAN(new Locale("kor", "Korean")),
-    ROMANIAN(new Locale("ro", "Romania"));
+    ROMANIAN(new Locale("ro", "Romania")),
+    LITHUANIAN(new Locale("lt", "Lithuania"));
 
     private static final Logger logger = LoggerFactory.getLogger(Locales.class);
 
