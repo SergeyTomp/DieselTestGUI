@@ -4,15 +4,18 @@ import fi.stardex.sisu.model.GUI_TypeModel;
 import fi.stardex.sisu.model.PiezoRepairModel;
 import fi.stardex.sisu.model.Step3Model;
 import fi.stardex.sisu.model.cr.MainSectionModel;
-import fi.stardex.sisu.model.pump.ManufacturerPumpModel;
 import fi.stardex.sisu.model.uis.MainSectionUisModel;
 import fi.stardex.sisu.model.uis.UisInjectorSectionModel;
 import fi.stardex.sisu.model.updateModels.TestBenchSectionUpdateModel;
+import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.DimasGUIEditionState;
 import fi.stardex.sisu.states.InjectorSectionPwrState;
 import fi.stardex.sisu.states.PumpsStartButtonState;
 import fi.stardex.sisu.util.enums.GUI_type;
+import fi.stardex.sisu.version.FirmwareVersion;
+import fi.stardex.sisu.version.UltimaFirmwareVersion;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.ComboBox;
@@ -23,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.PostConstruct;
 import java.util.prefs.Preferences;
 
+import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.Main_version_0;
 import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.UIS_to_CR_pulseControlSwitch;
 
 public class GUI_TypeController {
@@ -53,7 +57,6 @@ public class GUI_TypeController {
     private Parent connection;
     private Parent uisSettings;
     private DimasGUIEditionState dimasGUIEditionState;
-    private ManufacturerPumpModel manufacturerPumpModel;
     private GUI_TypeModel gui_typeModel;
     private PumpsStartButtonState pumpsStartButtonState;
     private MainSectionModel mainSectionModel;
@@ -64,10 +67,9 @@ public class GUI_TypeController {
     private PiezoRepairModel piezoRepairModel;
     private TestBenchSectionUpdateModel testBenchSectionUpdateModel;
     private ModbusRegisterProcessor ultimaModbusWriter;
+    private RegisterProvider ultimaRegisterProvider;
+    private FirmwareVersion<UltimaFirmwareVersion.UltimaVersions> ultimaFirmwareVersion;
 
-    public void setManufacturerPumpModel(ManufacturerPumpModel manufacturerPumpModel) {
-        this.manufacturerPumpModel = manufacturerPumpModel;
-    }
     public void setRootPreferences(Preferences rootPreferences) {
         this.rootPreferences = rootPreferences;
     }
@@ -155,6 +157,12 @@ public class GUI_TypeController {
     public void setTestBenchSectionUpdateModel(TestBenchSectionUpdateModel testBenchSectionUpdateModel) {
         this.testBenchSectionUpdateModel = testBenchSectionUpdateModel;
     }
+    public void setUltimaRegisterProvider(RegisterProvider ultimaRegisterProvider) {
+        this.ultimaRegisterProvider = ultimaRegisterProvider;
+    }
+    public void setUltimaFirmwareVersion(FirmwareVersion<UltimaFirmwareVersion.UltimaVersions> ultimaFirmwareVersion) {
+        this.ultimaFirmwareVersion = ultimaFirmwareVersion;
+    }
 
     @PostConstruct
     private void init() {
@@ -188,7 +196,7 @@ public class GUI_TypeController {
         GUI_type currentGUIType = GUI_type.valueOf(rootPreferences.get("GUI_Type", GUI_type.CR_Inj.toString()));
 
         gui_typeComboBox.getSelectionModel().select(currentGUIType);
-        gui_typeComboBox.visibleProperty().bind(dimasGUIEditionState.isDimasGuiEditionProperty().not());
+        dimasGUIEditionState.isDimasGuiEditionProperty().addListener((observableValue, oldValue, newValue) -> gui_typeComboBox.setVisible(!newValue));
         step3Model.step3PauseProperty().addListener((observableValue, oldValue, newValue) -> gui_typeComboBox.setDisable(newValue));
         piezoRepairModel.startMeasureProperty().addListener((observableValue, oldValue, newValue) -> gui_typeComboBox.setDisable(newValue));
         pumpsStartButtonState.startButtonProperty().addListener((observableValue, oldValue, newValue) -> gui_typeComboBox.setDisable(newValue));
@@ -197,6 +205,20 @@ public class GUI_TypeController {
         mainSectionUisModel.startButtonProperty().addListener((observableValue, oldValue, newValue) -> gui_typeComboBox.setDisable(isStarted()));
         uisInjectorSectionModel.injectorButtonProperty().addListener((observableValue, oldValue, newValue) -> gui_typeComboBox.setDisable(isStarted()));
         testBenchSectionUpdateModel.sectionStartedProperty().addListener((observable, oldValue, newValue) -> gui_typeComboBox.setDisable(isStarted()));
+
+        ultimaFirmwareVersion.versionProperty().addListener((observableValue, oldValue, newValue) -> {
+
+            ultimaRegisterProvider.read(Main_version_0);
+            if ((int)Main_version_0.getLastValue() == 93) {
+                Platform.runLater(()-> {
+                    gui_typeComboBox.getSelectionModel().select(GUI_type.CR_Pump);
+                    gui_typeComboBox.setVisible(false);
+                });
+            }
+            else{
+                gui_typeComboBox.setVisible(true);
+            }
+        });
     }
 
     private void changeToCRInj() {

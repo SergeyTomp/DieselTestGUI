@@ -62,6 +62,7 @@ import fi.stardex.sisu.util.wrappers.StatusBarWrapper;
 import fi.stardex.sisu.version.FirmwareVersion;
 import fi.stardex.sisu.version.FlowFirmwareVersion;
 import fi.stardex.sisu.version.StandFirmwareVersion;
+import fi.stardex.sisu.version.UltimaFirmwareVersion;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
@@ -122,7 +123,6 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                  ViewHolder settings,
                                                  ViewHolder connection,
                                                  ViewHolder uisInjectorSection,
-                                                 ManufacturerPumpModel manufacturerPumpModel,
                                                  PumpsStartButtonState pumpsStartButtonState,
                                                  GUI_TypeModel gui_typeModel,
                                                  MainSectionModel mainSectionModel,
@@ -133,7 +133,9 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                  ModbusRegisterProcessor ultimaModbusWriter,
                                                  MainSectionUisModel mainSectionUisModel,
                                                  UisInjectorSectionModel uisInjectorSectionModel,
-                                                 TestBenchSectionUpdateModel testBenchSectionUpdateModel) {
+                                                 TestBenchSectionUpdateModel testBenchSectionUpdateModel,
+                                                 RegisterProvider ultimaRegisterProvider,
+                                                 FirmwareVersion<UltimaFirmwareVersion.UltimaVersions> ultimaFirmwareVersion) {
         GUI_TypeController gui_typeController = rootLayoutController.getGui_typeController();
         gui_typeController.setRootPreferences(rootPreferences);
         gui_typeController.setMainSection(mainSection().getView());
@@ -149,7 +151,6 @@ public class JavaFXSpringConfigure extends ViewLoader{
         gui_typeController.setSettings(settings.getView());
         gui_typeController.setConnection(connection.getView());
         gui_typeController.setDimasGUIEditionState(dimasGUIEditionState);
-        gui_typeController.setManufacturerPumpModel(manufacturerPumpModel);
         gui_typeController.setPumpsStartButtonState(pumpsStartButtonState);
         gui_typeController.setGui_typeModel(gui_typeModel);
         gui_typeController.setMainSectionModel(mainSectionModel);
@@ -165,6 +166,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
         gui_typeController.setMainSectionUisModel(mainSectionUisModel);
         gui_typeController.setUisInjectorSectionModel(uisInjectorSectionModel);
         gui_typeController.setTestBenchSectionUpdateModel(testBenchSectionUpdateModel);
+        gui_typeController.setUltimaRegisterProvider(ultimaRegisterProvider);
+        gui_typeController.setUltimaFirmwareVersion(ultimaFirmwareVersion);
         return gui_typeController;
     }
 
