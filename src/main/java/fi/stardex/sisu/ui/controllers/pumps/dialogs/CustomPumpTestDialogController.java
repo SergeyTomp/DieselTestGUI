@@ -451,7 +451,11 @@ public class CustomPumpTestDialogController {
 
     private void validateValues(TextField max, TextField min, boolean groupActive) {
 
-        if (!groupActive) return;
+        if (!groupActive) {
+            max.clear();
+            min.clear();
+            return;
+        }
         if (isEmpty(max) && isEmpty(min)) { isValid = false; }
         if (!isEmpty(max) && !isEmpty(min) && getDouble(max) <= getDouble(min)) { isValid = false;}
     }
