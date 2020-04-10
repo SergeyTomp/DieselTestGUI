@@ -19,9 +19,12 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.control.ComboBox;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 
 import javax.annotation.PostConstruct;
 import java.util.prefs.Preferences;
@@ -33,8 +36,8 @@ public class GUI_TypeController {
 
     private final Logger logger = LoggerFactory.getLogger(GUI_TypeController.class);
 
-    @FXML
-    private ComboBox<GUI_type> gui_typeComboBox;
+    @FXML private ImageView logoImage;
+    @FXML private ComboBox<GUI_type> gui_typeComboBox;
     private Preferences rootPreferences;
     private Parent mainSection;
     private Parent mainSectionPumps;
@@ -69,6 +72,10 @@ public class GUI_TypeController {
     private ModbusRegisterProcessor ultimaModbusWriter;
     private RegisterProvider ultimaRegisterProvider;
     private FirmwareVersion<UltimaFirmwareVersion.UltimaVersions> ultimaFirmwareVersion;
+    @Value("${customer}")
+    private String customer;
+    @Value("${logo.image}")
+    private String logoPath;
 
     public void setRootPreferences(Preferences rootPreferences) {
         this.rootPreferences = rootPreferences;
@@ -166,6 +173,16 @@ public class GUI_TypeController {
 
     @PostConstruct
     private void init() {
+
+        switch (customer) {
+            case "merlin":
+                logoImage.setImage(new Image(logoPath));
+                logoImage.setFitHeight(80);
+                break;
+            case "stardex":
+            default:
+                break;
+        }
 
         gui_typeComboBox.getItems().addAll(GUI_type.values());
 

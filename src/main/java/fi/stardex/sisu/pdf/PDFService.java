@@ -38,6 +38,7 @@ import org.apache.pdfbox.printing.Scaling;
 import org.apache.pdfbox.util.Matrix;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 
 import javax.annotation.PostConstruct;
 import javax.imageio.ImageIO;
@@ -51,10 +52,8 @@ import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 import java.util.List;
-import java.util.Objects;
 
 import static fi.stardex.sisu.company.CompanyDetails.*;
 
@@ -111,6 +110,10 @@ public class PDFService {
     private StringProperty code;
     private StringProperty nominalFlowRange;
     private StringProperty value;
+    @Value("${logo.image}")
+    private String logoPath;
+    @Value("${customer}")
+    private String client;
 
     private Customer customer;
     private PDPageContentStream contentStream;
@@ -419,7 +422,7 @@ public class PDFService {
 
     private void drawHeaderPage(PDDocument document, PDPage page) throws IOException {
         PDImageXObject companyLogoImage = getCompanyImage(document);
-        BufferedImage stardexImage = ImageIO.read(getClass().getResource("/img/logo.png"));
+        BufferedImage stardexImage = ImageIO.read(getClass().getResource(File.separator + logoPath));
         PDImageXObject stardexObjectImage = LosslessFactory.createFromImage(document, stardexImage);
         contentStream = new PDPageContentStream(document, page);
 
@@ -441,17 +444,21 @@ public class PDFService {
         font = PDType0Font.load(document, inputStream);
 
         contentStream.setFont(font, FONT);
+
         contentStream.newLineAtOffset(390, 630);
-//        contentStream.showText(resourceBundle.getString("pdf.stardex.logo.line.first"));
-        contentStream.showText(logoLineFirst.getValue());
-        contentStream.newLineAtOffset(0, -LINES_INTERVAL);
+        if (!client.equals("merlin")) {
+            //        contentStream.showText(resourceBundle.getString("pdf.stardex.logo.line.first"));
+            contentStream.showText(logoLineFirst.getValue());
+            contentStream.newLineAtOffset(0, -LINES_INTERVAL);
 //        contentStream.showText(resourceBundle.getString("pdf.stardex.logo.line.second"));
-        contentStream.showText(logoLineSecond.getValue());
-        contentStream.newLineAtOffset(0, -LINES_INTERVAL);
+            contentStream.showText(logoLineSecond.getValue());
+            contentStream.newLineAtOffset(0, -LINES_INTERVAL);
 //        contentStream.showText(resourceBundle.getString("stardex.site"));
-        contentStream.showText(stardexSite.getValue());
-        contentStream.newLineAtOffset(0, -LINES_INTERVAL);
-        contentStream.showText("Finland");
+            contentStream.showText(stardexSite.getValue());
+            contentStream.newLineAtOffset(0, -LINES_INTERVAL);
+            contentStream.showText("Finland");
+        }
+
         contentStream.newLineAtOffset(-370, LINES_INTERVAL * 4f);
         drawAndMove(NAME.get());
         drawAndMove(ADDRESS.get());

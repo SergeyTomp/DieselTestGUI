@@ -7,6 +7,7 @@ import fi.stardex.sisu.spring.SpringJavaConfig;
 import javafx.application.Application;
 import javafx.application.Preloader;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -31,6 +32,9 @@ public abstract class AbstractJavaFxApplicationSupport extends Application {
     protected ConfigurableApplicationContext context;
     private ExecutorService es = Executors.newSingleThreadExecutor();
 
+    @Value("${windowTitle}")
+    String windowTitle;
+
     @Autowired
     private ModbusRegisterProcessor ultimaModbusWriter;
     @Autowired
@@ -43,20 +47,17 @@ public abstract class AbstractJavaFxApplicationSupport extends Application {
     @Override
     public void init() {
 
-        Thread progress = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                double progress = 0;
-                while (true) {
-                    try {
-                        notifyPreloader(new Preloader.ProgressNotification(progress));
-                        progress += 0.01;
-                        Thread.sleep(60);
-                    } catch (InterruptedException e) {
-                        notifyPreloader(new Preloader.ProgressNotification(1));
-                        try {Thread.sleep(500); } catch (InterruptedException e1) {}
-                        return;
-                    }
+        Thread progress = new Thread(() -> {
+            double progress1 = 0;
+            while (true) {
+                try {
+                    notifyPreloader(new Preloader.ProgressNotification(progress1));
+                    progress1 += 0.01;
+                    Thread.sleep(60);
+                } catch (InterruptedException e) {
+                    notifyPreloader(new Preloader.ProgressNotification(1));
+                    try {Thread.sleep(500); } catch (InterruptedException e1) {}
+                    return;
                 }
             }
         });

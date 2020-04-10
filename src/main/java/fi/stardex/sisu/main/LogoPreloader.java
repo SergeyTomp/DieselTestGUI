@@ -1,7 +1,6 @@
 package fi.stardex.sisu.main;
 
 import fi.stardex.sisu.spring.JavaFXSpringConfigure;
-import fi.stardex.sisu.ui.controllers.common.LogoController;
 import javafx.application.Preloader;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -26,7 +25,23 @@ public class LogoPreloader extends Preloader {
 
     public void init(){
 
-        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource("fxml/Logo.fxml"));
+        String fxmlPath = null;
+        try{
+            InputStream resourceAsStream = getClass().getClassLoader().getResourceAsStream("properties/app.properties");
+            if(resourceAsStream == null){
+                throw new NullPointerException();
+            }
+            Properties properties = new Properties();
+            properties.load(resourceAsStream);
+            version = properties.getProperty("stardex.version");
+            fxmlPath = properties.getProperty("logo.preloader");
+        } catch (Exception i){
+            logger.info("Exception while load {}", "properties/app.properties - not found");
+            i.printStackTrace();
+            System.exit(10);
+        }
+
+        FXMLLoader fxmlLoader = new FXMLLoader(getClass().getClassLoader().getResource(fxmlPath));
         try {
             fxmlLoader.load();
             LogoController logoController = fxmlLoader.getController();
@@ -34,32 +49,15 @@ public class LogoPreloader extends Preloader {
             bar.setProgress(0);
             this.scene = new Scene(logoController.getRootBorderPane(), 600, 500);
             scene.setFill(Color.TRANSPARENT);
-
-            Properties properties = new Properties();
-            InputStream resourceAsStream = getClass().getClassLoader().getResourceAsStream("properties/app.properties");
-            if(resourceAsStream == null){
-                throw new NullPointerException();
-            }
-            properties.load(resourceAsStream);
-
-            version = properties.getProperty("stardex.version");
             logoController.getVersionLabel().setText(version);
         } catch (IOException e) {
-            logger.info("Exception while load {}", "fxml/Logo.fxml");
+            logger.info("Exception while load {}", fxmlPath);
             e.printStackTrace();
-            System.exit(10);
-        }catch (NullPointerException n){
-            logger.info("Exception while load {}", "properties/app.properties - not found");
-            n.printStackTrace();
-            System.exit(10);
-        }catch (Exception i){
-            logger.info("Exception while load {}", "fxml/Logo.fxml - not found");
-            i.printStackTrace();
             System.exit(10);
         }
     }
 
-    public void start(Stage stage) throws Exception {
+    public void start(Stage stage) {
         this.stage = stage;
         stage.initStyle(StageStyle.TRANSPARENT);
         stage.setResizable(false);
