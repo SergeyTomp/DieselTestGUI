@@ -1,0 +1,10 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Version=1.0
+Type=Application
+Terminal=false
+Icon[en_US]=/opt/sisu/GUI/merlinLogo.png
+Name[en_US]=MERLIN_SISU
+Exec=/usr/lib/jvm/jdk-11.0.1/bin/java -jar /opt/sisu/GUI/merlin.jar
+Name=MERLIN_SISU
+Icon=/opt/sisu/GUI/merlinLogo.png

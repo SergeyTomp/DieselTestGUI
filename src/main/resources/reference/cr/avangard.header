@@ -17,6 +17,8 @@ sudo cp /tmp/upd/avangard.jar /opt/avangard/GUI/
 sudo cp /tmp/upd/stardexLogo.png /opt/avangard/GUI/
 sudo cp /tmp/upd/stardex.desktop ~/Desktop/
 sudo chmod 777 ~/Desktop/stardex.desktop
+sudo chown stardexdiesel:stardexdiesel ~/Desktop/stardex.desktop
+
 sudo start avangard
 sleep 3
 rm -rf /tmp/upd

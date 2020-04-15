@@ -15,6 +15,7 @@ sudo cp /tmp/upd/stardexLogo.png /opt/avangard/GUI/
 sudo rm -f ~/Desktop/uis.desktop
 sudo cp /tmp/upd/uis.desktop ~/Desktop/
 sudo chmod 777 ~/Desktop/uis.desktop
+sudo chown stardexdiesel:stardexdiesel ~/Desktop/uis.desktop
 
 sleep 3
 rm -rf /tmp/upd

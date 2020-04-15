@@ -14,6 +14,8 @@ sudo cp /tmp/upd/merlin.jar /opt/avangard/GUI/
 sudo cp /tmp/upd/merlinLogo.png /opt/avangard/GUI/
 sudo cp /tmp/upd/merlin.desktop ~/Desktop/
 sudo chmod 777 ~/Desktop/merlin.desktop
+sudo chown stardexdiesel:stardexdiesel ~/Desktop/merlin.desktop
+
 sleep 3
 rm -rf /tmp/upd
 echo Finish

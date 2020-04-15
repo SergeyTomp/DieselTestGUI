@@ -18,6 +18,7 @@ sudo cp /tmp/upd/stardexLogo.png /opt/sisu/GUI/
 sudo rm -f ~/Desktop/sisu.desktop
 sudo cp /tmp/upd/sisu.desktop ~/Desktop/
 sudo chmod 777 ~/Desktop/sisu.desktop
+sudo chown stardexdiesel:stardexdiesel ~/Desktop/sisu.desktop
 
 sleep 3
 rm -rf /tmp/upd

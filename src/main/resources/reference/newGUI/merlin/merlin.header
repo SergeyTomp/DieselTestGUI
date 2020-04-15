@@ -1,0 +1,27 @@
+#!/bin/bash
+echo Updating Stardex-Merlin...
+mkdir -p /tmp/upd
+sudo mkdir -p /opt/sisu/GUI/
+sed -e '1,/^exit$/d' "$0" | tar -C /tmp/upd -zxf -
+cd /tmp/upd
+sleep 3
+sudo rm -f /var/log/syslog*
+sudo rm -rf ~/stardex
+sudo rm -f /opt/sisu/GUI/merlin.jar
+sudo cp /tmp/upd/merlin.jar /opt/sisu/GUI/
+
+sudo tar xkfvz openjdk-11.0.1_linux-x64_bin.tar.gz --directory /usr/lib/jvm
+
+sudo rm -f /opt/sisu/GUI/merlinLogo.png
+sudo cp /tmp/upd/merlinLogo.png /opt/sisu/GUI/
+
+sudo rm -f ~/Desktop/merlin_sisu.desktop
+sudo cp /tmp/upd/merlin_sisu.desktop ~/Desktop/
+sudo chmod 777 ~/Desktop/merlin_sisu.desktop
+sudo chown stardexdiesel:stardexdiesel ~/Desktop/merlin_sisu.desktop
+
+sleep 3
+rm -rf /tmp/upd
+echo Finish
+sudo reboot
+exit

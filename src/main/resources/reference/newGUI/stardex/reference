@@ -10,7 +10,7 @@
   - stardexLogo.png
   - avangard.header
 - Из IDEA в неё скопировать:
-  - проект -> build-> lib -> xxx.jar
+  - проект -> target -> xxx.jar
   - переименовать его в sisu.jar
 - добавить сюда же openjdk-11.0.1_linux-x64_bin.tar.gz
 - В терминале (из созданной папки) выполнить:

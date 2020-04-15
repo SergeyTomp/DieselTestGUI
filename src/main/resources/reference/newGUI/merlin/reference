@@ -1,0 +1,15 @@
+В app.properties и pom.xml  изменить version
+В app.properties закомментировать строки в блоке stardex logos partition и ркаскомментировать строки в блоке merlin logos partition
+Сделать maven.clean и maven.install
+Создать новую папку, где будет новый апдейт
+Из последнего старого апдейта  в неё скопировать:
+- merlin_sisu.desktop
+- merlinLogo.png
+- merlin.header
+Из IDEA в неё скопировать:
+- проект -> target -> sisu-xxx.jar
+- переименовать его в merlin.jar
+добавить сюда же openjdk-11.0.1_linux-x64_bin.tar.gz
+В терминале выполнить:
+1. tar cvzf merlin.tgz merlin.jar merlin_sisu.desktop merlinLogo.png openjdk-11.0.1_linux-x64_bin.tar.gz
+2. cat merlin.header merlin.tgz > merlin.”номер версии”.update
