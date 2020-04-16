@@ -39,7 +39,6 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
@@ -62,7 +61,6 @@ public class InjectorSectionController {
     @FXML private Label coil2Label;
     @FXML private Spinner<Integer> width2CurrentSignalSpinner;
     @FXML private Spinner<Integer> offset2CurrentSignalSpinner;
-    @FXML private GridPane gridLedBeaker;
     @FXML private ProgressBar switcherProgressBar;
     @FXML private Spinner<Integer> widthCurrentSignalSpinner;
     @FXML private Spinner<Double> freqCurrentSignalSpinner;
@@ -155,49 +153,8 @@ public class InjectorSectionController {
         return widthCurrentSignalSpinner;
     }
 
-    public Spinner<Double> getFreqCurrentSignalSpinner() {
-        return freqCurrentSignalSpinner;
-    }
-
-    public ToggleGroup getPiezoCoilToggleGroup() {
-        return piezoCoilToggleGroup;
-    }
-
-    public RadioButton getPiezoRadioButton() {
-        return piezoRadioButton;
-    }
-
-    public RadioButton getCoilRadioButton() {
-        return coilRadioButton;
-    }
-
-    public RadioButton getPiezoDelphiRadioButton() {
-        return piezoDelphiRadioButton;
-    }
-
-    public ToggleButton getLed1ToggleButton() {
-        return led1ToggleButton;
-    }
-
-    public ToggleButton getLed2ToggleButton() {
-        return led2ToggleButton;
-    }
-
-    public ToggleButton getLed3ToggleButton() {
-        return led3ToggleButton;
-    }
-
-    public ToggleButton getLed4ToggleButton() {
-        return led4ToggleButton;
-    }
-
     public ToggleButton getInjectorSectionStartToggleButton() {
         return injectorSectionStartToggleButton;
-    }
-
-    public List<Integer> getArrayNumbersOfActiveLedToggleButtons()
-    {
-        return arrayNumbersOfActiveLedToggleButtons;
     }
 
     public void setUltimaModbusWriter(ModbusRegisterProcessor ultimaModbusWriter) {
@@ -220,7 +177,7 @@ public class InjectorSectionController {
         this.injectorTypeModel = injectorTypeModel;
     }
 
-    public synchronized List<ToggleButton> getActiveLedToggleButtonsList() {
+    private synchronized List<ToggleButton> getActiveLedToggleButtonsList() {
         activeLedToggleButtonsList.clear();
         for (ToggleButton s : ledToggleButtons) {
             if (s.isSelected()) activeLedToggleButtonsList.add(s);
@@ -442,11 +399,6 @@ public class InjectorSectionController {
         });
 
         injectorModel.injectorProperty().addListener((observableValue, oldValue, newValue) -> {
-
-//            coilOnePulseParametersModel.widthProperty().setValue(0);
-//            coilOnePulseParametersModel.periodProperty().setValue(0);
-//            coilTwoPulseParametersModel.width_2Property().setValue(0);
-//            coilTwoPulseParametersModel.shiftProperty().setValue(0);
 
             if (newValue == null) {
                 led1ToggleButton.setSelected(false);
@@ -741,7 +693,11 @@ public class InjectorSectionController {
                 disableNode(true, led2ToggleButton, led3ToggleButton, led4ToggleButton, width2CurrentSignalSpinner, offset2CurrentSignalSpinner);
                 ledToggleButtons.forEach(l -> {if(l.isSelected()){ledBlinkStart(l);}});
                 ledParametersChangeListener.sendLedRegisters();
-                ultimaModbusWriter.add(Injectors_Running_En, true);
+
+                if (injectorTestModel.injectorTestProperty().get().getTestName().getMeasurement() != Measurement.NO) {
+                    ultimaModbusWriter.add(Injectors_Running_En, true);
+                }
+
                 // FIXME: throws NPE if there is no connection
                 // при коннекте должен строиться хотя бы нулевой график
                 timerTasksManager.start();

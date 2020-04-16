@@ -124,7 +124,7 @@ public class UisRlcController {
         ToggleButton ledController = selectedButton();
         InjectorType injectorType = mainSectionUisModel.modelProperty().get().getVAP().getInjectorType();
         InjectorSubType injectorSubType = mainSectionUisModel.modelProperty().get().getVAP().getInjectorSubType();
-        boolean isDoubleCoil = injectorSubType == DOUBLE_COIL ||injectorSubType == HPI;
+        boolean isDoubleCoil = injectorSubType == DOUBLE_COIL ||injectorSubType == HPI || injectorSubType == F2E_COMMON;
 
 
         Double parameter1;
@@ -241,7 +241,7 @@ public class UisRlcController {
         parameter4Gauge.setMaxValue(gauge2MaxValue);
 
         measurementTabPane.getSelectionModel().select(0);
-        tabCoilTwo.setDisable(!(injectorSubType == DOUBLE_COIL || injectorSubType == HPI));
+        tabCoilTwo.setDisable(!(injectorSubType == DOUBLE_COIL || injectorSubType == HPI || injectorSubType == F2E_COMMON));
 
         clearGauges();
     }

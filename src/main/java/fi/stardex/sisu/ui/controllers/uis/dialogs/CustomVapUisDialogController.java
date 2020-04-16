@@ -140,7 +140,7 @@ public class CustomVapUisDialogController {
         customModelDialogModel.getInjectorType().addListener((observableValue,  oldValue, newValue) -> currInjTypeLabel.setText(newValue.name()));
         customModelDialogModel.getInjectorSubType().addListener((observableValue,  oldValue, newValue) -> {
             currInjSubTypeLabel.setText(newValue.name());
-            activateCoil2Spinners(newValue == InjectorSubType.DOUBLE_COIL);
+            activateCoil2Spinners(newValue == InjectorSubType.DOUBLE_COIL || newValue == InjectorSubType.F2E_COMMON);
         });
 
         bipCheckBox.selectedProperty().addListener((observableValue,  oldValue, newValue) -> activateBipSpinners(newValue));
@@ -274,7 +274,8 @@ public class CustomVapUisDialogController {
         inletPressureSpinner.setDisable(false);
         bipPwmSpinner.setDisable(true);
         bipWindowSpinner.setDisable(true);
-        activateCoil2Spinners(customModelDialogModel.getInjectorSubType().get() == InjectorSubType.DOUBLE_COIL);
+        InjectorSubType injectorSubType = customModelDialogModel.getInjectorSubType().get();
+        activateCoil2Spinners(injectorSubType == InjectorSubType.DOUBLE_COIL || injectorSubType == InjectorSubType.F2E_COMMON);
     }
 
     private void setDelete() {

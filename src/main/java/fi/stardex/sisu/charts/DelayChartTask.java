@@ -129,7 +129,10 @@ public class DelayChartTask extends ChartTask {
             case UIS:
 
                 isActive = !uisInjectorSectionModel.activeLedToggleButtonsListProperty().get().isEmpty();
-                slotNumber = mainSectionUisModel.injectorTestProperty().get().getVoltAmpereProfile().getInjectorSubType() == InjectorSubType.HPI ? 2 : 1;
+
+                InjectorSubType injectorSubType = mainSectionUisModel.injectorTestProperty().get().getVoltAmpereProfile().getInjectorSubType();
+                boolean isDoubleCoil = injectorSubType == InjectorSubType.HPI || injectorSubType == InjectorSubType.F2E_COMMON;
+                slotNumber = isDoubleCoil ? 2 : 1;
                 break;
 
             default:isActive = false;

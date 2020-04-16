@@ -273,7 +273,8 @@ public class UisVapController {
         uisVapModel.boostDisableProperty().setValue(currentVAP.getBoostDisable());
         enableBoostToggleButton.setSelected(currentVAP.getBoostDisable());
 
-        boolean isDoubleChannel = currentVAP.getInjectorSubType() == DOUBLE_COIL || currentVAP.getInjectorSubType() == HPI;
+        InjectorSubType injectorSubType = currentVAP.getInjectorSubType();
+        boolean isDoubleChannel = injectorSubType == DOUBLE_COIL || injectorSubType == HPI || injectorSubType == F2E_COMMON;
 
         activateCoil2Spinners(isDoubleChannel);
         activateBipSpinners(isBipTest);
@@ -589,7 +590,7 @@ public class UisVapController {
 
             InjectorSubType injectorSubType = currentVAP.getInjectorSubType();
 
-            if (injectorSubType == DOUBLE_COIL || injectorSubType == HPI) {
+            if (injectorSubType == DOUBLE_COIL || injectorSubType == HPI || injectorSubType == F2E_COMMON) {
 
                 double boostI2Value = boostI2Spinner.getValue();
                 double firstI2Value = firstI2Spinner.getValue();
@@ -623,11 +624,11 @@ public class UisVapController {
                 ultimaModbusWriter.add(StartOnBatteryUTwo, boostToggleButtonSelected);
                 ultimaModbusWriter.add(SecondCoilShiftTime, shift);
 
-                log.info((char)27 + "[31mBoostIBoardTwo " + boostIValue);
-                log.info((char)27 + "[31mFirstIBoardTwo " + firstIValue);
-                log.info((char)27 + "[31mSecondIBoardTwo " + secondIValue);
-                log.info((char)27 + "[31mFirstWBoardTwo " + firstWValue);
-                log.info((char)27 + "[31mWidthBoardTwo " + widthValue);
+                log.info((char)27 + "[31mBoostIBoardTwo " + boostI2Value);
+                log.info((char)27 + "[31mFirstIBoardTwo " + firstI2Value);
+                log.info((char)27 + "[31mSecondIBoardTwo " + secondI2Value);
+                log.info((char)27 + "[31mFirstWBoardTwo " + firstW2Value);
+                log.info((char)27 + "[31mWidthBoardTwo " + width2Value);
                 log.info((char)27 + "[31mBoostUTwoDisabled " + boostToggleButtonSelected);
             }
             else {
@@ -640,7 +641,7 @@ public class UisVapController {
                 ultimaModbusWriter.add(StartOnBatteryUTwo, boostToggleButtonSelected);
             }
 
-            if (currentVAP.getInjectorSubType() == HPI || currentVAP.getInjectorSubType() == DOUBLE_SIGNAL) {
+            if (injectorSubType == HPI || injectorSubType == DOUBLE_SIGNAL  || injectorSubType == F2E_COMMON) {
 
                 int angle_2;
                 switch (who) {
@@ -657,7 +658,7 @@ public class UisVapController {
 
                 log.info((char)27 + "[31mAngle_2 " + angle_2);
             }
-            if (currentVAP.getInjectorSubType() == DOUBLE_SIGNAL) {
+            if (injectorSubType == DOUBLE_SIGNAL) {
 
                 int width_2;
                 switch (who) {

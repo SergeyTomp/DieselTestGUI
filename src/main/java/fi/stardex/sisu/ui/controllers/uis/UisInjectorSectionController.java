@@ -248,6 +248,18 @@ public class UisInjectorSectionController {
                 pressureToggleButton.setVisible(true);
                 pressureToggleButton.setSelected(true);
                 break;
+            case F2E_COMMON:
+                width2Label.setVisible(true);
+                width2Spinner.setVisible(true);
+                pressureLabel.setVisible(true);
+                dutyLabel.setVisible(true);
+                currentLabel.setVisible(true);
+                pressureSpinner.setVisible(true);
+                currentSpinner.setVisible(true);
+                dutySpinner.setVisible(true);
+                pressureToggleButton.setVisible(true);
+                pressureToggleButton.setSelected(true);
+                break;
         }
         injectorSubType.getModeSwitchRegisters().forEach((k, v) -> ultimaModbusWriter.add(k, v));
         injectorSubType.getSlotConfigureRegisters().forEach((k, v) -> ultimaModbusWriter.add(k, v));
@@ -469,6 +481,7 @@ public class UisInjectorSectionController {
 
                 widthSpinner.getValueFactory().setValue(WIDTH_CURRENT_SIGNAL_SPINNER_INIT);
                 angle1Spinner.getValueFactory().setValue(ANGLE_OFFSET_SPINNER_INIT);
+                angle2Spinner.getValueFactory().setValue(ANGLE_OFFSET_SPINNER_INIT);
                 bipGauge.setBipMode(false);
                 Platform.runLater(bipGauge);
                 bipTaskLabel.setText("");
@@ -494,17 +507,19 @@ public class UisInjectorSectionController {
 
             InjectorSubType injectorSubType = newValue.getVoltAmpereProfile().getInjectorSubType();
 
-            if (injectorSubType == DOUBLE_COIL || injectorSubType == HPI || injectorSubType == DOUBLE_SIGNAL) {
+            if (injectorSubType == DOUBLE_COIL || injectorSubType == HPI || injectorSubType == DOUBLE_SIGNAL || injectorSubType == F2E_COMMON) {
                 width2Spinner.getValueFactory().setValue(injectorSubType == DOUBLE_COIL ? totalPulseTime1 : totalPulseTime2);
                 if (injectorSubType != DOUBLE_COIL) {
                     angle2Spinner.getValueFactory().setValue(angle_2);
                 } else {
                     offsetSpinner.getValueFactory().setValue(shift);
                 }
-            } else if (injectorSubType == F2E) {
-                regulator1pressModeON(settedPressure);
-            }else{
+            } else{
                 width2Spinner.getValueFactory().setValue(totalPulseTime2);
+            }
+
+            if (injectorSubType == F2E || injectorSubType == F2E_COMMON) {
+                regulator1pressModeON(settedPressure);
             }
 
             if (isBipTest(newValue)) {
@@ -525,6 +540,7 @@ public class UisInjectorSectionController {
                 bipTaskLabel.setText("");
                 uisInjectorSectionModel.bipRangeLabelProperty().setValue("");
             }
+            sendSlotPulseRegisters(testBenchSectionModel.targetRPMProperty().get());
         });
     }
 
@@ -541,15 +557,24 @@ public class UisInjectorSectionController {
     private void setupTargetRPMListener() {
 
         testBenchSectionModel.targetRPMProperty().addListener((observable, oldValue, newValue) -> {
-            int targetRPM = newValue.intValue();
-            int period = targetRPM != 0 ? (int) ((60d / targetRPM) * 1000) : 100;
-            int pulseTime1 = (int) ((period / 360d) * angle1Spinner.getValue());
-            int pulseTime2 = (int) ((period / 360d) * angle2Spinner.getValue());
-//
-            ultimaModbusWriter.add(Ftime1, pulseTime1);
-            ultimaModbusWriter.add(Ftime2, pulseTime2);
-            ultimaModbusWriter.add(GImpulsesPeriod, period);
+
+            if (mainSectionUisModel.isTestIsChanging()
+                    || mainSectionUisModel.injectorTestProperty().get() == null
+                    || mainSectionUisModel.modelProperty().get() == null) { return; }
+
+            sendSlotPulseRegisters(newValue.intValue());
         });
+    }
+
+    private void sendSlotPulseRegisters(int targetRPM) {
+
+        int period = targetRPM != 0 ? (int) ((60d / targetRPM) * 1000) : 100;
+        int pulseTime1 = (int) ((period / 360d) * angle1Spinner.getValue());
+        int pulseTime2 = (int) ((period / 360d) * angle2Spinner.getValue());
+
+        ultimaModbusWriter.add(Ftime1, pulseTime1);
+        ultimaModbusWriter.add(Ftime2, pulseTime2);
+        ultimaModbusWriter.add(GImpulsesPeriod, period);
     }
 
     private void setupRPMSourceListener() {

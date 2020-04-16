@@ -201,7 +201,7 @@ public class UisHardwareUpdateModel implements Updater {
 
             injectorSubType = model.getVAP().getInjectorSubType();
 
-            if (injectorSubType == DOUBLE_COIL || injectorSubType == HPI) {
+            if (injectorSubType == DOUBLE_COIL || injectorSubType == HPI || injectorSubType == F2E_COMMON) {
 
                 if ((value = FirstWBoardTwo.getLastValue().toString()) != null){
                     first_W2.setValue(value);
@@ -234,7 +234,7 @@ public class UisHardwareUpdateModel implements Updater {
                 width2.setValue(Integer.toString(0));
                 shift.setValue(Integer.toString(0));
             }
-            if (injectorSubType == F2E) {
+            if (injectorSubType == F2E || injectorSubType == F2E_COMMON) {
 
                 if ((PressureReg1_I_Fact.getLastValue()) != null && activeRegulatingMode != RegActive.CURRENT) {
                     current.setValue(round((double)PressureReg1_I_Fact.getLastValue()));

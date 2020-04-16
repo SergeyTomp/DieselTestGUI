@@ -71,7 +71,17 @@ public enum InjectorSubType {
             1,      // injectorSlotNumberOne
             0xFF,   // injectorSlotNumberTwo
             1,      // angleSlotNumberOne
-            0xFF);  // angleSlotNumberTwo;
+            0xFF),  // angleSlotNumberTwo;
+    F2E_COMMON (
+            false,  // hpiEnable
+            false,  // doubleCoilEnable
+            false,  // doubleSignalSlotOneEn
+            false,  // doubleSignalSlotTwoEn
+            1,      // injectorSlotNumberOne
+            2,      // injectorSlotNumberTwo
+            1,      // angleSlotNumberOne
+            2);     // angleSlotNumberTwo;
+
 
     private Map<ModbusMapUltima, Boolean> modeSwitchRegisters = new HashMap<>();
     private Map<ModbusMapUltima, Integer> slotConfigureRegisters = new HashMap<>();

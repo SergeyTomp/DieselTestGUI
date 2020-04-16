@@ -36,7 +36,7 @@
                               <RowConstraints maxHeight="-Infinity" prefHeight="40.0" vgrow="SOMETIMES" />
                           </rowConstraints>
                           <children>
-                              <Label fx:id="widthLabel" text="Width" GridPane.rowIndex="1" />
+                              <Label fx:id="widthLabel" text="Width_1" GridPane.rowIndex="1" />
                               <Label fx:id="angle1Label" text="Angle_1" GridPane.rowIndex="2" />
                               <StackPane fx:id="widthStackPane" GridPane.columnIndex="1" GridPane.rowIndex="1">
                                   <Spinner fx:id="widthSpinner" editable="true" />
@@ -52,46 +52,55 @@
                       <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                     </columnConstraints>
                     <rowConstraints>
+                        <RowConstraints maxHeight="-Infinity" minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
                       <RowConstraints maxHeight="-Infinity" prefHeight="40.0" vgrow="SOMETIMES" />
                       <RowConstraints maxHeight="-Infinity" prefHeight="40.0" vgrow="SOMETIMES" />
                       <RowConstraints maxHeight="-Infinity" prefHeight="40.0" vgrow="SOMETIMES" />
                         <RowConstraints prefHeight="10.0" vgrow="SOMETIMES" />
                     </rowConstraints>
                      <children>
-                        <StackPane fx:id="topLabelStackPane">
+                        <StackPane fx:id="topLabelStackPane" GridPane.rowIndex="1">
                            <children>
                               <Label fx:id="pressureLabel" text="Pressure" visible="false" />
-                              <Label fx:id="offsetLabel" text="Pressurisation" visible="false" />
-                              <Label fx:id="width2Label" text="Width_2" visible="false" />
+                              <Label fx:id="angle2Label" text="Angle_2" visible="false" />
                            </children>
                         </StackPane>
-                        <StackPane fx:id="midLabelStackPane" GridPane.rowIndex="1">
+                        <StackPane fx:id="midLabelStackPane" GridPane.rowIndex="2">
                            <children>
-                              <Label fx:id="angle2Label" text="Angle_2" visible="false" />
                               <Label fx:id="currentLabel" text="Ampere" visible="false" />
                            </children>
                         </StackPane>
-                        <StackPane fx:id="lowLabelStackPane" GridPane.rowIndex="2">
+                        <StackPane fx:id="lowLabelStackPane" GridPane.rowIndex="3">
                            <children>
                               <Label fx:id="dutyLabel" text="Percent" visible="false" />
                            </children>
                         </StackPane>
-                        <StackPane fx:id="topSpinnerStackPane" GridPane.columnIndex="1">
+                        <StackPane fx:id="topSpinnerStackPane" GridPane.columnIndex="1" GridPane.rowIndex="1">
                            <children>
                               <Spinner fx:id="pressureSpinner" editable="true" visible="false" />
-                              <Spinner fx:id="width2Spinner" editable="true" visible="false" />
-                              <Spinner fx:id="offsetSpinner" editable="true" visible="false" />
-                           </children>
-                        </StackPane>
-                        <StackPane fx:id="midSpinnerStackPane" GridPane.columnIndex="1" GridPane.rowIndex="1">
-                           <children>
-                              <Spinner fx:id="currentSpinner" editable="true" visible="false" />
                               <Spinner fx:id="angle2Spinner" editable="true" visible="false" />
                            </children>
                         </StackPane>
-                        <StackPane fx:id="lowSpinnerStackPane" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                        <StackPane fx:id="midSpinnerStackPane" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                           <children>
+                              <Spinner fx:id="currentSpinner" editable="true" visible="false" />
+                           </children>
+                        </StackPane>
+                        <StackPane fx:id="lowSpinnerStackPane" GridPane.columnIndex="1" GridPane.rowIndex="3">
                            <children>
                               <Spinner fx:id="dutySpinner" editable="true" visible="false" />
+                           </children>
+                        </StackPane>
+                        <StackPane fx:id="firstLabelStackPane" prefHeight="150.0" prefWidth="200.0">
+                           <children>
+                              <Label fx:id="width2Label" text="Width_2" visible="false" />
+                              <Label fx:id="offsetLabel" text="Pressurisation" visible="false" />
+                           </children>
+                        </StackPane>
+                        <StackPane fx:id="firstSpinnerStackPane" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="1">
+                           <children>
+                              <Spinner fx:id="width2Spinner" editable="true" visible="false" />
+                              <Spinner fx:id="offsetSpinner" editable="true" visible="false" />
                            </children>
                         </StackPane>
                      </children>

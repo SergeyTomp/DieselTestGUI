@@ -345,7 +345,7 @@ public abstract class ChartTask extends TimerTask {
                 return voltAmpereProfileDialogModel.isDoubleCoilProperty().get();
             case UIS:
                 InjectorSubType injectorSubType = mainSectionUisModel.modelProperty().get().getVAP().getInjectorSubType();
-                return injectorSubType == DOUBLE_COIL || injectorSubType == HPI;
+                return injectorSubType == DOUBLE_COIL || injectorSubType == HPI || injectorSubType == F2E_COMMON;
             default:return false;
         }
     }
