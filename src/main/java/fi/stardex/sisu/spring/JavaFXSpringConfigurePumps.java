@@ -289,12 +289,14 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
                                                                  PumpModel pumpModel,
                                                                  PumpTestModel pumpTestModel,
                                                                  I18N i18N,
-                                                                 LanguageModel languageModel) {
+                                                                 LanguageModel languageModel,
+                                                                 PumpModelService pumpModelService) {
         PumpFlowTextAreaController pumpFlowTextAreaController = pumpFlowController.getPumpFlowTextAreaController();
         pumpFlowTextAreaController.setPumpModel(pumpModel);
         pumpFlowTextAreaController.setPumpTestModel(pumpTestModel);
         pumpFlowTextAreaController.setI18N(i18N);
         pumpFlowTextAreaController.setLanguageModel(languageModel);
+        pumpFlowTextAreaController.setPumpModelService(pumpModelService);
         return pumpFlowTextAreaController;
     }
 

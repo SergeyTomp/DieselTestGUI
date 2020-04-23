@@ -26,7 +26,7 @@ public class PumpModelService implements ModelService {
     }
 
     @Override
-    public Model findByModelCode(String modelCode) {
+    public Pump findByModelCode(String modelCode) {
         return pumpRepository.findByPumpCode(modelCode);
     }
 

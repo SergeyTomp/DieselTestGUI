@@ -14,7 +14,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "pump")
-@NamedEntityGraph(name = "Pump.allLazy", attributeNodes = {@NamedAttributeNode("manufacturer")})
+@NamedEntityGraph(name = "Pump.allLazy", attributeNodes = {@NamedAttributeNode("manufacturer"), @NamedAttributeNode("pumpCarModelList"), @NamedAttributeNode("pumpInfo")})
 public class Pump implements Model {
 
     @Id
@@ -56,12 +56,19 @@ public class Pump implements Model {
     @Column(name = "scv_max_curr")
     private Double scvMaxCurr;
 
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "pump_code", referencedColumnName = "pump_code")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "pump", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PumpTest> pumpTests = new ArrayList<>();
+
+    //  старый вариант маппинга, оставил как пример
+//    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+//    @JoinColumn(name = "pump_code", referencedColumnName = "pump_code")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "pumpCode", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<PumpCarModel> pumpCarModelList = new ArrayList<>();
 
-    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
-    @JoinColumn(name = "pump_code", referencedColumnName = "pump_code")
+    //  старый вариант маппинга, оставил как пример (в PumpInfo убрать implements Serializable и изменить тип pumpCode с Pump на String, как было)
+//    @OneToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
+//    @JoinColumn(name = "pump_code", referencedColumnName = "pump_code")
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "pumpCode", cascade = CascadeType.ALL, orphanRemoval = true)
     private PumpInfo pumpInfo;
 
     public Pump() { }

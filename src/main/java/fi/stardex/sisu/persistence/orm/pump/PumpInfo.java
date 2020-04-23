@@ -1,17 +1,16 @@
 package fi.stardex.sisu.persistence.orm.pump;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "pump_info")
-public class PumpInfo {
+public class PumpInfo implements Serializable{
 
     @Id
-    @Column(name = "pump_code")
-    private String pumpCode;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "pump_code")
+    private Pump pumpCode;
 
     @Column(name = "pump_type")
     private String pumpType;

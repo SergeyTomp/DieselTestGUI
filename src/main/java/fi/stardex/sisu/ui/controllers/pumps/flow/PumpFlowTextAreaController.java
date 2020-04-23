@@ -5,6 +5,7 @@ import fi.stardex.sisu.model.pump.PumpModel;
 import fi.stardex.sisu.model.pump.PumpTestModel;
 import fi.stardex.sisu.persistence.orm.pump.Pump;
 import fi.stardex.sisu.persistence.orm.pump.PumpTest;
+import fi.stardex.sisu.persistence.repos.pump.PumpModelService;
 import fi.stardex.sisu.util.i18n.I18N;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -44,21 +45,22 @@ public class PumpFlowTextAreaController {
     private PumpTestModel pumpTestModel;
     private I18N i18N;
     private LanguageModel languageModel;
+    private PumpModelService pumpModelService;
 
     public void setPumpModel(PumpModel pumpModel) {
         this.pumpModel = pumpModel;
     }
-
     public void setPumpTestModel(PumpTestModel pumpTestModel) {
         this.pumpTestModel = pumpTestModel;
     }
-
     public void setI18N(I18N i18N) {
         this.i18N = i18N;
     }
-
     public void setLanguageModel(LanguageModel languageModel) {
         this.languageModel = languageModel;
+    }
+    public void setPumpModelService(PumpModelService pumpModelService) {
+        this.pumpModelService = pumpModelService;
     }
 
     @PostConstruct
@@ -101,6 +103,7 @@ public class PumpFlowTextAreaController {
         StringBuilder sb = new StringBuilder();
 
         Pump pump = pumpModel.pumpProperty().get();
+        pump = pumpModelService.findByModelCode(pump.getModelCode());
         PumpTest pumpTest = pumpTestModel.pumpTestProperty().get();
 
         sb.append(oem.get()).append(pump.getManufacturer()).append(NEW_LINE)
