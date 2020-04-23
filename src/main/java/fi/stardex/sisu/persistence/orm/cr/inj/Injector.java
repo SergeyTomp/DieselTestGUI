@@ -7,6 +7,7 @@ import fi.stardex.sisu.persistence.orm.interfaces.VAP;
 import javax.persistence.*;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 
 @Entity
 @NamedEntityGraph(name = "Injector.allLazy", attributeNodes = {@NamedAttributeNode("manufacturer"), @NamedAttributeNode("voltAmpereProfile")})
@@ -126,6 +127,19 @@ public class Injector implements Model {
     @Override
     public String toString() {
         return injectorCode;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Injector that = (Injector) o;
+        return Objects.equals(getModelCode(), that.getModelCode());
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getModelCode());
     }
 
 }

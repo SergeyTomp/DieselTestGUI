@@ -670,10 +670,12 @@ public class MainSectionUisController {
             if (event.getButton() == MouseButton.SECONDARY) {
                 testMenu.getItems().clear();
 
-                testMenu.getItems().add(newTest);
-                if (!defaultRadioButton.isSelected() && testListView.getSelectionModel().getSelectedItem() != null) {
-                    testMenu.getItems().add(editTest);
-                    testMenu.getItems().add(deleteTest);
+                if (!defaultRadioButton.isSelected()) {
+                    testMenu.getItems().add(newTest);
+                    if (testListView.getSelectionModel().getSelectedItem() != null) {
+                        testMenu.getItems().add(editTest);
+                        testMenu.getItems().add(deleteTest);
+                    }
                 }
                 testMenu.show(testListView, event.getScreenX(), event.getScreenY());
             } else

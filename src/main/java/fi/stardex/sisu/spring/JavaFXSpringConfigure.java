@@ -198,7 +198,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                        NewEditInjectorDialogModel newEditInjectorDialogModel,
                                                        Step3Model step3Model,
                                                        TabSectionModel tabSectionModel,
-                                                       PiezoRepairModel piezoRepairModel) {
+                                                       PiezoRepairModel piezoRepairModel,
+                                                       NewEditTestDialogModel newEditTestDialogModel) {
         MainSectionController mainSectionController = (MainSectionController) mainSection().getController();
         mainSectionController.setNewEditInjectorDialog(newEditInjectorDialog());
         mainSectionController.setNewEditTestDialog(newEditTestDialog());
@@ -225,6 +226,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         mainSectionController.setStep3Model(step3Model);
         mainSectionController.setTabSectionModel(tabSectionModel);
         mainSectionController.setPiezoRepairModel(piezoRepairModel);
+        mainSectionController.setNewEditTestDialogModel(newEditTestDialogModel);
         return mainSectionController;
     }
 
@@ -995,10 +997,14 @@ public class JavaFXSpringConfigure extends ViewLoader{
     @Bean
     @Autowired
     public NewEditTestDialogController newEditTestDialogController(InjectorTestRepository injectorTestRepository,
-                                                                   TestNamesRepository testNamesRepositor) {
+                                                                   TestNamesRepository testNamesRepositor,
+                                                                   MainSectionModel mainSectionModel,
+                                                                   NewEditTestDialogModel newEditTestDialogModel) {
         NewEditTestDialogController newEditTestDialogController = (NewEditTestDialogController) newEditTestDialog().getController();
         newEditTestDialogController.setInjectorTestRepository(injectorTestRepository);
         newEditTestDialogController.setTestNamesRepository(testNamesRepositor);
+        newEditTestDialogController.setMainSectionModel(mainSectionModel);
+        newEditTestDialogController.setNewEditTestDialogModel(newEditTestDialogModel);
         return newEditTestDialogController;
     }
 

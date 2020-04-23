@@ -240,6 +240,8 @@ public class MainSectionController {
 
     private PiezoRepairModel piezoRepairModel;
 
+    private NewEditTestDialogModel newEditTestDialogModel;
+
     private boolean oemAlertProcessing;
 
     private boolean modelAlertProcessing;
@@ -384,6 +386,10 @@ public class MainSectionController {
         this.piezoRepairModel = piezoRepairModel;
     }
 
+    public void setNewEditTestDialogModel(NewEditTestDialogModel newEditTestDialogModel) {
+        this.newEditTestDialogModel = newEditTestDialogModel;
+    }
+
     @PostConstruct
     private void init() {
 
@@ -409,6 +415,7 @@ public class MainSectionController {
         setupGUI_typeModelListener();
         setupManufacturerMenuDialogModelListener();
         setupNewEditInjectorDialogListener();
+        setupNewEditTestDialogListener();
 //        setupManufacturerListListener();
         setupInjectorSectionPwrButtonListener();
         setupStartButtonListener();
@@ -662,7 +669,7 @@ public class MainSectionController {
                 } else {
                     modelMenu.getItems().add(newModel);
                     if (modelListView.getSelectionModel().getSelectedItem() != null)
-                        modelMenu.getItems().addAll(copyModel, editModel, deleteModel);
+                        modelMenu.getItems().addAll(editModel, deleteModel);
                 }
                 modelMenu.show(modelListView, event.getScreenX(), event.getScreenY());
             } else
@@ -680,10 +687,18 @@ public class MainSectionController {
         editTest.setOnAction(new TestMenuEventHandler("Edit test", NewEditTestDialogController::setEdit));
         MenuItem deleteTest = new MenuItem("Delete");
         deleteTest.setOnAction(new TestMenuEventHandler("Delete test", NewEditTestDialogController::setDelete));
-        testMenu.getItems().add(newTest);
+
 
         testListView.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
             if (event.getButton() == MouseButton.SECONDARY) {
+                testMenu.getItems().clear();
+                if (!defaultRadioButton.isSelected()) {
+                    testMenu.getItems().add(newTest);
+                    if (testListView.getSelectionModel().getSelectedItem() != null) {
+                        testMenu.getItems().add(editTest);
+                        testMenu.getItems().add(deleteTest);
+                    }
+                }
                 testMenu.show(testListView, event.getScreenX(), event.getScreenY());
             } else
                 testMenu.hide();
@@ -1107,6 +1122,15 @@ public class MainSectionController {
             Injector newInj = newEditInjectorDialogModel.customInjectorProperty().get();
             modelListView.getSelectionModel().select(newInj);
             modelListView.scrollTo(newInj);
+        });
+    }
+
+    private void setupNewEditTestDialogListener() {
+
+        newEditTestDialogModel.doneProperty().addListener((observable, oldValue, newValue) -> {
+            Injector injector = mainSectionModel.injectorProperty().get();
+            setFilteredItems(mainSectionModel.manufacturerObjectProperty().get());
+            modelListView.getSelectionModel().select(injector);
         });
     }
 

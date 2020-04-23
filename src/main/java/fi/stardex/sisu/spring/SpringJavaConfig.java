@@ -1406,6 +1406,11 @@ public class SpringJavaConfig {
         return new PumpTestNameService(pumpTestNameRepository);
     }
 
+    @Bean
+    public NewEditTestDialogModel newEditTestDialogModel() {
+        return new NewEditTestDialogModel();
+    }
+
 //    @Bean
 //    @Autowired
 //    public FxListSelection pumpTestListSelectionModel(PumpTestListController pumpTestListController) {

@@ -1,5 +1,8 @@
 package fi.stardex.sisu.ui.controllers.cr.dialogs;
 
+import fi.stardex.sisu.model.cr.MainSectionModel;
+import fi.stardex.sisu.model.cr.NewEditTestDialogModel;
+import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.persistence.orm.cr.inj.TestName;
 import fi.stardex.sisu.persistence.repos.cr.InjectorTestRepository;
@@ -19,55 +22,44 @@ import static fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer.getInjector
 
 public class NewEditTestDialogController {
 
-    @FXML
-    private ComboBox<TestName> testComboBox;
-    @FXML
-    private TextField barTF;
-    @FXML
-    private TextField rpmTF;
-    @FXML
-    private TextField widthTF;
-    @FXML
-    private TextField freqTF;
-    @FXML
-    private TextField nominalTF;
-    @FXML
-    private TextField flowRangeTF;
-    @FXML
-    private TextField adjTimeTF;
-    @FXML
-    private TextField measureTimeTF;
-    @FXML
-    private Button saveBtn;
-    @FXML
-    private Button cancelBtn;
+    @FXML private ComboBox<TestName> testComboBox;
+    @FXML private TextField barTF;
+    @FXML private TextField rpmTF;
+    @FXML private TextField widthTF;
+    @FXML private TextField freqTF;
+    @FXML private TextField nominalTF;
+    @FXML private TextField flowRangeTF;
+    @FXML private TextField adjTimeTF;
+    @FXML private TextField measureTimeTF;
+    @FXML private Button saveBtn;
+    @FXML private Button cancelBtn;
 
     private List<TestName> testNames = new LinkedList<>();
-
     private InjectorTestRepository injectorTestRepository;
-
     private TestNamesRepository testNamesRepository;
-
     private Stage stage;
-
     private ListView<InjectorTest> testListView;
-
     private State currentState;
+    private MainSectionModel mainSectionModel;
+    private NewEditTestDialogModel newEditTestDialogModel;
 
     public void setInjectorTestRepository(InjectorTestRepository injectorTestRepository) {
         this.injectorTestRepository = injectorTestRepository;
     }
-
     public void setTestNamesRepository(TestNamesRepository testNamesRepository) {
         this.testNamesRepository = testNamesRepository;
     }
-
+    public void setMainSectionModel(MainSectionModel mainSectionModel) {
+        this.mainSectionModel = mainSectionModel;
+    }
     public void setStage(Stage stage) {
         this.stage = stage;
     }
-
     public void setTestListView(ListView<InjectorTest> testListView) {
         this.testListView = testListView;
+    }
+    public void setNewEditTestDialogModel(NewEditTestDialogModel newEditTestDialogModel) {
+        this.newEditTestDialogModel = newEditTestDialogModel;
     }
 
     @PostConstruct
@@ -79,6 +71,7 @@ public class NewEditTestDialogController {
                     createAndSave();
                     break;
                 case EDIT:
+                    editAndSave();
                     break;
                 case DELETE:
                     deleteTest();
@@ -96,14 +89,41 @@ public class NewEditTestDialogController {
                 0, 0);
 
         injectorTestRepository.save(injectorTest);
-        testListView.getItems().add(injectorTest);
+        newEditTestDialogModel.customTestProperty().setValue(injectorTest);
+        newEditTestDialogModel.doneProperty().setValue(new Object());
+        stage.close();
+    }
+
+    private void editAndSave() {
+
+        InjectorTest injectorTest = mainSectionModel.injectorTestProperty().get();
+        Injector injector = mainSectionModel.injectorProperty().get();
+
+        injectorTest.setInjector(injector);
+        injectorTest.setTestName(testComboBox.getSelectionModel().getSelectedItem());
+        injectorTest.setMotorSpeed(Integer.valueOf(rpmTF.getText()));
+        injectorTest.setSettedPressure( Integer.valueOf(barTF.getText()));
+        injectorTest.setAdjustingTime(Integer.valueOf(adjTimeTF.getText()));
+        injectorTest.setMeasurementTime(Integer.valueOf(measureTimeTF.getText()));
+        injectorTest.setInjectionRate(Integer.valueOf(freqTF.getText()));
+        injectorTest.setTotalPulseTime(Integer.valueOf(widthTF.getText()));
+        injectorTest.setNominalFlow(Double.valueOf(nominalTF.getText()));
+        injectorTest.setFlowRange(Double.valueOf(flowRangeTF.getText()));
+        injectorTest.setTotalPulseTime2(0);
+        injectorTest.setShift(0);
+
+        injectorTestRepository.save(injectorTest);
+        newEditTestDialogModel.customTestProperty().setValue(injectorTest);
+        newEditTestDialogModel.doneProperty().setValue(new Object());
         stage.close();
     }
 
     private void deleteTest() {
         InjectorTest currentTest = testListView.getSelectionModel().getSelectedItem();
         injectorTestRepository.delete(currentTest);
-        testListView.getItems().remove(currentTest);
+        newEditTestDialogModel.customTestProperty().setValue(null);
+        newEditTestDialogModel.doneProperty().setValue(new Object());
+        stage.close();
     }
 
     public void setNew() {
@@ -122,6 +142,16 @@ public class NewEditTestDialogController {
     }
 
     private void setLabels() {
+
+        rpmTF.setDisable(false);
+        barTF.setDisable(false);
+        widthTF.setDisable(false);
+        freqTF.setDisable(false);
+        nominalTF.setDisable(false);
+        flowRangeTF.setDisable(false);
+        adjTimeTF.setDisable(false);
+        measureTimeTF.setDisable(false);
+
         if (currentState == State.NEW) {
             testComboBox.setDisable(false);
             testComboBox.getItems().setAll(testNames);

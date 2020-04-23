@@ -141,77 +141,99 @@ public class InjectorTest implements ChangeListener<Boolean> {
     public BooleanProperty includedProperty() {
         return included;
     }
-
     public void setIncluded(boolean included) {
         this.included.set(included);
     }
-
     public boolean isIncluded() {
         return included.get();
     }
-
     public Integer getId() {
         return id;
     }
-
     public Injector getInjector() {
         return injector;
     }
-
     public Integer getMotorSpeed() {
         return motorSpeed;
     }
-
     public Integer getSettedPressure() {
         return settedPressure;
     }
-
     public Integer getAdjustingTime() {
         return adjustingTime;
     }
-
     public Integer getMeasurementTime() {
         return measurementTime;
     }
-
     public Integer getInjectionRate() {
         return injectionRate;
     }
-
     public Integer getTotalPulseTime() {
         return totalPulseTime;
     }
-
     public Double getNominalFlow() {
         return nominalFlow;
     }
-
     public Double getFlowRange() {
         return flowRange;
     }
-
     public Boolean isCustom() {
         return isCustom;
     }
-
     public VoltAmpereProfile getVoltAmpereProfile() {
         return voltAmpereProfile;
     }
-
     public TestName getTestName() {
         return testName;
     }
-
     public Integer getTotalPulseTime2() {
         return totalPulseTime2;
     }
-
     public Integer getShift() {
         return shift;
     }
 
     public void setVoltAmpereProfile(VoltAmpereProfile voltAmpereProfile) {
         this.voltAmpereProfile = voltAmpereProfile;
+    }
+    public void setInjector(Injector injector) {
+        this.injector = injector;
+    }
+    public void setTestName(TestName testName) {
+        this.testName = testName;
+    }
+    public void setMotorSpeed(Integer motorSpeed) {
+        this.motorSpeed = motorSpeed;
+    }
+    public void setSettedPressure(Integer settedPressure) {
+        this.settedPressure = settedPressure;
+    }
+    public void setAdjustingTime(Integer adjustingTime) {
+        this.adjustingTime = adjustingTime;
+    }
+    public void setMeasurementTime(Integer measurementTime) {
+        this.measurementTime = measurementTime;
+    }
+    public void setInjectionRate(Integer injectionRate) {
+        this.injectionRate = injectionRate;
+    }
+    public void setTotalPulseTime(Integer totalPulseTime) {
+        this.totalPulseTime = totalPulseTime;
+    }
+    public void setNominalFlow(Double nominalFlow) {
+        this.nominalFlow = nominalFlow;
+    }
+    public void setFlowRange(Double flowRange) {
+        this.flowRange = flowRange;
+    }
+    public void setCustom(Boolean custom) {
+        isCustom = custom;
+    }
+    public void setTotalPulseTime2(Integer totalPulseTime2) {
+        this.totalPulseTime2 = totalPulseTime2;
+    }
+    public void setShift(Integer shift) {
+        this.shift = shift;
     }
 
     @Override
