@@ -566,6 +566,7 @@ public class MainSectionUisController {
 
     private void setTests() {
 
+        mainSectionUisModel.injectorTestProperty().setValue(null);
         Tests.TestType test = mainSectionUisModel.testTypeProperty().get();
         switch (test) {
 

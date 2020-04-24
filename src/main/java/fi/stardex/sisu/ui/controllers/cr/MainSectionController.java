@@ -591,6 +591,9 @@ public class MainSectionController {
 
     private void setTests() {
 
+        injectorTestModel.injectorTestProperty().setValue(null);
+        mainSectionModel.injectorTestProperty().setValue(null); // in future replace above line
+
         TestType test = mainSectionModel.testTypeProperty().get();
 
         switch (test) {

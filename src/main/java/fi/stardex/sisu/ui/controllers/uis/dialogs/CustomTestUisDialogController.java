@@ -380,14 +380,14 @@ public class CustomTestUisDialogController {
     private Integer getInteger(Control control) {
 
         if (control instanceof TextField) {
-            return ((TextField)control).getText().isEmpty() ? null : convertDataToInt(((TextField)control).getText());
+            return ((TextField)control).getText().isEmpty() ? 0 : convertDataToInt(((TextField)control).getText());
         } return null;
     }
 
     private Double getDouble(Control control) {
 
         if (control instanceof TextField) {
-            return ((TextField)control).getText().isEmpty() ? null : convertDataToDouble(((TextField)control).getText());
+            return ((TextField)control).getText().isEmpty() ? 0 : convertDataToDouble(((TextField)control).getText());
         } return null;
     }
 
