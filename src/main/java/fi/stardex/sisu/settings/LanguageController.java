@@ -3,6 +3,7 @@ package fi.stardex.sisu.settings;
 import fi.stardex.sisu.model.LanguageModel;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.i18n.Locales;
+import fi.stardex.sisu.util.listeners.LocaleChangeListener;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
 import javafx.scene.control.ComboBox;
@@ -20,6 +21,8 @@ public class LanguageController {
     private Preferences rootPrefs;
 
     private I18N i18N;
+
+    private Boolean localeChange = false;
 
     public void setLanguageModel(LanguageModel languageModel) {
         this.languageModel = languageModel;
@@ -48,7 +51,7 @@ public class LanguageController {
             i18N.setLocale(Locales.getLocale(newValue.name()));
 
         });
-
+        i18N.localeProperty().addListener(new LocaleChangeListener(languagesConfigComboBox, localeChange));
     }
 
 }

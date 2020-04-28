@@ -39,7 +39,7 @@ public class I18N {
         Locale.setDefault(locale);
     }
 
-    private ObjectProperty<Locale> localeProperty() {
+    public ObjectProperty<Locale> localeProperty() {
         return locale;
     }
 

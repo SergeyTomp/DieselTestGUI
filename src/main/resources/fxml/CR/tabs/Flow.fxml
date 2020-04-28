@@ -100,7 +100,7 @@
                                           <Tooltip text="%h4.field.tip.beaker3" />
                                       </tooltip>
                                   </TextField>
-                                  <TextField fx:id="delivery4TextField" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="70.0" styleClass="modelTextField" stylesheets="@../../../css/Styling.css" GridPane.columnIndex="3" GridPane.rowIndex="1">
+                                  <TextField fx:id="delivery4TextField" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="90.0" styleClass="modelTextField" stylesheets="@../../../css/Styling.css" GridPane.columnIndex="3" GridPane.rowIndex="1">
                                       <tooltip>
                                           <Tooltip text="%h4.field.tip.beaker4" />
                                       </tooltip>

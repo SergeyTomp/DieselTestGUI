@@ -233,7 +233,9 @@ public class GUI_TypeController {
                 });
             }
             else{
-                gui_typeComboBox.setVisible(true);
+                if (!dimasGUIEditionState.isDimasGuiEditionProperty().get()) {
+                    gui_typeComboBox.setVisible(true);
+                }
             }
         });
     }

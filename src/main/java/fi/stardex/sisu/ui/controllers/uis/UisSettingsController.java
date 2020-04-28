@@ -8,6 +8,7 @@ import fi.stardex.sisu.util.enums.InjectorSubType;
 import fi.stardex.sisu.util.enums.uis.RpmSource;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.i18n.Locales;
+import fi.stardex.sisu.util.listeners.LocaleChangeListener;
 import fi.stardex.sisu.version.FirmwareVersion;
 import fi.stardex.sisu.version.FlowFirmwareVersion;
 import javafx.beans.property.SimpleStringProperty;
@@ -25,6 +26,7 @@ import java.util.prefs.Preferences;
 
 import static fi.stardex.sisu.util.SpinnerDefaults.*;
 import static fi.stardex.sisu.util.enums.uis.RpmSource.EXTERNAL;
+import static fi.stardex.sisu.util.i18n.Locales.ENGLISH;
 import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions.MASTER_DF;
 
 public class UisSettingsController {
@@ -53,6 +55,7 @@ public class UisSettingsController {
     private ModbusConnect flowModbusConnect;
     private FirmwareVersion<FlowFirmwareVersion.FlowVersions> flowFirmwareVersion;
     private MainSectionUisModel mainSectionUisModel;
+    private Boolean localeChange = false;
 
     private static final String PREF_KEY_FLOW = "checkBoxFlowVisibleSelected";
     private static final String PREF_KEY_PRESSURE = "pressureSensorSelected";
@@ -101,11 +104,14 @@ public class UisSettingsController {
 
         languagesComboBox.setItems(FXCollections.observableArrayList(Locales.values()));
         uisSettingsModel.languageProperty().bind(languagesComboBox.getSelectionModel().selectedItemProperty());
-        languagesComboBox.getSelectionModel().select(Locales.valueOf(rootPrefs.get("Language", Locales.ENGLISH.name())));
+        languagesComboBox.getSelectionModel().select(Locales.valueOf(rootPrefs.get("Language", ENGLISH.name())));
         languagesComboBox.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
-            rootPrefs.put("Language", newValue.name());
-            i18N.setLocale(Locales.getLocale(newValue.name()));
+            if (!localeChange) {
+                rootPrefs.put("Language", newValue.name());
+                i18N.setLocale(Locales.getLocale(newValue.name()));
+            }
         });
+        i18N.localeProperty().addListener(new LocaleChangeListener(languagesComboBox, localeChange));
 
         uisSettingsModel.instantFlowProperty().bind(instantFlowCheckBox.selectedProperty());
         instantFlowCheckBox.setSelected(rootPrefs.getBoolean(PREF_KEY_FLOW, true));

@@ -17,7 +17,8 @@ import java.util.Objects;
 @Entity
 @NamedEntityGraphs({
         @NamedEntityGraph(name = "InjectorUisTest.testName", attributeNodes = {
-                @NamedAttributeNode("testName")}),
+                @NamedAttributeNode("testName"),
+                @NamedAttributeNode("injector")}),
         @NamedEntityGraph(name = "InjectorUisTest.allLazy", attributeNodes = {
                 @NamedAttributeNode("injector"),
                 @NamedAttributeNode("testName"),
