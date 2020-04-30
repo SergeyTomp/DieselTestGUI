@@ -977,7 +977,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                                            VoltAmpereProfileRepository voltAmpereProfileRepository,
                                                                            InjectorsRepository injectorsRepository,
                                                                            GUI_TypeModel gui_typeModel,
-                                                                           NewEditInjectorDialogModel newEditInjectorDialogModel) {
+                                                                           NewEditInjectorDialogModel newEditInjectorDialogModel,
+                                                                           MainSectionModel mainSectionModel) {
         NewEditInjectorDialogController newEditInjectorDialogController = (NewEditInjectorDialogController) newEditInjectorDialog().getController();
         newEditInjectorDialogController.setInjectorTypeRepository(injectorTypeRepository);
         newEditInjectorDialogController.setInjectorTestRepository(injectorTestRepository);
@@ -986,6 +987,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         newEditInjectorDialogController.setNewEditVOAPDialog(newEditVOAPDialog());
         newEditInjectorDialogController.setGui_typeModel(gui_typeModel);
         newEditInjectorDialogController.setNewEditInjectorDialogModel(newEditInjectorDialogModel);
+        newEditInjectorDialogController.setMainSectionModel(mainSectionModel);
         return newEditInjectorDialogController;
     }
 

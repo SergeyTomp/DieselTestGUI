@@ -6,7 +6,7 @@ sed -e '1,/^exit$/d' "$0" | tar -C /tmp/upd -zxf -
 cd /tmp/upd
 sleep 3
 sudo rm -f /var/log/syslog*
-sudo rm -rf ~/stardex
+sudo rm -rf ~/stardex/database
 sudo rm -f /opt/sisu/GUI/sisu.jar
 sudo cp /tmp/upd/sisu.jar /opt/sisu/GUI/
 

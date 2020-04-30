@@ -69,59 +69,61 @@ public class Injector implements Model {
         this.codetype = codetype;
     }
 
-    public String getInjectorCode() {
-        return injectorCode;
+    @Override
+    public Integer getCodetype() {
+        return codetype;
     }
-
     @Override
     public String getModelCode() {
         return getInjectorCode();
     }
-
+    @Override
+    public Boolean isCustom() {
+        return isCustom;
+    }
+    @Override
+    public VAP getVAP() {
+        return null;
+    }
+    public String getInjectorCode() {
+        return injectorCode;
+    }
     public Manufacturer getManufacturer() {
         return manufacturer;
+    }
+    public String getCalibrationId() {
+        return calibrationId;
+    }
+    public Integer getCoefficient() {
+        return coefficient;
+    }
+    public Boolean isHeui() {
+        return isHeui;
+    }
+    public List<InjectorTest> getInjectorTests() {
+        return injectorTests;
+    }
+    public VoltAmpereProfile getVoltAmpereProfile() {
+        return voltAmpereProfile;
     }
 
     public void setManufacturer(Manufacturer manufacturer) {
         this.manufacturer = manufacturer;
     }
-    @Override
-    public Integer getCodetype() {
-        return codetype;
-    }
-
-    public String getCalibrationId() {
-        return calibrationId;
-    }
-
-    public Integer getCoefficient() {
-        return coefficient;
-    }
-
-    @Override
-    public Boolean isCustom() {
-        return isCustom;
-    }
-
-    @Override
-    public VAP getVAP() {
-        return null;
-    }
-
-    public VoltAmpereProfile getVoltAmpereProfile() {
-        return voltAmpereProfile;
-    }
-
     public void setVoltAmpereProfile(VoltAmpereProfile voltAmpereProfile) {
         this.voltAmpereProfile = voltAmpereProfile;
     }
-
     public void setHeui(Boolean heui) {
         isHeui = heui;
     }
-
-    public Boolean isHeui() {
-        return isHeui;
+    public void setCodetype(Integer codetype) {
+        this.codetype = codetype;
+    }
+    public void setCalibrationId(String calibrationId) {
+        this.calibrationId = calibrationId;
+    }
+    public void setCoefficient(Integer coefficient) {
+        this.coefficient = coefficient;
     }
 
     @Override

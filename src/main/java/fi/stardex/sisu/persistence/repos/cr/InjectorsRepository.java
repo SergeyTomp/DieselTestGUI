@@ -18,4 +18,6 @@ public interface InjectorsRepository extends CrudRepository<Injector, String> {
 
     @EntityGraph(value = "Injector.allLazy", type = EntityGraph.EntityGraphType.LOAD)
     List<Injector> findByIsCustom(boolean isCustom);
+
+    boolean existsByInjectorCode(String code);
 }

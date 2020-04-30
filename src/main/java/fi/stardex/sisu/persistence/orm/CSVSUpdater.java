@@ -482,14 +482,15 @@ public class CSVSUpdater {
                     try {
                         String codetypeValue = injector.getCodetype().toString();
                         String calibrationIdValue = (injector.getCalibrationId() == null) ? "" : injector.getCalibrationId();
-                        String coefficient = injector.getCoefficient().toString();
+                        String coefficient = (injector.getCoefficient() == null) ? "" : injector.getCoefficient().toString();
                         writer.append(injector.getInjectorCode()).append(COMMA_DELIMITER)
                                 .append(injector.getManufacturer().toString()).append(COMMA_DELIMITER)
                                 .append(injector.getVoltAmpereProfile().toString()).append(COMMA_DELIMITER)
                                 .append(codetypeValue).append(COMMA_DELIMITER)
                                 .append(calibrationIdValue).append(COMMA_DELIMITER)
                                 .append(coefficient).append(COMMA_DELIMITER)
-                                .append(injector.isCustom().toString()).append(NEW_LINE_SEPARATOR);
+                                .append(injector.isCustom().toString()).append(COMMA_DELIMITER)
+                                .append(injector.isHeui().toString()).append(NEW_LINE_SEPARATOR);
                     } catch (IOException ex) {
                         logger.error("IO Exception occurred!", ex);
                     }
@@ -512,6 +513,9 @@ public class CSVSUpdater {
                     try {
                         String adjustingTimeValue = (injectorTest.getAdjustingTime() == null) ? "" : injectorTest.getAdjustingTime().toString();
                         String voltAmpereProfileValue = (injectorTest.getVoltAmpereProfile() == null) ? "" : injectorTest.getVoltAmpereProfile().toString();
+                        String injectionRate = (injectorTest.getInjectionRate() == null) ? "" : injectorTest.getInjectionRate().toString();
+                        String nominalFlow = (injectorTest.getNominalFlow() == null) ? "" : injectorTest.getNominalFlow().toString();
+                        String flowRange = (injectorTest.getFlowRange() == null) ? "" : injectorTest.getFlowRange().toString();
                         writer.append(injectorTest.getId().toString()).append(COMMA_DELIMITER)
                                 .append(injectorTest.getInjector().toString()).append(COMMA_DELIMITER)
                                 .append(injectorTest.getTestName().getId().toString()).append(COMMA_DELIMITER)
@@ -519,10 +523,10 @@ public class CSVSUpdater {
                                 .append(injectorTest.getSettedPressure().toString()).append(COMMA_DELIMITER)
                                 .append(adjustingTimeValue).append(COMMA_DELIMITER)
                                 .append(injectorTest.getMeasurementTime().toString()).append(COMMA_DELIMITER)
-                                .append(injectorTest.getInjectionRate().toString()).append(COMMA_DELIMITER)
+                                .append(injectionRate).append(COMMA_DELIMITER)
                                 .append(injectorTest.getTotalPulseTime().toString()).append(COMMA_DELIMITER)
-                                .append(injectorTest.getNominalFlow().toString()).append(COMMA_DELIMITER)
-                                .append(injectorTest.getFlowRange().toString()).append(COMMA_DELIMITER)
+                                .append(nominalFlow).append(COMMA_DELIMITER)
+                                .append(flowRange).append(COMMA_DELIMITER)
                                 .append(voltAmpereProfileValue).append(NEW_LINE_SEPARATOR);
                     } catch (IOException ex) {
                         logger.error("IO Exception occurred!", ex);

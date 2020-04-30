@@ -9,7 +9,9 @@ import java.util.List;
 
 public interface PumpRepository extends CrudRepository<Pump, String> {
 
+    @EntityGraph(value = "Pump.pumpCode", type = EntityGraph.EntityGraphType.LOAD)
     List<Pump> findAllByManufacturerAndCustom(Producer producer, boolean custom);
+
     List<Pump> findByManufacturer(Producer producer);
 
     @EntityGraph(value = "Pump.allLazy", type = EntityGraph.EntityGraphType.LOAD)

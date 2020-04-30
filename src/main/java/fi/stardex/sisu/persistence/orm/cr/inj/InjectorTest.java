@@ -132,6 +132,24 @@ public class InjectorTest implements ChangeListener<Boolean> {
         this.flowRange = flowRange;
     }
 
+    //for test copy in injector copy procedure
+    public InjectorTest(InjectorTest test, Injector newInjector) {
+        this.injector = newInjector;
+        this.testName = test.testName;
+        this.motorSpeed = test.motorSpeed;
+        this.settedPressure = test.settedPressure;
+        this.adjustingTime = test.adjustingTime;
+        this.measurementTime = test.measurementTime;
+        this.injectionRate = test.injectionRate;
+        this.totalPulseTime = test.totalPulseTime;
+        this.nominalFlow = test.nominalFlow;
+        this.flowRange = test.flowRange;
+        this.isCustom = true;
+        this.totalPulseTime2 = test.totalPulseTime2;
+        this.shift = test.shift;
+        this.voltAmpereProfile = null;
+    }
+
     public static ObservableList<InjectorTest> getListOfNonIncludedTests() {
         return listOfNonIncludedTests;
     }

@@ -266,7 +266,8 @@ public class PDFService {
             startTable = drawTable(document, flowReportModel.getResultsList(), new FlowHeader(), startTable);
             drawTable(document, delayReportModel.getResultsList(), new DelayHeader(), startTable);
         } else if (resultMode == ResultPrintMode.CODING) {
-            drawTable(document, codingReportModel.getResultsList(), new CodingHeader(), START_TABLE);
+            float startTable =  drawTable(document, codingReportModel.getResultsList(), new CodingHeader(), START_TABLE);
+            drawTable(document, flowReportModel.getResultsList(), new FlowHeader(), startTable);
         } else if (resultMode == ResultPrintMode.PUMPS) {
             pumpFlowResultsList = pumpReportModel.getResultsList();
             drawTable(document, pumpFlowResultsList, new PumpHeader(), START_TABLE);

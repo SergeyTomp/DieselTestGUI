@@ -572,6 +572,7 @@ public class MainSectionController {
                 VoltAmpereProfile defaultVAP = injector.getVoltAmpereProfile();
                 newValue.stream().filter(t -> t.getVoltAmpereProfile() == null).forEach(t -> t.setVoltAmpereProfile(defaultVAP));
                 setInjectorTests(newValue);
+                mainSectionModel.setInjectorTests(newValue);
 
                 if (!checkInjectorForCoding(injector.getCodetype()) && codingTestRadioButton.isSelected()) {
 
@@ -660,6 +661,7 @@ public class MainSectionController {
         MenuItem editModel = new MenuItem("Edit");
         editModel.setOnAction(new ModelMenuEventHandler("Edit injector", NewEditInjectorDialogController::setEdit));
         MenuItem copyModel = new MenuItem("Copy");
+        copyModel.setOnAction(new ModelMenuEventHandler("Copy injector", NewEditInjectorDialogController::setCopy));
         MenuItem deleteModel = new MenuItem("Delete");
         deleteModel.setOnAction(new ModelMenuEventHandler("Delete injector", NewEditInjectorDialogController::setDelete));
 
@@ -1121,7 +1123,11 @@ public class MainSectionController {
     private void setupNewEditInjectorDialogListener() {
 
         newEditInjectorDialogModel.doneProperty().addListener((observable, oldValue, newValue) -> {
-            setFilteredItems(mainSectionModel.manufacturerObjectProperty().get());
+            if (defaultRadioButton.isSelected()) {
+                customRadioButton.setSelected(true);
+            }else{
+                setFilteredItems(mainSectionModel.manufacturerObjectProperty().get());
+            }
             Injector newInj = newEditInjectorDialogModel.customInjectorProperty().get();
             modelListView.getSelectionModel().select(newInj);
             modelListView.scrollTo(newInj);

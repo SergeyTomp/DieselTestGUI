@@ -15,6 +15,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "pump")
 @NamedEntityGraph(name = "Pump.allLazy", attributeNodes = {@NamedAttributeNode("manufacturer"), @NamedAttributeNode("pumpCarModelList"), @NamedAttributeNode("pumpInfo")})
+@NamedEntityGraph(name = "Pump.pumpCode", attributeNodes = {@NamedAttributeNode("manufacturer")})
 public class Pump implements Model {
 
     @Id

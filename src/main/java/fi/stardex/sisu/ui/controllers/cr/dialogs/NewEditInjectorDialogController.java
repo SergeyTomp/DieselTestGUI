@@ -1,11 +1,9 @@
 package fi.stardex.sisu.ui.controllers.cr.dialogs;
 
 import fi.stardex.sisu.model.GUI_TypeModel;
+import fi.stardex.sisu.model.cr.MainSectionModel;
 import fi.stardex.sisu.model.cr.NewEditInjectorDialogModel;
-import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
-import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
-import fi.stardex.sisu.persistence.orm.cr.inj.InjectorType;
-import fi.stardex.sisu.persistence.orm.cr.inj.VoltAmpereProfile;
+import fi.stardex.sisu.persistence.orm.cr.inj.*;
 import fi.stardex.sisu.persistence.orm.interfaces.Model;
 import fi.stardex.sisu.persistence.repos.InjectorTypeRepository;
 import fi.stardex.sisu.persistence.repos.cr.InjectorTestRepository;
@@ -24,118 +22,87 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
 
 import static fi.stardex.sisu.util.enums.GUI_type.HEUI;
 import static fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer.getInjector;
+import static fi.stardex.sisu.util.obtainers.CurrentInjectorTestsObtainer.getInjectorTests;
 import static fi.stardex.sisu.util.obtainers.CurrentManufacturerObtainer.getManufacturer;
 
 public class NewEditInjectorDialogController {
 
-    @FXML
-    private Label firstW2Label;
-    @FXML
-    private Label boostI2Label;
-    @FXML
-    private Label firstI2Label;
-    @FXML
-    private Label secondI2Label;
-    @FXML
-    private GridPane rootGridPane;
-    @FXML
-    private TextField injectorCodeTF;
-    @FXML
-    private Label noUniqueLabel;
-    @FXML
-    private ComboBox<InjectorType> injTypeCB;
-    @FXML
-    private RadioButton defaultRB;
-    @FXML
-    private ToggleGroup baseType;
-    @FXML
-    private RadioButton customRB;
-    @FXML
-    private ListView<VoltAmpereProfile> voapListView;
-    @FXML
-    private Label sureLabel;
-    @FXML
-    private ButtonBar controlBtnBar;
-    @FXML
-    private Button saveBtn;
-    @FXML
-    private Button cancelBtn;
+    @FXML private Label firstW2Label;
+    @FXML private Label boostI2Label;
+    @FXML private Label firstI2Label;
+    @FXML private Label secondI2Label;
+    @FXML private GridPane rootGridPane;
+    @FXML private TextField injectorCodeTF;
+    @FXML private Label noUniqueLabel;
+    @FXML private ComboBox<InjectorType> injTypeCB;
+    @FXML private RadioButton defaultRB;
+    @FXML private ToggleGroup baseType;
+    @FXML private RadioButton customRB;
+    @FXML private ListView<VoltAmpereProfile> voapListView;
+    @FXML private Label sureLabel;
+    @FXML private ButtonBar controlBtnBar;
+    @FXML private Button saveBtn;
+    @FXML private Button cancelBtn;
 
-    @FXML
-    private Label boostUvalue;
-    @FXML
-    private Label boostEnableValue;
-    @FXML
-    private Label boostIvalue;
-    @FXML
-    private Label firstWvalue;
-    @FXML
-    private Label firstIvalue;
-    @FXML
-    private Label batteryUvalue;
-    @FXML
-    private Label secondIvalue;
-    @FXML
-    private Label negativeUvalue;
+    @FXML private Label boostUvalue;
+    @FXML private Label boostEnableValue;
+    @FXML private Label boostIvalue;
+    @FXML private Label firstWvalue;
+    @FXML private Label firstIvalue;
+    @FXML private Label batteryUvalue;
+    @FXML private Label secondIvalue;
+    @FXML private Label negativeUvalue;
 
     private Stage stage;
-
+    private Stage newVOAPStage;
     private State currentState;
-
     private ListView<Model> modelListView;
+    private InjectorTypeRepository injectorTypeRepository;
+    private InjectorTestRepository injectorTestRepository;
+    private VoltAmpereProfileRepository voltAmpereProfileRepository;
+    private InjectorsRepository injectorsRepository;
+    private ViewHolder newEditVOAPDialog;
+    private GUI_TypeModel gui_typeModel;
+    private NewEditInjectorDialogModel newEditInjectorDialogModel;
+    private MainSectionModel mainSectionModel;
+    private StringBuilder codeBuilder = new StringBuilder();
 
     public void setModelListView(ListView<Model> modelListView) {
         this.modelListView = modelListView;
     }
-
-    private InjectorTypeRepository injectorTypeRepository;
-
-    private InjectorTestRepository injectorTestRepository;
-
-    private VoltAmpereProfileRepository voltAmpereProfileRepository;
-
-    private InjectorsRepository injectorsRepository;
-
-    private ViewHolder newEditVOAPDialog;
-
-    private GUI_TypeModel gui_typeModel;
-
-    private NewEditInjectorDialogModel newEditInjectorDialogModel;
-
     public void setInjectorTypeRepository(InjectorTypeRepository injectorTypeRepository) {
         this.injectorTypeRepository = injectorTypeRepository;
     }
-
     public void setVoltAmpereProfileRepository(VoltAmpereProfileRepository voltAmpereProfileRepository) {
         this.voltAmpereProfileRepository = voltAmpereProfileRepository;
     }
-
     public void setInjectorsRepository(InjectorsRepository injectorsRepository) {
         this.injectorsRepository = injectorsRepository;
     }
-
     public void setNewEditVOAPDialog(ViewHolder newEditVOAPDialog) {
         this.newEditVOAPDialog = newEditVOAPDialog;
     }
-
-    private Stage newVOAPStage;
-
     public void setStage(Stage stage) {
         this.stage = stage;
     }
-
     public void setGui_typeModel(GUI_TypeModel gui_typeModel) {
         this.gui_typeModel = gui_typeModel;
     }
-
     public void setNewEditInjectorDialogModel(NewEditInjectorDialogModel newEditInjectorDialogModel) {
         this.newEditInjectorDialogModel = newEditInjectorDialogModel;
+    }
+    public void setMainSectionModel(MainSectionModel mainSectionModel) {
+        this.mainSectionModel = mainSectionModel;
+    }
+    public void setInjectorTestRepository(InjectorTestRepository injectorTestRepository) {
+        this.injectorTestRepository = injectorTestRepository;
     }
 
     @PostConstruct
@@ -147,6 +114,9 @@ public class NewEditInjectorDialogController {
                     break;
                 case EDIT:
                     updateInjector();
+                    break;
+                case COPY:
+                    copyInjector();
                     break;
                 case DELETE:
                     deleteInjector();
@@ -227,6 +197,30 @@ public class NewEditInjectorDialogController {
         injectorTests.clear();
         injectorTests.addAll(new LinkedList<>());
         injectorsRepository.save(injectorForUpdate);
+        stage.close();
+    }
+
+    private void copyInjector() {
+
+        Injector baseInjector = mainSectionModel.injectorProperty().get();
+        Manufacturer manufacturer = mainSectionModel.manufacturerObjectProperty().get();
+        List<InjectorTest> testList = mainSectionModel.getInjectorTests();
+        VoltAmpereProfile voltAmpereProfile = baseInjector.getVoltAmpereProfile();
+        Integer codetype = baseInjector.getCodetype();
+        String newCode = makeCode(injectorCodeTF.getText());
+
+        Injector copy = new Injector(newCode, manufacturer, voltAmpereProfile, true, codetype);
+        copy.setHeui(baseInjector.isHeui());
+        copy.setCalibrationId(baseInjector.getCalibrationId());
+        copy.setCodetype(baseInjector.getCodetype());
+        copy.setCoefficient(baseInjector.getCoefficient());
+        List<InjectorTest> newTestsList = new ArrayList<>();
+        testList.forEach(test -> newTestsList.add(new InjectorTest(test, copy)));
+        copy.getInjectorTests().addAll(newTestsList);
+
+        injectorsRepository.save(copy);
+        newEditInjectorDialogModel.customInjectorProperty().setValue(copy);
+        newEditInjectorDialogModel.doneProperty().setValue(new Object());
         stage.close();
     }
 
@@ -319,6 +313,29 @@ public class NewEditInjectorDialogController {
         voapListView.getSelectionModel().select(voltAmpereProfile);
     }
 
+    public void setCopy() {
+
+        currentState = State.COPY;
+
+        injectorCodeTF.setDisable(false);
+        injTypeCB.setDisable(true);
+        voapListView.setDisable(true);
+        defaultRB.setDisable(true);
+        customRB.setDisable(true);
+        sureLabel.setVisible(false);
+
+        Injector injector = mainSectionModel.injectorProperty().get();
+        VoltAmpereProfile voltAmpereProfile = injector.getVoltAmpereProfile();
+        injectorCodeTF.setText(injector.getInjectorCode());
+        injTypeCB.getSelectionModel().select(voltAmpereProfile.getInjectorType());
+        if (voltAmpereProfile.isCustom())
+            customRB.setSelected(true);
+        else
+            defaultRB.setSelected(true);
+        voapListView.scrollTo(voltAmpereProfile);
+        voapListView.getSelectionModel().select(voltAmpereProfile);
+    }
+
     public void setDelete() {
         currentState = State.DELETE;
         Injector injector = getInjector();
@@ -343,12 +360,26 @@ public class NewEditInjectorDialogController {
         voapListView.getSelectionModel().select(voltAmpereProfile);
     }
 
-    public void setInjectorTestRepository(InjectorTestRepository injectorTestRepository) {
-        this.injectorTestRepository = injectorTestRepository;
+    private String makeCode(String code) {
+        codeBuilder.setLength(0);
+        if (injectorsRepository.existsByInjectorCode(code)) {
+            if (code.contains("(")) {
+                int indexBKT1 = code.indexOf('(');
+                int indexBKT2 = code.indexOf(')');
+                int count = Integer.valueOf(code.substring(indexBKT1 + 1, indexBKT2));
+                count++;
+                codeBuilder.append(code.substring(0, indexBKT1)).append("(").append(count).append(")");
+            } else {
+                codeBuilder.append(code).append("(1)");
+            }
+            return makeCode(codeBuilder.toString());
+        }else {
+            return code;
+        }
     }
 
     private enum State {
-        NEW, EDIT, DELETE
+        NEW, EDIT, COPY, DELETE
     }
 
     private void selectFirst() {

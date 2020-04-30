@@ -12,6 +12,8 @@ import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
+import java.util.List;
+
 import static fi.stardex.sisu.ui.controllers.cr.dialogs.ManufacturerMenuDialogController.State;
 
 public class MainSectionModel {
@@ -30,6 +32,7 @@ public class MainSectionModel {
     // test listView part
     private final ObjectProperty<InjectorTest> injectorTestProperty = new SimpleObjectProperty<>();
     private boolean testIsChanging;
+    private List<InjectorTest> injectorTests;
 
     // test mode checkButtons part
     private ObjectProperty<Tests.TestType> testType = new SimpleObjectProperty<>(Tests.TestType.AUTO);
@@ -70,11 +73,17 @@ public class MainSectionModel {
     public boolean isTestIsChanging() {
         return testIsChanging;
     }
+    public List<InjectorTest> getInjectorTests() {
+        return injectorTests;
+    }
 
     public void setInjectorIsChanging(boolean injectorIsChanging) {
         this.injectorIsChanging = injectorIsChanging;
     }
     public void setTestIsChanging(boolean testIsChanging) {
         this.testIsChanging = testIsChanging;
+    }
+    public void setInjectorTests(List<InjectorTest> injectorTests) {
+        this.injectorTests = injectorTests;
     }
 }
