@@ -1,5 +1,6 @@
 package fi.stardex.sisu.coding.delphi.c3i;
 
+import fi.stardex.sisu.pdf.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,22 +22,37 @@ public class DelphiC3ICoding {
 
     private static final int[] OFFSETS = {3, 5, 4, 5, 8, 5, 7, 5, 6, 6, 6, 5, 6, 6, 6, 5, 6};
 
-    public static List<String> calculate() {
+    public static List<String> calculate(List<Integer> activeLEDs, List<Result> codes) {
 
         List<String> resultList = new LinkedList<>();
 
-        resultList.add("");
-        resultList.add("");
-        resultList.add("");
-        resultList.add("");
+        if (codes.isEmpty()) {
+            resultList.add("");
+            resultList.add("");
+            resultList.add("");
+            resultList.add("");
+        } else {
 
-        Optional.ofNullable(getLed1DataStorage()).ifPresent(data -> resultList.set(0, makeResultString(data)));
-        Optional.ofNullable(getLed2DataStorage()).ifPresent(data -> resultList.set(1, makeResultString(data)));
-        Optional.ofNullable(getLed3DataStorage()).ifPresent(data -> resultList.set(2, makeResultString(data)));
-        Optional.ofNullable(getLed4DataStorage()).ifPresent(data -> resultList.set(3, makeResultString(data)));
+            resultList.add(codes.get(0) != null ? codes.get(0).getSubColumn1() : "" );
+            resultList.add(codes.get(1) != null ? codes.get(1).getSubColumn1() : "" );
+            resultList.add(codes.get(2) != null ? codes.get(2).getSubColumn1() : "" );
+            resultList.add(codes.get(3) != null ? codes.get(3).getSubColumn1() : "" );
+        }
+
+        if (activeLEDs.contains(1)) {
+            Optional.ofNullable(getLed1DataStorage()).ifPresent(data -> resultList.set(0, makeResultString(data)));
+        }
+        if (activeLEDs.contains(2)) {
+            Optional.ofNullable(getLed2DataStorage()).ifPresent(data -> resultList.set(1, makeResultString(data)));
+        }
+        if (activeLEDs.contains(3)) {
+            Optional.ofNullable(getLed3DataStorage()).ifPresent(data -> resultList.set(2, makeResultString(data)));
+        }
+        if (activeLEDs.contains(4)) {
+            Optional.ofNullable(getLed4DataStorage()).ifPresent(data -> resultList.set(3, makeResultString(data)));
+        }
 
         return resultList;
-
     }
 
     private static String makeResultString(int[] data) {

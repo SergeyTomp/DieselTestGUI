@@ -71,14 +71,22 @@ public class DelphiC3ICodingDataStorage {
 
     }
 
-    public static void store(FlowResult flowTestResult) {
+    public static void store(FlowResult flowTestResult, List<Integer> activeLEDs) {
 
         InjectorTest injectorTest = flowTestResult.getInjectorTest();
 
-        Optional.ofNullable(led1DataStorage).ifPresent(data -> storeCoefficient(injectorTest, flowTestResult.getDoubleValue_1(), data));
-        Optional.ofNullable(led2DataStorage).ifPresent(data -> storeCoefficient(injectorTest, flowTestResult.getDoubleValue_2(), data));
-        Optional.ofNullable(led3DataStorage).ifPresent(data -> storeCoefficient(injectorTest, flowTestResult.getDoubleValue_3(), data));
-        Optional.ofNullable(led4DataStorage).ifPresent(data -> storeCoefficient(injectorTest, flowTestResult.getDoubleValue_4(), data));
+        if (activeLEDs.contains(1)) {
+            Optional.ofNullable(led1DataStorage).ifPresent(data -> storeCoefficient(injectorTest, flowTestResult.getDoubleValue_1(), data));
+        }
+        if (activeLEDs.contains(2)) {
+            Optional.ofNullable(led2DataStorage).ifPresent(data -> storeCoefficient(injectorTest, flowTestResult.getDoubleValue_2(), data));
+        }
+        if (activeLEDs.contains(3)) {
+            Optional.ofNullable(led3DataStorage).ifPresent(data -> storeCoefficient(injectorTest, flowTestResult.getDoubleValue_3(), data));
+        }
+        if (activeLEDs.contains(4)) {
+            Optional.ofNullable(led4DataStorage).ifPresent(data -> storeCoefficient(injectorTest, flowTestResult.getDoubleValue_4(), data));
+        }
 
     }
 

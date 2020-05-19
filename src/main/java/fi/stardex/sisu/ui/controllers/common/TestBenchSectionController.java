@@ -289,7 +289,7 @@ public class TestBenchSectionController {
             if (newValue != null) {
 
                 targetRPMSpinner.getValueFactory().setValue(newValue.getMotorSpeed());
-                if (newValue.getVoltAmpereProfile().getInjectorSubType() == InjectorSubType.HPI) {
+                if (isForte() && newValue.getVoltAmpereProfile().getInjectorSubType() == InjectorSubType.HPI) {
                     modBusWriter.add(SLAVE_TARGET_RPM.getRegister(), uisSettingsModel.slaveMotorRPMProperty().get());
                 }
             }
@@ -435,11 +435,10 @@ public class TestBenchSectionController {
 
             modBusWriter.add(MAIN_DRIVE_ON.getRegister(), newValue);
 
+            //TODO: pay attention to the string below after implementation of commom MainSection idea
             Test test = mainSectionUisModel.injectorTestProperty().get();
 
-            if (MAIN_DRIVE_ON.getRegister() != SLAVE_DRIVE_ON.getRegister()
-                    && test != null
-                    && test.getVoltAmpereProfile().getInjectorSubType() == InjectorSubType.HPI) {
+            if (isForte() && test != null && test.getVoltAmpereProfile().getInjectorSubType() == InjectorSubType.HPI) {
                 modBusWriter.add(SLAVE_DRIVE_ON.getRegister(), newValue);
                 modBusWriter.add(SLAVE_TARGET_RPM.getRegister(), uisSettingsModel.slaveMotorRPMProperty().get());
             }
@@ -455,7 +454,7 @@ public class TestBenchSectionController {
         if (flowFirmwareVersion.getVersions() == STAND_FM
                 || flowFirmwareVersion.getVersions() == STAND_FM_4_CH
                 || standFirmwareVersion.versionProperty().get() == STAND
-                ||standFirmwareVersion.versionProperty().get() == STAND_FORTE)
+                || isForte())
             testBenchStartToggleButton.setDisable(false);
         else
             testBenchStartToggleButton.setDisable(true);
@@ -467,10 +466,14 @@ public class TestBenchSectionController {
         uisSettingsModel.slaveMotorRPMProperty().addListener((observable, oldValue, newValue) -> {
 
             Test test = mainSectionUisModel.injectorTestProperty().get();
-            if (test != null && test.getVoltAmpereProfile().getInjectorSubType() == InjectorSubType.HPI) {
+            if (isForte() && test != null && test.getVoltAmpereProfile().getInjectorSubType() == InjectorSubType.HPI) {
                 standModbusWriter.add(SLAVE_TARGET_RPM.getRegister(), newValue);
             }
         });
+    }
+
+    private boolean isForte() {
+        return standFirmwareVersion.versionProperty().get() == STAND_FORTE;
     }
 
     private void setupPumpControlToggleButton() {

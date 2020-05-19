@@ -1,5 +1,6 @@
 package fi.stardex.sisu.coding.delphi.c2i;
 
+import fi.stardex.sisu.pdf.Result;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,44 +16,67 @@ public class DelphiC2ICoding {
 
     private static int coefficient;
 
-    public static List<String> calculate() {
+    public static List<String> calculate(List<Integer> activeLEDs, List<Result> codes) {
 
         coefficient = getInjector().getCoefficient();
 
         List<String> resultList = new LinkedList<>();
 
-        resultList.add("");
-        resultList.add("");
-        resultList.add("");
-        resultList.add("");
-
-        for (int i = 1; i < 5; i++)
-            generateCode(resultList, i);
-
-        return resultList;
-
-    }
-
-    private static void generateCode(List<String> resultList, int beaker) {
-
-        switch (beaker) {
-
-            case 1:
-                Optional.ofNullable(getLed1DataStorage()).ifPresent(data -> resultList.set(0, makeResultString(data)));
-                break;
-            case 2:
-                Optional.ofNullable(getLed2DataStorage()).ifPresent(data -> resultList.set(1, makeResultString(data)));
-                break;
-            case 3:
-                Optional.ofNullable(getLed3DataStorage()).ifPresent(data -> resultList.set(2, makeResultString(data)));
-                break;
-            case 4:
-                Optional.ofNullable(getLed4DataStorage()).ifPresent(data -> resultList.set(3, makeResultString(data)));
-                break;
-
+        if (codes.isEmpty()) {
+            resultList.add("");
+            resultList.add("");
+            resultList.add("");
+            resultList.add("");
+        }else{
+            resultList.add(codes.get(0) != null ? codes.get(0).getSubColumn1() : "" );
+            resultList.add(codes.get(1) != null ? codes.get(1).getSubColumn1() : "" );
+            resultList.add(codes.get(2) != null ? codes.get(2).getSubColumn1() : "" );
+            resultList.add(codes.get(3) != null ? codes.get(3).getSubColumn1() : "" );
         }
 
+        if (activeLEDs.contains(1)) {
+            Optional.ofNullable(getLed1DataStorage()).ifPresent(data -> resultList.set(0, makeResultString(data)));
+        }
+        if (activeLEDs.contains(2)) {
+            Optional.ofNullable(getLed2DataStorage()).ifPresent(data -> resultList.set(1, makeResultString(data)));
+        }
+        if (activeLEDs.contains(3)) {
+            Optional.ofNullable(getLed3DataStorage()).ifPresent(data -> resultList.set(2, makeResultString(data)));
+        }
+        if (activeLEDs.contains(4)) {
+            Optional.ofNullable(getLed4DataStorage()).ifPresent(data -> resultList.set(3, makeResultString(data)));
+        }
+//        resultList.add("");
+//        resultList.add("");
+//        resultList.add("");
+//        resultList.add("");
+//
+//        for (int i = 1; i < 5; i++)
+//            generateCode(resultList, i);
+
+        return resultList;
     }
+
+//    private static void generateCode(List<String> resultList, int beaker) {
+//
+//        switch (beaker) {
+//
+//            case 1:
+//                Optional.ofNullable(getLed1DataStorage()).ifPresent(data -> resultList.set(0, makeResultString(data)));
+//                break;
+//            case 2:
+//                Optional.ofNullable(getLed2DataStorage()).ifPresent(data -> resultList.set(1, makeResultString(data)));
+//                break;
+//            case 3:
+//                Optional.ofNullable(getLed3DataStorage()).ifPresent(data -> resultList.set(2, makeResultString(data)));
+//                break;
+//            case 4:
+//                Optional.ofNullable(getLed4DataStorage()).ifPresent(data -> resultList.set(3, makeResultString(data)));
+//                break;
+//
+//        }
+//
+//    }
 
     private static String makeResultString(Map<String, Integer> data) {
 
@@ -62,7 +86,7 @@ public class DelphiC2ICoding {
                 .append(completeBinaryWithZeroes(coefficient, 3))
                 .append(completeBinaryWithZeroes(16, 5));
 
-        logger.error("1. resultStr: {}", resultString);
+        logger.info("1. resultStr: {}", resultString);
 
         resultString
                 .append(completeBinaryWithZeroes(data.get("Test Point 08"), getDelphiC2ICoefficient("Test Point 08")))
@@ -74,18 +98,18 @@ public class DelphiC2ICoding {
                 .append(completeBinaryWithZeroes(data.get("Test Point 02"), getDelphiC2ICoefficient("Test Point 02")))
                 .append(completeBinaryWithZeroes(data.get("Test Point 01"), getDelphiC2ICoefficient("Test Point 01")));
 
-        logger.error("2. resultStr: {}", resultString);
+        logger.info("2. resultStr: {}", resultString);
 
         String temp = resultString.toString().substring(2);
 
-        logger.error("3. temp: {}", temp);
+        logger.info("3. temp: {}", temp);
 
         List<String> hexList = new ArrayList<>();
 
         for (int j = 0; j < 56; j += 8)
             hexList.add(intToHex(Integer.valueOf(temp.substring(j, j + 8), 2)));
 
-        logger.error("4. hexList: {}", hexList);
+        logger.info("4. hexList: {}", hexList);
 
         String hexCode = null;
 
@@ -97,18 +121,18 @@ public class DelphiC2ICoding {
                 for (int j = hexList.size() - 1; j > -1; j--)
                     checkSum += Integer.valueOf(hexList.get(j), 16) * (j + 1);
                 checkSum = (checkSum % 64) * 4;
-                logger.error("5. checkSum: {}", checkSum);
+                logger.info("5. checkSum: {}", checkSum);
                 hexCode = addHexLines(hexList, checkSum);
                 break;
             case 1:
                 checkSum = (int) (61 - (Long.valueOf("001" + temp.substring(1, 56), 2)) % 61) * 4;
-                logger.error("6. checkSum: {}", checkSum);
+                logger.info("6. checkSum: {}", checkSum);
                 hexCode = addHexLines(hexList, checkSum);
                 break;
 
         }
 
-        logger.error("7. Final code: {}", hexCode);
+        logger.info("7. Final code: {}", hexCode);
 
         return hexCode;
 

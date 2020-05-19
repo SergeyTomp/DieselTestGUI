@@ -97,6 +97,8 @@ public class StandControlsService implements ControlsService {
         OIL.setRegister(TankOilLevel);
         TEMP_1.setRegister(Temperature1);
         TEMP_2.setRegister(Temperature2);
+        SLAVE_DRIVE_ON.setRegister(Rotation);
+        SLAVE_TARGET_RPM.setRegister(TargetRPM);
 
         switch (standFirmwareVersion.getVersions()) {
 
@@ -128,8 +130,6 @@ public class StandControlsService implements ControlsService {
         FACT_RPM.setRegister(CurrentRPM);
         DRIVE_DIRECTION.setRegister(RotationDirection);
         MAIN_DRIVE_ON.setRegister(Rotation);
-        SLAVE_DRIVE_ON.setRegister(Rotation);
-        SLAVE_TARGET_RPM.setRegister(TargetRPM);
     }
 
     private void setForteDriveControls() {
@@ -138,8 +138,6 @@ public class StandControlsService implements ControlsService {
         FACT_RPM.setRegister(CurrentRPM_Forte);
         DRIVE_DIRECTION.setRegister(RotationDirection_Forte);
         MAIN_DRIVE_ON.setRegister(Rotation_Forte);
-        SLAVE_DRIVE_ON.setRegister(Rotation);
-        SLAVE_TARGET_RPM.setRegister(TargetRPM);
     }
 
     private void setStandFmControls() {

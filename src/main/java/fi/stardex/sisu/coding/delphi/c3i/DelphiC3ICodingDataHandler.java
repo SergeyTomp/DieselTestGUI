@@ -67,7 +67,7 @@ class DelphiC3ICodingDataHandler {
 
     static int calculateUnsignedCoefficient(int coefficient, int power) {
 
-        return coefficient + (int) Math.pow(2, power - 1);
+        return coefficient + (int) Math.pow(2, power - 1) - 1;
 
     }
 
@@ -81,14 +81,15 @@ class DelphiC3ICodingDataHandler {
 
         int offset = (int) Math.pow(2, power - 1);
 
-        int result = (int)((flow - nominalFlow) * offset / range);
+        int result = (int)((nominalFlow - flow) * offset / range);
 
         if (result > offset) {
-            result = offset - 1;
+            result = offset;
         } else if (result < -offset) {
             result = -offset;
-        } else if(result == 0)
-            result = -1;
+        }
+//        else if(result == 0)
+//            result = -1;
 
         return result / 3;
 

@@ -12,28 +12,38 @@ class DelphiC2ICodingDataHandler {
 
         double flowRange = nominalFlow * (injectorTest.getFlowRange() / 100);
 
-        double min = nominalFlow - flowRange;
-
-        double max = nominalFlow + flowRange;
+//        double min = nominalFlow - flowRange;
+//
+//        double max = nominalFlow + flowRange;
 
         int result;
 
         int roughDivisor = 2;
 
-        if (flow < min)
-            result = range * 2 - 1;
-        else if (flow > max)
-            result = 1;
-        else {
-            double deviation = Math.abs(nominalFlow - flow);
-            result = nominalFlow >= flow ? (int) (-range * deviation / flowRange) + range
-                    : (int) (range * deviation / flowRange) + range;
+//        if (flow < min)
+//            result = range * 2 - 1;
+//        else if (flow > max)
+//            result = 1;
+//        else {
+//            double deviation = Math.abs(nominalFlow - flow);
+//            result = nominalFlow >= flow ? (int) (-range * deviation / flowRange) + range
+//                    : (int) (range * deviation / flowRange) + range;
+//        }
+//
+//        result = result / roughDivisor;
+
+        double deviation = nominalFlow - flow;
+        result = (int) (range * deviation / flowRange);
+
+        if (result > range) {
+            result = range;
+        } else if (result < -range) {
+            result = -range;
         }
 
-        result = result / roughDivisor;
+        result = result / roughDivisor + range;
 
         return result;
-
     }
 
 }

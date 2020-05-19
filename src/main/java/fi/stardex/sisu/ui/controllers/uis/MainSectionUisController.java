@@ -767,6 +767,7 @@ public class MainSectionUisController {
 
             if (oldValue == UIS) {
                 startToggleButton.setSelected(false);
+                manufacturerListView.getSelectionModel().select(null);
             }
 
             /*TODO: add if-cases for other GUI types after implementation of this controller as unique for them and move outside of if-else:
