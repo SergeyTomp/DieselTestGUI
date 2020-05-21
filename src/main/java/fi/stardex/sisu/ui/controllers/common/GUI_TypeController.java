@@ -210,7 +210,9 @@ public class GUI_TypeController {
             }
         });
 
-        GUI_type currentGUIType = GUI_type.valueOf(rootPreferences.get("GUI_Type", GUI_type.CR_Inj.toString()));
+        GUI_type currentGUIType = GUI_type.getType(rootPreferences.get("GUI_Type", GUI_type.CR_Inj.toString()));
+        /**Uncomment string below and comment string above in case of problems with initial gui-type search in rootPreferences.*/
+//        GUI_type currentGUIType = GUI_type.CR_Inj;
 
         gui_typeComboBox.getSelectionModel().select(currentGUIType);
         dimasGUIEditionState.isDimasGuiEditionProperty().addListener((observableValue, oldValue, newValue) -> gui_typeComboBox.setVisible(!newValue));

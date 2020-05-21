@@ -46,37 +46,9 @@ public class DelphiC2ICoding {
         if (activeLEDs.contains(4)) {
             Optional.ofNullable(getLed4DataStorage()).ifPresent(data -> resultList.set(3, makeResultString(data)));
         }
-//        resultList.add("");
-//        resultList.add("");
-//        resultList.add("");
-//        resultList.add("");
-//
-//        for (int i = 1; i < 5; i++)
-//            generateCode(resultList, i);
 
         return resultList;
     }
-
-//    private static void generateCode(List<String> resultList, int beaker) {
-//
-//        switch (beaker) {
-//
-//            case 1:
-//                Optional.ofNullable(getLed1DataStorage()).ifPresent(data -> resultList.set(0, makeResultString(data)));
-//                break;
-//            case 2:
-//                Optional.ofNullable(getLed2DataStorage()).ifPresent(data -> resultList.set(1, makeResultString(data)));
-//                break;
-//            case 3:
-//                Optional.ofNullable(getLed3DataStorage()).ifPresent(data -> resultList.set(2, makeResultString(data)));
-//                break;
-//            case 4:
-//                Optional.ofNullable(getLed4DataStorage()).ifPresent(data -> resultList.set(3, makeResultString(data)));
-//                break;
-//
-//        }
-//
-//    }
 
     private static String makeResultString(Map<String, Integer> data) {
 
