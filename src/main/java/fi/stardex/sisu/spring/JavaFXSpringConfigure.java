@@ -1043,7 +1043,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                        PiezoRepairUpdateModel piezoRepairUpdateModel,
                                                        ModbusConnect ultimaModbusConnect,
                                                        RegisterProvider ultimaRegisterProvider,
-                                                       TabSectionModel tabSectionModel){
+                                                       TabSectionModel tabSectionModel,
+                                                       I18N i18N){
         PiezoRepairController piezoRepairController = tabSectionController.getPiezoRepairController();
         piezoRepairController.setPiezoRepairModel(piezoRepairModel);
         piezoRepairController.setUltimaModbusWriter(ultimaModbusWriter);
@@ -1052,6 +1053,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         piezoRepairController.setUltimaRegisterProvider(ultimaRegisterProvider);
         piezoRepairController.setTabSectionController(tabSectionController);
         piezoRepairController.setTabSectionModel(tabSectionModel);
+        piezoRepairController.setI18N(i18N);
         return piezoRepairController;
     }
 

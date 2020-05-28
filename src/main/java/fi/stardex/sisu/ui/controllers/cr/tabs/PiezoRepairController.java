@@ -12,6 +12,7 @@ import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.controllers.cr.TabSectionController;
 import fi.stardex.sisu.util.GaugeCreator;
 import fi.stardex.sisu.util.enums.VoltageRange;
+import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.spinners.SpinnerManager;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
@@ -57,6 +58,7 @@ public class PiezoRepairController {
     private Image lightBulb;
     private Timer timer;
     private IntegerProperty touchLevel = new SimpleIntegerProperty();
+    private I18N i18N;
 
     private ObservableList<String> startStopButtonStyleClass;
     private PiezoRepairModel piezoRepairModel;
@@ -96,6 +98,9 @@ public class PiezoRepairController {
     public void setTabSectionModel(TabSectionModel tabSectionModel) {
         this.tabSectionModel = tabSectionModel;
     }
+    public void setI18N(I18N i18N) {
+        this.i18N = i18N;
+    }
 
     /**Two ways for data request running are possible:
      *
@@ -121,7 +126,6 @@ public class PiezoRepairController {
         initToggleGroup();
         setupTimeLines();
         adjustingTime = new VoltageProgressBar(voltageAdjustment, adjustingText, outputValue);
-        output.setText("Output ");
         outputValue.setText(String.valueOf(LOW.getMin()));
         volt.setText(" V");
         darkBulb = new Image(getClass().getResourceAsStream("/img/pump_button-off.png"));
@@ -131,6 +135,7 @@ public class PiezoRepairController {
         gaugeStackPane.getChildren().add(gauge);
         startStopButton.setDisable(true);
         setupListeners();
+        bindingI18N();
     }
 
     private void setupTimeLines(){
@@ -151,7 +156,7 @@ public class PiezoRepairController {
         SpinnerManager.setupDoubleSpinner(voltageSpinner);
         LOW.setLastValue(LOW.getMin());
         HIGH.setLastValue(HIGH.getMin());
-        currentSpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(2.5, 5, 0, 0.1));
+        currentSpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(2.5, 5, 3.5, 0.1));
         SpinnerManager.setupDoubleSpinner(currentSpinner);
     }
 
@@ -375,6 +380,10 @@ public class PiezoRepairController {
         timer.cancel();
         timer.purge();
         touchLevel.setValue(0);
+    }
+
+    private void bindingI18N() {
+        output.textProperty().bind(i18N.createStringBinding("h4.tab.repair.output"));
     }
 
     private class VoltageProgressBar {

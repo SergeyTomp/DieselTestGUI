@@ -52,7 +52,7 @@
                   </HBox>
                   <HBox spacing="10.0">
                      <children>
-                        <Label fx:id="output" />
+                        <Label fx:id="output" text="%h4.tab.repair.output" />
                         <Label fx:id="outputValue" />
                         <Label fx:id="volt" />
                      </children>

@@ -175,7 +175,11 @@ public class TabSectionController {
         tabSectionModel.step3TabIsShowingProperty().bind(tabStep3.selectedProperty());
         tabSectionModel.piezoTabIsShowingProperty().bind(tabPiezoRepair.selectedProperty());
 
-        tabPane.getTabs().stream().filter(t -> !t.textProperty().get().equals("Piezo") && !t.textProperty().get().equals("Step_3")).forEach(t -> {
+        String piezo = tabPiezoRepair.textProperty().get();
+        String step3 = tabStep3.textProperty().get();
+        tabPane.getTabs().stream()
+                .filter(t -> !t.textProperty().get().equals(piezo) && !t.textProperty().get().equals(step3))
+                .forEach(t -> {
 
             step3Model.step3PauseProperty().addListener((observableValue, oldValue, newValue) -> t.setDisable(newValue));
             piezoRepairModel.startMeasureProperty().addListener((observableValue, oldValue, newValue) -> t.setDisable(newValue));
@@ -203,5 +207,7 @@ public class TabSectionController {
         tabReport.textProperty().bind(i18N.createStringBinding("additional.report"));
         tabCoding.textProperty().bind(i18N.createStringBinding("additional.coding"));
         tabInfo.textProperty().bind(i18N.createStringBinding("additional.info"));
+        tabPiezoRepair.textProperty().bind(i18N.createStringBinding("h4.tab.repair"));
+        tabStep3.textProperty().bind(i18N.createStringBinding("additional.step3"));
     }
 }
