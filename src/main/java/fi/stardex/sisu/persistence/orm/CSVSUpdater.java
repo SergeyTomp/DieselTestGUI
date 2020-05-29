@@ -221,7 +221,7 @@ public class CSVSUpdater {
                     try{
                         writer.append(test.getId().toString()).append(COMMA_DELIMITER)
                                 .append(pumpTest.getModel().getModelCode()).append(COMMA_DELIMITER)
-                                .append(pumpTest.getTestName().getName()).append(COMMA_DELIMITER)
+                                .append(String.valueOf(pumpTest.getTestName().getId())).append(COMMA_DELIMITER)
                                 .append(String.valueOf(pumpTest.isVacuum())).append(COMMA_DELIMITER)
                                 .append(pumpTest.getAdjustingTime().toString()).append(COMMA_DELIMITER)
                                 .append(pumpTest.getMeasuringTime() == null ? "" : pumpTest.getMeasuringTime().toString()).append(COMMA_DELIMITER)

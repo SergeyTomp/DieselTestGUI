@@ -37,6 +37,10 @@ public class PumpTestName implements Name {
         return null;
     }
 
+    public int getId() {
+        return id;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
