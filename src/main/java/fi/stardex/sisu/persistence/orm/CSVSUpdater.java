@@ -257,7 +257,7 @@ public class CSVSUpdater {
                         Pump pump = (Pump) model;
                         writer.append(model.getModelCode()).append(COMMA_DELIMITER)
                                 .append(pump.getManufacturer().getManufacturerName()).append(COMMA_DELIMITER)
-                                .append(String.valueOf(pump.isCustom())).append(NEW_LINE_SEPARATOR)
+                                .append(String.valueOf(pump.isCustom())).append(COMMA_DELIMITER)
                                 .append(String.valueOf(pump.getFeedPressure())).append(COMMA_DELIMITER)
                                 .append(pump.getPumpRotation().name()).append(COMMA_DELIMITER)
                                 .append(pump.getPumpRegulatorConfig().name()).append(COMMA_DELIMITER)
