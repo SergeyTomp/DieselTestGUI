@@ -22,6 +22,7 @@ import fi.stardex.sisu.ui.controllers.cr.dialogs.PrintDialogPanelController;
 import fi.stardex.sisu.util.DesktopFiles;
 import fi.stardex.sisu.util.enums.Measurement;
 import fi.stardex.sisu.util.i18n.I18N;
+import fi.stardex.sisu.util.i18n.Locales;
 import fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer;
 import fi.stardex.sisu.util.obtainers.CurrentManufacturerObtainer;
 import javafx.beans.property.SimpleStringProperty;
@@ -336,7 +337,7 @@ public class PDFService {
             Row<PDPage> row = baseTable.createRow(CELL_HEIGHT);
             Cell<PDPage> cell = result.getMainColumn() == null ? null : row.createCell(result.getMainColumn());
             cell = result.getSubColumn1() == null ? null : row.createCell(result.getSubColumn1());
-            cell = result.getSubColumn2() == null ? null : row.createCell(result.getSubColumn2());
+            cell = result.getSubColumn2() == null ? null : row.createCell(fixKorean(result.getSubColumn2()));
             List<String> textColumns = result.getValueColumns();
             List<Double> numericDataColumns = result.getNumericDataColumns();
 
@@ -371,7 +372,7 @@ public class PDFService {
             cell = row.createCell(result.getSubColumn3());
             cell = row.createCell(result.getSubColumn4());
 
-            nominal = result.nominalDeliveryFlowProperty().get();
+            nominal = fixKorean(result.nominalDeliveryFlowProperty().get());
             cell = row.createCell(nominal);
 
             flow = result.getDelivery_double();
@@ -379,7 +380,7 @@ public class PDFService {
             Color color = getColorCellOfResult(flow, result, Measurement.DELIVERY);
             cell.setFillColor(color);
 
-            nominal = result.nominalBackFlowProperty().get();
+            nominal = fixKorean(result.nominalBackFlowProperty().get());
             cell = row.createCell(nominal);
             flow = result.getBackFlow_double();
             cell = row.createCell(String.valueOf(flow));
@@ -436,8 +437,11 @@ public class PDFService {
 
         InputStream inputStream;
 
-        if(languageModel.languageProperty().get().equals("RUSSIAN")){
+        if(languageModel.languageProperty().get() == Locales.RUSSIAN){
             inputStream = this.getClass().getResourceAsStream("/fonts/Arial_Cyr.ttf");
+        }
+        else if (languageModel.languageProperty().get() == Locales.KOREAN) {
+            inputStream = this.getClass().getResourceAsStream("/fonts/NanumGothic-Regular.ttf");
         }
         else {
             inputStream = this.getClass().getResourceAsStream("/fonts/LiberationSans-Bold.ttf");
@@ -907,10 +911,10 @@ public class PDFService {
                 new HeaderCell(7, "Bar"),
                 new HeaderCell(7, "SCV"),
                 new HeaderCell(7, "PCV"),
-                new HeaderCell(16, deliveryLH.get()),
-                new HeaderCell(11, delivery.get()),
-                new HeaderCell(16, deliveryLH.get()),
-                new HeaderCell(11, backFlow.get())));
+                new HeaderCell(17, deliveryLH.get()),
+                new HeaderCell(10, delivery.get()),
+                new HeaderCell(17, deliveryLH.get()),
+                new HeaderCell(10, backFlow.get())));
         }
     }
 
@@ -937,5 +941,12 @@ public class PDFService {
 
         String getMainHeader();
         List<PDFService.HeaderCell> getHeaderCells();
+    }
+
+    private String fixKorean(String str) {
+        if (languageModel.languageProperty().get() == Locales.KOREAN) {
+            str = str.replace(" \u00B1 ", "+/-");
+        }
+        return str;
     }
 }
