@@ -424,7 +424,7 @@ public class PDFService {
 
     private void drawHeaderPage(PDDocument document, PDPage page) throws IOException {
         PDImageXObject companyLogoImage = getCompanyImage(document);
-        BufferedImage stardexImage = ImageIO.read(getClass().getResource(File.separator + logoPath));
+        BufferedImage stardexImage = ImageIO.read(getClass().getResource("/" + logoPath));
         PDImageXObject stardexObjectImage = LosslessFactory.createFromImage(document, stardexImage);
         contentStream = new PDPageContentStream(document, page);
 
