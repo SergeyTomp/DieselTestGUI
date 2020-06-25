@@ -9,7 +9,7 @@ import fi.stardex.sisu.coding.delphi.c3i.DelphiC3ICodingDataStorage;
 import fi.stardex.sisu.coding.denso.DensoCoding;
 import fi.stardex.sisu.coding.denso.DensoCodingDataStorage;
 import fi.stardex.sisu.coding.siemens.SiemensCoding;
-import fi.stardex.sisu.model.*;
+import fi.stardex.sisu.model.TestBenchSectionModel;
 import fi.stardex.sisu.model.cr.CodingReportModel;
 import fi.stardex.sisu.model.cr.FlowReportModel;
 import fi.stardex.sisu.model.cr.MainSectionModel;
@@ -21,16 +21,15 @@ import fi.stardex.sisu.registers.flow.ModbusMapFlow;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.HighPressureSectionPwrState;
 import fi.stardex.sisu.states.InjectorControllersState;
-import fi.stardex.sisu.ui.controllers.cr.windows.ISADetectionController;
-import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.common.TestBenchSectionController;
+import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.cr.MainSectionController;
+import fi.stardex.sisu.ui.controllers.cr.windows.ISADetectionController;
 import fi.stardex.sisu.util.enums.Measurement;
 import fi.stardex.sisu.util.enums.Tests.TestType;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.scene.control.*;
@@ -252,7 +251,7 @@ public class CrTestManager implements TestManager {
         switch (getManufacturer().toString()) {
 
             case "Bosch":
-                setCodingResults(BoschCoding.calculate(flowReportModel.getResultObservableMap()));
+                setCodingResults(BoschCoding.calculate(flowReportModel.getResultObservableMap(), codingReportModel.getResultsList()));
                 break;
             case "Siemens":
                 setCodingResults(SiemensCoding.calculate(flowReportModel.getResultObservableMap(), mainSectionModel.injectorProperty().get()));
