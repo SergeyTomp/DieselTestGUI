@@ -447,7 +447,6 @@ public class BoschCoding {
         return resultList;
 
     }
-    //TODO: на данный момент isHEX в принципе можно вычислять на месте по codeStep, если 4 - true, иначе false
     private static String prepareStringResult(String binaryResult, CodeTypes codeType) {
 
         logger.info("5. final binary string: {}", binaryResult);
