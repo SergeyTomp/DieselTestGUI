@@ -2,9 +2,7 @@ package fi.stardex.sisu.util.enums;
 
 import fi.stardex.sisu.registers.ModbusMap;
 
-import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.Battery_U;
-import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.Boost_U;
-import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.StartOnBatteryUOne;
+import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.*;
 
 public enum VoltageRange {
 
@@ -20,7 +18,7 @@ public enum VoltageRange {
     private boolean isLowRange;
     private double correction;
     private int upTimeStep = 150;   // в мс
-    private int downTimeStep = 400; // в мс
+    private int downTimeStep = 800; // в мс
     private double lastValue;
 
     VoltageRange(double min,
@@ -39,6 +37,7 @@ public enum VoltageRange {
         this.switchRangeRegister = switchRangeRegister;
         this.isLowRange = isLowRange;
         this.correction = correction;
+        this.lastValue = min;
     }
 
     public Double getMin() {
@@ -64,6 +63,9 @@ public enum VoltageRange {
     }
     public int getDownTimeStep() {
         return downTimeStep;
+    }
+    public double getDownTimeStep(double voltage){
+        return Math.round(-0.0025 * Math.pow(voltage, 3) + 0.89 * Math.pow(voltage, 2) - 105 * voltage + 5302);
     }
     public double getLastValue() {
         return lastValue;

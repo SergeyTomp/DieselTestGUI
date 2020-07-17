@@ -1051,7 +1051,6 @@ public class JavaFXSpringConfigure extends ViewLoader{
         piezoRepairController.setPiezoRepairUpdateModel(piezoRepairUpdateModel);
         piezoRepairController.setUltimaModbusConnect(ultimaModbusConnect);
         piezoRepairController.setUltimaRegisterProvider(ultimaRegisterProvider);
-        piezoRepairController.setTabSectionController(tabSectionController);
         piezoRepairController.setTabSectionModel(tabSectionModel);
         piezoRepairController.setI18N(i18N);
         return piezoRepairController;

@@ -9,7 +9,6 @@ import fi.stardex.sisu.model.updateModels.PiezoRepairUpdateModel;
 import fi.stardex.sisu.registers.ModbusMap;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
-import fi.stardex.sisu.ui.controllers.cr.TabSectionController;
 import fi.stardex.sisu.util.GaugeCreator;
 import fi.stardex.sisu.util.enums.VoltageRange;
 import fi.stardex.sisu.util.i18n.I18N;
@@ -18,9 +17,7 @@ import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
 import javafx.beans.property.IntegerProperty;
-import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -32,6 +29,7 @@ import javafx.scene.text.Text;
 import javafx.util.Duration;
 
 import javax.annotation.PostConstruct;
+import java.util.Optional;
 import java.util.Timer;
 
 import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.*;
@@ -70,11 +68,12 @@ public class PiezoRepairController {
     private VoltageProgressBar adjustingTime;
     private boolean isSwitchRange;
     private boolean incorrectInput;
+    private double vapBatteryU;
+    private double vapBoostU;
     private static final float ONE_AMPERE_MULTIPLY = 93.07f;
+    private final VoltageRange INITIAL_RANGE = HIGH;
     private Gauge gauge;
     private RegisterProvider ultimaRegisterProvider;
-    private TabSectionController tabSectionController;
-    private ObjectProperty<Boolean> isTabPiezoShowing = new SimpleObjectProperty<>();
     private TabSectionModel tabSectionModel;
 
     public void setPiezoRepairModel(PiezoRepairModel piezoRepairModel) {
@@ -92,9 +91,6 @@ public class PiezoRepairController {
     public void setUltimaRegisterProvider(RegisterProvider ultimaRegisterProvider) {
         this.ultimaRegisterProvider = ultimaRegisterProvider;
     }
-    public void setTabSectionController(TabSectionController tabSectionController) {
-        this.tabSectionController = tabSectionController;
-    }
     public void setTabSectionModel(TabSectionModel tabSectionModel) {
         this.tabSectionModel = tabSectionModel;
     }
@@ -105,13 +101,13 @@ public class PiezoRepairController {
     /**Two ways for data request running are possible:
      *
      * 1 - standard one is through Updater interface realised in PiezoRepairUpdateModel, standard request circle period is 500ms
-     *   - deactivate methods startTouchControl() and stopTouchControl() in isTabPiezoShowing() listener
+     *   - deactivate methods startTouchControl() and stopTouchControl() in tabSectionModel.piezoTabIsShowingProperty() listener
      *   - activate PiezoRepairUpdateModel via uncommenting of it's run() method content
      *   - activate piezoRepairUpdateModel.touchLevelProperty() listener in setupListeners()
      *   - deactivate touchLevel listener in setupListeners()
      *
      * 2 - special one through TimerTask interface realised in PiezoRepairTask, request circle period could be defined in Timer timer period parameter:
-     *   - activate methods startTouchControl() and stopTouchControl() in isTabPiezoShowing() listener
+     *   - activate methods startTouchControl() and stopTouchControl() in tabSectionModel.piezoTabIsShowingProperty() listener
      *   - set required period for request circle in startTouchControl() method
      *   - deactivate PiezoRepairUpdateModel via commenting of it's run() method content
      *   - deactivate piezoRepairUpdateModel.touchLevelProperty() listener in setupListeners()
@@ -126,7 +122,7 @@ public class PiezoRepairController {
         initToggleGroup();
         setupTimeLines();
         adjustingTime = new VoltageProgressBar(voltageAdjustment, adjustingText, outputValue);
-        outputValue.setText(String.valueOf(LOW.getMin()));
+        outputValue.setText(String.valueOf(INITIAL_RANGE.getMin()));
         volt.setText(" V");
         darkBulb = new Image(getClass().getResourceAsStream("/img/pump_button-off.png"));
         lightBulb = new Image(getClass().getResourceAsStream("/img/pump_button-on.png"));
@@ -152,20 +148,19 @@ public class PiezoRepairController {
 
     private void setupSpinners() {
 
-        setSpinnerRangeConstants(LOW);
+        setSpinnerRangeConstants(INITIAL_RANGE);
         SpinnerManager.setupDoubleSpinner(voltageSpinner);
-        LOW.setLastValue(LOW.getMin());
-        HIGH.setLastValue(HIGH.getMin());
         currentSpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(2.5, 5, 3.5, 0.1));
         SpinnerManager.setupDoubleSpinner(currentSpinner);
+        voltageSpinner.repeatDelayProperty().setValue(Duration.ZERO);
     }
 
     private void initToggleGroup(){
 
         highVoltageButton.setToggleGroup(toggleGroup);
         lowVoltageButton.setToggleGroup(toggleGroup);
-        piezoRepairModel.voltageRangeObjectProperty().setValue(LOW);
-        lowVoltageButton.setSelected(true);
+        piezoRepairModel.voltageRangeObjectProperty().setValue(INITIAL_RANGE);
+        toggleGroup.selectToggle(INITIAL_RANGE == LOW ? lowVoltageButton : highVoltageButton);
     }
 
     private void setSpinnerRangeConstants(VoltageRange range) {
@@ -231,30 +226,18 @@ public class PiezoRepairController {
                     return;
                 }
 
+                double step = piezoRepairModel.voltageRangeObjectProperty().get().getStep();
+
+                if ((newValue * 10)  % (step * 10) != 0) {
+                    newValue = newValue - newValue % step;
+                    incorrectInput = true;
+                    voltageSpinner.getValueFactory().setValue(newValue);
+                }
+
                 progressTimeLine.stop();
 
-                double delta = newValue - oldValue;
-                double voltageStep = piezoRepairModel.voltageRangeObjectProperty().get().getStep();
-                double upTimeStep = piezoRepairModel.voltageRangeObjectProperty().get().getUpTimeStep() * voltageStep;
-                double downTimeStep = piezoRepairModel.voltageRangeObjectProperty().get().getDownTimeStep() * voltageStep;
-                double timeStep = delta >= 0 ? upTimeStep : downTimeStep;
-                double timeLineDuration = (Math.abs(delta) * timeStep / voltageStep);
-
-                adjustingTime.setTimeStep((int)timeStep);
-                adjustingTime.setProgress((int)timeLineDuration);
-                adjustingTime.setInitialVoltage(oldValue);
-                adjustingTime.setVoltageStep(piezoRepairModel.voltageRangeObjectProperty().get().getStep() * delta / Math.abs(delta));
-
-                piezoRepairModel.voltageValueProperty().setValue(newValue);
-                piezoRepairModel.voltageRangeObjectProperty().get().setLastValue(newValue);
-                disableNodes(true, startStopButton, voltageSpinner, lowVoltageButton, highVoltageButton);
-
-                sendVoltage();
-
-                progressTimeLine.getKeyFrames().clear();
-                progressTimeLine.getKeyFrames().add(new KeyFrame(Duration.millis(timeStep), event ->
-                        tickProgress()));
-                progressTimeLine.play();
+                VoltageRange voltageRange = piezoRepairModel.voltageRangeObjectProperty().get();
+                adjustVoltages(newValue, oldValue, voltageRange);
             }
             else {
                 incorrectInput = true;
@@ -296,9 +279,49 @@ public class PiezoRepairController {
         tabSectionModel.piezoTabIsShowingProperty().addListener((observableValue, oldValue, newValue) -> {
 
             if (newValue) {
+                vapBatteryU = (double)Optional.ofNullable(ultimaRegisterProvider.read(Battery_U)).orElse(14d);
+                vapBoostU = (double)Optional.ofNullable(ultimaRegisterProvider.read(Boost_U)).orElse(30d);
+
+                VoltageRange voltageRange = piezoRepairModel.voltageRangeObjectProperty().get();
+                double vapVoltage = voltageRange == LOW ? vapBatteryU : vapBoostU;
+                double requiredVoltage = voltageRange.getLastValue();
+
+                adjustVoltages(requiredVoltage, vapVoltage, voltageRange);
                 startTouchControl();
-            }else stopTouchControl();
+            }else {
+                stopTouchControl();
+                progressTimeLine.stop();
+                ultimaModbusWriter.add(Battery_U, vapBatteryU);
+                ultimaModbusWriter.add(Boost_U, vapBoostU);
+            }
         });
+    }
+
+    private void adjustVoltages(double requiredVoltage, double currentVoltage, VoltageRange voltageRange) {
+
+        double delta = requiredVoltage - currentVoltage;
+        double voltageStep = voltageRange.getStep();
+        double upTimeStep = voltageRange.getUpTimeStep() * voltageStep;
+        double downTimeStep = voltageRange.getDownTimeStep(Math.abs(currentVoltage)) * voltageStep;
+        double timeStep = delta >= 0 ? upTimeStep : downTimeStep;
+        double timeLineDuration = (Math.abs(delta) * timeStep / voltageStep);
+
+        adjustingTime.setTimeStep((int)timeStep);
+        adjustingTime.setProgress((int)timeLineDuration);
+
+        adjustingTime.setInitialVoltage(currentVoltage);
+        adjustingTime.setVoltageStep(voltageStep * delta / Math.abs(delta));
+
+        piezoRepairModel.voltageValueProperty().setValue(requiredVoltage);
+        piezoRepairModel.voltageRangeObjectProperty().get().setLastValue(requiredVoltage);
+        disableNodes(true, startStopButton, voltageSpinner, lowVoltageButton, highVoltageButton);
+
+        sendVoltage();
+
+        progressTimeLine.getKeyFrames().clear();
+        progressTimeLine.getKeyFrames().add(new KeyFrame(Duration.millis(timeStep), event ->
+                tickProgress()));
+        progressTimeLine.play();
     }
 
     private void switchRange(VoltageRange range) {
@@ -359,6 +382,7 @@ public class PiezoRepairController {
 
         if(adjustingTime.tick() <= 0){
             progressTimeLine.stop();
+            outputValue.setText(String.valueOf(voltageSpinner.getValue()));
 //            adjustingText.setVisible(false);      // возможно adjustingText потом совсем убрать
 //            voltageAdjustment.setVisible(false);  // возможно voltageAdjustment потом совсем убрать
             disableNodes(false, startStopButton, voltageSpinner, lowVoltageButton, highVoltageButton);
@@ -393,7 +417,7 @@ public class PiezoRepairController {
         private Label output;
         private int initialTime;
         private int timeStep;
-        private double initialVoltage;
+        private double currentVoltage;
         private double voltageStep;
 
         VoltageProgressBar(ProgressBar progressBar, Text text, Label output) {
@@ -406,7 +430,8 @@ public class PiezoRepairController {
             this.timeStep = timeStep;
         }
         void setInitialVoltage(double initialVoltage) {
-            this.initialVoltage = initialVoltage;
+            this.currentVoltage = initialVoltage;
+            output.setText(String.valueOf(initialVoltage));
         }
         void setVoltageStep(double voltageStep) {
             this.voltageStep = voltageStep;
@@ -428,8 +453,8 @@ public class PiezoRepairController {
 
                 text.setText(String.valueOf(time -= timeStep));
                 progressBar.setProgress (1 - (float)time / (float) initialTime);
-                output.setText(String.valueOf(initialVoltage += voltageStep));
-
+                currentVoltage = Math.round((currentVoltage + voltageStep)*10) / 10d;
+                output.setText(String.valueOf(currentVoltage));
             }
             return time;
         }
