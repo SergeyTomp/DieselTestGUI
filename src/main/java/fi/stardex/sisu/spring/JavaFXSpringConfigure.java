@@ -762,11 +762,13 @@ public class JavaFXSpringConfigure extends ViewLoader{
     @Autowired
     SettingsController settingsController(ViewHolder settings,
                                           ModbusConnect flowModbusConnect,
-                                          FirmwareVersion<FlowVersions> flowFirmwareVersion){
+                                          FirmwareVersion<FlowVersions> flowFirmwareVersion,
+                                          SettingsModel settingsModel){
         SettingsController settingsController = (SettingsController)settings.getController();
         settingsController.setI18N(i18N);
         settingsController.setFlowModbusConnect(flowModbusConnect);
         settingsController.setFlowFirmwareVersion(flowFirmwareVersion);
+        settingsController.setSettingsModel(settingsModel);
         return settingsController;
     }
 
@@ -916,13 +918,15 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                                              GUI_TypeModel gui_typeModel,
                                                                              ManufacturerMenuDialogModel manufacturerMenuDialogModel,
                                                                              MainSectionModel mainSectionModel,
-                                                                             ViewHolder manufacturerMenuDialog) {
+                                                                             ViewHolder manufacturerMenuDialog,
+                                                                             I18N i18N) {
         ManufacturerMenuDialogController manufacturerMenuDialogController = (ManufacturerMenuDialogController) manufacturerMenuDialog().getController();
         manufacturerMenuDialogController.setManufacturerRepository(manufacturerRepository);
         manufacturerMenuDialogController.setGui_typeModel(gui_typeModel);
         manufacturerMenuDialogController.setManufacturerMenuDialogModel(manufacturerMenuDialogModel);
         manufacturerMenuDialogController.setMainSectionModel(mainSectionModel);
         manufacturerMenuDialogController.setManufacturerMenuDialog(manufacturerMenuDialog);
+        manufacturerMenuDialogController.setI18N(i18N);
         return manufacturerMenuDialogController;
     }
 
@@ -935,9 +939,11 @@ public class JavaFXSpringConfigure extends ViewLoader{
 
     @Bean
     @Autowired
-    public NewEditVOAPDialogController newEditVOAPDialogController(VoltAmpereProfileRepository voltAmpereProfileRepository) {
+    public NewEditVOAPDialogController newEditVOAPDialogController(VoltAmpereProfileRepository voltAmpereProfileRepository,
+                                                                   I18N i18N) {
         NewEditVOAPDialogController newEditVOAPDialogController = (NewEditVOAPDialogController) newEditVOAPDialog().getController();
         newEditVOAPDialogController.setVoltAmpereProfileRepository(voltAmpereProfileRepository);
+        newEditVOAPDialogController.setI18N(i18N);
         return newEditVOAPDialogController;
     }
 
@@ -978,7 +984,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                                            InjectorsRepository injectorsRepository,
                                                                            GUI_TypeModel gui_typeModel,
                                                                            NewEditInjectorDialogModel newEditInjectorDialogModel,
-                                                                           MainSectionModel mainSectionModel) {
+                                                                           MainSectionModel mainSectionModel,
+                                                                           I18N i18N) {
         NewEditInjectorDialogController newEditInjectorDialogController = (NewEditInjectorDialogController) newEditInjectorDialog().getController();
         newEditInjectorDialogController.setInjectorTypeRepository(injectorTypeRepository);
         newEditInjectorDialogController.setInjectorTestRepository(injectorTestRepository);
@@ -988,6 +995,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         newEditInjectorDialogController.setGui_typeModel(gui_typeModel);
         newEditInjectorDialogController.setNewEditInjectorDialogModel(newEditInjectorDialogModel);
         newEditInjectorDialogController.setMainSectionModel(mainSectionModel);
+        newEditInjectorDialogController.setI18N(i18N);
         return newEditInjectorDialogController;
     }
 
@@ -1001,12 +1009,14 @@ public class JavaFXSpringConfigure extends ViewLoader{
     public NewEditTestDialogController newEditTestDialogController(InjectorTestRepository injectorTestRepository,
                                                                    TestNamesRepository testNamesRepositor,
                                                                    MainSectionModel mainSectionModel,
-                                                                   NewEditTestDialogModel newEditTestDialogModel) {
+                                                                   NewEditTestDialogModel newEditTestDialogModel,
+                                                                   I18N i18N) {
         NewEditTestDialogController newEditTestDialogController = (NewEditTestDialogController) newEditTestDialog().getController();
         newEditTestDialogController.setInjectorTestRepository(injectorTestRepository);
         newEditTestDialogController.setTestNamesRepository(testNamesRepositor);
         newEditTestDialogController.setMainSectionModel(mainSectionModel);
         newEditTestDialogController.setNewEditTestDialogModel(newEditTestDialogModel);
+        newEditTestDialogController.setI18N(i18N);
         return newEditTestDialogController;
     }
 
@@ -1859,5 +1869,24 @@ public class JavaFXSpringConfigure extends ViewLoader{
         differentialFMController.setFlowModbusConnect(flowModbusConnect);
         differentialFMController.setFlowFirmwareVersion(flowFirmwareVersion);
         return differentialFMController;
+    }
+
+    @Bean
+    public ViewHolder updateFirmware(){return loadView("/fxml/common/UpdateFirmware.fxml");}
+
+    @Bean
+    @Autowired
+    public UpdateFirmwareController updateFirmwareController(ViewHolder updateFirmware,
+                                                             ConnectionController connectionController,
+                                                             ModbusRegisterProcessor ultimaModbusWriter,
+                                                             SettingsModel settingsModel,
+                                                             ViewHolder rootLayout) {
+        UpdateFirmwareController updateFirmwareController = (UpdateFirmwareController)updateFirmware.getController();
+        updateFirmwareController.setConnectionController(connectionController);
+        updateFirmwareController.setRootParent(rootLayout.getView());
+        updateFirmwareController.setUltimaModbusWriter(ultimaModbusWriter);
+        updateFirmwareController.setSettingsModel(settingsModel);
+        updateFirmwareController.setUpdateFirmware(updateFirmware.getView());
+        return updateFirmwareController;
     }
 }

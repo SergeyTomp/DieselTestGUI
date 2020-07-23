@@ -1,15 +1,17 @@
 package fi.stardex.sisu.ui.controllers.cr.tabs.settings;
 
 import fi.stardex.sisu.connect.ModbusConnect;
-import fi.stardex.sisu.registers.RegisterProvider;
-import fi.stardex.sisu.registers.flow.ModbusMapFlow;
+import fi.stardex.sisu.model.SettingsModel;
 import fi.stardex.sisu.settings.*;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.version.FirmwareVersion;
 import fi.stardex.sisu.version.FlowFirmwareVersion;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
+import javafx.scene.input.MouseButton;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
@@ -20,6 +22,8 @@ import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions.MASTER_DF
 
 public class SettingsController {
 
+    @FXML private Label firmwareUpdateLabel;
+    @FXML private Button firmwareUpdateButton;
     @FXML private StackPane firmwareButton;
     @FXML private StackPane differentialFlowMeterButton;
     @FXML private HBox pressureSensor;
@@ -52,13 +56,19 @@ public class SettingsController {
     protected I18N i18N;
     private ModbusConnect flowModbusConnect;
     private FirmwareVersion<FlowFirmwareVersion.FlowVersions> flowFirmwareVersion;
-
+    private SettingsModel settingsModel;
 
     public void setFlowModbusConnect(ModbusConnect flowModbusConnect) {
         this.flowModbusConnect = flowModbusConnect;
     }
     public void setI18N(I18N i18N) {
         this.i18N = i18N;
+    }
+    public void setSettingsModel(SettingsModel settingsModel) {
+        this.settingsModel = settingsModel;
+    }
+    public void setFlowFirmwareVersion(FirmwareVersion<FlowFirmwareVersion.FlowVersions> flowFirmwareVersion) {
+        this.flowFirmwareVersion = flowFirmwareVersion;
     }
 
     public DimasGuiEditionController getDimasGuiEditionController() {
@@ -91,9 +101,6 @@ public class SettingsController {
     public DifferentialFlowMeterButtonController getDifferentialFlowMeterButtonController() {
         return differentialFlowMeterButtonController;
     }
-    public void setFlowFirmwareVersion(FirmwareVersion<FlowFirmwareVersion.FlowVersions> flowFirmwareVersion) {
-        this.flowFirmwareVersion = flowFirmwareVersion;
-    }
 
     @PostConstruct
     private void init() {
@@ -109,11 +116,25 @@ public class SettingsController {
             }
         });
 
+        firmwareUpdateButton.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
+            if (event.getButton().equals(MouseButton.PRIMARY)) {
+                settingsModel.firmwareUpdateProperty().setValue(true);
+                settingsModel.firmwareUpdateProperty().setValue(false);
+            }
+        });
+
+        hideUpdate();
+
         pressureSensorLabel.textProperty().bind(i18N.createStringBinding("settings.pressureSensor.Label"));
         regulatorsConfigLabel.textProperty().bind(i18N.createStringBinding("settings.regulatorsConfig.ComboBox"));
         injectorsConfigLabel.textProperty().bind(i18N.createStringBinding("settings.injectorsConfig.ComboBox"));
         languagesLabel.textProperty().bind(i18N.createStringBinding("settings.languages.ComboBox"));
         flowOutputDimensionLabel.textProperty().bind(i18N.createStringBinding("settings.FlowOutputDimension.ComboBox"));
         diffFmSettingsLabel.textProperty().bind(i18N.createStringBinding("differentialFM.calibrationButton"));
+    }
+
+    private void hideUpdate() {
+        firmwareUpdateLabel.setVisible(false);
+        firmwareUpdateButton.setVisible(false);
     }
 }

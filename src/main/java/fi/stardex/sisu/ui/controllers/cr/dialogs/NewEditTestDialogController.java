@@ -7,11 +7,10 @@ import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.persistence.orm.cr.inj.TestName;
 import fi.stardex.sisu.persistence.repos.cr.InjectorTestRepository;
 import fi.stardex.sisu.persistence.repos.cr.TestNamesRepository;
+import fi.stardex.sisu.util.converters.DataConverter;
+import fi.stardex.sisu.util.i18n.I18N;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import javax.annotation.PostConstruct;
@@ -22,6 +21,15 @@ import static fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer.getInjector
 
 public class NewEditTestDialogController {
 
+    @FXML private Label rpmLabel;
+    @FXML private Label widthLabel;
+    @FXML private Label nominalFlowLabel;
+    @FXML private Label adjustingTimeLabel;
+    @FXML private Label barLabel;
+    @FXML private Label frquencyLabel;
+    @FXML private Label flowRangeLabel;
+    @FXML private Label measurementTimeLabel;
+    @FXML private Label selectTestLabel;
     @FXML private ComboBox<TestName> testComboBox;
     @FXML private TextField barTF;
     @FXML private TextField rpmTF;
@@ -42,6 +50,7 @@ public class NewEditTestDialogController {
     private State currentState;
     private MainSectionModel mainSectionModel;
     private NewEditTestDialogModel newEditTestDialogModel;
+    private I18N i18N;
 
     public void setInjectorTestRepository(InjectorTestRepository injectorTestRepository) {
         this.injectorTestRepository = injectorTestRepository;
@@ -61,6 +70,9 @@ public class NewEditTestDialogController {
     public void setNewEditTestDialogModel(NewEditTestDialogModel newEditTestDialogModel) {
         this.newEditTestDialogModel = newEditTestDialogModel;
     }
+    public void setI18N(I18N i18N) {
+        this.i18N = i18N;
+    }
 
     @PostConstruct
     private void init() {
@@ -79,13 +91,14 @@ public class NewEditTestDialogController {
             }
         });
         testNamesRepository.findAll().forEach(testName -> testNames.add(testName));
+        bindingI18N();
     }
 
-    //TODO freq and flowrange
     private void createAndSave() {
+        String frequency = String.valueOf(Math.round(1000 / DataConverter.convertDataToFloat(freqTF.getText())));
         InjectorTest injectorTest = new InjectorTest(getInjector(), testComboBox.getSelectionModel().getSelectedItem(),
                 Integer.valueOf(rpmTF.getText()), Integer.valueOf(barTF.getText()), Integer.valueOf(adjTimeTF.getText()), Integer.valueOf(measureTimeTF.getText()),
-                Integer.valueOf(freqTF.getText()), Integer.valueOf(widthTF.getText()), Double.valueOf(nominalTF.getText()), Double.valueOf(flowRangeTF.getText()),
+                Integer.valueOf(frequency), Integer.valueOf(widthTF.getText()), Double.valueOf(nominalTF.getText()), Double.valueOf(flowRangeTF.getText()),
                 0, 0);
 
         injectorTestRepository.save(injectorTest);
@@ -98,6 +111,7 @@ public class NewEditTestDialogController {
 
         InjectorTest injectorTest = mainSectionModel.injectorTestProperty().get();
         Injector injector = mainSectionModel.injectorProperty().get();
+        String frequency = String.valueOf(Math.round(1000 / DataConverter.convertDataToFloat(freqTF.getText())));
 
         injectorTest.setInjector(injector);
         injectorTest.setTestName(testComboBox.getSelectionModel().getSelectedItem());
@@ -105,7 +119,7 @@ public class NewEditTestDialogController {
         injectorTest.setSettedPressure( Integer.valueOf(barTF.getText()));
         injectorTest.setAdjustingTime(Integer.valueOf(adjTimeTF.getText()));
         injectorTest.setMeasurementTime(Integer.valueOf(measureTimeTF.getText()));
-        injectorTest.setInjectionRate(Integer.valueOf(freqTF.getText()));
+        injectorTest.setInjectionRate(Integer.valueOf(frequency));
         injectorTest.setTotalPulseTime(Integer.valueOf(widthTF.getText()));
         injectorTest.setNominalFlow(Double.valueOf(nominalTF.getText()));
         injectorTest.setFlowRange(Double.valueOf(flowRangeTF.getText()));
@@ -176,11 +190,12 @@ public class NewEditTestDialogController {
             testComboBox.setDisable(true);
 
             InjectorTest injectorTest = testListView.getSelectionModel().getSelectedItem();
+            String frequency = String.valueOf((Math.round(100000f / injectorTest.getInjectionRate())) / 100);
 
             rpmTF.setText(injectorTest.getMotorSpeed().toString());
             barTF.setText(injectorTest.getSettedPressure().toString());
             widthTF.setText(injectorTest.getTotalPulseTime().toString());
-            freqTF.setText(injectorTest.getInjectionRate().toString());
+            freqTF.setText(frequency);
             nominalTF.setText(injectorTest.getNominalFlow().toString());
             flowRangeTF.setText(injectorTest.getFlowRange().toString());
             adjTimeTF.setText(injectorTest.getAdjustingTime().toString());
@@ -201,5 +216,20 @@ public class NewEditTestDialogController {
 
     private enum State {
         NEW, EDIT, DELETE
+    }
+
+    private void bindingI18N(){
+
+        rpmLabel.textProperty().bind(i18N.createStringBinding("h1.label.rpm"));
+        widthLabel.textProperty().bind(i18N.createStringBinding("h3.label.width"));
+        nominalFlowLabel.textProperty().bind(i18N.createStringBinding("editTestDialog.nominalFlow"));
+        adjustingTimeLabel.textProperty().bind(i18N.createStringBinding("main.label.adjusting.time"));
+        barLabel.textProperty().bind(i18N.createStringBinding("h4.report.table.label.pressure"));
+        frquencyLabel.textProperty().bind(i18N.createStringBinding("editTestDialog.frequency"));
+        flowRangeLabel.textProperty().bind(i18N.createStringBinding("editTestDialog.flowRange"));
+        measurementTimeLabel.textProperty().bind(i18N.createStringBinding("main.label.measuring.time"));
+        selectTestLabel.textProperty().bind(i18N.createStringBinding("editTestDialog.selectTest"));
+        saveBtn.textProperty().bind(i18N.createStringBinding("h4.delay.button.save"));
+        cancelBtn.textProperty().bind(i18N.createStringBinding("voapProfile.button.cancel"));
     }
 }

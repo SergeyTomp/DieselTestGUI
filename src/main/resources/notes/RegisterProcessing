@@ -1,0 +1,121 @@
+RegisterProvider, в нём непосредственно описаны методы записи в железо и чтения из него.
+Для каждого вида оборудования создаётся экземпляр RegisterProvider - ultimaRegisterProvider, flowRegisterProvider, standRegisterProvider
+В конструктор передаётся ModbusConnect
+В нём основные методы write(ModbusMap register, Object value) и read(ModbusMap register) для ModbusRegisterProcessor (см.ниже)
+В методе write производится установка значения переменной LastValue каждого прочитанного регистра, которую затем считывает соответствующий updater.
+Содержит abstract class RegisterFactory со статическими методами ModbusRequest getRequest(ModbusMap reg, boolean isWriting, Object value) и ModbusRequest createWriteRegisters(ModbusMap reg, Object value)
+**По сути RegisterFactory неверно назван, реально название должно быть RequestFactory
+Внутри нкаждого экземпляря класса создаётся FirmwareVersionListener, он слушает подключение, запрашивает в железе версию и передаёт соответствующую enum переменную версии в
+FirmwareVersion<UltimaVersions> ultimaFirmwareVersion, FirmwareVersion<FlowVersions> flowFirmwareVersion или FirmwareVersion<StandVersions> standFirmwareVersion
+
+ModbusRegisterProcessor - осуществляет циклическое чтение регистров и запись в них.
+Внутри есть абстрактный метод initThread() и абстрактный класс ProcessExecutor implements Runnable с методом run(), в котором задействуются методы writeAll(), readAll() и последним в цепочке метод updateAll()
+Для каждого вида оборудования создаётся экземпляр ModbusRegisterProcessor:
+ -- в конструктор передаётся RegisterProvider и ModbusMap[] readList (список регистров для обработки в циклах чтения или записи)
+ -- определяется метод initThread(), в котором создаётся поток чтения из железа, записи в железо и считывания последних полученных из железе данных каждым соответствующим Updater
+ -- в конце конструктора запускается поток, описанный в initThread()
+Для описания потока в initThread():
+ -- создаётся Thread, в него передаётся анонимный экземпляр ProcessExecutor, в котором определеляется его абстрактный метод updateAll()
+ -- в методе updateAll() и производится однократный запуск методов update() для всех Updater, соответствующих типу устройства, переданных сюда в виде фильтрованнго по аннотации списка updaters
+
+ModbusConnect - контролирует подключение к железу.
+Для каждого вида оборудования создаётся экземпляр ModbusConnect.
+В конструктор передаётся:
+- пара IP+port
+- ConnectProcessor,
+- Devices, в котором списки присоединённых и подключенных устройств
+- StatusBarWrapper для вывода внизу экрана списка подключенных устройств
+- Device для определения типа устройства
+- InetAddressWrapper с методами проверки доступности адреса и получения самого адреса в виде класса InetAddress
+В конструкторе создаётся экземпляр SchedulerNotifier, уникальный для каждого ModbusConnect
+Основные методы:
+- @Scheduled connect() - через метод connect(String addressLine, int port) отправляет новый ConnectCallable для конкретного устройства в ConnectProcessor и дополняет списки устройств в Devices
+ -- дёргается системным диспетчером процессов с интервалом, заданным в @Scheduled (cron = "*/3 * * * * *") - каждые 3с
+ --
+- boolean isConnected() проверяет наличие подключения, обновлят BooleanProperty connectedProperty (его слушают ultimaRegisterProvider, flowRegisterProvider, standRegisterProvider) и возвращает результат проверки
+- disconnect2() заватывает ReentrantLock lock, при условии (connectCallable != null && connectCallable.getConnection() != null) закрывает соединение, удаляет устройство из списка подключенных, отпускает lock
+- ModbusTransaction getTransaction(ModbusRequest request) для RegisterProvider, которому возвращается ModbusTransaction
+
+ConnectCallable - непосредственно осуществляет подключение к железу.
+В конструктор передаются Devices devices, String addressLine, int port, StatusBarWrapper statusBar, Device dieselDevice, SchedulerNotifier schedularNotifier, InetAddressWrapper inetAddressWrapper
+В методе Boolean call() производится проверка доступности железа с таймаутом 2с:
+- если железо недоступно:
+ -- возвращает false
+ -- в блоке finally удаляет из списка подключенных соответствующее устройство devices.disconnect(dieselDevice)
+- если железо доступно:
+ -- создаёт экземпляр TCPMasterConnection
+ -- инициирует подключение через его метод connect()
+ -- возвращает результат этого метода
+ -- в блоке finally добавляет в список подключенных устройств devices.connect(dieselDevice))
+ -- посылает сигнал в schedularNotifier.signal()
+
+ConnectProcessor: в нём по сути только executorService с ёмкостью в 3 Callable<Boolean> и метод submit(Callable<Boolean> callable)
+
+SchedulerNotifier - отправляет процессу, ждущему на Condition, сигнал о возможности возобновиться
+- при создании ModbusConnect в конструкторе создаётся свой SchedulerNotifier
+- в конструктор SchedulerNotifier передаётся ReentrantLock lock = new ReentrantLock() и Condition condition = lock.newCondition(), т.е в каждом ModbusConnect будет свой SchedulerNotifier с lock и condition
+- в ModbusConnect при создании ConnectCallable в него передаётся этот SchedulerNotifier
+- метод signal() захватывает lock, затем отправляет сигнал потоку, ждущему на этом condition, после чего отпускает lock
+
+Devices
+
+Как работает:
+- системный диспетчер запускает метод @Scheduled connect() в ModbusConnect каждого устройства с периодом 3с
+- этот метод:
+ -- проверяет, есть ли подключение и не изменился ли адрес
+ -- при невыполнении условия пытается установить соединение через connect(String addressLine, int port)
+ -- при выполнении условия, в настоящем, упрощённом случае, производится schedularNotifier.signal(), непонятно зачем
+- в процессе работы метод connect(String addressLine, int port) перед установкой нового соединения, запускает метод disconnect2()
+- в методе disconnect2() происходит запрос взятия блокировки монитора Condition - lock.lock(), lock может быть занят ConnectCallable
+- если lock занят
+- если lock свободен
+ -- происходит его взятие, закрытие соединения и освобождение lock
+ -- далее в методе connect(String addressLine, int port) создаётся новый ConnectCallable, он передаётся в ConnectProcessor
+ -- ConnectProcessor запускает метод call()
+
+Текущую реализацию можно упростить.
+1. упростить классы ConnectCallable, Devices, ModbusConnect:
+-> в ConnectCallable
+ -- в методе call() сократить блок finally:
+    finally {
+                if (isConnected()) {logger.info("Connected to {}", addressLine);}
+                else {logger.info("Cannot connect to {}", addressLine);}
+                Platform.runLater(statusBar::refresh);
+            }
+ -- убрать Devices devices, Device dieselDevice, SchedulerNotifier schedularNotifier. они не используются
+
+-> в Devices можно убрать почти всё и привести к состоянию:
+    public class Devices {
+        private final EnumSet<Device> connectedDevices = EnumSet.noneOf(Device.class);
+
+        public boolean connect(Device device) {
+            boolean result = connectedDevices.add(device);
+            return result;
+        }
+
+        public boolean disconnect(Device device) {
+            boolean result = connectedDevices.remove(device);
+            return result;
+        }
+
+        public boolean isConnected(Device device) {return connectedDevices.contains(device);}
+        public boolean isNoDeviceConnected() {return connectedDevices.isEmpty();}
+        public Iterator<Device> connectedDevices() {return connectedDevices.iterator();}
+    }
+
+-> в ModbusConnect:
+ -- упростить метод connect()
+    public void connect() {
+        if (isConnected() && isSame(addressLine, port)) {
+            return;
+        }
+        connect(connectInfo.getKey(), Integer.valueOf(connectInfo.getValue()));
+    }
+ -- упростить метод disconnect2()
+     public void disconnect2() {
+        if (connectCallable != null && connectCallable.getConnection() != null){connectCallable.getConnection().close();}
+        modbusTransaction = null;
+        devices.disconnect(dieselDevice);
+      }
+
+2. Удалить SchedulerNotifier schedularNotifier, он не используется, соответственно не нужны Lock lock и Condition condition = lock.newCondition();

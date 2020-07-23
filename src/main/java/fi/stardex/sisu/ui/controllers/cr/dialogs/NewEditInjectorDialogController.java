@@ -10,6 +10,7 @@ import fi.stardex.sisu.persistence.repos.cr.InjectorTestRepository;
 import fi.stardex.sisu.persistence.repos.cr.InjectorsRepository;
 import fi.stardex.sisu.persistence.repos.cr.VoltAmpereProfileRepository;
 import fi.stardex.sisu.ui.ViewHolder;
+import fi.stardex.sisu.util.i18n.I18N;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -29,12 +30,28 @@ import java.util.function.Consumer;
 
 import static fi.stardex.sisu.util.enums.GUI_type.HEUI;
 import static fi.stardex.sisu.util.obtainers.CurrentInjectorObtainer.getInjector;
-import static fi.stardex.sisu.util.obtainers.CurrentInjectorTestsObtainer.getInjectorTests;
 import static fi.stardex.sisu.util.obtainers.CurrentManufacturerObtainer.getManufacturer;
 
 public class NewEditInjectorDialogController {
 
+    @FXML private Label boostOnLabel;
+    @FXML private Label nameLabel;
+    @FXML private Label boostULabel;
+    @FXML private Label boostI_1Label;
+    @FXML private Label firstW1Label;
+    @FXML private Label firstI_1Label;
+    @FXML private Label batteryULabel;
+    @FXML private Label secondI_1Label;
+    @FXML private Label negativeULabel;
+    @FXML private Label boostI_2Label;
+    @FXML private Label firstI_2Label;
+    @FXML private Label secondI_2Label;
+    @FXML private Label coil1Label;
+    @FXML private Label coil2Label;
+    @FXML private Label voltageLabel;
     @FXML private Label firstW2Label;
+
+    @FXML private Label firstW2value;
     @FXML private Label boostI2Label;
     @FXML private Label firstI2Label;
     @FXML private Label secondI2Label;
@@ -73,6 +90,7 @@ public class NewEditInjectorDialogController {
     private NewEditInjectorDialogModel newEditInjectorDialogModel;
     private MainSectionModel mainSectionModel;
     private StringBuilder codeBuilder = new StringBuilder();
+    private I18N i18N;
 
     public void setModelListView(ListView<Model> modelListView) {
         this.modelListView = modelListView;
@@ -104,6 +122,10 @@ public class NewEditInjectorDialogController {
     public void setInjectorTestRepository(InjectorTestRepository injectorTestRepository) {
         this.injectorTestRepository = injectorTestRepository;
     }
+    public void setI18N(I18N i18N) {
+        this.i18N = i18N;
+    }
+
 
     @PostConstruct
     private void init() {
@@ -168,6 +190,7 @@ public class NewEditInjectorDialogController {
                 voapListMenu.hide();
             }
         });
+        bindingI18N();
     }
 
     private void checkAndSaveInjector() {
@@ -243,7 +266,7 @@ public class NewEditInjectorDialogController {
             secondIvalue.setText("");
             negativeUvalue.setText("");
             boostI2Label.setText("");
-            firstW2Label.setText("");
+            firstW2value.setText("");
             firstI2Label.setText("");
             secondI2Label.setText("");
         } else {
@@ -258,12 +281,12 @@ public class NewEditInjectorDialogController {
 
             if (newValue.isDoubleCoil()) {
                 boostI2Label.setText(newValue.getBoostI2().toString());
-                firstW2Label.setText(newValue.getFirstW2().toString());
+                firstW2value.setText(newValue.getFirstW2().toString());
                 firstI2Label.setText(newValue.getFirstI2().toString());
                 secondI2Label.setText(newValue.getSecondI2().toString());
             }else{
                 boostI2Label.setText("");
-                firstW2Label.setText("");
+                firstW2value.setText("");
                 firstI2Label.setText("");
                 secondI2Label.setText("");
             }
@@ -412,5 +435,28 @@ public class NewEditInjectorDialogController {
             controller.setInjectorType(injTypeCB.getSelectionModel().getSelectedItem());
             newVOAPStage.show();
         }
+    }
+
+    private void bindingI18N(){
+        nameLabel.textProperty().bind(i18N.createStringBinding("h4.report.table.label.injectorName"));
+        coil1Label.textProperty().bind(i18N.createStringBinding("voapProfile.label.coil1"));
+        coil2Label.textProperty().bind(i18N.createStringBinding("voapProfile.label.coil2"));
+        boostOnLabel.textProperty().bind(i18N.createStringBinding("voapProfile.button.boostUdisabled"));
+        boostULabel.textProperty().bind(i18N.createStringBinding("voapProfile.label.boostU"));
+        voltageLabel.textProperty().bind(i18N.createStringBinding("h4.voltage.label.voltage"));
+        batteryULabel.textProperty().bind(i18N.createStringBinding("h4.voltage.label.voltageHold"));
+        negativeULabel.textProperty().bind(i18N.createStringBinding("h4.voltage.label.firstNegativeVoltage"));
+        boostI_1Label.textProperty().bind(i18N.createStringBinding("h4.voltage.label.currentBoost"));
+        boostI_2Label.textProperty().bind(i18N.createStringBinding("h4.voltage.label.currentBoost"));
+        firstW1Label.textProperty().bind(i18N.createStringBinding("h4.voltage.label.first"));
+        firstW2Label.textProperty().bind(i18N.createStringBinding("h4.voltage.label.first"));
+        firstI_1Label.textProperty().bind(i18N.createStringBinding("h4.voltage.label.I1"));
+        firstI_2Label.textProperty().bind(i18N.createStringBinding("h4.voltage.label.I1"));
+        secondI_1Label.textProperty().bind(i18N.createStringBinding("h4.voltage.label.I2"));
+        secondI_2Label.textProperty().bind(i18N.createStringBinding("h4.voltage.label.I2"));
+        saveBtn.textProperty().bind(i18N.createStringBinding("h4.delay.button.save"));
+        cancelBtn.textProperty().bind(i18N.createStringBinding("voapProfile.button.cancel"));
+        defaultRB.textProperty().bind(i18N.createStringBinding("main.defaultRB.radiobutton"));
+        customRB.textProperty().bind(i18N.createStringBinding("main.customRB.radiobutton"));
     }
 }

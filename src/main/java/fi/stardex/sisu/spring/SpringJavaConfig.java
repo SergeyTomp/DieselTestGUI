@@ -36,6 +36,7 @@ import fi.stardex.sisu.registers.stand.ModbusMapStand;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.*;
+import fi.stardex.sisu.ui.controllers.common.FirmwareUpdater;
 import fi.stardex.sisu.ui.controllers.common.TestBenchSectionController;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
 import fi.stardex.sisu.ui.controllers.cr.MainSectionController;
@@ -833,6 +834,12 @@ public class SpringJavaConfig {
         return new InjectorSectionPwrState();
     }
 
+    @Bean
+    @Autowired
+    public FirmwareUpdater firmwareUpdater(ModbusRegisterProcessor ultimaModbusWriter) {
+        return new FirmwareUpdater(ultimaModbusWriter);
+    }
+
     // --------------------------------------Model-----------------------------------------------
 
     @Bean
@@ -1409,6 +1416,11 @@ public class SpringJavaConfig {
     @Bean
     public NewEditTestDialogModel newEditTestDialogModel() {
         return new NewEditTestDialogModel();
+    }
+
+    @Bean
+    public SettingsModel settingsModel() {
+        return new SettingsModel();
     }
 
 //    @Bean

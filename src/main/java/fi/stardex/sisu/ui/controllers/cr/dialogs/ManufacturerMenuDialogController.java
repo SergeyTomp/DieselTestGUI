@@ -6,6 +6,7 @@ import fi.stardex.sisu.model.cr.ManufacturerMenuDialogModel;
 import fi.stardex.sisu.persistence.orm.cr.inj.Manufacturer;
 import fi.stardex.sisu.persistence.repos.ManufacturerRepository;
 import fi.stardex.sisu.ui.ViewHolder;
+import fi.stardex.sisu.util.i18n.I18N;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -32,6 +33,7 @@ public class ManufacturerMenuDialogController {
     private MainSectionModel mainSectionModel;
     private Stage stage;
     private ViewHolder manufacturerMenuDialog;
+    private I18N i18N;
 
     public void setManufacturerRepository(ManufacturerRepository manufacturerRepository) {
         this.manufacturerRepository = manufacturerRepository;
@@ -50,6 +52,9 @@ public class ManufacturerMenuDialogController {
 
     public void setManufacturerMenuDialog(ViewHolder manufacturerMenuDialog) {
         this.manufacturerMenuDialog = manufacturerMenuDialog;
+    }
+    public void setI18N(I18N i18N) {
+        this.i18N = i18N;
     }
 
     @PostConstruct
@@ -95,6 +100,7 @@ public class ManufacturerMenuDialogController {
             nameTF.requestFocus();
             stage.show();
         });
+        bindingI18N();
     }
 
     private void create() {
@@ -170,5 +176,10 @@ public class ManufacturerMenuDialogController {
         public String getTitle() {
             return title;
         }
+    }
+    private void bindingI18N(){
+        nameLabel.textProperty().bind(i18N.createStringBinding("dialog.company.name"));
+        applyBtn.textProperty().bind(i18N.createStringBinding("voapProfile.button.apply"));
+        cancelBtn.textProperty().bind(i18N.createStringBinding("voapProfile.button.cancel"));
     }
 }

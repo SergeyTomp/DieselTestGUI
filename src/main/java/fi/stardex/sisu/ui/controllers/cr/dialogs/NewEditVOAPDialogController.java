@@ -3,7 +3,10 @@ package fi.stardex.sisu.ui.controllers.cr.dialogs;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorType;
 import fi.stardex.sisu.persistence.orm.cr.inj.VoltAmpereProfile;
 import fi.stardex.sisu.persistence.repos.cr.VoltAmpereProfileRepository;
+import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.spinners.SpinnerManager;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
@@ -14,56 +17,55 @@ import static fi.stardex.sisu.util.SpinnerDefaults.*;
 
 public class NewEditVOAPDialogController {
 
-    @FXML
-    private CheckBox coil2CheckBox;
-    @FXML
-    private Spinner<Double> firstI2Spinner;
-    @FXML
-    private Spinner<Double> secondI2Spinner;
-    @FXML
-    private Spinner<Double> boostI2Spinner;
-    @FXML
-    private Spinner<Integer> firstW2Spinner;
-    @FXML
-    private TextField enterNameTF;
-    @FXML
-    private Label notUniqueLabel;
-    @FXML
-    private Label currInjTypeLabel;
-    @FXML
-    private Spinner<Integer> firstWSpinner;
-    @FXML
-    private Spinner<Integer> batteryUSpinner;
-    @FXML
-    private Spinner<Double> boostISpinner;
-    @FXML
-    private Spinner<Integer> boostUSpinner;
-    @FXML
-    private Spinner<Double> firstISpinner;
-    @FXML
-    private Spinner<Integer> negativeUSpinner;
-    @FXML
-    private Spinner<Double> secondISpinner;
-    @FXML
-    private ToggleButton enableBoostToggleButton;
-    @FXML
-    private Button saveBtn;
-    @FXML
-    private Button cancelBtn;
+    @FXML private Label firstW_1Label;
+    @FXML private Label batteryULabel;
+    @FXML private Label boostI_1Label;
+    @FXML private Label boostULabel;
+    @FXML private Label firstI_1Label;
+    @FXML private Label negativeULabel;
+    @FXML private Label secondI_1Label;
+    @FXML private Label enterNameLabel;
+    @FXML private Label injTypeLabel;
+    @FXML private Label coil1Label;
+    @FXML private Label boostI_2Label;
+    @FXML private Label firstI_2Label;
+    @FXML private Label secondI_2Label;
+    @FXML private Label firstW_2Label;
+    @FXML private CheckBox coil2CheckBox;
+    @FXML private Spinner<Double> firstI2Spinner;
+    @FXML private Spinner<Double> secondI2Spinner;
+    @FXML private Spinner<Double> boostI2Spinner;
+    @FXML private Spinner<Integer> firstW2Spinner;
+    @FXML private TextField enterNameTF;
+    @FXML private Label notUniqueLabel;
+    @FXML private Label currInjTypeLabel;
+    @FXML private Spinner<Integer> firstWSpinner;
+    @FXML private Spinner<Integer> batteryUSpinner;
+    @FXML private Spinner<Double> boostISpinner;
+    @FXML private Spinner<Integer> boostUSpinner;
+    @FXML private Spinner<Double> firstISpinner;
+    @FXML private Spinner<Integer> negativeUSpinner;
+    @FXML private Spinner<Double> secondISpinner;
+    @FXML private ToggleButton enableBoostToggleButton;
+    @FXML private Button saveBtn;
+    @FXML private Button cancelBtn;
 
     private VoltAmpereProfileRepository voltAmpereProfileRepository;
-
     private InjectorType injectorType;
-
     private State currentState;
-
     private Stage stage;
-
     private ListView<VoltAmpereProfile> voapList;
+    private I18N i18N;
+    private StringProperty boostU_enabled = new SimpleStringProperty();
+    private StringProperty boostU_disabled = new SimpleStringProperty();
 
     public void setVoltAmpereProfileRepository(VoltAmpereProfileRepository voltAmpereProfileRepository) {
         this.voltAmpereProfileRepository = voltAmpereProfileRepository;
     }
+    public void setI18N(I18N i18N) {
+        this.i18N = i18N;
+    }
+
 
     @PostConstruct
     private void init() {
@@ -82,13 +84,12 @@ public class NewEditVOAPDialogController {
 
         enableBoostToggleButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
-                enableBoostToggleButton.setText("Boost_U enabled");
+                enableBoostToggleButton.setText(boostU_enabled.get());
             } else {
-                enableBoostToggleButton.setText("Boost_U disabled");
+                enableBoostToggleButton.setText(boostU_disabled.get());
             }
         });
 
-        //TODO: Boost U для Piezo/PiezoDelphi [30; 350]
         firstWSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(FIRST_W_SPINNER_MIN,
                 FIRST_W_SPINNER_MAX,
                 FIRST_W_SPINNER_INIT,
@@ -151,6 +152,8 @@ public class NewEditVOAPDialogController {
         coil2CheckBox.selectedProperty().setValue(false);
         activateCoil2Spinners(false);
         coil2CheckBox.selectedProperty().addListener((observableValue, oldValue, newValue) -> activateCoil2Spinners(newValue));
+
+        bindingI18N();
     }
 
     private void activateCoil2Spinners(boolean activate) {
@@ -209,5 +212,27 @@ public class NewEditVOAPDialogController {
 
     private enum State {
         NEW
+    }
+
+    private void bindingI18N(){
+        enterNameLabel.textProperty().bind(i18N.createStringBinding("h4.report.table.label.injectorName"));
+        injTypeLabel.textProperty().bind(i18N.createStringBinding("voapProfile.label.injType"));
+        coil1Label.textProperty().bind(i18N.createStringBinding("voapProfile.label.coil1"));
+        coil2CheckBox.textProperty().bind(i18N.createStringBinding("voapProfile.label.coil2"));
+        boostU_enabled.bind(i18N.createStringBinding("voapProfile.button.boostU_enabled"));
+        boostU_disabled.bind(i18N.createStringBinding("voapProfile.button.boostUdisabled"));
+        boostULabel.textProperty().bind(i18N.createStringBinding("voapProfile.label.boostU"));
+        batteryULabel.textProperty().bind(i18N.createStringBinding("h4.voltage.label.voltageHold"));
+        negativeULabel.textProperty().bind(i18N.createStringBinding("h4.voltage.label.firstNegativeVoltage"));
+        boostI_1Label.textProperty().bind(i18N.createStringBinding("h4.voltage.label.currentBoost"));
+        boostI_2Label.textProperty().bind(i18N.createStringBinding("h4.voltage.label.currentBoost"));
+        firstW_1Label.textProperty().bind(i18N.createStringBinding("h4.voltage.label.first"));
+        firstW_2Label.textProperty().bind(i18N.createStringBinding("h4.voltage.label.first"));
+        firstI_1Label.textProperty().bind(i18N.createStringBinding("h4.voltage.label.I1"));
+        firstI_2Label.textProperty().bind(i18N.createStringBinding("h4.voltage.label.I1"));
+        secondI_1Label.textProperty().bind(i18N.createStringBinding("h4.voltage.label.I2"));
+        secondI_2Label.textProperty().bind(i18N.createStringBinding("h4.voltage.label.I2"));
+        saveBtn.textProperty().bind(i18N.createStringBinding("h4.delay.button.save"));
+        cancelBtn.textProperty().bind(i18N.createStringBinding("voapProfile.button.cancel"));
     }
 }

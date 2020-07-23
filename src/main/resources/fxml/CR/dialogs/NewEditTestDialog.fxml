@@ -25,10 +25,10 @@
     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
   </rowConstraints>
    <children>
-      <Label text="RPM" GridPane.rowIndex="1" />
-      <Label text="Width" GridPane.rowIndex="2" />
-      <Label text="Nominal Flow" GridPane.rowIndex="3" />
-      <Label text="Adjusting time" GridPane.rowIndex="4" />
+      <Label fx:id="rpmLabel" text="RPM" GridPane.rowIndex="1" />
+      <Label fx:id="widthLabel" text="Width" GridPane.rowIndex="2" />
+      <Label fx:id="nominalFlowLabel" text="Nominal Flow" GridPane.rowIndex="3" />
+      <Label fx:id="adjustingTimeLabel" text="Adjusting time" GridPane.rowIndex="4" />
       <ComboBox fx:id="testComboBox" prefWidth="150.0" GridPane.columnIndex="2" />
       <TextField fx:id="rpmTF" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
          <GridPane.margin>
@@ -45,7 +45,7 @@
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
          </GridPane.margin>
       </TextField>
-      <TextField fx:id="freqTF" prefWidth="100.0" GridPane.columnIndex="3" GridPane.rowIndex="2">
+      <TextField fx:id="freqTF" prefWidth="100.0" promptText="16.67" GridPane.columnIndex="3" GridPane.rowIndex="2">
          <GridPane.margin>
             <Insets bottom="10.0" left="10.0" right="20.0" top="10.0" />
          </GridPane.margin>
@@ -72,10 +72,10 @@
       </TextField>
     <Button fx:id="saveBtn" mnemonicParsing="false" text="Save" GridPane.columnIndex="2" GridPane.rowIndex="5" />
       <Button fx:id="cancelBtn" mnemonicParsing="false" text="Cancel" GridPane.columnIndex="3" GridPane.rowIndex="5" />
-      <Label text="Bar" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-      <Label text="Freq" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-      <Label text="Flow range" GridPane.columnIndex="2" GridPane.rowIndex="3" />
-      <Label text="Measurement time" GridPane.columnIndex="2" GridPane.rowIndex="4" />
-      <Label text="Select test name: " GridPane.columnIndex="1" />
+      <Label fx:id="barLabel" text="Bar" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+      <Label fx:id="frquencyLabel" text="Frequency" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+      <Label fx:id="flowRangeLabel" text="Flow range" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+      <Label fx:id="measurementTimeLabel" text="Measurement time" GridPane.columnIndex="2" GridPane.rowIndex="4" />
+      <Label fx:id="selectTestLabel" text="Select test name: " GridPane.columnIndex="1" />
    </children>
 </GridPane>

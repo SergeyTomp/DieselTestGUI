@@ -32,7 +32,7 @@
    <children>
       <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.rowIndex="6">
          <children>
-            <Label text="First W: " />
+            <Label fx:id="firstW_1Label" text="First W: " />
             <Spinner fx:id="firstWSpinner" editable="true" prefWidth="100.0" />
          </children>
          <GridPane.margin>
@@ -41,7 +41,7 @@
       </HBox>
       <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="2" GridPane.rowIndex="4">
          <children>
-            <Label text="Battery U: " />
+            <Label fx:id="batteryULabel" text="Battery U: " />
             <Spinner fx:id="batteryUSpinner" editable="true" prefWidth="100.0" />
          </children>
          <GridPane.margin>
@@ -50,7 +50,7 @@
       </HBox>
       <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.rowIndex="3">
          <children>
-            <Label text="Boost I: " />
+            <Label fx:id="boostI_1Label" text="Boost I: " />
             <Spinner fx:id="boostISpinner" editable="true" prefWidth="100.0" />
          </children>
          <GridPane.margin>
@@ -59,7 +59,7 @@
       </HBox>
       <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="2" GridPane.rowIndex="3">
          <children>
-            <Label text="Boost U: " />
+            <Label fx:id="boostULabel" text="Boost U: " />
             <Spinner fx:id="boostUSpinner" editable="true" prefWidth="100.0" />
          </children>
          <GridPane.margin>
@@ -68,7 +68,7 @@
       </HBox>
       <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.rowIndex="4">
          <children>
-            <Label text="First I: " />
+            <Label fx:id="firstI_1Label" text="First I: " />
             <Spinner fx:id="firstISpinner" editable="true" prefWidth="100.0" />
          </children>
          <GridPane.margin>
@@ -77,7 +77,7 @@
       </HBox>
       <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="2" GridPane.rowIndex="5">
          <children>
-            <Label text="Negative U: " />
+            <Label fx:id="negativeULabel" text="Negative U: " />
             <Spinner fx:id="negativeUSpinner" editable="true" prefWidth="100.0" />
          </children>
          <GridPane.margin>
@@ -86,7 +86,7 @@
       </HBox>
       <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.rowIndex="5">
          <children>
-            <Label text="Second I: " />
+            <Label fx:id="secondI_1Label" text="Second I: " />
             <Spinner fx:id="secondISpinner" editable="true" prefWidth="100.0" />
          </children>
          <GridPane.margin>
@@ -129,10 +129,10 @@
          </children>
       </HBox>
       <Label fx:id="notUniqueLabel" text="Not unique name!" visible="false" GridPane.rowIndex="1" />
-      <Label text="Coil 1" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
+      <Label fx:id="coil1Label" text="Coil 1" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
       <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
          <children>
-            <Label text="Boost I: " />
+            <Label fx:id="boostI_2Label" text="Boost I: " />
             <Spinner fx:id="boostI2Spinner" editable="true" prefWidth="100.0" />
          </children>
          <padding>
@@ -141,7 +141,7 @@
       </HBox>
       <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="4">
          <children>
-            <Label text="First I: " />
+            <Label fx:id="firstI_2Label" text="First I: " />
             <Spinner fx:id="firstI2Spinner" editable="true" prefWidth="100.0" />
          </children>
          <padding>
@@ -150,7 +150,7 @@
       </HBox>
       <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
          <children>
-            <Label text="Second I: " />
+            <Label fx:id="secondI_2Label" text="Second I: " />
             <Spinner fx:id="secondI2Spinner" editable="true" prefWidth="100.0" />
          </children>
          <padding>
@@ -159,7 +159,7 @@
       </HBox>
       <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0" spacing="10.0" GridPane.columnIndex="1" GridPane.rowIndex="6">
          <children>
-            <Label text="First W: " />
+            <Label fx:id="firstW_2Label" text="First W: " />
             <Spinner fx:id="firstW2Spinner" editable="true" prefWidth="100.0" />
          </children>
          <padding>
