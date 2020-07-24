@@ -344,8 +344,15 @@ public class CustomPumpDialogController {
     }
 
     private void bindingI18N() {
-
+        nameLabel.textProperty().bind(i18N.createStringBinding("pump.test.report.pumpCode"));
+        applyBtn.textProperty().bind(i18N.createStringBinding("voapProfile.button.apply"));
+        cancelBtn.textProperty().bind(i18N.createStringBinding("voapProfile.button.cancel"));
         yesButton.bind((i18N.createStringBinding("alert.yesButton")));
         alertString.bind((i18N.createStringBinding("alert.customDialog")));
+        regConfigLabel.textProperty().bind((i18N.createStringBinding("pump.customPump.regulatorConfiguration")));
+        regTypeLabel.textProperty().bind((i18N.createStringBinding("pump.customPump.regulatorType")));
+        pressureControlLabel.textProperty().bind((i18N.createStringBinding("pump.customPump.pressureControl")));
+        rotationLabel.textProperty().bind((i18N.createStringBinding("pump.customPump.rotationDirection")));
+        feedPressureLabel.textProperty().bind((i18N.createStringBinding("pump.customPump.feedPressure")));
     }
 }

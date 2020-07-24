@@ -421,6 +421,7 @@ public class InjectorSectionController {
         injectorModel.injectorProperty().addListener((observableValue, oldValue, newValue) -> {
 
             if (newValue == null) {
+                selectInjectorTypeRadioButton(coilRadioButton);
                 disableRadioButtons(piezoCoilToggleGroup, false);
             }
             else{

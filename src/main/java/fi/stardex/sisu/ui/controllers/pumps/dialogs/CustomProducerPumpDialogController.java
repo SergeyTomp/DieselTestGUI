@@ -106,6 +106,8 @@ public class CustomProducerPumpDialogController {
 
         guiTypeModel.guiTypeProperty().addListener((observable, oldValue, newValue) ->
                 customPumpProducerDialogModel.customProducerProperty().setValue(null));
+
+        bindingI18N();
     }
 
     private void create() {
@@ -149,5 +151,11 @@ public class CustomProducerPumpDialogController {
         nameLabel.setVisible(false);
         nameTF.setText(manufacturerPumpModel.manufacturerPumpProperty().get().getManufacturerName());
         notUniqueLabel.setVisible(false);
+    }
+
+    private void bindingI18N(){
+        nameLabel.textProperty().bind(i18N.createStringBinding("dialog.company.name"));
+        applyBtn.textProperty().bind(i18N.createStringBinding("voapProfile.button.apply"));
+        cancelBtn.textProperty().bind(i18N.createStringBinding("voapProfile.button.cancel"));
     }
 }

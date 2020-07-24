@@ -476,22 +476,22 @@ public class CustomPumpTestDialogController {
     }
 
     private void bindingI18N() {
-//        rpmLabel.textProperty().bind(i18N.createStringBinding(""));
-//        scvMaxLabel.textProperty().bind(i18N.createStringBinding(""));
-//        minDirectLabel.textProperty().bind(i18N.createStringBinding(""));
-//        adjustingLabel.textProperty().bind(i18N.createStringBinding(""));
-//        pressureLabel.textProperty().bind(i18N.createStringBinding(""));
-//        scvMinLabel.textProperty().bind(i18N.createStringBinding(""));
-//        maxDirectLabel.textProperty().bind(i18N.createStringBinding(""));
-//        measuringLabel.textProperty().bind(i18N.createStringBinding(""));
-//        testLabel.textProperty().bind(i18N.createStringBinding(""));
-//        minBackLabel.textProperty().bind(i18N.createStringBinding(""));
-//        maxBackLabel.textProperty().bind(i18N.createStringBinding(""));
-//        shiftLabel.textProperty().bind(i18N.createStringBinding(""));
-//        pcvLabel.textProperty().bind(i18N.createStringBinding(""));
-//        saveButton.textProperty().bind(i18N.createStringBinding(""));
-//        cancelButton.textProperty().bind(i18N.createStringBinding(""));
-//        vacuumCheckBox.textProperty().bind(i18N.createStringBinding(""));
+        rpmLabel.textProperty().bind(i18N.createStringBinding("h1.label.rpm"));
+        testLabel.textProperty().bind(i18N.createStringBinding("h4.report.table.label.testName"));
+        adjustingLabel.textProperty().bind(i18N.createStringBinding("main.label.adjusting.time"));
+        measuringLabel.textProperty().bind(i18N.createStringBinding("main.label.measuring.time"));
+        scvMaxLabel.textProperty().bind(i18N.createStringBinding("pump.customTest.scvMaxCurrent"));
+        scvMinLabel.textProperty().bind(i18N.createStringBinding("pump.customTest.scvMinCurrent"));
+        scvEavLabel.textProperty().bind(i18N.createStringBinding("pump.customTest.scvEavCurrent"));
+        shiftLabel.textProperty().bind(i18N.createStringBinding("pump.customTest.currentShift"));
+        pressureLabel.textProperty().bind(i18N.createStringBinding("pump.customTest.bar"));
+        vacuumCheckBox.textProperty().bind(i18N.createStringBinding("pump.customTest.vacuum"));
+        minDirectLabel.textProperty().bind(i18N.createStringBinding("pump.customTest.minDelivery"));
+        maxDirectLabel.textProperty().bind(i18N.createStringBinding("pump.customTest.maxDelivery"));
+        minBackLabel.textProperty().bind(i18N.createStringBinding("pump.customTest.minBackFlow"));
+        maxBackLabel.textProperty().bind(i18N.createStringBinding("pump.customTest.maxBackFlow"));
+        saveButton.textProperty().bind(i18N.createStringBinding("h4.delay.button.save"));
+        cancelButton.textProperty().bind(i18N.createStringBinding("voapProfile.button.cancel"));
         alertString.bind((i18N.createStringBinding("alert.customDialog")));
         yesButton.bind((i18N.createStringBinding("alert.yesButton")));
     }
