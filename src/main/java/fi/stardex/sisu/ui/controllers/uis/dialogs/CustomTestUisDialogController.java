@@ -37,6 +37,26 @@ import static fi.stardex.sisu.util.enums.InjectorSubType.SINGLE_COIL;
 
 public class CustomTestUisDialogController {
 
+    @FXML private Label rpmLabel;
+    @FXML private Label width1Label;
+    @FXML private Label nominalFlowLabel;
+    @FXML private Label adjustingTimeLabel;
+    @FXML private Label barLabel;
+    @FXML private Label flowRangeLabel;
+    @FXML private Label measurementTimeLabel;
+    @FXML private Label testNameLabel;
+    @FXML private Label width2Label;
+    @FXML private Label angle1Label;
+    @FXML private Label angle2Label;
+    @FXML private Label offsetLabel;
+    @FXML private Label bipLabel;
+    @FXML private Label bipRangeLabel;
+    @FXML private Label targetLabel;
+    @FXML private Label toleranceLabel;
+    @FXML private Label coil1Label;
+    @FXML private Label coil2Label;
+    @FXML private Label mechanicsLabel;
+    @FXML private Label timersLabel;
     @FXML private ComboBox<InjectorUisTestName> testComboBox;
     @FXML private TextField barTF;
     @FXML private TextField rpmTF;
@@ -455,5 +475,24 @@ public class CustomTestUisDialogController {
 
         yesButton.bind((i18N.createStringBinding("alert.yesButton")));
         alertString.bind((i18N.createStringBinding("alert.customDialog")));
+        rpmLabel.textProperty().bind((i18N.createStringBinding("h1.label.rpm")));
+        width1Label.textProperty().bind((i18N.createStringBinding("h3.label.width")));
+        nominalFlowLabel.textProperty().bind((i18N.createStringBinding("editTestDialog.nominalFlow")));
+        adjustingTimeLabel.textProperty().bind((i18N.createStringBinding("main.label.adjusting.time")));
+        measurementTimeLabel.textProperty().bind((i18N.createStringBinding("main.label.measuring.time")));
+        barLabel.textProperty().bind((i18N.createStringBinding("h4.report.table.label.pressure")));
+        flowRangeLabel.textProperty().bind((i18N.createStringBinding("editTestDialog.flowRange")));
+        testNameLabel.textProperty().bind((i18N.createStringBinding("editTestDialog.selectTest")));
+        width2Label.textProperty().bind((i18N.createStringBinding("h3.label.width")));
+        angle1Label.textProperty().bind((i18N.createStringBinding("uis.customTest.angle1")));
+        angle2Label.textProperty().bind((i18N.createStringBinding("uis.customTest.angle2")));
+        offsetLabel.textProperty().bind((i18N.createStringBinding("injSection.label.offset")));
+        bipRangeLabel.textProperty().bind((i18N.createStringBinding("uis.customTest.bipRange")));
+        targetLabel.textProperty().bind((i18N.createStringBinding("uis.customTest.targets")));
+        toleranceLabel.textProperty().bind((i18N.createStringBinding("uis.customTest.tolerance")));
+        coil1Label.textProperty().bind((i18N.createStringBinding("voapProfile.label.coil1")));
+        coil2Label.textProperty().bind((i18N.createStringBinding("voapProfile.label.coil2")));
+        mechanicsLabel.textProperty().bind((i18N.createStringBinding("uis.customTest.mechanics")));
+        timersLabel.textProperty().bind((i18N.createStringBinding("uis.customTest.timers")));
     }
 }

@@ -196,5 +196,6 @@ public class UisSettingsController {
         diffFmSettingsButton.textProperty().bind((i18N.createStringBinding("h4.tab.settings")));
         rangeViewLabel.textProperty().bind((i18N.createStringBinding("settings.FlowOutputDimension.ComboBox")));
         slaveMotorLabel.textProperty().bind((i18N.createStringBinding("settings.slaveMotor.Spinner")));
+        firmwareButton.textProperty().bind((i18N.createStringBinding("settings.firmware.Button")));
     }
 }

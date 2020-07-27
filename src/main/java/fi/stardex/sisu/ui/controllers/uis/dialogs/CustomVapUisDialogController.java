@@ -6,7 +6,10 @@ import fi.stardex.sisu.persistence.orm.interfaces.VAP;
 import fi.stardex.sisu.persistence.orm.uis.InjectorUisVAP;
 import fi.stardex.sisu.persistence.repos.uis.UisVapService;
 import fi.stardex.sisu.util.enums.InjectorSubType;
+import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.spinners.SpinnerManager;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -21,6 +24,25 @@ import static fi.stardex.sisu.util.SpinnerDefaults.*;
 
 public class CustomVapUisDialogController {
 
+    @FXML private Label injSubTypeLabel;
+    @FXML private Label firstW1Label;
+    @FXML private Label batteryULabel;
+    @FXML private Label boostI1Label;
+    @FXML private Label boostULabel;
+    @FXML private Label firstI1Label;
+    @FXML private Label negativeULabel;
+    @FXML private Label secondI1Label;
+    @FXML private Label enterNameLabel;
+    @FXML private Label injTypeLabel;
+    @FXML private Label coil1Label;
+    @FXML private Label coil2Label;
+    @FXML private Label boostI2Label;
+    @FXML private Label firstI2Label;
+    @FXML private Label secondI2Label;
+    @FXML private Label firstW2Label;
+    @FXML private Label bipWindowLabel;
+    @FXML private Label camTypeLabel;
+    @FXML private Label inletPressureLabel;
     @FXML private CheckBox bipCheckBox;
     @FXML private Spinner<Double> firstI2Spinner;
     @FXML private Spinner<Double> secondI2Spinner;
@@ -52,10 +74,13 @@ public class CustomVapUisDialogController {
     private SpinnerValueFactory.IntegerSpinnerValueFactory bipPwmSpinnerDisabled;
     private SpinnerValueFactory.IntegerSpinnerValueFactory bipWindowSpinnerEnabled;
     private SpinnerValueFactory.IntegerSpinnerValueFactory bipWindowSpinnerDisabled;
+    private StringProperty boostU_enabled = new SimpleStringProperty();
+    private StringProperty boostU_disabled = new SimpleStringProperty();
 
     private CustomVapUisDialogModel customVapUisDialogModel;
     private CustomModelDialogModel customModelDialogModel;
     private UisVapService uisVapService;
+    private I18N i18N;
 
     public void setCustomVapUisDialogModel(CustomVapUisDialogModel customVapUisDialogModel) {
         this.customVapUisDialogModel = customVapUisDialogModel;
@@ -68,6 +93,9 @@ public class CustomVapUisDialogController {
     }
     public void setUisVapService(UisVapService uisVapService) {
         this.uisVapService = uisVapService;
+    }
+    public void setI18N(I18N i18N) {
+        this.i18N = i18N;
     }
 
     @PostConstruct
@@ -131,9 +159,9 @@ public class CustomVapUisDialogController {
 
         enableBoostToggleButton.selectedProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue) {
-                enableBoostToggleButton.setText("Boost_U enabled");
+                enableBoostToggleButton.setText(boostU_enabled.get());
             } else {
-                enableBoostToggleButton.setText("Boost_U disabled");
+                enableBoostToggleButton.setText(boostU_disabled.get());
             }
         });
 
@@ -211,6 +239,8 @@ public class CustomVapUisDialogController {
         SpinnerManager.setupIntegerSpinner(bipWindowSpinner);
 
         activateCoil2Spinners(false);
+
+        bindingI18N();
     }
 
     private void create() {
@@ -319,5 +349,31 @@ public class CustomVapUisDialogController {
         bipWindowSpinner.setDisable(!activate);
         bipPwmSpinner.setValueFactory(activate ? bipPwmSpinnerEnabled : bipPwmSpinnerDisabled);
         bipWindowSpinner.setValueFactory(activate ? bipWindowSpinnerEnabled : bipWindowSpinnerDisabled);
+    }
+
+    private void bindingI18N(){
+        enterNameLabel.textProperty().bind(i18N.createStringBinding("h4.report.table.label.injectorName"));
+        injTypeLabel.textProperty().bind(i18N.createStringBinding("voapProfile.label.injType"));
+        injSubTypeLabel.textProperty().bind(i18N.createStringBinding("uis.customTest.injectorSubType"));
+        coil1Label.textProperty().bind(i18N.createStringBinding("voapProfile.label.coil1"));
+        coil2Label.textProperty().bind(i18N.createStringBinding("voapProfile.label.coil2"));
+        boostU_enabled.bind(i18N.createStringBinding("voapProfile.button.boostU_enabled"));
+        boostU_disabled.bind(i18N.createStringBinding("voapProfile.button.boostUdisabled"));
+        boostULabel.textProperty().bind(i18N.createStringBinding("voapProfile.label.boostU"));
+        batteryULabel.textProperty().bind(i18N.createStringBinding("h4.voltage.label.voltageHold"));
+        negativeULabel.textProperty().bind(i18N.createStringBinding("h4.voltage.label.firstNegativeVoltage"));
+        boostI1Label.textProperty().bind(i18N.createStringBinding("h4.voltage.label.currentBoost"));
+        boostI2Label.textProperty().bind(i18N.createStringBinding("h4.voltage.label.currentBoost"));
+        firstW1Label.textProperty().bind(i18N.createStringBinding("h4.voltage.label.first"));
+        firstW2Label.textProperty().bind(i18N.createStringBinding("h4.voltage.label.first"));
+        firstI1Label.textProperty().bind(i18N.createStringBinding("h4.voltage.label.I1"));
+        firstI2Label.textProperty().bind(i18N.createStringBinding("h4.voltage.label.I1"));
+        secondI1Label.textProperty().bind(i18N.createStringBinding("h4.voltage.label.I2"));
+        secondI2Label.textProperty().bind(i18N.createStringBinding("h4.voltage.label.I2"));
+        saveBtn.textProperty().bind(i18N.createStringBinding("h4.delay.button.save"));
+        cancelBtn.textProperty().bind(i18N.createStringBinding("voapProfile.button.cancel"));
+        inletPressureLabel.textProperty().bind(i18N.createStringBinding("pump.customPump.feedPressure"));
+        bipWindowLabel.textProperty().bind(i18N.createStringBinding("uis.customTest.bipWindow"));
+        camTypeLabel.textProperty().bind(i18N.createStringBinding("uis.customTest.camType"));
     }
 }

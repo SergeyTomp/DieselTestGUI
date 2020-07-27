@@ -1442,12 +1442,14 @@ public class JavaFXSpringConfigure extends ViewLoader{
     @Autowired
     public CustomVapUisDialogController customVapUisDialogController(CustomVapUisDialogModel customVapUisDialogModel,
                                                                      CustomModelDialogModel customModelDialogModel,
-                                                                     UisVapService uisVapService) {
+                                                                     UisVapService uisVapService,
+                                                                     I18N i18N) {
         CustomVapUisDialogController customVapUisDialogController = (CustomVapUisDialogController)customVapUisDialog().getController();
         customVapUisDialogController.setCustomVapUisDialogModel(customVapUisDialogModel);
         customVapUisDialogController.setCustomModelDialogModel(customModelDialogModel);
         customVapUisDialogController.setNewEditVOAPDialog(customVapUisDialog().getView());
         customVapUisDialogController.setUisVapService(uisVapService);
+        customVapUisDialogController.setI18N(i18N);
         return customVapUisDialogController;
     }
 

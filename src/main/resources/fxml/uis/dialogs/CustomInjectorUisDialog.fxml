@@ -30,7 +30,7 @@
     <children>
         <HBox alignment="CENTER" prefHeight="100.0">
             <children>
-                <Label text="Enter Name: " />
+                <Label fx:id="nameLabel" text="Enter Name: " />
                 <TextField fx:id="injectorCodeTF" />
             </children>
         </HBox>
@@ -58,14 +58,14 @@
         </ListView>
         <ButtonBar fx:id="controlBtnBar" prefHeight="40.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
             <buttons>
-                <Button fx:id="saveBtn" mnemonicParsing="false" text="Save" />
-                <Button fx:id="cancelBtn" mnemonicParsing="false" text="Cancel" />
+                <Button fx:id="saveBtn" mnemonicParsing="false" prefHeight="26.0" prefWidth="120.0" text="Save" />
+                <Button fx:id="cancelBtn" mnemonicParsing="false" prefHeight="26.0" prefWidth="120.0" text="Cancel" />
             </buttons>
             <GridPane.margin>
                 <Insets />
             </GridPane.margin>
             <padding>
-                <Insets right="60.0" />
+                <Insets right="20.0" />
             </padding>
         </ButtonBar>
         <Label fx:id="noUniqueLabel" text="Name not unique!" visible="false" GridPane.rowIndex="2" />
@@ -86,33 +86,45 @@
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
             </rowConstraints>
             <children>
-                <Label text="Boost U: " GridPane.columnIndex="4" GridPane.rowIndex="2" />
-                <Label fx:id="boostUvalue" GridPane.columnIndex="5" GridPane.rowIndex="2" />
-                <Label text="Boost: " GridPane.columnIndex="4" GridPane.rowIndex="1" />
-                <Label fx:id="boostEnableValue" GridPane.columnIndex="5" GridPane.rowIndex="1" />
-                <Label text="Boost I: " GridPane.rowIndex="2" />
+                <Label fx:id="boostULabel" text="Boost U: " GridPane.columnIndex="4" GridPane.rowIndex="2" />
+                <Label fx:id="boostUvalue" GridPane.columnIndex="5" GridPane.rowIndex="2">
+               <padding>
+                  <Insets left="10.0" />
+               </padding></Label>
+                <Label fx:id="boostOnLabel" text="Boost: " GridPane.columnIndex="4" GridPane.rowIndex="1" />
+                <Label fx:id="boostEnableValue" GridPane.columnIndex="5" GridPane.rowIndex="1">
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin></Label>
+                <Label fx:id="boostI1Label" text="Boost I: " GridPane.rowIndex="2" />
                 <Label fx:id="boostIvalue" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                <Label text="First W: " GridPane.rowIndex="1" />
+                <Label fx:id="firstW1Label" text="First W: " GridPane.rowIndex="1" />
                 <Label fx:id="firstWvalue" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                <Label text="First I:" GridPane.rowIndex="3" />
+                <Label fx:id="firstI1Label" text="First I:" GridPane.rowIndex="3" />
                 <Label fx:id="firstIvalue" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                <Label text="Battery U: " GridPane.columnIndex="4" GridPane.rowIndex="3" />
-                <Label fx:id="batteryUvalue" GridPane.columnIndex="5" GridPane.rowIndex="3" />
-                <Label text="Second I: " GridPane.rowIndex="4" />
+                <Label fx:id="batteryULabel" text="Battery U: " GridPane.columnIndex="4" GridPane.rowIndex="3" />
+                <Label fx:id="batteryUvalue" GridPane.columnIndex="5" GridPane.rowIndex="3">
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin></Label>
+                <Label fx:id="secondI1Label" text="Second I: " GridPane.rowIndex="4" />
                 <Label fx:id="secondIvalue" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                <Label text="Negative U: " GridPane.columnIndex="4" GridPane.rowIndex="4" />
-                <Label fx:id="negativeUvalue" GridPane.columnIndex="5" GridPane.rowIndex="4" />
-                <Label text="Boost I: " GridPane.columnIndex="2" GridPane.rowIndex="2" />
-                <Label text="First I:" GridPane.columnIndex="2" GridPane.rowIndex="3" />
-                <Label text="Second I: " GridPane.columnIndex="2" GridPane.rowIndex="4" />
-                <Label text="First W: " GridPane.columnIndex="2" GridPane.rowIndex="1" />
-                <Label text="Coil 1" />
-                <Label text="Coil 2" GridPane.columnIndex="2" />
-                <Label text="Voltage" GridPane.columnIndex="4" />
-                <Label fx:id="firstW2Label" GridPane.columnIndex="3" GridPane.rowIndex="1" />
-                <Label fx:id="boostI2Label" GridPane.columnIndex="3" GridPane.rowIndex="2" />
-                <Label fx:id="firstI2Label" GridPane.columnIndex="3" GridPane.rowIndex="3" />
-                <Label fx:id="secondI2Label" GridPane.columnIndex="3" GridPane.rowIndex="4" />
+                <Label fx:id="negativeULabel" text="Negative U: " GridPane.columnIndex="4" GridPane.rowIndex="4" />
+                <Label fx:id="negativeUvalue" GridPane.columnIndex="5" GridPane.rowIndex="4">
+               <GridPane.margin>
+                  <Insets left="10.0" />
+               </GridPane.margin></Label>
+                <Label fx:id="boostI2Label" text="Boost I: " GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                <Label fx:id="firstI2Label" text="First I:" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+                <Label fx:id="secondI2Label" text="Second I: " GridPane.columnIndex="2" GridPane.rowIndex="4" />
+                <Label fx:id="firstW2Label" text="First W: " GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                <Label fx:id="coil1Label" text="Coil 1" />
+                <Label fx:id="coil2Label" text="Coil 2" GridPane.columnIndex="2" />
+                <Label fx:id="voltageLabel" text="Voltage" GridPane.columnIndex="4" />
+                <Label GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                <Label GridPane.columnIndex="3" GridPane.rowIndex="2" />
+                <Label GridPane.columnIndex="3" GridPane.rowIndex="3" />
+                <Label GridPane.columnIndex="3" GridPane.rowIndex="4" />
             </children>
             <GridPane.margin>
                 <Insets left="20.0" />

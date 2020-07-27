@@ -111,7 +111,7 @@ public class NewEditTestDialogController {
 
         InjectorTest injectorTest = mainSectionModel.injectorTestProperty().get();
         Injector injector = mainSectionModel.injectorProperty().get();
-        String frequency = String.valueOf(Math.round(1000 / DataConverter.convertDataToFloat(freqTF.getText())));
+        String frequency = String.valueOf(Math.round(100000 / DataConverter.convertDataToFloat(freqTF.getText())) / 100);
 
         injectorTest.setInjector(injector);
         injectorTest.setTestName(testComboBox.getSelectionModel().getSelectedItem());

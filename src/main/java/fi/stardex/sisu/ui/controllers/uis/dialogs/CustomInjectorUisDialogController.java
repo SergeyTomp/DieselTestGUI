@@ -38,6 +38,18 @@ import static fi.stardex.sisu.util.enums.Operation.*;
 
 public class CustomInjectorUisDialogController {
 
+    @FXML private Label nameLabel;
+    @FXML private Label coil1Label;
+    @FXML private Label coil2Label;
+    @FXML private Label voltageLabel;
+    @FXML private Label boostULabel;
+    @FXML private Label boostOnLabel;
+    @FXML private Label batteryULabel;
+    @FXML private Label boostI1Label;
+    @FXML private Label firstW1Label;
+    @FXML private Label firstI1Label;
+    @FXML private Label secondI1Label;
+    @FXML private Label negativeULabel;
     @FXML private Label firstW2Label;
     @FXML private Label boostI2Label;
     @FXML private Label firstI2Label;
@@ -383,7 +395,27 @@ public class CustomInjectorUisDialogController {
 
     private void bindingI18N() {
 
+        nameLabel.textProperty().bind(i18N.createStringBinding("h4.report.table.label.injectorName"));
         yesButton.bind((i18N.createStringBinding("alert.yesButton")));
         alertString.bind((i18N.createStringBinding("alert.customDialog")));
+        saveBtn.textProperty().bind(i18N.createStringBinding("h4.delay.button.save"));
+        cancelBtn.textProperty().bind(i18N.createStringBinding("voapProfile.button.cancel"));
+        defaultRB.textProperty().bind(i18N.createStringBinding("main.defaultRB.radiobutton"));
+        customRB.textProperty().bind(i18N.createStringBinding("main.customRB.radiobutton"));
+        boostI2Label.textProperty().bind(i18N.createStringBinding("h4.voltage.label.currentBoost"));
+        firstW2Label.textProperty().bind(i18N.createStringBinding("h4.voltage.label.first"));
+        firstI2Label.textProperty().bind(i18N.createStringBinding("h4.voltage.label.I1"));
+        secondI2Label.textProperty().bind(i18N.createStringBinding("h4.voltage.label.I2"));
+        boostI1Label.textProperty().bind(i18N.createStringBinding("h4.voltage.label.currentBoost"));
+        firstW1Label.textProperty().bind(i18N.createStringBinding("h4.voltage.label.first"));
+        firstI1Label.textProperty().bind(i18N.createStringBinding("h4.voltage.label.I1"));
+        secondI1Label.textProperty().bind(i18N.createStringBinding("h4.voltage.label.I2"));
+        boostOnLabel.textProperty().bind(i18N.createStringBinding("voapProfile.button.boostUdisabled"));
+        boostULabel.textProperty().bind(i18N.createStringBinding("voapProfile.label.boostU"));
+        batteryULabel.textProperty().bind(i18N.createStringBinding("h4.voltage.label.voltageHold"));
+        negativeULabel.textProperty().bind(i18N.createStringBinding("h4.voltage.label.firstNegativeVoltage"));
+        coil1Label.textProperty().bind(i18N.createStringBinding("voapProfile.label.coil1"));
+        coil2Label.textProperty().bind(i18N.createStringBinding("voapProfile.label.coil2"));
+        voltageLabel.textProperty().bind(i18N.createStringBinding("h4.voltage.label.voltage"));
     }
 }

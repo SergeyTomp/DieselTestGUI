@@ -32,10 +32,10 @@
         <RowConstraints minHeight="10.0" prefHeight="50.0" vgrow="SOMETIMES" />
     </rowConstraints>
     <children>
-        <Label text="RPM" GridPane.rowIndex="2" />
-        <Label text="Width" GridPane.rowIndex="6" />
-        <Label text="Nominal Flow" GridPane.rowIndex="10" />
-        <Label text="Adjusting time" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+        <Label fx:id="rpmLabel" text="RPM" GridPane.rowIndex="2" />
+        <Label fx:id="width1Label" text="Width" GridPane.rowIndex="6" />
+        <Label fx:id="nominalFlowLabel" text="Nominal Flow" GridPane.rowIndex="10" />
+        <Label fx:id="adjustingTimeLabel" text="Adjusting time" GridPane.columnIndex="2" GridPane.rowIndex="2" />
         <TextField fx:id="rpmTF" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
             <GridPane.margin>
                 <Insets bottom="10.0" left="10.0" right="30.0" top="10.0" />
@@ -101,10 +101,10 @@
             <Insets bottom="10.0" left="10.0" right="30.0" top="10.0" />
          </GridPane.margin>
       </TextField>
-        <Label text="Bar" GridPane.rowIndex="3" />
-        <Label text="Flow range" GridPane.columnIndex="2" GridPane.rowIndex="10" />
-        <Label text="Measurement time" GridPane.columnIndex="2" GridPane.rowIndex="3" />
-        <Label text="Select test name: " GridPane.columnIndex="1" />
+        <Label fx:id="barLabel" text="Bar" GridPane.rowIndex="3" />
+        <Label fx:id="flowRangeLabel" text="Flow range" GridPane.columnIndex="2" GridPane.rowIndex="10" />
+        <Label fx:id="measurementTimeLabel" text="Measurement time" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+        <Label fx:id="testNameLabel" text="Select test name: " GridPane.columnIndex="1" />
         <ComboBox fx:id="testComboBox" prefWidth="250.0" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.halignment="LEFT">
          <opaqueInsets>
             <Insets />
@@ -112,25 +112,25 @@
          <GridPane.margin>
             <Insets right="10.0" />
          </GridPane.margin></ComboBox>
-        <Button fx:id="saveBtn" mnemonicParsing="false" prefHeight="26.0" prefWidth="100.0" text="Save" GridPane.columnIndex="2" GridPane.rowIndex="12" />
-        <Button fx:id="cancelBtn" mnemonicParsing="false" prefHeight="26.0" prefWidth="100.0" text="Cancel" GridPane.columnIndex="3" GridPane.rowIndex="12" />
-      <Label text="Width" GridPane.columnIndex="2" GridPane.rowIndex="6" />
-      <Label text="Angle 1" GridPane.rowIndex="7" />
-      <Label text="Angle 2" GridPane.rowIndex="8" />
-      <Label text="Offset" GridPane.columnIndex="2" GridPane.rowIndex="7" />
-      <Label text="BIP" GridPane.rowIndex="11" />
-      <Label text="BIP Range" GridPane.columnIndex="2" GridPane.rowIndex="11" />
-      <Label text="Target value" GridPane.columnIndex="1" GridPane.rowIndex="9" />
-      <Label text="Tolerance" GridPane.columnIndex="3" GridPane.rowIndex="9" />
-      <Label text="Coil 1" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-      <Label text="Coil 2" GridPane.columnIndex="3" GridPane.rowIndex="5" />
+        <Button fx:id="saveBtn" mnemonicParsing="false" prefHeight="26.0" prefWidth="120.0" text="Save" GridPane.columnIndex="2" GridPane.rowIndex="12" />
+        <Button fx:id="cancelBtn" mnemonicParsing="false" prefHeight="26.0" prefWidth="120.0" text="Cancel" GridPane.columnIndex="3" GridPane.rowIndex="12" />
+      <Label fx:id="width2Label" text="Width" GridPane.columnIndex="2" GridPane.rowIndex="6" />
+      <Label fx:id="angle1Label" text="Angle 1" GridPane.rowIndex="7" />
+      <Label fx:id="angle2Label" text="Angle 2" GridPane.rowIndex="8" />
+      <Label fx:id="offsetLabel" text="Offset" GridPane.columnIndex="2" GridPane.rowIndex="7" />
+      <Label fx:id="bipLabel" text="BIP" GridPane.rowIndex="11" />
+      <Label fx:id="bipRangeLabel" text="BIP Range" GridPane.columnIndex="2" GridPane.rowIndex="11" />
+      <Label fx:id="targetLabel" text="Target value" GridPane.columnIndex="1" GridPane.rowIndex="9" />
+      <Label fx:id="toleranceLabel" text="Tolerance" GridPane.columnIndex="3" GridPane.rowIndex="9" />
+      <Label fx:id="coil1Label" text="Coil 1" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+      <Label fx:id="coil2Label" text="Coil 2" GridPane.columnIndex="3" GridPane.rowIndex="5" />
       <Label text="Rack position" GridPane.rowIndex="4" />
       <TextField fx:id="rackPositionTF" GridPane.columnIndex="1" GridPane.rowIndex="4">
          <GridPane.margin>
             <Insets bottom="10.0" left="10.0" right="30.0" top="10.0" />
          </GridPane.margin>
       </TextField>
-      <Label text="Mechanics" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-      <Label text="Timers" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+      <Label fx:id="mechanicsLabel" text="Mechanics" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+      <Label fx:id="timersLabel" text="Timers" GridPane.columnIndex="3" GridPane.rowIndex="1" />
     </children>
 </GridPane>

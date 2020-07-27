@@ -105,6 +105,8 @@ public class CustomManufacturerUisDialogController {
 
         guiTypeModel.guiTypeProperty().addListener((observable, oldValue, newValue) ->
                 customProducerDialogModel.customProducerProperty().setValue(null));
+
+        bindingI18N();
     }
 
     private void create() {
@@ -147,5 +149,11 @@ public class CustomManufacturerUisDialogController {
         nameTF.setDisable(true);
         nameLabel.setVisible(false);
         nameTF.setText(mainSectionUisModel.manufacturerObjectProperty().get().getManufacturerName());
+    }
+
+    private void bindingI18N(){
+        nameLabel.textProperty().bind(i18N.createStringBinding("dialog.company.name"));
+        applyBtn.textProperty().bind(i18N.createStringBinding("voapProfile.button.apply"));
+        cancelBtn.textProperty().bind(i18N.createStringBinding("voapProfile.button.cancel"));
     }
 }
