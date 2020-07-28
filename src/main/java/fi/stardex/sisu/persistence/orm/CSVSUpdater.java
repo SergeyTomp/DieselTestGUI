@@ -313,7 +313,7 @@ public class CSVSUpdater {
                         String vap = test.getVoltAmpereProfile() == null ? "" : test.getVoltAmpereProfile().getProfileName();
                         writer.append(test.getId().toString()).append(COMMA_DELIMITER)
                                 .append(test.getModel().getModelCode()).append(COMMA_DELIMITER)
-                                .append(test.getTestName().getName()).append(COMMA_DELIMITER)
+                                .append(test.getTestName().getId().toString()).append(COMMA_DELIMITER)
                                 .append(test.getMotorSpeed() == null ? "" : test.getMotorSpeed().toString()).append(COMMA_DELIMITER)
                                 .append(test.getTargetPressure() == null ? "" : test.getTargetPressure().toString()).append(COMMA_DELIMITER)
                                 .append(test.getAngle_1() == null ? "" : test.getAngle_1().toString()).append(COMMA_DELIMITER)
@@ -406,7 +406,9 @@ public class CSVSUpdater {
                 customManufacturersList.forEach(manufacturer -> {
                     try {
                         writer.append(manufacturer.getManufacturerName()).append(COMMA_DELIMITER)
-                                .append(String.valueOf(manufacturer.isCustom())).append(NEW_LINE_SEPARATOR);
+                                .append(String.valueOf(manufacturer.isCustom())).append(COMMA_DELIMITER)
+                                .append(manufacturer.getCommonRail().toString()).append(COMMA_DELIMITER)
+                                .append(manufacturer.getHeui().toString()).append(NEW_LINE_SEPARATOR);
                     } catch (IOException ex) {
                         logger.error("IO Exception occurred!", ex);
                     }
@@ -527,7 +529,8 @@ public class CSVSUpdater {
                                 .append(injectorTest.getTotalPulseTime().toString()).append(COMMA_DELIMITER)
                                 .append(nominalFlow).append(COMMA_DELIMITER)
                                 .append(flowRange).append(COMMA_DELIMITER)
-                                .append(voltAmpereProfileValue).append(NEW_LINE_SEPARATOR);
+                                .append(voltAmpereProfileValue).append(COMMA_DELIMITER)
+                                .append(injectorTest.isCustom().toString()).append(NEW_LINE_SEPARATOR);
                     } catch (IOException ex) {
                         logger.error("IO Exception occurred!", ex);
                     }

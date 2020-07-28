@@ -62,6 +62,13 @@ public class Manufacturer implements Producer {
         return 0;
     }
 
+    public Boolean getCommonRail() {
+        return commonRail;
+    }
+    public Boolean getHeui() {
+        return heui;
+    }
+
     @Override
     public void setCustom(boolean custom) {
         isCustom = custom;
