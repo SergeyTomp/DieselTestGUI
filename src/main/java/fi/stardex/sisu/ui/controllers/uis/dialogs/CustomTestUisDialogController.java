@@ -291,7 +291,9 @@ public class CustomTestUisDialogController {
             List<InjectorUisTest> injectorTests = uisTestService.findAllByModel(mainSectionUisModel.modelProperty().get());
 
             if (injectorTests != null) {
-                injectorTests.forEach(injectorTest -> testComboBox.getItems().remove(injectorTest.getTestName())); }
+                injectorTests.forEach(injectorTest -> testComboBox.getItems().remove(injectorTest.getTestName()));
+                testComboBox.getSelectionModel().selectFirst();
+            }
 
         }
         else {

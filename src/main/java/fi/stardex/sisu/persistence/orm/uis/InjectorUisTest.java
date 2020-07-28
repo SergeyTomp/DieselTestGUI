@@ -148,6 +148,28 @@ public class InjectorUisTest implements Test, ChangeListener<Boolean> {
         this.angle_2 = angle_2;
     }
 
+    //for test copy in injector copy procedure
+    public InjectorUisTest(InjectorUisTest injectorUisTest, InjectorUIS injector) {
+        this.injector = injector;
+        this.testName = injectorUisTest.testName;
+        this.motorSpeed = injectorUisTest.motorSpeed;
+        this.settedPressure = injectorUisTest.settedPressure;
+        this.angle_1 = injectorUisTest.angle_1;
+        this.angle_2 = injectorUisTest.angle_2;
+        this.doubleCoilOffset = injectorUisTest.doubleCoilOffset;
+        this.totalPulseTime1 = injectorUisTest.totalPulseTime1;
+        this.totalPulseTime2 = injectorUisTest.totalPulseTime2;
+        this.nominalFlow = injectorUisTest.nominalFlow;
+        this.flowRange = injectorUisTest.flowRange;
+        this.adjustingTime = injectorUisTest.adjustingTime;
+        this.measurementTime = injectorUisTest.measurementTime;
+        this.voltAmpereProfile = null;
+        this.bip = injectorUisTest.bip;
+        this.bipRange = injectorUisTest.bipRange;
+        this.rackPosition = injectorUisTest.rackPosition;
+        this.isCustom = true;
+    }
+
     @Override public Integer getId() {
         return id;
     }

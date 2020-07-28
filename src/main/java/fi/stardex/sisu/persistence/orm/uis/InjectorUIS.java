@@ -88,6 +88,10 @@ public class InjectorUIS implements Model {
         return -1;
     }
 
+    public List<InjectorUisTest> getInjectorTests() {
+        return injectorTests;
+    }
+
     @Override
     public void setVAP(VAP voltAmpereProfile){
         this.voltAmpereProfile = (InjectorUisVAP) voltAmpereProfile;}

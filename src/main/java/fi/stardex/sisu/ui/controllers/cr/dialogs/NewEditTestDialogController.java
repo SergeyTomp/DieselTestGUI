@@ -172,10 +172,11 @@ public class NewEditTestDialogController {
 
             List<InjectorTest> injectorTests = injectorTestRepository.findAllByInjector(getInjector());
 
-            if (injectorTests != null)
+            if (injectorTests != null){
                 injectorTests.forEach(injectorTest -> testComboBox.getItems().remove(injectorTest.getTestName()));
+                testComboBox.getSelectionModel().selectFirst();
+            }
 
-            testComboBox.getSelectionModel().clearSelection();
             rpmTF.setText("");
             barTF.setText("");
             widthTF.setText("");

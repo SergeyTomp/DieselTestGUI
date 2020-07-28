@@ -319,8 +319,14 @@ public class MainSectionUisController {
     private void setupCustomModelDialogModelListener() {
 
         customModelDialogModel.doneProperty().addListener((observableValue, oldValue, newValue) -> {
-
-            setFilteredItems(manufacturerListView.getSelectionModel().getSelectedItem());
+            if (defaultRadioButton.isSelected()) {
+                customRadioButton.setSelected(true);
+            }else {
+                setFilteredItems(manufacturerListView.getSelectionModel().getSelectedItem());
+            }
+            Model model = customModelDialogModel.customModelProperty().get();
+            modelListView.getSelectionModel().select(model);
+            modelListView.scrollTo(model);
             mainSectionUisModel.customModelOperationProperty().setValue(null);
         });
 
@@ -634,6 +640,7 @@ public class MainSectionUisController {
         MenuItem editModel = new MenuItem("Edit");
         editModel.setOnAction(actionEvent -> mainSectionUisModel.customModelOperationProperty().setValue(Operation.EDIT));
         MenuItem copyModel = new MenuItem("Copy");
+        copyModel.setOnAction(actionEvent -> mainSectionUisModel.customModelOperationProperty().setValue(Operation.COPY));
         MenuItem deleteModel = new MenuItem("Delete");
         deleteModel.setOnAction(actionEvent -> mainSectionUisModel.customModelOperationProperty().setValue(Operation.DELETE));
 

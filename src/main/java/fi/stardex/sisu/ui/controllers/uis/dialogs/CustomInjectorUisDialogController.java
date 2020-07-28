@@ -5,6 +5,9 @@ import fi.stardex.sisu.model.uis.CustomModelDialogModel;
 import fi.stardex.sisu.model.uis.CustomVapUisDialogModel;
 import fi.stardex.sisu.model.uis.MainSectionUisModel;
 import fi.stardex.sisu.persistence.orm.interfaces.Model;
+import fi.stardex.sisu.persistence.orm.interfaces.Producer;
+import fi.stardex.sisu.persistence.orm.interfaces.Test;
+import fi.stardex.sisu.persistence.orm.interfaces.VAP;
 import fi.stardex.sisu.persistence.orm.uis.InjectorUIS;
 import fi.stardex.sisu.persistence.orm.uis.InjectorUisTest;
 import fi.stardex.sisu.persistence.orm.uis.InjectorUisVAP;
@@ -30,6 +33,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -89,6 +93,7 @@ public class CustomInjectorUisDialogController {
     private Alert alert;
     private StringProperty alertString = new SimpleStringProperty("Please specify all values!");
     private StringProperty yesButton = new SimpleStringProperty();
+    private StringBuilder codeBuilder = new StringBuilder();
 
     public void setMainSectionUisModel(MainSectionUisModel mainSectionUisModel) {
         this.mainSectionUisModel = mainSectionUisModel;
@@ -146,6 +151,9 @@ public class CustomInjectorUisDialogController {
                 case EDIT:
                     setEdit();
                     break;
+                case COPY:
+                    setCopy();
+                    break;
             }
             dialogStage.setTitle(mainSectionUisModel.customModelOperationProperty().get().getTitle() + "injector");
             dialogStage.show();
@@ -200,6 +208,9 @@ public class CustomInjectorUisDialogController {
                     break;
                 case EDIT:
                     update();
+                    break;
+                case COPY:
+                    copy();
                     break;
             }
         });
@@ -288,9 +299,52 @@ public class CustomInjectorUisDialogController {
 
         Model injectorForUpdate = mainSectionUisModel.modelProperty().get();
         uisModelService.delete(injectorForUpdate);
-        customModelDialogModel.customModelProperty().setValue(injectorForUpdate);
+        customModelDialogModel.customModelProperty().setValue(null);
         customModelDialogModel.doneProperty().setValue(new Object());
         dialogStage.close();
+    }
+
+    private void copy() {
+
+        if(!isDataComplete()) return;
+
+        Model injectorForCopy = mainSectionUisModel.modelProperty().get();
+        Producer producer = mainSectionUisModel.manufacturerObjectProperty().get();
+        List<Test> testList = mainSectionUisModel.getTestObservableList();
+        VAP vap = injectorForCopy.getVAP();
+
+        String newCode = makeCode(injectorCodeTF.getText());
+        InjectorUIS copy = new InjectorUIS(newCode, (ManufacturerUIS)producer, (InjectorUisVAP)vap, true);
+        List<InjectorUisTest> newTestList = new ArrayList<>();
+        testList.forEach(test -> newTestList.add(new InjectorUisTest((InjectorUisTest) test, copy)));
+        copy.getInjectorTests().addAll(newTestList);
+
+        uisModelService.save(copy);
+        customModelDialogModel.customModelProperty().setValue(copy);
+        customModelDialogModel.doneProperty().setValue(new Object());
+        dialogStage.close();
+    }
+
+    private void setCopy() {
+
+        injectorCodeTF.setDisable(false);
+
+        injTypeCB.setDisable(true);
+        injSubTypeCB.setDisable(true);
+        voapListView.setDisable(true);
+        defaultRB.setDisable(true);
+        customRB.setDisable(true);
+        sureLabel.setVisible(false);
+
+        Model model = mainSectionUisModel.modelProperty().get();
+        InjectorUisVAP vap = (InjectorUisVAP)model.getVAP();
+        injectorCodeTF.setText(model.getModelCode());
+        if (vap.isCustom())
+            customRB.setSelected(true);
+        else
+            defaultRB.setSelected(true);
+        voapListView.scrollTo(vap);
+        voapListView.getSelectionModel().select(vap);
     }
 
     private void setNew() {
@@ -368,6 +422,24 @@ public class CustomInjectorUisDialogController {
                 firstI2Label.setText("");
                 secondI2Label.setText("");
             }
+        }
+    }
+
+    private String makeCode(String code) {
+        codeBuilder.setLength(0);
+        if (uisModelService.existsByModelCode(code)) {
+            if (code.contains("(")) {
+                int indexBKT1 = code.indexOf('(');
+                int indexBKT2 = code.indexOf(')');
+                int count = Integer.valueOf(code.substring(indexBKT1 + 1, indexBKT2));
+                count++;
+                codeBuilder.append(code.substring(0, indexBKT1)).append("(").append(count).append(")");
+            } else {
+                codeBuilder.append(code).append("(1)");
+            }
+            return makeCode(codeBuilder.toString());
+        }else {
+            return code;
         }
     }
 
