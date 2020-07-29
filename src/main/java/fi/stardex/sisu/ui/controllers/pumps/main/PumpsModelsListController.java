@@ -109,13 +109,15 @@ public class PumpsModelsListController {
             }
 
             pumpModel.pumpProperty().set(newValue);
-//            pumpTestListModel.initPumpTestList();
             pumpReportModel.clearResults();
         });
 
         customPumpDialogModel.doneProperty().addListener((observableValue, oldValue, newValue) -> {
-
-            initPumpList();
+            if (defaultRadioButton.isSelected()) {
+                customRadioButton.setSelected(true);
+            }else{
+                initPumpList();
+            }
             modelListView.getSelectionModel().select((Pump)customPumpDialogModel.customModelProperty().get());
             pumpModel.customPumpOperationProperty().setValue(null);
         });
@@ -172,6 +174,7 @@ public class PumpsModelsListController {
         MenuItem editModel = new MenuItem("Edit");
         editModel.setOnAction(actionEvent -> pumpModel.customPumpOperationProperty().setValue(Operation.EDIT));
         MenuItem copyModel = new MenuItem("Copy");
+        copyModel.setOnAction(actionEvent -> pumpModel.customPumpOperationProperty().setValue(Operation.COPY));
         MenuItem deleteModel = new MenuItem("Delete");
         deleteModel.setOnAction(actionEvent -> pumpModel.customPumpOperationProperty().setValue(Operation.DELETE));
 

@@ -1,9 +1,11 @@
 package fi.stardex.sisu.ui.controllers.pumps.dialogs;
 
 import fi.stardex.sisu.model.GUI_TypeModel;
+import fi.stardex.sisu.model.pump.AutoTestListLastChangeModel.PumpTestWrapper;
 import fi.stardex.sisu.model.pump.CustomPumpDialogModel;
 import fi.stardex.sisu.model.pump.ManufacturerPumpModel;
 import fi.stardex.sisu.model.pump.PumpModel;
+import fi.stardex.sisu.model.pump.PumpTestListModel;
 import fi.stardex.sisu.persistence.orm.interfaces.Model;
 import fi.stardex.sisu.persistence.orm.pump.ManufacturerPump;
 import fi.stardex.sisu.persistence.orm.pump.Pump;
@@ -28,6 +30,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
@@ -62,9 +65,11 @@ public class CustomPumpDialogController {
     private PumpModel pumpModel;
     private CustomPumpDialogModel customPumpDialogModel;
     private ManufacturerPumpModel manufacturerPumpModel;
+    private PumpTestListModel pumpTestListModel;
     private Alert alert;
     private StringProperty alertString = new SimpleStringProperty("Please specify all values!");
     private StringProperty yesButton = new SimpleStringProperty();
+    private StringBuilder codeBuilder = new StringBuilder();
 
     public void setDialogViev(Parent dialogViev) {
         this.dialogViev = dialogViev;
@@ -89,6 +94,9 @@ public class CustomPumpDialogController {
     }
     public void setManufacturerPumpModel(ManufacturerPumpModel manufacturerPumpModel) {
         this.manufacturerPumpModel = manufacturerPumpModel;
+    }
+    public void setPumpTestListModel(PumpTestListModel pumpTestListModel) {
+        this.pumpTestListModel = pumpTestListModel;
     }
 
     @PostConstruct
@@ -139,6 +147,9 @@ public class CustomPumpDialogController {
                 case EDIT:
                     setEdit();
                     break;
+                case COPY:
+                    setCopy();
+                    break;
             }
 
             notUniqueLabel.setVisible(false);
@@ -166,6 +177,9 @@ public class CustomPumpDialogController {
                     break;
                 case EDIT:
                     update();
+                    break;
+                case COPY:
+                    copy();
                     break;
             }
         });
@@ -237,6 +251,24 @@ public class CustomPumpDialogController {
         configForm(true);
     }
 
+    private void setCopy() {
+
+        Pump pump = pumpModel.pumpProperty().get();
+        nameTextField.setText(pump.getPumpCode());
+
+        regConfigComboBox.getSelectionModel().select(pump.getPumpRegulatorConfig());
+        regTypeComboBox.getSelectionModel().select(pump.getPumpRegulatorType());
+        rotationComboBox.getSelectionModel().select(pump.getPumpRotation());
+        pressureControlComboBox.getSelectionModel().select(pump.getPumpPressureControl());
+        feedPressureSpinner.getValueFactory().setValue(pump.getFeedPressure());
+
+        regConfigComboBox.setDisable(true);
+        rotationComboBox.setDisable(true);
+        feedPressureSpinner.setDisable(true);
+        pressureControlComboBox.setDisable(true);
+        regTypeComboBox.setDisable(true);
+    }
+
     private void create() {
 
         if(!isDataComplete()) return;
@@ -303,6 +335,25 @@ public class CustomPumpDialogController {
         dialogStage.close();
     }
 
+    private void copy() {
+
+        if(!isDataComplete()) return;
+
+        List<PumpTest> testList = pumpTestListModel.getPumpTestObservableList().stream()
+                .map(PumpTestWrapper::getPumpTest)
+                .collect(Collectors.toList());
+        String newCode = makeCode(nameTextField.getText());
+        Pump copy = new Pump(newCode, pumpModel.pumpProperty().get());
+        List<PumpTest> newTestList = new ArrayList<>();
+        testList.forEach(test -> newTestList.add(new PumpTest((PumpTest) test, copy)));
+        copy.getPumpTests().addAll(newTestList);
+
+        pumpModelService.save(copy);
+        customPumpDialogModel.customModelProperty().setValue(copy);
+        customPumpDialogModel.doneProperty().setValue(new Object());
+        dialogStage.close();
+    }
+
     private void showAlert() {
 
         if (alert == null) {
@@ -341,6 +392,24 @@ public class CustomPumpDialogController {
             showAlert();
         }
         return alert == null || !alert.isShowing();
+    }
+
+    private String makeCode(String code) {
+        codeBuilder.setLength(0);
+        if (pumpModelService.existsByModelCode(code)) {
+            if (code.contains("(")) {
+                int indexBKT1 = code.indexOf('(');
+                int indexBKT2 = code.indexOf(')');
+                int count = Integer.valueOf(code.substring(indexBKT1 + 1, indexBKT2));
+                count++;
+                codeBuilder.append(code.substring(0, indexBKT1)).append("(").append(count).append(")");
+            } else {
+                codeBuilder.append(code).append("(1)");
+            }
+            return makeCode(codeBuilder.toString());
+        }else {
+            return code;
+        }
     }
 
     private void bindingI18N() {

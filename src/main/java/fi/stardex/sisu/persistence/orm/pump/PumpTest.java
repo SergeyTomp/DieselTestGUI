@@ -116,6 +116,30 @@ public class PumpTest implements Test {
         this.calibrationI2 = null;
     }
 
+    //for test copy in pump copy procedure
+    public PumpTest(PumpTest pumpTest, Pump pump) {
+
+        this.pump = pump;
+        this.pumpTestName = pumpTest.pumpTestName;
+        this.vacuum = pumpTest.vacuum;
+        this.adjustingTime = pumpTest.adjustingTime;
+        this.measuringTime = pumpTest.measuringTime;
+        this.motorSpeed = pumpTest.motorSpeed;
+        this.targetPressure = pumpTest.targetPressure;
+        this.minDirectFlow = pumpTest.minDirectFlow;
+        this.maxDirectFlow = pumpTest.maxDirectFlow;
+        this.minBackFlow = pumpTest.minBackFlow;
+        this.maxBackFlow = pumpTest.maxBackFlow;
+        this.regulatorCurrent = pumpTest.regulatorCurrent;
+        this.pcvCurrent = pumpTest.pcvCurrent;
+        this.calibrationMinI = pumpTest.calibrationMinI;
+        this.calibrationMaxI = pumpTest.calibrationMaxI;
+        this.calibrationIoffset = pumpTest.calibrationIoffset;
+        this.isCustom = true;
+        this.calibrationI1 = null;
+        this.calibrationI2 = null;
+    }
+
     @Override
     public void setMotorSpeed(Integer motorSpeed) {
         this.motorSpeed = motorSpeed;

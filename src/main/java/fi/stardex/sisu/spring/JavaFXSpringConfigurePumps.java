@@ -449,7 +449,8 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
                                                                  PumpTestService pumpTestService,
                                                                  PumpModel pumpModel,
                                                                  CustomPumpDialogModel customPumpDialogModel,
-                                                                 ManufacturerPumpModel manufacturerPumpModel) {
+                                                                 ManufacturerPumpModel manufacturerPumpModel,
+                                                                 PumpTestListModel pumpTestListModel) {
         CustomPumpDialogController customPumpDialogController = (CustomPumpDialogController)customPumpDialog().getController();
         customPumpDialogController.setDialogViev(customPumpDialog().getView());
         customPumpDialogController.setCustomPumpDialogModel(customPumpDialogModel);
@@ -459,6 +460,7 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
         customPumpDialogController.setPumpTestService(pumpTestService);
         customPumpDialogController.setPumpModel(pumpModel);
         customPumpDialogController.setManufacturerPumpModel(manufacturerPumpModel);
+        customPumpDialogController.setPumpTestListModel(pumpTestListModel);
         return customPumpDialogController;
     }
 

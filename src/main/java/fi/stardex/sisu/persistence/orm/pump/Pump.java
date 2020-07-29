@@ -74,6 +74,17 @@ public class Pump implements Model {
 
     public Pump() { }
 
+    public Pump(String pumpCode, Pump original) {
+        this.pumpCode = pumpCode;
+        this.manufacturer = original.manufacturer;
+        this.feedPressure = original.feedPressure;
+        this.pumpRotation = original.pumpRotation;
+        this.pumpRegulatorConfig = original.pumpRegulatorConfig;
+        this.pumpPressureControl = original.pumpPressureControl;
+        this.pumpRegulatorType = original.pumpRegulatorType;
+        this.custom = true;
+    }
+
     public Pump(String pumpCode,
                 ManufacturerPump manufacturer,
                 Boolean custom,
@@ -146,6 +157,10 @@ public class Pump implements Model {
 
     public Double getScvMaxCurr() {
         return scvMaxCurr;
+    }
+
+    public List<PumpTest> getPumpTests() {
+        return pumpTests;
     }
 
     @Override
