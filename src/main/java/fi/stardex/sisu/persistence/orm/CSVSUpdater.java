@@ -219,7 +219,7 @@ public class CSVSUpdater {
 
                     PumpTest pumpTest = (PumpTest) test;
                     try{
-                        writer.append(test.getId().toString()).append(COMMA_DELIMITER)
+                        writer.append("").append(COMMA_DELIMITER)
                                 .append(pumpTest.getModel().getModelCode()).append(COMMA_DELIMITER)
                                 .append(String.valueOf(pumpTest.getTestName().getId())).append(COMMA_DELIMITER)
                                 .append(String.valueOf(pumpTest.isVacuum())).append(COMMA_DELIMITER)
@@ -311,7 +311,7 @@ public class CSVSUpdater {
 
                     try{
                         String vap = test.getVoltAmpereProfile() == null ? "" : test.getVoltAmpereProfile().getProfileName();
-                        writer.append(test.getId().toString()).append(COMMA_DELIMITER)
+                        writer.append("").append(COMMA_DELIMITER)
                                 .append(test.getModel().getModelCode()).append(COMMA_DELIMITER)
                                 .append(test.getTestName().getId().toString()).append(COMMA_DELIMITER)
                                 .append(test.getMotorSpeed() == null ? "" : test.getMotorSpeed().toString()).append(COMMA_DELIMITER)
@@ -518,7 +518,7 @@ public class CSVSUpdater {
                         String injectionRate = (injectorTest.getInjectionRate() == null) ? "" : injectorTest.getInjectionRate().toString();
                         String nominalFlow = (injectorTest.getNominalFlow() == null) ? "" : injectorTest.getNominalFlow().toString();
                         String flowRange = (injectorTest.getFlowRange() == null) ? "" : injectorTest.getFlowRange().toString();
-                        writer.append(injectorTest.getId().toString()).append(COMMA_DELIMITER)
+                        writer.append("").append(COMMA_DELIMITER)
                                 .append(injectorTest.getInjector().toString()).append(COMMA_DELIMITER)
                                 .append(injectorTest.getTestName().getId().toString()).append(COMMA_DELIMITER)
                                 .append(injectorTest.getMotorSpeed().toString()).append(COMMA_DELIMITER)
