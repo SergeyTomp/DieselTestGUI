@@ -251,7 +251,7 @@ public class CrTestManager implements TestManager {
         switch (getManufacturer().toString()) {
 
             case "Bosch":
-                setCodingResults(BoschCoding.calculate(flowReportModel.getResultObservableMap(), codingReportModel.getResultsList()));
+                setCodingResults(BoschCoding.calculate(flowReportModel.getResultObservableMap(), codingReportModel.getResultsList(), injectorControllersState.getArrayNumbersOfActiveLedToggleButtons()));
                 break;
             case "Siemens":
                 setCodingResults(SiemensCoding.calculate(flowReportModel.getResultObservableMap(), mainSectionModel.injectorProperty().get()));

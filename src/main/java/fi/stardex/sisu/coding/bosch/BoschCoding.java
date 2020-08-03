@@ -34,8 +34,9 @@ public class BoschCoding {
     private static CodeTypes injectorCodeType;
     private static Random randomFlow = new Random();
     private static List<String> previousResultList;
+    private static List<Integer> activeLEDs;
 
-    public static List<String> calculate(ObservableMap<InjectorTest, FlowResult> mapOfFlowTestResults, List<Result> codes) {
+    public static List<String> calculate(ObservableMap<InjectorTest, FlowResult> mapOfFlowTestResults, List<Result> codes, List<Integer> activeChannels) {
 
         Map<InjectorTest, List<Double>> temp = new HashMap<>();
         Injector injector = getInjector();
@@ -43,8 +44,7 @@ public class BoschCoding {
         injectorCoefficient = injector.getCoefficient();
         valueDivider = injectorCodeType.divider(injectorCoefficient);
         injectorIntCodeType = injectorCodeType.getCodeType();
-
-        if (injectorIntCodeType == 5 || injectorIntCodeType == 6) {
+        activeLEDs = activeChannels;
 
             previousResultList = new LinkedList<>();
             if (codes.isEmpty()) {
@@ -58,7 +58,6 @@ public class BoschCoding {
                 previousResultList.add(codes.get(2) != null ? codes.get(2).getSubColumn1() : "" );
                 previousResultList.add(codes.get(3) != null ? codes.get(3).getSubColumn1() : "" );
             }
-        }
 
         for (Map.Entry<InjectorTest, FlowResult> entry : mapOfFlowTestResults.entrySet()) {
 
@@ -71,7 +70,52 @@ public class BoschCoding {
                     flowTestResult.getDoubleValue_4()));
         }
 
-        if (injectorCodeType != ZERO) { addLostTests(temp); }
+        if (injectorCodeType == IMA11_1 || injectorCodeType == IMA11_2 || injectorCodeType == IMA11_3 || injectorCodeType == IMA11_4) {
+            /** First step: we have to define if one of Test Point 01 or Pre-Injection tests are present to prevent fake substitution creation of another one.
+             * In case neither Test Point 01 nor Pre-Injection has been found we agree Test Point 01 fake substitution creation is the best. */
+            String toExclude = temp.keySet()
+                    .stream().map(k -> k.getTestName().toString())
+                    .filter(k -> k.equals(TP1.toString()) || k.equals(PRE_INJ.toString()))
+                    .findFirst().filter(k -> !k.equals(TP1.toString()))
+                    .map(k -> TP1.toString())
+                    .orElse(PRE_INJ.toString());
+            addLostTests(temp, List.of(toExclude));
+
+            /** Second step: depending on injectorCodeType we have to provide zero deviations of results from nominal values for tests defined in the technical task.
+             * This is necessary for:
+             * 1. correct checkSum calculation - those tests should not bring in any value into checkSum calculation.
+             * 2. universal and approach to code parts concatenation in getCodeResult() for all IMA-types
+             * 3. simplification of future changes - no necessity to make changes in getCodeResult() for IMA-types but only here below */
+            for (Map.Entry<InjectorTest, List<Double>> entrySet : temp.entrySet()) {
+
+                Double nominal = entrySet.getKey().getNominalFlow();
+                String testName = entrySet.getKey().getTestName().toString();
+
+                switch (injectorCodeType) {
+                    case IMA11_1:
+                        if(testName.equals(TP1.toString()) || testName.equals(TP7.toString()) || testName.equals(PRE_INJ.toString()) || testName.equals(TP5.toString())){
+                            temp.put(entrySet.getKey(), List.of(nominal, nominal, nominal, nominal));
+                        }
+                        break;
+                    case IMA11_2:
+                        if(testName.equals(TP7.toString()) || testName.equals(TP5.toString())){
+                            temp.put(entrySet.getKey(), List.of(nominal, nominal, nominal, nominal));
+                        }
+                        break;
+                    case IMA11_3:
+                        if(testName.equals(TP1.toString()) || testName.equals(PRE_INJ.toString()) || testName.equals(TP5.toString())){
+                            temp.put(entrySet.getKey(), List.of(nominal, nominal, nominal, nominal));
+                        }
+                        break;
+                    case IMA11_4:
+                        if(testName.equals(TP5.toString())){
+                            temp.put(entrySet.getKey(), List.of(nominal, nominal, nominal, nominal));
+                        }
+                        break;
+                }
+            }
+        }
+        else if (injectorCodeType != ZERO) { addLostTests(temp, Collections.emptyList()); }
         /**In case of real tests activation for codeType == 0 do not forget to remove this fake results generation */
         else {
 
@@ -264,17 +308,39 @@ public class BoschCoding {
 
             int checkSum = preparedMap.get(CHECK_SUM.toString()).get(i);
 
-            int emissionPointValue = preparedMap.get(EMISSION_POINT.toString()).get(i);
-            resultString.append(emissionPointValue != -99 ? completeBinaryWithZeroes(emissionPointValue, EMISSION_POINT.fieldLength(injectorIntCodeType, injectorCoefficient)) : "");
+            int testPoint1Value = -99;
+            int testPoint5Value = -99;
+            int testPoint6Value = -99;
+            int testPoint7Value = -99;
 
-            int idleValue = preparedMap.get(IDLE.toString()).get(i);
-            resultString.append(idleValue != -99 ? completeBinaryWithZeroes(idleValue, IDLE.fieldLength(injectorIntCodeType, injectorCoefficient)) : "");
+            if (injectorCodeType == IMA11_1 || injectorCodeType == IMA11_2 || injectorCodeType == IMA11_3 || injectorCodeType == IMA11_4) {
 
-            int maximumLoadValue = preparedMap.get(MAX_LOAD.toString()).get(i);
-            resultString.append(maximumLoadValue != -99 ? completeBinaryWithZeroes(maximumLoadValue, MAX_LOAD.fieldLength(injectorIntCodeType, injectorCoefficient)) : "");
+                int testPoint4Value = preparedMap.get(TP4.toString()).get(i);
+                resultString.append(testPoint4Value != -99 ? completeBinaryWithZeroes(testPoint4Value, TP4.fieldLength(injectorIntCodeType, injectorCoefficient)) : "");
 
-            int preInjectionValue = preparedMap.get(PRE_INJ.toString()).get(i);
-            resultString.append(preInjectionValue != -99 ? completeBinaryWithZeroes(preInjectionValue, PRE_INJ.fieldLength(injectorIntCodeType, injectorCoefficient)) : "");
+                resultString.append(completeBinaryWithZeroes(0, ADD_00000.fieldLength(injectorIntCodeType, injectorCoefficient)));
+
+                int testPoint2value = preparedMap.get(TP2.toString()).get(i);
+                resultString.append(testPoint2value != -99 ? completeBinaryWithZeroes(testPoint2value, TP2.fieldLength(injectorIntCodeType, injectorCoefficient)) : "");
+
+                testPoint1Value = preparedMap.get(TP1.toString()) != null ? preparedMap.get(TP1.toString()).get(i) : preparedMap.get(PRE_INJ.toString()).get(i);
+                testPoint5Value = preparedMap.get(TP5.toString()).get(i);
+                testPoint6Value = preparedMap.get(TP6.toString()).get(i);
+                testPoint7Value = preparedMap.get(TP7.toString()).get(i);
+            }else{
+
+                int emissionPointValue = preparedMap.get(EMISSION_POINT.toString()).get(i);
+                resultString.append(emissionPointValue != -99 ? completeBinaryWithZeroes(emissionPointValue, EMISSION_POINT.fieldLength(injectorIntCodeType, injectorCoefficient)) : "");
+
+                int idleValue = preparedMap.get(IDLE.toString()).get(i);
+                resultString.append(idleValue != -99 ? completeBinaryWithZeroes(idleValue, IDLE.fieldLength(injectorIntCodeType, injectorCoefficient)) : "");
+
+                int maximumLoadValue = preparedMap.get(MAX_LOAD.toString()).get(i);
+                resultString.append(maximumLoadValue != -99 ? completeBinaryWithZeroes(maximumLoadValue, MAX_LOAD.fieldLength(injectorIntCodeType, injectorCoefficient)) : "");
+
+                int preInjectionValue = preparedMap.get(PRE_INJ.toString()).get(i);
+                resultString.append(preInjectionValue != -99 ? completeBinaryWithZeroes(preInjectionValue, PRE_INJ.fieldLength(injectorIntCodeType, injectorCoefficient)) : "");
+            }
 
             switch (injectorCodeType) {
 
@@ -348,16 +414,29 @@ public class BoschCoding {
                                 .append(completeBinaryWithZeroes(injectorCoefficient, 2))
                                 .append("00");
                     break;
+                case IMA11_1:
+                case IMA11_2:
+                case IMA11_3:
+                case IMA11_4:
+                    if (checkSum != -99) {
+
+                        resultString.append(testPoint1Value != -99 ? completeBinaryWithZeroes(testPoint1Value, TP1.fieldLength(injectorIntCodeType, injectorCoefficient)) : "")
+                                .append(completeBinaryWithZeroes(checkSum, CHECK_SUM.fieldLength(injectorIntCodeType, injectorCoefficient)))
+                                .append(completeBinaryWithZeroes(injectorCoefficient, 2));
+
+                        if (testPoint5Value != -99 && testPoint6Value != -99 && testPoint7Value != -99) {
+                            resultString.append(completeBinaryWithZeroes(testPoint5Value, TP5.fieldLength(injectorIntCodeType, injectorCoefficient)))
+                                    .append(completeBinaryWithZeroes(testPoint6Value, TP6.fieldLength(injectorIntCodeType, injectorCoefficient)))
+                                    .append(completeBinaryWithZeroes(testPoint7Value, TP7.fieldLength(injectorIntCodeType, injectorCoefficient)));
+                        }
+                        resultString.append(completeBinaryWithZeroes(0, ADD_0.fieldLength(injectorIntCodeType, injectorCoefficient)));
+                    }
+                    break;
             }
-
             codeResult.add(resultString.toString());
-
             logger.info("4. result string {}: {}", i, resultString.toString());
-
         }
-
         return getCode(codeResult);
-
     }
 
     private static String completeBinaryWithZeroes(final int decimal, final int size) {
@@ -393,11 +472,18 @@ public class BoschCoding {
             case ONE:
             case TWO:
             case ZERO:
-                codeResult.forEach(result -> resultList.add(result.contains(NO_CODING) ? "Coding impossible" : prepareStringResult(result, injectorCodeType)));
-                break;
             case THREE:
             case FOUR:
-                codeResult.forEach(result -> resultList.add(result.contains(NO_CODING) ? "Coding impossible" : prepareStringResult(result, injectorCodeType)));
+            case IMA11_1:
+            case IMA11_2:
+            case IMA11_3:
+            case IMA11_4:
+                resultList.addAll(previousResultList);
+                for (int i = 0; i < codeResult.size(); i++) {
+                    if (activeLEDs.contains(i + 1)) {
+                        resultList.set(i, codeResult.get(i).equals(NO_CODING) ? "Coding impossible" : prepareStringResult(codeResult.get(i), injectorCodeType));
+                    }
+                }
                 break;
             case FIVE:
                 for (int i = 0; i < codeResult.size(); i++) {
@@ -486,9 +572,9 @@ public class BoschCoding {
         return randomFlows;
     }
 
-    private static void addLostTests(Map<InjectorTest, List<Double>> testsMap) {
+    private static void addLostTests(Map<InjectorTest, List<Double>> testsMap, List<String> toExclude) {
 
-        List<String> baseTestNames = injectorCodeType.getTestsList();
+        List<String> baseTestNames = injectorCodeType.getTestsList().stream().filter(name -> !toExclude.contains(name)).collect(Collectors.toList());
         List<String> factTestNames = testsMap.keySet().stream().map(t -> t.getTestName().toString()).collect(Collectors.toList());
         baseTestNames.stream()
                 .filter(name -> !factTestNames.contains(name))
@@ -573,6 +659,58 @@ enum CodeTypes {
         }
         @Override List<String> getTestsList() {
             return Arrays.asList(EMISSION_POINT.toString(), IDLE.toString(), MAX_LOAD.toString(), PRE_INJ.toString());}
+    },
+    IMA11_1(111, 5) {
+        @Override double divider(int k_coeff) { return getDivider(k_coeff); }
+        @Override int codeSize(int k_coeff) {
+            return commonPartIMA(k_coeff)
+                    + TP5.fieldLength(getCodeType(), k_coeff)
+                    + TP6.fieldLength(getCodeType(), k_coeff)
+                    + TP7.fieldLength(getCodeType(), k_coeff)
+                    + ADD_0.fieldLength(getCodeType(), k_coeff);
+        }
+        @Override List<String> getTestsList() {
+            return Arrays.asList(TP4.toString(), TP2.toString(), TP1.toString(), PRE_INJ.toString(), TP5.toString(), TP6.toString(), TP7.toString());
+        }
+    },
+    IMA11_2(112, 5) {
+        @Override double divider(int k_coeff) { return getDivider(k_coeff); }
+        @Override int codeSize(int k_coeff) {
+            return commonPartIMA(k_coeff)
+                    + TP5.fieldLength(getCodeType(), k_coeff)
+                    + TP6.fieldLength(getCodeType(), k_coeff)
+                    + TP7.fieldLength(getCodeType(), k_coeff)
+                    + ADD_0.fieldLength(getCodeType(), k_coeff);
+        }
+        @Override List<String> getTestsList() {
+            return Arrays.asList(TP4.toString(), TP2.toString(), TP1.toString(), PRE_INJ.toString(), TP5.toString(), TP6.toString(), TP7.toString());
+        }
+    },
+    IMA11_3(113, 5) {
+        @Override double divider(int k_coeff) { return getDivider(k_coeff); }
+        @Override int codeSize(int k_coeff) {
+            return commonPartIMA(k_coeff)
+                    + TP5.fieldLength(getCodeType(), k_coeff)
+                    + TP6.fieldLength(getCodeType(), k_coeff)
+                    + TP7.fieldLength(getCodeType(), k_coeff)
+                    + ADD_0.fieldLength(getCodeType(), k_coeff);
+        }
+        @Override List<String> getTestsList() {
+            return Arrays.asList(TP4.toString(), TP2.toString(), TP1.toString(), PRE_INJ.toString(), TP5.toString(), TP6.toString(), TP7.toString());
+        }
+    },
+    IMA11_4(114, 5) {
+        @Override double divider(int k_coeff) { return getDivider(k_coeff); }
+        @Override int codeSize(int k_coeff) {
+            return commonPartIMA(k_coeff)
+                    + TP5.fieldLength(getCodeType(), k_coeff)
+                    + TP6.fieldLength(getCodeType(), k_coeff)
+                    + TP7.fieldLength(getCodeType(), k_coeff)
+                    + ADD_0.fieldLength(getCodeType(), k_coeff);
+        }
+        @Override List<String> getTestsList() {
+            return Arrays.asList(TP4.toString(), TP2.toString(), TP1.toString(), PRE_INJ.toString(), TP5.toString(), TP6.toString(), TP7.toString());
+        }
     };
 
     private final int codeType;
@@ -607,6 +745,16 @@ enum CodeTypes {
                 + IDLE.fieldLength(0, k_coeff)
                 + MAX_LOAD.fieldLength(0, k_coeff)
                 + PRE_INJ.fieldLength(0, k_coeff)
+                + CHECK_SUM.fieldLength(0, k_coeff)
+                + 2;
+    }
+
+    private static int commonPartIMA(int k_coeff) {
+        return
+                TP4.fieldLength(0, k_coeff)
+                + ADD_00000.fieldLength(0, k_coeff)
+                + TP2.fieldLength(0, k_coeff)
+                + TP1.fieldLength(0, k_coeff)
                 + CHECK_SUM.fieldLength(0, k_coeff)
                 + 2;
     }
@@ -648,7 +796,14 @@ enum BitFields{
     U_CHAR ("U_char") {final int fieldLength(int codeType, int k){return 5;}},
     ADD_0("Add_0") {final int fieldLength(int codeType, int k){return 1;}},
     ADD_00("Add_00") {final int fieldLength(int codeType, int k){return 2;}},
-    ADD_000("Add_000"){final int fieldLength(int codeType, int k){return 3;}};
+    ADD_000("Add_000"){final int fieldLength(int codeType, int k){return 3;}},
+    ADD_00000("Add_000"){final int fieldLength(int codeType, int k){return 5;}},
+    TP1("Test Point 01") {int fieldLength(int codeType, int k) { return 5; }},
+    TP2("Test Point 02") {int fieldLength(int codeType, int k) { return 7; }},
+    TP4("Test Point 04") {int fieldLength(int codeType, int k) { return 7; }},
+    TP5("Test Point 05") {int fieldLength(int codeType, int k) { return 5; }},
+    TP6("Test Point 06") {int fieldLength(int codeType, int k) { return 7; }},
+    TP7("Test Point 07") {int fieldLength(int codeType, int k) { return 7; }};
 
     private final String testName;
 
