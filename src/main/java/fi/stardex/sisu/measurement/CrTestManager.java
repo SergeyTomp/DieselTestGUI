@@ -1,6 +1,7 @@
 package fi.stardex.sisu.measurement;
 
 import eu.hansolo.enzo.lcd.Lcd;
+import fi.stardex.sisu.coding.CoderFactory;
 import fi.stardex.sisu.coding.bosch.BoschCoding;
 import fi.stardex.sisu.coding.delphi.c2i.DelphiC2ICoding;
 import fi.stardex.sisu.coding.delphi.c2i.DelphiC2ICodingDataStorage;
@@ -112,6 +113,8 @@ public class CrTestManager implements TestManager {
 
     private InjectorControllersState injectorControllersState;
 
+    private CoderFactory coderFactory;
+
     public void setCodingComplete(boolean codingComplete) {
         this.codingComplete = codingComplete;
     }
@@ -127,7 +130,8 @@ public class CrTestManager implements TestManager {
                          HighPressureSectionUpdateModel highPressureSectionUpdateModel,
                          MainSectionModel mainSectionModel,
                          InjectorControllersState injectorControllersState,
-                         TestBenchSectionModel testBenchSectionModel) {
+                         TestBenchSectionModel testBenchSectionModel,
+                         CoderFactory coderFactory) {
 
         this.flowReportModel = flowReportModel;
         this.mainSectionController = mainSectionController;
@@ -135,6 +139,7 @@ public class CrTestManager implements TestManager {
         this.pressureRegulatorOneModel = pressureRegulatorOneModel;
         this.highPressureSectionPwrState = highPressureSectionPwrState;
         this.highPressureSectionUpdateModel = highPressureSectionUpdateModel;
+        this.coderFactory = coderFactory;
         testListView = mainSectionController.getTestListView();
         testListViewItems = mainSectionController.getTestListViewItems();
         testsSelectionModel = mainSectionController.getTestsSelectionModel();
@@ -251,7 +256,8 @@ public class CrTestManager implements TestManager {
         switch (getManufacturer().toString()) {
 
             case "Bosch":
-                setCodingResults(BoschCoding.calculate(flowReportModel.getResultObservableMap(), codingReportModel.getResultsList(), injectorControllersState.getArrayNumbersOfActiveLedToggleButtons()));
+//                setCodingResults(BoschCoding.calculate(flowReportModel.getResultObservableMap(), codingReportModel.getResultsList(), injectorControllersState.getArrayNumbersOfActiveLedToggleButtons()));
+                setCodingResults(coderFactory.getCoder(mainSectionModel.injectorProperty().get()).buildCode(flowReportModel.getResultObservableMap()));
                 break;
             case "Siemens":
                 setCodingResults(SiemensCoding.calculate(flowReportModel.getResultObservableMap(), mainSectionModel.injectorProperty().get()));

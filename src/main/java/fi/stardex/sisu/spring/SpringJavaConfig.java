@@ -5,6 +5,7 @@ import fi.stardex.sisu.charts.ChartTaskFour;
 import fi.stardex.sisu.charts.ChartTaskOne;
 import fi.stardex.sisu.charts.ChartTaskThree;
 import fi.stardex.sisu.charts.ChartTaskTwo;
+import fi.stardex.sisu.coding.CoderFactory;
 import fi.stardex.sisu.connect.ConnectProcessor;
 import fi.stardex.sisu.connect.InetAddressWrapper;
 import fi.stardex.sisu.connect.ModbusConnect;
@@ -665,7 +666,8 @@ public class SpringJavaConfig {
                                        HighPressureSectionUpdateModel highPressureSectionUpdateModel,
                                        MainSectionModel mainSectionModel,
                                        InjectorControllersState injectorControllersState,
-                                       TestBenchSectionModel testBenchSectionModel) {
+                                       TestBenchSectionModel testBenchSectionModel,
+                                       CoderFactory coderFactory) {
         return new CrTestManager(mainSectionController, testBenchSectionController,
                 injectorSectionController,
                 isaDetectionController, codingReportModel, flowReportModel,
@@ -674,7 +676,8 @@ public class SpringJavaConfig {
                 highPressureSectionUpdateModel,
                 mainSectionModel,
                 injectorControllersState,
-                testBenchSectionModel);
+                testBenchSectionModel,
+                coderFactory);
     }
 
     private List<Updater> addUpdaters(List<Updater> updatersList, Device targetDevice) {
@@ -1421,6 +1424,14 @@ public class SpringJavaConfig {
     @Bean
     public SettingsModel settingsModel() {
         return new SettingsModel();
+    }
+
+    @Bean
+    @Autowired
+    public CoderFactory coderFactory(FlowReportModel flowReportModel,
+                                     CodingReportModel codingReportModel,
+                                     InjectorControllersState injectorControllersState){
+        return new CoderFactory(flowReportModel, codingReportModel, injectorControllersState);
     }
 
 //    @Bean
