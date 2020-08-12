@@ -1891,4 +1891,19 @@ public class JavaFXSpringConfigure extends ViewLoader{
         updateFirmwareController.setUpdateFirmware(updateFirmware.getView());
         return updateFirmwareController;
     }
+
+    @Bean
+    public ViewHolder activation() {
+        return loadView("/fxml/common/Activation.fxml");
+    }
+
+    @Bean
+    @Autowired
+    public ActivationController activationController(ViewHolder activation,
+                                                     I18N i18N) {
+        ActivationController activationController = (ActivationController)activation.getController();
+        activationController.setDialogViev(activation.getView());
+        activationController.setI18N(i18N);
+        return activationController;
+    }
 }

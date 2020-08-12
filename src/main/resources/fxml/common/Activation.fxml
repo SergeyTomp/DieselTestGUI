@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.effect.Lighting?>
+<?import javafx.scene.effect.Shadow?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<AnchorPane prefHeight="350.0" prefWidth="600.0" styleClass="root-layout" stylesheets="@../../css/Styling.css" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.common.ActivationController">
+   <children>
+      <GridPane layoutX="87.0" layoutY="140.0" stylesheets="@../../css/Styling.css" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+          <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0">
+               <children>
+                  <Label fx:id="codeLabel" text="Payment Code" />
+                  <TextField editable="false" prefHeight="40.0" styleClass="searchTextField" stylesheets="@../../css/Styling.css" />
+               </children>
+               <padding>
+                  <Insets left="10.0" right="10.0" />
+               </padding>
+            </VBox>
+            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0" GridPane.rowIndex="2">
+               <children>
+                  <Label fx:id="activationCodeLabel" text="Activation Code" />
+                  <TextField prefHeight="40.0" styleClass="searchTextField" stylesheets="@../../css/Styling.css" />
+               </children>
+               <padding>
+                  <Insets left="10.0" right="10.0" />
+               </padding>
+            </VBox>
+            <Button fx:id="copyButton" mnemonicParsing="false" prefHeight="50.0" prefWidth="140.0" text="Copy Code" GridPane.columnIndex="1" />
+            <Button fx:id="applyButton" mnemonicParsing="false" prefHeight="50.0" prefWidth="140.0" text="Apply Code" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <Button fx:id="cancelButton" mnemonicParsing="false" prefHeight="50.0" prefWidth="140.0" text="Cancel Activation" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            <VBox alignment="CENTER" GridPane.rowIndex="3">
+               <children>
+                  <Label fx:id="activationLabel" text="Code is incorrect!" />
+               </children>
+            </VBox>
+            <Separator prefWidth="200.0" stylesheets="@../../css/Styling.css" GridPane.columnSpan="2" GridPane.rowIndex="2" GridPane.valignment="TOP">
+               <effect>
+                  <Lighting light="$null">
+                     <bumpInput>
+                        <Shadow color="WHITE" />
+                     </bumpInput>
+                  </Lighting>
+               </effect>
+            </Separator>
+            <Separator prefWidth="200.0" valignment="TOP" GridPane.columnSpan="2" GridPane.rowIndex="3" GridPane.valignment="TOP">
+               <effect>
+                  <Lighting light="$null">
+                     <bumpInput>
+                        <Shadow />
+                     </bumpInput>
+                  </Lighting>
+               </effect>
+            </Separator>
+            <Separator layoutX="10.0" layoutY="235.0" prefWidth="200.0" valignment="TOP" GridPane.columnSpan="2" GridPane.rowIndex="1" GridPane.valignment="TOP">
+               <effect>
+                  <Lighting light="$null">
+                     <bumpInput>
+                        <Shadow />
+                     </bumpInput>
+                  </Lighting>
+               </effect>
+            </Separator>
+            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0" GridPane.rowIndex="1">
+               <children>
+                  <Label fx:id="finalCodeLabel" text="Final Payment Code" />
+                  <TextField prefHeight="40.0" styleClass="searchTextField" stylesheets="@../../css/Styling.css" />
+               </children>
+               <padding>
+                  <Insets left="10.0" right="10.0" />
+               </padding>
+            </VBox>
+            <Button fx:id="finalCopyButton" mnemonicParsing="false" prefHeight="50.0" prefWidth="140.0" text="Copy Code" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+         </children>
+      </GridPane>
+   </children>
+</AnchorPane>
