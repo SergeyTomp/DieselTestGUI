@@ -1,4 +1,4 @@
-package fi.stardex.sisu.coding.bosch;
+package fi.stardex.sisu.coding;
 
 public enum CodeType {
 

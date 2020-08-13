@@ -1,5 +1,6 @@
 package fi.stardex.sisu.coding.bosch;
 
+import fi.stardex.sisu.coding.CodeField;
 import fi.stardex.sisu.model.cr.FlowReportModel;
 import fi.stardex.sisu.pdf.Result;
 import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
@@ -9,7 +10,7 @@ import javafx.collections.ObservableMap;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static fi.stardex.sisu.coding.bosch.CodeField.*;
+import static fi.stardex.sisu.coding.CodeField.*;
 
 public class BoschCoderOne extends BoschCoder {
 

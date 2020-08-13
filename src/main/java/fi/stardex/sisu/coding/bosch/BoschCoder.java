@@ -1,5 +1,6 @@
 package fi.stardex.sisu.coding.bosch;
 
+import fi.stardex.sisu.coding.CodeField;
 import fi.stardex.sisu.coding.Coder;
 import fi.stardex.sisu.model.cr.FlowReportModel;
 import fi.stardex.sisu.pdf.Result;

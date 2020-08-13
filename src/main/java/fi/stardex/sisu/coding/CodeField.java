@@ -1,4 +1,4 @@
-package fi.stardex.sisu.coding.bosch;
+package fi.stardex.sisu.coding;
 
 import java.util.stream.Stream;
 
@@ -19,6 +19,7 @@ public enum CodeField {
     TP5("Test Point 05", true),
     TP6("Test Point 06", true),
     TP7("Test Point 07", true),
+    PART_LOAD("Part Load", true),
     U_CHAR ("U_char", false),
     CHECK_SUM ("Check Sum", false),
     COEFF ("Coefficient", false),
@@ -35,7 +36,7 @@ public enum CodeField {
         this.isTest = isTest;
     }
 
-    static CodeField getField(String test) {
+    public static CodeField getField(String test) {
         return Stream.of(values()).filter(f -> f.testName.equals(test)).findFirst().orElseThrow();
     }
 

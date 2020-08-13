@@ -1,6 +1,8 @@
 package fi.stardex.sisu.coding;
 
 import fi.stardex.sisu.coding.bosch.*;
+import fi.stardex.sisu.coding.siemens.SiemensCoderOne;
+import fi.stardex.sisu.coding.siemens.SiemensCoderTwo;
 import fi.stardex.sisu.model.cr.CodingReportModel;
 import fi.stardex.sisu.model.cr.FlowReportModel;
 import fi.stardex.sisu.pdf.Result;
@@ -61,6 +63,13 @@ public class CoderFactory {
                         return null;
                 }
             case "Siemens":
+                switch (codetype) {
+                    case TWO:
+                        return new SiemensCoderTwo(activeLeds, resultsList);
+                    case ONE:
+                    default:
+                        return new SiemensCoderOne(activeLeds, resultsList);
+                }
             case "Denso":
             case "Delphi":
             default:
