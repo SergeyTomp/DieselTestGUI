@@ -585,11 +585,17 @@ public class TestBenchSectionController {
         testBenchSectionUpdateModel.rotationDirectionProperty().addListener((observableValue, oldValue, newValue) -> {
             if (newValue){
                 rightDirectionRotationToggleButton.setSelected(true);
-                rightDirectionRotationToggleButton.requestFocus();
+                /**Forced focus request below is done to avoid phantom selection of both arrows simultaneously despite of both buttons belong to toggle group
+                 * phantom effect takes place when one arrow is selected manually, the opposite one is selected programmatically afterwards
+                 * Temporarily commented due to another bug - focus interception in Pump GUI during selection of pump by keyboard arrows (up-down):
+                 * if pump with another rotation direction is chosen then focus is set to rotation arrow
+                 * and further keyboard arrows begin to change rotation direction instead of Pump in the list*/
+//                rightDirectionRotationToggleButton.requestFocus();
             }
             else{
                 leftDirectionRotationToggleButton.setSelected(true);
-                leftDirectionRotationToggleButton.requestFocus();
+                /**reason of commenting see abowe*/
+//                leftDirectionRotationToggleButton.requestFocus();
             }
         });
 
@@ -645,10 +651,10 @@ public class TestBenchSectionController {
     private void initRotationDirection() {
 
         rightDirectionRotationToggleButton.setSelected(true);
-        //forced focus request below is done to avoid phantom selection of left arrow simultaneously with right one despite of the fact that both buttons belong to toggle group
-        //phantom effect takes place while this method invocation upon first connection established only
-        //in fact left arrow is not selected but lightened nevertheless, hardware register value corresponds with right arrow
-        //reason is not clear, forced focus request is made just to avoid disorienting visual bug
+        /**forced focus request below is done to avoid phantom selection of left arrow simultaneously with right one despite of both buttons belong to toggle group
+         * phantom effect takes place while this method invocation upon first connection established only
+         * in fact left arrow is not selected but lightened nevertheless, hardware register value corresponds with right arrow
+         * reason is not clear, forced focus request is made just to avoid disorienting visual bug*/
         Platform.runLater(() -> rightDirectionRotationToggleButton.requestFocus());
     }
 
