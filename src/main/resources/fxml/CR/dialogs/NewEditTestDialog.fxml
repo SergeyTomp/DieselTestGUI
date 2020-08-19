@@ -29,7 +29,10 @@
       <Label fx:id="widthLabel" text="Width" GridPane.rowIndex="2" />
       <Label fx:id="nominalFlowLabel" text="Nominal Flow" GridPane.rowIndex="3" />
       <Label fx:id="adjustingTimeLabel" text="Adjusting time" GridPane.rowIndex="4" />
-      <ComboBox fx:id="testComboBox" prefWidth="150.0" GridPane.columnIndex="2" />
+      <ComboBox fx:id="testComboBox" prefWidth="230.0" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.halignment="LEFT">
+         <GridPane.margin>
+            <Insets />
+         </GridPane.margin></ComboBox>
       <TextField fx:id="rpmTF" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
          <GridPane.margin>
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
@@ -50,12 +53,12 @@
             <Insets bottom="10.0" left="10.0" right="20.0" top="10.0" />
          </GridPane.margin>
       </TextField>
-      <TextField fx:id="nominalTF" prefWidth="100.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
+      <TextField fx:id="nominalTF" prefWidth="100.0" promptText="0" GridPane.columnIndex="1" GridPane.rowIndex="3">
          <GridPane.margin>
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
          </GridPane.margin>
       </TextField>
-      <TextField fx:id="flowRangeTF" prefWidth="100.0" GridPane.columnIndex="3" GridPane.rowIndex="3">
+      <TextField fx:id="flowRangeTF" prefWidth="100.0" promptText="100" GridPane.columnIndex="3" GridPane.rowIndex="3">
          <GridPane.margin>
             <Insets bottom="10.0" left="10.0" right="20.0" top="10.0" />
          </GridPane.margin>

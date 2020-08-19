@@ -1,5 +1,9 @@
 package fi.stardex.sisu.ui.controllers.common;
 
+import fi.stardex.sisu.connect.ModbusConnect;
+import fi.stardex.sisu.model.updateModels.InjectorSectionUpdateModel;
+import fi.stardex.sisu.registers.RegisterProvider;
+import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.util.i18n.I18N;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
@@ -17,6 +21,10 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import javax.annotation.PostConstruct;
+
+import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.CurrentTime_seconds;
+import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.Version_controllable_1;
+import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.Version_controllable_2;
 
 public class ActivationController {
 
@@ -37,6 +45,11 @@ public class ActivationController {
     private I18N i18N;
     private StringProperty windowTitleProperty = new SimpleStringProperty("");
     private ClipboardContent content = new ClipboardContent();
+    private ModbusRegisterProcessor ultimaModbusWriter;
+    private ModbusConnect ultimaModbusConnect;
+    private RegisterProvider ultimaRegisterProvider;
+    private InjectorSectionUpdateModel injectorSectionUpdateModel;
+
 
     public void setDialogViev(Parent dialogViev) {
         this.dialogViev = dialogViev;
@@ -45,8 +58,20 @@ public class ActivationController {
         this.i18N = i18N;
     }
 
+    public void setUltimaModbusWriter(ModbusRegisterProcessor ultimaModbusWriter) {
+        this.ultimaModbusWriter = ultimaModbusWriter;
+    }
+    public void setUltimaModbusConnect(ModbusConnect ultimaModbusConnect) {
+        this.ultimaModbusConnect = ultimaModbusConnect;
+    }
+    public void setInjectorSectionUpdateModel(InjectorSectionUpdateModel injectorSectionUpdateModel) {
+        this.injectorSectionUpdateModel = injectorSectionUpdateModel;
+    }
+
     @PostConstruct
     public void init() {
+
+        ultimaRegisterProvider = ultimaModbusWriter.getRegisterProvider();
 
         applyButton.setOnMouseClicked(mouseEvent -> {
 
@@ -60,6 +85,21 @@ public class ActivationController {
             Clipboard.getSystemClipboard().setContent(content);
         });
         cancelButton.setOnMouseClicked(mouseEvent -> Platform.exit());
+        ultimaModbusConnect.connectedProperty().addListener((observableValue, oldValue, newValue) -> {
+
+            if (newValue) {
+
+                ultimaRegisterProvider.read(Version_controllable_1);
+                ultimaRegisterProvider.read(Version_controllable_2);
+                Object lastValue_1 = Version_controllable_1.getLastValue();
+                Object lastValue_2 = Version_controllable_2.getLastValue();
+
+//                if ((lastValue_1 != null && lastValue_2 != null && (int)lastValue_1 == 0xF1 && (int)lastValue_2 == 0xAA)) {
+//
+//                }
+                ultimaModbusWriter.add(CurrentTime_seconds, (int)(System.currentTimeMillis() / 1000));
+            }
+        });
         bindingI18N();
     }
 

@@ -189,7 +189,13 @@ public enum ModbusMapUltima implements ModbusMap {
     InjectorCPU_4_version_0(REGISTER_HOLDING, 1034, 1, true, false),
     InjectorCPU_4_version_1(REGISTER_HOLDING, 1035, 1, true, false),
     RLC_MeasureCPU_version_0(REGISTER_INPUT, 4208, 1, true, false),
-    RLC_MeasureCPU_version_1(REGISTER_INPUT, 4209, 1, true, false);
+    RLC_MeasureCPU_version_1(REGISTER_INPUT, 4209, 1, true, false),
+
+    // Активация продукта при лизинге
+    CurrentTime_seconds(REGISTER_HOLDING, 240, 2, true, false),
+    Activation_error(DISCRETE_COIL, 200, 1, true, false),
+    Activation_errorCode(REGISTER_HOLDING, 242, 1, false, false);
+//    Activation_key(REGISTER_HOLDING, 250, 8, false, false);
 
     private final RegisterType type;
     private final int ref;

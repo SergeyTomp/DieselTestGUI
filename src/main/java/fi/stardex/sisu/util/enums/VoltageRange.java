@@ -6,8 +6,8 @@ import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.*;
 
 public enum VoltageRange {
 
-    LOW (14.0, 29.5, 11.0, 0.5, Battery_U, StartOnBatteryUOne, true, -2d),
-    HIGH (30.0, 160.0, 30.0, 0.5, Boost_U, StartOnBatteryUOne, false, 0d);
+    LOW (14.0, 29.5, 14.0, 0.5, Battery_U, StartOnBatteryUOne, true, -2d),
+    HIGH (30.0, 160.0, 130.0, 0.5, Boost_U, StartOnBatteryUOne, false, 0d);
 
     private double min;
     private double max;
@@ -37,7 +37,7 @@ public enum VoltageRange {
         this.switchRangeRegister = switchRangeRegister;
         this.isLowRange = isLowRange;
         this.correction = correction;
-        this.lastValue = min;
+        this.lastValue = init;
     }
 
     public Double getMin() {

@@ -8,12 +8,18 @@ import fi.stardex.sisu.persistence.orm.cr.inj.TestName;
 import fi.stardex.sisu.persistence.repos.cr.InjectorTestRepository;
 import fi.stardex.sisu.persistence.repos.cr.TestNamesRepository;
 import fi.stardex.sisu.util.converters.DataConverter;
+import fi.stardex.sisu.util.enums.Measurement;
 import fi.stardex.sisu.util.i18n.I18N;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.scene.layout.Region;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -51,6 +57,10 @@ public class NewEditTestDialogController {
     private MainSectionModel mainSectionModel;
     private NewEditTestDialogModel newEditTestDialogModel;
     private I18N i18N;
+    private List<Control> controlsList = new ArrayList<>();
+    private Alert alert;
+    private StringProperty alertString = new SimpleStringProperty("Please specify all values!");
+    private StringProperty yesButton = new SimpleStringProperty();
 
     public void setInjectorTestRepository(InjectorTestRepository injectorTestRepository) {
         this.injectorTestRepository = injectorTestRepository;
@@ -76,6 +86,15 @@ public class NewEditTestDialogController {
 
     @PostConstruct
     private void init() {
+        controlsList.add(barTF);
+        controlsList.add(rpmTF);
+        controlsList.add(widthTF);
+        controlsList.add(freqTF);
+        controlsList.add(nominalTF);
+        controlsList.add(flowRangeTF);
+        controlsList.add(adjTimeTF);
+        controlsList.add(measureTimeTF);
+
         cancelBtn.setOnMouseClicked(event -> stage.close());
         saveBtn.setOnMouseClicked(event -> {
             switch (currentState) {
@@ -91,11 +110,65 @@ public class NewEditTestDialogController {
             }
         });
         testNamesRepository.findAll().forEach(testName -> testNames.add(testName));
+
+        testComboBox.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue) -> {
+            if (newValue != null) {
+                Measurement measurement = newValue.getMeasurement();
+                freqTF.setDisable(measurement == Measurement.NO);
+                widthTF.setDisable(measurement == Measurement.NO);
+                nominalTF.setDisable(measurement == Measurement.NO);
+                flowRangeTF.setDisable(measurement == Measurement.NO);
+
+                if (measurement == Measurement.NO || measurement == Measurement.VISUAL) {
+                    nominalTF.setText("0.0");
+                    flowRangeTF.setText("100");
+                    if (measurement == Measurement.NO) {
+                        freqTF.setText("0.0");
+                        widthTF.setText("0");
+                    }
+                }
+            }
+        });
         bindingI18N();
     }
 
+    private void showAlert() {
+
+        if (alert == null) {
+            alert = new Alert(Alert.AlertType.NONE, "", ButtonType.YES);
+            alert.initStyle(StageStyle.UNDECORATED);
+            alert.getDialogPane().getStylesheets().add(getClass().getResource("/css/Styling.css").toExternalForm());
+            alert.getDialogPane().getStyleClass().add("alertDialog");
+            alert.setResizable(true);
+            alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+        }
+        ((Button) alert.getDialogPane().lookupButton(ButtonType.YES)).textProperty().setValue(yesButton.get());
+        alert.setContentText(alertString.get());
+        alert.show();
+    }
+
+    private boolean isDataComplete() {
+
+        controlsList.stream().filter(c -> !c.isDisabled()).filter(this::isEmpty).findAny().ifPresent(c -> showAlert());
+
+        if(alert != null && alert.isShowing())return false;
+        return true;
+    }
+
+    private boolean isEmpty(Control control) {
+
+        if (control instanceof ComboBox) {
+            return ((ComboBox) control).getSelectionModel().isEmpty();
+        } else if (control instanceof TextField) {
+            return ((TextField) control).getText().isEmpty();
+        }else return true;
+    }
+
     private void createAndSave() {
-        String frequency = String.valueOf(Math.round(1000 / DataConverter.convertDataToFloat(freqTF.getText())));
+
+        if(!isDataComplete())return;
+        String freqText = freqTF.getText().equals("0") || freqTF.getText().equals("0.0") ? String.valueOf(Integer.MAX_VALUE) : freqTF.getText();
+        String frequency = String.valueOf(Math.round(1000 / DataConverter.convertDataToFloat(freqText)));
         InjectorTest injectorTest = new InjectorTest(getInjector(), testComboBox.getSelectionModel().getSelectedItem(),
                 Integer.valueOf(rpmTF.getText()), Integer.valueOf(barTF.getText()), Integer.valueOf(adjTimeTF.getText()), Integer.valueOf(measureTimeTF.getText()),
                 Integer.valueOf(frequency), Integer.valueOf(widthTF.getText()), Double.valueOf(nominalTF.getText()), Double.valueOf(flowRangeTF.getText()),
@@ -109,9 +182,12 @@ public class NewEditTestDialogController {
 
     private void editAndSave() {
 
+        if(!isDataComplete())return;
+
         InjectorTest injectorTest = mainSectionModel.injectorTestProperty().get();
         Injector injector = mainSectionModel.injectorProperty().get();
-        String frequency = String.valueOf(Math.round(100000 / DataConverter.convertDataToFloat(freqTF.getText())) / 100);
+        String freqText = freqTF.getText().equals("0") || freqTF.getText().equals("0.0") ? String.valueOf(Integer.MAX_VALUE) : freqTF.getText();
+        String frequency = String.valueOf(Math.round(1000 / DataConverter.convertDataToFloat(freqText)));
 
         injectorTest.setInjector(injector);
         injectorTest.setTestName(testComboBox.getSelectionModel().getSelectedItem());
@@ -191,14 +267,17 @@ public class NewEditTestDialogController {
             testComboBox.setDisable(true);
 
             InjectorTest injectorTest = testListView.getSelectionModel().getSelectedItem();
-            String frequency = String.valueOf((Math.round(100000f / injectorTest.getInjectionRate())) / 100);
+            Integer injectionRate = injectorTest.getInjectionRate() == null || injectorTest.getInjectionRate() == 0 ? Integer.MAX_VALUE : injectorTest.getInjectionRate();
+            String frequency = String.valueOf((Math.round(100000f / injectionRate)) / 100d);
 
             rpmTF.setText(injectorTest.getMotorSpeed().toString());
             barTF.setText(injectorTest.getSettedPressure().toString());
             widthTF.setText(injectorTest.getTotalPulseTime().toString());
             freqTF.setText(frequency);
-            nominalTF.setText(injectorTest.getNominalFlow().toString());
-            flowRangeTF.setText(injectorTest.getFlowRange().toString());
+            Double nominalFlow = injectorTest.getNominalFlow();
+            Double flowRange = injectorTest.getFlowRange();
+            nominalTF.setText(nominalFlow == null ? "0" : injectorTest.getNominalFlow().toString());
+            flowRangeTF.setText(flowRange == null ? "100" : injectorTest.getFlowRange().toString());
             adjTimeTF.setText(injectorTest.getAdjustingTime().toString());
             measureTimeTF.setText(injectorTest.getMeasurementTime().toString());
         }
@@ -232,5 +311,7 @@ public class NewEditTestDialogController {
         selectTestLabel.textProperty().bind(i18N.createStringBinding("editTestDialog.selectTest"));
         saveBtn.textProperty().bind(i18N.createStringBinding("h4.delay.button.save"));
         cancelBtn.textProperty().bind(i18N.createStringBinding("voapProfile.button.cancel"));
+        yesButton.bind((i18N.createStringBinding("alert.yesButton")));
+        alertString.bind((i18N.createStringBinding("alert.customDialog")));
     }
 }

@@ -1900,10 +1900,16 @@ public class JavaFXSpringConfigure extends ViewLoader{
     @Bean
     @Autowired
     public ActivationController activationController(ViewHolder activation,
-                                                     I18N i18N) {
+                                                     I18N i18N,
+                                                     ModbusRegisterProcessor ultimaModbusWriter,
+                                                     ModbusConnect ultimaModbusConnect,
+                                                     InjectorSectionUpdateModel injectorSectionUpdateModel) {
         ActivationController activationController = (ActivationController)activation.getController();
         activationController.setDialogViev(activation.getView());
         activationController.setI18N(i18N);
+        activationController.setUltimaModbusConnect(ultimaModbusConnect);
+        activationController.setUltimaModbusWriter(ultimaModbusWriter);
+        activationController.setInjectorSectionUpdateModel(injectorSectionUpdateModel);
         return activationController;
     }
 }
