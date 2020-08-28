@@ -13,7 +13,9 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import java.nio.ByteBuffer;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
 
 public abstract class RegisterProvider {
 
@@ -209,7 +211,7 @@ public abstract class RegisterProvider {
             return request;
 
         }
-        //TODO проверка value instanceof не нужна
+
         private static ModbusRequest createWriteRegisters(ModbusMap reg, Object value) {
 
             WriteMultipleRegistersRequest request;
@@ -217,23 +219,57 @@ public abstract class RegisterProvider {
             if (reg.getCount() > 1) {
 
                 byte[] byteData;
-                float floatValue;
+//                float floatValue;
 
-                if (value instanceof Integer) {
+//                if (value instanceof Integer) {
+//
+//                    floatValue = ((Integer) value).floatValue();
+//                    byteData = ModbusUtil.floatToRegisters(floatValue);
+//
+//                } else{
+//                    byteData = ModbusUtil.floatToRegisters(((Number) value).floatValue());
+//                }
 
-                    floatValue = ((Integer) value).floatValue();
-                    byteData = ModbusUtil.floatToRegisters(floatValue);
+//                short firstWord = (short) (((byteData[0] & 0xFF) << 8) | (byteData[1] & 0xFF));
+//                short secondWord = (short) (((byteData[2] & 0xFF) << 8) | (byteData[3] & 0xFF));
+//                Register firstReg = new SimpleRegister(firstWord);
+//                Register secondReg = new SimpleRegister(secondWord);
+//                request = new WriteMultipleRegistersRequest(reg.getRef(), new Register[]{firstReg, secondReg});
 
-                } else{
+                Register[] registers = new Register[reg.getCount()];
+                /**Attention!!! Code for String-type is very specific.
+                 * Works only if every symbol represents hex-digit (A-Fa-f0-9) and string-length == 4*(register words count).*/
+                if (value instanceof String) {
+
+                    String trimmed = ((String) value).trim();
+                    if (trimmed.length() != reg.getCount() * 4) { throw new IllegalArgumentException("Incorrect code string length!"); }
+
+                    Pattern p = Pattern.compile("[A-Fa-f0-9]*");
+                    if (!p.matcher(trimmed).matches()) { throw new IllegalArgumentException("Incorrect code string characters!"); }
+
+                    byteData = new byte[reg.getCount() * 2];
+
+                    List<String> parts = new ArrayList<>();
+                    int length = trimmed.length();
+                    for (int i = 0; i < length; i += 2) {
+                        parts.add(trimmed.substring(i, Math.min(length, i + 2)));
+                    }
+                    for (int i = 0; i < byteData.length; i++){
+                        byteData[i] = (byte)(Integer.parseInt(parts.get(i),16));
+                    }
+                }
+                else if(value instanceof Integer){
+                    byteData = ModbusUtil.intToRegisters(((Integer) value));
+                }
+                else {
                     byteData = ModbusUtil.floatToRegisters(((Number) value).floatValue());
                 }
 
-
-                short firstWord = (short) (((byteData[0] & 0xFF) << 8) | (byteData[1] & 0xFF));
-                short secondWord = (short) (((byteData[2] & 0xFF) << 8) | (byteData[3] & 0xFF));
-                Register firstReg = new SimpleRegister(firstWord);
-                Register secondReg = new SimpleRegister(secondWord);
-                request = new WriteMultipleRegistersRequest(reg.getRef(), new Register[]{firstReg, secondReg});
+                for(int i = 0; i < byteData.length; i+=2) {
+                    short word = (short) (((byteData[i] & 0xFF) << 8) | (byteData[i+1] & 0xFF));
+                    registers[Math.min(byteData.length, i/2)] = new SimpleRegister(word);
+                }
+                request = new WriteMultipleRegistersRequest(reg.getRef(), registers);
 
             } else {
 

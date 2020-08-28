@@ -32,6 +32,7 @@ public class InjectorSectionUpdateModel implements Updater {
     private StringProperty width2 = new SimpleStringProperty(String.valueOf(0));
     private StringProperty offset = new SimpleStringProperty(String.valueOf(0));
     private BooleanProperty injectorError = new SimpleBooleanProperty();
+    private BooleanProperty activationError = new SimpleBooleanProperty();
 
     private VoltAmpereProfileDialogModel voltAmpereProfileDialogModel;
 
@@ -82,6 +83,9 @@ public class InjectorSectionUpdateModel implements Updater {
     public StringProperty offsetProperty() {
         return offset;
     }
+    public BooleanProperty activationErrorProperty() {
+        return activationError;
+    }
 
     public void setVoltAmpereProfileDialogModel(VoltAmpereProfileDialogModel voltAmpereProfileDialogModel) {
         this.voltAmpereProfileDialogModel = voltAmpereProfileDialogModel;
@@ -131,6 +135,9 @@ public class InjectorSectionUpdateModel implements Updater {
 //        if ((value = Injectors_Running_En.getLastValue().toString()) != null) {
 //            System.err.println("Injectors_Running_En  " + value);
 //        }
+        if ((value = Activation_error.getLastValue().toString()) != null) {
+            activationError.setValue(Boolean.parseBoolean(value));
+        }
 
         if (voltAmpereProfileDialogModel.isDoubleCoilProperty().get()) {
 
