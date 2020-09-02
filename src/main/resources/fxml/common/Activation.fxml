@@ -22,7 +22,6 @@
         </columnConstraints>
         <rowConstraints>
           <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
-            <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
           <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
           <RowConstraints minHeight="10.0" prefHeight="25.0" vgrow="SOMETIMES" />
         </rowConstraints>
@@ -36,7 +35,7 @@
                   <Insets left="10.0" right="10.0" />
                </padding>
             </VBox>
-            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0" GridPane.rowIndex="2">
+            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0" GridPane.rowIndex="1">
                <children>
                   <Label fx:id="activationCodeLabel" text="Activation Code" />
                   <TextField fx:id="activationTextField" alignment="CENTER" prefHeight="40.0" styleClass="searchTextField" stylesheets="@../../css/Styling.css" />
@@ -46,14 +45,14 @@
                </padding>
             </VBox>
             <Button fx:id="copyButton" mnemonicParsing="false" prefHeight="50.0" prefWidth="140.0" text="Copy Code" GridPane.columnIndex="1" />
-            <Button fx:id="applyButton" mnemonicParsing="false" prefHeight="50.0" prefWidth="140.0" text="Apply Code" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-            <Button fx:id="cancelButton" mnemonicParsing="false" prefHeight="50.0" prefWidth="140.0" text="Cancel Activation" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-            <VBox alignment="CENTER" GridPane.rowIndex="3">
+            <Button fx:id="applyButton" mnemonicParsing="false" prefHeight="50.0" prefWidth="140.0" text="Apply Code" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <Button fx:id="cancelButton" mnemonicParsing="false" prefHeight="50.0" prefWidth="140.0" text="Cancel Activation" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <VBox alignment="CENTER" GridPane.rowIndex="2">
                <children>
-                  <Label fx:id="activationLabel" text="Code is incorrect!" />
+                  <Label fx:id="acceptanceLabel" text="Code is incorrect!" />
                </children>
             </VBox>
-            <Separator prefWidth="200.0" stylesheets="@../../css/Styling.css" GridPane.columnSpan="2" GridPane.rowIndex="2" GridPane.valignment="TOP">
+            <Separator prefWidth="200.0" stylesheets="@../../css/Styling.css" GridPane.columnSpan="2" GridPane.rowIndex="1" GridPane.valignment="TOP">
                <effect>
                   <Lighting light="$null">
                      <bumpInput>
@@ -62,7 +61,7 @@
                   </Lighting>
                </effect>
             </Separator>
-            <Separator prefWidth="200.0" valignment="TOP" GridPane.columnSpan="2" GridPane.rowIndex="3" GridPane.valignment="TOP">
+            <Separator prefWidth="200.0" valignment="TOP" GridPane.columnSpan="2" GridPane.rowIndex="2" GridPane.valignment="TOP">
                <effect>
                   <Lighting light="$null">
                      <bumpInput>
@@ -71,25 +70,6 @@
                   </Lighting>
                </effect>
             </Separator>
-            <Separator layoutX="10.0" layoutY="235.0" prefWidth="200.0" valignment="TOP" GridPane.columnSpan="2" GridPane.rowIndex="1" GridPane.valignment="TOP">
-               <effect>
-                  <Lighting light="$null">
-                     <bumpInput>
-                        <Shadow />
-                     </bumpInput>
-                  </Lighting>
-               </effect>
-            </Separator>
-            <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" spacing="10.0" GridPane.rowIndex="1">
-               <children>
-                  <Label fx:id="finalCodeLabel" text="Final Payment Code" />
-                  <TextField fx:id="finalPaymentTextField" alignment="CENTER" prefHeight="40.0" styleClass="searchTextField" stylesheets="@../../css/Styling.css" />
-               </children>
-               <padding>
-                  <Insets left="10.0" right="10.0" />
-               </padding>
-            </VBox>
-            <Button fx:id="finalCopyButton" mnemonicParsing="false" prefHeight="50.0" prefWidth="140.0" text="Copy Code" GridPane.columnIndex="1" GridPane.rowIndex="1" />
          </children>
       </GridPane>
    </children>

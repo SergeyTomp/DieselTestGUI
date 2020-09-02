@@ -219,6 +219,8 @@ public abstract class RegisterProvider {
             if (reg.getCount() > 1) {
 
                 byte[] byteData;
+                // old variant of 2-word register creation for writing to ModBus
+                // all holding registers at hardware side are defined as float, so values of all number types are converted to float
 //                float floatValue;
 
 //                if (value instanceof Integer) {
@@ -258,10 +260,7 @@ public abstract class RegisterProvider {
                         byteData[i] = (byte)(Integer.parseInt(parts.get(i),16));
                     }
                 }
-                else if(value instanceof Integer){
-                    byteData = ModbusUtil.intToRegisters(((Integer) value));
-                }
-                else {
+                else { // all holding registers are defined as float, so values of all number types are converted to float
                     byteData = ModbusUtil.floatToRegisters(((Number) value).floatValue());
                 }
 

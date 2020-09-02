@@ -5,6 +5,8 @@ import fi.stardex.sisu.model.updateModels.InjectorSectionUpdateModel;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.util.i18n.I18N;
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -20,10 +22,11 @@ import javafx.scene.input.ClipboardContent;
 import javafx.scene.input.DataFormat;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
+import javafx.util.Duration;
 import net.wimpi.modbus.ModbusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.scheduling.annotation.Scheduled;
 
 import javax.annotation.PostConstruct;
 import java.util.stream.IntStream;
@@ -36,15 +39,12 @@ public class ActivationController {
 
     @FXML private TextField paymentCodeTextField;
     @FXML private TextField activationTextField;
-    @FXML private TextField finalPaymentTextField;
     @FXML private Label codeLabel;
-    @FXML private Label finalCodeLabel;
     @FXML private Label activationCodeLabel;
     @FXML private Button copyButton;
     @FXML private Button applyButton;
     @FXML private Button cancelButton;
-    @FXML private Label activationLabel;
-    @FXML private Button finalCopyButton;
+    @FXML private Label acceptanceLabel;
 
     private Parent dialogViev;
     private Stage dialogStage;
@@ -58,6 +58,10 @@ public class ActivationController {
     private Task<Integer> requestTask;
     private Thread codeCheck;
     private final int CODE_SIZE = Activation_key.getCount() * 4;
+    private final StringProperty incorrectCode = new SimpleStringProperty();
+    private final StringProperty codeAccepted = new SimpleStringProperty();
+    private final StringProperty finalCodeAccepted = new SimpleStringProperty();
+    private Timeline closeDialog;
 
     public void setDialogViev(Parent dialogViev) {
         this.dialogViev = dialogViev;
@@ -65,7 +69,6 @@ public class ActivationController {
     public void setI18N(I18N i18N) {
         this.i18N = i18N;
     }
-
     public void setUltimaModbusWriter(ModbusRegisterProcessor ultimaModbusWriter) {
         this.ultimaModbusWriter = ultimaModbusWriter;
     }
@@ -76,11 +79,14 @@ public class ActivationController {
         this.injectorSectionUpdateModel = injectorSectionUpdateModel;
     }
 
+
     @PostConstruct
     public void init() {
 
         ultimaRegisterProvider = ultimaModbusWriter.getRegisterProvider();
-        activationLabel.setVisible(false);
+        acceptanceLabel.setText("");
+        closeDialog = new Timeline(new KeyFrame(Duration.millis(3000), actionEvent -> dialogStage.close()));
+        closeDialog.setCycleCount(1);
 
         applyButton.setOnMouseClicked(mouseEvent -> {
 
@@ -116,9 +122,15 @@ public class ActivationController {
 
             requestTask.valueProperty().addListener((observable, oldValue, newValue) -> {
                 if (newValue == 1) {
-                    dialogStage.close();
-                } else {
-                    activationLabel.setVisible(true);
+                    acceptanceLabel.setText(codeAccepted.get());
+                    closeDialog.play();
+                }
+                else if (newValue == 2) {
+                    acceptanceLabel.setText(finalCodeAccepted.get());
+                    closeDialog.play();
+                }
+                else {
+                    acceptanceLabel.setText(incorrectCode.get());
                 }
             });
 
@@ -132,42 +144,50 @@ public class ActivationController {
             Clipboard.getSystemClipboard().setContent(content);
         });
 
-        finalCopyButton.setOnMouseClicked(mouseEvent -> {
-            content.put(DataFormat.PLAIN_TEXT, finalPaymentTextField.getText());
-            Clipboard.getSystemClipboard().setContent(content);
-        });
-
         cancelButton.setOnMouseClicked(mouseEvent -> Platform.exit());
-        ultimaModbusConnect.connectedProperty().addListener((observableValue, oldValue, newValue) -> {
 
+
+//        ultimaModbusConnect.connectedProperty().addListener((observableValue, oldValue, newValue) -> {
+//
 //            if (newValue) {
 //
 //                ultimaRegisterProvider.read(Version_controllable_1);
 //                ultimaRegisterProvider.read(Version_controllable_2);
 //                Object lastValue_1 = Version_controllable_1.getLastValue();
 //                Object lastValue_2 = Version_controllable_2.getLastValue();
-////                if ((lastValue_1 != null && lastValue_2 != null && (int)lastValue_1 == 0xF1 && (int)lastValue_2 == 0xAA)) {
-//                sendTime();
-////                }
+//
+//                if ((lastValue_1 != null && lastValue_2 != null && (int)lastValue_1 != 0xF1 && (int)lastValue_2 != 0xAA)) return;
+//                if (((int)Main_version_0.getLastValue()) / 10  != 4) return;
+//
+//                new Thread(() -> {
+//                    while (!Thread.currentThread().isInterrupted()) {
+//                        sendTime();
+//                        try {
+//                            Thread.sleep(600000);
+//                        } catch (InterruptedException e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                }).start();
 //            }
-        });
+//        });
 
         injectorSectionUpdateModel.activationErrorProperty().addListener((observableValue, oldValue, newValue) -> {
             if (newValue) {
                 try {
-                    Integer[] integers = ultimaRegisterProvider.readBytePacket(Activation_paymentKey.getRef(), Activation_paymentKey.getCount());
+                    Integer[] payment = ultimaRegisterProvider.readBytePacket(Activation_paymentKey.getRef(), Activation_paymentKey.getCount());
                     StringBuilder sb = new StringBuilder();
 
-                    for (int number : integers){
+                    for (int number : payment){
 
                         number = number & 0xFFFF;
                         if (number < 0xF) {
-                            sb.append("0");
+                            sb.append("000");
                         }
-                        if (number < 0xFF) {
-                            sb.append("0");
+                        else if (number < 0xFF) {
+                            sb.append("00");
                         }
-                        if(number < 0xFFF){
+                        else if(number < 0xFFF){
                             sb.append("0");
                         }
                         sb.append(Integer.toHexString(number));
@@ -186,8 +206,10 @@ public class ActivationController {
         bindingI18N();
     }
 
-//    @Scheduled(cron = "0 */10 * * * *")
-    public void sendTime() {
+//    @Scheduled(cron = "0 */10 * * * *") // every 10 minutes
+//    @Scheduled(cron = "*/10 * * * * *") // every 10 seconds
+//    for @Scheduled usage method should be public
+    private void sendTime() {
         int time = (int) (System.currentTimeMillis() / 1000);
         ultimaModbusWriter.add(CurrentTime_seconds, time);
     }
@@ -199,9 +221,14 @@ public class ActivationController {
             dialogStage.setScene(new Scene(dialogViev));
             dialogStage.setResizable(false);
             dialogStage.initModality(Modality.APPLICATION_MODAL);
+            dialogStage.setOnCloseRequest(event -> {
+                if (event.getEventType() == WindowEvent.WINDOW_CLOSE_REQUEST) {
+                    Platform.exit();
+                }
+            });
         }
         dialogStage.setTitle(windowTitleProperty.get());
-        activationLabel.setVisible(false);
+        acceptanceLabel.textProperty().setValue("");
         dialogStage.show();
     }
 
@@ -221,13 +248,13 @@ public class ActivationController {
     private void bindingI18N() {
 
         copyButton.textProperty().bind(i18N.createStringBinding("activation.copy.button"));
-        finalCopyButton.textProperty().bind(i18N.createStringBinding("activation.copy.button"));
         cancelButton.textProperty().bind(i18N.createStringBinding("voapProfile.button.cancel"));
         applyButton.textProperty().bind(i18N.createStringBinding("alert.applyButton"));
         windowTitleProperty.bind(i18N.createStringBinding("activation.windowTitle"));
-        activationLabel.textProperty().bind(i18N.createStringBinding("activation.incorrectCode.label"));
         codeLabel.textProperty().bind(i18N.createStringBinding("activation.paymentCode.label"));
-        finalCodeLabel.textProperty().bind(i18N.createStringBinding("activation.finalCode.label"));
         activationCodeLabel.textProperty().bind(i18N.createStringBinding("activation.activationCode.label"));
+        incorrectCode.bind(i18N.createStringBinding("activation.incorrectCode.label"));
+        codeAccepted.bind(i18N.createStringBinding("activation.codeAccepted.label"));
+        finalCodeAccepted.bind(i18N.createStringBinding("activation.finalCodeAccepted.label"));
     }
 }
