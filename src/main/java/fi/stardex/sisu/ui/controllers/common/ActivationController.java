@@ -141,6 +141,7 @@ public class ActivationController {
 
             String codeString = activationTextField.getText().toLowerCase();
             if (codeString.length() != CODE_SIZE || !pattern.matcher(codeString).matches()) {
+                logger.error("Code has incorrect length or contains restricted symbols!");
                 acceptanceLabel.setText(incorrectCode.get());
                 return;
             }
@@ -170,6 +171,7 @@ public class ActivationController {
             };
 
             requestTask.valueProperty().addListener((observable, oldValue, newValue) -> {
+//                System.err.println("Hardware reply is " + newValue);
                 if (newValue == 1) {
                     acceptanceLabel.setText(codeAccepted.get());
                     closeDialog.play();
@@ -195,27 +197,27 @@ public class ActivationController {
 
         cancelButton.setOnMouseClicked(mouseEvent -> Platform.exit());
 
-//        ultimaModbusConnect.connectedProperty().addListener((observableValue, oldValue, newValue) -> {
-//
-//            if (newValue) {
-//
-//                ultimaRegisterProvider.read(Version_controllable_1);
-//                ultimaRegisterProvider.read(Version_controllable_2);
-//                Object lastValue_1 = Version_controllable_1.getLastValue();
-//                Object lastValue_2 = Version_controllable_2.getLastValue();
-//
-//                if ((lastValue_1 != null && lastValue_2 != null && (int) lastValue_1 != 0xF1 && (int) lastValue_2 != 0xAA)) return;
-//                if (((int) Main_version_0.getLastValue()) / 10 != 4) return;
-//
-//                injectorSectionUpdateModel.activationErrorProperty().setValue(false);
-//                injectorSectionUpdateModel.activationErrorProperty().addListener(activationErrorListener);
-//                sendTime();
-//                timeUpdate.play();
-//            } else {
-//                injectorSectionUpdateModel.activationErrorProperty().removeListener(activationErrorListener);
-//                timeUpdate.stop();
-//            }
-//        });
+        ultimaModbusConnect.connectedProperty().addListener((observableValue, oldValue, newValue) -> {
+
+            if (newValue) {
+
+                ultimaRegisterProvider.read(Version_controllable_1);
+                ultimaRegisterProvider.read(Version_controllable_2);
+                Object lastValue_1 = Version_controllable_1.getLastValue();
+                Object lastValue_2 = Version_controllable_2.getLastValue();
+
+                if ((lastValue_1 != null && lastValue_2 != null && (int) lastValue_1 != 0xF1 && (int) lastValue_2 != 0xAA)) return;
+                if (((int) Main_version_0.getLastValue()) / 10 != 4) return;
+
+                injectorSectionUpdateModel.activationErrorProperty().setValue(false);
+                injectorSectionUpdateModel.activationErrorProperty().addListener(activationErrorListener);
+                sendTime();
+                timeUpdate.play();
+            } else {
+                injectorSectionUpdateModel.activationErrorProperty().removeListener(activationErrorListener);
+                timeUpdate.stop();
+            }
+        });
 
         bindingI18N();
     }

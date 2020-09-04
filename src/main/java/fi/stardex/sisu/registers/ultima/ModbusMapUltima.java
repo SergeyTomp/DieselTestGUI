@@ -193,7 +193,7 @@ public enum ModbusMapUltima implements ModbusMap {
 
     // Активация продукта при лизинге
     CurrentTime_seconds(REGISTER_HOLDING, 240, 2, false, false),
-    Activation_error(DISCRETE_COIL, 200, 1, false, false),
+    Activation_error(DISCRETE_COIL, 200, 1, true, false),
     Activation_errorCode(REGISTER_HOLDING, 242, 1, false, false),
     Activation_paymentKey(REGISTER_INPUT, 4480, 8, false, false),
     Activation_key(REGISTER_HOLDING, 252, 8, false, false);
