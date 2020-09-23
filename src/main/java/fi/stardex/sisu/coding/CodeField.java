@@ -15,6 +15,7 @@ public enum CodeField {
     REST ("Rest", true),
     TP1("Test Point 01", true),
     TP2("Test Point 02", true),
+    TP3("Test Point 03", true),
     TP4("Test Point 04", true),
     TP5("Test Point 05", true),
     TP6("Test Point 06", true),
@@ -26,7 +27,8 @@ public enum CodeField {
     ADD_0("Add_0", false),
     ADD_00("Add_00", false),
     ADD_000("Add_000", false),
-    ADD_00000("Add_00000", false);
+    ADD_00000("Add_00000", false),
+    ADD_1("Add_1", false);
 
     private final String testName;
     private final boolean isTest;

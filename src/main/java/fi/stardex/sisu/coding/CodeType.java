@@ -9,6 +9,7 @@ public enum CodeType {
     FOUR(4, 4),
     FIVE(5, 5),
     SIX(6, 4),
+    SEVENTEEN(17, 4),
     IMA11_1(111, 5),
     IMA11_2(112, 5),
     IMA11_3(113, 5),

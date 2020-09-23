@@ -59,6 +59,8 @@ public class CoderFactory {
                         return new BoschCoderIMA_113(injector, activeLeds, resultsList);
                     case IMA11_4:
                         return new BoschCoderIMA_114(injector, activeLeds, resultsList);
+                    case SEVENTEEN:
+                        return new BoschCoder_17(injector, activeLeds, resultsList);
                     default:
                         return null;
                 }

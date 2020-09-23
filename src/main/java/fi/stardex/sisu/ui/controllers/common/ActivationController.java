@@ -197,6 +197,7 @@ public class ActivationController {
 
         cancelButton.setOnMouseClicked(mouseEvent -> Platform.exit());
 
+        /**Reminder: to disable activation comment listener below and set autoUpdate=false for Activation_error*/
         ultimaModbusConnect.connectedProperty().addListener((observableValue, oldValue, newValue) -> {
 
             if (newValue) {
