@@ -169,9 +169,11 @@ public class NewEditInjectorDialogController {
         MenuItem newVOAP = new MenuItem("New");
         newVOAP.setOnAction(new VoapListEventHandler("New VOAP", NewEditVOAPDialogController::setNew));
         MenuItem copyVOAP = new MenuItem("Copy");
-
+        copyVOAP.setOnAction(new VoapListEventHandler("Copy VOAP", NewEditVOAPDialogController::setCopy));
         MenuItem editVOAP = new MenuItem("Edit");
+        editVOAP.setOnAction(new VoapListEventHandler("Edit VOAP", NewEditVOAPDialogController::setEdit));
         MenuItem deleteVOAP = new MenuItem("Delete");
+        deleteVOAP.setOnAction(new VoapListEventHandler("Delete VOAP", NewEditVOAPDialogController::setDelete));
 
         voapListView.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             if (event.getButton() == MouseButton.SECONDARY) {
@@ -431,8 +433,14 @@ public class NewEditInjectorDialogController {
                 controller.setVoapList(voapListView);
             }
             newVOAPStage.setTitle(title);
-            dialogType.accept(controller);
+            if (!title.contains("New")) {
+                controller.setCurrentVOAP(voapListView.getSelectionModel().getSelectedItem());
+                if (title.contains("Copy")) {
+                    customRB.setSelected(defaultRB.isSelected());
+                }
+            }
             controller.setInjectorType(injTypeCB.getSelectionModel().getSelectedItem());
+            dialogType.accept(controller);
             newVOAPStage.show();
         }
     }

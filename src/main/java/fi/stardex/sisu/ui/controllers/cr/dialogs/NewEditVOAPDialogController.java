@@ -58,6 +58,8 @@ public class NewEditVOAPDialogController {
     private I18N i18N;
     private StringProperty boostU_enabled = new SimpleStringProperty();
     private StringProperty boostU_disabled = new SimpleStringProperty();
+    private StringBuilder codeBuilder = new StringBuilder();
+    private VoltAmpereProfile currentVOAP;
 
     public void setVoltAmpereProfileRepository(VoltAmpereProfileRepository voltAmpereProfileRepository) {
         this.voltAmpereProfileRepository = voltAmpereProfileRepository;
@@ -73,6 +75,15 @@ public class NewEditVOAPDialogController {
             switch (currentState) {
                 case NEW:
                     checkAndSaveVOAP();
+                    break;
+                case COPY:
+                    copyVOAP();
+                    break;
+                case DELETE:
+                    deleteVOAP();
+                    break;
+                case EDIT:
+                    editVOAP();
                     break;
             }
         });
@@ -193,8 +204,144 @@ public class NewEditVOAPDialogController {
         }
     }
 
+    private void copyVOAP() {
+
+        notUniqueLabel.setVisible(false);
+        VoltAmpereProfile newProfile = new VoltAmpereProfile(makeCode(enterNameTF.getText()),
+                injectorType,
+                true,
+                boostUSpinner.getValue(),
+                batteryUSpinner.getValue(),
+                boostISpinner.getValue(),
+                firstISpinner.getValue(),
+                firstWSpinner.getValue(),
+                secondISpinner.getValue(),
+                negativeUSpinner.getValue(),
+                enableBoostToggleButton.isSelected(),
+                boostI2Spinner.getValue(),
+                firstI2Spinner.getValue(),
+                firstW2Spinner.getValue(),
+                secondI2Spinner.getValue(),
+                coil2CheckBox.isSelected());
+        voltAmpereProfileRepository.save(newProfile);
+        voapList.getItems().add(newProfile);
+        voapList.getSelectionModel().select(newProfile);
+        voapList.scrollTo(newProfile);
+        stage.close();
+    }
+
+    private void deleteVOAP() {
+        voltAmpereProfileRepository.deleteById(voapList.getSelectionModel().getSelectedItem().getProfileName());
+        voapList.getItems().remove(voapList.getSelectionModel().getSelectedItem());
+        stage.close();
+    }
+
+    private void editVOAP() {
+
+        VoltAmpereProfile vapToUpdate = currentVOAP;
+
+        vapToUpdate.setBatteryU(batteryUSpinner.getValue());
+        vapToUpdate.setBoostU(boostUSpinner.getValue());
+        vapToUpdate.setBoostI(boostISpinner.getValue());
+        vapToUpdate.setBoostDisable(enableBoostToggleButton.isSelected());
+        vapToUpdate.setFirstI(firstISpinner.getValue());
+        vapToUpdate.setFirstW(firstWSpinner.getValue());
+        vapToUpdate.setSecondI(secondISpinner.getValue());
+        vapToUpdate.setNegativeU(negativeUSpinner.getValue());
+        vapToUpdate.setDoubleCoil(coil2CheckBox.isSelected());
+
+        if (coil2CheckBox.isSelected()) {
+            vapToUpdate.setBoostI2(boostI2Spinner.getValue());
+            vapToUpdate.setFirstI2(firstI2Spinner.getValue());
+            vapToUpdate.setFirstW2(firstW2Spinner.getValue());
+            vapToUpdate.setSecondI2(secondI2Spinner.getValue());
+        }
+        voltAmpereProfileRepository.save(vapToUpdate);
+        stage.close();
+    }
+
     public void setNew() {
         currentState = State.NEW;
+        enterNameTF.clear();
+        disableNodes(false);
+        enterNameTF.setDisable(false);
+    }
+
+    public void setCopy() {
+        currentState = State.COPY;
+        disableNodes(true);
+        setValues();
+        enterNameTF.setDisable(false);
+    }
+
+    public void setDelete() {
+        currentState = State.DELETE;
+        enterNameTF.setText(voapList.getSelectionModel().getSelectedItem().getProfileName());
+        disableNodes(true);
+        setValues();
+        enterNameTF.setDisable(true);
+    }
+
+    public void setEdit() {
+        currentState = State.EDIT;
+        enterNameTF.setText(voapList.getSelectionModel().getSelectedItem().getProfileName());
+        disableNodes(false);
+        setValues();
+        enterNameTF.setDisable(true);
+    }
+
+    private void disableNodes(boolean disable) {
+        boostUSpinner.setDisable(disable);
+        batteryUSpinner.setDisable(disable);
+        boostISpinner.setDisable(disable);
+        firstISpinner.setDisable(disable);
+        firstWSpinner.setDisable(disable);
+        secondISpinner.setDisable(disable);
+        negativeUSpinner.setDisable(disable);
+        enableBoostToggleButton.setDisable(disable);
+        coil2CheckBox.setDisable(disable);
+        boostI2Spinner.setDisable(disable || !currentVOAP.isDoubleCoil());
+        firstI2Spinner.setDisable(disable || !currentVOAP.isDoubleCoil());
+        firstW2Spinner.setDisable(disable || !currentVOAP.isDoubleCoil());
+        secondI2Spinner.setDisable(disable || !currentVOAP.isDoubleCoil());
+    }
+
+    private void setValues() {
+
+        enterNameTF.setText(currentVOAP.getProfileName());
+        batteryUSpinner.getValueFactory().setValue(currentVOAP.getBatteryU());
+        boostUSpinner.getValueFactory().setValue(currentVOAP.getBoostU());
+        boostISpinner.getValueFactory().setValue(currentVOAP.getBoostI());
+        firstISpinner.getValueFactory().setValue(currentVOAP.getFirstI());
+        firstWSpinner.getValueFactory().setValue(currentVOAP.getFirstW());
+        secondISpinner.getValueFactory().setValue(currentVOAP.getSecondI());
+        enableBoostToggleButton.setSelected(currentVOAP.getBoostDisable());
+        coil2CheckBox.setSelected(currentVOAP.isDoubleCoil());
+
+        if (currentVOAP.isDoubleCoil()) {
+            boostI2Spinner.getValueFactory().setValue(currentVOAP.getBoostI2());
+            firstI2Spinner.getValueFactory().setValue(currentVOAP.getFirstI2());
+            firstW2Spinner.getValueFactory().setValue(currentVOAP.getFirstW2());
+            secondI2Spinner.getValueFactory().setValue(currentVOAP.getSecondI2());
+        }
+    }
+
+    private String makeCode(String code) {
+        codeBuilder.setLength(0);
+        if (voltAmpereProfileRepository.existsById(code)) {
+            if (code.contains("(")) {
+                int indexBKT1 = code.indexOf('(');
+                int indexBKT2 = code.indexOf(')');
+                int count = Integer.valueOf(code.substring(indexBKT1 + 1, indexBKT2));
+                count++;
+                codeBuilder.append(code, 0, indexBKT1).append("(").append(count).append(")");
+            } else {
+                codeBuilder.append(code).append("(1)");
+            }
+            return makeCode(codeBuilder.toString());
+        }else {
+            return code;
+        }
     }
 
     public void setStage(Stage stage) {
@@ -206,16 +353,19 @@ public class NewEditVOAPDialogController {
         currInjTypeLabel.setText(injectorType.getInjectorType());
     }
 
-    public void setVoapList(ListView<VoltAmpereProfile> voapList) {
+    void setCurrentVOAP(VoltAmpereProfile currentVOAP) {
+        this.currentVOAP = currentVOAP;
+    }
+    void setVoapList(ListView<VoltAmpereProfile> voapList) {
         this.voapList = voapList;
     }
 
     private enum State {
-        NEW
+        NEW, COPY, EDIT, DELETE
     }
 
     private void bindingI18N(){
-        enterNameLabel.textProperty().bind(i18N.createStringBinding("h4.report.table.label.injectorName"));
+        enterNameLabel.textProperty().bind(i18N.createStringBinding("voapProfile.label.vapName"));
         injTypeLabel.textProperty().bind(i18N.createStringBinding("voapProfile.label.injType"));
         coil1Label.textProperty().bind(i18N.createStringBinding("voapProfile.label.coil1"));
         coil2CheckBox.textProperty().bind(i18N.createStringBinding("voapProfile.label.coil2"));

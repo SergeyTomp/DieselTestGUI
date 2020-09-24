@@ -85,65 +85,99 @@ public class VoltAmpereProfile {
     public String getProfileName() {
         return profileName;
     }
-
     public InjectorType getInjectorType() {
         return injectorType;
     }
-
     public Boolean isCustom() {
         return isCustom;
     }
-
     public Integer getBoostU() {
         return boostU;
     }
-
     public Integer getBatteryU() {
         return batteryU;
     }
-
     public Double getBoostI() {
         return boostI;
     }
-
     public Double getFirstI() {
         return firstI;
     }
-
     public Integer getFirstW() {
         return firstW;
     }
-
     public Double getSecondI() {
         return secondI;
     }
-
     public Integer getNegativeU() {
         return negativeU;
     }
-
     public Boolean getBoostDisable() {
         return boostDisable;
     }
-
     public Double getBoostI2() {
         return boostI2;
     }
-
     public Double getFirstI2() {
         return firstI2;
     }
-
     public Integer getFirstW2() {
         return firstW2;
     }
-
     public Double getSecondI2() {
         return secondI2;
     }
-
     public Boolean isDoubleCoil() {
         return isDoubleCoil;
+    }
+
+    public void setProfileName(String profileName) {
+        this.profileName = profileName;
+    }
+    public void setInjectorType(InjectorType injectorType) {
+        this.injectorType = injectorType;
+    }
+    public void setCustom(Boolean custom) {
+        isCustom = custom;
+    }
+    public void setBoostU(Integer boostU) {
+        this.boostU = boostU;
+    }
+    public void setBatteryU(Integer batteryU) {
+        this.batteryU = batteryU;
+    }
+    public void setBoostI(Double boostI) {
+        this.boostI = boostI;
+    }
+    public void setFirstI(Double firstI) {
+        this.firstI = firstI;
+    }
+    public void setFirstW(Integer firstW) {
+        this.firstW = firstW;
+    }
+    public void setSecondI(Double secondI) {
+        this.secondI = secondI;
+    }
+    public void setNegativeU(Integer negativeU) {
+        this.negativeU = negativeU;
+    }
+    public void setBoostDisable(Boolean boostDisable) {
+        this.boostDisable = boostDisable;
+    }
+    public void setBoostI2(Double boostI2) {
+        this.boostI2 = boostI2;
+    }
+    public void setFirstI2(Double firstI2) {
+        this.firstI2 = firstI2;
+    }
+    public void setFirstW2(Integer firstW2) {
+        this.firstW2 = firstW2;
+    }
+    public void setSecondI2(Double secondI2) {
+        this.secondI2 = secondI2;
+    }
+    public void setDoubleCoil(Boolean doubleCoil) {
+        isDoubleCoil = doubleCoil;
     }
 
     public VoltAmpereProfile() {
