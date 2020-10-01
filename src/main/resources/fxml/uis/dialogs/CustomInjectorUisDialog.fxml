@@ -121,10 +121,10 @@
                 <Label fx:id="coil1Label" text="Coil 1" />
                 <Label fx:id="coil2Label" text="Coil 2" GridPane.columnIndex="2" />
                 <Label fx:id="voltageLabel" text="Voltage" GridPane.columnIndex="4" />
-                <Label GridPane.columnIndex="3" GridPane.rowIndex="1" />
-                <Label GridPane.columnIndex="3" GridPane.rowIndex="2" />
-                <Label GridPane.columnIndex="3" GridPane.rowIndex="3" />
-                <Label GridPane.columnIndex="3" GridPane.rowIndex="4" />
+                <Label fx:id="firstW2Value" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                <Label fx:id="boostI2Value" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+                <Label fx:id="firstI2Value" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+                <Label fx:id="secondI2Value" GridPane.columnIndex="3" GridPane.rowIndex="4" />
             </children>
             <GridPane.margin>
                 <Insets left="20.0" />

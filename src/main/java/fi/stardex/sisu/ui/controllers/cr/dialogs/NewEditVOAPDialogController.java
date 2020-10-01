@@ -17,6 +17,7 @@ import static fi.stardex.sisu.util.SpinnerDefaults.*;
 
 public class NewEditVOAPDialogController {
 
+    @FXML private Label deletionError;
     @FXML private Label firstW_1Label;
     @FXML private Label batteryULabel;
     @FXML private Label boostI_1Label;
@@ -165,6 +166,8 @@ public class NewEditVOAPDialogController {
         coil2CheckBox.selectedProperty().addListener((observableValue, oldValue, newValue) -> activateCoil2Spinners(newValue));
 
         bindingI18N();
+        enableBoostToggleButton.setSelected(false);
+        enableBoostToggleButton.setText(boostU_disabled.get());
     }
 
     private void activateCoil2Spinners(boolean activate) {
@@ -190,7 +193,7 @@ public class NewEditVOAPDialogController {
                     firstWSpinner.getValue(),
                     secondISpinner.getValue(),
                     negativeUSpinner.getValue(),
-                    enableBoostToggleButton.isSelected(),
+                    !enableBoostToggleButton.isSelected(),
                     boostI2Spinner.getValue(),
                     firstI2Spinner.getValue(),
                     firstW2Spinner.getValue(),
@@ -217,7 +220,7 @@ public class NewEditVOAPDialogController {
                 firstWSpinner.getValue(),
                 secondISpinner.getValue(),
                 negativeUSpinner.getValue(),
-                enableBoostToggleButton.isSelected(),
+                !enableBoostToggleButton.isSelected(),
                 boostI2Spinner.getValue(),
                 firstI2Spinner.getValue(),
                 firstW2Spinner.getValue(),
@@ -231,6 +234,12 @@ public class NewEditVOAPDialogController {
     }
 
     private void deleteVOAP() {
+
+        if (!voltAmpereProfileRepository.findByProfileName(voapList.getSelectionModel().getSelectedItem().getProfileName()).getInjectors().isEmpty()) {
+            deletionError.setVisible(true);
+            return;
+        }
+        deletionError.setVisible(false);
         voltAmpereProfileRepository.deleteById(voapList.getSelectionModel().getSelectedItem().getProfileName());
         voapList.getItems().remove(voapList.getSelectionModel().getSelectedItem());
         stage.close();
@@ -243,7 +252,7 @@ public class NewEditVOAPDialogController {
         vapToUpdate.setBatteryU(batteryUSpinner.getValue());
         vapToUpdate.setBoostU(boostUSpinner.getValue());
         vapToUpdate.setBoostI(boostISpinner.getValue());
-        vapToUpdate.setBoostDisable(enableBoostToggleButton.isSelected());
+        vapToUpdate.setBoostDisable(!enableBoostToggleButton.isSelected());
         vapToUpdate.setFirstI(firstISpinner.getValue());
         vapToUpdate.setFirstW(firstWSpinner.getValue());
         vapToUpdate.setSecondI(secondISpinner.getValue());
@@ -257,18 +266,23 @@ public class NewEditVOAPDialogController {
             vapToUpdate.setSecondI2(secondI2Spinner.getValue());
         }
         voltAmpereProfileRepository.save(vapToUpdate);
+        voapList.getItems().setAll(voltAmpereProfileRepository.findByIsCustomAndInjectorType(true, currentVOAP.getInjectorType()));
+        voapList.getSelectionModel().select(currentVOAP);
+        voapList.scrollTo(currentVOAP);
         stage.close();
     }
 
     public void setNew() {
         currentState = State.NEW;
         enterNameTF.clear();
+        deletionError.setVisible(false);
         disableNodes(false);
         enterNameTF.setDisable(false);
     }
 
     public void setCopy() {
         currentState = State.COPY;
+        deletionError.setVisible(false);
         disableNodes(true);
         setValues();
         enterNameTF.setDisable(false);
@@ -277,6 +291,7 @@ public class NewEditVOAPDialogController {
     public void setDelete() {
         currentState = State.DELETE;
         enterNameTF.setText(voapList.getSelectionModel().getSelectedItem().getProfileName());
+        deletionError.setVisible(false);
         disableNodes(true);
         setValues();
         enterNameTF.setDisable(true);
@@ -285,6 +300,7 @@ public class NewEditVOAPDialogController {
     public void setEdit() {
         currentState = State.EDIT;
         enterNameTF.setText(voapList.getSelectionModel().getSelectedItem().getProfileName());
+        deletionError.setVisible(false);
         disableNodes(false);
         setValues();
         enterNameTF.setDisable(true);
@@ -300,10 +316,18 @@ public class NewEditVOAPDialogController {
         negativeUSpinner.setDisable(disable);
         enableBoostToggleButton.setDisable(disable);
         coil2CheckBox.setDisable(disable);
-        boostI2Spinner.setDisable(disable || !currentVOAP.isDoubleCoil());
-        firstI2Spinner.setDisable(disable || !currentVOAP.isDoubleCoil());
-        firstW2Spinner.setDisable(disable || !currentVOAP.isDoubleCoil());
-        secondI2Spinner.setDisable(disable || !currentVOAP.isDoubleCoil());
+
+        if (currentState != State.NEW) {
+            boostI2Spinner.setDisable(disable || !currentVOAP.isDoubleCoil());
+            firstI2Spinner.setDisable(disable || !currentVOAP.isDoubleCoil());
+            firstW2Spinner.setDisable(disable || !currentVOAP.isDoubleCoil());
+            secondI2Spinner.setDisable(disable || !currentVOAP.isDoubleCoil());
+        } else {
+            boostI2Spinner.setDisable(disable || !coil2CheckBox.isSelected());
+            firstI2Spinner.setDisable(disable || !coil2CheckBox.isSelected());
+            firstW2Spinner.setDisable(disable || !coil2CheckBox.isSelected());
+            secondI2Spinner.setDisable(disable || !coil2CheckBox.isSelected());
+        }
     }
 
     private void setValues() {
@@ -315,7 +339,8 @@ public class NewEditVOAPDialogController {
         firstISpinner.getValueFactory().setValue(currentVOAP.getFirstI());
         firstWSpinner.getValueFactory().setValue(currentVOAP.getFirstW());
         secondISpinner.getValueFactory().setValue(currentVOAP.getSecondI());
-        enableBoostToggleButton.setSelected(currentVOAP.getBoostDisable());
+        negativeUSpinner.getValueFactory().setValue(currentVOAP.getNegativeU());
+        enableBoostToggleButton.setSelected(!currentVOAP.getBoostDisable());
         coil2CheckBox.setSelected(currentVOAP.isDoubleCoil());
 
         if (currentVOAP.isDoubleCoil()) {
@@ -384,5 +409,6 @@ public class NewEditVOAPDialogController {
         secondI_2Label.textProperty().bind(i18N.createStringBinding("h4.voltage.label.I2"));
         saveBtn.textProperty().bind(i18N.createStringBinding("h4.delay.button.save"));
         cancelBtn.textProperty().bind(i18N.createStringBinding("voapProfile.button.cancel"));
+        deletionError.textProperty().bind(i18N.createStringBinding("voapProfile.label.deletionError"));
     }
 }

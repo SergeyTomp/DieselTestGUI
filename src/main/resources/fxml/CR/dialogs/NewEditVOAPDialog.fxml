@@ -12,6 +12,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.text.Font?>
 
 <GridPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="400.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.cr.dialogs.NewEditVOAPDialogController">
    <columnConstraints>
@@ -168,5 +169,9 @@
       </HBox>
       <TextField fx:id="enterNameTF" GridPane.columnIndex="1" />
       <CheckBox fx:id="coil2CheckBox" mnemonicParsing="false" text="Coil 2" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+      <Label fx:id="deletionError" text="Denied!" textAlignment="CENTER" textFill="RED" GridPane.columnSpan="2" GridPane.rowIndex="7">
+         <font>
+            <Font size="18.0" />
+         </font></Label>
    </children>
 </GridPane>

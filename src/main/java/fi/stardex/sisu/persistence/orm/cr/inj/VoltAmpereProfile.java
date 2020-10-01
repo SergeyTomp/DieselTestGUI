@@ -9,6 +9,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "volt_ampere_profile")
+@NamedEntityGraph(name = "CrInjectorsByVAP", attributeNodes = {@NamedAttributeNode("profileName"), @NamedAttributeNode("injectors")})
 public class VoltAmpereProfile {
 
     @Id
@@ -129,6 +130,9 @@ public class VoltAmpereProfile {
     }
     public Boolean isDoubleCoil() {
         return isDoubleCoil;
+    }
+    public List<Injector> getInjectors() {
+        return injectors;
     }
 
     public void setProfileName(String profileName) {

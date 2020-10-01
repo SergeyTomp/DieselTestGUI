@@ -13,4 +13,5 @@ public interface VapService {
     List<? extends VAP> findByIsCustom(boolean isCustom);
     List<? extends VAP> findByIsCustomAndInjectorType(boolean isCustom, InjectorType injectorType);
     List<? extends VAP>findByIsCustomAndInjectorTypeAndInjectorSubType(boolean isCustom, InjectorType injectorType, InjectorSubType injectorSubType);
+    VAP findByVapName(String vapName);
 }

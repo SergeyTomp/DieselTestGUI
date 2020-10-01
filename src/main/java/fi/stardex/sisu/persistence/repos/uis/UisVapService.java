@@ -31,6 +31,11 @@ public class UisVapService implements VapService {
     }
 
     @Override
+    public InjectorUisVAP findByVapName(String vapName) {
+        return injectorUisVapRepository.findByProfileName(vapName);
+    }
+
+    @Override
     public boolean existsById(String id) {
         return injectorUisVapRepository.existsById(id);
     }

@@ -11,6 +11,8 @@ import fi.stardex.sisu.persistence.repos.cr.InjectorsRepository;
 import fi.stardex.sisu.persistence.repos.cr.VoltAmpereProfileRepository;
 import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.util.i18n.I18N;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -19,8 +21,10 @@ import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.Region;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
@@ -91,6 +95,9 @@ public class NewEditInjectorDialogController {
     private MainSectionModel mainSectionModel;
     private StringBuilder codeBuilder = new StringBuilder();
     private I18N i18N;
+    private Alert alert;
+    private StringProperty alertString = new SimpleStringProperty("Please specify all values!");
+    private StringProperty yesButton = new SimpleStringProperty();
 
     public void setModelListView(ListView<Model> modelListView) {
         this.modelListView = modelListView;
@@ -196,7 +203,9 @@ public class NewEditInjectorDialogController {
     }
 
     private void checkAndSaveInjector() {
-        if (injectorCodeTF.getText().isEmpty() || injectorsRepository.existsById(injectorCodeTF.getText())) {
+
+        if(!isDataComplete()) return;
+        if (injectorsRepository.existsById(injectorCodeTF.getText())) {
             noUniqueLabel.setVisible(true);
             return;
         }
@@ -210,23 +219,24 @@ public class NewEditInjectorDialogController {
         else newInj.setHeui(false);
 
         injectorsRepository.save(newInj);
-        newEditInjectorDialogModel.customInjectorProperty().setValue(newInj);
-        newEditInjectorDialogModel.doneProperty().setValue(new Object());
-        stage.close();
+        complete(newInj);
     }
 
     private void updateInjector() {
+
+        if(!isDataComplete()) return;
         Injector injectorForUpdate = getInjector();
         injectorForUpdate.setVoltAmpereProfile(voapListView.getSelectionModel().getSelectedItem());
         List<InjectorTest> injectorTests = injectorTestRepository.findAllByInjector(injectorForUpdate);
         injectorTests.clear();
         injectorTests.addAll(new LinkedList<>());
         injectorsRepository.save(injectorForUpdate);
-        stage.close();
+        complete(injectorForUpdate);
     }
 
     private void copyInjector() {
 
+        if(!isDataComplete()) return;
         Injector baseInjector = mainSectionModel.injectorProperty().get();
         Manufacturer manufacturer = mainSectionModel.manufacturerObjectProperty().get();
         List<InjectorTest> testList = mainSectionModel.getInjectorTests();
@@ -244,15 +254,17 @@ public class NewEditInjectorDialogController {
         copy.getInjectorTests().addAll(newTestsList);
 
         injectorsRepository.save(copy);
-        newEditInjectorDialogModel.customInjectorProperty().setValue(copy);
-        newEditInjectorDialogModel.doneProperty().setValue(new Object());
-        stage.close();
+        complete(copy);
     }
 
     private void deleteInjector() {
         Injector injector = getInjector();
         injectorsRepository.delete(injector);
-        newEditInjectorDialogModel.customInjectorProperty().setValue(null);
+        complete(null);
+    }
+
+    private void complete(Injector injector) {
+        newEditInjectorDialogModel.customInjectorProperty().setValue(injector);
         newEditInjectorDialogModel.doneProperty().setValue(new Object());
         stage.close();
     }
@@ -412,6 +424,28 @@ public class NewEditInjectorDialogController {
         voapListView.scrollTo(0);
     }
 
+    private void showAlert() {
+
+        if (alert == null) {
+            alert = new Alert(Alert.AlertType.NONE, "", ButtonType.YES);
+            alert.initStyle(StageStyle.UNDECORATED);
+            alert.getDialogPane().getStylesheets().add(getClass().getResource("/css/Styling.css").toExternalForm());
+            alert.getDialogPane().getStyleClass().add("alertDialog");
+            alert.setResizable(true);
+            alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+        }
+        ((Button) alert.getDialogPane().lookupButton(ButtonType.YES)).textProperty().setValue(yesButton.get());
+        alert.setContentText(alertString.get());
+        alert.show();
+    }
+
+    private boolean isDataComplete() {
+
+        if (injectorCodeTF.getText().isEmpty() || voapListView.getSelectionModel().getSelectedItem() == null) showAlert();
+        if(alert != null && alert.isShowing())return false;
+        return true;
+    }
+
     private class VoapListEventHandler implements EventHandler<ActionEvent> {
         private String title;
         private Consumer<NewEditVOAPDialogController> dialogType;
@@ -466,5 +500,7 @@ public class NewEditInjectorDialogController {
         cancelBtn.textProperty().bind(i18N.createStringBinding("voapProfile.button.cancel"));
         defaultRB.textProperty().bind(i18N.createStringBinding("main.defaultRB.radiobutton"));
         customRB.textProperty().bind(i18N.createStringBinding("main.customRB.radiobutton"));
+        yesButton.bind((i18N.createStringBinding("alert.yesButton")));
+        alertString.bind((i18N.createStringBinding("alert.customDialog")));
     }
 }

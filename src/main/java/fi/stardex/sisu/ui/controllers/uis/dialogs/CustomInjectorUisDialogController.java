@@ -79,6 +79,10 @@ public class CustomInjectorUisDialogController {
     @FXML private Label batteryUvalue;
     @FXML private Label secondIvalue;
     @FXML private Label negativeUvalue;
+    @FXML private Label firstW2Value;
+    @FXML private Label boostI2Value;
+    @FXML private Label firstI2Value;
+    @FXML private Label secondI2Value;
 
     private MainSectionUisModel mainSectionUisModel;
     private Stage dialogStage;
@@ -248,10 +252,17 @@ public class CustomInjectorUisDialogController {
 
         customVapUisDialogModel.doneProperty().addListener((observableValue, oldValue, newValue) -> {
 
-            voapListView.getItems().clear();
-            List<InjectorUisVAP> updatedList = uisVapService.findByIsCustomAndInjectorTypeAndInjectorSubType(!defaultRB.isSelected(), injTypeCB.getValue(), injSubTypeCB.getValue());
-            voapListView.getItems().setAll(updatedList);
-            voapListView.getSelectionModel().select((InjectorUisVAP) customVapUisDialogModel.customVapProperty().get());
+            if (defaultRB.isSelected()) {
+                customRB.setSelected(true);
+            } else {
+                List<InjectorUisVAP> updatedList = uisVapService.findByIsCustomAndInjectorTypeAndInjectorSubType(true, injTypeCB.getValue(), injSubTypeCB.getValue());
+                voapListView.getItems().setAll(updatedList);
+            }
+            if (customModelDialogModel.customVapOperationProperty().get() == DELETE) {
+                voapListView.getSelectionModel().clearSelection();
+            } else {
+                voapListView.getSelectionModel().select((InjectorUisVAP) customVapUisDialogModel.customVapProperty().get());
+            }
             customModelDialogModel.customVapOperationProperty().setValue(null);
         });
 
@@ -265,7 +276,7 @@ public class CustomInjectorUisDialogController {
 
         if(!isDataComplete()) return;
 
-        if (injectorCodeTF.getText().isEmpty() || uisModelService.existsByModelCode(injectorCodeTF.getText())) {
+        if (uisModelService.existsByModelCode(injectorCodeTF.getText())) {
             noUniqueLabel.setVisible(true);
             return;
         }
@@ -275,9 +286,7 @@ public class CustomInjectorUisDialogController {
                 (ManufacturerUIS)mainSectionUisModel.manufacturerObjectProperty().get(),
                 voapListView.getSelectionModel().getSelectedItem(), true);
         uisModelService.save(newInj);
-        customModelDialogModel.customModelProperty().setValue(newInj);
-        customModelDialogModel.doneProperty().setValue(new Object());
-        dialogStage.close();
+        complete(newInj);
     }
 
     private void update() {
@@ -290,18 +299,14 @@ public class CustomInjectorUisDialogController {
         injectorTests.clear();
         injectorTests.addAll(new LinkedList<>());
         uisModelService.save(injectorForUpdate);
-        customModelDialogModel.customModelProperty().setValue(injectorForUpdate);
-        customModelDialogModel.doneProperty().setValue(new Object());
-        dialogStage.close();
+        complete(injectorForUpdate);
     }
 
     private void delete() {
 
         Model injectorForUpdate = mainSectionUisModel.modelProperty().get();
         uisModelService.delete(injectorForUpdate);
-        customModelDialogModel.customModelProperty().setValue(null);
-        customModelDialogModel.doneProperty().setValue(new Object());
-        dialogStage.close();
+        complete(null);
     }
 
     private void copy() {
@@ -320,7 +325,11 @@ public class CustomInjectorUisDialogController {
         copy.getInjectorTests().addAll(newTestList);
 
         uisModelService.save(copy);
-        customModelDialogModel.customModelProperty().setValue(copy);
+        complete(copy);
+    }
+
+    private void complete(Model injector) {
+        customModelDialogModel.customModelProperty().setValue(injector);
         customModelDialogModel.doneProperty().setValue(new Object());
         dialogStage.close();
     }
@@ -339,6 +348,8 @@ public class CustomInjectorUisDialogController {
         Model model = mainSectionUisModel.modelProperty().get();
         InjectorUisVAP vap = (InjectorUisVAP)model.getVAP();
         injectorCodeTF.setText(model.getModelCode());
+        injTypeCB.getSelectionModel().select(vap.getInjectorType());
+        injSubTypeCB.getSelectionModel().select(vap.getInjectorSubType());
         if (vap.isCustom())
             customRB.setSelected(true);
         else
@@ -351,6 +362,7 @@ public class CustomInjectorUisDialogController {
 
         injectorCodeTF.setDisable(false);
         injTypeCB.setDisable(false);
+        injSubTypeCB.setDisable(false);
         voapListView.setDisable(false);
         defaultRB.setDisable(false);
         customRB.setDisable(false);
@@ -364,11 +376,22 @@ public class CustomInjectorUisDialogController {
 
         injectorCodeTF.setDisable(true);
         injTypeCB.setDisable(true);
+        injSubTypeCB.setDisable(true);
         voapListView.setDisable(false);
         defaultRB.setDisable(false);
         customRB.setDisable(false);
         sureLabel.setVisible(false);
-        injectorCodeTF.setText(mainSectionUisModel.modelProperty().get().getModelCode());
+        Model model = mainSectionUisModel.modelProperty().get();
+        injectorCodeTF.setText(model.getModelCode());
+        InjectorUisVAP vap = (InjectorUisVAP)model.getVAP();
+        injTypeCB.getSelectionModel().select(vap.getInjectorType());
+        injSubTypeCB.getSelectionModel().select(vap.getInjectorSubType());
+        if (vap.isCustom())
+            customRB.setSelected(true);
+        else
+            defaultRB.setSelected(true);
+        voapListView.scrollTo(vap);
+        voapListView.getSelectionModel().select(vap);
     }
 
     private void setDelete() {
@@ -380,7 +403,17 @@ public class CustomInjectorUisDialogController {
         defaultRB.setDisable(true);
         customRB.setDisable(true);
         sureLabel.setVisible(true);
-        injectorCodeTF.setText(mainSectionUisModel.modelProperty().get().getModelCode());
+        Model model = mainSectionUisModel.modelProperty().get();
+        injectorCodeTF.setText(model.getModelCode());
+        InjectorUisVAP vap = (InjectorUisVAP)model.getVAP();
+        injTypeCB.getSelectionModel().select(vap.getInjectorType());
+        injSubTypeCB.getSelectionModel().select(vap.getInjectorSubType());
+        if (vap.isCustom())
+            customRB.setSelected(true);
+        else
+            defaultRB.setSelected(true);
+        voapListView.scrollTo(vap);
+        voapListView.getSelectionModel().select(vap);
     }
 
     private void selectFirst() {
@@ -397,10 +430,10 @@ public class CustomInjectorUisDialogController {
             batteryUvalue.setText("");
             secondIvalue.setText("");
             negativeUvalue.setText("");
-            boostI2Label.setText("");
-            firstW2Label.setText("");
-            firstI2Label.setText("");
-            secondI2Label.setText("");
+            boostI2Value.setText("");
+            firstW2Value.setText("");
+            firstI2Value.setText("");
+            secondI2Value.setText("");
         } else {
             boostUvalue.setText(newValue.getBoostU().toString());
             boostEnableValue.setText(newValue.getBoostDisable().toString());
@@ -412,15 +445,15 @@ public class CustomInjectorUisDialogController {
             negativeUvalue.setText(newValue.getNegativeU().toString());
 
             if (newValue.getInjectorSubType() == InjectorSubType.DOUBLE_COIL) {
-                boostI2Label.setText(newValue.getBoostI2().toString());
-                firstW2Label.setText(newValue.getFirstW2().toString());
-                firstI2Label.setText(newValue.getFirstI2().toString());
-                secondI2Label.setText(newValue.getSecondI2().toString());
+                boostI2Value.setText(newValue.getBoostI2().toString());
+                firstW2Value.setText(newValue.getFirstW2().toString());
+                firstI2Value.setText(newValue.getFirstI2().toString());
+                secondI2Value.setText(newValue.getSecondI2().toString());
             }else{
-                boostI2Label.setText("");
-                firstW2Label.setText("");
-                firstI2Label.setText("");
-                secondI2Label.setText("");
+                boostI2Value.setText("");
+                firstW2Value.setText("");
+                firstI2Value.setText("");
+                secondI2Value.setText("");
             }
         }
     }
@@ -433,7 +466,7 @@ public class CustomInjectorUisDialogController {
                 int indexBKT2 = code.indexOf(')');
                 int count = Integer.valueOf(code.substring(indexBKT1 + 1, indexBKT2));
                 count++;
-                codeBuilder.append(code.substring(0, indexBKT1)).append("(").append(count).append(")");
+                codeBuilder.append(code, 0, indexBKT1).append("(").append(count).append(")");
             } else {
                 codeBuilder.append(code).append("(1)");
             }

@@ -12,6 +12,7 @@ import java.util.Objects;
 
 @Entity
 @Table(name = "volt_ampere_profiles_UIS")
+@NamedEntityGraph(name = "UisInjectorsByVAP", attributeNodes = {@NamedAttributeNode("profileName"), @NamedAttributeNode("injectors")})
 public class InjectorUisVAP implements VAP {
 
     @Id
@@ -189,6 +190,67 @@ public class InjectorUisVAP implements VAP {
     }
     public Integer getBipWindow() {
         return bipWindow;
+    }
+    public List<InjectorUIS> getInjectors() {
+        return injectors;
+    }
+
+    public void setCamType(Integer camType) {
+        this.camType = camType;
+    }
+    public void setInletPressure(Integer inletPressure) {
+        this.inletPressure = inletPressure;
+    }
+    public void setInjectorType(InjectorType injectorType) {
+        this.injectorType = injectorType;
+    }
+    public void setInjectorSubType(InjectorSubType injectorSubType) {
+        this.injectorSubType = injectorSubType;
+    }
+    public void setBoostDisable(Boolean boostDisable) {
+        this.boostDisable = boostDisable;
+    }
+    public void setBoostU(Integer boostU) {
+        this.boostU = boostU;
+    }
+    public void setBoostI(Double boostI) {
+        this.boostI = boostI;
+    }
+    public void setBatteryU(Integer batteryU) {
+        this.batteryU = batteryU;
+    }
+    public void setFirstI(Double firstI) {
+        this.firstI = firstI;
+    }
+    public void setFirstW(Integer firstW) {
+        this.firstW = firstW;
+    }
+    public void setSecondI(Double secondI) {
+        this.secondI = secondI;
+    }
+    public void setBoostI2(Double boostI2) {
+        this.boostI2 = boostI2;
+    }
+    public void setFirstI2(Double firstI2) {
+        this.firstI2 = firstI2;
+    }
+    public void setFirstW2(Integer firstW2) {
+        this.firstW2 = firstW2;
+    }
+    public void setSecondI2(Double secondI2) {
+        this.secondI2 = secondI2;
+    }
+    public void setNegativeU(Integer negativeU) {
+        this.negativeU = negativeU;
+    }
+    public void setBipPWM(Integer bipPWM) {
+        this.bipPWM = bipPWM;
+    }
+    public void setBipWindow(Integer bipWindow) {
+        this.bipWindow = bipWindow;
+    }
+    public void setCustom(Boolean custom) {
+        isCustom = custom;
     }
 
     @PostPersist

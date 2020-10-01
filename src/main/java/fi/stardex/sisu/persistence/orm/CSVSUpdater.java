@@ -383,8 +383,8 @@ public class CSVSUpdater {
                                 .append(String.valueOf(vap.getFirstW2())).append(COMMA_DELIMITER)
                                 .append(String.valueOf(vap.getSecondI2())).append(COMMA_DELIMITER)
                                 .append(String.valueOf(vap.getNegativeU())).append(COMMA_DELIMITER)
-                                .append(((InjectorUisVAP) vap).getBipPWM() == 0 ? "" : String.valueOf(((InjectorUisVAP) vap).getBipPWM())).append(COMMA_DELIMITER)
-                                .append(((InjectorUisVAP) vap).getBipWindow() == 0 ? "" : String.valueOf(((InjectorUisVAP) vap).getBipWindow())).append(COMMA_DELIMITER)
+                                .append(((InjectorUisVAP) vap).getBipPWM() == null ? "" : String.valueOf(((InjectorUisVAP) vap).getBipPWM())).append(COMMA_DELIMITER)
+                                .append(((InjectorUisVAP) vap).getBipWindow() == null ? "" : String.valueOf(((InjectorUisVAP) vap).getBipWindow())).append(COMMA_DELIMITER)
                                 .append(String.valueOf(vap.isCustom())).append(NEW_LINE_SEPARATOR);
                     } catch (IOException ex) {
                         logger.error("IO Exception for VAP file update process occurred!", ex);
