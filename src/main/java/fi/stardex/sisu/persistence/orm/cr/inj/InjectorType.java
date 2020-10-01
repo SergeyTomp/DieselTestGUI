@@ -21,6 +21,9 @@ public class InjectorType {
     public String getInjectorType() {
         return injectorType;
     }
+    public String getTypeName() {
+        return typeName;
+    }
 
     @Override
     public String toString() {

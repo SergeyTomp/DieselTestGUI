@@ -453,7 +453,7 @@ public class CSVSUpdater {
                 customVOAPList.forEach(voap -> {
                     try {
                         writer.append(voap.getProfileName()).append(COMMA_DELIMITER)
-                                .append(voap.getInjectorType().toString()).append(COMMA_DELIMITER)
+                                .append(voap.getInjectorType().getTypeName()).append(COMMA_DELIMITER)
                                 .append(String.valueOf(voap.isCustom())).append(COMMA_DELIMITER)
                                 .append(voap.getBoostU().toString()).append(COMMA_DELIMITER)
                                 .append(voap.getBatteryU().toString()).append(COMMA_DELIMITER)
@@ -462,7 +462,12 @@ public class CSVSUpdater {
                                 .append(voap.getFirstW().toString()).append(COMMA_DELIMITER)
                                 .append(voap.getSecondI().toString()).append(COMMA_DELIMITER)
                                 .append(voap.getNegativeU().toString()).append(COMMA_DELIMITER)
-                                .append(voap.getBoostDisable().toString()).append(NEW_LINE_SEPARATOR);
+                                .append(voap.getBoostDisable().toString()).append(COMMA_DELIMITER)
+                                .append(voap.isDoubleCoil().toString()).append(COMMA_DELIMITER)
+                                .append(voap.getBoostI2().toString()).append(COMMA_DELIMITER)
+                                .append(voap.getFirstI2().toString()).append(COMMA_DELIMITER)
+                                .append(voap.getFirstW2().toString()).append(COMMA_DELIMITER)
+                                .append(voap.getSecondI2().toString()).append(NEW_LINE_SEPARATOR);
                     } catch (IOException ex) {
                         logger.error("IO Exception occurred!", ex);
                     }

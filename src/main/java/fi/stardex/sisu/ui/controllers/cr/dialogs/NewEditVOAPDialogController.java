@@ -283,8 +283,8 @@ public class NewEditVOAPDialogController {
     public void setCopy() {
         currentState = State.COPY;
         deletionError.setVisible(false);
-        disableNodes(true);
         setValues();
+        disableNodes(true);
         enterNameTF.setDisable(false);
     }
 
@@ -292,8 +292,8 @@ public class NewEditVOAPDialogController {
         currentState = State.DELETE;
         enterNameTF.setText(voapList.getSelectionModel().getSelectedItem().getProfileName());
         deletionError.setVisible(false);
-        disableNodes(true);
         setValues();
+        disableNodes(true);
         enterNameTF.setDisable(true);
     }
 
@@ -332,6 +332,19 @@ public class NewEditVOAPDialogController {
 
     private void setValues() {
 
+        String typeName = currentVOAP.getInjectorType().getTypeName();
+        if (typeName.equals("PIEZO") || typeName.equals("NEG_PIEZO")) {
+
+            boostUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(BOOST_U_SPINNER_MIN,
+                    BOOST_U_SPINNER_MAX_PIEZO,
+                    BOOST_U_SPINNER_INIT,
+                    BOOST_U_SPINNER_STEP));
+        } else {
+            boostUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(BOOST_U_SPINNER_MIN,
+                    BOOST_U_SPINNER_MAX,
+                    BOOST_U_SPINNER_INIT,
+                    BOOST_U_SPINNER_STEP));
+        }
         enterNameTF.setText(currentVOAP.getProfileName());
         batteryUSpinner.getValueFactory().setValue(currentVOAP.getBatteryU());
         boostUSpinner.getValueFactory().setValue(currentVOAP.getBoostU());
