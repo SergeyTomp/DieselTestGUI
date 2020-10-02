@@ -290,6 +290,7 @@ public class PumpTestManager implements TestManager{
             adjustingTimeline.stop();
 
             if (pumpTimeProgressModel.measurementTimeEnabledProperty().get()) {
+                resetFlowData();
                 measurementTimeline.play();
 //                autoResetTimeline.play();
             }

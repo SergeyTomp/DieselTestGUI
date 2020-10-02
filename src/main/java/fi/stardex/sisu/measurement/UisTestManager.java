@@ -248,6 +248,7 @@ public class UisTestManager implements TestManager {
 
             adjustingTimeline.stop();
             if (mainSectionUisModel.measurementTimeEnabledProperty().get()) {
+                resetFlowData();
                 measurementTimeline.play();
 //                autoResetTimeline.play();
             } else {

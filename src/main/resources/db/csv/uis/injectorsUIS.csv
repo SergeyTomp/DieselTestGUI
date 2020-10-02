@@ -215,4 +215,6 @@ CAT 3600,Caterpillar,VA_CAT 3600,FALSE
 Cummins HPI 2,Scania,VA_Cummins HPI 2,FALSE
 Scania HPI(1),Cummins,VA_Scania HPI(1),FALSE
 33800-84300-CR,DelphiF2E,VA_33800-84300-CR,FALSE
-Cummins QSK,Cummins,VA_Cummins HPI 2,FALSE
+Cummins QSK,Cummins,VA_Cummins HPI 3,FALSE
+CAT C15/C18,Caterpillar,VA_CAT_C15/C18,FALSE
+EMD,EMD,VA_EMD,FALSE
