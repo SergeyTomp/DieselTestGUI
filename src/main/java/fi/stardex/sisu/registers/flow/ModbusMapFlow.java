@@ -57,7 +57,11 @@ public enum ModbusMapFlow implements ModbusMap {
     ShiftingPeriod(REGISTER_HOLDING, 3, 1, false, false),
     ShiftingAutoStartIsOn(DISCRETE_COIL, 2, 1, true, false),
     ShiftingManualStart(DISCRETE_COIL, 3, 1, true, false),
-    ShiftingIsInProgress(DISCRETE_INPUT, 11, 1, true, false);
+    ShiftingIsInProgress(DISCRETE_INPUT, 11, 1, true, false),
+
+    // 2-cell delivery channel flow-meter
+    PreciseCellChoice(DISCRETE_COIL, 9, 1, false, false);
+
 
     private final RegisterType type;
     private final int ref;

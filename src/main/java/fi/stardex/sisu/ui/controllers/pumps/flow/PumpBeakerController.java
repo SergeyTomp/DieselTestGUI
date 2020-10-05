@@ -1,11 +1,12 @@
 package fi.stardex.sisu.ui.controllers.pumps.flow;
 
 import fi.stardex.sisu.model.pump.*;
-import fi.stardex.sisu.util.enums.Dimension;
 import fi.stardex.sisu.persistence.orm.pump.PumpTest;
+import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.controllers.common.BeakerController;
 import fi.stardex.sisu.util.InputController;
 import fi.stardex.sisu.util.enums.BeakerType;
+import fi.stardex.sisu.util.enums.Dimension;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.rescalers.Rescaler;
 import javafx.application.Platform;
@@ -29,13 +30,17 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import java.util.Optional;
+import java.util.prefs.Preferences;
 
+import static fi.stardex.sisu.registers.flow.ModbusMapFlow.PreciseCellChoice;
 import static fi.stardex.sisu.util.FlowUnitObtainer.*;
 import static fi.stardex.sisu.util.converters.DataConverter.*;
 import static fi.stardex.sisu.util.enums.BeakerType.DELIVERY;
 
 public class PumpBeakerController {
 
+    @FXML private Label precisionLabel;
+    @FXML private ComboBox<String> precisionCB;
     @FXML private ComboBox<String> flowComboBox;
     @FXML private Label flowLabel;
     @FXML private Label flowRangeLabel;
@@ -78,6 +83,8 @@ public class PumpBeakerController {
     private PumpTestModel pumpTestModel;
     private FlowViewModel flowViewModel;
     private PumpReportModel pumpReportModel;
+    private ModbusRegisterProcessor flowModbusWriter;
+    private Preferences rootPrefs;
 
     private I18N i18N;
     private static final Logger logger = LoggerFactory.getLogger(BeakerController.class);
@@ -125,6 +132,12 @@ public class PumpBeakerController {
     public void setPumpReportModel(PumpReportModel pumpReportModel) {
         this.pumpReportModel = pumpReportModel;
     }
+    public void setFlowModbusWriter(ModbusRegisterProcessor flowModbusWriter) {
+        this.flowModbusWriter = flowModbusWriter;
+    }
+    public void setRootPrefs(Preferences rootPrefs) {
+        this.rootPrefs = rootPrefs;
+    }
 
     @PostConstruct
     public void init() {
@@ -135,6 +148,24 @@ public class PumpBeakerController {
         setupBindings();
         setupListeners();
         setupFlowComboBox();
+
+        switch (beakerType){
+            case DELIVERY:
+                precisionCB.getItems().addAll("HIGH", "NORM");
+                precisionCB.getSelectionModel().select(rootPrefs.get("sensorType", "HIGH"));
+                precisionCB.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue)
+                        -> rootPrefs.put("sensorType", newValue));
+                precisionCB.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue)
+                        -> flowModbusWriter.add(PreciseCellChoice, newValue.equals("HIGH")));
+//                flowModbusWriter.add(PreciseCellChoice, precisionCB.getSelectionModel().getSelectedItem().equals("HIGH"));
+                break;
+            case BACKFLOW:
+                precisionCB.setVisible(false);
+                precisionLabel.setVisible(false);
+                break;
+        }
+        precisionCB.setVisible(false);
+        precisionLabel.setVisible(false);
     }
 
     private void bindingI18N(){
@@ -506,8 +537,6 @@ public class PumpBeakerController {
         AnchorPane.setBottomAnchor(arc, rectangleBeaker.getHeight() * value - ARC_DEVIATION);
         arc.setOpacity(1d);
     }
-
-
 
     /** Listens for corresponding beaker height changes and set level in corresponding beaker
      * either in relation with other beakers levels in the same beaker set in case corresponding range label is empty

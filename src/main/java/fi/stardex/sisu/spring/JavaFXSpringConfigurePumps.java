@@ -36,6 +36,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
+import java.util.prefs.Preferences;
+
 @Configuration
 @ComponentScan(value = "fi.stardex.sisu")
 public class JavaFXSpringConfigurePumps extends ViewLoader {
@@ -241,7 +243,9 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
                                                        PumpFlowTemperaturesModel pumpDeliveryFlowTemperaturesModel,
                                                        PumpTestModel pumpTestModel,
                                                        FlowViewModel flowViewModel,
-                                                       PumpReportModel pumpReportModel) {
+                                                       PumpReportModel pumpReportModel,
+                                                       ModbusRegisterProcessor flowModbusWriter,
+                                                       Preferences rootPrefs) {
         PumpBeakerController pumpDeliveryController = pumpFlowController.getPumpDeliveryController();
         pumpDeliveryController.setI18N(i18N);
         pumpDeliveryController.setBeakerType(BeakerType.DELIVERY);
@@ -254,6 +258,8 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
         pumpDeliveryController.setFlowRangeModel(pumpDeliveryFlowRangeModel);
         pumpDeliveryController.setFlowUnitsModel(pumpDeliveryFlowUnitsModel);
         pumpDeliveryController.setPumpReportModel(pumpReportModel);
+        pumpDeliveryController.setFlowModbusWriter(flowModbusWriter);
+        pumpDeliveryController.setRootPrefs(rootPrefs);
         return pumpDeliveryController;
     }
 
@@ -267,7 +273,9 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
                                                        PumpFlowTemperaturesModel pumpBackFlowTemperaturesModel,
                                                        PumpTestModel pumpTestModel,
                                                        FlowViewModel flowViewModel,
-                                                       PumpReportModel pumpReportModel) {
+                                                       PumpReportModel pumpReportModel,
+                                                       ModbusRegisterProcessor flowModbusWriter,
+                                                       Preferences rootPrefs) {
         PumpBeakerController pumpBackflowController = pumpFlowController.getPumpBackflowController();
         pumpBackflowController.setI18N(i18N);
         pumpBackflowController.setBeakerType(BeakerType.BACKFLOW);
@@ -280,6 +288,8 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
         pumpBackflowController.setFlowUnitsModel(pumpBackFlowUnitsModel);
         pumpBackflowController.setFlowRangeModel(pumpBackFlowRangeModel);
         pumpBackflowController.setPumpReportModel(pumpReportModel);
+        pumpBackflowController.setFlowModbusWriter(flowModbusWriter);
+        pumpBackflowController.setRootPrefs(rootPrefs);
         return pumpBackflowController;
     }
 
