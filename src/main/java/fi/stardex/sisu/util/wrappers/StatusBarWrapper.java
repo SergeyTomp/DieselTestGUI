@@ -128,6 +128,9 @@ public class StatusBarWrapper {
             case STAND_FM_4_CH:
                 sb.append("Stand FM 4 CH");
                 break;
+            case PUMP_METER:
+                sb.append(device.getLabel()).append(" PUMP");
+                break;
         }
 
     }

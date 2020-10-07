@@ -74,6 +74,7 @@ public class PumpFlowUpdater implements Updater{
         switch(flowFirmwareVersion.getVersions()){
 
             case MASTER:
+            case PUMP_METER:
 
                 if((value = Channel3Level.getLastValue().toString()) != null){
                     pumpDeliveryFlowValuesModel.flowProperty().setValue(value);

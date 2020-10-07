@@ -219,6 +219,11 @@ public class SpringJavaConfig {
                                 standIPField.setDisable(true);
                                 standPortField.setDisable(true);
                                 break;
+                            case 0xAA88:
+                                flowFirmwareVersion.setVersions(PUMP_METER);
+                                standIPField.setDisable(false);
+                                standPortField.setDisable(false);
+                                break;
                         }
                     } else {
                         flowFirmwareVersion.setVersions(FlowVersions.NO_VERSION);
@@ -384,6 +389,11 @@ public class SpringJavaConfig {
                                         updater instanceof FlowStreamUpdater
                                         || updater instanceof UisFlowUpdater
                                         || updater instanceof TestBenchSectionUpdateModel)
+                                        .forEach(Platform::runLater);
+                                break;
+                            case PUMP_METER:
+                                updaters.stream()
+                                        .filter(updater -> updater instanceof PumpFlowUpdater)
                                         .forEach(Platform::runLater);
                                 break;
                             default:

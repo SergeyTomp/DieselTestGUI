@@ -3,6 +3,9 @@ package fi.stardex.sisu.ui.controllers.pumps.pressure;
 import eu.hansolo.enzo.lcd.Lcd;
 import fi.stardex.sisu.model.updateModels.HighPressureSectionUpdateModel;
 import fi.stardex.sisu.util.GaugeCreator;
+import fi.stardex.sisu.version.FirmwareVersion;
+import fi.stardex.sisu.version.FlowFirmwareVersion;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -22,9 +25,13 @@ public class PumpHighPressureSectionLcdController {
     private StackPane rootStackPane;
 
     private HighPressureSectionUpdateModel highPressureSectionUpdateModel;
+    private FirmwareVersion<FlowFirmwareVersion.FlowVersions> flowFirmwareVersion;
 
     public void setHighPressureSectionUpdateModel(HighPressureSectionUpdateModel highPressureSectionUpdateModel) {
         this.highPressureSectionUpdateModel = highPressureSectionUpdateModel;
+    }
+    public void setFlowFirmwareVersion(FirmwareVersion<FlowFirmwareVersion.FlowVersions> flowFirmwareVersion) {
+        this.flowFirmwareVersion = flowFirmwareVersion;
     }
 
     public StackPane getLcdStackPane() {
@@ -37,26 +44,32 @@ public class PumpHighPressureSectionLcdController {
         pressureLcd = GaugeCreator.createLcd("bar");
         pressureLcd_2 = GaugeCreator.createLcd("bar");
         grid_2.add(pressureLcd_2, 0, 1);
-        configureLayout(1);
 
         rootStackPane = (StackPane) lcdStackPane.getParent().getParent();
         rootStackPane.widthProperty().addListener(new StackPaneWidthListener(rootStackPane, lcdStackPane));
         pressureLcd.valueProperty().bind(highPressureSectionUpdateModel.lcdPressureProperty());
+
+        setPumpMeter(flowFirmwareVersion.versionProperty().get() == FlowFirmwareVersion.FlowVersions.PUMP_METER);
+        flowFirmwareVersion.versionProperty().addListener((observableValue, oldValue, newValue)
+                -> setPumpMeter(newValue == FlowFirmwareVersion.FlowVersions.PUMP_METER));
     }
 
-    private void configureLayout(int qty) {
-        lcdStackPane.getChildren().clear();
-        switch (qty) {
-            case 2:
+    private void setPumpMeter(boolean isPumpMeter) {
+        Platform.runLater(() -> {
+
+            lcdStackPane.getChildren().clear();
+            grid_1.getChildren().remove(pressureLcd);
+            grid_2.getChildren().remove(pressureLcd);
+            if (isPumpMeter) {
                 grid_2.add(pressureLcd, 0, 0);
                 lcdStackPane.getChildren().add(grid_2);
-                break;
-            case 1:
-            default:
+                pressureLcd_2.valueProperty().bind(highPressureSectionUpdateModel.lcd_2PressureProperty());
+            } else {
                 grid_1.add(pressureLcd, 0, 0);
                 lcdStackPane.getChildren().add(grid_1);
-                break;
-        }
+                pressureLcd_2.valueProperty().unbind();
+            }
+        });
     }
 
     private class StackPaneWidthListener implements ChangeListener<Number> {

@@ -9,6 +9,8 @@ import fi.stardex.sisu.util.enums.BeakerType;
 import fi.stardex.sisu.util.enums.Dimension;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.rescalers.Rescaler;
+import fi.stardex.sisu.version.FirmwareVersion;
+import fi.stardex.sisu.version.FlowFirmwareVersion;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -85,6 +87,7 @@ public class PumpBeakerController {
     private PumpReportModel pumpReportModel;
     private ModbusRegisterProcessor flowModbusWriter;
     private Preferences rootPrefs;
+    private FirmwareVersion<FlowFirmwareVersion.FlowVersions> flowFirmwareVersion;
 
     private I18N i18N;
     private static final Logger logger = LoggerFactory.getLogger(BeakerController.class);
@@ -138,6 +141,9 @@ public class PumpBeakerController {
     public void setRootPrefs(Preferences rootPrefs) {
         this.rootPrefs = rootPrefs;
     }
+    public void setFlowFirmwareVersion(FirmwareVersion<FlowFirmwareVersion.FlowVersions> flowFirmwareVersion) {
+        this.flowFirmwareVersion = flowFirmwareVersion;
+    }
 
     @PostConstruct
     public void init() {
@@ -148,24 +154,36 @@ public class PumpBeakerController {
         setupBindings();
         setupListeners();
         setupFlowComboBox();
+        precisionCB.setVisible(false);
+        precisionLabel.setVisible(false);
 
         switch (beakerType){
             case DELIVERY:
-                precisionCB.getItems().addAll("HIGH", "NORM");
+                precisionCB.getItems().addAll("HIGH", "LOW");
                 precisionCB.getSelectionModel().select(rootPrefs.get("sensorType", "HIGH"));
                 precisionCB.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue)
                         -> rootPrefs.put("sensorType", newValue));
                 precisionCB.getSelectionModel().selectedItemProperty().addListener((observableValue, oldValue, newValue)
                         -> flowModbusWriter.add(PreciseCellChoice, newValue.equals("HIGH")));
-//                flowModbusWriter.add(PreciseCellChoice, precisionCB.getSelectionModel().getSelectedItem().equals("HIGH"));
+
+                setPumpMeter(flowFirmwareVersion.versionProperty().get() == FlowFirmwareVersion.FlowVersions.PUMP_METER);
+
+                flowFirmwareVersion.versionProperty().addListener((observableValue, oldValue, newValue)
+                        -> setPumpMeter(newValue == FlowFirmwareVersion.FlowVersions.PUMP_METER));
                 break;
             case BACKFLOW:
                 precisionCB.setVisible(false);
                 precisionLabel.setVisible(false);
                 break;
         }
-        precisionCB.setVisible(false);
-        precisionLabel.setVisible(false);
+    }
+
+    private void setPumpMeter(boolean isPumpMeter) {
+        precisionCB.setVisible(isPumpMeter);
+        precisionLabel.setVisible(isPumpMeter);
+        if (isPumpMeter) {
+            flowModbusWriter.add(PreciseCellChoice, precisionCB.getSelectionModel().getSelectedItem().equals("HIGH"));
+        }else flowModbusWriter.add(PreciseCellChoice, true);
     }
 
     private void bindingI18N(){

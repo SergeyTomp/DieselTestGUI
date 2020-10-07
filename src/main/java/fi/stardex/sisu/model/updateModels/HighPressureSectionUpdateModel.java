@@ -27,6 +27,7 @@ public class HighPressureSectionUpdateModel implements Updater {
     private DoubleProperty current_3Property = new SimpleDoubleProperty();
     private DoubleProperty duty_3Property = new SimpleDoubleProperty();
     private IntegerProperty lcdPressureProperty = new SimpleIntegerProperty();
+    private IntegerProperty lcd_2PressureProperty = new SimpleIntegerProperty();
     private RegulationModesModel regulationModesModel;
     private DoubleProperty gauge_1Property = new SimpleDoubleProperty();
     private DoubleProperty gauge_2Property = new SimpleDoubleProperty();
@@ -52,6 +53,9 @@ public class HighPressureSectionUpdateModel implements Updater {
     }
     public IntegerProperty lcdPressureProperty() {
         return lcdPressureProperty;
+    }
+    public IntegerProperty lcd_2PressureProperty() {
+        return lcd_2PressureProperty;
     }
 
     public DoubleProperty gauge_1PropertyProperty() {
@@ -109,6 +113,10 @@ public class HighPressureSectionUpdateModel implements Updater {
 
         if(PressureReg3_DutyFact.getLastValue() != null && activeRegMode3 != DUTY){
             duty_3Property.setValue(round((double)PressureReg3_DutyFact.getLastValue()));
+        }
+        if (TouchDetection.getLastValue() != null) {
+            double pressure = pressureSensorModel.pressureSensorProperty().get() * (Double) TouchDetection.getLastValue();
+            lcd_2PressureProperty.setValue(pressure);
         }
     }
 

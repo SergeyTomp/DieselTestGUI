@@ -30,6 +30,8 @@ import fi.stardex.sisu.ui.controllers.pumps.pressure.*;
 import fi.stardex.sisu.util.enums.BeakerType;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.rescalers.Rescaler;
+import fi.stardex.sisu.version.FirmwareVersion;
+import fi.stardex.sisu.version.FlowFirmwareVersion;
 import javafx.embed.swing.JFXPanel;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -245,7 +247,8 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
                                                        FlowViewModel flowViewModel,
                                                        PumpReportModel pumpReportModel,
                                                        ModbusRegisterProcessor flowModbusWriter,
-                                                       Preferences rootPrefs) {
+                                                       Preferences rootPrefs,
+                                                       FirmwareVersion<FlowFirmwareVersion.FlowVersions> flowFirmwareVersion) {
         PumpBeakerController pumpDeliveryController = pumpFlowController.getPumpDeliveryController();
         pumpDeliveryController.setI18N(i18N);
         pumpDeliveryController.setBeakerType(BeakerType.DELIVERY);
@@ -260,6 +263,7 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
         pumpDeliveryController.setPumpReportModel(pumpReportModel);
         pumpDeliveryController.setFlowModbusWriter(flowModbusWriter);
         pumpDeliveryController.setRootPrefs(rootPrefs);
+        pumpDeliveryController.setFlowFirmwareVersion(flowFirmwareVersion);
         return pumpDeliveryController;
     }
 
@@ -407,9 +411,11 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
     @Bean
     @Autowired
     public PumpHighPressureSectionLcdController pumpHighPressureSectionLcdController(PumpHighPressureSectionController pumpHighPressureSectionController,
-                                                                                     HighPressureSectionUpdateModel highPressureSectionUpdateModel) {
+                                                                                     HighPressureSectionUpdateModel highPressureSectionUpdateModel,
+                                                                                     FirmwareVersion<FlowFirmwareVersion.FlowVersions> flowFirmwareVersion) {
         PumpHighPressureSectionLcdController pumpHighPressureSectionLcdController = pumpHighPressureSectionController.getPumpHighPressureSectionLcdController();
         pumpHighPressureSectionLcdController.setHighPressureSectionUpdateModel(highPressureSectionUpdateModel);
+        pumpHighPressureSectionLcdController.setFlowFirmwareVersion(flowFirmwareVersion);
         return pumpHighPressureSectionLcdController;
     }
 

@@ -229,15 +229,21 @@ public class GUI_TypeController {
 
             ultimaRegisterProvider.read(Main_version_0);
             if ((int)Main_version_0.getLastValue() == 93) {
+                /**Attention! If DIMAS GUI Edition was set before connecting to Ultima version starting with 93.xxx,
+                 * then it becomes impossible to switch to CR even if regular versions are connected to afterwards.
+                 * Ways to fix:
+                 * 1. delete line starting with <entry key="GUI_Type" in all files prefs.xml and restart
+                 * 2. replace CR_Pump by CR_Inj in all lines <entry key="GUI_Type" value="CR_Pump"/> in all files prefs.xml and restart
+                 * 3. Add gui_typeComboBox.getSelectionModel().select(GUI_type.CR_Inj); in else{} block as a first line and recompile
+                 * file prefs.xml could be found in Linux by command in terminal: grep -rs "<entry key=\"GUI_Type\"" /home
+                 * */
                 Platform.runLater(()-> {
                     gui_typeComboBox.getSelectionModel().select(GUI_type.CR_Pump);
                     gui_typeComboBox.setVisible(false);
                 });
             }
             else{
-                if (!dimasGUIEditionState.isDimasGuiEditionProperty().get()) {
-                    gui_typeComboBox.setVisible(true);
-                }
+                Platform.runLater(()-> gui_typeComboBox.setVisible(!dimasGUIEditionState.isDimasGuiEditionProperty().get()));
             }
         });
     }
