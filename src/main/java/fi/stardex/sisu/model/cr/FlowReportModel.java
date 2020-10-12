@@ -26,6 +26,7 @@ public class FlowReportModel {
     private FlowViewModel flowViewModel;
     private BooleanProperty resultMapChanged = new SimpleBooleanProperty();
     private ObservableMap<InjectorTest, FlowResult> resultObservableMap = FXCollections.observableMap(new LinkedHashMap<>());
+    private ObservableMap<InjectorTest, FlowResult> densoResultObservableMap = FXCollections.observableMap(new LinkedHashMap<>());
     private InjectorControllersState injectorControllersState;
     private InjectorTestModel injectorTestModel;
 
@@ -46,23 +47,21 @@ public class FlowReportModel {
         this.backFlowUnitsModel = backFlowUnitsModel;
         this.injectorControllersState = injectorControllersState;
         this.injectorTestModel = injectorTestModel;
-
     }
 
     public List<Result> getResultsList(){
         return new ArrayList<>(resultObservableMap.values());
     }
-
     public ObservableMap<InjectorTest, FlowResult> getResultObservableMap() {
         return resultObservableMap;
     }
-
     public BooleanProperty resultMapChangedProperty() {
         return resultMapChanged;
     }
 
     public void clearResults(){
         resultObservableMap.clear();
+        densoResultObservableMap.clear();
         resultMapChanged.setValue(true);
     }
 
@@ -88,12 +87,49 @@ public class FlowReportModel {
         Dimension dimension = flowViewModel.flowViewProperty().get();
 
         if (!resultObservableMap.containsKey(injectorTest)) {
-
             resultObservableMap.put(injectorTest, new FlowResult(injectorTest, nominalFlow,"-", "-", "-","-"));
         }
-
         resultObservableMap.get(injectorTest).setParameters(injectorTest, dimension, nominalFlow);
+        resultMapChanged.setValue(true);
+    }
 
+    public void storeDensoCodingFlowResult(){
+        InjectorTest injectorTest = injectorTestModel.injectorTestProperty().get();
+        Measurement measurement = injectorTest.getTestName().getMeasurement();
+        String nominalFlow = null;
+
+        switch (measurement) {
+
+            case DELIVERY:
+                nominalFlow = getNominalFlow(deliveryFlowRangeModel.deliveryFlowRangeProperty().get(), deliveryFlowUnitsModel.deliveryFlowUnitsProperty().get());
+                break;
+            case BACK_FLOW:
+                nominalFlow = getNominalFlow(backFlowRangeModel.backFlowRangeProperty().get(), backFlowUnitsModel.backFlowUnitsProperty().get());
+                break;
+            case NO:
+            case VISUAL:
+                return;
+        }
+
+        Dimension dimension = flowViewModel.flowViewProperty().get();
+
+        if (!densoResultObservableMap.containsKey(injectorTest)) {
+            densoResultObservableMap.put(injectorTest, new FlowResult(injectorTest, nominalFlow,"-", "-", "-","-"));
+        }
+        densoResultObservableMap.get(injectorTest).setParameters(injectorTest, dimension, nominalFlow);
+    }
+
+    public void setDensoCodingFlowReport() {
+
+        resultObservableMap.forEach((test, result) -> {
+
+            FlowResult densoResult = densoResultObservableMap.get(test);
+            result.flow1.setValue(densoResult.flow1.get());
+            result.flow2.setValue(densoResult.flow2.get());
+            result.flow3.setValue(densoResult.flow3.get());
+            result.flow4.setValue(densoResult.flow4.get());
+            result.setupDoubleFlowValues(injectorTestModel.injectorTestProperty().get().getTestName().getMeasurement());
+        });
         resultMapChanged.setValue(true);
     }
 
@@ -109,95 +145,68 @@ public class FlowReportModel {
     public class FlowResult implements Result{
 
         private final ObjectProperty<InjectorTest> injectorTest;
-
         private final StringProperty flowType;
-
         private final StringProperty nominalFlow;
-
         private final StringProperty flow1;
-
         private final StringProperty flow2;
-
         private final StringProperty flow3;
-
         private final StringProperty flow4;
 
         private double flow1_double;
-
         private double flow2_double;
-
         private double flow3_double;
-
         private double flow4_double;
 
         private double flowRangeLeft;
-
         private double flowRangeRight;
-
         private double acceptableFlowRangeLeft;
-
         private double acceptableFlowRangeRight;
 
         public InjectorTest getInjectorTest() {
             return injectorTest.get();
         }
-
         public String getFlow1() {
             return flow1.get();
         }
-
         public String getFlow2() {
             return flow2.get();
         }
-
         public String getFlow3() {
             return flow3.get();
         }
-
         public String getFlow4() {
             return flow4.get();
         }
-
         public ObjectProperty<InjectorTest> injectorTestProperty() {
             return injectorTest;
         }
-
         public StringProperty flowTypeProperty() {
             return flowType;
         }
-
         public StringProperty nominalFlowProperty() {
             return nominalFlow;
         }
-
         public StringProperty flow1Property() {
             return flow1;
         }
-
         public StringProperty flow2Property() {
             return flow2;
         }
-
         public StringProperty flow3Property() {
             return flow3;
         }
-
         public StringProperty flow4Property() {
             return flow4;
         }
-
         public double getDoubleValue_1() {
             return flow1_double;
         }
-
         public double getDoubleValue_2() {
             return flow2_double;
         }
-
         public double getDoubleValue_3() {
             return flow3_double;
         }
-
         public double getDoubleValue_4() {
             return flow4_double;
         }
@@ -259,7 +268,6 @@ public class FlowReportModel {
             String[] stringValues;
 
             switch (dimension) {
-
                 case LIMIT:
                     stringValues = nominalFlow.split(" - ");
                     stringValues[1] = stringValues[1].substring(0, stringValues[1].indexOf(" "));
@@ -272,7 +280,6 @@ public class FlowReportModel {
                     flowRangeLeft = convertDataToDouble(stringValues[0]) - convertDataToDouble(stringValues[1]);
                     flowRangeRight = convertDataToDouble(stringValues[0]) + convertDataToDouble(stringValues[1]);
                     break;
-
             }
             acceptableFlowRangeLeft = flowRangeLeft - flowRangeLeft * 0.03;
             acceptableFlowRangeRight = flowRangeRight + flowRangeRight * 0.03;

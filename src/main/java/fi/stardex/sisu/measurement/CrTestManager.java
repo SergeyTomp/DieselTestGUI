@@ -2,14 +2,12 @@ package fi.stardex.sisu.measurement;
 
 import eu.hansolo.enzo.lcd.Lcd;
 import fi.stardex.sisu.coding.CoderFactory;
-import fi.stardex.sisu.coding.bosch.BoschCoding;
 import fi.stardex.sisu.coding.delphi.c2i.DelphiC2ICoding;
 import fi.stardex.sisu.coding.delphi.c2i.DelphiC2ICodingDataStorage;
 import fi.stardex.sisu.coding.delphi.c3i.DelphiC3ICoding;
 import fi.stardex.sisu.coding.delphi.c3i.DelphiC3ICodingDataStorage;
 import fi.stardex.sisu.coding.denso.DensoCoding;
 import fi.stardex.sisu.coding.denso.DensoCodingDataStorage;
-import fi.stardex.sisu.coding.siemens.SiemensCoding;
 import fi.stardex.sisu.model.TestBenchSectionModel;
 import fi.stardex.sisu.model.cr.CodingReportModel;
 import fi.stardex.sisu.model.cr.FlowReportModel;
@@ -237,6 +235,12 @@ public class CrTestManager implements TestManager {
 
             if (codingComplete)
                 performCoding();
+            /** For Denso-coding it is necessary to show result corresponding with test value of width == totalPulseTime
+             * but not additionally calculated incremented and decremented width values.
+             * Below we initiate final report data replacement after code calculation */
+            if (isDensoCoding()) {
+                flowReportModel.setDensoCodingFlowReport();
+            }
 
             densoCodingPointsIterator = null;
             mainSectionController.pointToFirstTest();
@@ -381,6 +385,12 @@ public class CrTestManager implements TestManager {
 
         adjustingTime.refreshProgress();
         measuringTime.refreshProgress();
+        /** For Denso-coding it is necessary to store result corresponding with test value of totalPulseTime
+         * but not calculated additionally calculated incremented and decremented width values
+         * Below we initiate temporal result storage got by test-defined value of width*/
+        if (widthCurrentSignalSpinner.getValue().intValue() == testsSelectionModel.getSelectedItem().getTotalPulseTime()) {
+            flowReportModel.storeDensoCodingFlowResult();
+        }
         widthCurrentSignalSpinner.getValueFactory().setValue(densoCodingPointsIterator.next());
         start();
     }
@@ -485,7 +495,12 @@ public class CrTestManager implements TestManager {
             if (mainSectionModel.testTypeProperty().get() == CODING) {
 
                 if (isDensoCoding() && testName.getMeasurement() != Measurement.VISUAL) {
-                    DensoCodingDataStorage.store(widthCurrentSignalSpinner.getValue(), flowReportModel.getResultObservableMap().get(injectorTest));
+                    List<Integer> activeLeds = injectorControllersState.activeLedToggleButtonsListProperty().get()
+                            .stream()
+                            .mapToInt(toggleButton -> Integer.parseInt(toggleButton.getText()))
+                            .boxed()
+                            .collect(Collectors.toList());
+                    DensoCodingDataStorage.store(widthCurrentSignalSpinner.getValue(), flowReportModel.getResultObservableMap().get(injectorTest), activeLeds);
                 } else if (testName.isTestPoint()) {
                     if (isDelphiC2ICoding())
                         DelphiC2ICodingDataStorage.store(flowReportModel.getResultObservableMap().get(injectorTest), injectorControllersState.getArrayNumbersOfActiveLedToggleButtons());
