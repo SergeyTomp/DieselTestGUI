@@ -763,12 +763,14 @@ public class JavaFXSpringConfigure extends ViewLoader{
     SettingsController settingsController(ViewHolder settings,
                                           ModbusConnect flowModbusConnect,
                                           FirmwareVersion<FlowVersions> flowFirmwareVersion,
-                                          SettingsModel settingsModel){
+                                          CrSettingsModel crSettingsModel,
+                                          Preferences rootPrefs){
         SettingsController settingsController = (SettingsController)settings.getController();
         settingsController.setI18N(i18N);
         settingsController.setFlowModbusConnect(flowModbusConnect);
         settingsController.setFlowFirmwareVersion(flowFirmwareVersion);
-        settingsController.setSettingsModel(settingsModel);
+        settingsController.setCrSettingsModel(crSettingsModel);
+        settingsController.setRootPrefs(rootPrefs);
         return settingsController;
     }
 
@@ -1881,14 +1883,14 @@ public class JavaFXSpringConfigure extends ViewLoader{
     public UpdateFirmwareController updateFirmwareController(ViewHolder updateFirmware,
                                                              ConnectionController connectionController,
                                                              ModbusRegisterProcessor ultimaModbusWriter,
-                                                             SettingsModel settingsModel,
-                                                             ViewHolder rootLayout) {
+                                                             ViewHolder rootLayout,
+                                                             CrSettingsModel crSettingsModel) {
         UpdateFirmwareController updateFirmwareController = (UpdateFirmwareController)updateFirmware.getController();
         updateFirmwareController.setConnectionController(connectionController);
         updateFirmwareController.setRootParent(rootLayout.getView());
         updateFirmwareController.setUltimaModbusWriter(ultimaModbusWriter);
-        updateFirmwareController.setSettingsModel(settingsModel);
         updateFirmwareController.setUpdateFirmware(updateFirmware.getView());
+        updateFirmwareController.setCrSettingsModel(crSettingsModel);
         return updateFirmwareController;
     }
 

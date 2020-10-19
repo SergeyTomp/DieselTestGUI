@@ -3,9 +3,11 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Spinner?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.StackPane?>
 
 <GridPane fx:id="settingsGridPane" prefHeight="241.0" prefWidth="506.0" stylesheets="@../../../../css/Styling.css" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.cr.tabs.settings.SettingsController">
 
@@ -17,25 +19,50 @@
         <fx:include fx:id="flowView" source="FlowView.fxml" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="4" />
         <fx:include fx:id="regulatorsQTY" source="RegulatorsQTY.fxml" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="1" />
 
-        <fx:include fx:id="fastCoding" source="FastCoding.fxml" GridPane.columnIndex="0" GridPane.halignment="LEFT" GridPane.rowIndex="5" />
-        <fx:include fx:id="dimasGuiEdition" source="DimasGuiEdition.fxml" GridPane.columnIndex="0" GridPane.halignment="LEFT" GridPane.rowIndex="7" />
-        <fx:include fx:id="instantFlow" source="InstantFlow.fxml" GridPane.columnIndex="0" GridPane.halignment="LEFT" GridPane.rowIndex="6" />
+        <fx:include fx:id="fastCoding" source="FastCoding.fxml" GridPane.columnIndex="0" GridPane.halignment="LEFT" GridPane.rowIndex="6" />
+        <fx:include fx:id="dimasGuiEdition" source="DimasGuiEdition.fxml" GridPane.columnIndex="0" GridPane.halignment="LEFT" GridPane.rowIndex="8" />
+        <fx:include fx:id="instantFlow" source="InstantFlow.fxml" GridPane.columnIndex="0" GridPane.halignment="LEFT" GridPane.rowIndex="7" />
 
-        <fx:include fx:id="firmwareButton" source="FirmwareButton.fxml" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="7" />
-        <fx:include fx:id="differentialFlowMeterButton" source="DifferentialFlowMeterButton.fxml" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="5" />
+        <fx:include fx:id="firmwareButton" source="FirmwareButton.fxml" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="8" />
+        <fx:include fx:id="differentialFlowMeterButton" source="DifferentialFlowMeterButton.fxml" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="6" />
 
         <Label fx:id="regulatorsConfigLabel" prefHeight="16.0" stylesheets="@../../../../css/Styling.css" text="%settings.regulatorsConfig.ComboBox" GridPane.rowIndex="1" />
         <Label fx:id="injectorsConfigLabel" prefHeight="16.0" stylesheets="@../../../../css/Styling.css" text="%settings.injectorsConfig.ComboBox" GridPane.rowIndex="2" />
         <Label fx:id="languagesLabel" prefHeight="16.0" stylesheets="@../../../../css/Styling.css" text="%settings.languages.ComboBox" GridPane.rowIndex="3" />
         <Label fx:id="pressureSensorLabel" layoutX="80.0" layoutY="15.0" stylesheets="@../../../../css/Styling.css" text="%settings.pressureSensor.Label" GridPane.rowIndex="0" />
         <Label fx:id="flowOutputDimensionLabel" prefHeight="16.0" stylesheets="@../../../../css/Styling.css" text="%settings.FlowOutputDimension.ComboBox" GridPane.rowIndex="4" />
-        <Label fx:id="diffFmSettingsLabel" prefHeight="16.0" text="%differentialFM.calibrationButton" GridPane.rowIndex="5" />
-      <Label fx:id="firmwareUpdateLabel" text="Firmware update" GridPane.rowIndex="8" />
-      <Button fx:id="firmwareUpdateButton" mnemonicParsing="false" prefHeight="30.0" prefWidth="150.0" text="Update" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="8">
+        <Label fx:id="diffFmSettingsLabel" prefHeight="16.0" text="%differentialFM.calibrationButton" GridPane.rowIndex="6" />
+      <Label fx:id="firmwareUpdateLabel" text="Firmware update" GridPane.rowIndex="9" />
+      <Button fx:id="firmwareUpdateButton" mnemonicParsing="false" prefHeight="30.0" prefWidth="150.0" text="Update" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="9">
          <GridPane.margin>
             <Insets left="47.0" />
          </GridPane.margin>
       </Button>
+      <StackPane fx:id="limitControlsStackPane" alignment="CENTER_LEFT" prefHeight="150.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="5">
+         <children>
+            <Spinner fx:id="pumpRpmLimitSpinner" editable="true" prefWidth="180.0">
+               <StackPane.margin>
+                  <Insets left="15.0" />
+               </StackPane.margin>
+            </Spinner>
+            <Spinner fx:id="heuiMaxPressureSpinner" editable="true" prefWidth="180.0">
+               <StackPane.margin>
+                  <Insets left="15.0" />
+               </StackPane.margin>
+            </Spinner>
+         </children>
+      </StackPane>
+      <StackPane fx:id="limitLabelsStackPane" alignment="CENTER_LEFT" prefHeight="150.0" prefWidth="200.0" GridPane.rowIndex="5">
+         <children>
+            <Label fx:id="pumpRpmLimitLabel" text="Pump RPM Limit" />
+            <Label fx:id="heuiMaxPressureLabel" text="HEUI max rail pressure " />
+         </children>
+      </StackPane>
+        <!--<Button fx:id="firmwareUpdateButton" mnemonicParsing="false" prefHeight="30.0" prefWidth="150.0" text="Update" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="8">-->
+            <!--<GridPane.margin>-->
+                <!--<Insets left="47.0" />-->
+            <!--</GridPane.margin>-->
+        <!--</Button>-->
 
     </children>
 
@@ -53,5 +80,6 @@
         <RowConstraints maxHeight="50.0" minHeight="10.0" prefHeight="50.0" vgrow="ALWAYS" />
         <RowConstraints maxHeight="50.0" minHeight="10.0" prefHeight="50.0" vgrow="ALWAYS" />
         <RowConstraints maxHeight="50.0" minHeight="10.0" prefHeight="50.0" vgrow="ALWAYS" />
+      <RowConstraints />
     </rowConstraints>
 </GridPane>

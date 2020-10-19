@@ -17,17 +17,21 @@ import fi.stardex.sisu.version.FirmwareVersion;
 import fi.stardex.sisu.version.UltimaFirmwareVersion;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.ComboBox;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 
 import javax.annotation.PostConstruct;
+import java.util.List;
 import java.util.prefs.Preferences;
+import java.util.stream.Collectors;
 
 import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.Main_version_0;
 import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.UIS_to_CR_pulseControlSwitch;
@@ -76,6 +80,12 @@ public class GUI_TypeController {
     private String customer;
     @Value("${logo.image}")
     private String logoPath;
+
+    private Node pumpRpmLimitSpinner;
+    private Node heuiMaxPressureSpinner;
+    private Node pumpRpmLimitLabel;
+    private Node heuiMaxPressureLabel;
+    private List<Node> limitsStackPanes;
 
     public void setRootPreferences(Preferences rootPreferences) {
         this.rootPreferences = rootPreferences;
@@ -210,6 +220,17 @@ public class GUI_TypeController {
             }
         });
 
+        pumpRpmLimitSpinner = getNode("limitControlsStackPane", "pumpRpmLimitSpinner");
+        heuiMaxPressureSpinner = getNode("limitControlsStackPane", "heuiMaxPressureSpinner");
+        pumpRpmLimitLabel = getNode("limitLabelsStackPane", "pumpRpmLimitLabel");
+        heuiMaxPressureLabel = getNode("limitLabelsStackPane", "heuiMaxPressureLabel");
+
+        limitsStackPanes = settings.getChildrenUnmodifiable()
+                .stream()
+                .filter(node -> node.getId() != null)
+                .filter(node -> node.getId().equals("limitControlsStackPane") || node.getId().equals("limitLabelsStackPane")).collect(Collectors.toList());
+
+
         GUI_type currentGUIType = GUI_type.getType(rootPreferences.get("GUI_Type", GUI_type.CR_Inj.toString()));
         /**Uncomment string below and comment string above in case of problems with initial gui-type search in rootPreferences.*/
 //        GUI_type currentGUIType = GUI_type.CR_Inj;
@@ -248,6 +269,20 @@ public class GUI_TypeController {
         });
     }
 
+    private Node getNode(String stackPane, String nodeId) {
+
+        return settings.getChildrenUnmodifiable()
+                .stream()
+                .filter(n -> n.getId() != null)
+                .filter(n -> n.getId().equals(stackPane))
+                .filter(n -> n instanceof StackPane)
+                .map(n -> (StackPane) n)
+                .flatMap(n -> n.getChildren().stream())
+                .filter(n -> n.getId().equals(nodeId))
+                .findFirst()
+                .orElse(null);
+    }
+
     private void changeToCRInj() {
 
         clearSections();
@@ -280,6 +315,8 @@ public class GUI_TypeController {
                 .filter(node -> node.getId().equals("diffFmSettingsLabel"))
                 .findAny()
                 .ifPresent(c -> c.setVisible(true));
+
+        limitsStackPanes.forEach(c -> c.setVisible(false));
 
         activeMainSection = mainSection;
         activeChangeableSection = crSection;
@@ -323,6 +360,12 @@ public class GUI_TypeController {
                 .findAny()
                 .ifPresent(c -> c.setVisible(false));
 
+        limitsStackPanes.forEach(c -> c.setVisible(true));
+        pumpRpmLimitLabel.setVisible(true);
+        heuiMaxPressureLabel.setVisible(false);
+        pumpRpmLimitSpinner.toFront();
+        heuiMaxPressureSpinner.toBack();
+
         activeMainSection = mainSectionPumps;
         activeChangeableSection = pumpSection;
         activeTabSection = tabSectionPumps;
@@ -335,6 +378,12 @@ public class GUI_TypeController {
     private void changeToHEUI() {
 
         changeToCRInj();
+
+        limitsStackPanes.forEach(c -> c.setVisible(true));
+        pumpRpmLimitLabel.setVisible(false);
+        heuiMaxPressureLabel.setVisible(true);
+        pumpRpmLimitSpinner.toBack();
+        heuiMaxPressureSpinner.toFront();
     }
 
     private void changeToUIS() {

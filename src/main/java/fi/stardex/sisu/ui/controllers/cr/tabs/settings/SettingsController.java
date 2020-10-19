@@ -1,15 +1,14 @@
 package fi.stardex.sisu.ui.controllers.cr.tabs.settings;
 
 import fi.stardex.sisu.connect.ModbusConnect;
-import fi.stardex.sisu.model.SettingsModel;
+import fi.stardex.sisu.model.cr.CrSettingsModel;
 import fi.stardex.sisu.settings.*;
 import fi.stardex.sisu.util.i18n.I18N;
+import fi.stardex.sisu.util.spinners.SpinnerManager;
 import fi.stardex.sisu.version.FirmwareVersion;
 import fi.stardex.sisu.version.FlowFirmwareVersion;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
@@ -18,10 +17,18 @@ import javafx.scene.layout.StackPane;
 
 import javax.annotation.PostConstruct;
 
+import java.util.prefs.Preferences;
+
 import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions.MASTER_DF;
 
 public class SettingsController {
 
+    @FXML private StackPane limitControlsStackPane;
+    @FXML private StackPane limitLabelsStackPane;
+    @FXML private Spinner<Integer> pumpRpmLimitSpinner;
+    @FXML private Spinner<Integer> heuiMaxPressureSpinner;
+    @FXML private Label pumpRpmLimitLabel;
+    @FXML private Label heuiMaxPressureLabel;
     @FXML private Label firmwareUpdateLabel;
     @FXML private Button firmwareUpdateButton;
     @FXML private StackPane firmwareButton;
@@ -56,7 +63,8 @@ public class SettingsController {
     protected I18N i18N;
     private ModbusConnect flowModbusConnect;
     private FirmwareVersion<FlowFirmwareVersion.FlowVersions> flowFirmwareVersion;
-    private SettingsModel settingsModel;
+    private CrSettingsModel crSettingsModel;
+    private Preferences rootPrefs;
 
     public void setFlowModbusConnect(ModbusConnect flowModbusConnect) {
         this.flowModbusConnect = flowModbusConnect;
@@ -64,11 +72,14 @@ public class SettingsController {
     public void setI18N(I18N i18N) {
         this.i18N = i18N;
     }
-    public void setSettingsModel(SettingsModel settingsModel) {
-        this.settingsModel = settingsModel;
-    }
     public void setFlowFirmwareVersion(FirmwareVersion<FlowFirmwareVersion.FlowVersions> flowFirmwareVersion) {
         this.flowFirmwareVersion = flowFirmwareVersion;
+    }
+    public void setCrSettingsModel(CrSettingsModel crSettingsModel) {
+        this.crSettingsModel = crSettingsModel;
+    }
+    public void setRootPrefs(Preferences rootPrefs) {
+        this.rootPrefs = rootPrefs;
     }
 
     public DimasGuiEditionController getDimasGuiEditionController() {
@@ -118,12 +129,24 @@ public class SettingsController {
 
         firmwareUpdateButton.addEventHandler(MouseEvent.MOUSE_CLICKED, event -> {
             if (event.getButton().equals(MouseButton.PRIMARY)) {
-                settingsModel.firmwareUpdateProperty().setValue(true);
-                settingsModel.firmwareUpdateProperty().setValue(false);
+                crSettingsModel.firmwareUpdateProperty().setValue(true);
+                crSettingsModel.firmwareUpdateProperty().setValue(false);
             }
         });
 
         hideUpdate();
+
+        heuiMaxPressureSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(150, 300, 300, 10));
+        pumpRpmLimitSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 2000, 2000, 100));
+        crSettingsModel.heuiMaxPressureProperyProperty().bind(heuiMaxPressureSpinner.valueProperty());
+        crSettingsModel.pumpMaxRpmPropertyProperty().bind(pumpRpmLimitSpinner.valueProperty());
+        heuiMaxPressureSpinner.getValueFactory().valueProperty().addListener((observableValue, oldValue, newValue) -> rootPrefs.putInt("heuiMaxPressure", newValue));
+        pumpRpmLimitSpinner.getValueFactory().valueProperty().addListener((observableValue, oldValue, newValue) -> rootPrefs.putInt("pumpRpmLimit", newValue));
+        heuiMaxPressureSpinner.getValueFactory().setValue(rootPrefs.getInt("heuiMaxPressure", 300));
+        pumpRpmLimitSpinner.getValueFactory().setValue(rootPrefs.getInt("pumpRpmLimit", 2000));
+        SpinnerManager.setupIntegerSpinner(heuiMaxPressureSpinner);
+        SpinnerManager.setupIntegerSpinner(pumpRpmLimitSpinner);
+
 
         pressureSensorLabel.textProperty().bind(i18N.createStringBinding("settings.pressureSensor.Label"));
         regulatorsConfigLabel.textProperty().bind(i18N.createStringBinding("settings.regulatorsConfig.ComboBox"));

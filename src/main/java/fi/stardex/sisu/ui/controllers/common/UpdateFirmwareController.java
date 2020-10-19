@@ -1,6 +1,7 @@
 package fi.stardex.sisu.ui.controllers.common;
 
 import fi.stardex.sisu.model.SettingsModel;
+import fi.stardex.sisu.model.cr.CrSettingsModel;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.ui.controllers.cr.tabs.settings.ConnectionController;
@@ -56,10 +57,10 @@ public class UpdateFirmwareController implements EventHandler<ActionEvent>, Chan
     private ConnectionController connectionController;
     private ModbusRegisterProcessor ultimaModbusWriter;
     private RegisterProvider ultimaRegisterProvider;
-    private SettingsModel settingsModel;
     private Stage updateFirmwareStage;
     private Parent rootParent;
     private Parent updateFirmware;
+    private CrSettingsModel crSettingsModel;
 
     enum UpdatingState {
         NO, RUNNING, FINISHED, SOCKET_IN_USE, WRONG_PASSWORD, EXCEPTION, TIMED_OUT
@@ -72,14 +73,14 @@ public class UpdateFirmwareController implements EventHandler<ActionEvent>, Chan
         this.ultimaModbusWriter = ultimaModbusWriter;
         ultimaRegisterProvider = ultimaModbusWriter.getRegisterProvider();
     }
-    public void setSettingsModel(SettingsModel settingsModel) {
-        this.settingsModel = settingsModel;
-    }
     public void setRootParent(Parent rootParent) {
         this.rootParent = rootParent;
     }
     public void setUpdateFirmware(Parent updateFirmware) {
         this.updateFirmware = updateFirmware;
+    }
+    public void setCrSettingsModel(CrSettingsModel crSettingsModel) {
+        this.crSettingsModel = crSettingsModel;
     }
 
     @PostConstruct
@@ -93,7 +94,7 @@ public class UpdateFirmwareController implements EventHandler<ActionEvent>, Chan
         });
         startProcessButton.setOnAction(this);
 
-        settingsModel.firmwareUpdateProperty().addListener((observable, oldValue, newValue) ->{
+        crSettingsModel.firmwareUpdateProperty().addListener((observable, oldValue, newValue) ->{
             if (newValue) {
                 if (updateFirmwareStage == null) {
                     updateFirmwareStage = new Stage(StageStyle.DECORATED);
