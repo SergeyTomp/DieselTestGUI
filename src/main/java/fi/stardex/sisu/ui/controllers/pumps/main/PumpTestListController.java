@@ -1,5 +1,6 @@
 package fi.stardex.sisu.ui.controllers.pumps.main;
 
+import fi.stardex.sisu.model.cr.CrSettingsModel;
 import fi.stardex.sisu.model.pump.*;
 import fi.stardex.sisu.model.pump.AutoTestListLastChangeModel.PumpTestWrapper;
 import fi.stardex.sisu.persistence.orm.pump.PumpTest;
@@ -45,6 +46,7 @@ public class PumpTestListController {
     private PumpTestService pumpTestService;
     private CustomPumpState customPumpState;
     private CustomPumpTestDialogModel customPumpTestDialogModel;
+    private CrSettingsModel crSettingsModel;
 
     public void setPumpTestModel(PumpTestModel pumpTestModel) {
         this.pumpTestModel = pumpTestModel;
@@ -72,6 +74,9 @@ public class PumpTestListController {
     }
     public void setCustomPumpTestDialogModel(CustomPumpTestDialogModel customPumpTestDialogModel) {
         this.customPumpTestDialogModel = customPumpTestDialogModel;
+    }
+    public void setCrSettingsModel(CrSettingsModel crSettingsModel) {
+        this.crSettingsModel = crSettingsModel;
     }
 
     public ListView<PumpTestWrapper> getTestListView() {

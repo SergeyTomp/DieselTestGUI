@@ -1,31 +1,37 @@
 package fi.stardex.sisu.ui.controllers.cr;
 
 import fi.stardex.sisu.model.GUI_TypeModel;
-import fi.stardex.sisu.model.cr.InjectorTestModel;
-import fi.stardex.sisu.model.cr.PressureRegulatorOneModel;
 import fi.stardex.sisu.model.PressureSensorModel;
 import fi.stardex.sisu.model.RegulationModesModel;
+import fi.stardex.sisu.model.cr.CrSettingsModel;
+import fi.stardex.sisu.model.cr.InjectorTestModel;
+import fi.stardex.sisu.model.cr.PressureRegulatorOneModel;
 import fi.stardex.sisu.model.updateModels.HighPressureSectionUpdateModel;
 import fi.stardex.sisu.registers.ultima.ModbusMapUltima;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
 import fi.stardex.sisu.states.HighPressureSectionPwrState;
-import fi.stardex.sisu.ui.controllers.common.GUI_TypeController;
+import fi.stardex.sisu.util.enums.GUI_type;
 import fi.stardex.sisu.util.enums.RegActive;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.listeners.ThreeSpinnerStyleChangeListener;
 import fi.stardex.sisu.util.spinners.SpinnerManager;
+import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.control.Spinner;
-import javafx.scene.control.SpinnerValueFactory;
-import javafx.scene.control.ToggleButton;
+import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.StackPane;
+import javafx.stage.StageStyle;
 
 import javax.annotation.PostConstruct;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.prefs.Preferences;
 
 import static fi.stardex.sisu.registers.ultima.ModbusMapUltima.*;
 import static fi.stardex.sisu.util.SpinnerDefaults.*;
@@ -55,6 +61,15 @@ public class HighPressureSectionOneController {
     private I18N i18N;
     private RegulationModesModel regulationModesModel;
     private GUI_TypeModel gui_typeModel;
+    private Preferences rootPreferences;
+    private CrSettingsModel crSettingsModel;
+    private ChangeListener<Number> maxPressureListener;
+    private ChangeListener<Boolean> pwrListener;
+    private Timer timer;
+    private TimerTask timerTask;
+    private Alert alert;
+    private StringProperty alertString = new SimpleStringProperty("Rail is over pressured!");
+    private StringProperty yesButton = new SimpleStringProperty();
 
     public void setI18N(I18N i18N) {
         this.i18N = i18N;
@@ -83,6 +98,13 @@ public class HighPressureSectionOneController {
     public void setGui_typeModel(GUI_TypeModel gui_typeModel) {
         this.gui_typeModel = gui_typeModel;
     }
+    public void setCrSettingsModel(CrSettingsModel crSettingsModel) {
+        this.crSettingsModel = crSettingsModel;
+    }
+    public void setRootPreferences(Preferences rootPreferences) {
+        this.rootPreferences = rootPreferences;
+
+    }
 
     @PostConstruct
     public void init(){
@@ -98,16 +120,75 @@ public class HighPressureSectionOneController {
         currentLabel.textProperty().bind(i18N.createStringBinding("highPressure.label.amp"));
         dutyLabel.textProperty().bind(i18N.createStringBinding("highPressure.label.cycle"));
         regLabel.textProperty().bind(i18N.createStringBinding("highPressure.label.reg1.name"));
+        yesButton.bind(i18N.createStringBinding("dialog.customer.close"));
     }
 
     private void setupSpinners(){
+
+        maxPressureListener = ((observable, oldValue, newValue)
+                -> pressSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(PRESS_REG_1_SPINNER_MIN, newValue.intValue(), PRESS_REG_1_SPINNER_INIT, PRESS_REG_1_SPINNER_STEP)));
+
+        pwrListener = ((observable, oldValue, newValue) -> {
+            if (newValue) {
+                timer = new Timer();
+                timerTask = new TimerTask() {
+                    @Override
+                    public void run() {
+                        if (highPressureSectionUpdateModel.lcdPressureProperty().get() > crSettingsModel.heuiMaxPressureProperyProperty().get()) {
+                            pressureRegulatorOneModel.overPressureProperty().setValue(true);
+                            Platform.runLater(() -> showAlert());
+                        }
+                    }
+                };
+                timer.schedule(timerTask, 0, 1000);
+            }
+            else {
+                timer.cancel();
+                timer.purge();
+                pressureRegulatorOneModel.overPressureProperty().setValue(false);
+            }
+        });
+
         currentSpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(CURRENT_REG_1_SPINNER_MIN, CURRENT_REG_1_SPINNER_MAX, CURRENT_REG_1_SPINNER_INIT, CURRENT_REG_1_SPINNER_STEP));
         dutySpinner.setValueFactory(new SpinnerValueFactory.DoubleSpinnerValueFactory(DUTY_CYCLE_REG_1_SPINNER_MIN, DUTY_CYCLE_REG_1_SPINNER_MAX, DUTY_CYCLE_REG_1_SPINNER_INIT, DUTY_CYCLE_REG_1_SPINNER_STEP));
 
-        int maxPressure = pressureSensorModel.pressureSensorProperty().intValue();
+        GUI_type guiTypeCurrent = GUI_type.getType(rootPreferences.get("GUI_Type", GUI_type.CR_Inj.toString()));
+
+        int maxPressure;
+        switch (guiTypeCurrent) {
+            case HEUI:
+                maxPressure = crSettingsModel.heuiMaxPressureProperyProperty().get();
+                crSettingsModel.heuiMaxPressureProperyProperty().addListener(maxPressureListener);
+                highPressureSectionPwrState.powerButtonProperty().addListener(pwrListener);
+                break;
+            default:
+                maxPressure = pressureSensorModel.pressureSensorProperty().intValue();
+                pressureSensorModel.pressureSensorProperty().addListener(maxPressureListener);
+                break;
+        }
         pressSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(PRESS_REG_1_SPINNER_MIN, maxPressure, PRESS_REG_1_SPINNER_INIT, PRESS_REG_1_SPINNER_STEP));
-        pressureSensorModel.pressureSensorProperty().addListener(((observable, oldValue, newValue) -> pressSpinner.setValueFactory(
-                new SpinnerValueFactory.IntegerSpinnerValueFactory(PRESS_REG_1_SPINNER_MIN, newValue.intValue(), PRESS_REG_1_SPINNER_INIT, PRESS_REG_1_SPINNER_STEP))));
+
+        gui_typeModel.guiTypeProperty().addListener((observableValue, oldValue, newValue) -> {
+            int maxValue;
+            switch (newValue) {
+                case HEUI:
+                    maxValue = crSettingsModel.heuiMaxPressureProperyProperty().get();
+                    crSettingsModel.heuiMaxPressureProperyProperty().addListener(maxPressureListener);
+                    pressureSensorModel.pressureSensorProperty().removeListener(maxPressureListener);
+                    highPressureSectionPwrState.powerButtonProperty().addListener(pwrListener);
+                    break;
+                default:
+                    maxValue = pressureSensorModel.pressureSensorProperty().intValue();
+                    crSettingsModel.heuiMaxPressureProperyProperty().removeListener(maxPressureListener);
+                    pressureSensorModel.pressureSensorProperty().addListener(maxPressureListener);
+                    highPressureSectionPwrState.powerButtonProperty().removeListener(pwrListener);
+                    break;
+            }
+            pressSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(PRESS_REG_1_SPINNER_MIN, maxValue, PRESS_REG_1_SPINNER_INIT, PRESS_REG_1_SPINNER_STEP));
+        });
+
+//        pressureSensorModel.pressureSensorProperty().addListener(((observable, oldValue, newValue) -> pressSpinner.setValueFactory(
+//                new SpinnerValueFactory.IntegerSpinnerValueFactory(PRESS_REG_1_SPINNER_MIN, newValue.intValue(), PRESS_REG_1_SPINNER_INIT, PRESS_REG_1_SPINNER_STEP))));
 
         SpinnerManager.setupIntegerSpinner(pressSpinner);
         SpinnerManager.setupDoubleSpinner(currentSpinner);
@@ -187,6 +268,21 @@ public class HighPressureSectionOneController {
                 pressSpinner.getValueFactory().setValue(0);
             }
         });
+    }
+
+    private void showAlert() {
+
+        if (alert == null) {
+            alert = new Alert(Alert.AlertType.NONE, "", ButtonType.YES);
+            alert.initStyle(StageStyle.UNDECORATED);
+            alert.getDialogPane().getStylesheets().add(getClass().getResource("/css/Styling.css").toExternalForm());
+            alert.getDialogPane().getStyleClass().add("alertDialog");
+            alert.setResizable(true);
+            alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+        }
+        ((Button) alert.getDialogPane().lookupButton(ButtonType.YES)).textProperty().setValue(yesButton.get());
+        alert.setContentText(alertString.get());
+        alert.show();
     }
 
     private class StackPanePowerButtonWidthListener implements ChangeListener<Number> {

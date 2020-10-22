@@ -178,6 +178,12 @@ public class CrTestManager implements TestManager {
 
         autoResetTimeline = new Timeline(new KeyFrame(Duration.seconds(6), event -> autoReset()));
         preInjectionAutoResetTimeline = new Timeline(new KeyFrame(Duration.seconds(18), event -> autoReset()));
+
+        pressureRegulatorOneModel.overPressureProperty().addListener((observableValue, oldValue, newValue) -> {
+            if (newValue && mainSectionStartToggleButton.isSelected()) {
+                mainSectionStartToggleButton.setSelected(false);
+            }
+        });
     }
 
     @Override

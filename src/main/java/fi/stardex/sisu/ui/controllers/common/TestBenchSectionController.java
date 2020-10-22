@@ -5,6 +5,7 @@ import fi.stardex.sisu.connect.ModbusConnect;
 import fi.stardex.sisu.model.GUI_TypeModel;
 import fi.stardex.sisu.model.TabSectionModel;
 import fi.stardex.sisu.model.TestBenchSectionModel;
+import fi.stardex.sisu.model.cr.CrSettingsModel;
 import fi.stardex.sisu.model.cr.InjectorTestModel;
 import fi.stardex.sisu.model.pump.PumpModel;
 import fi.stardex.sisu.model.pump.PumpTestModel;
@@ -37,6 +38,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
+
+import java.util.prefs.Preferences;
 
 import static fi.stardex.sisu.registers.StandControlsService.StandControls.*;
 import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions;
@@ -98,6 +101,8 @@ public class TestBenchSectionController {
     private UisSettingsModel uisSettingsModel;
     private ChangeListener<Boolean> pumpTurnOnListener;
     private ChangeListener<GUI_type> guiTypeListener = (observableValue, oldValue, newValue) -> setArrowsVisibility();
+    private Preferences rootPreferences;
+    private CrSettingsModel crSettingsModel;
 
     public Spinner<Integer> getTargetRPMSpinner() {
         return targetRPMSpinner;
@@ -174,6 +179,12 @@ public class TestBenchSectionController {
     }
     public void setGui_typeModel(GUI_TypeModel gui_typeModel) {
         this.gui_typeModel = gui_typeModel;
+    }
+    public void setRootPreferences(Preferences rootPreferences) {
+        this.rootPreferences = rootPreferences;
+    }
+    public void setCrSettingsModel(CrSettingsModel crSettingsModel) {
+        this.crSettingsModel = crSettingsModel;
     }
 
     public enum StatePump {

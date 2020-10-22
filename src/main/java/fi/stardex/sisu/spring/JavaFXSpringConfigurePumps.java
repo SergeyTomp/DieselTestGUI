@@ -4,6 +4,7 @@ import fi.stardex.sisu.model.GUI_TypeModel;
 import fi.stardex.sisu.model.LanguageModel;
 import fi.stardex.sisu.model.PressureSensorModel;
 import fi.stardex.sisu.model.RegulationModesModel;
+import fi.stardex.sisu.model.cr.CrSettingsModel;
 import fi.stardex.sisu.model.pump.*;
 import fi.stardex.sisu.model.updateModels.DifferentialFmUpdateModel;
 import fi.stardex.sisu.model.updateModels.HighPressureSectionUpdateModel;
@@ -104,7 +105,8 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
                                                                PumpReportModel pumpReportModel,
                                                                PumpsStartButtonState pumpsStartButtonState,
                                                                CustomPumpDialogModel customPumpDialogModel,
-                                                               PumpModelService pumpModelService) {
+                                                               PumpModelService pumpModelService,
+                                                               CrSettingsModel crSettingsModel) {
         PumpsModelsListController pumpsModelsListController = mainSectionPumpsController.getPumpsModelsListController();
         pumpsModelsListController.setManufacturerPumpModel(manufacturerPumpModel);
         pumpsModelsListController.setPumpModel(pumpModel);
@@ -115,6 +117,7 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
         pumpsModelsListController.setPumpsStartButtonState(pumpsStartButtonState);
         pumpsModelsListController.setCustomPumpDialogModel(customPumpDialogModel);
         pumpsModelsListController.setPumpModelService(pumpModelService);
+        pumpsModelsListController.setCrSettingsModel(crSettingsModel);
         return pumpsModelsListController;
     }
 
@@ -169,7 +172,8 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
                                                          PumpModel pumpModel,
                                                          PumpTestService pumpTestService,
                                                          CustomPumpState customPumpState,
-                                                         CustomPumpTestDialogModel customPumpTestDialogModel) {
+                                                         CustomPumpTestDialogModel customPumpTestDialogModel,
+                                                         CrSettingsModel crSettingsModel) {
         PumpTestListController pumpTestListController = mainSectionPumpsController.getPumpTestListController();
         pumpTestListController.setPumpTestModel(pumpTestModel);
         pumpTestListController.setPumpTestListModel(pumpTestListModel);
@@ -180,6 +184,7 @@ public class JavaFXSpringConfigurePumps extends ViewLoader {
         pumpTestListController.setPumpTestService(pumpTestService);
         pumpTestListController.setCustomPumpState(customPumpState);
         pumpTestListController.setCustomPumpTestDialogModel(customPumpTestDialogModel);
+        pumpTestListController.setCrSettingsModel(crSettingsModel);
         return pumpTestListController;
     }
 

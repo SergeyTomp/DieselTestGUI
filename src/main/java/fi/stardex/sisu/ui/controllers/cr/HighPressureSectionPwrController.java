@@ -2,6 +2,7 @@ package fi.stardex.sisu.ui.controllers.cr;
 
 import fi.stardex.sisu.model.GUI_TypeModel;
 import fi.stardex.sisu.model.TabSectionModel;
+import fi.stardex.sisu.model.cr.PressureRegulatorOneModel;
 import fi.stardex.sisu.states.HighPressureSectionPwrState;
 import javafx.fxml.FXML;
 import javafx.scene.control.ToggleButton;
@@ -20,6 +21,7 @@ public class HighPressureSectionPwrController {
     private HighPressureSectionPwrState highPressureSectionPwrState;
     private TabSectionModel tabSectionModel;
     private GUI_TypeModel gui_typeModel;
+    private PressureRegulatorOneModel pressureRegulatorOneModel;
 
     public StackPane getPwrButtonStackPane() {
         return pwrButtonStackPane;
@@ -36,6 +38,9 @@ public class HighPressureSectionPwrController {
     }
     public void setGui_typeModel(GUI_TypeModel gui_typeModel) {
         this.gui_typeModel = gui_typeModel;
+    }
+    public void setPressureRegulatorOneModel(PressureRegulatorOneModel pressureRegulatorOneModel) {
+        this.pressureRegulatorOneModel = pressureRegulatorOneModel;
     }
 
     @PostConstruct
@@ -56,6 +61,13 @@ public class HighPressureSectionPwrController {
 
         gui_typeModel.guiTypeProperty().addListener((observable, oldValue, newValue) -> {
             if (oldValue == CR_Inj || oldValue == HEUI) {
+                pwrButtonToggleButton.setSelected(false);
+            }
+        });
+
+        pressureRegulatorOneModel.overPressureProperty().addListener((observable, oldValue, newValue) -> {
+
+            if (pwrButtonToggleButton.isSelected() && newValue) {
                 pwrButtonToggleButton.setSelected(false);
             }
         });

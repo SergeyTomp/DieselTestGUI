@@ -259,7 +259,9 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                                  MainSectionUisModel mainSectionUisModel,
                                                                  TabSectionModel tabSectionModel,
                                                                  UisSettingsModel uisSettingsModel,
-                                                                 GUI_TypeModel gui_typeModel) {
+                                                                 GUI_TypeModel gui_typeModel,
+                                                                 Preferences rootPreferences,
+                                                                 CrSettingsModel crSettingsModel) {
         TestBenchSectionController testBenchSectionController = rootLayoutController.getTestBenchSectionController();
         testBenchSectionController.setFlowModbusWriter(flowModbusWriter);
         testBenchSectionController.setStandModbusWriter(standModbusWriter);
@@ -279,6 +281,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
         testBenchSectionController.setTabSectionModel(tabSectionModel);
         testBenchSectionController.setUisSettingsModel(uisSettingsModel);
         testBenchSectionController.setGui_typeModel(gui_typeModel);
+        testBenchSectionController.setRootPreferences(rootPreferences);
+        testBenchSectionController.setCrSettingsModel(crSettingsModel);
         return testBenchSectionController;
     }
 
@@ -303,7 +307,9 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                                              PressureRegulatorOneModel pressureRegulatorOneModel,
                                                                              I18N i18N,
                                                                              RegulationModesModel regulationModesModel,
-                                                                             GUI_TypeModel gui_typeModel){
+                                                                             GUI_TypeModel gui_typeModel,
+                                                                             CrSettingsModel crSettingsModel,
+                                                                             Preferences rootPreferences){
         HighPressureSectionOneController highPressureSectionOneController = injectorHighPressureSectionController.getHighPressureSectionOneController();
         highPressureSectionOneController.setHighPressureSectionPwrState(highPressureSectionPwrState);
         highPressureSectionOneController.setPressureSensorModel(pressureSensorModel);
@@ -314,6 +320,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
         highPressureSectionOneController.setI18N(i18N);
         highPressureSectionOneController.setRegulationModesModel(regulationModesModel);
         highPressureSectionOneController.setGui_typeModel(gui_typeModel);
+        highPressureSectionOneController.setCrSettingsModel(crSettingsModel);
+        highPressureSectionOneController.setRootPreferences(rootPreferences);
         return highPressureSectionOneController;
     }
 
@@ -370,11 +378,13 @@ public class JavaFXSpringConfigure extends ViewLoader{
     public HighPressureSectionPwrController highPressureSectionPwrController(InjectorHighPressureSectionController injectorHighPressureSectionController,
                                                                              HighPressureSectionPwrState highPressureSectionPwrState,
                                                                              TabSectionModel tabSectionModel,
-                                                                             GUI_TypeModel gui_typeModel){
+                                                                             GUI_TypeModel gui_typeModel,
+                                                                             PressureRegulatorOneModel pressureRegulatorOneModel){
         HighPressureSectionPwrController highPressureSectionPwrController = injectorHighPressureSectionController.getHighPressureSectionPwrController();
         highPressureSectionPwrController.setHighPressureSectionPwrState(highPressureSectionPwrState);
         highPressureSectionPwrController.setTabSectionModel(tabSectionModel);
         highPressureSectionPwrController.setGui_typeModel(gui_typeModel);
+        highPressureSectionPwrController.setPressureRegulatorOneModel(pressureRegulatorOneModel);
         return highPressureSectionPwrController;
     }
 

@@ -1,5 +1,6 @@
 package fi.stardex.sisu.ui.controllers.pumps.main;
 
+import fi.stardex.sisu.model.cr.CrSettingsModel;
 import fi.stardex.sisu.model.pump.*;
 import fi.stardex.sisu.persistence.orm.pump.Pump;
 import fi.stardex.sisu.persistence.repos.pump.PumpModelService;
@@ -46,6 +47,7 @@ public class PumpsModelsListController {
     private StringProperty alertString = new SimpleStringProperty();
     private StringProperty yesButton = new SimpleStringProperty();
     private StringProperty noButton = new SimpleStringProperty();
+    private CrSettingsModel crSettingsModel;
 
     public void setManufacturerPumpModel(ManufacturerPumpModel manufacturerPumpModel) {
         this.manufacturerPumpModel = manufacturerPumpModel;
@@ -73,6 +75,10 @@ public class PumpsModelsListController {
     }
     public void setPumpModelService(PumpModelService pumpModelService) {
         this.pumpModelService = pumpModelService;
+    }
+
+    public void setCrSettingsModel(CrSettingsModel crSettingsModel) {
+        this.crSettingsModel = crSettingsModel;
     }
 
     @PostConstruct
@@ -137,6 +143,7 @@ public class PumpsModelsListController {
             searchModelTextField.setDisable(newValue);
             baseTypeToggleGroup.getToggles().stream().filter(toggle -> !toggle.isSelected()).forEach(radioButton -> ((Node)radioButton).setDisable(newValue));
         });
+        crSettingsModel.pumpMaxRpmPropertyProperty().addListener((observableValue, oldValue, newValue) -> modelListView.getSelectionModel().clearSelection());
     }
 
     private void initPumpList() {
