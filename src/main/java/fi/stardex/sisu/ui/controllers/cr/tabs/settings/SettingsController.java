@@ -137,13 +137,13 @@ public class SettingsController {
         hideUpdate();
 
         heuiMaxPressureSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(150, 300, 300, 10));
-        pumpRpmLimitSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 2000, 2000, 100));
+        pumpRpmLimitSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(500, 5000, 2500, 50));
         crSettingsModel.heuiMaxPressureProperyProperty().bind(heuiMaxPressureSpinner.valueProperty());
         crSettingsModel.pumpMaxRpmPropertyProperty().bind(pumpRpmLimitSpinner.valueProperty());
         heuiMaxPressureSpinner.getValueFactory().valueProperty().addListener((observableValue, oldValue, newValue) -> rootPrefs.putInt("heuiMaxPressure", newValue));
         pumpRpmLimitSpinner.getValueFactory().valueProperty().addListener((observableValue, oldValue, newValue) -> rootPrefs.putInt("pumpRpmLimit", newValue));
         heuiMaxPressureSpinner.getValueFactory().setValue(rootPrefs.getInt("heuiMaxPressure", 300));
-        pumpRpmLimitSpinner.getValueFactory().setValue(rootPrefs.getInt("pumpRpmLimit", 2000));
+        pumpRpmLimitSpinner.getValueFactory().setValue(rootPrefs.getInt("pumpRpmLimit", 2500));
         SpinnerManager.setupIntegerSpinner(heuiMaxPressureSpinner);
         SpinnerManager.setupIntegerSpinner(pumpRpmLimitSpinner);
 

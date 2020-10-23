@@ -187,6 +187,7 @@ public class PumpTestListController {
 
         pumpTestModel.pumpTestProperty().setValue(null);
         List<PumpTest> allByPump = pumpTestService.findAllByModel(pumpModel.pumpProperty().get());
+        adjustNominals(allByPump);
 
         allByPump.sort(Comparator.comparingInt(PumpTest::getId));
 
@@ -304,5 +305,29 @@ public class PumpTestListController {
     private void showUpDownButtons(boolean show){
         upButton.setVisible(show);
         downButton.setVisible(show);
+    }
+
+    private void adjustNominals(List<PumpTest> testsList) {
+
+        testsList.forEach(pumpTest -> {
+
+            Optional<Double> maxDirectFlow = Optional.ofNullable(pumpTest.getMaxDirectFlow());
+            Optional<Double> minDirectFlow = Optional.ofNullable(pumpTest.getMinDirectFlow());
+            Optional<Double> maxBackFlow = Optional.ofNullable(pumpTest.getMaxBackFlow());
+            Optional<Double> minBackFlow = Optional.ofNullable(pumpTest.getMinBackFlow());
+
+            int rpm = pumpTest.getMotorSpeed();
+            int maxRpm = crSettingsModel.pumpMaxRpmPropertyProperty().get();
+            double relation = (double)maxRpm / rpm;
+
+            if (relation < 1) {
+
+                pumpTest.setMotorSpeed(maxRpm);
+                maxDirectFlow.ifPresent(f -> pumpTest.setMaxDirectFlow(f * relation));
+                minDirectFlow.ifPresent(f -> pumpTest.setMinDirectFlow(f * relation));
+                maxBackFlow.ifPresent(f -> pumpTest.setMaxBackFlow(f * relation));
+                minBackFlow.ifPresent(f -> pumpTest.setMinBackFlow(f * relation));
+            }
+        });
     }
 }

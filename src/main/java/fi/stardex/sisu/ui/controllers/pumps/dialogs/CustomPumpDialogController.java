@@ -1,7 +1,6 @@
 package fi.stardex.sisu.ui.controllers.pumps.dialogs;
 
 import fi.stardex.sisu.model.GUI_TypeModel;
-import fi.stardex.sisu.model.pump.AutoTestListLastChangeModel.PumpTestWrapper;
 import fi.stardex.sisu.model.pump.CustomPumpDialogModel;
 import fi.stardex.sisu.model.pump.ManufacturerPumpModel;
 import fi.stardex.sisu.model.pump.PumpModel;
@@ -241,6 +240,11 @@ public class CustomPumpDialogController {
         feedPressureSpinner.getValueFactory().setValue(pump.getFeedPressure());
 
         nameTextField.setDisable(true);
+        regConfigComboBox.setDisable(false);
+        rotationComboBox.setDisable(false);
+        feedPressureSpinner.setDisable(false);
+        pressureControlComboBox.setDisable(false);
+        regTypeComboBox.setDisable(false);
     }
 
     private void setDelete() {
@@ -262,6 +266,7 @@ public class CustomPumpDialogController {
         pressureControlComboBox.getSelectionModel().select(pump.getPumpPressureControl());
         feedPressureSpinner.getValueFactory().setValue(pump.getFeedPressure());
 
+        nameTextField.setDisable(false);
         regConfigComboBox.setDisable(true);
         rotationComboBox.setDisable(true);
         feedPressureSpinner.setDisable(true);
@@ -339,9 +344,11 @@ public class CustomPumpDialogController {
 
         if(!isDataComplete()) return;
 
-        List<PumpTest> testList = pumpTestListModel.getPumpTestObservableList().stream()
-                .map(PumpTestWrapper::getPumpTest)
-                .collect(Collectors.toList());
+//        List<PumpTest> testList = pumpTestListModel.getPumpTestObservableList().stream()
+//                .map(PumpTestWrapper::getPumpTest)
+//                .collect(Collectors.toList());
+        List<PumpTest> testList = pumpTestService.findAllByModel(pumpModel.pumpProperty().get());
+
         String newCode = makeCode(nameTextField.getText());
         Pump copy = new Pump(newCode, pumpModel.pumpProperty().get());
         List<PumpTest> newTestList = new ArrayList<>();

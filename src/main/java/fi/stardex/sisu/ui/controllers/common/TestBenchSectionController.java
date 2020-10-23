@@ -103,6 +103,7 @@ public class TestBenchSectionController {
     private ChangeListener<GUI_type> guiTypeListener = (observableValue, oldValue, newValue) -> setArrowsVisibility();
     private Preferences rootPreferences;
     private CrSettingsModel crSettingsModel;
+    private ChangeListener<Number> maxRpmListener;
 
     public Spinner<Integer> getTargetRPMSpinner() {
         return targetRPMSpinner;
@@ -427,17 +428,44 @@ public class TestBenchSectionController {
 
     private void setupTargetRPMSpinner() {
 
-        targetRPMSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 3000, 0, 50));
+        maxRpmListener = (observableValue, oldValue, newValue)
+                -> targetRPMSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, newValue.intValue(), 0, 50));
 
+        GUI_type guiTypeCurrent = GUI_type.getType(rootPreferences.get("GUI_Type", GUI_type.CR_Inj.toString()));
+        int maxRpm;
+        switch (guiTypeCurrent) {
+            case CR_Pump:
+                maxRpm = rootPreferences.getInt("pumpRpmLimit", 5000);
+                crSettingsModel.pumpMaxRpmPropertyProperty().addListener(maxRpmListener);
+                break;
+            default:
+                maxRpm = 3000;
+                break;
+        }
+
+        targetRPMSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, maxRpm, 0, 50));
         SpinnerManager.setupIntegerSpinner(targetRPMSpinner);
+
+        gui_typeModel.guiTypeProperty().addListener((observable, oldValue, newValue) -> {
+            int maxValue;
+            switch (newValue) {
+                case CR_Pump:
+                    maxValue = crSettingsModel.pumpMaxRpmPropertyProperty().get();
+                    crSettingsModel.pumpMaxRpmPropertyProperty().addListener(maxRpmListener);
+                    break;
+                default:
+                    maxValue = 3000;
+                    crSettingsModel.pumpMaxRpmPropertyProperty().removeListener(maxRpmListener);
+                    break;
+            }
+            targetRPMSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, maxValue, 0, 50));
+        });
 
         targetRPMSpinner.valueProperty().addListener((observable, oldValue, newValue) -> {
 
             modBusWriter.add(MAIN_TARGET_RPM.getRegister(), newValue);
-
             testBenchSectionModel.targetRPMProperty().setValue(newValue);
         });
-
     }
 
     private void setupTestBenchStartToggleButton() {
