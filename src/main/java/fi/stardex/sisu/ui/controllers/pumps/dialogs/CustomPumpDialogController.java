@@ -203,7 +203,7 @@ public class CustomPumpDialogController {
                 case NO_CONFIG:
                     regTypeComboBox.getItems().setAll(getRegTypesList(true));
                     regTypeComboBox.getSelectionModel().select(0);
-                    regTypeComboBox.setDisable(false);
+                    regTypeComboBox.setDisable(true);
                     break;
                 default:
                     regTypeComboBox.getItems().clear();
@@ -244,7 +244,6 @@ public class CustomPumpDialogController {
         rotationComboBox.setDisable(false);
         feedPressureSpinner.setDisable(false);
         pressureControlComboBox.setDisable(false);
-        regTypeComboBox.setDisable(false);
     }
 
     private void setDelete() {

@@ -154,6 +154,8 @@ public class SettingsController {
         languagesLabel.textProperty().bind(i18N.createStringBinding("settings.languages.ComboBox"));
         flowOutputDimensionLabel.textProperty().bind(i18N.createStringBinding("settings.FlowOutputDimension.ComboBox"));
         diffFmSettingsLabel.textProperty().bind(i18N.createStringBinding("differentialFM.calibrationButton"));
+        pumpRpmLimitLabel.textProperty().bind(i18N.createStringBinding("settings.pumpRpmLimit.label"));
+        heuiMaxPressureLabel.textProperty().bind(i18N.createStringBinding("settings.heuiMaxPressure.label"));
     }
 
     private void hideUpdate() {
