@@ -502,9 +502,9 @@ public class UisVapController {
 
     private void sendVAPRegisters(Invocator who) {
 
-        log.info("-----------------------------------");
-        log.info((char)27 + "[31m" + who + " sendVAPRegisters");
-        log.info("-----------------------------------");
+//        log.info("-----------------------------------");
+//        log.info((char)27 + "[31m" + who + " sendVAPRegisters");
+//        log.info("-----------------------------------");
 
         int negativeValue = negativeUSpinner.getValue();
         double boostIValue = boostISpinner.getValue();
@@ -564,16 +564,16 @@ public class UisVapController {
         ultimaModbusWriter.add(Angle_1, angle_1);
         ultimaModbusWriter.add(StartOnBatteryUOne, boostToggleButtonSelected);
 
-        log.info((char)27 + "[31mBoost_U " + boostUSpinner.getValue());
-        log.info((char)27 + "[31mBattery_U  " + batteryUSpinner.getValue());
-        log.info((char)27 + "[31mNegative_U " + negativeValue);
-        log.info((char)27 + "[31mBoostIBoardOne " + boostIValue);
-        log.info((char)27 + "[31mFirstIBoardOne " + firstIValue);
-        log.info((char)27 + "[31mSecondIBoardOne " + secondIValue);
-        log.info((char)27 + "[31mFirstWBoardOne " + firstWValue);
-        log.info((char)27 + "[31mWidthBoardOne " + widthValue);
-        log.info((char)27 + "[31mBoostUOneDisabled " + boostToggleButtonSelected);
-        log.info((char)27 + "[31mAngle_1 " + angle_1);
+//        log.info((char)27 + "[31mBoost_U " + boostUSpinner.getValue());
+//        log.info((char)27 + "[31mBattery_U  " + batteryUSpinner.getValue());
+//        log.info((char)27 + "[31mNegative_U " + negativeValue);
+//        log.info((char)27 + "[31mBoostIBoardOne " + boostIValue);
+//        log.info((char)27 + "[31mFirstIBoardOne " + firstIValue);
+//        log.info((char)27 + "[31mSecondIBoardOne " + secondIValue);
+//        log.info((char)27 + "[31mFirstWBoardOne " + firstWValue);
+//        log.info((char)27 + "[31mWidthBoardOne " + widthValue);
+//        log.info((char)27 + "[31mBoostUOneDisabled " + boostToggleButtonSelected);
+//        log.info((char)27 + "[31mAngle_1 " + angle_1);
 
         if (isBipTest) {
             ultimaModbusWriter.add(BipModeInterval_1, bipWindow + firstWValue);
@@ -581,8 +581,8 @@ public class UisVapController {
             ultimaModbusWriter.add(BipModeDuty_1, bipPWM);
             ultimaModbusWriter.add(BipModeDuty_2, bipPWM);
 
-            log.info((char)27 + "[31mBipModeInterval_1 " + bipWindow);
-            log.info((char)27 + "[31mBipModeDuty_1 " + bipPWM);
+//            log.info((char)27 + "[31mBipModeInterval_1 " + bipWindow);
+//            log.info((char)27 + "[31mBipModeDuty_1 " + bipPWM);
 
         }
 
@@ -624,12 +624,12 @@ public class UisVapController {
                 ultimaModbusWriter.add(StartOnBatteryUTwo, boostToggleButtonSelected);
                 ultimaModbusWriter.add(SecondCoilShiftTime, shift);
 
-                log.info((char)27 + "[31mBoostIBoardTwo " + boostI2Value);
-                log.info((char)27 + "[31mFirstIBoardTwo " + firstI2Value);
-                log.info((char)27 + "[31mSecondIBoardTwo " + secondI2Value);
-                log.info((char)27 + "[31mFirstWBoardTwo " + firstW2Value);
-                log.info((char)27 + "[31mWidthBoardTwo " + width2Value);
-                log.info((char)27 + "[31mBoostUTwoDisabled " + boostToggleButtonSelected);
+//                log.info((char)27 + "[31mBoostIBoardTwo " + boostI2Value);
+//                log.info((char)27 + "[31mFirstIBoardTwo " + firstI2Value);
+//                log.info((char)27 + "[31mSecondIBoardTwo " + secondI2Value);
+//                log.info((char)27 + "[31mFirstWBoardTwo " + firstW2Value);
+//                log.info((char)27 + "[31mWidthBoardTwo " + width2Value);
+//                log.info((char)27 + "[31mBoostUTwoDisabled " + boostToggleButtonSelected);
             }
             else {
 
@@ -656,7 +656,7 @@ public class UisVapController {
                 }
                 ultimaModbusWriter.add(Angle_2, angle_2);
 
-                log.info((char)27 + "[31mAngle_2 " + angle_2);
+//                log.info((char)27 + "[31mAngle_2 " + angle_2);
             }
             if (injectorSubType == DOUBLE_SIGNAL) {
 
@@ -674,11 +674,11 @@ public class UisVapController {
                 }
                 ultimaModbusWriter.add(SecondSignalInterval, width_2);
 
-                log.info((char)27 + "[31mSecondSignalInterval " + width_2);
+//                log.info((char)27 + "[31mSecondSignalInterval " + width_2);
             }
         }
         ultimaModbusWriter.add(FirstPulseFlag, true);
-        log.info("-----------------------------------");
+//        log.info("-----------------------------------");
     }
 
     private int calculateAngle(int offset, int angle) { return (offset - angle + 360) % 360; }

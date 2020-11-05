@@ -1,6 +1,5 @@
 package fi.stardex.sisu.ui.controllers.common;
 
-import fi.stardex.sisu.model.SettingsModel;
 import fi.stardex.sisu.model.cr.CrSettingsModel;
 import fi.stardex.sisu.registers.RegisterProvider;
 import fi.stardex.sisu.registers.writers.ModbusRegisterProcessor;
@@ -207,7 +206,7 @@ public class UpdateFirmwareController implements EventHandler<ActionEvent>, Chan
         private Optional<String> fetchAddress(String subNet) throws SocketException {
 
             Enumeration<NetworkInterface> nets = NetworkInterface.getNetworkInterfaces();
-            String regex = subNet + "\\d{3}";
+            String regex = subNet + "\\d{2,3}";
             String found = null;
 
             OUTER:

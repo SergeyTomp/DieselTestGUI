@@ -355,6 +355,9 @@ public class InjectorSectionController {
         injectorSectionUpdateModel.injectorErrorProperty().addListener((observableValue, oldValue, newValue) -> {
 
             if (newValue) {
+                logger.info("-----------------------------------");
+                logger.info((char)27 + "[31m" + "CR_InjectorSectionController" + " Inj_Process_Global_Error");
+                logger.info("-----------------------------------");
                 ultimaModbusWriter.add(Inj_Process_Global_Error, false);
             }
         });
