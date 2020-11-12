@@ -83,10 +83,10 @@ public class InjConfigurationController {
 
         injectorTypeModel.injectorTypeProperty().addListener((observableValue, oldValue, newValue) -> {
 
-            if (newValue.equals(InjectorType.PIEZO_DELPHI)) {
+            if (newValue == InjectorType.PIEZO_DELPHI) {
                 selectChannelMode(SINGLE_CHANNEL);
-            } else{
-                restoreChannelMode();
+            } else if (oldValue == InjectorType.PIEZO_DELPHI){
+                    restoreChannelMode();
             }
         });
         /**Old version of ChannelMode restore listener. Has a bug of incorrect return to previously selected SingleChannel mode.
