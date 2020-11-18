@@ -759,10 +759,12 @@ public class JavaFXSpringConfigure extends ViewLoader{
     @Bean
     @Autowired
     public ConnectionController connectionController(Preferences rootPrefs,
-                                                     ViewHolder connection){
+                                                     ViewHolder connection,
+                                                     ViewHolder rootLayout){
         ConnectionController connectionController = (ConnectionController)connection.getController();
         connectionController.setI18N(i18N);
         connectionController.setRootPrefs(rootPrefs);
+        connectionController.setRootLayout(rootLayout);
         return connectionController;
     }
 

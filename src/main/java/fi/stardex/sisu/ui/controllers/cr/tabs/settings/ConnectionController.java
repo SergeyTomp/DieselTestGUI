@@ -1,19 +1,24 @@
 package fi.stardex.sisu.ui.controllers.cr.tabs.settings;
 
+import fi.stardex.sisu.ui.ViewHolder;
 import fi.stardex.sisu.util.Pair;
+import fi.stardex.sisu.util.enums.Theme;
 import fi.stardex.sisu.util.i18n.I18N;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TextFormatter;
+import javafx.geometry.Pos;
+import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 
 import javax.annotation.PostConstruct;
+import java.util.Comparator;
 import java.util.function.UnaryOperator;
 import java.util.prefs.Preferences;
 
 public class ConnectionController {
+
+    @FXML private Label themeLabel;
+
+    @FXML private ComboBox<Theme> themeComboBox;
 
     @FXML private GridPane connectionGridPane;
 
@@ -43,9 +48,9 @@ public class ConnectionController {
 
     private I18N i18N;
 
-    private Preferences rootPrefs;
+    private ViewHolder rootLayout;
 
-    private Preferences prefs = Preferences.userNodeForPackage(this.getClass());
+    private Preferences rootPrefs;
 
     private Pair<String, String> ultimaConnect = new Pair<>();
 
@@ -71,6 +76,10 @@ public class ConnectionController {
         this.rootPrefs = rootPrefs;
     }
 
+    public void setRootLayout(ViewHolder rootLayout) {
+        this.rootLayout = rootLayout;
+    }
+
     public Pair<String, String> getUltimaConnect() {
         return ultimaConnect;
     }
@@ -82,7 +91,6 @@ public class ConnectionController {
     public Pair<String, String> getStandConnect() {
         return standConnect;
     }
-
 
     @PostConstruct
     private void init() {
@@ -121,6 +129,8 @@ public class ConnectionController {
 
         });
         bindingI18N();
+
+//        setThemeManager();
     }
 
     private void setPairValues() {
@@ -155,6 +165,38 @@ public class ConnectionController {
         };
     }
 
+    private void setThemeManager() {
+
+        themeComboBox.setButtonCell(new ListCell<>() {
+            @Override
+            public void updateItem(Theme item, boolean empty) {
+                super.updateItem(item, empty);
+                if (item != null) {
+                    setText(item.name());
+                    setAlignment(Pos.CENTER);
+                }
+            }
+        });
+
+        themeComboBox.getItems().addAll(Theme.values());
+        themeComboBox.getItems().sort(Comparator.comparingInt(Theme::getOrder));
+        themeComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            rootLayout.getView().getStylesheets().clear();
+            rootLayout.getView().getStylesheets().add(getClass().getResource(("/css/" + newValue.getFile()).intern()).toExternalForm());
+            rootPrefs.put("theme", newValue.name());
+        });
+
+        Theme currentTheme = Theme.valueOf(rootPrefs.get("theme", "STANDARD"));
+        if (themeComboBox.getItems().contains(currentTheme)) {
+            themeComboBox.getSelectionModel().select(currentTheme);
+        } else {
+            themeComboBox.getSelectionModel().select(Theme.STANDARD);
+        }
+
+        themeComboBox.setVisible(true);
+        themeLabel.setVisible(true);
+    }
+
     private void bindingI18N() {
         ultimaLabel.textProperty().bind(i18N.createStringBinding("link.ultima.label"));
         flowMeterLabel.textProperty().bind(i18N.createStringBinding("link.flowmeter.label"));
@@ -162,6 +204,6 @@ public class ConnectionController {
         ipAddressLabel.textProperty().bind(i18N.createStringBinding("link.ipAddress.label"));
         portLabel.textProperty().bind(i18N.createStringBinding("link.port.label"));
         acceptButton.textProperty().bind(i18N.createStringBinding("link.accept.button"));
+        themeLabel.textProperty().bind(i18N.createStringBinding("link.theme.label"));
     }
-
 }
