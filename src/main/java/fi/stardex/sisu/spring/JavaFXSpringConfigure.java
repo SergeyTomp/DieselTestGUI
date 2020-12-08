@@ -1718,13 +1718,15 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                  MainSectionUisModel mainSectionUisModel,
                                                  DelayCalculator delayCalculator,
                                                  I18N i18N,
-                                                 UisDelayModel uisDelayModel) {
+                                                 UisDelayModel uisDelayModel,
+                                                 UisInjectorSectionModel uisInjectorSectionModel) {
         UisDelayController uisDelayController = uisTabSectionController.getUisDelayController();
         uisDelayController.setChartTaskDataModel(chartTaskDataModel);
         uisDelayController.setDelayCalculator(delayCalculator);
         uisDelayController.setMainSectionUisModel(mainSectionUisModel);
         uisDelayController.setI18N(i18N);
         uisDelayController.setUisDelayModel(uisDelayModel);
+        uisDelayController.setUisInjectorSectionModel(uisInjectorSectionModel);
         return uisDelayController;
     }
 

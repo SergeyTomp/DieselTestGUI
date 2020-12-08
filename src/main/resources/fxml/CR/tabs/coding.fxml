@@ -22,11 +22,11 @@
         <ColumnConstraints percentWidth="20" />
     </columnConstraints>
     <children>
-        <Label fx:id="labelCode1TextField" stylesheets="@../../../css/Styling.css" text="%h4.coding.label.injector1" GridPane.columnIndex="0" />
-        <Label fx:id="labelCode2TextField" stylesheets="@../../../css/Styling.css" text="%h4.coding.label.injector2" GridPane.columnIndex="0" GridPane.rowIndex="1" />
-        <Label fx:id="labelCode3TextField" stylesheets="@../../../css/Styling.css" text="%h4.coding.label.injector3" GridPane.columnIndex="0" GridPane.rowIndex="2" />
-        <Label fx:id="labelCode4TextField" stylesheets="@../../../css/Styling.css" text="%h4.coding.label.injector4" GridPane.columnIndex="0" GridPane.rowIndex="3" />
-        <TextField fx:id="injectorCode1TextField" alignment="CENTER" editable="false" minHeight="-Infinity" minWidth="-Infinity" styleClass="modelTextField" stylesheets="@../../../css/Styling.css" GridPane.columnIndex="1">
+        <Label fx:id="labelCode1TextField" text="%h4.coding.label.injector1" GridPane.columnIndex="0" />
+        <Label fx:id="labelCode2TextField" text="%h4.coding.label.injector2" GridPane.columnIndex="0" GridPane.rowIndex="1" />
+        <Label fx:id="labelCode3TextField" text="%h4.coding.label.injector3" GridPane.columnIndex="0" GridPane.rowIndex="2" />
+        <Label fx:id="labelCode4TextField" text="%h4.coding.label.injector4" GridPane.columnIndex="0" GridPane.rowIndex="3" />
+        <TextField fx:id="injectorCode1TextField" alignment="CENTER" editable="false" minHeight="-Infinity" minWidth="-Infinity" styleClass="modelTextField" GridPane.columnIndex="1">
             <tooltip>
                 <Tooltip text="%h4.field.tip.code1" />
             </tooltip>
@@ -34,7 +34,7 @@
                 <Insets left="20.0" />
             </GridPane.margin>
         </TextField>
-        <TextField fx:id="injectorCode2TextField" alignment="CENTER" editable="false" minHeight="-Infinity" minWidth="-Infinity" styleClass="modelTextField" stylesheets="@../../../css/Styling.css" GridPane.columnIndex="1" GridPane.rowIndex="1">
+        <TextField fx:id="injectorCode2TextField" alignment="CENTER" editable="false" minHeight="-Infinity" minWidth="-Infinity" styleClass="modelTextField" GridPane.columnIndex="1" GridPane.rowIndex="1">
             <tooltip>
                 <Tooltip text="%h4.field.tip.code2" />
             </tooltip>
@@ -42,7 +42,7 @@
                 <Insets left="20.0" />
             </GridPane.margin>
         </TextField>
-        <TextField fx:id="injectorCode3TextField" alignment="CENTER" editable="false" minHeight="-Infinity" minWidth="-Infinity" styleClass="modelTextField" stylesheets="@../../../css/Styling.css" GridPane.columnIndex="1" GridPane.rowIndex="2">
+        <TextField fx:id="injectorCode3TextField" alignment="CENTER" editable="false" minHeight="-Infinity" minWidth="-Infinity" styleClass="modelTextField" GridPane.columnIndex="1" GridPane.rowIndex="2">
             <tooltip>
                 <Tooltip text="%h4.field.tip.code3" />
             </tooltip>
@@ -50,7 +50,7 @@
                 <Insets left="20.0" />
             </GridPane.margin>
         </TextField>
-        <TextField fx:id="injectorCode4TextField" alignment="CENTER" editable="false" minHeight="-Infinity" minWidth="-Infinity" styleClass="modelTextField" stylesheets="@../../../css/Styling.css" GridPane.columnIndex="1" GridPane.rowIndex="3">
+        <TextField fx:id="injectorCode4TextField" alignment="CENTER" editable="false" minHeight="-Infinity" minWidth="-Infinity" styleClass="modelTextField" GridPane.columnIndex="1" GridPane.rowIndex="3">
             <tooltip>
                 <Tooltip text="%h4.field.tip.code4" />
             </tooltip>
@@ -58,6 +58,6 @@
                 <Insets left="20.0" />
             </GridPane.margin>
         </TextField>
-        <Label fx:id="labelCodingNote" prefHeight="63.0" prefWidth="460.0" stylesheets="@../../../css/Styling.css" text="%h4.coding.label.codingNote" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+        <Label fx:id="labelCodingNote" prefHeight="63.0" prefWidth="460.0" text="%h4.coding.label.codingNote" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="4" />
     </children>
 </GridPane>

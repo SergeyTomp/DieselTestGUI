@@ -3,11 +3,4 @@
 <?import javafx.scene.control.CheckBox?>
 
 
-<CheckBox fx:id="flowVisibleCheckBox"
-          mnemonicParsing="false"
-          styleClass="checkBox"
-          stylesheets="@../../../../css/Styling.css"
-          text="%settings.flowVisible.CheckBox"
-          xmlns="http://javafx.com/javafx/8.0.121"
-          xmlns:fx="http://javafx.com/fxml/1"
-          fx:controller="fi.stardex.sisu.settings.InstantFlowController" />
+<CheckBox fx:id="flowVisibleCheckBox" mnemonicParsing="false" styleClass="checkBox" text="%settings.flowVisible.CheckBox" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.settings.InstantFlowController" />

@@ -129,7 +129,8 @@ public class ConnectionController {
 
         });
         bindingI18N();
-
+        /**TODO: удалить строку ниже после подключения функционала управления стилями и раскомментироваать setThemeManager()*/
+        rootLayout.getView().getStylesheets().add(getClass().getResource("/css/Styling.css").toExternalForm());
 //        setThemeManager();
     }
 

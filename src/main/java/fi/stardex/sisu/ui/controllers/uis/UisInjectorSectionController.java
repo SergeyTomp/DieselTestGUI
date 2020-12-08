@@ -216,6 +216,7 @@ public class UisInjectorSectionController {
         lcd.valueProperty().bind(uisHardwareUpdateModel.lcdPressureProperty());
         bipLabel.setText("BIP(\u00B5s)");
         saveBipButton.setDisable(true);
+        saveDelayButton.setDisable(true);
         injectorToggleButton.setDisable(true);
     }
 
@@ -407,9 +408,13 @@ public class UisInjectorSectionController {
     private void setupBipSaveInvocation() {
 
         saveBipButton.setOnMouseClicked(mouseEvent -> uisInjectorSectionModel.getSaveBipButton().fire());
+        saveDelayButton.setOnMouseClicked(mouseEvent -> uisInjectorSectionModel.getSaveDelayButton().fire());
         mainSectionUisModel.getStoreButton().addEventHandler(ActionEvent.ACTION, event -> {
             if (!saveBipButton.isDisabled()) {
                 uisInjectorSectionModel.getSaveBipButton().fire();
+            }
+            if (!saveDelayButton.isDisabled()) {
+                uisInjectorSectionModel.getSaveDelayButton().fire();
             }
         });
     }
@@ -490,12 +495,14 @@ public class UisInjectorSectionController {
                 bipTaskLabel.setText("");
                 uisInjectorSectionModel.bipRangeLabelProperty().setValue("");
                 saveBipButton.setDisable(true);
+                saveDelayButton.setDisable(true);
                 regulator1pressModeOFF();
                 injectorToggleButton.setDisable(true);
                 return;
             }
 
             injectorToggleButton.setDisable(false);
+            saveDelayButton.setDisable(false);
             InjectorUisTest test = (InjectorUisTest) newValue;
             InjectorUisVAP vap = (InjectorUisVAP)newValue.getVoltAmpereProfile();
             Integer totalPulseTime1 = newValue.getTotalPulseTime1();

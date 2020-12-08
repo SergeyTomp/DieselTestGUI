@@ -16,7 +16,7 @@
                 <Insets left="10.0" top="4.0" />
             </HBox.margin>
         </ImageView>
-        <ComboBox fx:id="gui_typeComboBox" maxWidth="1.7976931348623157E308" prefWidth="150.0" stylesheets="@../css/Styling.css" HBox.hgrow="ALWAYS">
+        <ComboBox fx:id="gui_typeComboBox" maxWidth="1.7976931348623157E308" prefWidth="150.0" HBox.hgrow="ALWAYS">
             <HBox.margin>
                 <Insets right="10.0" top="8.0" />
             </HBox.margin>

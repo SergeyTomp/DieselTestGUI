@@ -3,6 +3,7 @@ package fi.stardex.sisu.ui.controllers.uis.tabs;
 import fi.stardex.sisu.model.ChartTaskDataModel;
 import fi.stardex.sisu.model.uis.UisDelayModel;
 import fi.stardex.sisu.model.uis.MainSectionUisModel;
+import fi.stardex.sisu.model.uis.UisInjectorSectionModel;
 import fi.stardex.sisu.util.DelayCalculator;
 import fi.stardex.sisu.util.i18n.I18N;
 import javafx.collections.FXCollections;
@@ -46,6 +47,7 @@ public class UisDelayController {
     private I18N i18N;
     private ChartTaskDataModel chartTaskDataModel;
     private UisDelayModel uisDelayModel;
+    private UisInjectorSectionModel uisInjectorSectionModel;
 
     public void setDelayCalculator(DelayCalculator delayCalculator) {
         this.delayCalculator = delayCalculator;
@@ -63,6 +65,10 @@ public class UisDelayController {
         this.uisDelayModel = uisDelayModel;
     }
 
+    public void setUisInjectorSectionModel(UisInjectorSectionModel uisInjectorSectionModel) {
+        this.uisInjectorSectionModel = uisInjectorSectionModel;
+    }
+
     @PostConstruct
     public void init() {
         bindingI18N();
@@ -78,6 +84,8 @@ public class UisDelayController {
             uisDelayModel.setAverageDelay(averageDelay.getText());
             uisDelayModel.storeResult();
         });
+
+        uisInjectorSectionModel.getSaveDelayButton().setOnAction(event -> saveDelayButton.fire());
 
         mainSectionUisModel.injectorTestProperty().addListener((observableValue, oldValue, newValue) -> {
 

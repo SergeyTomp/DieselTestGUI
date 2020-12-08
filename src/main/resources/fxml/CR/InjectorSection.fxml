@@ -14,7 +14,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.StackPane?>
 
-<HBox fx:id="rootHBox" alignment="CENTER_LEFT" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="130.0" minWidth="500.0" stylesheets="@../../css/Styling.css" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.cr.InjectorSectionController">
+<HBox fx:id="rootHBox" alignment="CENTER_LEFT" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="130.0" minWidth="500.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.cr.InjectorSectionController">
     <children>
         <GridPane alignment="CENTER_LEFT" minHeight="130.0" HBox.hgrow="ALWAYS">
             <children>
@@ -32,11 +32,11 @@
                     <padding>
                         <Insets left="10.0" />
                     </padding></Label>
-                <Spinner fx:id="widthCurrentSignalSpinner" editable="true" maxHeight="30.0" maxWidth="90.0" minHeight="30.0" minWidth="90.0" prefHeight="30.0" prefWidth="90.0" stylesheets="@../../css/Styling.css" GridPane.columnIndex="1" GridPane.halignment="CENTER">
+                <Spinner fx:id="widthCurrentSignalSpinner" editable="true" maxHeight="30.0" maxWidth="90.0" minHeight="30.0" minWidth="90.0" prefHeight="30.0" prefWidth="90.0" GridPane.columnIndex="1" GridPane.halignment="CENTER">
                     <GridPane.margin>
                         <Insets />
                     </GridPane.margin></Spinner>
-                <Spinner fx:id="freqCurrentSignalSpinner" editable="true" maxHeight="30.0" maxWidth="90.0" minHeight="30.0" minWidth="90.0" prefHeight="30.0" prefWidth="90.0" stylesheets="@../../css/Styling.css" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1">
+                <Spinner fx:id="freqCurrentSignalSpinner" editable="true" maxHeight="30.0" maxWidth="90.0" minHeight="30.0" minWidth="90.0" prefHeight="30.0" prefWidth="90.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1">
                     <GridPane.margin>
                         <Insets />
                     </GridPane.margin></Spinner>
@@ -64,11 +64,11 @@
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <Spinner fx:id="width2CurrentSignalSpinner" editable="true" maxHeight="30.0" maxWidth="90.0" minHeight="30.0" minWidth="90.0" prefHeight="30.0" prefWidth="90.0" stylesheets="@../../css/Styling.css" GridPane.columnIndex="1" GridPane.halignment="CENTER">
+            <Spinner fx:id="width2CurrentSignalSpinner" editable="true" maxHeight="30.0" maxWidth="90.0" minHeight="30.0" minWidth="90.0" prefHeight="30.0" prefWidth="90.0" GridPane.columnIndex="1" GridPane.halignment="CENTER">
                <GridPane.margin>
                   <Insets />
                </GridPane.margin></Spinner>
-            <Spinner fx:id="offset2CurrentSignalSpinner" editable="true" maxHeight="30.0" maxWidth="90.0" minHeight="30.0" minWidth="90.0" prefHeight="30.0" prefWidth="90.0" stylesheets="@../../css/Styling.css" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1">
+            <Spinner fx:id="offset2CurrentSignalSpinner" editable="true" maxHeight="30.0" maxWidth="90.0" minHeight="30.0" minWidth="90.0" prefHeight="30.0" prefWidth="90.0" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1">
                <GridPane.margin>
                   <Insets />
                </GridPane.margin></Spinner>
@@ -91,7 +91,7 @@
       </GridPane>
         <GridPane alignment="CENTER_LEFT" minHeight="130.0" HBox.hgrow="ALWAYS">
             <children>
-                <RadioButton fx:id="piezoRadioButton" minWidth="50.0" mnemonicParsing="false" styleClass="radioButton" stylesheets="@../../css/Styling.css" text="%injSection.radio.piezo" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" GridPane.vgrow="ALWAYS">
+                <RadioButton fx:id="piezoRadioButton" minWidth="50.0" mnemonicParsing="false" styleClass="radioButton" text="%injSection.radio.piezo" GridPane.hgrow="ALWAYS" GridPane.rowIndex="0" GridPane.vgrow="ALWAYS">
                     <GridPane.margin>
                         <Insets bottom="2.0" left="5.0" right="2.0" top="2.0" />
                     </GridPane.margin>
@@ -99,12 +99,12 @@
                         <ToggleGroup fx:id="piezoCoilToggleGroup" />
                     </toggleGroup>
                 </RadioButton>
-                <RadioButton fx:id="coilRadioButton" minWidth="50.0" mnemonicParsing="false" selected="true" styleClass="radioButton" stylesheets="@../../css/Styling.css" text="%injSection.radio.coil" toggleGroup="$piezoCoilToggleGroup" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
+                <RadioButton fx:id="coilRadioButton" minWidth="50.0" mnemonicParsing="false" selected="true" styleClass="radioButton" text="%injSection.radio.coil" toggleGroup="$piezoCoilToggleGroup" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
                     <GridPane.margin>
                         <Insets bottom="2.0" left="5.0" right="2.0" top="2.0" />
                     </GridPane.margin>
                 </RadioButton>
-                <RadioButton fx:id="piezoDelphiRadioButton" minWidth="50.0" mnemonicParsing="false" styleClass="radioButton" stylesheets="@../../css/Styling.css" text="%injSection.radio.piezoDelphi" toggleGroup="$piezoCoilToggleGroup" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="ALWAYS">
+                <RadioButton fx:id="piezoDelphiRadioButton" minWidth="50.0" mnemonicParsing="false" styleClass="radioButton" text="%injSection.radio.piezoDelphi" toggleGroup="$piezoCoilToggleGroup" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="ALWAYS">
                     <GridPane.margin>
                         <Insets bottom="2.0" left="5.0" right="2.0" top="2.0" />
                     </GridPane.margin>

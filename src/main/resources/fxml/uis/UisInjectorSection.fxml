@@ -237,7 +237,7 @@
                                                 <Insets />
                                             </GridPane.margin>
                                  <children>
-                                              <Button fx:id="saveDelayButton" disable="true" mnemonicParsing="false" prefHeight="25.0" prefWidth="65.0" text="Save" StackPane.alignment="BOTTOM_CENTER" />
+                                              <Button fx:id="saveDelayButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="65.0" text="Save" StackPane.alignment="BOTTOM_CENTER" />
                                  </children>
                                         </StackPane>
                                     </children>

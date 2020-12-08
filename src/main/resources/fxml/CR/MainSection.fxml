@@ -30,28 +30,28 @@
       <RowConstraints minHeight="10.0" percentHeight="10.0" prefHeight="30.0" vgrow="NEVER" />
     </rowConstraints>
     <children>
-      <HBox prefHeight="100.0" prefWidth="200.0" spacing="4.0">
+      <HBox fx:id="dbHBox" prefHeight="100.0" prefWidth="200.0" spacing="4.0">
          <children>
-            <ListView fx:id="manufacturerListView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="100.0" stylesheets="@../../css/Styling.css" />
+            <ListView fx:id="manufacturerListView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="100.0" />
             <VBox fx:id="injectorsVBox" disable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="200.0" spacing="4.0">
                <children>
-                  <HBox alignment="CENTER" prefHeight="50.0" spacing="20.0" stylesheets="@../../css/Styling.css">
+                  <HBox alignment="CENTER" prefHeight="50.0" spacing="20.0">
                      <children>
-                        <RadioButton fx:id="defaultRadioButton" mnemonicParsing="false" selected="true" style="-fx-font-size: 11;" styleClass="radioButton" stylesheets="@../../css/Styling.css" text="%main.defaultRB.radiobutton">
+                        <RadioButton fx:id="defaultRadioButton" mnemonicParsing="false" selected="true" style="-fx-font-size: 11;" styleClass="radioButton" text="%main.defaultRB.radiobutton">
                            <toggleGroup>
                               <ToggleGroup fx:id="baseTypeToggleGroup" />
                            </toggleGroup>
                            <font>
                               <Font size="11.0" />
                            </font></RadioButton>
-                        <RadioButton fx:id="customRadioButton" mnemonicParsing="false" style="-fx-font-size: 11;" styleClass="radioButton" stylesheets="@../../css/Styling.css" text="%main.customRB.radiobutton" toggleGroup="$baseTypeToggleGroup">
+                        <RadioButton fx:id="customRadioButton" mnemonicParsing="false" style="-fx-font-size: 11;" styleClass="radioButton" text="%main.customRB.radiobutton" toggleGroup="$baseTypeToggleGroup">
                            <font>
                               <Font size="11.0" />
                            </font></RadioButton>
                      </children>
                   </HBox>
-                  <TextField fx:id="searchModelTextField" styleClass="searchTextField" stylesheets="@../../css/Styling.css" />
-                  <ListView fx:id="modelListView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" stylesheets="@../../css/Styling.css" />
+                  <TextField fx:id="searchModelTextField" styleClass="searchTextField" />
+                  <ListView fx:id="modelListView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" />
                </children>
             </VBox>
          </children>
@@ -64,7 +64,7 @@
       </HBox>
       <VBox fx:id="injectorTestsVBox" prefHeight="200.0" prefWidth="300.0" visible="false" GridPane.rowIndex="1">
          <children>
-            <TextField fx:id="injectorNumberTextField" alignment="CENTER" editable="false" styleClass="modelTextField" stylesheets="@../../css/Styling.css">
+            <TextField fx:id="injectorNumberTextField" alignment="CENTER" editable="false" styleClass="modelTextField">
                <VBox.margin>
                   <Insets left="30.0" right="30.0" top="10.0" />
                </VBox.margin></TextField>
@@ -79,7 +79,7 @@
                 <RowConstraints minHeight="-Infinity" prefHeight="35.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
-                  <RadioButton fx:id="codingTestRadioButton" mnemonicParsing="false" styleClass="radioButton" stylesheets="@../../css/Styling.css" text="main.coding.radiobutton" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                  <RadioButton fx:id="codingTestRadioButton" mnemonicParsing="false" styleClass="radioButton" text="main.coding.radiobutton" GridPane.columnIndex="2" GridPane.rowIndex="1">
                      <GridPane.margin>
                         <Insets left="5.0" />
                      </GridPane.margin>
@@ -87,12 +87,12 @@
                           <ToggleGroup fx:id="testsToggleGroup" />
                      </toggleGroup>
                   </RadioButton>
-                  <RadioButton fx:id="autoTestRadioButton" mnemonicParsing="false" selected="true" styleClass="radioButton" stylesheets="@../../css/Styling.css" text="%main.auto.radiobutton" toggleGroup="$testsToggleGroup" GridPane.columnIndex="1">
+                  <RadioButton fx:id="autoTestRadioButton" mnemonicParsing="false" selected="true" styleClass="radioButton" text="%main.auto.radiobutton" toggleGroup="$testsToggleGroup" GridPane.columnIndex="1">
                      <GridPane.margin>
                         <Insets left="5.0" />
                      </GridPane.margin>
                   </RadioButton>
-                  <RadioButton fx:id="testPlanTestRadioButton" mnemonicParsing="false" styleClass="radioButton" stylesheets="@../../css/Styling.css" text="%main.testPlan.radiobutton" toggleGroup="$testsToggleGroup" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                  <RadioButton fx:id="testPlanTestRadioButton" mnemonicParsing="false" styleClass="radioButton" text="%main.testPlan.radiobutton" toggleGroup="$testsToggleGroup" GridPane.columnIndex="1" GridPane.rowIndex="1">
                      <GridPane.margin>
                         <Insets left="5.0" />
                      </GridPane.margin>
@@ -104,7 +104,7 @@
             </GridPane>
             <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="100.0" VBox.vgrow="ALWAYS">
                <children>
-                  <ListView fx:id="testListView" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minWidth="200.0" prefHeight="140.0" prefWidth="263.0" stylesheets="@../../css/Styling.css" VBox.vgrow="ALWAYS">
+                  <ListView fx:id="testListView" maxHeight="1.7976931348623157E308" maxWidth="-Infinity" minWidth="200.0" prefHeight="140.0" prefWidth="263.0" VBox.vgrow="ALWAYS">
                      <VBox.margin>
                         <Insets bottom="5.0" />
                      </VBox.margin></ListView>
@@ -166,7 +166,7 @@
                               <Insets right="20.0" />
                            </GridPane.margin>
                         </ProgressBar>
-                        <Label fx:id="labelAdjustTime" stylesheets="@../../css/Styling.css" text="%main.adjusting.label">
+                        <Label fx:id="labelAdjustTime" text="%main.adjusting.label">
                            <padding>
                               <Insets right="10.0" />
                            </padding>
@@ -174,7 +174,7 @@
                               <Font size="11.0" />
                            </font>
                         </Label>
-                        <Label fx:id="labelMeasureTime" stylesheets="@../../css/Styling.css" text="%main.measuring.label" GridPane.rowIndex="1">
+                        <Label fx:id="labelMeasureTime" text="%main.measuring.label" GridPane.rowIndex="1">
                            <padding>
                               <Insets right="10.0" />
                            </padding>
@@ -190,11 +190,11 @@
             </VBox>
             <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0">
                <children>
-                  <Label fx:id="timingSpeedLabel" stylesheets="@../../css/Styling.css" text="%main.timingSpeed.label">
+                  <Label fx:id="timingSpeedLabel" text="%main.timingSpeed.label">
                      <HBox.margin>
                         <Insets left="10.0" />
                      </HBox.margin></Label>
-                  <ComboBox fx:id="speedComboBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="27.0" prefWidth="90.0" styleClass="combo-box-speed" stylesheets="@../../css/Styling.css">
+                  <ComboBox fx:id="speedComboBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="27.0" prefWidth="90.0" styleClass="combo-box-speed">
                      <HBox.margin>
                         <Insets left="20.0" right="20.0" top="5.0" />
                      </HBox.margin>

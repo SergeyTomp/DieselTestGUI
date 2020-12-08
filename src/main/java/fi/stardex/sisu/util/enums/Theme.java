@@ -4,7 +4,7 @@ import org.springframework.core.Ordered;
 
 public enum Theme implements Ordered {
 
-    STANDARD("Styling.css", 0), GRAY_FLASH("GrayFlash.css", 1);
+    STANDARD("Styling.css", 0), LIGHT("Light.css", 1);
 
     private String file;
     private int order;

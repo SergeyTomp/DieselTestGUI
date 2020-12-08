@@ -33,6 +33,7 @@ public class UisInjectorSectionModel {
     private IntegerProperty pressureSpinner = new SimpleIntegerProperty();
     private DoubleProperty bipValue = new SimpleDoubleProperty(0);
     private Button saveBipButton = new Button();
+    private Button saveDelayButton = new Button();
     private StringProperty bipRangeLabel = new SimpleStringProperty("");
     private BooleanProperty pressureButtonProperty = new SimpleBooleanProperty();
 
@@ -91,6 +92,10 @@ public class UisInjectorSectionModel {
     public Button getSaveBipButton() {
         return saveBipButton;
     }
+    public Button getSaveDelayButton() {
+        return saveDelayButton;
+    }
+
     public DoubleProperty bipValueProperty() {
         return bipValue;
     }

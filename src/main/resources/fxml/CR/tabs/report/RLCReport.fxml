@@ -6,7 +6,7 @@
 
 <StackPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.cr.tabs.report.RLC_ReportController">
    <children>
-       <TableView fx:id="rlcTableView" stylesheets="@../../../../css/Styling.css">
+       <TableView fx:id="rlcTableView">
            <columns>
                <TableColumn fx:id="parameterColumn" prefWidth="150.0" text="%h4.report.measure.label.parameterName" />
                <TableColumn fx:id="unitsColumn" prefWidth="150.0" styleClass="unitsOfMeasureColumn" text="%h4.report.measure.label.units" />
