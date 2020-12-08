@@ -109,6 +109,10 @@ public class UisDelayController {
 
         chartTaskDataModel.delayValueProperty().addListener((observableValue, oldValue, newValue)
                 -> averageDelay.setText(String.format("%.0f", newValue.doubleValue())));
+        chartTaskDataModel.minDelayValueProperty().addListener((observableValue, oldValue, newValue)
+                -> minimumDelay.setText(String.format("%.0f", newValue.doubleValue())));
+        chartTaskDataModel.maxDelayValueProperty().addListener((observableValue, oldValue, newValue)
+                -> maximumDelay.setText(String.format("%.0f", newValue.doubleValue())));
     }
     private void setupDelayChart() {
 

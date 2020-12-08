@@ -15,6 +15,8 @@ public class ChartTaskDataModel {
     private ObservableList<XYChart.Data<Double, Double>> delayChartDataList = FXCollections.observableArrayList();
     private DoubleProperty bipSignalValue = new SimpleDoubleProperty();
     private DoubleProperty delayValue = new SimpleDoubleProperty();
+    private DoubleProperty minDelayValue = new SimpleDoubleProperty();
+    private DoubleProperty maxDelayValue = new SimpleDoubleProperty();
 
 
     public ObservableList<XYChart.Data<Double, Double>> getChartOneDataList() {
@@ -37,5 +39,11 @@ public class ChartTaskDataModel {
     }
     public DoubleProperty delayValueProperty() {
         return delayValue;
+    }
+    public DoubleProperty minDelayValueProperty() {
+        return minDelayValue;
+    }
+    public DoubleProperty maxDelayValueProperty() {
+        return maxDelayValue;
     }
 }

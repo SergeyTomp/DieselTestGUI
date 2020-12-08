@@ -9,13 +9,22 @@ import fi.stardex.sisu.persistence.orm.ISADetection;
 import fi.stardex.sisu.persistence.repos.ISADetectionRepository;
 import fi.stardex.sisu.states.InjectorControllersState;
 import fi.stardex.sisu.ui.controllers.cr.InjectorSectionController;
+import fi.stardex.sisu.util.i18n.I18N;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.application.Platform;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.layout.Region;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
@@ -111,6 +120,11 @@ public class ISADetectionController {
 
     private double ISA_trigger;
 
+    private Alert alert;
+    private StringProperty yesButton = new SimpleStringProperty();
+    private I18N i18N;
+    private Text txt = new Text();
+
     public static List<ISAResult> getIsaResult() {
         return ISA_RESULT;
     }
@@ -183,6 +197,10 @@ public class ISADetectionController {
         this.injectorControllersState = injectorControllersState;
     }
 
+    public void setI18N(I18N i18N) {
+        this.i18N = i18N;
+    }
+
     public enum ISAResultState {
         VALID, INVALID, OFF
     }
@@ -246,6 +264,8 @@ public class ISADetectionController {
                 .setupAdjustingTimeline()
                 .setupMeasurementTimeline()
                 .setupStopISAButtonActionListener();
+
+        yesButton.bind(i18N.createStringBinding("dialog.customer.close"));
     }
 
     private ISADetectionController setupPressureTimeline() {
@@ -407,6 +427,7 @@ public class ISADetectionController {
         boostUSpinner.getValueFactory().setValue(getInjector().getVoltAmpereProfile().getBoostU());
         voltAmpereProfileApplyButton.fire();
         currentIndex = ISADetection.ISA_CHARS_NUMBER - 1;
+//        Platform.runLater(this::showLetter);
         stopISAButton.fire();
     }
 
@@ -485,5 +506,27 @@ public class ISADetectionController {
         ISA_RESULT.add(new ISAResult(ISAResultState.OFF));
         ISA_RESULT.add(new ISAResult(ISAResultState.OFF));
         ISA_RESULT.add(new ISAResult(ISAResultState.OFF));
+    }
+
+    private void showLetter() {
+
+        char symbol = mask.charAt(currentIndex);
+
+        if (alert == null) {
+            alert = new Alert(Alert.AlertType.NONE, "", ButtonType.YES);
+            alert.initStyle(StageStyle.UNDECORATED);
+            alert.initModality(Modality.NONE);
+            alert.getDialogPane().getStylesheets().add(getClass().getResource("/css/Styling.css").toExternalForm());
+            alert.getDialogPane().getStyleClass().add("alertDialog");
+            alert.setResizable(true);
+            alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
+            Font font = Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 22);
+            txt.setFont(font);
+        }
+        ((Button) alert.getDialogPane().lookupButton(ButtonType.YES)).textProperty().setValue(yesButton.get());
+        txt.setText(String.valueOf(symbol));
+        alert.getDialogPane().setContent(txt);
+//        alert.setContentText("Result - " + String.valueOf(symbol));
+        alert.show();
     }
 }

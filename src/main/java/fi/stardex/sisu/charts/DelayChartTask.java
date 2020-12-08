@@ -282,6 +282,8 @@ public class DelayChartTask extends ChartTask {
         maximumDelayTextField.setText(String.format("%.0f", delayCalculator.getMaximumDelay()));
         averageDelayTextField.setText(String.format("%.0f", delayCalculator.getAverageDelay()));
         chartTaskDataModel.delayValueProperty().setValue(delayCalculator.getAverageDelay());
+        chartTaskDataModel.maxDelayValueProperty().setValue(delayCalculator.getMaximumDelay());
+        chartTaskDataModel.minDelayValueProperty().setValue(delayCalculator.getMinimumDelay());
     }
 
     private int getNumber(ToggleButton ledBeakerController) {

@@ -458,7 +458,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                          HighPressureSectionUpdateModel highPressureSectionUpdateModel,
                                                          PressureRegulatorOneModel pressureRegulatorOneModel,
                                                          InjectorTestModel injectorTestModel,
-                                                         InjectorControllersState injectorControllersState) {
+                                                         InjectorControllersState injectorControllersState,
+                                                         I18N i18N) {
         ISADetectionController isaDetectionController = (ISADetectionController) isaDetection().getController();
         isaDetectionController.setISAParent(isaDetection().getView());
         isaDetectionController.setRootParent(rootLayout.getView());
@@ -477,6 +478,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         isaDetectionController.setPressureRegulatorOneModel(pressureRegulatorOneModel);
         isaDetectionController.setInjectorTestModel(injectorTestModel);
         isaDetectionController.setInjectorControllersState(injectorControllersState);
+        isaDetectionController.setI18N(i18N);
         return isaDetectionController;
     }
 
