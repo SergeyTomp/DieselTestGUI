@@ -21,9 +21,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.layout.Region;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontPosture;
-import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
@@ -510,8 +507,6 @@ public class ISADetectionController {
 
     private void showLetter() {
 
-        char symbol = mask.charAt(currentIndex);
-
         if (alert == null) {
             alert = new Alert(Alert.AlertType.NONE, "", ButtonType.YES);
             alert.initStyle(StageStyle.UNDECORATED);
@@ -519,14 +514,21 @@ public class ISADetectionController {
             alert.getDialogPane().getStylesheets().add(getClass().getResource("/css/Styling.css").toExternalForm());
             alert.getDialogPane().getStyleClass().add("alertDialog");
             alert.setResizable(true);
-            alert.getDialogPane().setMinHeight(Region.USE_PREF_SIZE);
-            Font font = Font.font("verdana", FontWeight.BOLD, FontPosture.REGULAR, 22);
-            txt.setFont(font);
+            alert.getDialogPane().setPrefHeight(Region.USE_COMPUTED_SIZE);
+            alert.getDialogPane().setMaxWidth(185);
         }
         ((Button) alert.getDialogPane().lookupButton(ButtonType.YES)).textProperty().setValue(yesButton.get());
-        txt.setText(String.valueOf(symbol));
-        alert.getDialogPane().setContent(txt);
-//        alert.setContentText("Result - " + String.valueOf(symbol));
+
+        String one = ISA_RESULT.get(0).getIsa_char() != null ? String.valueOf(ISA_RESULT.get(0).getIsa_char()) : "";
+        String two = ISA_RESULT.get(1).getIsa_char() != null ? String.valueOf(ISA_RESULT.get(1).getIsa_char()) : "";
+        String three = ISA_RESULT.get(2).getIsa_char() != null ? String.valueOf(ISA_RESULT.get(2).getIsa_char()) : "";
+        String four = ISA_RESULT.get(3).getIsa_char() != null ? String.valueOf(ISA_RESULT.get(3).getIsa_char()) : "";
+
+        alert.setContentText("ISA Chars:" + "\n"
+                + (!one.isEmpty() ? ("1 - " + one + "\n") : "")
+                + (!two.isEmpty() ? ("2 - " + two + "\n") : "")
+                + (!three.isEmpty() ? ("3 - " + three + "\n") : "")
+                + (!four.isEmpty() ? ("4 - " + four) : ""));
         alert.show();
     }
 }
