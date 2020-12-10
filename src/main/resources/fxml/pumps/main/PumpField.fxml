@@ -3,4 +3,4 @@
 <?import javafx.scene.control.TextField?>
 
 
-<TextField fx:id="pumpTextField" alignment="CENTER" editable="false" styleClass="modelTextField" stylesheets="@../../../css/Styling.css" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.pumps.main.PumpFieldController" />
+<TextField fx:id="pumpTextField" alignment="CENTER" editable="false" styleClass="modelTextField" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.pumps.main.PumpFieldController" />

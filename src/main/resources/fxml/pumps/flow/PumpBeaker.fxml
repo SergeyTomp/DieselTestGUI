@@ -28,7 +28,7 @@
           <children>
               <GridPane prefHeight="55.0" VBox.vgrow="NEVER">
                   <children>
-                      <ComboBox fx:id="flowComboBox" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="110.0" styleClass="combo-box-base" stylesheets="@../../../css/Styling.css" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
+                      <ComboBox fx:id="flowComboBox" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="110.0" styleClass="combo-box-base" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS">
                           <GridPane.margin>
                               <Insets bottom="2.0" top="2.0" />
                           </GridPane.margin>
@@ -121,7 +121,7 @@
                      </AnchorPane>
                   </children>
                </StackPane>
-                      <TextField fx:id="flowTextField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="95.0" styleClass="modelTextField" stylesheets="@../../../css/Styling.css" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                      <TextField fx:id="flowTextField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="95.0" styleClass="modelTextField" GridPane.columnIndex="1" GridPane.rowIndex="1">
                           <tooltip>
                               <Tooltip text="%h4.field.tip.beaker1" />
                           </tooltip>
@@ -130,8 +130,8 @@
                       <Label fx:id="temperature2Flow" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                <VBox alignment="TOP_CENTER" spacing="5.0">
                   <children>
-                     <Label fx:id="precisionLabel" stylesheets="@../../../css/Styling.css" text="Flow" />
-                     <ComboBox fx:id="precisionCB" styleClass="combo-box-speed" stylesheets="@../../../css/Styling.css" />
+                     <Label fx:id="precisionLabel" text="Flow" />
+                     <ComboBox fx:id="precisionCB" styleClass="combo-box-speed" />
                   </children>
                </VBox>
                   </children>

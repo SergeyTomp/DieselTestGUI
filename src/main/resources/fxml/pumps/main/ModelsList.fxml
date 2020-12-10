@@ -11,9 +11,9 @@
 
 <VBox fx:id="injectorsVBox" disable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="200.0" spacing="4.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.pumps.main.PumpsModelsListController">
    <children>
-      <HBox alignment="CENTER" prefHeight="50.0" spacing="20.0" stylesheets="@../../../css/Styling.css">
+      <HBox alignment="CENTER" prefHeight="50.0" spacing="20.0">
          <children>
-            <RadioButton fx:id="defaultRadioButton" mnemonicParsing="false" selected="true" style="-fx-font-size: 11;" styleClass="radioButton" stylesheets="@../../../css/Styling.css" text="%main.defaultRB.radiobutton">
+            <RadioButton fx:id="defaultRadioButton" mnemonicParsing="false" selected="true" style="-fx-font-size: 11;" styleClass="radioButton" text="%main.defaultRB.radiobutton">
                <toggleGroup>
                   <ToggleGroup fx:id="baseTypeToggleGroup" />
                </toggleGroup>
@@ -21,15 +21,15 @@
                   <Font size="11.0" />
                </font>
             </RadioButton>
-            <RadioButton fx:id="customRadioButton" mnemonicParsing="false" style="-fx-font-size: 11;" styleClass="radioButton" stylesheets="@../../../css/Styling.css" text="%main.customRB.radiobutton" toggleGroup="$baseTypeToggleGroup">
+            <RadioButton fx:id="customRadioButton" mnemonicParsing="false" style="-fx-font-size: 11;" styleClass="radioButton" text="%main.customRB.radiobutton" toggleGroup="$baseTypeToggleGroup">
                <font>
                   <Font size="11.0" />
                </font>
             </RadioButton>
          </children>
       </HBox>
-      <TextField fx:id="searchModelTextField" styleClass="searchTextField" stylesheets="@../../../css/Styling.css" />
-      <ListView fx:id="modelListView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" stylesheets="@../../../css/Styling.css" />
+      <TextField fx:id="searchModelTextField" styleClass="searchTextField" />
+      <ListView fx:id="modelListView" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" />
    </children>
    <padding>
       <Insets left="5.0" right="5.0" />

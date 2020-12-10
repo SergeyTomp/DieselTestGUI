@@ -1723,8 +1723,8 @@ label
 ****************/
 .text-area{
 
-    -textFont-color: #ddff99;
-    -background-color: #424242;
+    -textFont-color: #191970;
+    -background-color: #969696;
     -fx-text-fill:-textFont-color;
     -fx-font-size: 10pt;
     -fx-font-family: monospace;
@@ -1749,7 +1749,7 @@ label
 .text-area .content{
 
     -fx-border-width: 0px;
-    -background-color: #424242;
+    -background-color: #969696;
     -border-color: #4169E1;
     -textFont-color: #191970;
     -fx-background-color: -border-color, -border-color, -border-color,  -background-color;

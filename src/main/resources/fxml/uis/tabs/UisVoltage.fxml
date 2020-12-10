@@ -22,7 +22,7 @@
                 <RowConstraints maxHeight="1.7976931348623157E308" minHeight="210.0" prefHeight="210.0" vgrow="ALWAYS" />
             </rowConstraints>
             <children>
-                <LineChart id="LineChart" fx:id="lineChart" axisSortingPolicy="NONE" createSymbols="false" stylesheets="@../../../css/Styling.css" titleSide="LEFT">
+                <LineChart id="LineChart" fx:id="lineChart" axisSortingPolicy="NONE" createSymbols="false" titleSide="LEFT">
                     <xAxis>
                         <NumberAxis label="%h4.voltage.chars.time" minWidth="-Infinity" prefHeight="50.0" prefWidth="250.0" fx:id="xAxis" />
                     </xAxis>

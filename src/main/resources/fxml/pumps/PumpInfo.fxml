@@ -5,12 +5,11 @@
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.VBox?>
 
-
 <AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.pumps.PumpInfoController">
    <children>
       <VBox alignment="CENTER" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <children>
-            <TableView fx:id="infoTableView" prefHeight="600.0" stylesheets="@../../css/Styling.css">
+            <TableView fx:id="infoTableView" prefHeight="600.0">
                <columns>
                   <TableColumn fx:id="parameterColumn" prefWidth="175.0" text="Category" />
                   <TableColumn fx:id="dataColumn" maxWidth="1.7976931348623157E308" prefWidth="700.0" text="Information" />

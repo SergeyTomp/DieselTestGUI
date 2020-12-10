@@ -6,7 +6,6 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-
 <GridPane fx:id="testModeGridPane" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.pumps.main.TestModeController">
    <columnConstraints>
       <ColumnConstraints halignment="CENTER" hgrow="SOMETIMES" minWidth="10.0" percentWidth="50.0" />
@@ -16,11 +15,11 @@
       <RowConstraints minHeight="10.0" vgrow="SOMETIMES" />
    </rowConstraints>
    <children>
-      <RadioButton fx:id="autoTestRadioButton" mnemonicParsing="false" selected="true" styleClass="radioButton" stylesheets="@../../../css/Styling.css" text="%main.auto.radiobutton">
+      <RadioButton fx:id="autoTestRadioButton" mnemonicParsing="false" selected="true" styleClass="radioButton" text="%main.auto.radiobutton">
          <toggleGroup>
             <ToggleGroup fx:id="testsToggleGroup" />
          </toggleGroup>
       </RadioButton>
-      <RadioButton fx:id="testPlanTestRadioButton" mnemonicParsing="false" styleClass="radioButton" stylesheets="@../../../css/Styling.css" text="%main.testPlan.radiobutton" toggleGroup="$testsToggleGroup" GridPane.columnIndex="1" />
+      <RadioButton fx:id="testPlanTestRadioButton" mnemonicParsing="false" styleClass="radioButton" text="%main.testPlan.radiobutton" toggleGroup="$testsToggleGroup" GridPane.columnIndex="1" />
    </children>
 </GridPane>

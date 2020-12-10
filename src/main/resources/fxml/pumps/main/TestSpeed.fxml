@@ -33,17 +33,17 @@
                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                </rowConstraints>
                <children>
-                  <ProgressBar fx:id="measuringTimeProgressBar" prefWidth="200.0" progress="0.0" stylesheets="@../../../css/Styling.css" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                  <ProgressBar fx:id="measuringTimeProgressBar" prefWidth="200.0" progress="0.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
                      <GridPane.margin>
                         <Insets right="20.0" />
                      </GridPane.margin>
                   </ProgressBar>
-                  <ProgressBar fx:id="adjustingTimeProgressBar" prefWidth="200.0" progress="0.0" stylesheets="@../../../css/Styling.css" GridPane.columnIndex="1">
+                  <ProgressBar fx:id="adjustingTimeProgressBar" prefWidth="200.0" progress="0.0" GridPane.columnIndex="1">
                      <GridPane.margin>
                         <Insets right="20.0" />
                      </GridPane.margin>
                   </ProgressBar>
-                  <Label fx:id="labelAjustingTime" stylesheets="@../../../css/Styling.css" text="%main.adjusting.label">
+                  <Label fx:id="labelAjustingTime" text="%main.adjusting.label">
                      <padding>
                         <Insets right="10.0" />
                      </padding>
@@ -51,7 +51,7 @@
                         <Font size="11.0" />
                      </font>
                   </Label>
-                  <Label fx:id="labelMeasuringTime" stylesheets="@../../../css/Styling.css" text="%main.measuring.label" GridPane.rowIndex="1">
+                  <Label fx:id="labelMeasuringTime" text="%main.measuring.label" GridPane.rowIndex="1">
                      <padding>
                         <Insets right="10.0" />
                      </padding>
@@ -67,7 +67,7 @@
       </VBox>
       <HBox alignment="CENTER_RIGHT" prefHeight="100.0" prefWidth="200.0">
          <children>
-            <Label fx:id="timerSpeedLabel" stylesheets="@../../../css/Styling.css" text="%main.timingSpeed.label">
+            <Label fx:id="timerSpeedLabel" text="%main.timingSpeed.label">
                <HBox.margin>
                   <Insets left="10.0" />
                </HBox.margin>
@@ -75,7 +75,7 @@
                   <Font size="11.0" />
                </font>
             </Label>
-            <ComboBox fx:id="speedComboBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="27.0" prefWidth="110.0" styleClass="combo-box-speed" stylesheets="@../../../css/Styling.css">
+            <ComboBox fx:id="speedComboBox" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="27.0" prefWidth="110.0" styleClass="combo-box-speed">
                <HBox.margin>
                   <Insets left="20.0" right="20.0" top="5.0" />
                </HBox.margin>
