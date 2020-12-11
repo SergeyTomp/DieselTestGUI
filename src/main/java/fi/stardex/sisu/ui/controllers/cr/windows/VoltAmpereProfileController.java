@@ -21,6 +21,7 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
@@ -90,6 +91,9 @@ public class VoltAmpereProfileController {
     private Parent vapDialogView;
     private CoilPulseCalculator coilPulseCalculator;
     private VoltAmpereProfile currentVAP;
+
+    @Autowired
+    private MainSectionModel mainSectionModel;
 
     private Logger logger = LoggerFactory.getLogger(VoltAmpereProfileController.class);
 
@@ -183,6 +187,8 @@ public class VoltAmpereProfileController {
 
         setupVoltageTabListener();
 
+        setupManufacturerListener();
+
     }
 
     private void setupTestModelListener() {
@@ -222,6 +228,19 @@ public class VoltAmpereProfileController {
                 setInitialsToVapSpinners();
             }
         });
+    }
+
+    private void setupManufacturerListener() {
+
+        mainSectionModel.manufacturerObjectProperty().addListener((observableValue, oldValue, newValue) -> {
+            if (newValue!= null && newValue.getManufacturerName().equals("Denso")) {
+                boostUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(BOOST_U_SPINNER_MIN,
+                        BOOST_U_SPINNER_MAX + 15,
+                        BOOST_U_SPINNER_INIT,
+                        BOOST_U_SPINNER_STEP));
+            }
+        });
+
     }
 
     private void setupVoltageTabListener() {
@@ -420,9 +439,14 @@ public class VoltAmpereProfileController {
                     BOOST_U_SPINNER_MAX_PIEZO,
                     BOOST_U_SPINNER_INIT,
                     BATTERY_U_SPINNER_STEP));
-        }else{
+        } else if (mainSectionModel.manufacturerObjectProperty().get().getManufacturerName().equals("Denso")) {
+            boostUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(BOOST_U_SPINNER_MIN,
+                    BOOST_U_SPINNER_MAX + 15,
+                    BOOST_U_SPINNER_INIT,
+                    BOOST_U_SPINNER_STEP));
+        } else {
 
-            if (convertDataToInt(injectorSectionUpdateModel.boost_UProperty().get()) > BOOST_U_SPINNER_MAX){
+            if (convertDataToInt(injectorSectionUpdateModel.boost_UProperty().get()) > BOOST_U_SPINNER_MAX) {
                 ultimaModbusWriter.add(ModbusMapUltima.Boost_U, BOOST_U_SPINNER_INIT);
             }
             boostUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(BOOST_U_SPINNER_MIN,

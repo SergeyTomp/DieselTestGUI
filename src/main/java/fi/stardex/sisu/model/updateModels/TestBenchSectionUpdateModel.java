@@ -2,10 +2,13 @@ package fi.stardex.sisu.model.updateModels;
 
 import fi.stardex.sisu.annotations.Module;
 import fi.stardex.sisu.devices.Device;
+import fi.stardex.sisu.model.GUI_TypeModel;
 import fi.stardex.sisu.registers.stand.ModbusMapStand;
 import fi.stardex.sisu.ui.updaters.Updater;
 import fi.stardex.sisu.util.enums.ControlsService;
+import fi.stardex.sisu.util.enums.GUI_type;
 import javafx.beans.property.*;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
 
@@ -40,6 +43,9 @@ public class TestBenchSectionUpdateModel implements Updater {
     private ModbusMapStand factRpmValue;
     private ModbusMapStand direction;
     private ModbusMapStand driveON;
+
+    @Autowired
+    private GUI_TypeModel gui_typeModel;
 
     public BooleanProperty sectionStartedProperty() {
         return sectionStarted;
@@ -109,9 +115,15 @@ public class TestBenchSectionUpdateModel implements Updater {
         runDoubleRegister(temp_1Value, tankOilTemperature);
         runDoubleRegister(temp_2Value, backFlowOilTemperature);
         runIntegerRegister(targetRpmValue, targetRPM);
-        runIntegerRegister(factRpmValue, currentRPM);
         runIntegerRegister(oilValue, tankOilLevel);
         runPumpButtonRegisters(pumpAuto, pumpAutoMode, pumpON, pumpTurnOn);
+        /** ниже в комментариях необходимая доработка для отключения отслеживания оборотов от датчика Stand или StandFM для UIS.
+         * При подключении этой доработки необходимо раскомментировать в TachometerUltimaUpdateModel, также в run(),
+         * условие для обработки датчика оборотов Ultima при выборе UIS даже при подлюченных Stand или StandFM,
+         * там есть аналогичный комментарий*/
+//        if (gui_typeModel.guiTypeProperty().get() != GUI_type.UIS) {
+            runIntegerRegister(factRpmValue, currentRPM);
+//        }
     }
 
 

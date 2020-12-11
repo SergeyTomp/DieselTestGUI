@@ -1,5 +1,6 @@
 package fi.stardex.sisu.ui.controllers.cr.dialogs;
 
+import fi.stardex.sisu.model.cr.MainSectionModel;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorType;
 import fi.stardex.sisu.persistence.orm.cr.inj.VoltAmpereProfile;
 import fi.stardex.sisu.persistence.repos.cr.VoltAmpereProfileRepository;
@@ -10,6 +11,7 @@ import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
 
@@ -61,6 +63,9 @@ public class NewEditVOAPDialogController {
     private StringProperty boostU_disabled = new SimpleStringProperty();
     private StringBuilder codeBuilder = new StringBuilder();
     private VoltAmpereProfile currentVOAP;
+
+    @Autowired
+    private MainSectionModel mainSectionModel;
 
     public void setVoltAmpereProfileRepository(VoltAmpereProfileRepository voltAmpereProfileRepository) {
         this.voltAmpereProfileRepository = voltAmpereProfileRepository;
@@ -278,6 +283,12 @@ public class NewEditVOAPDialogController {
         deletionError.setVisible(false);
         disableNodes(false);
         enterNameTF.setDisable(false);
+        if (mainSectionModel.manufacturerObjectProperty().get().getManufacturerName().equals("Denso")) {
+            boostUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(BOOST_U_SPINNER_MIN,
+                    BOOST_U_SPINNER_MAX + 15,
+                    BOOST_U_SPINNER_INIT,
+                    BOOST_U_SPINNER_STEP));
+        }
     }
 
     public void setCopy() {
@@ -337,6 +348,11 @@ public class NewEditVOAPDialogController {
 
             boostUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(BOOST_U_SPINNER_MIN,
                     BOOST_U_SPINNER_MAX_PIEZO,
+                    BOOST_U_SPINNER_INIT,
+                    BOOST_U_SPINNER_STEP));
+        } else if (mainSectionModel.manufacturerObjectProperty().get().getManufacturerName().equals("Denso")) {
+            boostUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(BOOST_U_SPINNER_MIN,
+                    BOOST_U_SPINNER_MAX + 15,
                     BOOST_U_SPINNER_INIT,
                     BOOST_U_SPINNER_STEP));
         } else {

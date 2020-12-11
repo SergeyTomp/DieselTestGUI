@@ -231,6 +231,9 @@
                                     </VBox>
                                               <Button fx:id="saveBipButton" disable="true" mnemonicParsing="false" prefHeight="25.0" prefWidth="65.0" text="Save" StackPane.alignment="BOTTOM_CENTER" />
                                  </children>
+                                 <padding>
+                                    <Insets top="10.0" />
+                                 </padding>
                                         </StackPane>
                                         <StackPane fx:id="delayStackPane" maxWidth="190.0" GridPane.columnIndex="1">
                                             <GridPane.margin>
@@ -239,6 +242,9 @@
                                  <children>
                                               <Button fx:id="saveDelayButton" mnemonicParsing="false" prefHeight="25.0" prefWidth="65.0" text="Save" StackPane.alignment="BOTTOM_CENTER" />
                                  </children>
+                                 <padding>
+                                    <Insets top="10.0" />
+                                 </padding>
                                         </StackPane>
                                     </children>
                                 </GridPane>
