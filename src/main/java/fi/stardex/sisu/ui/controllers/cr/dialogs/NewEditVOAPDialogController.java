@@ -63,6 +63,7 @@ public class NewEditVOAPDialogController {
     private StringProperty boostU_disabled = new SimpleStringProperty();
     private StringBuilder codeBuilder = new StringBuilder();
     private VoltAmpereProfile currentVOAP;
+    private int DENSO_ADD = 15;
 
     @Autowired
     private MainSectionModel mainSectionModel;
@@ -285,7 +286,7 @@ public class NewEditVOAPDialogController {
         enterNameTF.setDisable(false);
         if (mainSectionModel.manufacturerObjectProperty().get().getManufacturerName().equals("Denso")) {
             boostUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(BOOST_U_SPINNER_MIN,
-                    BOOST_U_SPINNER_MAX + 15,
+                    BOOST_U_SPINNER_MAX + DENSO_ADD,
                     BOOST_U_SPINNER_INIT,
                     BOOST_U_SPINNER_STEP));
         }
@@ -352,7 +353,7 @@ public class NewEditVOAPDialogController {
                     BOOST_U_SPINNER_STEP));
         } else if (mainSectionModel.manufacturerObjectProperty().get().getManufacturerName().equals("Denso")) {
             boostUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(BOOST_U_SPINNER_MIN,
-                    BOOST_U_SPINNER_MAX + 15,
+                    BOOST_U_SPINNER_MAX + DENSO_ADD,
                     BOOST_U_SPINNER_INIT,
                     BOOST_U_SPINNER_STEP));
         } else {

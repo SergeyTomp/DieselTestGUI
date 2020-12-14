@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<GridPane fx:id="settingsUisGridPane" maxHeight="300.0" prefHeight="280.0" prefWidth="506.0" stylesheets="@../../../css/Styling.css" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.uis.UisSettingsController">
+<GridPane fx:id="settingsUisGridPane" maxHeight="300.0" prefHeight="280.0" prefWidth="506.0" xmlns="http://javafx.com/javafx/8.0.121" xmlns:fx="http://javafx.com/fxml/1" fx:controller="fi.stardex.sisu.ui.controllers.uis.UisSettingsController">
 
   <columnConstraints>
     <ColumnConstraints halignment="LEFT" hgrow="ALWAYS" maxWidth="200.0" minWidth="10.0" prefWidth="180.0" />
@@ -27,11 +27,11 @@
       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
   </rowConstraints>
    <children>
-      <Label fx:id="pressureSensorLabel" stylesheets="@../../../css/Styling.css" text="%settings.pressureSensor.Label">
+      <Label fx:id="pressureSensorLabel" text="%settings.pressureSensor.Label">
          <GridPane.margin>
             <Insets left="10.0" />
          </GridPane.margin></Label>
-      <Label fx:id="languagesLabel" prefHeight="16.0" stylesheets="@../../../css/Styling.css" text="%settings.languages.ComboBox" GridPane.rowIndex="1">
+      <Label fx:id="languagesLabel" prefHeight="16.0" text="%settings.languages.ComboBox" GridPane.rowIndex="1">
          <GridPane.margin>
             <Insets left="10.0" />
          </GridPane.margin></Label>
@@ -43,12 +43,12 @@
          <GridPane.margin>
             <Insets left="10.0" />
          </GridPane.margin></Label>
-      <Spinner fx:id="sensorAngleSpinner" prefWidth="170.0" stylesheets="@../../../css/Styling.css" GridPane.columnIndex="1" GridPane.rowIndex="2">
+      <Spinner fx:id="sensorAngleSpinner" prefWidth="170.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
          <GridPane.margin>
             <Insets />
          </GridPane.margin>
       </Spinner>
-      <CheckBox fx:id="instantFlowCheckBox" mnemonicParsing="false" selected="true" styleClass="checkBox" stylesheets="@../../../css/Styling.css" text="%h4.settings.label.flowVisible" GridPane.rowIndex="7">
+      <CheckBox fx:id="instantFlowCheckBox" mnemonicParsing="false" selected="true" styleClass="checkBox" text="%h4.settings.label.flowVisible" GridPane.rowIndex="7">
          <GridPane.margin>
             <Insets left="10.0" />
          </GridPane.margin></CheckBox>

@@ -20,7 +20,7 @@
             <children>
             <VBox>
                <children>
-                  <TextField fx:id="typeTextField" alignment="CENTER" editable="false" maxHeight="-Infinity" styleClass="modelTextField" stylesheets="@../../css/Styling.css">
+                  <TextField fx:id="typeTextField" alignment="CENTER" editable="false" maxHeight="-Infinity" styleClass="modelTextField">
                      <VBox.margin>
                         <Insets bottom="5.0" left="10.0" right="10.0" top="5.0" />
                      </VBox.margin>

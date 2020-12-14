@@ -91,6 +91,7 @@ public class VoltAmpereProfileController {
     private Parent vapDialogView;
     private CoilPulseCalculator coilPulseCalculator;
     private VoltAmpereProfile currentVAP;
+    private int DENSO_ADD = 15;
 
     @Autowired
     private MainSectionModel mainSectionModel;
@@ -235,7 +236,7 @@ public class VoltAmpereProfileController {
         mainSectionModel.manufacturerObjectProperty().addListener((observableValue, oldValue, newValue) -> {
             if (newValue!= null && newValue.getManufacturerName().equals("Denso")) {
                 boostUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(BOOST_U_SPINNER_MIN,
-                        BOOST_U_SPINNER_MAX + 15,
+                        BOOST_U_SPINNER_MAX + DENSO_ADD,
                         BOOST_U_SPINNER_INIT,
                         BOOST_U_SPINNER_STEP));
             }
@@ -441,7 +442,7 @@ public class VoltAmpereProfileController {
                     BATTERY_U_SPINNER_STEP));
         } else if (mainSectionModel.manufacturerObjectProperty().get().getManufacturerName().equals("Denso")) {
             boostUSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(BOOST_U_SPINNER_MIN,
-                    BOOST_U_SPINNER_MAX + 15,
+                    BOOST_U_SPINNER_MAX + DENSO_ADD,
                     BOOST_U_SPINNER_INIT,
                     BOOST_U_SPINNER_STEP));
         } else {

@@ -90,7 +90,7 @@
                             </AnchorPane>
                         </children>
                     </StackPane>
-                    <TextField fx:id="flowTextField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="85.0" styleClass="modelTextField" stylesheets="@../../../css/Styling.css" GridPane.columnIndex="0" GridPane.rowIndex="1">
+                    <TextField fx:id="flowTextField" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="30.0" prefWidth="85.0" styleClass="modelTextField" GridPane.columnIndex="0" GridPane.rowIndex="1">
                         <tooltip>
                             <Tooltip text="%h4.field.tip.beaker1" />
                         </tooltip>
