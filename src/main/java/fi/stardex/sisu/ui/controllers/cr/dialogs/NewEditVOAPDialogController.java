@@ -11,7 +11,6 @@ import javafx.beans.property.StringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.stage.Stage;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
 
@@ -64,9 +63,11 @@ public class NewEditVOAPDialogController {
     private StringBuilder codeBuilder = new StringBuilder();
     private VoltAmpereProfile currentVOAP;
     private int DENSO_ADD = 15;
-
-    @Autowired
     private MainSectionModel mainSectionModel;
+
+    public void setMainSectionModel(MainSectionModel mainSectionModel) {
+        this.mainSectionModel = mainSectionModel;
+    }
 
     public void setVoltAmpereProfileRepository(VoltAmpereProfileRepository voltAmpereProfileRepository) {
         this.voltAmpereProfileRepository = voltAmpereProfileRepository;

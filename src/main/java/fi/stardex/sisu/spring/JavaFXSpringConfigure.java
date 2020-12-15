@@ -762,11 +762,21 @@ public class JavaFXSpringConfigure extends ViewLoader{
     @Autowired
     public ConnectionController connectionController(Preferences rootPrefs,
                                                      ViewHolder connection,
-                                                     ViewHolder rootLayout){
+                                                     ViewHolder rootLayout,
+                                                     ViewHolder firmwareDialog,
+                                                     ViewHolder printDialogPanel,
+                                                     ViewHolder newEditTestDialog,
+                                                     ViewHolder newEditInjectorDialog,
+                                                     ViewHolder manufacturerMenuDialog){
         ConnectionController connectionController = (ConnectionController)connection.getController();
         connectionController.setI18N(i18N);
         connectionController.setRootPrefs(rootPrefs);
         connectionController.setRootLayout(rootLayout);
+        connectionController.setFirmwareDialog(firmwareDialog);
+        connectionController.setPrintDialogPanel(printDialogPanel);
+        connectionController.setNewEditTestDialog(newEditTestDialog);
+        connectionController.setNewEditInjectorDialog(newEditInjectorDialog);
+        connectionController.setManufacturerMenuDialog(manufacturerMenuDialog);
         return connectionController;
     }
 
@@ -803,7 +813,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                                    InjectorSectionUpdateModel injectorSectionUpdateModel,
                                                                    InjectorModel injectorModel,
                                                                    InjectorTypeModel injectorTypeModel,
-                                                                   VoltageTabModel voltageTabModel) {
+                                                                   VoltageTabModel voltageTabModel,
+                                                                   MainSectionModel mainSectionModel) {
         VoltAmpereProfileController voltAmpereProfileController = (VoltAmpereProfileController) voltAmpereProfileDialog().getController();
         voltAmpereProfileController.setUltimaModbusWriter(ultimaModbusWriter);
         voltAmpereProfileController.setI18N(i18N);
@@ -816,6 +827,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         voltAmpereProfileController.setInjectorTypeModel(injectorTypeModel);
         voltAmpereProfileController.setVapDialogView(voltAmpereProfileDialog().getView());
         voltAmpereProfileController.setVoltageTabModel(voltageTabModel);
+        voltAmpereProfileController.setMainSectionModel(mainSectionModel);
         return voltAmpereProfileController;
     }
 
@@ -956,10 +968,12 @@ public class JavaFXSpringConfigure extends ViewLoader{
     @Bean
     @Autowired
     public NewEditVOAPDialogController newEditVOAPDialogController(VoltAmpereProfileRepository voltAmpereProfileRepository,
-                                                                   I18N i18N) {
+                                                                   I18N i18N,
+                                                                   MainSectionModel mainSectionModel) {
         NewEditVOAPDialogController newEditVOAPDialogController = (NewEditVOAPDialogController) newEditVOAPDialog().getController();
         newEditVOAPDialogController.setVoltAmpereProfileRepository(voltAmpereProfileRepository);
         newEditVOAPDialogController.setI18N(i18N);
+        newEditVOAPDialogController.setMainSectionModel(mainSectionModel);
         return newEditVOAPDialogController;
     }
 

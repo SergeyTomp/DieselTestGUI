@@ -21,7 +21,6 @@ import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
@@ -92,8 +91,6 @@ public class VoltAmpereProfileController {
     private CoilPulseCalculator coilPulseCalculator;
     private VoltAmpereProfile currentVAP;
     private int DENSO_ADD = 15;
-
-    @Autowired
     private MainSectionModel mainSectionModel;
 
     private Logger logger = LoggerFactory.getLogger(VoltAmpereProfileController.class);
@@ -156,6 +153,10 @@ public class VoltAmpereProfileController {
 
     public void setVapDialogView(Parent vapDialogView) {
         this.vapDialogView = vapDialogView;
+    }
+
+    public void setMainSectionModel(MainSectionModel mainSectionModel) {
+        this.mainSectionModel = mainSectionModel;
     }
 
     private enum Invocator {

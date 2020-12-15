@@ -10,7 +10,9 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 
 import javax.annotation.PostConstruct;
+import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.List;
 import java.util.function.UnaryOperator;
 import java.util.prefs.Preferences;
 
@@ -48,7 +50,10 @@ public class ConnectionController {
 
     private I18N i18N;
 
+    private List<ViewHolder> viewHoldersList = new ArrayList<>();
+
     private ViewHolder rootLayout;
+    private ViewHolder printDialogPanel;
 
     private Preferences rootPrefs;
 
@@ -78,6 +83,28 @@ public class ConnectionController {
 
     public void setRootLayout(ViewHolder rootLayout) {
         this.rootLayout = rootLayout;
+        viewHoldersList.add(rootLayout);
+    }
+
+    public void setFirmwareDialog(ViewHolder firmwareDialog) {
+        viewHoldersList.add(firmwareDialog);
+    }
+
+    public void setPrintDialogPanel(ViewHolder printDialogPanel) {
+        this.printDialogPanel = printDialogPanel;
+        viewHoldersList.add(printDialogPanel);
+    }
+
+    public void setNewEditTestDialog(ViewHolder newEditTestDialog) {
+        viewHoldersList.add(newEditTestDialog);
+    }
+
+    public void setNewEditInjectorDialog(ViewHolder newEditInjectorDialog) {
+        viewHoldersList.add(newEditInjectorDialog);
+    }
+
+    public void setManufacturerMenuDialog(ViewHolder manufacturerMenuDialog) {
+        viewHoldersList.add(manufacturerMenuDialog);
     }
 
     public Pair<String, String> getUltimaConnect() {
@@ -129,8 +156,9 @@ public class ConnectionController {
 
         });
         bindingI18N();
-        /**TODO: удалить строку ниже после подключения функционала управления стилями и раскомментироваать setThemeManager()*/
+        /**TODO: удалить строки ниже после подключения функционала управления стилями и раскомментироваать setThemeManager()*/
         rootLayout.getView().getStylesheets().add(getClass().getResource("/css/Styling.css").toExternalForm());
+        printDialogPanel.getView().getStylesheets().add(getClass().getResource("/css/Styling.css").toExternalForm());
 //        setThemeManager();
     }
 
@@ -182,8 +210,7 @@ public class ConnectionController {
         themeComboBox.getItems().addAll(Theme.values());
         themeComboBox.getItems().sort(Comparator.comparingInt(Theme::getOrder));
         themeComboBox.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            rootLayout.getView().getStylesheets().clear();
-            rootLayout.getView().getStylesheets().add(getClass().getResource(("/css/" + newValue.getFile()).intern()).toExternalForm());
+            setTheme(getClass().getResource(("/css/" + newValue.getFile()).intern()).toExternalForm());
             rootPrefs.put("theme", newValue.name());
         });
 
@@ -196,6 +223,14 @@ public class ConnectionController {
 
         themeComboBox.setVisible(true);
         themeLabel.setVisible(true);
+    }
+
+    private void setTheme(String theme) {
+
+        viewHoldersList.forEach(vh -> {
+            vh.getView().getStylesheets().clear();
+            vh.getView().getStylesheets().add(theme);
+        });
     }
 
     private void bindingI18N() {
