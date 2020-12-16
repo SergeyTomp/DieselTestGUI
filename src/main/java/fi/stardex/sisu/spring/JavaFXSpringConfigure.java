@@ -767,7 +767,16 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                      ViewHolder printDialogPanel,
                                                      ViewHolder newEditTestDialog,
                                                      ViewHolder newEditInjectorDialog,
-                                                     ViewHolder manufacturerMenuDialog){
+                                                     ViewHolder voltAmpereProfileDialog,
+                                                     ViewHolder manufacturerMenuDialog,
+                                                     ViewHolder customProducerPumpDialog,
+                                                     ViewHolder customPumpDialog,
+                                                     ViewHolder customPumpTestDialog,
+                                                     ViewHolder customManufacturerUisDialog,
+                                                     ViewHolder customInjectorUisDialog,
+                                                     ViewHolder customTestUisDialog,
+                                                     ViewHolder customVapUisDialog,
+                                                     ViewHolder uisVap){
         ConnectionController connectionController = (ConnectionController)connection.getController();
         connectionController.setI18N(i18N);
         connectionController.setRootPrefs(rootPrefs);
@@ -777,6 +786,15 @@ public class JavaFXSpringConfigure extends ViewLoader{
         connectionController.setNewEditTestDialog(newEditTestDialog);
         connectionController.setNewEditInjectorDialog(newEditInjectorDialog);
         connectionController.setManufacturerMenuDialog(manufacturerMenuDialog);
+        connectionController.setVoltAmpereProfileDialog(voltAmpereProfileDialog);
+        connectionController.setCustomProducerPumpDialog(customProducerPumpDialog);
+        connectionController.setCustomPumpDialog(customPumpDialog);
+        connectionController.setCustomPumpTestDialog(customPumpTestDialog);
+        connectionController.setCustomManufacturerUisDialog(customManufacturerUisDialog);
+        connectionController.setCustomTestUisDialog(customTestUisDialog);
+        connectionController.setCustomInjectorUisDialog(customInjectorUisDialog);
+        connectionController.setCustomVapUisDialog(customVapUisDialog);
+        connectionController.setUisVap(uisVap);
         return connectionController;
     }
 

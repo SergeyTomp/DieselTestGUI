@@ -54,6 +54,7 @@ public class ConnectionController {
 
     private ViewHolder rootLayout;
     private ViewHolder printDialogPanel;
+    private ViewHolder firmwareDialog;
 
     private Preferences rootPrefs;
 
@@ -87,6 +88,7 @@ public class ConnectionController {
     }
 
     public void setFirmwareDialog(ViewHolder firmwareDialog) {
+        this.firmwareDialog = firmwareDialog;
         viewHoldersList.add(firmwareDialog);
     }
 
@@ -105,6 +107,42 @@ public class ConnectionController {
 
     public void setManufacturerMenuDialog(ViewHolder manufacturerMenuDialog) {
         viewHoldersList.add(manufacturerMenuDialog);
+    }
+
+    public void setVoltAmpereProfileDialog(ViewHolder voltAmpereProfileDialog) {
+        viewHoldersList.add(voltAmpereProfileDialog);
+    }
+
+    public void setCustomProducerPumpDialog(ViewHolder customProducerPumpDialog) {
+        viewHoldersList.add(customProducerPumpDialog);
+    }
+
+    public void setCustomPumpDialog(ViewHolder customPumpDialog) {
+        viewHoldersList.add(customPumpDialog);
+    }
+
+    public void setCustomPumpTestDialog(ViewHolder customPumpTestDialog) {
+        viewHoldersList.add(customPumpTestDialog);
+    }
+
+    public void setCustomManufacturerUisDialog(ViewHolder customManufacturerUisDialog) {
+        viewHoldersList.add(customManufacturerUisDialog);
+    }
+
+    public void setCustomInjectorUisDialog(ViewHolder customInjectorUisDialog) {
+        viewHoldersList.add(customInjectorUisDialog);
+    }
+
+    public void setCustomTestUisDialog(ViewHolder customTestUisDialog) {
+        viewHoldersList.add(customTestUisDialog);
+    }
+
+    public void setCustomVapUisDialog(ViewHolder customVapUisDialog) {
+        viewHoldersList.add(customVapUisDialog);
+    }
+
+    public void setUisVap(ViewHolder uisVap) {
+        viewHoldersList.add(uisVap);
     }
 
     public Pair<String, String> getUltimaConnect() {
@@ -156,9 +194,10 @@ public class ConnectionController {
 
         });
         bindingI18N();
-        /**TODO: удалить строки ниже после подключения функционала управления стилями и раскомментироваать setThemeManager()*/
+        /**TODO: удалить 3 строки ниже после подключения функционала управления стилями и раскомментировать setThemeManager()*/
         rootLayout.getView().getStylesheets().add(getClass().getResource("/css/Styling.css").toExternalForm());
         printDialogPanel.getView().getStylesheets().add(getClass().getResource("/css/Styling.css").toExternalForm());
+        firmwareDialog.getView().getStylesheets().add(getClass().getResource("/css/Styling.css").toExternalForm());
 //        setThemeManager();
     }
 
