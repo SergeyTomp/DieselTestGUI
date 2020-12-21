@@ -74,6 +74,9 @@ public class InjectorTest implements ChangeListener<Boolean> {
     @Column(name = "shift")
     private Integer shift;
 
+    @Column(name = "coding_range")
+    private Double codingRange;
+
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "volt_ampere_profile")
     @NotFound
@@ -211,6 +214,9 @@ public class InjectorTest implements ChangeListener<Boolean> {
     }
     public Integer getShift() {
         return shift;
+    }
+    public Double getCodingRange() {
+        return codingRange;
     }
 
     public void setVoltAmpereProfile(VoltAmpereProfile voltAmpereProfile) {

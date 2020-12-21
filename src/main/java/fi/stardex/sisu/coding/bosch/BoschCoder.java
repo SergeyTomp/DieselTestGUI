@@ -107,10 +107,11 @@ public abstract class BoschCoder implements Coder {
         for (Map.Entry<InjectorTest, List<Double>> entry : filteredSet) {
 
             double nominalFlow = entry.getKey().getNominalFlow();
+            Double codingRange = entry.getKey().getCodingRange() == null ? 0 : entry.getKey().getCodingRange();
 
             int fieldLength = getFieldLength(entry.getKey().getTestName().toString());
             List<Integer> convertedList = entry.getValue().stream()
-                    .map(value -> convertToInt(value, nominalFlow, fieldLength))
+                    .map(value -> convertToInt(value, nominalFlow, fieldLength, codingRange))
                     .collect(Collectors.toList());
             convertedMap.put(entry.getKey().toString(), convertedList);
         }
@@ -160,7 +161,7 @@ public abstract class BoschCoder implements Coder {
         }
     }
 
-    int convertToInt(double value, Double nominalFlow, int fieldLength) {
+    int convertToInt(double value, Double nominalFlow, int fieldLength, double codingRange) {
 
         if (value == -99d)
             return -99;
@@ -182,10 +183,29 @@ public abstract class BoschCoder implements Coder {
 //            return (int) (value / valueDivider);
 
             /** New calculation of deviation from central point value with limitation to 50%*/
+//            int sign = delta < 0 ? -1 : 1;
+//            int valueToReturn = (int) (Math.round((delta / valueDivider) / 2));
+//            valueToReturn = Math.abs(valueToReturn) > Math.pow(2d, fieldLength - 2) ? (sign * (int)Math.pow(2d, fieldLength - 2)) : valueToReturn;
+//            return valueToReturn;
+
+            /** New modified calculation of deviation from central point value:
+             *  limitation to 50%
+             *  additional limitation to coding_range (special field in injector-test DB-table)
+             */
             int sign = delta < 0 ? -1 : 1;
-            int valueToReturn = (int) (Math.round((delta / valueDivider) / 2));
-            valueToReturn = Math.abs(valueToReturn) > Math.pow(2d, fieldLength - 2) ? (sign * (int)Math.pow(2d, fieldLength - 2)) : valueToReturn;
-            return valueToReturn;
+            double valueToReturn = Math.abs(delta / 2);
+
+            if (codingRange != 0 && valueToReturn > codingRange) {
+                valueToReturn =  codingRange;
+            }
+
+            valueToReturn =  valueToReturn / valueDivider;
+
+            if (valueToReturn > Math.pow(2d, fieldLength - 2)) {
+                valueToReturn = Math.pow(2d, fieldLength - 2);
+            }
+
+            return (int)(Math.abs(valueToReturn) * sign);
         }
     }
 

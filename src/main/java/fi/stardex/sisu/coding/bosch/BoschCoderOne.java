@@ -101,6 +101,7 @@ public class BoschCoderOne extends BoschCoder {
             isCoeff2andPreInjection = entry.getKey().getTestName().toString().equals(PRE_INJ.toString()) && injectorCoefficient == 2;
 
             double nominalFlow = isCoeff2andPreInjection ? 0d : entry.getKey().getNominalFlow();
+            Double codingRange = entry.getKey().getCodingRange() == null ? 0 : entry.getKey().getCodingRange();
 
             if (isCoeff2andPreInjection) {
                 entry.setValue(entry.getValue().stream()
@@ -110,7 +111,7 @@ public class BoschCoderOne extends BoschCoder {
 
             int fieldLength = getFieldLength(entry.getKey().getTestName().toString());
             List<Integer> convertedList = entry.getValue().stream()
-                    .map(value -> convertToInt(value, nominalFlow, fieldLength))
+                    .map(value -> convertToInt(value, nominalFlow, fieldLength, codingRange))
                     .collect(Collectors.toList());
             convertedMap.put(entry.getKey().toString(), convertedList);
         }

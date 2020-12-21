@@ -244,10 +244,9 @@ public class NewEditInjectorDialogController {
         Integer codetype = baseInjector.getCodetype();
         String newCode = makeCode(injectorCodeTF.getText());
 
-        Injector copy = new Injector(newCode, manufacturer, voltAmpereProfile, true, codetype);
+        Injector copy = new Injector(newCode, manufacturer, voltAmpereProfile, true, -1);
         copy.setHeui(baseInjector.isHeui());
         copy.setCalibrationId(baseInjector.getCalibrationId());
-        copy.setCodetype(baseInjector.getCodetype());
         copy.setCoefficient(baseInjector.getCoefficient());
         List<InjectorTest> newTestsList = new ArrayList<>();
         testList.forEach(test -> newTestsList.add(new InjectorTest(test, copy)));
