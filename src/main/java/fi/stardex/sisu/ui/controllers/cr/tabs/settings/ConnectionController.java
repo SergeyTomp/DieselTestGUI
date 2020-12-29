@@ -52,9 +52,9 @@ public class ConnectionController {
 
     private List<ViewHolder> viewHoldersList = new ArrayList<>();
 
-    private ViewHolder rootLayout;
-    private ViewHolder printDialogPanel;
-    private ViewHolder firmwareDialog;
+//    private ViewHolder rootLayout;
+//    private ViewHolder printDialogPanel;
+//    private ViewHolder firmwareDialog;
 
     private Preferences rootPrefs;
 
@@ -83,17 +83,17 @@ public class ConnectionController {
     }
 
     public void setRootLayout(ViewHolder rootLayout) {
-        this.rootLayout = rootLayout;
+//        this.rootLayout = rootLayout;
         viewHoldersList.add(rootLayout);
     }
 
     public void setFirmwareDialog(ViewHolder firmwareDialog) {
-        this.firmwareDialog = firmwareDialog;
+//        this.firmwareDialog = firmwareDialog;
         viewHoldersList.add(firmwareDialog);
     }
 
     public void setPrintDialogPanel(ViewHolder printDialogPanel) {
-        this.printDialogPanel = printDialogPanel;
+//        this.printDialogPanel = printDialogPanel;
         viewHoldersList.add(printDialogPanel);
     }
 
@@ -195,10 +195,10 @@ public class ConnectionController {
         });
         bindingI18N();
         /**TODO: удалить 3 строки ниже после подключения функционала управления стилями и раскомментировать setThemeManager()*/
-        rootLayout.getView().getStylesheets().add(getClass().getResource("/css/Styling.css").toExternalForm());
-        printDialogPanel.getView().getStylesheets().add(getClass().getResource("/css/Styling.css").toExternalForm());
-        firmwareDialog.getView().getStylesheets().add(getClass().getResource("/css/Styling.css").toExternalForm());
-//        setThemeManager();
+//        rootLayout.getView().getStylesheets().add(getClass().getResource("/css/Styling.css").toExternalForm());
+//        printDialogPanel.getView().getStylesheets().add(getClass().getResource("/css/Styling.css").toExternalForm());
+//        firmwareDialog.getView().getStylesheets().add(getClass().getResource("/css/Styling.css").toExternalForm());
+        setThemeManager();
     }
 
     private void setPairValues() {
