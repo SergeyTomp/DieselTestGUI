@@ -604,6 +604,7 @@ public class MainSectionController {
                 List<InjectorTest> injectorTests = getInjectorTests().
                         stream().
                         filter(injectorTest -> !injectorTest.getTestName().toString().equals("ISA Detection")).
+                        filter(injectorTest -> !injectorTest.getTestName().toString().equals("Back flow pressure levelling 2")).
                         collect(Collectors.toList());
                 testListViewItems.setAll(injectorTests);
                 testListViewItems.sort((Comparator.comparingInt(injectorTest -> injectorTest.getTestName().getId())));
@@ -614,6 +615,7 @@ public class MainSectionController {
                 injectorTests = getInjectorTests().
                         stream().
                         filter(injectorTest -> !injectorTest.getTestName().toString().equals("ISA Detection")).
+                        filter(injectorTest -> !injectorTest.getTestName().toString().equals("Back flow pressure levelling 2")).
                         collect(Collectors.toList());
                 testListViewItems.setAll(injectorTests);
                 testListViewItems.sort((Comparator.comparingInt(injectorTest -> injectorTest.getTestName().getId())));
