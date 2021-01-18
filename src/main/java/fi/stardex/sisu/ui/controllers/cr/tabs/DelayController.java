@@ -202,7 +202,7 @@ public class DelayController {
 
     private void setupAddingTime() {
 
-        addingTime.setText("0");
+        addingTime.setText("500");
 
         Pattern p = Pattern.compile("^([1-9]\\d*)?$");
 
