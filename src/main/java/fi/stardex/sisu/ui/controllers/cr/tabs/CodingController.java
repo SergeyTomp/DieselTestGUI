@@ -1,39 +1,56 @@
 package fi.stardex.sisu.ui.controllers.cr.tabs;
 
 import fi.stardex.sisu.model.cr.CodingReportModel;
+import fi.stardex.sisu.model.cr.InjectorModel;
+import fi.stardex.sisu.model.cr.MainSectionModel;
 import fi.stardex.sisu.pdf.Result;
 import fi.stardex.sisu.util.i18n.I18N;
 import javafx.collections.MapChangeListener;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
 
 public class CodingController {
 
-    @FXML private TextField injectorCode1TextField;
+    @FXML
+    private TextField injectorCode1TextField;
 
-    @FXML private TextField injectorCode2TextField;
+    @FXML
+    private TextField injectorCode2TextField;
 
-    @FXML private TextField injectorCode3TextField;
+    @FXML
+    private TextField injectorCode3TextField;
 
-    @FXML private TextField injectorCode4TextField;
+    @FXML
+    private TextField injectorCode4TextField;
 
-    @FXML private Label labelCode1TextField;
+    @FXML
+    private Label labelCode1TextField;
 
-    @FXML private Label labelCode2TextField;
+    @FXML
+    private Label labelCode2TextField;
 
-    @FXML private Label labelCode3TextField;
+    @FXML
+    private Label labelCode3TextField;
 
-    @FXML private Label labelCode4TextField;
+    @FXML
+    private Label labelCode4TextField;
 
-    @FXML private Label labelCodingNote;
+    @FXML
+    private Label labelCodingNote;
+
+    @FXML
+    private Label codeCompletionLabel;
 
     private List<TextField> textFieldsList;
 
     private CodingReportModel codingReportModel;
+
+    private MainSectionModel mainSectionModel;
 
     private I18N i18N;
 
@@ -61,24 +78,31 @@ public class CodingController {
         this.codingReportModel = codingReportModel;
     }
 
+    public void setMainSectionModel(MainSectionModel mainSectionModel) {
+        this.mainSectionModel = mainSectionModel;
+    }
+
     @PostConstruct
-    private void init(){
+    private void init() {
         bindingI18N();
-        
+
         textFieldsList = List.of(injectorCode1TextField, injectorCode2TextField, injectorCode3TextField, injectorCode4TextField);
 
         codingReportModel.getResultObservableMap().addListener((MapChangeListener<String, Result>) change -> {
 
-            if(!change.getMap().isEmpty()){
+            if (!change.getMap().isEmpty()) {
 
                 List<Result> values = codingReportModel.getResultsList();
                 values.stream()
                         .filter(v -> !v.getMainColumn().equals(""))
                         .forEach(result -> textFieldsList.get(Integer.parseInt(result.getMainColumn()) - 1).setText(result.getSubColumn1()));
-            }else{
+            } else {
                 List.of(injectorCode1TextField, injectorCode2TextField, injectorCode3TextField, injectorCode4TextField).forEach(tF -> tF.setText(""));
             }
         });
+
+        mainSectionModel.manufacturerObjectProperty().addListener((observableValue, oldValue, newValue) ->
+                codeCompletionLabel.setVisible(newValue != null && newValue.getManufacturerName().equals("Bosch")));
     }
 
     private void bindingI18N() {
@@ -87,5 +111,6 @@ public class CodingController {
         labelCode3TextField.textProperty().bind(i18N.createStringBinding("h4.coding.label.injector3"));
         labelCode4TextField.textProperty().bind(i18N.createStringBinding("h4.coding.label.injector4"));
         labelCodingNote.textProperty().bind(i18N.createStringBinding("h4.coding.label.codingNote"));
+        codeCompletionLabel.textProperty().bind(i18N.createStringBinding("coding.code-completion.label"));
     }
 }

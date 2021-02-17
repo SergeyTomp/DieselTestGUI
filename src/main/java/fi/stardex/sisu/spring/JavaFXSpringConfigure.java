@@ -533,10 +533,12 @@ public class JavaFXSpringConfigure extends ViewLoader{
     @Bean
     @Autowired
     public CodingController codingController(TabSectionController tabSectionController,
-                                             CodingReportModel codingReportModel){
+                                             CodingReportModel codingReportModel,
+                                             MainSectionModel mainSectionModel){
         CodingController codingController = tabSectionController.getCodingController();
         codingController.setI18N(i18N);
         codingController.setCodingReportModel(codingReportModel);
+        codingController.setMainSectionModel(mainSectionModel);
         return codingController;
     }
 

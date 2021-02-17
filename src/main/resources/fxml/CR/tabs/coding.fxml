@@ -15,6 +15,7 @@
         <RowConstraints percentHeight="20" />
         <RowConstraints percentHeight="20" />
         <RowConstraints percentHeight="20" />
+      <RowConstraints minHeight="10.0" percentHeight="20.0" prefHeight="30.0" />
     </rowConstraints>
     <columnConstraints>
         <ColumnConstraints halignment="RIGHT" percentWidth="30" />
@@ -58,6 +59,7 @@
                 <Insets left="20.0" />
             </GridPane.margin>
         </TextField>
-        <Label fx:id="labelCodingNote" prefHeight="63.0" prefWidth="460.0" text="%h4.coding.label.codingNote" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+        <Label fx:id="labelCodingNote" text="%h4.coding.label.codingNote" wrapText="true" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.rowIndex="4" />
+      <Label fx:id="codeCompletionLabel" text="If the generated code is shorter than the original code, add the last characters from the original code to the end of the generated code." visible="false" GridPane.columnSpan="3" GridPane.halignment="CENTER" GridPane.rowIndex="5" GridPane.valignment="TOP" />
     </children>
 </GridPane>
