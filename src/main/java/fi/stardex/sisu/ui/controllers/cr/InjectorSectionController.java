@@ -370,7 +370,9 @@ public class InjectorSectionController {
                 disableNode(true, width2CurrentSignalSpinner, offset2CurrentSignalSpinner, injectorSectionStartToggleButton);
                 return;
             }
+
             Measurement measurementType = newValue.getTestName().getMeasurement();
+            boolean isDoubleCoil = newValue.getVoltAmpereProfile().isDoubleCoil();
 
             switch (measurementType) {
 
@@ -380,6 +382,7 @@ public class InjectorSectionController {
                     break;
                 default:
                     setDefaultSpinnerValueFactories(true);
+                    disableNode (isDoubleCoil || tabSectionModel.step3TabIsShowingProperty().get(), led2ToggleButton, led3ToggleButton, led4ToggleButton);
                     disableNode(false, widthCurrentSignalSpinner, freqCurrentSignalSpinner);
                     disableNode(boostUadjustmentState.boostUadjustmentStateProperty().get()
                             || tabSectionModel.step3TabIsShowingProperty().get()
@@ -414,8 +417,7 @@ public class InjectorSectionController {
                 boolean isDoubleCoil = newValue.getVoltAmpereProfile().isDoubleCoil();
                 led1ToggleButton.setSelected(true);
                 selectButton(false, led2ToggleButton, led3ToggleButton, led4ToggleButton);
-                disableNode (isDoubleCoil || tabSectionModel.step3TabIsShowingProperty().get(), led2ToggleButton, led3ToggleButton, led4ToggleButton);
-//                disableNode (tabSectionModel.step3TabIsShowingProperty().get(), led2ToggleButton, led3ToggleButton, led4ToggleButton);
+//                disableNode (isDoubleCoil || tabSectionModel.step3TabIsShowingProperty().get(), led2ToggleButton, led3ToggleButton, led4ToggleButton);
                 ultimaModbusWriter.add(Double_Coil_Mode_En, isDoubleCoil);
                 ultimaModbusWriter.add(SecondCoilShiftEnable, isDoubleCoil);
             }
