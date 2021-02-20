@@ -2,6 +2,7 @@ package fi.stardex.sisu.ui.controllers.cr;
 
 import fi.stardex.sisu.coding.delphi.c2i.DelphiC2ICodingDataStorage;
 import fi.stardex.sisu.coding.delphi.c3i.DelphiC3ICodingDataStorage;
+import fi.stardex.sisu.coding.delphi.c4i.DelphiC4ICodingDataStorage;
 import fi.stardex.sisu.coding.denso.DensoCodingDataStorage;
 import fi.stardex.sisu.measurement.CrTestManager;
 import fi.stardex.sisu.model.GUI_TypeModel;
@@ -1291,6 +1292,7 @@ public class MainSectionController {
         DensoCodingDataStorage.clean();
         DelphiC2ICodingDataStorage.clean();
         DelphiC3ICodingDataStorage.clean();
+        DelphiC4ICodingDataStorage.clean();
         delayReportModel.clearResults();
         rlc_reportModel.clearResults();
         flowReportModel.clearResults();

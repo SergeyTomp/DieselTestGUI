@@ -6,6 +6,8 @@ import fi.stardex.sisu.coding.delphi.c2i.DelphiC2ICoding;
 import fi.stardex.sisu.coding.delphi.c2i.DelphiC2ICodingDataStorage;
 import fi.stardex.sisu.coding.delphi.c3i.DelphiC3ICoding;
 import fi.stardex.sisu.coding.delphi.c3i.DelphiC3ICodingDataStorage;
+import fi.stardex.sisu.coding.delphi.c4i.DelphiC4ICoding;
+import fi.stardex.sisu.coding.delphi.c4i.DelphiC4ICodingDataStorage;
 import fi.stardex.sisu.coding.denso.DensoCoding;
 import fi.stardex.sisu.coding.denso.DensoCodingDataStorage;
 import fi.stardex.sisu.model.TestBenchSectionModel;
@@ -225,6 +227,14 @@ public class CrTestManager implements TestManager {
                                     .collect(Collectors.toList()));
                 else if (isDelphiC3ICoding())
                     DelphiC3ICodingDataStorage.initialize(activeLedToggleButtonsList);
+                else if (isDelphiC4ICoding()) {
+                    DelphiC4ICodingDataStorage.initialize(activeLedToggleButtonsList,
+                            testListViewItems
+                                    .stream()
+                                    .filter(injectorTest -> injectorTest.getTestName().isTestPoint())
+                                    .map(injectorTest -> injectorTest.getTestName().toString())
+                                    .collect(Collectors.toList()));
+                }
                 break;
         }
         start();
@@ -266,11 +276,9 @@ public class CrTestManager implements TestManager {
         switch (getManufacturer().toString()) {
 
             case "Bosch":
-//                setCodingResults(BoschCoding.calculate(flowReportModel.getResultObservableMap(), codingReportModel.getResultsList(), injectorControllersState.getArrayNumbersOfActiveLedToggleButtons()));
                 setCodingResults(coderFactory.getCoder(mainSectionModel.injectorProperty().get()).buildCode(flowReportModel.getResultObservableMap()));
                 break;
             case "Siemens":
-//                setCodingResults(SiemensCoding.calculate(flowReportModel.getResultObservableMap(), mainSectionModel.injectorProperty().get()));
                 setCodingResults(coderFactory.getCoder(mainSectionModel.injectorProperty().get()).buildCode(flowReportModel.getResultObservableMap()));
                 break;
             case "Denso":
@@ -278,9 +286,15 @@ public class CrTestManager implements TestManager {
                 break;
             case "Delphi":
                 if (isDelphiC2ICoding())
-                    setCodingResults(DelphiC2ICoding.calculate(injectorControllersState.getArrayNumbersOfActiveLedToggleButtons(), codingReportModel.getResultsList()));
+                    setCodingResults(DelphiC2ICoding.calculate(
+                            injectorControllersState.getArrayNumbersOfActiveLedToggleButtons(), codingReportModel.getResultsList()));
                 else if (isDelphiC3ICoding())
-                    setCodingResults(DelphiC3ICoding.calculate(injectorControllersState.getArrayNumbersOfActiveLedToggleButtons(), codingReportModel.getResultsList()));
+                    setCodingResults(DelphiC3ICoding.calculate(
+                            injectorControllersState.getArrayNumbersOfActiveLedToggleButtons(), codingReportModel.getResultsList()));
+                else if(isDelphiC4ICoding()){
+                    setCodingResults(DelphiC4ICoding.calculate(
+                            injectorControllersState.getArrayNumbersOfActiveLedToggleButtons(), codingReportModel.getResultsList(), mainSectionModel.injectorProperty().get()));
+                }
                 break;
         }
     }
@@ -347,7 +361,7 @@ public class CrTestManager implements TestManager {
                                     runDensoTest();
                             }
                         }
-                    } else if (isDelphiC2ICoding() || isDelphiC3ICoding()) {
+                    } else if (isDelphiC2ICoding() || isDelphiC3ICoding() || isDelphiC4ICoding()) {
                         selectNextTest(selectedTestIndex);
                         start();
                     } else {
@@ -512,6 +526,8 @@ public class CrTestManager implements TestManager {
                         DelphiC2ICodingDataStorage.store(flowReportModel.getResultObservableMap().get(injectorTest), injectorControllersState.getArrayNumbersOfActiveLedToggleButtons());
                     else if (isDelphiC3ICoding())
                         DelphiC3ICodingDataStorage.store(flowReportModel.getResultObservableMap().get(injectorTest), injectorControllersState.getArrayNumbersOfActiveLedToggleButtons());
+                    else if (isDelphiC4ICoding())
+                        DelphiC4ICodingDataStorage.store(flowReportModel.getResultObservableMap().get(injectorTest), injectorControllersState.getArrayNumbersOfActiveLedToggleButtons());
                 }
             }
             runNextTest();
@@ -536,6 +552,11 @@ public class CrTestManager implements TestManager {
     private boolean isDelphiC3ICoding() {
 
         return getManufacturer().getManufacturerName().equals("Delphi") && getInjector().getCodetype() == 2;
+    }
+
+    private boolean isDelphiC4ICoding() {
+
+        return getManufacturer().getManufacturerName().equals("Delphi") && getInjector().getCodetype() == 3;
     }
 
     private Iterator<Integer> getDensoCodingPointsIterator(InjectorTest injectorTest) {
