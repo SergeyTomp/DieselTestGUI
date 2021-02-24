@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.*;
 import java.util.function.BinaryOperator;
+import java.util.stream.IntStream;
 
 import static fi.stardex.sisu.coding.delphi.c4i.DelphiC4ICodingDataStorage.*;
 
@@ -21,8 +22,8 @@ public class DelphiC4ICoding {
     static {
         converterMap.put(21, new Converter( 0, 6, (cv, bit) -> cv));                                  // ChkSum
         converterMap.put(20, new Converter( 1, 3, (cv, bit) -> cv));                                  // CSType
-        converterMap.put(18, new Converter( 2, 4, (cv, bit) -> cv + (int)Math.pow(2, bit - 1)));      // N18
-        converterMap.put(178, new Converter( 3, 6, (cv, bit) -> 0));                                  // C1
+        converterMap.put(19, new Converter( 2, 4, (cv, bit) -> cv + (int)Math.pow(2, bit - 1)));      // N19
+        converterMap.put(18, new Converter( 3, 6, (cv, bit) -> 0));                                   // N18(=0)
         converterMap.put(17, new Converter( 4, 4, (cv, bit) -> cv + (int)Math.pow(2, bit - 1) - 1));  // N17
         converterMap.put(16, new Converter( 5, 4, (cv, bit) -> cv + (int)Math.pow(2, bit - 1) - 1));  // N16
         converterMap.put(15, new Converter( 6, 4, (cv, bit) -> cv + (int)Math.pow(2, bit - 1)));      // N15
@@ -79,11 +80,17 @@ public class DelphiC4ICoding {
     private static String makeResultString(Map<String, Double> deltas) {
 
         final String [] results = new String[converterMap.size()];
+        final StringBuilder sb = new StringBuilder();
+        converterMap.values().forEach(v -> {
+            IntStream.rangeClosed(1, v.bit).forEach(i -> sb.append("0"));
+            results[v.index] = sb.toString();
+            sb.setLength(0);
+        });
 
         deltas.forEach((k,v) -> {
 
-            int nxx = ((int)Math.abs(v * 10) + Integer.parseInt(k.substring(k.length() - 2)) - 1) % 18 + 1;
-            int codeValue = (((int)(Math.abs(v * 10) / 18)) % 2 - 1);
+            int nxx = ((int)Math.abs(v * 10) + Integer.parseInt(k.substring(k.length() - 2)) - 1) % 19 + 1;
+            int codeValue = ((int)(Math.abs(v * 10) / 19) % 2) * 2 - 1;
             codeValue = v < 0 ? - codeValue : v == 0 ? 0 : codeValue;
             converterMap.get(nxx).convert(codeValue, results);
         });
@@ -102,15 +109,12 @@ public class DelphiC4ICoding {
 
     private static String getBinaryString(String[] data) {
 
-        converterMap.get(178).convert(0, data);
-        logger.error("2. C1 inserted: {}", Arrays.toString(data));
-
-        converterMap.get(19).convert(coefficient, data);
-        logger.error("2. CSType inserted: {}", Arrays.toString(data));
+        converterMap.get(20).convert(coefficient, data);
+        logger.error("2. CSType appended: {}", Arrays.toString(data));
 
         StringBuilder binary = new StringBuilder();
         Arrays.stream(data).forEach(binary::append);
-        converterMap.get(20).convert(getCheckSum(binary.toString()), data);
+        converterMap.get(21).convert(getCheckSum(binary.toString()), data);
         logger.error("2. ChkSum appended: {}", Arrays.toString(data));
 
         binary.setLength(0);

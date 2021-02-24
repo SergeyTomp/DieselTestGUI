@@ -67,7 +67,7 @@ public class DelphiC4ICodingDataStorage {
             Optional.ofNullable(led3DataStorage).ifPresent(data -> data.put(testName, flowTestResult.getDoubleValue_3() - injectorTest.getNominalFlow()));
         }
         if (activeLEDs.contains(4)) {
-            Optional.ofNullable(led4DataStorage).ifPresent(data -> data.put(testName, flowTestResult.getDoubleValue_3() - injectorTest.getNominalFlow()));
+            Optional.ofNullable(led4DataStorage).ifPresent(data -> data.put(testName, flowTestResult.getDoubleValue_4() - injectorTest.getNominalFlow()));
         }
     }
 
