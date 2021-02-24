@@ -1,6 +1,9 @@
 package fi.stardex.sisu.coding;
 
 import fi.stardex.sisu.coding.bosch.*;
+import fi.stardex.sisu.coding.delphi.DelphiC2ICoder;
+import fi.stardex.sisu.coding.delphi.DelphiC3ICoder;
+import fi.stardex.sisu.coding.delphi.DelphiC4ICoder;
 import fi.stardex.sisu.coding.siemens.SiemensCoderOne;
 import fi.stardex.sisu.coding.siemens.SiemensCoderTwo;
 import fi.stardex.sisu.model.cr.CodingReportModel;
@@ -62,20 +65,32 @@ public class CoderFactory {
                     case SEVENTEEN:
                         return new BoschCoder_17(injector, activeLeds, resultsList);
                     default:
-                        return null;
+                        throw new IllegalArgumentException("Bosch code type is undefined! Coding impossible.");
                 }
             case "Siemens":
                 switch (codetype) {
                     case TWO:
                         return new SiemensCoderTwo(activeLeds, resultsList);
                     case ONE:
-                    default:
                         return new SiemensCoderOne(activeLeds, resultsList);
+                    default:
+                        throw new IllegalArgumentException("Siemens code type is undefined! Coding impossible.");
                 }
             case "Denso":
+                throw new IllegalArgumentException("Denso coder is undefined! Coding impossible.");
             case "Delphi":
+                switch (injector.getCodetype()){
+                    case 1:
+                        return new DelphiC2ICoder(injector, activeLeds, resultsList);
+                    case 2:
+                        return new DelphiC3ICoder(injector, activeLeds, resultsList);
+                    case 3:
+                        return new DelphiC4ICoder(injector, activeLeds, resultsList);
+                    default:
+                        throw new IllegalArgumentException("Delphi code type is undefined! Coding impossible.");
+                }
             default:
-                return null;
+                throw new IllegalArgumentException("Producer is undefined! Coding impossible.");
         }
     }
 }
