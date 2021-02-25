@@ -14,7 +14,6 @@ public class DelphiC3ICoder extends DelphiCoder {
 
 
     private static Logger logger = LoggerFactory.getLogger(DelphiC3ICoder.class);
-    private String ALPHABET = "0123456789ABCDEFGHJKLMNPRSTUWXYZ";
     private final int[] BITS = {3, 5, 4, 5, 8, 5, 7, 5, 6, 6, 6, 5, 6, 6, 6, 5, 6};
 
     public DelphiC3ICoder(Injector injector, List<Integer> activeLEDs, List<Result> oldCodes) {
@@ -137,51 +136,51 @@ public class DelphiC3ICoder extends DelphiCoder {
 
         switch (testName) {
 
-            case "Test Point 01":
+            case TP01:
                 power = 5;
                 data[13] = calculateUnsignedCodeValue(calculateCodeValue(injectorTest, flow, power), power);
                 break;
-            case "Test Point 02":
+            case TP02:
                 power = 6;
                 data[10] = calculateUnsignedCodeValue(calculateCodeValue(injectorTest, flow, power), power);
                 break;
-            case "Test Point 03":
+            case TP03:
                 power = 6;
                 data[14] = calculateUnsignedCodeValue(calculateCodeValue(injectorTest, flow, power), power);
                 break;
-            case "Test Point 04":
-            case "Test Point 05":
+            case TP04:
+            case TP05:
                 power = 6;
                 data[12] += calculateCodeValue(injectorTest, flow, power);
                 break;
-            case "Test Point 06":
-            case "Test Point 07":
+            case TP06:
+            case TP07:
                 power = 6;
                 data[11] += calculateCodeValue(injectorTest, flow, power);
                 break;
-            case "Test Point 08":
+            case TP08:
                 power = 5;
                 data[9] = calculateUnsignedCodeValue(calculateCodeValue(injectorTest, flow, power), power);
                 break;
-            case "Test Point 09":
+            case TP09:
                 power = 6;
                 data[6] = calculateUnsignedCodeValue(calculateCodeValue(injectorTest, flow, power), power);
                 break;
-            case "Test Point 10":
-            case "Test Point 11":
+            case TP10:
+            case TP11:
                 power = 6;
                 data[8] += calculateCodeValue(injectorTest, flow, power);
                 break;
-            case "Test Point 12":
-            case "Test Point 13":
+            case TP12:
+            case TP13:
                 power = 6;
                 data[7] += calculateCodeValue(injectorTest, flow, power);
                 break;
-            case "Test Point 14":
+            case TP14:
                 power = 5;
                 data[1] = calculateUnsignedCodeValue(calculateCodeValue(injectorTest, flow, power), power);
                 break;
-            case "Test Point 15":
+            case TP15:
                 power = 4;
                 data[0] = calculateUnsignedCodeValue(calculateCodeValue(injectorTest, flow, power), power);
                 break;

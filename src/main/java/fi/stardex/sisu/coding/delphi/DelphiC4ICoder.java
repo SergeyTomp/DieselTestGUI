@@ -15,7 +15,6 @@ import java.util.stream.IntStream;
 public class DelphiC4ICoder extends DelphiCoder {
 
     private Logger logger = LoggerFactory.getLogger(DelphiC4ICoder.class);
-    private String ALPHABET = "0123456789ABCDEFGHJKLMNPRSTUWXYZ";
     private Map<Integer, Converter> converterMap = new HashMap<>();
 
     public DelphiC4ICoder(Injector injector, List<Integer> activeLEDs, List<Result> oldCodes) {

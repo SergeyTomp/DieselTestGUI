@@ -64,14 +64,14 @@ public class DelphiC2ICoder extends DelphiCoder {
         logger.info("1. resultStr: {}", resultString);
 
         resultString
-                .append(completeBinaryWithZeroes(data.get("Test Point 08"), getBits("Test Point 08")))
-                .append(completeBinaryWithZeroes(data.get("Test Point 07"), getBits("Test Point 07")))
-                .append(completeBinaryWithZeroes(data.get("Test Point 06"), getBits("Test Point 06")))
-                .append(completeBinaryWithZeroes(data.get("Test Point 05"), getBits("Test Point 05")))
-                .append(completeBinaryWithZeroes(data.get("Test Point 04"), getBits("Test Point 04")))
-                .append(completeBinaryWithZeroes(data.get("Test Point 03"), getBits("Test Point 03")))
-                .append(completeBinaryWithZeroes(data.get("Test Point 02"), getBits("Test Point 02")))
-                .append(completeBinaryWithZeroes(data.get("Test Point 01"), getBits("Test Point 01")));
+                .append(completeBinaryWithZeroes(data.get(TP08), getBits(TP08)))
+                .append(completeBinaryWithZeroes(data.get(TP07), getBits(TP07)))
+                .append(completeBinaryWithZeroes(data.get(TP06), getBits(TP06)))
+                .append(completeBinaryWithZeroes(data.get(TP05), getBits(TP05)))
+                .append(completeBinaryWithZeroes(data.get(TP04), getBits(TP04)))
+                .append(completeBinaryWithZeroes(data.get(TP03), getBits(TP03)))
+                .append(completeBinaryWithZeroes(data.get(TP02), getBits(TP02)))
+                .append(completeBinaryWithZeroes(data.get(TP01), getBits(TP01)));
 
         logger.info("2. resultStr: {}", resultString);
 
@@ -111,16 +111,16 @@ public class DelphiC2ICoder extends DelphiCoder {
     private int getBits(String testName) {
 
         switch (testName) {
-            case "Test Point 01":
-            case "Test Point 03":
-            case "Test Point 05":
-            case "Test Point 07":
+            case TP01:
+            case TP03:
+            case TP05:
+            case TP07:
                 return 5;
-            case "Test Point 02":
-            case "Test Point 04":
+            case TP02:
+            case TP04:
                 return 8;
-            case "Test Point 06":
-            case "Test Point 08":
+            case TP06:
+            case TP08:
                 return 7;
             default:
                 logger.error("Wrong test for Delphi C2I Coefficient!");
