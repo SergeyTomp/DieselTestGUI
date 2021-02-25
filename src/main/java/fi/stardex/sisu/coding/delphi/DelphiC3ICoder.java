@@ -106,7 +106,7 @@ public class DelphiC3ICoder extends DelphiCoder {
         StringBuilder appended = new StringBuilder();
 
         int m = 1, checksum = 0;
-        for (int i = 93; i > 0; i--) {
+        for (int i = 93; i >= 0; i--) {
             checksum += binary.charAt(i) == '1' ? m : 0;
             checksum %= 59;
             m = (m * 2) % 59;

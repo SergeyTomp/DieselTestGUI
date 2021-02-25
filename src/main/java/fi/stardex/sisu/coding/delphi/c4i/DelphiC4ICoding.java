@@ -77,15 +77,19 @@ public class DelphiC4ICoding {
         return resultList;
     }
 
+    private static String[] initializeArray() {
+
+        String [] initData = new String[converterMap.size()];
+        IntStream.rangeClosed(1, 19).forEach(i -> converterMap.get(i).convert(0, initData));
+        converterMap.get(20).convert(4, initData);
+        converterMap.get(21).convert(getCheckSum(concatParts(initData)), initData);
+        return initData;
+    }
+
     private static String makeResultString(Map<String, Double> deltas) {
 
-        final String [] results = new String[converterMap.size()];
-        final StringBuilder sb = new StringBuilder();
-        converterMap.values().forEach(v -> {
-            IntStream.rangeClosed(1, v.bit).forEach(i -> sb.append("0"));
-            results[v.index] = sb.toString();
-            sb.setLength(0);
-        });
+        final String [] results = initializeArray();
+        logger.error("0. initial data: {}", Arrays.toString(results));
 
         deltas.forEach((k,v) -> {
 
@@ -112,14 +116,18 @@ public class DelphiC4ICoding {
         converterMap.get(20).convert(coefficient, data);
         logger.error("2. CSType appended: {}", Arrays.toString(data));
 
-        StringBuilder binary = new StringBuilder();
-        Arrays.stream(data).forEach(binary::append);
-        converterMap.get(21).convert(getCheckSum(binary.toString()), data);
+        converterMap.get(21).convert(getCheckSum(concatParts(data)), data);
         logger.error("2. ChkSum appended: {}", Arrays.toString(data));
 
-        binary.setLength(0);
+        StringBuilder binary = new StringBuilder();
         Arrays.stream(data).forEach(binary::append);
 
+        return binary.toString();
+    }
+
+    private static String concatParts(String[] data) {
+        StringBuilder binary = new StringBuilder();
+        IntStream.rangeClosed(1, converterMap.size() - 1).forEach(i -> binary.append(data[i]));
         return binary.toString();
     }
 
@@ -127,7 +135,7 @@ public class DelphiC4ICoding {
 
         int m = 1, checksum = 0;
 
-        for (int i = 93; i > 0; i--) {
+        for (int i = 93; i >= 0; i--) {
             checksum += data.charAt(i) == '1' ? m : 0;
             checksum %= 59;
             m = (m * 2) % 59;
