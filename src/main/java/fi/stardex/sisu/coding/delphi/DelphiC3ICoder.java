@@ -44,13 +44,12 @@ public class DelphiC3ICoder extends DelphiCoder {
             if (entry.getKey().getTestName().isTestPoint()) {
 
                 FlowReportModel.FlowResult flowTestResult = entry.getValue();
-                Double nominalFlow = entry.getKey().getNominalFlow();
 
                 temp.put(entry.getKey(), Arrays.asList(
-                        flowTestResult.getDoubleValue_1() - nominalFlow,
-                        flowTestResult.getDoubleValue_2() - nominalFlow,
-                        flowTestResult.getDoubleValue_3() - nominalFlow,
-                        flowTestResult.getDoubleValue_4() - nominalFlow));
+                        flowTestResult.getDoubleValue_1(),
+                        flowTestResult.getDoubleValue_2(),
+                        flowTestResult.getDoubleValue_3(),
+                        flowTestResult.getDoubleValue_4()));
             }
         }
         return temp;

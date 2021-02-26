@@ -1290,9 +1290,9 @@ public class MainSectionController {
     private void clearAllResults() {
 
         DensoCodingDataStorage.clean();
-        DelphiC2ICodingDataStorage.clean();
-        DelphiC3ICodingDataStorage.clean();
-        DelphiC4ICodingDataStorage.clean();
+//        DelphiC2ICodingDataStorage.clean();
+//        DelphiC3ICodingDataStorage.clean();
+//        DelphiC4ICodingDataStorage.clean();
         delayReportModel.clearResults();
         rlc_reportModel.clearResults();
         flowReportModel.clearResults();
