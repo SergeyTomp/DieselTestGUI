@@ -97,8 +97,8 @@ public class DelphiC4ICoder extends DelphiCoder {
 
         deltas.forEach((k,v) -> {
 
-            int nxx = ((int)Math.abs(v * 10) + Integer.parseInt(k.substring(k.length() - 2)) - 1) % 19 + 1;
-            int codeValue = ((int)(Math.abs(v * 10) / 19) % 2) * 2 - 1;
+            int nxx = ((int)Math.abs(Math.round(v * 10)) + Integer.parseInt(k.substring(k.length() - 2)) - 1) % 19 + 1;
+            int codeValue = ((int)(Math.abs(Math.round(v * 10)) / 19) % 2) * 2 - 1;
             codeValue = v < 0 ? - codeValue : v == 0 ? 0 : codeValue;
             converterMap.get(nxx).convert(codeValue, results);
         });
