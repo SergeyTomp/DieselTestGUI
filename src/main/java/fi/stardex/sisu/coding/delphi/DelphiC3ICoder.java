@@ -35,26 +35,6 @@ public class DelphiC3ICoder extends DelphiCoder {
         return previousResultList;
     }
 
-    private Map<InjectorTest, List<Double>> getSourceMap(ObservableMap<InjectorTest, FlowReportModel.FlowResult> mapOfFlowTestResults) {
-
-        Map<InjectorTest, List<Double>> temp = new HashMap<>();
-
-        for (Map.Entry<InjectorTest, FlowReportModel.FlowResult> entry : mapOfFlowTestResults.entrySet()) {
-
-            if (entry.getKey().getTestName().isTestPoint()) {
-
-                FlowReportModel.FlowResult flowTestResult = entry.getValue();
-
-                temp.put(entry.getKey(), Arrays.asList(
-                        flowTestResult.getDoubleValue_1(),
-                        flowTestResult.getDoubleValue_2(),
-                        flowTestResult.getDoubleValue_3(),
-                        flowTestResult.getDoubleValue_4()));
-            }
-        }
-        return temp;
-    }
-
     private void completeData(int[] data) {
 
         data[2] = 63;

@@ -51,34 +51,14 @@ public class DelphiC4ICoder extends DelphiCoder {
     @Override
     public List<String> buildCode(ObservableMap<InjectorTest, FlowReportModel.FlowResult> mapOfFlowTestResults) {
 
-        Map<String, List<Double>> temp = getSourceMap(mapOfFlowTestResults);
+        Map<InjectorTest, List<Double>> temp = getSourceMap(mapOfFlowTestResults);
 
         activeLEDs.forEach(i -> {
             Map<String,Double> ledData = new HashMap<>();
-            temp.forEach((test,value) -> ledData.put(test, value.get(i - 1)));
+            temp.forEach((test,value) -> ledData.put(test.toString(), value.get(i - 1) - test.getNominalFlow()));
             previousResultList.set(i - 1, makeResultString(ledData));
         });
         return previousResultList;
-    }
-
-    private Map<String, List<Double>> getSourceMap(ObservableMap<InjectorTest, FlowReportModel.FlowResult> mapOfFlowTestResults) {
-        Map<String, List<Double>> temp = new HashMap<>();
-
-        for (Map.Entry<InjectorTest, FlowReportModel.FlowResult> entry : mapOfFlowTestResults.entrySet()) {
-
-            if (entry.getKey().getTestName().isTestPoint()) {
-
-                FlowReportModel.FlowResult flowTestResult = entry.getValue();
-                Double nominalFlow = entry.getKey().getNominalFlow();
-
-                temp.put(entry.getKey().toString(), Arrays.asList(
-                        flowTestResult.getDoubleValue_1() - nominalFlow,
-                        flowTestResult.getDoubleValue_2() - nominalFlow,
-                        flowTestResult.getDoubleValue_3() - nominalFlow,
-                        flowTestResult.getDoubleValue_4() - nominalFlow));
-            }
-        }
-        return temp;
     }
 
     private String[] initializeArray() {

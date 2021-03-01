@@ -1,10 +1,12 @@
 package fi.stardex.sisu.coding.delphi;
 
 import fi.stardex.sisu.coding.Coder;
+import fi.stardex.sisu.model.cr.FlowReportModel;
 import fi.stardex.sisu.pdf.Result;
+import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
+import javafx.collections.ObservableMap;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public abstract class DelphiCoder implements Coder {
 
@@ -48,5 +50,25 @@ public abstract class DelphiCoder implements Coder {
             previousResultList.add(oldCodes.get(2) != null ? oldCodes.get(2).getSubColumn1() : "" );
             previousResultList.add(oldCodes.get(3) != null ? oldCodes.get(3).getSubColumn1() : "" );
         }
+    }
+
+    Map<InjectorTest, List<Double>> getSourceMap(ObservableMap<InjectorTest, FlowReportModel.FlowResult> mapOfFlowTestResults){
+
+        Map<InjectorTest, List<Double>> temp = new HashMap<>();
+
+        for (Map.Entry<InjectorTest, FlowReportModel.FlowResult> entry : mapOfFlowTestResults.entrySet()) {
+
+            if (entry.getKey().getTestName().isTestPoint()) {
+
+                FlowReportModel.FlowResult flowTestResult = entry.getValue();
+
+                temp.put(entry.getKey(), Arrays.asList(
+                        flowTestResult.getDoubleValue_1(),
+                        flowTestResult.getDoubleValue_2(),
+                        flowTestResult.getDoubleValue_3(),
+                        flowTestResult.getDoubleValue_4()));
+            }
+        }
+        return temp;
     }
 }
