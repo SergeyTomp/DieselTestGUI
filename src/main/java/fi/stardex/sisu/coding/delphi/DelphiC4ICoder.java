@@ -21,10 +21,14 @@ public class DelphiC4ICoder extends DelphiCoder {
     private Logger logger = LoggerFactory.getLogger(DelphiC4ICoder.class);
     private Map<Integer, Converter> converterMap = new HashMap<>();
 
-    public DelphiC4ICoder(Injector injector, List<Integer> activeLEDs, List<Result> oldCodes) {
+    public DelphiC4ICoder(Injector injector,
+                          List<Integer> activeLEDs,
+                          List<Result> oldCodes,
+                          ObservableMap<InjectorTest, FlowReportModel.FlowResult> mapOfFlowTestResults) {
         super(oldCodes);
         super.activeLEDs = activeLEDs;
         super.injectorCoefficient = injector.getCoefficient();
+        super.mapOfFlowTestResults = mapOfFlowTestResults;
         converterMap.put(21, new Converter( 0, 6, (cv, bit) -> cv));                                  // ChkSum
         converterMap.put(20, new Converter( 1, 3, (cv, bit) -> cv));                                  // CSType
         converterMap.put(19, new Converter( 2, 4, (cv, bit) -> cv + (int)Math.pow(2, bit - 1)));      // N19
@@ -49,7 +53,7 @@ public class DelphiC4ICoder extends DelphiCoder {
     }
 
     @Override
-    public List<String> buildCode(ObservableMap<InjectorTest, FlowReportModel.FlowResult> mapOfFlowTestResults) {
+    public List<String> buildCode() {
 
         Map<InjectorTest, List<Double>> temp = getSourceMap(mapOfFlowTestResults);
 

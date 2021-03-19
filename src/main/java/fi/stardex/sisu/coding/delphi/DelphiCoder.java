@@ -30,6 +30,7 @@ public abstract class DelphiCoder implements Coder {
     final String TP14 = "Test Point 14";
     final String TP15 = "Test Point 15";
     final String ALPHABET = "0123456789ABCDEFGHJKLMNPRSTUWXYZ";
+    ObservableMap<InjectorTest, FlowReportModel.FlowResult> mapOfFlowTestResults;
 
     DelphiCoder(List<Result> oldCodes) {
         this.oldCodes = oldCodes;

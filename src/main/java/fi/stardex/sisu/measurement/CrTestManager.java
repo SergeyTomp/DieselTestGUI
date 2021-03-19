@@ -275,17 +275,11 @@ public class CrTestManager implements TestManager {
 
         switch (getManufacturer().toString()) {
 
-            case "Bosch":
-                setCodingResults(coderFactory.getCoder(mainSectionModel.injectorProperty().get()).buildCode(flowReportModel.getResultObservableMap()));
-                break;
-            case "Siemens":
-                setCodingResults(coderFactory.getCoder(mainSectionModel.injectorProperty().get()).buildCode(flowReportModel.getResultObservableMap()));
-                break;
             case "Denso":
                 setCodingResults(DensoCoding.calculate());
                 break;
-            case "Delphi":
-                setCodingResults(coderFactory.getCoder(mainSectionModel.injectorProperty().get()).buildCode(flowReportModel.getResultObservableMap()));
+            default:
+                setCodingResults(coderFactory.getCoder(mainSectionModel.injectorProperty().get()).buildCode());
 //                if (isDelphiC2ICoding())
 //                    setCodingResults(DelphiC2ICoding.calculate(
 //                            injectorControllersState.getArrayNumbersOfActiveLedToggleButtons(), codingReportModel.getResultsList()));

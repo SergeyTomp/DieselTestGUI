@@ -31,6 +31,7 @@ public abstract class BoschCoder implements Coder {
     int injectorCoefficient;
     Map<CodeField, Integer> fieldLengthMap;
     List<Integer> activeLEDs;
+    ObservableMap<InjectorTest, FlowReportModel.FlowResult> mapOfFlowTestResults;
 
     BoschCoder( List<Result> oldCodes) {
         this.oldCodes = oldCodes;

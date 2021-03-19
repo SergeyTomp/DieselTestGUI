@@ -8,5 +8,5 @@ import java.util.List;
 
 public interface Coder {
 
-    List<String> buildCode(ObservableMap<InjectorTest, FlowReportModel.FlowResult> mapOfFlowTestResults);
+    List<String> buildCode();
 }

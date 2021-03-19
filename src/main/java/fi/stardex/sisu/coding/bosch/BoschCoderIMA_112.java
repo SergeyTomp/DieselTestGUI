@@ -17,7 +17,10 @@ import static fi.stardex.sisu.coding.CodeField.ADD_0;
 
 public class BoschCoderIMA_112 extends BoschCoder {
 
-    public BoschCoderIMA_112(Injector injector, List<Integer> activeLEDs, List<Result> oldCodes) {
+    public BoschCoderIMA_112(Injector injector,
+                             List<Integer> activeLEDs,
+                             List<Result> oldCodes,
+                             ObservableMap<InjectorTest, FlowReportModel.FlowResult> mapOfFlowTestResults) {
         super(oldCodes);
         super.codeStep = 5;
         super.isHEX =  false;
@@ -43,10 +46,11 @@ public class BoschCoderIMA_112 extends BoschCoder {
                 .filter(k -> k != PRE_INJ)
                 .map(k -> fieldLengthMap.get(k))
                 .reduce(Integer::sum).orElse(0);
+        super.mapOfFlowTestResults = mapOfFlowTestResults;
     }
 
     @Override
-    public List<String> buildCode(ObservableMap<InjectorTest, FlowReportModel.FlowResult> mapOfFlowTestResults) {
+    public List<String> buildCode() {
 
         Map<InjectorTest, List<Double>> temp = getSourceMap(mapOfFlowTestResults);
 

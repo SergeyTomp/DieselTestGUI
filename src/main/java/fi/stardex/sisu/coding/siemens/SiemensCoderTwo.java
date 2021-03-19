@@ -12,17 +12,20 @@ import static fi.stardex.sisu.coding.CodeField.*;
 
 public class SiemensCoderTwo extends SiemensCoder {
 
-    public SiemensCoderTwo(List<Integer> activeLEDs, List<Result> oldCodes) {
+    public SiemensCoderTwo(List<Integer> activeLEDs,
+                           List<Result> oldCodes,
+                           ObservableMap<InjectorTest, FlowReportModel.FlowResult> mapOfFlowTestResults) {
         super(activeLEDs, oldCodes);
         super.TEST_COEFF.put(MAX_LOAD, 1);
         super.TEST_COEFF.put(PRE_INJ, 2);
         super.TEST_COEFF.put(PART_LOAD, 3);
         super.TEST_COEFF.put(IDLE, 4);
         super.TEST_COEFF.put(CHECK_SUM, 5);
+        super.mapOfFlowTestResults = mapOfFlowTestResults;
     }
 
     @Override
-    public List<String> buildCode(ObservableMap<InjectorTest, FlowReportModel.FlowResult> mapOfFlowTestResults) {
+    public List<String> buildCode() {
 
         Map<InjectorTest, List<Double>> temp = getSourceMap(mapOfFlowTestResults);
         Map<String, List<Integer>> preparedMap = convert(temp);

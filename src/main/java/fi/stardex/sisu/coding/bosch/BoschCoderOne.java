@@ -16,7 +16,10 @@ public class BoschCoderOne extends BoschCoder {
 
     private final List<String> testList;
 
-    public BoschCoderOne(Injector injector, List<Integer> activeLEDs, List<Result> oldCodes) {
+    public BoschCoderOne(Injector injector,
+                         List<Integer> activeLEDs,
+                         List<Result> oldCodes,
+                         ObservableMap<InjectorTest, FlowReportModel.FlowResult> mapOfFlowTestResults) {
         super(oldCodes);
         super.codeStep = 5;
         super.isHEX =  false;
@@ -35,10 +38,11 @@ public class BoschCoderOne extends BoschCoder {
         super.baseTestsList = testList;
         super.codeSize = fieldLengthMap.values().stream().reduce(Integer::sum).orElse(0);
         super.activeLEDs = activeLEDs;
+        super.mapOfFlowTestResults = mapOfFlowTestResults;
     }
 
     @Override
-    public List<String> buildCode(ObservableMap<InjectorTest, FlowReportModel.FlowResult> mapOfFlowTestResults) {
+    public List<String> buildCode() {
 
         Map<InjectorTest, List<Double>> temp = getSourceMap(mapOfFlowTestResults);
         addLostTests(temp, Collections.emptyList());

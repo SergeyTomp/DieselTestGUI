@@ -18,7 +18,10 @@ import static fi.stardex.sisu.ui.controllers.cr.windows.ISADetectionController.g
 
 public class BoschCoderSix extends BoschCoder {
 
-    public BoschCoderSix(Injector injector, List<Integer> activeLEDs, List<Result> oldCodes) {
+    public BoschCoderSix(Injector injector,
+                         List<Integer> activeLEDs,
+                         List<Result> oldCodes,
+                         ObservableMap<InjectorTest, FlowReportModel.FlowResult> mapOfFlowTestResults) {
         super(oldCodes);
         super.codeStep = 4;
         super.isHEX =  true;
@@ -39,9 +42,10 @@ public class BoschCoderSix extends BoschCoder {
         super.injectorCoefficient = injector.getCoefficient();
         super.codeSize = fieldLengthMap.values().stream().reduce(Integer::sum).orElse(0);
         super.activeLEDs = activeLEDs;
+        super.mapOfFlowTestResults = mapOfFlowTestResults;
     }
     @Override
-    public List<String> buildCode(ObservableMap<InjectorTest, FlowReportModel.FlowResult> mapOfFlowTestResults) {
+    public List<String> buildCode() {
 
         Map<InjectorTest, List<Double>> temp = getSourceMap(mapOfFlowTestResults);
 

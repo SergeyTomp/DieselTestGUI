@@ -16,14 +16,18 @@ public class DelphiC3ICoder extends DelphiCoder {
     private static Logger logger = LoggerFactory.getLogger(DelphiC3ICoder.class);
     private final int[] BITS = {3, 5, 4, 5, 8, 5, 7, 5, 6, 6, 6, 5, 6, 6, 6, 5, 6};
 
-    public DelphiC3ICoder(Injector injector, List<Integer> activeLEDs, List<Result> oldCodes) {
+    public DelphiC3ICoder(Injector injector,
+                          List<Integer> activeLEDs,
+                          List<Result> oldCodes,
+                          ObservableMap<InjectorTest, FlowReportModel.FlowResult> mapOfFlowTestResults) {
         super(oldCodes);
         super.activeLEDs = activeLEDs;
         super.injectorCoefficient = injector.getCoefficient();
+        super.mapOfFlowTestResults = mapOfFlowTestResults;
     }
 
     @Override
-    public List<String> buildCode(ObservableMap<InjectorTest, FlowReportModel.FlowResult> mapOfFlowTestResults) {
+    public List<String> buildCode() {
 
         Map<InjectorTest, List<Double>> temp = getSourceMap(mapOfFlowTestResults);
 

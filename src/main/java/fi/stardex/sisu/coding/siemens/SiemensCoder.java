@@ -26,6 +26,7 @@ public abstract class SiemensCoder implements Coder {
     private List<Result> oldCodes;
     private List<String> previousResultList;
     final Map<CodeField, Integer> TEST_COEFF = new HashMap<>();
+    ObservableMap<InjectorTest, FlowReportModel.FlowResult> mapOfFlowTestResults;
 
     SiemensCoder(List<Integer> activeLEDs, List<Result> oldCodes) {
 
