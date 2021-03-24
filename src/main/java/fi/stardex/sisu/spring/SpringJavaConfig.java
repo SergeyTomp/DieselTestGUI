@@ -990,8 +990,9 @@ public class SpringJavaConfig {
     @Bean
     @Autowired
     public HighPressureSectionUpdateModel highPressureSectionUpdateModel(PressureSensorModel pressureSensorModel,
-                                                                         RegulationModesModel regulationModesModel) {
-        return new HighPressureSectionUpdateModel(pressureSensorModel, regulationModesModel);
+                                                                         RegulationModesModel regulationModesModel,
+                                                                         CrSettingsModel crSettingsModel) {
+        return new HighPressureSectionUpdateModel(pressureSensorModel, regulationModesModel, crSettingsModel);
     }
 
     @Bean

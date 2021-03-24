@@ -4,6 +4,7 @@ import fi.stardex.sisu.annotations.Module;
 import fi.stardex.sisu.devices.Device;
 import fi.stardex.sisu.model.PressureSensorModel;
 import fi.stardex.sisu.model.RegulationModesModel;
+import fi.stardex.sisu.model.cr.CrSettingsModel;
 import fi.stardex.sisu.ui.updaters.Updater;
 import fi.stardex.sisu.util.enums.RegActive;
 import javafx.beans.property.DoubleProperty;
@@ -32,6 +33,7 @@ public class HighPressureSectionUpdateModel implements Updater {
     private DoubleProperty gauge_1Property = new SimpleDoubleProperty();
     private DoubleProperty gauge_2Property = new SimpleDoubleProperty();
     private DoubleProperty gauge_3Property = new SimpleDoubleProperty();
+    private CrSettingsModel crSettingsModel;
 
     public DoubleProperty current_1Property() {
         return current_1Property;
@@ -69,9 +71,11 @@ public class HighPressureSectionUpdateModel implements Updater {
     }
 
     public HighPressureSectionUpdateModel(PressureSensorModel pressureSensorModel,
-                                          RegulationModesModel regulationModesModel) {
+                                          RegulationModesModel regulationModesModel,
+                                          CrSettingsModel crSettingsModel) {
         this.pressureSensorModel = pressureSensorModel;
         this.regulationModesModel = regulationModesModel;
+        this.crSettingsModel = crSettingsModel;
     }
 
     @Override
@@ -86,7 +90,7 @@ public class HighPressureSectionUpdateModel implements Updater {
         RegActive activeRegMode3 = regulationModesModel.regulatorThreeModeProperty().get();
 
         if(PressureReg1_PressFact.getLastValue() != null){
-            double pressure = pressureSensorModel.pressureSensorProperty().get() * (Double) PressureReg1_PressFact.getLastValue();
+            double pressure = pressureSensorModel.pressureSensorProperty().get() * (Double) PressureReg1_PressFact.getLastValue() - crSettingsModel.pressCorrectionProperty().get();
             lcdPressureProperty.setValue(pressure);
         }
         if(PressureReg1_DutyFact.getLastValue() != null && activeRegMode1 != DUTY){

@@ -27,6 +27,7 @@ public class SettingsController {
     @FXML private StackPane limitLabelsStackPane;
     @FXML private Spinner<Integer> pumpRpmLimitSpinner;
     @FXML private Spinner<Integer> heuiMaxPressureSpinner;
+    @FXML private Spinner<Integer> pressCorrectionSpinner;
     @FXML private Label pumpRpmLimitLabel;
     @FXML private Label heuiMaxPressureLabel;
     @FXML private Label firmwareUpdateLabel;
@@ -48,6 +49,7 @@ public class SettingsController {
     @FXML private Label flowOutputDimensionLabel;
     @FXML private Label pressureSensorLabel;
     @FXML private Label diffFmSettingsLabel;
+    @FXML private Label pressCorrectionLabel;
 
     @FXML private DimasGuiEditionController dimasGuiEditionController;
     @FXML private FastCodingController fastCodingController;
@@ -138,14 +140,19 @@ public class SettingsController {
 
         heuiMaxPressureSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(150, 300, 300, 10));
         pumpRpmLimitSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(500, 5000, 2500, 50));
+        pressCorrectionSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(-100, 100, 0, 1));
         crSettingsModel.heuiMaxPressureProperyProperty().bind(heuiMaxPressureSpinner.valueProperty());
         crSettingsModel.pumpMaxRpmPropertyProperty().bind(pumpRpmLimitSpinner.valueProperty());
+        crSettingsModel.pressCorrectionProperty().bind(pressCorrectionSpinner.valueProperty());
         heuiMaxPressureSpinner.getValueFactory().valueProperty().addListener((observableValue, oldValue, newValue) -> rootPrefs.putInt("heuiMaxPressure", newValue));
         pumpRpmLimitSpinner.getValueFactory().valueProperty().addListener((observableValue, oldValue, newValue) -> rootPrefs.putInt("pumpRpmLimit", newValue));
+        pressCorrectionSpinner.getValueFactory().valueProperty().addListener((observableValue, oldValue, newValue) -> rootPrefs.putInt("pressCorrection", newValue));
         heuiMaxPressureSpinner.getValueFactory().setValue(rootPrefs.getInt("heuiMaxPressure", 300));
         pumpRpmLimitSpinner.getValueFactory().setValue(rootPrefs.getInt("pumpRpmLimit", 2500));
+        pressCorrectionSpinner.getValueFactory().setValue(rootPrefs.getInt("pressCorrection", 0));
         SpinnerManager.setupIntegerSpinner(heuiMaxPressureSpinner);
         SpinnerManager.setupIntegerSpinner(pumpRpmLimitSpinner);
+        SpinnerManager.setupIntegerSpinner(pressCorrectionSpinner);
 
 
         pressureSensorLabel.textProperty().bind(i18N.createStringBinding("settings.pressureSensor.Label"));
@@ -156,6 +163,7 @@ public class SettingsController {
         diffFmSettingsLabel.textProperty().bind(i18N.createStringBinding("differentialFM.calibrationButton"));
         pumpRpmLimitLabel.textProperty().bind(i18N.createStringBinding("settings.pumpRpmLimit.label"));
         heuiMaxPressureLabel.textProperty().bind(i18N.createStringBinding("settings.heuiMaxPressure.label"));
+        pressCorrectionLabel.textProperty().bind(i18N.createStringBinding("settings.pressureCorrection.label"));
     }
 
     private void hideUpdate() {

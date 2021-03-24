@@ -13,6 +13,7 @@ public class CrSettingsModel {
     private BooleanProperty firmwareUpdateProperty = new SimpleBooleanProperty();
     private IntegerProperty heuiMaxPressurePropery = new SimpleIntegerProperty();
     private IntegerProperty pumpMaxRpmProperty = new SimpleIntegerProperty();
+    private IntegerProperty pressCorrectionProperty = new SimpleIntegerProperty();
 
     public Button getDifferentialFmSettingsButton() {
         return differentialFmSettingsButton;
@@ -25,5 +26,8 @@ public class CrSettingsModel {
     }
     public IntegerProperty pumpMaxRpmPropertyProperty() {
         return pumpMaxRpmProperty;
+    }
+    public IntegerProperty pressCorrectionProperty() {
+        return pressCorrectionProperty;
     }
 }
