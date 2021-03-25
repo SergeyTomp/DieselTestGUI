@@ -3,6 +3,7 @@ package fi.stardex.sisu.ui.controllers.cr.tabs.settings;
 import fi.stardex.sisu.connect.ModbusConnect;
 import fi.stardex.sisu.model.cr.CrSettingsModel;
 import fi.stardex.sisu.settings.*;
+import fi.stardex.sisu.states.HighPressureSectionPwrState;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.spinners.SpinnerManager;
 import fi.stardex.sisu.version.FirmwareVersion;
@@ -16,7 +17,6 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 
 import javax.annotation.PostConstruct;
-
 import java.util.prefs.Preferences;
 
 import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions.MASTER_DF;
@@ -67,6 +67,7 @@ public class SettingsController {
     private FirmwareVersion<FlowFirmwareVersion.FlowVersions> flowFirmwareVersion;
     private CrSettingsModel crSettingsModel;
     private Preferences rootPrefs;
+    private HighPressureSectionPwrState highPressureSectionPwrState;
 
     public void setFlowModbusConnect(ModbusConnect flowModbusConnect) {
         this.flowModbusConnect = flowModbusConnect;
@@ -82,6 +83,9 @@ public class SettingsController {
     }
     public void setRootPrefs(Preferences rootPrefs) {
         this.rootPrefs = rootPrefs;
+    }
+    public void setHighPressureSectionPwrState(HighPressureSectionPwrState highPressureSectionPwrState) {
+        this.highPressureSectionPwrState = highPressureSectionPwrState;
     }
 
     public DimasGuiEditionController getDimasGuiEditionController() {
@@ -153,6 +157,7 @@ public class SettingsController {
         SpinnerManager.setupIntegerSpinner(heuiMaxPressureSpinner);
         SpinnerManager.setupIntegerSpinner(pumpRpmLimitSpinner);
         SpinnerManager.setupIntegerSpinner(pressCorrectionSpinner);
+//        pressCorrectionSpinner.disableProperty().bind(highPressureSectionPwrState.powerButtonProperty());
 
 
         pressureSensorLabel.textProperty().bind(i18N.createStringBinding("settings.pressureSensor.Label"));

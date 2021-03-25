@@ -808,13 +808,15 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                           ModbusConnect flowModbusConnect,
                                           FirmwareVersion<FlowVersions> flowFirmwareVersion,
                                           CrSettingsModel crSettingsModel,
-                                          Preferences rootPrefs){
+                                          Preferences rootPrefs,
+                                          HighPressureSectionPwrState highPressureSectionPwrState){
         SettingsController settingsController = (SettingsController)settings.getController();
         settingsController.setI18N(i18N);
         settingsController.setFlowModbusConnect(flowModbusConnect);
         settingsController.setFlowFirmwareVersion(flowFirmwareVersion);
         settingsController.setCrSettingsModel(crSettingsModel);
         settingsController.setRootPrefs(rootPrefs);
+        settingsController.setHighPressureSectionPwrState(highPressureSectionPwrState);
         return settingsController;
     }
 

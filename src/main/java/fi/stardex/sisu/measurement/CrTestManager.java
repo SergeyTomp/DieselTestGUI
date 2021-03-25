@@ -11,10 +11,7 @@ import fi.stardex.sisu.coding.delphi.c4i.DelphiC4ICodingDataStorage;
 import fi.stardex.sisu.coding.denso.DensoCoding;
 import fi.stardex.sisu.coding.denso.DensoCodingDataStorage;
 import fi.stardex.sisu.model.TestBenchSectionModel;
-import fi.stardex.sisu.model.cr.CodingReportModel;
-import fi.stardex.sisu.model.cr.FlowReportModel;
-import fi.stardex.sisu.model.cr.MainSectionModel;
-import fi.stardex.sisu.model.cr.PressureRegulatorOneModel;
+import fi.stardex.sisu.model.cr.*;
 import fi.stardex.sisu.model.updateModels.HighPressureSectionUpdateModel;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.persistence.orm.cr.inj.TestName;
@@ -115,6 +112,8 @@ public class CrTestManager implements TestManager {
 
     private CoderFactory coderFactory;
 
+    private CrSettingsModel crSettingsModel;
+
     public void setCodingComplete(boolean codingComplete) {
         this.codingComplete = codingComplete;
     }
@@ -131,7 +130,8 @@ public class CrTestManager implements TestManager {
                          MainSectionModel mainSectionModel,
                          InjectorControllersState injectorControllersState,
                          TestBenchSectionModel testBenchSectionModel,
-                         CoderFactory coderFactory) {
+                         CoderFactory coderFactory,
+                         CrSettingsModel crSettingsModel) {
 
         this.flowReportModel = flowReportModel;
         this.mainSectionController = mainSectionController;
@@ -159,6 +159,7 @@ public class CrTestManager implements TestManager {
         this.mainSectionModel = mainSectionModel;
         this.injectorControllersState = injectorControllersState;
         this.testBenchSectionModel = testBenchSectionModel;
+        this.crSettingsModel = crSettingsModel;
     }
 
     @PostConstruct
@@ -456,7 +457,7 @@ public class CrTestManager implements TestManager {
 
     private void pressurePreparation() {
 
-        if(isSectionReady(pressureRegulatorOneModel.pressureRegOneProperty().get(), highPressureSectionUpdateModel.lcdPressureProperty().get(), 0.2)){
+        if(isSectionReady(pressureRegulatorOneModel.pressureRegOneProperty().get() - crSettingsModel.pressCorrectionProperty().get(), highPressureSectionUpdateModel.lcdPressureProperty().get(), 0.2)){
             pressurePreparationTimeline.stop();
             resetButton.fire();
             injectorSectionStartToggleButton.setSelected(true);

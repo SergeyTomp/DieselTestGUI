@@ -491,6 +491,6 @@ public class HighPressureSectionOneController {
     }
 
     private double calcTargetPress(Integer target){
-        return target.doubleValue() / pressureSensorModel.pressureSensorProperty().get();
+        return (target.doubleValue() + (double) crSettingsModel.pressCorrectionProperty().get()) / pressureSensorModel.pressureSensorProperty().get();
     }
 }

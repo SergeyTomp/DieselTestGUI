@@ -677,7 +677,8 @@ public class SpringJavaConfig {
                                        MainSectionModel mainSectionModel,
                                        InjectorControllersState injectorControllersState,
                                        TestBenchSectionModel testBenchSectionModel,
-                                       CoderFactory coderFactory) {
+                                       CoderFactory coderFactory,
+                                       CrSettingsModel crSettingsModel) {
         return new CrTestManager(mainSectionController, testBenchSectionController,
                 injectorSectionController,
                 isaDetectionController, codingReportModel, flowReportModel,
@@ -687,7 +688,8 @@ public class SpringJavaConfig {
                 mainSectionModel,
                 injectorControllersState,
                 testBenchSectionModel,
-                coderFactory);
+                coderFactory,
+                crSettingsModel);
     }
 
     private List<Updater> addUpdaters(List<Updater> updatersList, Device targetDevice) {
