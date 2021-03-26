@@ -4,6 +4,7 @@ import fi.stardex.sisu.connect.ModbusConnect;
 import fi.stardex.sisu.model.cr.CrSettingsModel;
 import fi.stardex.sisu.settings.*;
 import fi.stardex.sisu.states.HighPressureSectionPwrState;
+import fi.stardex.sisu.states.PumpHighPressureSectionPwrState;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.spinners.SpinnerManager;
 import fi.stardex.sisu.version.FirmwareVersion;
@@ -68,6 +69,7 @@ public class SettingsController {
     private CrSettingsModel crSettingsModel;
     private Preferences rootPrefs;
     private HighPressureSectionPwrState highPressureSectionPwrState;
+    private PumpHighPressureSectionPwrState pumpHighPressureSectionPwrState;
 
     public void setFlowModbusConnect(ModbusConnect flowModbusConnect) {
         this.flowModbusConnect = flowModbusConnect;
@@ -86,6 +88,9 @@ public class SettingsController {
     }
     public void setHighPressureSectionPwrState(HighPressureSectionPwrState highPressureSectionPwrState) {
         this.highPressureSectionPwrState = highPressureSectionPwrState;
+    }
+    public void setPumpHighPressureSectionPwrState(PumpHighPressureSectionPwrState pumpHighPressureSectionPwrState) {
+        this.pumpHighPressureSectionPwrState = pumpHighPressureSectionPwrState;
     }
 
     public DimasGuiEditionController getDimasGuiEditionController() {
@@ -157,8 +162,8 @@ public class SettingsController {
         SpinnerManager.setupIntegerSpinner(heuiMaxPressureSpinner);
         SpinnerManager.setupIntegerSpinner(pumpRpmLimitSpinner);
         SpinnerManager.setupIntegerSpinner(pressCorrectionSpinner);
-//        pressCorrectionSpinner.disableProperty().bind(highPressureSectionPwrState.powerButtonProperty());
-
+//        highPressureSectionPwrState.powerButtonProperty().addListener((observableValue, oldValue, newValue) -> pressCorrectionSpinner.setDisable(newValue));
+//        pumpHighPressureSectionPwrState.powerButtonProperty().addListener((observableValue, oldValue, newValue) -> pressCorrectionSpinner.setDisable(newValue));
 
         pressureSensorLabel.textProperty().bind(i18N.createStringBinding("settings.pressureSensor.Label"));
         regulatorsConfigLabel.textProperty().bind(i18N.createStringBinding("settings.regulatorsConfig.ComboBox"));

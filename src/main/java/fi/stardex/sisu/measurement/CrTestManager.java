@@ -62,10 +62,6 @@ public class CrTestManager implements TestManager {
 
     private Spinner<Integer> widthCurrentSignalSpinner;
 
-    private Spinner<Integer> targetRPMSpinner;
-
-    private Lcd currentRPMLcd;
-
     private MainSectionController.TimeProgressBar adjustingTime;
 
     private MainSectionController.TimeProgressBar measuringTime;
@@ -112,8 +108,6 @@ public class CrTestManager implements TestManager {
 
     private CoderFactory coderFactory;
 
-    private CrSettingsModel crSettingsModel;
-
     public void setCodingComplete(boolean codingComplete) {
         this.codingComplete = codingComplete;
     }
@@ -130,8 +124,7 @@ public class CrTestManager implements TestManager {
                          MainSectionModel mainSectionModel,
                          InjectorControllersState injectorControllersState,
                          TestBenchSectionModel testBenchSectionModel,
-                         CoderFactory coderFactory,
-                         CrSettingsModel crSettingsModel) {
+                         CoderFactory coderFactory) {
 
         this.flowReportModel = flowReportModel;
         this.mainSectionController = mainSectionController;
@@ -148,18 +141,13 @@ public class CrTestManager implements TestManager {
         adjustingTime = mainSectionController.getAdjustingTime();
         measuringTime = mainSectionController.getMeasuringTime();
         flowModbusWriter = mainSectionController.getFlowModbusWriter();
-
         testBenchStartToggleButton = testBenchSectionController.getTestBenchStartToggleButton();
-        targetRPMSpinner = testBenchSectionController.getTargetRPMSpinner();
-        currentRPMLcd = testBenchSectionController.getCurrentRPMLcd();
-
         injectorSectionStartToggleButton = injectorSectionController.getInjectorSectionStartToggleButton();
         widthCurrentSignalSpinner = injectorSectionController.getWidthCurrentSignalSpinner();
         this.isaDetectionController = isaDetectionController;
         this.mainSectionModel = mainSectionModel;
         this.injectorControllersState = injectorControllersState;
         this.testBenchSectionModel = testBenchSectionModel;
-        this.crSettingsModel = crSettingsModel;
     }
 
     @PostConstruct
@@ -457,7 +445,7 @@ public class CrTestManager implements TestManager {
 
     private void pressurePreparation() {
 
-        if(isSectionReady(pressureRegulatorOneModel.pressureRegOneProperty().get() - crSettingsModel.pressCorrectionProperty().get(), highPressureSectionUpdateModel.lcdPressureProperty().get(), 0.2)){
+        if(isSectionReady(pressureRegulatorOneModel.pressureRegOneProperty().get(), highPressureSectionUpdateModel.lcdPressureProperty().get(), 0.2)){
             pressurePreparationTimeline.stop();
             resetButton.fire();
             injectorSectionStartToggleButton.setSelected(true);

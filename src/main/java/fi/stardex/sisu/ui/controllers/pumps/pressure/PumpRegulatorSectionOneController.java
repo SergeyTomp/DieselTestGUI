@@ -4,6 +4,7 @@ import eu.hansolo.medusa.Gauge;
 import fi.stardex.sisu.model.GUI_TypeModel;
 import fi.stardex.sisu.model.PressureSensorModel;
 import fi.stardex.sisu.model.RegulationModesModel;
+import fi.stardex.sisu.model.cr.CrSettingsModel;
 import fi.stardex.sisu.model.pump.PumpPressureRegulatorOneModel;
 import fi.stardex.sisu.model.pump.PumpTestModel;
 import fi.stardex.sisu.model.updateModels.HighPressureSectionUpdateModel;
@@ -58,6 +59,7 @@ public class PumpRegulatorSectionOneController {
     private RegulationModesModel regulationModesModel;
     private PumpTestModel pumpTestModel;
     private GUI_TypeModel gui_typeModel;
+    private CrSettingsModel crSettingsModel;
     private final String GREEN_STYLE_CLASS = "regulator-spinner-selected";
 
     public void setI18N(I18N i18N) {
@@ -86,6 +88,9 @@ public class PumpRegulatorSectionOneController {
     }
     public void setGui_typeModel(GUI_TypeModel gui_typeModel) {
         this.gui_typeModel = gui_typeModel;
+    }
+    public void setCrSettingsModel(CrSettingsModel crSettingsModel) {
+        this.crSettingsModel = crSettingsModel;
     }
 
     @PostConstruct
@@ -387,6 +392,6 @@ public class PumpRegulatorSectionOneController {
     }
 
     private double calcTargetPress(Integer target){
-        return target.doubleValue() / pressureSensorModel.pressureSensorProperty().get();
+        return (target.doubleValue() + (double) crSettingsModel.pressCorrectionProperty().get()) / pressureSensorModel.pressureSensorProperty().get();
     }
 }

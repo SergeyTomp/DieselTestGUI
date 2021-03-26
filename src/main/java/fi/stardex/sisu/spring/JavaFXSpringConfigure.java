@@ -809,7 +809,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                           FirmwareVersion<FlowVersions> flowFirmwareVersion,
                                           CrSettingsModel crSettingsModel,
                                           Preferences rootPrefs,
-                                          HighPressureSectionPwrState highPressureSectionPwrState){
+                                          HighPressureSectionPwrState highPressureSectionPwrState,
+                                          PumpHighPressureSectionPwrState pumpHighPressureSectionPwrState){
         SettingsController settingsController = (SettingsController)settings.getController();
         settingsController.setI18N(i18N);
         settingsController.setFlowModbusConnect(flowModbusConnect);
@@ -817,6 +818,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         settingsController.setCrSettingsModel(crSettingsModel);
         settingsController.setRootPrefs(rootPrefs);
         settingsController.setHighPressureSectionPwrState(highPressureSectionPwrState);
+        settingsController.setPumpHighPressureSectionPwrState(pumpHighPressureSectionPwrState);
         return settingsController;
     }
 
