@@ -18,6 +18,7 @@
   </columnConstraints>
   <rowConstraints>
     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
     <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
       <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -31,45 +32,51 @@
          <GridPane.margin>
             <Insets left="10.0" />
          </GridPane.margin></Label>
-      <Label fx:id="languagesLabel" prefHeight="16.0" text="%settings.languages.ComboBox" GridPane.rowIndex="1">
+      <Label fx:id="languagesLabel" prefHeight="16.0" text="%settings.languages.ComboBox" GridPane.rowIndex="2">
          <GridPane.margin>
             <Insets left="10.0" />
          </GridPane.margin></Label>
-      <Label fx:id="sensorAngleLabel" text="Sensor Angle" GridPane.rowIndex="2">
+      <Label fx:id="sensorAngleLabel" text="Sensor Angle" GridPane.rowIndex="3">
          <GridPane.margin>
             <Insets left="10.0" />
          </GridPane.margin></Label>
-      <Label fx:id="rpmSourceLabel" text="RPM Source" GridPane.rowIndex="3">
+      <Label fx:id="rpmSourceLabel" text="RPM Source" GridPane.rowIndex="4">
          <GridPane.margin>
             <Insets left="10.0" />
          </GridPane.margin></Label>
-      <Spinner fx:id="sensorAngleSpinner" prefWidth="170.0" GridPane.columnIndex="1" GridPane.rowIndex="2">
+      <Spinner fx:id="sensorAngleSpinner" prefWidth="170.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
          <GridPane.margin>
             <Insets />
          </GridPane.margin>
       </Spinner>
-      <CheckBox fx:id="instantFlowCheckBox" mnemonicParsing="false" selected="true" styleClass="checkBox" text="%h4.settings.label.flowVisible" GridPane.rowIndex="7">
+      <CheckBox fx:id="instantFlowCheckBox" mnemonicParsing="false" selected="true" styleClass="checkBox" text="%h4.settings.label.flowVisible" GridPane.rowIndex="8">
          <GridPane.margin>
             <Insets left="10.0" />
          </GridPane.margin></CheckBox>
-      <Button fx:id="firmwareButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" prefWidth="150.0" text="%settings.firmware.Button" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="7" />
+      <Button fx:id="firmwareButton" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" prefHeight="30.0" prefWidth="150.0" text="%settings.firmware.Button" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="8" />
       <ComboBox fx:id="pressureSensorComboBox" prefWidth="170.0" GridPane.columnIndex="1" />
-      <ComboBox fx:id="languagesComboBox" prefWidth="170.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-      <ComboBox fx:id="rpmSourceComboBox" prefWidth="170.0" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-      <ComboBox fx:id="rangeViewComboBox" prefWidth="170.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-      <Label fx:id="rangeViewLabel" text="Flow range view" GridPane.rowIndex="4">
+      <ComboBox fx:id="languagesComboBox" prefWidth="170.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+      <ComboBox fx:id="rpmSourceComboBox" prefWidth="170.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+      <ComboBox fx:id="rangeViewComboBox" prefWidth="170.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+      <Label fx:id="rangeViewLabel" text="Flow range view" GridPane.rowIndex="5">
          <GridPane.margin>
             <Insets left="10.0" />
          </GridPane.margin>
       </Label>
-      <Label fx:id="diffFmSettingsLabel" text="%differentialFM.calibrationButton" GridPane.rowIndex="6">
+      <Label fx:id="diffFmSettingsLabel" text="%differentialFM.calibrationButton" GridPane.rowIndex="7">
          <GridPane.margin>
             <Insets left="10.0" />
          </GridPane.margin>
       </Label>
-      <Button fx:id="diffFmSettingsButton" mnemonicParsing="false" prefHeight="30.0" prefWidth="150.0" text="%h4.tab.settings" GridPane.columnIndex="1" GridPane.rowIndex="6" />
-      <Spinner fx:id="slaveMotorSpinner" prefWidth="170.0" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-      <Label fx:id="slaveMotorLabel" text="Label" GridPane.rowIndex="5">
+      <Button fx:id="diffFmSettingsButton" mnemonicParsing="false" prefHeight="30.0" prefWidth="150.0" text="%h4.tab.settings" GridPane.columnIndex="1" GridPane.rowIndex="7" />
+      <Spinner fx:id="slaveMotorSpinner" prefWidth="170.0" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+      <Label fx:id="slaveMotorLabel" text="Label" GridPane.rowIndex="6">
+         <GridPane.margin>
+            <Insets left="10.0" />
+         </GridPane.margin>
+      </Label>
+      <Spinner fx:id="pressCorrectionSpinner" disable="true" prefWidth="170.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+      <Label fx:id="pressCorrectionLabel" text="%settings.pressureCorrection.label" GridPane.rowIndex="1">
          <GridPane.margin>
             <Insets left="10.0" />
          </GridPane.margin>

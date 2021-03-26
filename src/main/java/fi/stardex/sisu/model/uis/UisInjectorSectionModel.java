@@ -36,6 +36,7 @@ public class UisInjectorSectionModel {
     private Button saveDelayButton = new Button();
     private StringProperty bipRangeLabel = new SimpleStringProperty("");
     private BooleanProperty pressureButtonProperty = new SimpleBooleanProperty();
+    private IntegerProperty pressCorrectionProperty = new SimpleIntegerProperty();
 
     public ToggleButton getLedBeaker1ToggleButton() {
         return ledBeaker1ToggleButton;
@@ -69,6 +70,9 @@ public class UisInjectorSectionModel {
     }
     public BooleanProperty pressureButtonProperty() {
         return pressureButtonProperty;
+    }
+    public IntegerProperty pressCorrectionProperty() {
+        return pressCorrectionProperty;
     }
 
     public IntegerProperty width_1Property() {

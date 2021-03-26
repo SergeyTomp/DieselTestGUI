@@ -1555,7 +1555,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                        UisSettingsModel uisSettingsModel,
                                                        ModbusConnect flowModbusConnect,
                                                        FirmwareVersion<FlowFirmwareVersion.FlowVersions> flowFirmwareVersion,
-                                                       MainSectionUisModel mainSectionUisModel) {
+                                                       MainSectionUisModel mainSectionUisModel,
+                                                       UisInjectorSectionModel uisInjectorSectionModel) {
         UisSettingsController uisSettingsController = (UisSettingsController) uisSettings().getController();
         uisSettingsController.setI18N(i18N);
         uisSettingsController.setRootPrefs(rootPrefs);
@@ -1563,6 +1564,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         uisSettingsController.setFlowModbusConnect(flowModbusConnect);
         uisSettingsController.setFlowFirmwareVersion(flowFirmwareVersion);
         uisSettingsController.setMainSectionUisModel(mainSectionUisModel);
+        uisSettingsController.setUisInjectorSectionModel(uisInjectorSectionModel);
         return uisSettingsController;
     }
 

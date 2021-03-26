@@ -183,12 +183,12 @@ public class UisHardwareUpdateModel implements Updater {
             injectorError.setValue(Boolean.parseBoolean(value));
         }
         if(PressureReg1_PressFact.getLastValue() != null){
-            double pressure = uisSettingsModel.pressureSensorProperty().get() * (Double) PressureReg1_PressFact.getLastValue();
-            lcdPressure.setValue(pressure);
+            double pressure = pressureSensor * (Double) PressureReg1_PressFact.getLastValue() - uisSettingsModel.pressureSensorProperty().get();
+            lcdPressure.setValue(pressure < 0 ? 0 : pressure);
         }
         if(MaxPressureRegistered.getLastValue() != null){
-            double pressure = pressureSensor * (Double) MaxPressureRegistered.getLastValue();
-            maxLcdPressure.setValue(pressure);
+            double pressure = pressureSensor * (Double) MaxPressureRegistered.getLastValue() - uisSettingsModel.pressureSensorProperty().get();
+            maxLcdPressure.setValue(pressure < 0 ? 0 : pressure);
         }
 //        if ((value = Injectors_Running_En.getLastValue().toString()) != null) {
 //            System.err.println("Injectors_Running_En  " + value);

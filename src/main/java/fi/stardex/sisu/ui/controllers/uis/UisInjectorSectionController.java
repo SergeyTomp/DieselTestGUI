@@ -856,7 +856,7 @@ public class UisInjectorSectionController {
     }
 
     private double calcTargetPress(Integer target){
-        return target.doubleValue() / uisSettingsModel.pressureSensorProperty().get();
+        return (target.doubleValue() + (double) uisInjectorSectionModel.pressCorrectionProperty().get()) / uisSettingsModel.pressureSensorProperty().get();
     }
 
     private void regulator_ON(){

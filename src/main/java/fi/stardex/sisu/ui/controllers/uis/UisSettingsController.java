@@ -2,6 +2,7 @@ package fi.stardex.sisu.ui.controllers.uis;
 
 import fi.stardex.sisu.connect.ModbusConnect;
 import fi.stardex.sisu.model.uis.MainSectionUisModel;
+import fi.stardex.sisu.model.uis.UisInjectorSectionModel;
 import fi.stardex.sisu.model.uis.UisSettingsModel;
 import fi.stardex.sisu.util.enums.Dimension;
 import fi.stardex.sisu.util.enums.InjectorSubType;
@@ -9,6 +10,7 @@ import fi.stardex.sisu.util.enums.uis.RpmSource;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.i18n.Locales;
 import fi.stardex.sisu.util.listeners.LocaleChangeListener;
+import fi.stardex.sisu.util.spinners.SpinnerManager;
 import fi.stardex.sisu.version.FirmwareVersion;
 import fi.stardex.sisu.version.FlowFirmwareVersion;
 import javafx.beans.property.SimpleStringProperty;
@@ -31,6 +33,8 @@ import static fi.stardex.sisu.version.FlowFirmwareVersion.FlowVersions.MASTER_DF
 
 public class UisSettingsController {
 
+    @FXML private Spinner<Integer> pressCorrectionSpinner;
+    @FXML private Label pressCorrectionLabel;
     @FXML private  Spinner<Integer> slaveMotorSpinner;
     @FXML private  Label slaveMotorLabel;
     @FXML private ComboBox <Dimension>  rangeViewComboBox;
@@ -52,6 +56,7 @@ public class UisSettingsController {
     private Preferences rootPrefs;
     private I18N i18N;
     private UisSettingsModel uisSettingsModel;
+    private UisInjectorSectionModel uisInjectorSectionModel;
     private ModbusConnect flowModbusConnect;
     private FirmwareVersion<FlowFirmwareVersion.FlowVersions> flowFirmwareVersion;
     private MainSectionUisModel mainSectionUisModel;
@@ -62,6 +67,7 @@ public class UisSettingsController {
     private static final String PREF_KEY_OFFSET = "angleOffsetSelected";
     private static final String PREF_KEY_RANGE_VIEW = "flowOutputDimensionSelected";
     private static final String PREF_KEY_SLAVE_RPM = "slaveRpmSelected";
+    private static final String PREF_KEY_PRESS_CORR = "uisPressCorrection";
 
     private Alert alert;
     private StringProperty yesButton = new SimpleStringProperty();
@@ -86,6 +92,10 @@ public class UisSettingsController {
     }
     public void setMainSectionUisModel(MainSectionUisModel mainSectionUisModel) {
         this.mainSectionUisModel = mainSectionUisModel;
+    }
+
+    public void setUisInjectorSectionModel(UisInjectorSectionModel uisInjectorSectionModel) {
+        this.uisInjectorSectionModel = uisInjectorSectionModel;
     }
 
     @PostConstruct
@@ -143,6 +153,11 @@ public class UisSettingsController {
         sensorAngleSpinner.valueProperty().addListener((observableValue, oldValue, newValue) -> rootPrefs.putInt(PREF_KEY_OFFSET, newValue));
 
         slaveMotorSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(0, 3000, 1000, 50));
+        pressCorrectionSpinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(-100, 100, 0, 1));
+        pressCorrectionSpinner.getValueFactory().valueProperty().addListener((observableValue, oldValue, newValue) -> rootPrefs.putInt(PREF_KEY_PRESS_CORR, newValue));
+        pressCorrectionSpinner.getValueFactory().setValue(rootPrefs.getInt(PREF_KEY_PRESS_CORR, 0));
+        SpinnerManager.setupIntegerSpinner(pressCorrectionSpinner);
+//        uisInjectorSectionModel.injectorButtonProperty().addListener((observableValue, oldValue, newValue) -> pressCorrectionSpinner.setDisable(newValue));
         uisSettingsModel.slaveMotorRPMProperty().bind(slaveMotorSpinner.valueProperty());
         slaveMotorSpinner.getValueFactory().setValue(rootPrefs.getInt(PREF_KEY_SLAVE_RPM, 1000));
         slaveMotorSpinner.valueProperty().addListener((observableValue, oldValue, newValue) -> rootPrefs.putInt(PREF_KEY_SLAVE_RPM, newValue));
@@ -197,5 +212,6 @@ public class UisSettingsController {
         rangeViewLabel.textProperty().bind((i18N.createStringBinding("settings.FlowOutputDimension.ComboBox")));
         slaveMotorLabel.textProperty().bind((i18N.createStringBinding("settings.slaveMotor.Spinner")));
         firmwareButton.textProperty().bind((i18N.createStringBinding("settings.firmware.Button")));
+        pressCorrectionLabel.textProperty().bind(i18N.createStringBinding("settings.pressureCorrection.label"));
     }
 }
