@@ -59,7 +59,7 @@
          </children>
       </StackPane>
         <Label fx:id="pressCorrectionLabel" prefHeight="16.0" text="Press correction" GridPane.rowIndex="1" />
-      <Spinner fx:id="pressCorrectionSpinner" disable="true" prefWidth="180.0" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="TOP">
+      <Spinner fx:id="pressCorrectionSpinner" prefWidth="180.0" GridPane.columnIndex="1" GridPane.halignment="LEFT" GridPane.rowIndex="1" GridPane.valignment="TOP">
          <GridPane.margin>
             <Insets left="15.0" />
          </GridPane.margin>

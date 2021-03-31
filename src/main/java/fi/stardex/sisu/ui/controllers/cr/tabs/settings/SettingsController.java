@@ -1,6 +1,7 @@
 package fi.stardex.sisu.ui.controllers.cr.tabs.settings;
 
 import fi.stardex.sisu.connect.ModbusConnect;
+import fi.stardex.sisu.model.GUI_TypeModel;
 import fi.stardex.sisu.model.cr.CrSettingsModel;
 import fi.stardex.sisu.settings.*;
 import fi.stardex.sisu.states.HighPressureSectionPwrState;
@@ -67,9 +68,12 @@ public class SettingsController {
     private ModbusConnect flowModbusConnect;
     private FirmwareVersion<FlowFirmwareVersion.FlowVersions> flowFirmwareVersion;
     private CrSettingsModel crSettingsModel;
+    private GUI_TypeModel guiTypeModel;
     private Preferences rootPrefs;
     private HighPressureSectionPwrState highPressureSectionPwrState;
     private PumpHighPressureSectionPwrState pumpHighPressureSectionPwrState;
+
+    private static final String PREF_KEY_PRESS_CORR = "pressCorrection";
 
     public void setFlowModbusConnect(ModbusConnect flowModbusConnect) {
         this.flowModbusConnect = flowModbusConnect;
@@ -91,6 +95,10 @@ public class SettingsController {
     }
     public void setPumpHighPressureSectionPwrState(PumpHighPressureSectionPwrState pumpHighPressureSectionPwrState) {
         this.pumpHighPressureSectionPwrState = pumpHighPressureSectionPwrState;
+    }
+
+    public void setGiuTypeModel(GUI_TypeModel guiTypeModel) {
+        this.guiTypeModel = guiTypeModel;
     }
 
     public DimasGuiEditionController getDimasGuiEditionController() {
@@ -155,15 +163,18 @@ public class SettingsController {
         crSettingsModel.pressCorrectionProperty().bind(pressCorrectionSpinner.valueProperty());
         heuiMaxPressureSpinner.getValueFactory().valueProperty().addListener((observableValue, oldValue, newValue) -> rootPrefs.putInt("heuiMaxPressure", newValue));
         pumpRpmLimitSpinner.getValueFactory().valueProperty().addListener((observableValue, oldValue, newValue) -> rootPrefs.putInt("pumpRpmLimit", newValue));
-        pressCorrectionSpinner.getValueFactory().valueProperty().addListener((observableValue, oldValue, newValue) -> rootPrefs.putInt("pressCorrection", newValue));
+        pressCorrectionSpinner.getValueFactory().valueProperty().addListener((observableValue, oldValue, newValue) -> rootPrefs.putInt(PREF_KEY_PRESS_CORR, newValue));
         heuiMaxPressureSpinner.getValueFactory().setValue(rootPrefs.getInt("heuiMaxPressure", 300));
         pumpRpmLimitSpinner.getValueFactory().setValue(rootPrefs.getInt("pumpRpmLimit", 2500));
         pressCorrectionSpinner.getValueFactory().setValue(rootPrefs.getInt("pressCorrection", 0));
         SpinnerManager.setupIntegerSpinner(heuiMaxPressureSpinner);
         SpinnerManager.setupIntegerSpinner(pumpRpmLimitSpinner);
         SpinnerManager.setupIntegerSpinner(pressCorrectionSpinner);
-//        highPressureSectionPwrState.powerButtonProperty().addListener((observableValue, oldValue, newValue) -> pressCorrectionSpinner.setDisable(newValue));
-//        pumpHighPressureSectionPwrState.powerButtonProperty().addListener((observableValue, oldValue, newValue) -> pressCorrectionSpinner.setDisable(newValue));
+        highPressureSectionPwrState.powerButtonProperty().addListener((observableValue, oldValue, newValue) -> pressCorrectionSpinner.setDisable(newValue));
+        pumpHighPressureSectionPwrState.powerButtonProperty().addListener((observableValue, oldValue, newValue) -> pressCorrectionSpinner.setDisable(newValue));
+        guiTypeModel.guiTypeProperty().addListener((observableValue, oldValue, newValue) ->
+                pressCorrectionSpinner.getValueFactory().setValue(rootPrefs.getInt(PREF_KEY_PRESS_CORR, 0)));
+
 
         pressureSensorLabel.textProperty().bind(i18N.createStringBinding("settings.pressureSensor.Label"));
         regulatorsConfigLabel.textProperty().bind(i18N.createStringBinding("settings.regulatorsConfig.ComboBox"));

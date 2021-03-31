@@ -91,7 +91,7 @@ public class HighPressureSectionUpdateModel implements Updater {
 
         if(PressureReg1_PressFact.getLastValue() != null){
             double pressure = pressureSensorModel.pressureSensorProperty().get() * (Double) PressureReg1_PressFact.getLastValue() - crSettingsModel.pressCorrectionProperty().get();
-            lcdPressureProperty.setValue(pressure);
+            lcdPressureProperty.setValue(pressure < 0 ? 0 : pressure);
         }
         if(PressureReg1_DutyFact.getLastValue() != null && activeRegMode1 != DUTY){
             duty_1Property.setValue(round((double)PressureReg1_DutyFact.getLastValue()));
@@ -120,7 +120,7 @@ public class HighPressureSectionUpdateModel implements Updater {
         }
         if (TouchDetection.getLastValue() != null) {
             double pressure = pressureSensorModel.pressureSensorProperty().get() * (Double) TouchDetection.getLastValue() - crSettingsModel.pressCorrectionProperty().get();
-            lcd_2PressureProperty.setValue(pressure);
+            lcd_2PressureProperty.setValue(pressure < 0 ? 0 : pressure);
         }
     }
 

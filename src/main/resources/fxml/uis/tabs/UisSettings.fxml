@@ -75,7 +75,7 @@
             <Insets left="10.0" />
          </GridPane.margin>
       </Label>
-      <Spinner fx:id="pressCorrectionSpinner" disable="true" prefWidth="170.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+      <Spinner fx:id="pressCorrectionSpinner" prefWidth="170.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
       <Label fx:id="pressCorrectionLabel" text="%settings.pressureCorrection.label" GridPane.rowIndex="1">
          <GridPane.margin>
             <Insets left="10.0" />

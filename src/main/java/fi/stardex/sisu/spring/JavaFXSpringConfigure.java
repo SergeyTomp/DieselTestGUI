@@ -810,7 +810,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                           CrSettingsModel crSettingsModel,
                                           Preferences rootPrefs,
                                           HighPressureSectionPwrState highPressureSectionPwrState,
-                                          PumpHighPressureSectionPwrState pumpHighPressureSectionPwrState){
+                                          PumpHighPressureSectionPwrState pumpHighPressureSectionPwrState,
+                                          GUI_TypeModel gui_typeModel){
         SettingsController settingsController = (SettingsController)settings.getController();
         settingsController.setI18N(i18N);
         settingsController.setFlowModbusConnect(flowModbusConnect);
@@ -819,6 +820,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         settingsController.setRootPrefs(rootPrefs);
         settingsController.setHighPressureSectionPwrState(highPressureSectionPwrState);
         settingsController.setPumpHighPressureSectionPwrState(pumpHighPressureSectionPwrState);
+        settingsController.setGiuTypeModel(gui_typeModel);
         return settingsController;
     }
 
@@ -1556,7 +1558,8 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                        ModbusConnect flowModbusConnect,
                                                        FirmwareVersion<FlowFirmwareVersion.FlowVersions> flowFirmwareVersion,
                                                        MainSectionUisModel mainSectionUisModel,
-                                                       UisInjectorSectionModel uisInjectorSectionModel) {
+                                                       UisInjectorSectionModel uisInjectorSectionModel,
+                                                       GUI_TypeModel guiTypeModel) {
         UisSettingsController uisSettingsController = (UisSettingsController) uisSettings().getController();
         uisSettingsController.setI18N(i18N);
         uisSettingsController.setRootPrefs(rootPrefs);
@@ -1565,6 +1568,7 @@ public class JavaFXSpringConfigure extends ViewLoader{
         uisSettingsController.setFlowFirmwareVersion(flowFirmwareVersion);
         uisSettingsController.setMainSectionUisModel(mainSectionUisModel);
         uisSettingsController.setUisInjectorSectionModel(uisInjectorSectionModel);
+        uisSettingsController.setGuiTypeModel(guiTypeModel);
         return uisSettingsController;
     }
 

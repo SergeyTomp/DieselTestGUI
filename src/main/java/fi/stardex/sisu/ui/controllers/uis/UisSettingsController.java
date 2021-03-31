@@ -1,6 +1,7 @@
 package fi.stardex.sisu.ui.controllers.uis;
 
 import fi.stardex.sisu.connect.ModbusConnect;
+import fi.stardex.sisu.model.GUI_TypeModel;
 import fi.stardex.sisu.model.uis.MainSectionUisModel;
 import fi.stardex.sisu.model.uis.UisInjectorSectionModel;
 import fi.stardex.sisu.model.uis.UisSettingsModel;
@@ -60,6 +61,7 @@ public class UisSettingsController {
     private ModbusConnect flowModbusConnect;
     private FirmwareVersion<FlowFirmwareVersion.FlowVersions> flowFirmwareVersion;
     private MainSectionUisModel mainSectionUisModel;
+    private GUI_TypeModel guiTypeModel;
     private Boolean localeChange = false;
 
     private static final String PREF_KEY_FLOW = "checkBoxFlowVisibleSelected";
@@ -67,7 +69,7 @@ public class UisSettingsController {
     private static final String PREF_KEY_OFFSET = "angleOffsetSelected";
     private static final String PREF_KEY_RANGE_VIEW = "flowOutputDimensionSelected";
     private static final String PREF_KEY_SLAVE_RPM = "slaveRpmSelected";
-    private static final String PREF_KEY_PRESS_CORR = "uisPressCorrection";
+    private static final String PREF_KEY_PRESS_CORR = "pressCorrection";
 
     private Alert alert;
     private StringProperty yesButton = new SimpleStringProperty();
@@ -96,6 +98,10 @@ public class UisSettingsController {
 
     public void setUisInjectorSectionModel(UisInjectorSectionModel uisInjectorSectionModel) {
         this.uisInjectorSectionModel = uisInjectorSectionModel;
+    }
+
+    public void setGuiTypeModel(GUI_TypeModel guiTypeModel) {
+        this.guiTypeModel = guiTypeModel;
     }
 
     @PostConstruct
@@ -157,7 +163,7 @@ public class UisSettingsController {
         pressCorrectionSpinner.getValueFactory().valueProperty().addListener((observableValue, oldValue, newValue) -> rootPrefs.putInt(PREF_KEY_PRESS_CORR, newValue));
         pressCorrectionSpinner.getValueFactory().setValue(rootPrefs.getInt(PREF_KEY_PRESS_CORR, 0));
         SpinnerManager.setupIntegerSpinner(pressCorrectionSpinner);
-//        uisInjectorSectionModel.injectorButtonProperty().addListener((observableValue, oldValue, newValue) -> pressCorrectionSpinner.setDisable(newValue));
+        uisInjectorSectionModel.injectorButtonProperty().addListener((observableValue, oldValue, newValue) -> pressCorrectionSpinner.setDisable(newValue));
         uisSettingsModel.slaveMotorRPMProperty().bind(slaveMotorSpinner.valueProperty());
         slaveMotorSpinner.getValueFactory().setValue(rootPrefs.getInt(PREF_KEY_SLAVE_RPM, 1000));
         slaveMotorSpinner.valueProperty().addListener((observableValue, oldValue, newValue) -> rootPrefs.putInt(PREF_KEY_SLAVE_RPM, newValue));
@@ -176,6 +182,8 @@ public class UisSettingsController {
                 diffFmSettingsButton.setDisable(true);
             }
         });
+        guiTypeModel.guiTypeProperty().addListener((observableValue, oldValue, newValue) ->
+                pressCorrectionSpinner.getValueFactory().setValue(rootPrefs.getInt(PREF_KEY_PRESS_CORR, 0)));
         bindingI18N();
     }
 
