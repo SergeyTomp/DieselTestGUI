@@ -89,6 +89,7 @@ public class UisDelayController {
 
         mainSectionUisModel.injectorTestProperty().addListener((observableValue, oldValue, newValue) -> {
 
+            clearDelayResults();
             if (newValue == null) {
                 saveDelayButton.setDisable(true);
                 uisDelayModel.clearResults();

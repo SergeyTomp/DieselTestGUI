@@ -6,6 +6,7 @@ import fi.stardex.sisu.model.uis.MainSectionUisModel;
 import fi.stardex.sisu.model.uis.UisInjectorSectionModel;
 import fi.stardex.sisu.model.uis.UisSettingsModel;
 import fi.stardex.sisu.util.enums.Dimension;
+import fi.stardex.sisu.util.enums.GUI_type;
 import fi.stardex.sisu.util.enums.InjectorSubType;
 import fi.stardex.sisu.util.enums.uis.RpmSource;
 import fi.stardex.sisu.util.i18n.I18N;
@@ -182,8 +183,10 @@ public class UisSettingsController {
                 diffFmSettingsButton.setDisable(true);
             }
         });
-        guiTypeModel.guiTypeProperty().addListener((observableValue, oldValue, newValue) ->
-                pressCorrectionSpinner.getValueFactory().setValue(rootPrefs.getInt(PREF_KEY_PRESS_CORR, 0)));
+        guiTypeModel.guiTypeProperty().addListener((observableValue, oldValue, newValue) -> {
+            if (newValue == GUI_type.UIS) {
+                pressCorrectionSpinner.getValueFactory().setValue(rootPrefs.getInt(PREF_KEY_PRESS_CORR, 0));
+            }});
         bindingI18N();
     }
 

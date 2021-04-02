@@ -811,7 +811,7 @@ public class MainSectionUisController {
 
             testListView.getItems().sort((o1, o2) -> Boolean.compare(o2.includedProperty().get(), o1.includedProperty().get()));
             int includedQty = (int)testListView.getItems().stream().filter(t -> t.includedProperty().get()).count();
-            testListView.getItems().subList(0, includedQty).sort(Comparator.comparingInt(Test::getId));
+            testListView.getItems().subList(0, includedQty).sort(Comparator.comparingInt(injectorTest -> injectorTest.getTestName().getOrder()));
             testListView.scrollTo(0);
         });
     }

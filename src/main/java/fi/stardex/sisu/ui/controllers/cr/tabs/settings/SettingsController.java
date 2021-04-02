@@ -6,6 +6,7 @@ import fi.stardex.sisu.model.cr.CrSettingsModel;
 import fi.stardex.sisu.settings.*;
 import fi.stardex.sisu.states.HighPressureSectionPwrState;
 import fi.stardex.sisu.states.PumpHighPressureSectionPwrState;
+import fi.stardex.sisu.util.enums.GUI_type;
 import fi.stardex.sisu.util.i18n.I18N;
 import fi.stardex.sisu.util.spinners.SpinnerManager;
 import fi.stardex.sisu.version.FirmwareVersion;
@@ -172,8 +173,10 @@ public class SettingsController {
         SpinnerManager.setupIntegerSpinner(pressCorrectionSpinner);
         highPressureSectionPwrState.powerButtonProperty().addListener((observableValue, oldValue, newValue) -> pressCorrectionSpinner.setDisable(newValue));
         pumpHighPressureSectionPwrState.powerButtonProperty().addListener((observableValue, oldValue, newValue) -> pressCorrectionSpinner.setDisable(newValue));
-        guiTypeModel.guiTypeProperty().addListener((observableValue, oldValue, newValue) ->
-                pressCorrectionSpinner.getValueFactory().setValue(rootPrefs.getInt(PREF_KEY_PRESS_CORR, 0)));
+        guiTypeModel.guiTypeProperty().addListener((observableValue, oldValue, newValue) -> {
+            if (newValue != GUI_type.UIS) {
+                pressCorrectionSpinner.getValueFactory().setValue(rootPrefs.getInt(PREF_KEY_PRESS_CORR, 0));
+            }});
 
 
         pressureSensorLabel.textProperty().bind(i18N.createStringBinding("settings.pressureSensor.Label"));
