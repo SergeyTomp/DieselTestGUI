@@ -29,6 +29,7 @@ public class FlowReportModel {
     private ObservableMap<InjectorTest, FlowResult> densoResultObservableMap = FXCollections.observableMap(new LinkedHashMap<>());
     private InjectorControllersState injectorControllersState;
     private InjectorTestModel injectorTestModel;
+    private boolean densoResultRecovery;
 
     public FlowReportModel(FlowViewModel flowViewModel,
                            FlowValuesModel flowValuesModel,
@@ -57,6 +58,9 @@ public class FlowReportModel {
     }
     public BooleanProperty resultMapChangedProperty() {
         return resultMapChanged;
+    }
+    public boolean isDensoResultRecovery() {
+        return densoResultRecovery;
     }
 
     public void clearResults(){
@@ -130,7 +134,9 @@ public class FlowReportModel {
             result.flow4.setValue(densoResult.flow4.get());
             result.setupDoubleFlowValues(injectorTestModel.injectorTestProperty().get().getTestName().getMeasurement());
         });
+        densoResultRecovery = true;
         resultMapChanged.setValue(true);
+        densoResultRecovery = false;
     }
 
     public void deleteResult(InjectorTest injectorTest){

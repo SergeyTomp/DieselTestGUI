@@ -1441,8 +1441,10 @@ public class SpringJavaConfig {
     @Autowired
     public CoderFactory coderFactory(FlowReportModel flowReportModel,
                                      CodingReportModel codingReportModel,
-                                     InjectorControllersState injectorControllersState){
-        return new CoderFactory(flowReportModel, codingReportModel, injectorControllersState);
+                                     InjectorControllersState injectorControllersState,
+                                     MainSectionModel mainSectionModel,
+                                     CoilOnePulseParametersModel coilOnePulseParametersModel){
+        return new CoderFactory(flowReportModel, codingReportModel, injectorControllersState, mainSectionModel, coilOnePulseParametersModel);
     }
 
 //    @Bean

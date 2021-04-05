@@ -4,10 +4,13 @@ import fi.stardex.sisu.coding.bosch.*;
 import fi.stardex.sisu.coding.delphi.DelphiC2ICoder;
 import fi.stardex.sisu.coding.delphi.DelphiC3ICoder;
 import fi.stardex.sisu.coding.delphi.DelphiC4ICoder;
+import fi.stardex.sisu.coding.denso.DensoCoder;
 import fi.stardex.sisu.coding.siemens.SiemensCoderOne;
 import fi.stardex.sisu.coding.siemens.SiemensCoderTwo;
 import fi.stardex.sisu.model.cr.CodingReportModel;
+import fi.stardex.sisu.model.cr.CoilOnePulseParametersModel;
 import fi.stardex.sisu.model.cr.FlowReportModel;
+import fi.stardex.sisu.model.cr.MainSectionModel;
 import fi.stardex.sisu.pdf.Result;
 import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
 import fi.stardex.sisu.persistence.orm.interfaces.Producer;
@@ -20,14 +23,20 @@ public class CoderFactory {
     private FlowReportModel flowReportModel;
     private CodingReportModel codingReportModel;
     private InjectorControllersState injectorControllersState;
+    private MainSectionModel mainSectionModel;
+    private CoilOnePulseParametersModel coilOnePulseParametersModel;
 
     public CoderFactory(FlowReportModel flowReportModel,
                         CodingReportModel codingReportModel,
-                        InjectorControllersState injectorControllersState) {
+                        InjectorControllersState injectorControllersState,
+                        MainSectionModel mainSectionModel,
+                        CoilOnePulseParametersModel coilOnePulseParametersModel) {
 
         this.flowReportModel = flowReportModel;
         this.codingReportModel = codingReportModel;
         this.injectorControllersState = injectorControllersState;
+        this.mainSectionModel = mainSectionModel;
+        this.coilOnePulseParametersModel = coilOnePulseParametersModel;
     }
 
     public Coder getCoder(Injector injector) {
@@ -77,7 +86,7 @@ public class CoderFactory {
                         throw new IllegalArgumentException("Siemens code type is undefined! Coding impossible.");
                 }
             case "Denso":
-                throw new IllegalArgumentException("Denso coder is undefined! Coding impossible.");
+                return new DensoCoder(mainSectionModel, activeLeds, flowReportModel, coilOnePulseParametersModel);
             case "Delphi":
                 switch (injector.getCodetype()){
                     case 1:
