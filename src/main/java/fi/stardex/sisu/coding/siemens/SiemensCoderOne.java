@@ -1,5 +1,6 @@
 package fi.stardex.sisu.coding.siemens;
 
+import fi.stardex.sisu.model.cr.CodingReportModel;
 import fi.stardex.sisu.model.cr.FlowReportModel;
 import fi.stardex.sisu.pdf.Result;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
@@ -13,9 +14,9 @@ import static fi.stardex.sisu.coding.CodeField.*;
 public class SiemensCoderOne extends SiemensCoder {
 
     public SiemensCoderOne(List<Integer> activeLEDs,
-                           List<Result> oldCodes,
+                           CodingReportModel codingReportModel,
                            ObservableMap<InjectorTest, FlowReportModel.FlowResult> mapOfFlowTestResults) {
-        super(activeLEDs, oldCodes);
+        super(activeLEDs, codingReportModel);
         super.TEST_COEFF.put(MAX_LOAD, 1);
         super.TEST_COEFF.put(PART_LOAD, 2);
         super.TEST_COEFF.put(IDLE, 3);
@@ -26,7 +27,7 @@ public class SiemensCoderOne extends SiemensCoder {
 
     @Override
     public List<String> buildCode() {
-
+        makePreviousResultsList();
         Map<InjectorTest, List<Double>> temp = getSourceMap(mapOfFlowTestResults);
         Map<String, List<Integer>> preparedMap = convert(temp);
         List<Integer> checkSum = addCheckSum(preparedMap);

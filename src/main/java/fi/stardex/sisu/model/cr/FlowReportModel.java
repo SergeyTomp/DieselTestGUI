@@ -124,7 +124,7 @@ public class FlowReportModel {
     }
 
     public void setDensoCodingFlowReport() {
-
+        densoResultRecovery = true;
         resultObservableMap.forEach((test, result) -> {
 
             FlowResult densoResult = densoResultObservableMap.get(test);
@@ -134,7 +134,7 @@ public class FlowReportModel {
             result.flow4.setValue(densoResult.flow4.get());
             result.setupDoubleFlowValues(injectorTestModel.injectorTestProperty().get().getTestName().getMeasurement());
         });
-        densoResultRecovery = true;
+
         resultMapChanged.setValue(true);
         densoResultRecovery = false;
     }

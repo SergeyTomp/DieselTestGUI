@@ -2,6 +2,7 @@ package fi.stardex.sisu.coding.siemens;
 
 import fi.stardex.sisu.coding.Coder;
 import fi.stardex.sisu.coding.CodeField;
+import fi.stardex.sisu.model.cr.CodingReportModel;
 import fi.stardex.sisu.model.cr.FlowReportModel;
 import fi.stardex.sisu.pdf.Result;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
@@ -24,15 +25,15 @@ public abstract class SiemensCoder implements Coder {
     private final Map<InjectorTest, List<Double>> mapOfResults = new HashMap<>();
     private List<Integer> activeLEDs;
     private List<Result> oldCodes;
+    private CodingReportModel codingReportModel;
     private List<String> previousResultList;
     final Map<CodeField, Integer> TEST_COEFF = new HashMap<>();
     ObservableMap<InjectorTest, FlowReportModel.FlowResult> mapOfFlowTestResults;
 
-    SiemensCoder(List<Integer> activeLEDs, List<Result> oldCodes) {
+    SiemensCoder(List<Integer> activeLEDs, CodingReportModel codingReportModel) {
 
-        this.oldCodes = oldCodes;
+        this.codingReportModel = codingReportModel;
         this.activeLEDs = activeLEDs;
-        makePreviousResultsList();
     }
 
     Map<InjectorTest, List<Double>> getSourceMap(ObservableMap<InjectorTest, FlowReportModel.FlowResult> mapOfFlowTestResults) {
@@ -53,7 +54,9 @@ public abstract class SiemensCoder implements Coder {
         return temp;
     }
 
-    private void makePreviousResultsList() {
+    protected void makePreviousResultsList() {
+
+        oldCodes = codingReportModel.getResultsList();
 
         previousResultList = new LinkedList<>();
         if (oldCodes.isEmpty()) {

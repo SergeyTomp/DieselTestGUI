@@ -1,6 +1,7 @@
 package fi.stardex.sisu.coding.bosch;
 
 import fi.stardex.sisu.coding.CodeField;
+import fi.stardex.sisu.model.cr.CodingReportModel;
 import fi.stardex.sisu.model.cr.FlowReportModel;
 import fi.stardex.sisu.pdf.Result;
 import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
@@ -18,9 +19,9 @@ public class BoschCoderThree extends BoschCoder {
 
     public BoschCoderThree(Injector injector,
                            List<Integer> activeLEDs,
-                           List<Result> oldCodes,
+                           CodingReportModel codingReportModel,
                            ObservableMap<InjectorTest, FlowReportModel.FlowResult> mapOfFlowTestResults) {
-        super(oldCodes);
+        super(codingReportModel);
         super.codeStep = 4;
         super.isHEX =  true;
         super.valueDivider = getDivider(injector.getCoefficient());
@@ -44,6 +45,8 @@ public class BoschCoderThree extends BoschCoder {
 
     @Override
     public List<String> buildCode() {
+
+        makePreviousResultsList();
 
         Map<InjectorTest, List<Double>> temp = getSourceMap(mapOfFlowTestResults);
 

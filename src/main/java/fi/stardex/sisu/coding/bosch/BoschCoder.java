@@ -2,6 +2,7 @@ package fi.stardex.sisu.coding.bosch;
 
 import fi.stardex.sisu.coding.CodeField;
 import fi.stardex.sisu.coding.Coder;
+import fi.stardex.sisu.model.cr.CodingReportModel;
 import fi.stardex.sisu.model.cr.FlowReportModel;
 import fi.stardex.sisu.pdf.Result;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
@@ -25,6 +26,7 @@ public abstract class BoschCoder implements Coder {
     List<String> baseTestsList;
     List<String> previousResultList;
     private List<Result> oldCodes;
+    private CodingReportModel codingReportModel;
     int codeSize;
     int codeStep;
     boolean isHEX;
@@ -33,10 +35,9 @@ public abstract class BoschCoder implements Coder {
     List<Integer> activeLEDs;
     ObservableMap<InjectorTest, FlowReportModel.FlowResult> mapOfFlowTestResults;
 
-    BoschCoder( List<Result> oldCodes) {
-        this.oldCodes = oldCodes;
+    BoschCoder(CodingReportModel codingReportModel) {
         fieldLengthMap  = new HashMap<>();
-        makePreviousResultsList();
+        this.codingReportModel = codingReportModel;
     }
 
     protected abstract List<String> getCodeResult(Map<String, List<Integer>> preparedMap);
@@ -146,7 +147,9 @@ public abstract class BoschCoder implements Coder {
             return result.toString();
     }
 
-    private void makePreviousResultsList() {
+    protected void makePreviousResultsList() {
+
+        oldCodes = codingReportModel.getResultsList();
 
         previousResultList = new LinkedList<>();
         if (oldCodes.isEmpty()) {

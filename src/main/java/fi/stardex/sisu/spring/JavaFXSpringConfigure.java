@@ -189,7 +189,6 @@ public class JavaFXSpringConfigure extends ViewLoader{
                                                        FlowReportModel flowReportModel,
                                                        InjectorTestModel injectorTestModel,
                                                        InjectorModel injectorModel,
-                                                       ModbusRegisterProcessor ultimaModbusWriter,
                                                        ManufacturerRepository manufacturerRepository,
                                                        GUI_TypeModel gui_typeModel,
                                                        ManufacturerMenuDialogModel manufacturerMenuDialogModel,
@@ -216,7 +215,6 @@ public class JavaFXSpringConfigure extends ViewLoader{
         mainSectionController.setFlowReportModel(flowReportModel);
         mainSectionController.setInjectorTestModel(injectorTestModel);
         mainSectionController.setInjectorModel(injectorModel);
-        mainSectionController.setUltimaModbusWriter(ultimaModbusWriter);
         mainSectionController.setManufacturerRepository(manufacturerRepository);
         mainSectionController.setGui_typeModel(gui_typeModel);
         mainSectionController.setManufacturerMenuDialogModel(manufacturerMenuDialogModel);

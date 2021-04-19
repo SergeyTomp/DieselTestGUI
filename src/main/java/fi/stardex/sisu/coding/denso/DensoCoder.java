@@ -6,7 +6,6 @@ import fi.stardex.sisu.model.cr.FlowReportModel;
 import fi.stardex.sisu.model.cr.MainSectionModel;
 import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
-import fi.stardex.sisu.util.enums.Measurement;
 import javafx.collections.ObservableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,8 +23,8 @@ public class DensoCoder implements Coder {
     private List<InjectorTest> codingTests;
     private CoilOnePulseParametersModel coilOnePulseParametersModel;
 
-    private final List<Integer> DELTAS = new ArrayList<>();
-    private final Random RANDOM = new Random();
+    private final List<Integer> DELTAS;
+    private final Random RANDOM;
 
     private Map<InjectorTest, Map<Integer, Double>> led1DataStorage;
     private Map<InjectorTest, Map<Integer, Double>> led2DataStorage;
@@ -40,22 +39,30 @@ public class DensoCoder implements Coder {
         this.activeLEDs = activeLEDs;
         this.mapOfFlowTestResults = flowReportModel.getResultObservableMap();
         this.codingTests = mainSectionModel.getInjectorTests().stream()
-                .filter(injectorTest -> injectorTest.getTestName().getMeasurement() != Measurement.VISUAL)
+                .filter(injectorTest -> injectorTest.getTestName().isTestPoint())
                 .collect(Collectors.toList());
         this.coilOnePulseParametersModel = coilOnePulseParametersModel;
-        initialize();
+
+        DELTAS = new ArrayList<>();
+        RANDOM = new Random();
+
         flowReportModel.resultMapChangedProperty().addListener((observableValue, oldValue, newValue) -> {
-            if (!flowReportModel.isDensoResultRecovery()) {
-                store(mapOfFlowTestResults.get(mainSectionModel.injectorTestProperty().get()));
+            FlowReportModel.FlowResult flowResult = mapOfFlowTestResults.get(mainSectionModel.injectorTestProperty().get());
+            if (newValue && !flowReportModel.isDensoResultRecovery() && flowResult != null) {
+                    store(flowResult);
             }
         });
     }
 
-    private void initialize() {
+    private Map<InjectorTest, Map<Integer, Double>> getStorage() {
+        Map<InjectorTest, Map<Integer, Double>> storage = new LinkedHashMap<>();
+        codingTests.forEach(codingTest -> storage.put(codingTest, new LinkedHashMap<>()));
+        return storage;
+    }
 
-        activeLEDs.forEach(activeLed -> {
+    private void initialize(int led) {
 
-            switch (activeLed) {
+            switch (led) {
                 case 1:
                     led1DataStorage = new LinkedHashMap<>();
                     codingTests.forEach(codingTest -> led1DataStorage.put(codingTest, new LinkedHashMap<>()));
@@ -72,8 +79,7 @@ public class DensoCoder implements Coder {
                     led4DataStorage = new LinkedHashMap<>();
                     codingTests.forEach(codingTest -> led4DataStorage.put(codingTest, new LinkedHashMap<>()));
                     break;
-            }
-        });
+        }
     }
 
     private void store(FlowReportModel.FlowResult flowTestResult) {
@@ -83,16 +89,20 @@ public class DensoCoder implements Coder {
         activeLEDs.forEach(activeLed -> {
             switch (activeLed) {
                 case 1:
-                    Optional.ofNullable(led1DataStorage).ifPresent(data -> data.get(injectorTest).put(width, flowTestResult.getDoubleValue_1()));
+                    if (led1DataStorage == null) {led1DataStorage = getStorage(); }
+                    led1DataStorage.get(injectorTest).put(width, flowTestResult.getDoubleValue_1());
                     break;
                 case 2:
-                    Optional.ofNullable(led2DataStorage).ifPresent(data -> data.get(injectorTest).put(width, flowTestResult.getDoubleValue_2()));
+                    if (led2DataStorage == null) {led2DataStorage = getStorage(); }
+                    led2DataStorage.get(injectorTest).put(width, flowTestResult.getDoubleValue_2());
                     break;
                 case 3:
-                    Optional.ofNullable(led3DataStorage).ifPresent(data -> data.get(injectorTest).put(width, flowTestResult.getDoubleValue_3()));
+                    if (led3DataStorage == null) {led3DataStorage = getStorage(); }
+                    led3DataStorage.get(injectorTest).put(width, flowTestResult.getDoubleValue_3());
                     break;
                 case 4:
-                    Optional.ofNullable(led4DataStorage).ifPresent(data -> data.get(injectorTest).put(width, flowTestResult.getDoubleValue_4()));
+                    if (led4DataStorage == null) {led4DataStorage = getStorage(); }
+                    led4DataStorage.get(injectorTest).put(width, flowTestResult.getDoubleValue_4());
                     break;
             }
         });
@@ -156,16 +166,16 @@ public class DensoCoder implements Coder {
         DELTAS.clear();
         switch (beakerNumber) {
             case 1:
-                Optional.ofNullable(DensoCodingDataStorage.getLed1DataStorage()).ifPresent(data -> data.entrySet().forEach(entry -> DELTAS.add(getCodingPoint(entry))));
+                Optional.ofNullable(led1DataStorage).ifPresent(data -> data.entrySet().forEach(entry -> DELTAS.add(getCodingPoint(entry))));
                 break;
             case 2:
-                Optional.ofNullable(DensoCodingDataStorage.getLed2DataStorage()).ifPresent(data -> data.entrySet().forEach(entry -> DELTAS.add(getCodingPoint(entry))));
+                Optional.ofNullable(led2DataStorage).ifPresent(data -> data.entrySet().forEach(entry -> DELTAS.add(getCodingPoint(entry))));
                 break;
             case 3:
-                Optional.ofNullable(DensoCodingDataStorage.getLed3DataStorage()).ifPresent(data -> data.entrySet().forEach(entry -> DELTAS.add(getCodingPoint(entry))));
+                Optional.ofNullable(led3DataStorage).ifPresent(data -> data.entrySet().forEach(entry -> DELTAS.add(getCodingPoint(entry))));
                 break;
             case 4:
-                Optional.ofNullable(DensoCodingDataStorage.getLed4DataStorage()).ifPresent(data -> data.entrySet().forEach(entry -> DELTAS.add(getCodingPoint(entry))));
+                Optional.ofNullable(led4DataStorage).ifPresent(data -> data.entrySet().forEach(entry -> DELTAS.add(getCodingPoint(entry))));
                 break;
         }
         return DELTAS;

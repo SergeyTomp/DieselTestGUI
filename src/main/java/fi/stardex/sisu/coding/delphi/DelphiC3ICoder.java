@@ -1,5 +1,6 @@
 package fi.stardex.sisu.coding.delphi;
 
+import fi.stardex.sisu.model.cr.CodingReportModel;
 import fi.stardex.sisu.model.cr.FlowReportModel;
 import fi.stardex.sisu.pdf.Result;
 import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
@@ -18,9 +19,9 @@ public class DelphiC3ICoder extends DelphiCoder {
 
     public DelphiC3ICoder(Injector injector,
                           List<Integer> activeLEDs,
-                          List<Result> oldCodes,
+                          CodingReportModel codingReportModel,
                           ObservableMap<InjectorTest, FlowReportModel.FlowResult> mapOfFlowTestResults) {
-        super(oldCodes);
+        super(codingReportModel);
         super.activeLEDs = activeLEDs;
         super.injectorCoefficient = injector.getCoefficient();
         super.mapOfFlowTestResults = mapOfFlowTestResults;
@@ -29,6 +30,7 @@ public class DelphiC3ICoder extends DelphiCoder {
     @Override
     public List<String> buildCode() {
 
+        makePreviousResultsList();
         Map<InjectorTest, List<Double>> temp = getSourceMap(mapOfFlowTestResults);
 
         activeLEDs.forEach(i -> {

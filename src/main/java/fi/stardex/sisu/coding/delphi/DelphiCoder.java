@@ -1,17 +1,21 @@
 package fi.stardex.sisu.coding.delphi;
 
 import fi.stardex.sisu.coding.Coder;
+import fi.stardex.sisu.model.cr.CodingReportModel;
 import fi.stardex.sisu.model.cr.FlowReportModel;
 import fi.stardex.sisu.pdf.Result;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import javafx.collections.ObservableMap;
 
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public abstract class DelphiCoder implements Coder {
 
     int injectorCoefficient;
     private List<Result> oldCodes;
+    private CodingReportModel codingReportModel;
     protected List<Integer> activeLEDs;
     List<String> previousResultList;
     final String TP01 = "Test Point 01";
@@ -32,13 +36,13 @@ public abstract class DelphiCoder implements Coder {
     final String ALPHABET = "0123456789ABCDEFGHJKLMNPRSTUWXYZ";
     ObservableMap<InjectorTest, FlowReportModel.FlowResult> mapOfFlowTestResults;
 
-    DelphiCoder(List<Result> oldCodes) {
-        this.oldCodes = oldCodes;
-        makePreviousResultsList();
+    DelphiCoder(CodingReportModel codingReportModel) {
+        this.codingReportModel = codingReportModel;
     }
 
-    private void makePreviousResultsList() {
+    protected void makePreviousResultsList() {
 
+        oldCodes = codingReportModel.getResultsList();
         previousResultList = new LinkedList<>();
         if (oldCodes.isEmpty()) {
             previousResultList.add("");

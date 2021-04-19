@@ -5,6 +5,7 @@ import fi.stardex.sisu.model.cr.FlowReportModel.FlowResult;
 import fi.stardex.sisu.model.cr.MainSectionModel;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.util.i18n.I18N;
+import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.collections.FXCollections;
@@ -122,7 +123,8 @@ public class FlowReportController {
                 flowResultsSource.addAll(flowReportModel.getResultObservableMap().values());
                 flowTableView.setItems(flowResultsSource);
                 flowTableView.refresh();
-                resultSourceChanged.setValue(false);
+                Platform.runLater(() -> resultSourceChanged.setValue(false));
+//                resultSourceChanged.setValue(false);
             }
         });
     }

@@ -1,7 +1,7 @@
 package fi.stardex.sisu.coding.delphi;
 
+import fi.stardex.sisu.model.cr.CodingReportModel;
 import fi.stardex.sisu.model.cr.FlowReportModel;
-import fi.stardex.sisu.pdf.Result;
 import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import javafx.collections.ObservableMap;
@@ -9,11 +9,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.math.BigInteger;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.BinaryOperator;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class DelphiC4ICoder extends DelphiCoder {
@@ -23,9 +21,9 @@ public class DelphiC4ICoder extends DelphiCoder {
 
     public DelphiC4ICoder(Injector injector,
                           List<Integer> activeLEDs,
-                          List<Result> oldCodes,
+                          CodingReportModel codingReportModel,
                           ObservableMap<InjectorTest, FlowReportModel.FlowResult> mapOfFlowTestResults) {
-        super(oldCodes);
+        super(codingReportModel);
         super.activeLEDs = activeLEDs;
         super.injectorCoefficient = injector.getCoefficient();
         super.mapOfFlowTestResults = mapOfFlowTestResults;
@@ -55,10 +53,15 @@ public class DelphiC4ICoder extends DelphiCoder {
     @Override
     public List<String> buildCode() {
 
-        Map<InjectorTest, List<Double>> temp = getSourceMap(mapOfFlowTestResults);
+        makePreviousResultsList();
+
+        Map<InjectorTest, List<Double>> temp = getSourceMap(mapOfFlowTestResults).entrySet().stream().sorted(Comparator.comparingInt(elem -> {
+            String name = elem.getKey().getTestName().toString();
+            return Integer.parseInt(name.substring(name.length() - 2));
+        })).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (o1, o2) -> o1, LinkedHashMap::new));
 
         activeLEDs.forEach(i -> {
-            Map<String,Double> ledData = new HashMap<>();
+            Map<String,Double> ledData = new LinkedHashMap<>();
             temp.forEach((test,value) -> ledData.put(test.toString(), value.get(i - 1) - test.getNominalFlow()));
             previousResultList.set(i - 1, makeResultString(ledData));
         });

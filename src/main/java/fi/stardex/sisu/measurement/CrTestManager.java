@@ -1,17 +1,12 @@
 package fi.stardex.sisu.measurement;
 
-import eu.hansolo.enzo.lcd.Lcd;
+import fi.stardex.sisu.coding.Coder;
 import fi.stardex.sisu.coding.CoderFactory;
-import fi.stardex.sisu.coding.delphi.c2i.DelphiC2ICoding;
-import fi.stardex.sisu.coding.delphi.c2i.DelphiC2ICodingDataStorage;
-import fi.stardex.sisu.coding.delphi.c3i.DelphiC3ICoding;
-import fi.stardex.sisu.coding.delphi.c3i.DelphiC3ICodingDataStorage;
-import fi.stardex.sisu.coding.delphi.c4i.DelphiC4ICoding;
-import fi.stardex.sisu.coding.delphi.c4i.DelphiC4ICodingDataStorage;
-import fi.stardex.sisu.coding.denso.DensoCoding;
-import fi.stardex.sisu.coding.denso.DensoCodingDataStorage;
 import fi.stardex.sisu.model.TestBenchSectionModel;
-import fi.stardex.sisu.model.cr.*;
+import fi.stardex.sisu.model.cr.CodingReportModel;
+import fi.stardex.sisu.model.cr.FlowReportModel;
+import fi.stardex.sisu.model.cr.MainSectionModel;
+import fi.stardex.sisu.model.cr.PressureRegulatorOneModel;
 import fi.stardex.sisu.model.updateModels.HighPressureSectionUpdateModel;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
 import fi.stardex.sisu.persistence.orm.cr.inj.TestName;
@@ -36,8 +31,6 @@ import javafx.util.Duration;
 import javax.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static fi.stardex.sisu.util.enums.Tests.TestType.CODING;
 import static fi.stardex.sisu.util.enums.Tests.TestType.TESTPLAN;
@@ -47,66 +40,37 @@ import static fi.stardex.sisu.util.obtainers.CurrentManufacturerObtainer.getManu
 public class CrTestManager implements TestManager {
 
     private ListView<InjectorTest> testListView;
-
     private ObservableList<InjectorTest> testListViewItems;
-
     private MultipleSelectionModel<InjectorTest> testsSelectionModel;
-
     private Button resetButton;
-
     private ToggleButton mainSectionStartToggleButton;
-
     private ToggleButton testBenchStartToggleButton;
-
     private ToggleButton injectorSectionStartToggleButton;
-
     private Spinner<Integer> widthCurrentSignalSpinner;
-
     private MainSectionController.TimeProgressBar adjustingTime;
-
     private MainSectionController.TimeProgressBar measuringTime;
-
     private Timeline motorPreparationTimeline;
-
     private Timeline pressurePreparationTimeline;
-
     private Timeline adjustingTimeline;
-
     private Timeline measurementTimeline;
-
     private Timeline autoResetTimeline;
-
     private Timeline preInjectionAutoResetTimeline;
-
     private ModbusRegisterProcessor flowModbusWriter;
-
     private MainSectionController mainSectionController;
-
     private int includedAutoTestsLength;
-
     private ISADetectionController isaDetectionController;
-
     private CodingReportModel codingReportModel;
-
     private FlowReportModel flowReportModel;
-
     private HighPressureSectionPwrState highPressureSectionPwrState;
-
     private PressureRegulatorOneModel pressureRegulatorOneModel;
-
     private HighPressureSectionUpdateModel highPressureSectionUpdateModel;
-
     private TestBenchSectionModel testBenchSectionModel;
-
     private boolean codingComplete;
-
     private Iterator<Integer> densoCodingPointsIterator;
-
     private MainSectionModel mainSectionModel;
-
     private InjectorControllersState injectorControllersState;
-
     private CoderFactory coderFactory;
+    private Coder coder;
 
     public void setCodingComplete(boolean codingComplete) {
         this.codingComplete = codingComplete;
@@ -196,34 +160,7 @@ public class CrTestManager implements TestManager {
                 includedAutoTestsLength = (int) testListViewItems.stream().filter(InjectorTest::isIncluded).count();
                 break;
             case CODING:
-                List<Integer> activeLedToggleButtonsList = injectorControllersState.activeLedToggleButtonsListProperty().get()
-                        .stream()
-                        .mapToInt(toggleButton -> Integer.parseInt(toggleButton.getText()))
-                        .boxed()
-                        .collect(Collectors.toList());
-                if (isDensoCoding())
-                    DensoCodingDataStorage.initialize(activeLedToggleButtonsList,
-                            testListViewItems
-                                    .stream()
-                                    .filter(injectorTest -> injectorTest.getTestName().getMeasurement() != Measurement.VISUAL)
-                                    .collect(Collectors.toList()));
-//                else if (isDelphiC2ICoding())
-//                    DelphiC2ICodingDataStorage.initialize(activeLedToggleButtonsList,
-//                            testListViewItems
-//                                    .stream()
-//                                    .filter(injectorTest -> injectorTest.getTestName().isTestPoint())
-//                                    .map(injectorTest -> injectorTest.getTestName().toString())
-//                                    .collect(Collectors.toList()));
-//                else if (isDelphiC3ICoding())
-//                    DelphiC3ICodingDataStorage.initialize(activeLedToggleButtonsList);
-//                else if (isDelphiC4ICoding()) {
-//                    DelphiC4ICodingDataStorage.initialize(activeLedToggleButtonsList,
-//                            testListViewItems
-//                                    .stream()
-//                                    .filter(injectorTest -> injectorTest.getTestName().isTestPoint())
-//                                    .map(injectorTest -> injectorTest.getTestName().toString())
-//                                    .collect(Collectors.toList()));
-//                }
+                coder = coderFactory.getCoder(mainSectionModel.injectorProperty().get());
                 break;
         }
         start();
@@ -239,7 +176,7 @@ public class CrTestManager implements TestManager {
         if (mainSectionModel.testTypeProperty().get() == CODING) {
 
             if (codingComplete)
-                performCoding();
+                codingReportModel.storeResult(coder.buildCode());
             /** For Denso-coding it is necessary to show result corresponding with test value of width == totalPulseTime
              * but not additionally calculated incremented and decremented width values.
              * Below we initiate final report data replacement after code calculation */
@@ -258,34 +195,6 @@ public class CrTestManager implements TestManager {
     private void autoReset(){
 
         mainSectionController.getResetButton().fire();
-    }
-
-    private void performCoding() {
-
-        switch (getManufacturer().toString()) {
-
-            case "Denso":
-                setCodingResults(DensoCoding.calculate());
-                break;
-            default:
-                setCodingResults(coderFactory.getCoder(mainSectionModel.injectorProperty().get()).buildCode());
-//                if (isDelphiC2ICoding())
-//                    setCodingResults(DelphiC2ICoding.calculate(
-//                            injectorControllersState.getArrayNumbersOfActiveLedToggleButtons(), codingReportModel.getResultsList()));
-//                else if (isDelphiC3ICoding())
-//                    setCodingResults(DelphiC3ICoding.calculate(
-//                            injectorControllersState.getArrayNumbersOfActiveLedToggleButtons(), codingReportModel.getResultsList()));
-//                else if(isDelphiC4ICoding()){
-//                    setCodingResults(DelphiC4ICoding.calculate(
-//                            injectorControllersState.getArrayNumbersOfActiveLedToggleButtons(), codingReportModel.getResultsList(), mainSectionModel.injectorProperty().get()));
-//                }
-                break;
-        }
-    }
-
-    private void setCodingResults(List<String> codeResult) {
-
-        codingReportModel.storeResult(codeResult);
     }
 
     private void switchOffSections() {
@@ -487,34 +396,8 @@ public class CrTestManager implements TestManager {
     private void tickMeasurementTime() {
 
         if (measuringTime.tick() == 0) {
-
             measurementTimeline.stop();
-
-            InjectorTest injectorTest = testsSelectionModel.getSelectedItem();
-
-            TestName testName = injectorTest.getTestName();
-
             flowReportModel.storeResult();
-
-            if (mainSectionModel.testTypeProperty().get() == CODING) {
-
-                if (isDensoCoding() && testName.getMeasurement() != Measurement.VISUAL) {
-                    List<Integer> activeLeds = injectorControllersState.activeLedToggleButtonsListProperty().get()
-                            .stream()
-                            .mapToInt(toggleButton -> Integer.parseInt(toggleButton.getText()))
-                            .boxed()
-                            .collect(Collectors.toList());
-                    DensoCodingDataStorage.store(widthCurrentSignalSpinner.getValue(), flowReportModel.getResultObservableMap().get(injectorTest), activeLeds);
-                }
-//                else if (testName.isTestPoint()) {
-//                    if (isDelphiC2ICoding())
-//                        DelphiC2ICodingDataStorage.store(flowReportModel.getResultObservableMap().get(injectorTest), injectorControllersState.getArrayNumbersOfActiveLedToggleButtons());
-//                    else if (isDelphiC3ICoding())
-//                        DelphiC3ICodingDataStorage.store(flowReportModel.getResultObservableMap().get(injectorTest), injectorControllersState.getArrayNumbersOfActiveLedToggleButtons());
-//                    else if (isDelphiC4ICoding())
-//                        DelphiC4ICodingDataStorage.store(flowReportModel.getResultObservableMap().get(injectorTest), injectorControllersState.getArrayNumbersOfActiveLedToggleButtons());
-//                }
-            }
             runNextTest();
         }
     }

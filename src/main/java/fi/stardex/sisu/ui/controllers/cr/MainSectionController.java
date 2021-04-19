@@ -1,18 +1,14 @@
 package fi.stardex.sisu.ui.controllers.cr;
 
-import fi.stardex.sisu.coding.delphi.c2i.DelphiC2ICodingDataStorage;
-import fi.stardex.sisu.coding.delphi.c3i.DelphiC3ICodingDataStorage;
-import fi.stardex.sisu.coding.delphi.c4i.DelphiC4ICodingDataStorage;
-import fi.stardex.sisu.coding.denso.DensoCodingDataStorage;
 import fi.stardex.sisu.measurement.CrTestManager;
 import fi.stardex.sisu.model.GUI_TypeModel;
 import fi.stardex.sisu.model.PiezoRepairModel;
 import fi.stardex.sisu.model.Step3Model;
 import fi.stardex.sisu.model.TabSectionModel;
 import fi.stardex.sisu.model.cr.*;
-import fi.stardex.sisu.persistence.orm.cr.inj.Manufacturer;
 import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
+import fi.stardex.sisu.persistence.orm.cr.inj.Manufacturer;
 import fi.stardex.sisu.persistence.orm.cr.inj.VoltAmpereProfile;
 import fi.stardex.sisu.persistence.orm.interfaces.Model;
 import fi.stardex.sisu.persistence.repos.ManufacturerRepository;
@@ -181,8 +177,6 @@ public class MainSectionController {
 
     private ModbusRegisterProcessor flowModbusWriter;
 
-    private ModbusRegisterProcessor ultimaModbusWriter;
-
     private ViewHolder newEditInjectorDialog;
 
     private ViewHolder newEditTestDialog;
@@ -347,10 +341,6 @@ public class MainSectionController {
         this.injectorModel = injectorModel;
     }
 
-    public void setUltimaModbusWriter(ModbusRegisterProcessor ultimaModbusWriter) {
-        this.ultimaModbusWriter = ultimaModbusWriter;
-    }
-
     public void setManufacturerRepository(ManufacturerRepository manufacturerRepository) {
         this.manufacturerRepository = manufacturerRepository;
     }
@@ -417,7 +407,6 @@ public class MainSectionController {
         setupManufacturerMenuDialogModelListener();
         setupNewEditInjectorDialogListener();
         setupNewEditTestDialogListener();
-//        setupManufacturerListListener();
         setupInjectorSectionPwrButtonListener();
         setupStartButtonListener();
         setupStep3StartListener();
@@ -494,15 +483,6 @@ public class MainSectionController {
         manufacturerMenuDialogModel.cancelProperty().addListener((observableValue, oldValue, newValue) ->
                 mainSectionModel.makeOrDelProducerProperty().setValue(null));
     }
-
-//    private void setupManufacturerListListener() {
-//
-//        manufacturerListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) ->
-//                mainSectionModel.manufacturerObjectProperty().setValue(newValue));
-//
-//        manufacturerListView.getItems().addListener((ListChangeListener<Manufacturer>) change ->
-//                mainSectionModel.getManufacturerObservableList().setAll(manufacturerListView.getItems()));
-//    }
 
     private MainSectionController makeReferenceToInternalObjects() {
 
@@ -1289,10 +1269,6 @@ public class MainSectionController {
 
     private void clearAllResults() {
 
-        DensoCodingDataStorage.clean();
-//        DelphiC2ICodingDataStorage.clean();
-//        DelphiC3ICodingDataStorage.clean();
-//        DelphiC4ICodingDataStorage.clean();
         delayReportModel.clearResults();
         rlc_reportModel.clearResults();
         flowReportModel.clearResults();
