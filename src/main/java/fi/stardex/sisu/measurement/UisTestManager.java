@@ -370,7 +370,7 @@ public class UisTestManager implements TestManager {
             button.setDefaultButton(true);
             button.setOnAction(event -> start());
         }
-        int rackPosition = ((InjectorUisTest) (mainSectionUisModel.injectorTestProperty().get())).getRackPosition();
+        double rackPosition = ((InjectorUisTest) (mainSectionUisModel.injectorTestProperty().get())).getRackPosition();
         ((Button)settingsAlert.getDialogPane().lookupButton(ButtonType.APPLY)).textProperty().setValue(applyButton.get());
         settingsAlert.setContentText(alertString.get() + " " + rackPosition + " mm");
         settingsAlert.show();

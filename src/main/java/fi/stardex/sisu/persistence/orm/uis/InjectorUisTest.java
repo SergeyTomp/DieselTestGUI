@@ -9,7 +9,6 @@ import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import org.hibernate.annotations.NotFound;
-import org.springframework.lang.Nullable;
 
 import javax.persistence.*;
 import java.util.Objects;
@@ -84,7 +83,7 @@ public class InjectorUisTest implements Test, ChangeListener<Boolean> {
     private Integer bipRange;
 
     @Column(name = "rack_position")
-    private Integer rackPosition;
+    private Double rackPosition;
 
     @Column(name = "is_custom")
     private Boolean isCustom;
@@ -127,7 +126,7 @@ public class InjectorUisTest implements Test, ChangeListener<Boolean> {
                            InjectorUisVAP voltAmpereProfile,
                            Integer bip,
                            Integer bipRange,
-                           Integer rackPosition) {
+                           Double rackPosition) {
         this.injector = injector;
         this.testName = testName;
         this.motorSpeed = motorSpeed;
@@ -231,7 +230,7 @@ public class InjectorUisTest implements Test, ChangeListener<Boolean> {
     public Integer getBipRange() {
         return bipRange;
     }
-    public Integer getRackPosition() {
+    public Double getRackPosition() {
         return rackPosition;
     }
 
@@ -278,7 +277,7 @@ public class InjectorUisTest implements Test, ChangeListener<Boolean> {
     public void setBipRange(Integer bipRange) {
         this.bipRange = bipRange;
     }
-    public void setRackPosition(Integer rackPosition) {
+    public void setRackPosition(Double rackPosition) {
         this.rackPosition = rackPosition;
     }
 

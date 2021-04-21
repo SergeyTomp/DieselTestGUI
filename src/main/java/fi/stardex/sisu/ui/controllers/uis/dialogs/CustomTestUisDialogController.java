@@ -228,7 +228,7 @@ public class CustomTestUisDialogController {
                 null,
                 getInteger(bipTF),
                 getInteger(bipRangeTF),
-                getInteger(rackPositionTF));
+                getDouble(rackPositionTF));
 
         uisTestService.save(test);
         customTestDialogModel.doneProperty().setValue(new Object());
@@ -254,7 +254,7 @@ public class CustomTestUisDialogController {
         test.setAngle_2(getInteger(angle_2_TF));
         test.setBip(getInteger(bipTF));
         test.setBipRange(getInteger(bipRangeTF));
-        test.setRackPosition(getInteger(rackPositionTF));
+        test.setRackPosition(getDouble(rackPositionTF));
 
         controlsList.stream().filter(c -> !c.isDisabled()).filter(this::isEmpty).findAny().ifPresent(c -> showAlert());
         if(alert != null && alert.isShowing())return;
@@ -306,7 +306,7 @@ public class CustomTestUisDialogController {
 
             rpmTF.setText(getStringFromInteger(InjectorUisTest::getMotorSpeed, injectorTest));
             barTF.setText(getStringFromInteger(InjectorUisTest::getTargetPressure, injectorTest));
-            rackPositionTF.setText(getStringFromInteger(InjectorUisTest::getRackPosition, injectorTest));
+            rackPositionTF.setText(getStringFromDouble(InjectorUisTest::getRackPosition, injectorTest));
             adjTimeTF.setText(getStringFromInteger(InjectorUisTest::getAdjustingTime, injectorTest));
             measureTimeTF.setText(getStringFromInteger(InjectorUisTest::getMeasuringTime, injectorTest));
             width_1_TF.setText(getStringFromInteger(InjectorUisTest::getTotalPulseTime1, injectorTest));
