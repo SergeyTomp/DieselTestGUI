@@ -4,10 +4,12 @@ import fi.stardex.sisu.model.cr.FlowReportModel;
 import fi.stardex.sisu.model.cr.FlowReportModel.FlowResult;
 import fi.stardex.sisu.model.cr.MainSectionModel;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
+import fi.stardex.sisu.util.enums.Tests;
 import fi.stardex.sisu.util.i18n.I18N;
 import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -17,70 +19,39 @@ import javafx.util.Callback;
 
 import javax.annotation.PostConstruct;
 
+import java.util.Collection;
+
 import static fi.stardex.sisu.util.converters.DataConverter.convertDataToDouble;
 
 public class FlowReportController {
 
-    @FXML
-    private Label flowReportAttentionLabel;
-
-    @FXML
-    private TableView<FlowResult> flowTableView;
-
-    @FXML
-    private TableColumn<FlowResult, InjectorTest> flowTestNameColumn;
-
-    @FXML
-    private TableColumn<FlowResult, String> flowTypeColumn;
-
-    @FXML
-    private TableColumn<FlowResult, String> flowNominalColumn;
-
-    @FXML
-    private TableColumn<FlowResult, String> flow1Column;
-
-    @FXML
-    private TableColumn<FlowResult, String> flow2Column;
-
-    @FXML
-    private TableColumn<FlowResult, String> flow3Column;
-
-    @FXML
-    private TableColumn<FlowResult, String> flow4Column;
-
-    @FXML
-    private TableColumn<FlowResult, Boolean> deleteColumn;
+    @FXML private Label flowReportAttentionLabel;
+    @FXML private TableView<FlowResult> flowTableView;
+    @FXML private TableColumn<FlowResult, InjectorTest> flowTestNameColumn;
+    @FXML private TableColumn<FlowResult, String> flowTypeColumn;
+    @FXML private TableColumn<FlowResult, String> flowNominalColumn;
+    @FXML private TableColumn<FlowResult, String> flow1Column;
+    @FXML private TableColumn<FlowResult, String> flow2Column;
+    @FXML private TableColumn<FlowResult, String> flow3Column;
+    @FXML private TableColumn<FlowResult, String> flow4Column;
+    @FXML private TableColumn<FlowResult, Boolean> deleteColumn;
 
     private I18N i18N;
-
     private MainSectionModel mainSectionModel;
-
+    private ObservableList<FlowResult> flowResultsSource = FXCollections.observableArrayList();
     private static final String CELL_COLOR_DEFAULT = "-fx-text-fill: #bf8248;";
-
     private static final String CELL_COLOR_ORANGE = "-fx-text-fill: orange;";
-
     private static final String CELL_COLOR_RED = "-fx-text-fill: red;";
-
     private FlowReportModel flowReportModel;
-
     private BooleanProperty resultSourceChanged;
+    private ChangeListener<InjectorTest> testChangeListener;
 
     public void setFlowReportModel(FlowReportModel flowReportModel) {
         this.flowReportModel = flowReportModel;
     }
-
     public void setI18N(I18N i18N) {
         this.i18N = i18N;
     }
-
-    public TableView<FlowResult> getFlowTableView() {
-        return flowTableView;
-    }
-
-    public Label getFlowReportAttentionLabel() {
-        return flowReportAttentionLabel;
-    }
-
     public void setMainSectionModel(MainSectionModel mainSectionModel) {
         this.mainSectionModel = mainSectionModel;
     }
@@ -89,8 +60,10 @@ public class FlowReportController {
     private void init() {
         setupTableColumns();
         bindingI18N();
-        setupResultChangeListener();
+        resultSourceChanged = flowReportModel.resultMapChangedProperty();
+        buildResultToReportTriggerListeners();
         setupTestModeListener();
+        setupInjectorChangeListener();
     }
 
     private void setupTableColumns() {
@@ -113,26 +86,42 @@ public class FlowReportController {
         deleteColumn.setCellFactory(tableColumn -> new ButtonCell());
     }
 
-    private void setupResultChangeListener(){
+    private void buildResultToReportTriggerListeners() {
 
-        ObservableList<FlowResult> flowResultsSource = FXCollections.observableArrayList();
-        resultSourceChanged = flowReportModel.resultMapChangedProperty();
+        testChangeListener = (observable, oldValue, newValue) -> {
+            if (oldValue != null && oldValue.getTestName().isTestPoint()) {
+                updateReport(flowReportModel.getDensoResultObservableMap().values());
+            }
+        };
         resultSourceChanged.addListener((observable, oldValue, newValue) -> {
             if (newValue) {
-                flowResultsSource.clear();
-                flowResultsSource.addAll(flowReportModel.getResultObservableMap().values());
-                flowTableView.setItems(flowResultsSource);
-                flowTableView.refresh();
+                if (!isDensoCoding()) {
+                    updateReport(flowReportModel.getResultObservableMap().values());
+                }
                 Platform.runLater(() -> resultSourceChanged.setValue(false));
-//                resultSourceChanged.setValue(false);
             }
         });
+    }
+
+    private void updateReport(Collection<FlowReportModel.FlowResult> values) {
+
+        flowResultsSource.clear();
+        flowResultsSource.addAll(values);
+        flowTableView.setItems(flowResultsSource);
+        flowTableView.refresh();
+    }
+
+    private boolean isDensoCoding() {
+        return mainSectionModel.manufacturerObjectProperty().get() != null
+                && mainSectionModel.manufacturerObjectProperty().get().getManufacturerName().equals("Denso")
+                && mainSectionModel.testTypeProperty().get() == Tests.TestType.CODING;
     }
 
     private void setupTestModeListener() {
 
         mainSectionModel.testTypeProperty().addListener((observableValue, oldValue, newValue) -> {
 
+            clearDensoCodindReportUpdater();
             switch (newValue) {
                 case AUTO:
                     showFlowReport(true);
@@ -144,10 +133,29 @@ public class FlowReportController {
                     showFlowReport(true);   // to switch off report table in CODING mode set false
                     break;
             }
+            manageDensoCodindReportUpdater();
         });
     }
 
+    private void setupInjectorChangeListener() {
+        mainSectionModel.injectorProperty().addListener((observableValue, oldValue, newValue) -> {
+            clearDensoCodindReportUpdater();
+            flowTableView.getItems().clear();
+            if (newValue != null) {
+                manageDensoCodindReportUpdater();
+            }
+        });
+    }
 
+    private void clearDensoCodindReportUpdater() {
+        mainSectionModel.injectorTestProperty().removeListener(testChangeListener);
+    }
+
+    private void manageDensoCodindReportUpdater() {
+        if (isDensoCoding()) {
+            mainSectionModel.injectorTestProperty().addListener(testChangeListener);
+        }
+    }
 
     private void setCellFactory(TableColumn<FlowResult, String> column) {
 
@@ -192,11 +200,9 @@ public class FlowReportController {
             private boolean inAcceptableRange() {
                 return ((cellValue <= flowRangeLeft) && (cellValue >= acceptableFlowRangeLeft)) || ((cellValue >= flowRangeRight) && (cellValue <= acceptableFlowRangeRight));
             }
-
             private boolean beyondAcceptableRange() {
                 return (cellValue < acceptableFlowRangeLeft) || (cellValue > acceptableFlowRangeRight);
             }
-
             private boolean inRange(){
                 return (cellValue > flowRangeLeft && cellValue < flowRangeRight);
             }
@@ -222,13 +228,9 @@ public class FlowReportController {
         ButtonCell() {
 
             deleteButton = new Button("Delete");
-
             deleteButton.setStyle("-textFont-color: #1f1f2e");
-
             showNode(false, deleteButton);
-
             deleteButton.visibleProperty().bind(mainSectionModel.startButtonProperty().not());
-
             deleteButton.setOnAction(event -> flowReportModel.deleteResult(getTableRow().getTableView().getItems().get(getTableRow().getIndex()).getInjectorTest()));
         }
 
@@ -236,7 +238,6 @@ public class FlowReportController {
         protected void updateItem(Boolean item, boolean empty) {
 
             super.updateItem(item, empty);
-
             if (item == null || empty)
                 setGraphic(null);
             else

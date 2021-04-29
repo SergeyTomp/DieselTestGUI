@@ -63,6 +63,13 @@ public class FlowReportModel {
         return densoResultRecovery;
     }
 
+    /** Defensive copy is made to prevent direct changes observation by test report controller TableView for Denso coding */
+    public ObservableMap<InjectorTest, FlowResult> getDensoResultObservableMap() {
+        ObservableMap<InjectorTest, FlowResult> densoResultMap = FXCollections.observableMap(new LinkedHashMap<>());
+        densoResultObservableMap.forEach((k,v) -> densoResultMap.put(k, v.clone()));
+        return densoResultMap;
+    }
+
     public void clearResults(){
         resultObservableMap.clear();
         densoResultObservableMap.clear();
@@ -148,7 +155,7 @@ public class FlowReportModel {
         return range + " " + flowUnit;
     }
 
-    public class FlowResult implements Result{
+    public class FlowResult implements Result, Cloneable{
 
         private final ObjectProperty<InjectorTest> injectorTest;
         private final StringProperty flowType;
@@ -171,16 +178,16 @@ public class FlowReportModel {
         public InjectorTest getInjectorTest() {
             return injectorTest.get();
         }
-        public String getFlow1() {
+        String getFlow1() {
             return flow1.get();
         }
-        public String getFlow2() {
+        String getFlow2() {
             return flow2.get();
         }
-        public String getFlow3() {
+        String getFlow3() {
             return flow3.get();
         }
-        public String getFlow4() {
+        String getFlow4() {
             return flow4.get();
         }
         public ObjectProperty<InjectorTest> injectorTestProperty() {
@@ -344,6 +351,21 @@ public class FlowReportModel {
         @Override
         public List<Double> getNumericDataColumns() {
             return new ArrayList<>(Arrays.asList(flow1_double, flow2_double, flow3_double, flow4_double));
+        }
+
+        @Override
+        protected FlowResult clone() {
+            FlowResult result = new FlowResult(this.getInjectorTest(),
+                    this.nominalFlow.get(),
+                    this.getFlow1(),
+                    this.getFlow2(),
+                    this.getFlow3(),
+                    this.getFlow4());
+            result.flowRangeLeft = this.flowRangeLeft;
+            result.flowRangeRight = this.flowRangeRight;
+            result.acceptableFlowRangeLeft = this.acceptableFlowRangeLeft;
+            result.acceptableFlowRangeRight = this.acceptableFlowRangeRight;
+            return result;
         }
     }
 }

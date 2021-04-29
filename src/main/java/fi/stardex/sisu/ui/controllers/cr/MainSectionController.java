@@ -88,195 +88,109 @@ public class MainSectionController {
     private static Logger logger = LoggerFactory.getLogger(MainSectionController.class);
 
     @FXML private GridPane testsToggleGroupGridPane;
-
     @FXML private TextField injectorNumberTextField;
-
     @FXML private VBox injectorTestsVBox;
-
     @FXML private GridPane timingGridPane;
-
     @FXML private StackPane startStackPane;
-
     @FXML private Button moveUpButton;
-
     @FXML private Button moveDownButton;
-
     @FXML private Label timingSpeedLabel;
-
     @FXML private ToggleButton startToggleButton;
-
     @FXML private ProgressBar adjustingTimeProgressBar;
-
     @FXML private ProgressBar measuringTimeProgressBar;
-
     @FXML private Text adjustingText;
-
     @FXML private Text measuringText;
-
     @FXML private Label labelAdjustTime;
-
     @FXML private Label labelMeasureTime;
-
     @FXML private Button storeButton;
-
     @FXML private Button resetButton;
-
     @FXML private Button printButton;
-
     @FXML private ToggleGroup testsToggleGroup;
-
     @FXML private RadioButton testPlanTestRadioButton;
-
     @FXML private RadioButton autoTestRadioButton;
-
     @FXML private RadioButton codingTestRadioButton;
-
     @FXML private ToggleGroup baseTypeToggleGroup;
-
     @FXML private RadioButton defaultRadioButton;
-
     @FXML private RadioButton customRadioButton;
-
     @FXML private ListView<Manufacturer> manufacturerListView;
-
     @FXML private TextField searchModelTextField;
-
     @FXML private ListView<Model> modelListView;
-
     @FXML private ListView<InjectorTest> testListView;
-
     @FXML private ComboBox<String> speedComboBox;
-
     @FXML private VBox injectorsVBox;
 
     private MultipleSelectionModel<InjectorTest> testsSelectionModel;
-
     private SingleSelectionModel<String> speedComboBoxSelectionModel;
-
     private ObservableList<InjectorTest> testListViewItems;
-
     private ObservableList<String> startToggleButtonStyleClass;
-
     private static final String NORMAL_SPEED = "X1";
-
     private static final String DOUBLE_SPEED = "X2";
-
     private static final String HALF_SPEED = "X0.5";
-
     private TimeProgressBar adjustingTime;
-
     private TimeProgressBar measuringTime;
-
     private int currentAdjustingTime;
-
     private int currentMeasuringTime;
-
     private CrTestManager crTestManager;
-
     private FlowReportModel flowReportModel;
-
     private ModbusRegisterProcessor flowModbusWriter;
-
     private ViewHolder newEditInjectorDialog;
-
     private ViewHolder newEditTestDialog;
-
     private ViewHolder printDialogPanel;
-
     private DelayReportModel delayReportModel;
-
     private RLC_ReportModel rlc_reportModel;
-
     private CodingReportModel codingReportModel;
-
     private Step3Model step3Model;
-
     private InjectorsRepository injectorsRepository;
-
     private InjectorTestRepository injectorTestRepository;
-
     private VoltAmpereProfile dafaultVoltAmpereProfile;
-
     private Stage modelDialogStage;
-
     private Stage testDialogStage;
-
     private FilteredList<Model> filteredModelList;
-
     private I18N i18N;
-
     private boolean startLight;
-
     private boolean isFocusMoved;
-
     private boolean isAnotherAutoOrNewTestList;
-
     private Stage printStage;
-
     private InjectorModel injectorModel;
-
     private BoostUadjustmentState boostUadjustmentState;
-
     private InjectorTestModel injectorTestModel;
-
     private ManufacturerRepository manufacturerRepository;
-
     private GUI_TypeModel gui_typeModel;
-
     private ManufacturerMenuDialogModel manufacturerMenuDialogModel;
-
     private MainSectionModel mainSectionModel;
-
     private InjectorSectionPwrState injectorSectionPwrState;
-
     private NewEditInjectorDialogModel newEditInjectorDialogModel;
-
     private TabSectionModel tabSectionModel;
-
     private PiezoRepairModel piezoRepairModel;
-
     private NewEditTestDialogModel newEditTestDialogModel;
-
     private boolean oemAlertProcessing;
-
     private boolean modelAlertProcessing;
-
     private Alert alert;
-
     private StringProperty alertString = new SimpleStringProperty();
-
     private StringProperty yesButton = new SimpleStringProperty();
-
     private StringProperty noButton = new SimpleStringProperty();
 
     public ObservableList<InjectorTest> getTestListViewItems() {
         return testListViewItems;
     }
-
     public MultipleSelectionModel<InjectorTest> getTestsSelectionModel() {
         return testsSelectionModel;
     }
-
     public ModbusRegisterProcessor getFlowModbusWriter() {
         return flowModbusWriter;
     }
-
     public TimeProgressBar getAdjustingTime() {
         return adjustingTime;
     }
-
     public TimeProgressBar getMeasuringTime() {
         return measuringTime;
     }
-
     public ToggleButton getStartToggleButton() {
         return startToggleButton;
     }
-
     public Button getResetButton() {
         return resetButton;
     }
-
     public ListView<InjectorTest> getTestListView() {
         return testListView;
     }
@@ -284,99 +198,75 @@ public class MainSectionController {
     public void setNewEditInjectorDialog(ViewHolder newEditInjectorDialog) {
         this.newEditInjectorDialog = newEditInjectorDialog;
     }
-
     public void setNewEditTestDialog(ViewHolder newEditTestDialog) {
         this.newEditTestDialog = newEditTestDialog;
     }
-
     public void setPrintDialogPanel(ViewHolder printDialogPanel) {
         this.printDialogPanel = printDialogPanel;
     }
-
     public void setInjectorsRepository(InjectorsRepository injectorsRepository) {
         this.injectorsRepository = injectorsRepository;
     }
-
     public void setInjectorTestRepository(InjectorTestRepository injectorTestRepository) {
         this.injectorTestRepository = injectorTestRepository;
     }
-
     public void setCrTestManager(CrTestManager crTestManager) {
         this.crTestManager = crTestManager;
     }
-
     public void setFlowReportModel(FlowReportModel flowReportModel) {
         this.flowReportModel = flowReportModel;
     }
-
     public void setFlowModbusWriter(ModbusRegisterProcessor flowModbusWriter) {
         this.flowModbusWriter = flowModbusWriter;
     }
-
     public void setDelayReportModel(DelayReportModel delayReportModel) {
         this.delayReportModel = delayReportModel;
     }
-
     public void setRlc_reportModel(RLC_ReportModel rlc_reportModel) {
         this.rlc_reportModel = rlc_reportModel;
     }
-
     public void setCodingReportModel(CodingReportModel codingReportModel) {
         this.codingReportModel = codingReportModel;
     }
-
     public void setI18N(I18N i18N) {
         this.i18N = i18N;
     }
-
     public void setBoostUadjustmentState(BoostUadjustmentState boostUadjustmentState) {
         this.boostUadjustmentState = boostUadjustmentState;
     }
-
     public void setInjectorTestModel(InjectorTestModel injectorTestModel) {
         this.injectorTestModel = injectorTestModel;
     }
-
     public void setInjectorModel(InjectorModel injectorModel) {
         this.injectorModel = injectorModel;
     }
-
     public void setManufacturerRepository(ManufacturerRepository manufacturerRepository) {
         this.manufacturerRepository = manufacturerRepository;
     }
-
     public void setGui_typeModel(GUI_TypeModel gui_typeModel) {
         this.gui_typeModel = gui_typeModel;
     }
-
     public void setManufacturerMenuDialogModel(ManufacturerMenuDialogModel manufacturerMenuDialogModel) {
         this.manufacturerMenuDialogModel = manufacturerMenuDialogModel;
     }
-
     public void setMainSectionModel(MainSectionModel mainSectionModel) {
         this.mainSectionModel = mainSectionModel;
     }
-
     public void setInjectorSectionPwrState(InjectorSectionPwrState injectorSectionPwrState) {
         this.injectorSectionPwrState = injectorSectionPwrState;
     }
-
     public void setNewEditInjectorDialogModel(NewEditInjectorDialogModel newEditInjectorDialogModel) {
         this.newEditInjectorDialogModel = newEditInjectorDialogModel;
     }
-
     public void setStep3Model(Step3Model step3Model) {
         this.step3Model = step3Model;
     }
-
     public void setTabSectionModel(TabSectionModel tabSectionModel) {
         this.tabSectionModel = tabSectionModel;
     }
-
     public void setPiezoRepairModel(PiezoRepairModel piezoRepairModel) {
         this.piezoRepairModel = piezoRepairModel;
     }
-
     public void setNewEditTestDialogModel(NewEditTestDialogModel newEditTestDialogModel) {
         this.newEditTestDialogModel = newEditTestDialogModel;
     }
@@ -434,13 +324,11 @@ public class MainSectionController {
     }
 
     private void setHEUIManufacturerListView() {
-
         List<Manufacturer> manufacturers = manufacturerRepository.findByHeui(true);
         setManufacturersListView(manufacturers);
     }
 
     private void setCRManufacturerListView() {
-
         List<Manufacturer> manufacturers = manufacturerRepository.findByCommonRail(true);
         setManufacturersListView(manufacturers);
     }
@@ -452,9 +340,7 @@ public class MainSectionController {
     }
 
     private void setupGUI_typeModelListener() {
-
         gui_typeModel.guiTypeProperty().addListener((observableValue, oldValue, newValue) -> {
-
             manufacturerListView.getSelectionModel().clearSelection();
             baseTypeToggleGroup.selectToggle(defaultRadioButton);
             if (newValue == HEUI) {
@@ -468,7 +354,6 @@ public class MainSectionController {
     private void setupManufacturerMenuDialogModelListener() {
 
         manufacturerMenuDialogModel.doneProperty().addListener((observable, oldValue, newValue) -> {
-
             switch (gui_typeModel.guiTypeProperty().get()) {
                 case CR_Inj:
                     setCRManufacturerListView();
@@ -479,13 +364,11 @@ public class MainSectionController {
             manufacturerListView.getSelectionModel().select(manufacturerMenuDialogModel.customManufacturerProperty().get());
             mainSectionModel.makeOrDelProducerProperty().setValue(null);
         });
-
         manufacturerMenuDialogModel.cancelProperty().addListener((observableValue, oldValue, newValue) ->
                 mainSectionModel.makeOrDelProducerProperty().setValue(null));
     }
 
     private MainSectionController makeReferenceToInternalObjects() {
-
         testsSelectionModel = testListView.getSelectionModel();
         testListViewItems = testListView.getItems();
         startToggleButtonStyleClass = startToggleButton.getStyleClass();
@@ -494,7 +377,6 @@ public class MainSectionController {
     }
 
     private MainSectionController setupTimeProgressBars() {
-
         adjustingTime = new TimeProgressBar(adjustingTimeProgressBar, adjustingText);
         measuringTime = new TimeProgressBar(measuringTimeProgressBar, measuringText);
         return this;
@@ -517,7 +399,6 @@ public class MainSectionController {
     }
 
     private MainSectionController setupStoreButton() {
-
         storeButton.setOnAction((event) -> flowReportModel.storeResult());
         return this;
     }
@@ -536,15 +417,12 @@ public class MainSectionController {
 
     private void fetchTestsFromRepository() {
 
-
         Task<List<InjectorTest>> task = new Task<>() {
             @Override
             protected List<InjectorTest> call() {
                 return injectorTestRepository.findAllByInjector(injectorModel.injectorProperty().get());
             }
         };
-
-
         task.valueProperty().addListener((observable, oldValue, newValue) -> {
 
             if (newValue != null) {
@@ -577,7 +455,6 @@ public class MainSectionController {
         mainSectionModel.injectorTestProperty().setValue(null); // in future replace above line
 
         TestType test = mainSectionModel.testTypeProperty().get();
-
         switch (test) {
 
             case AUTO:
@@ -780,21 +657,16 @@ public class MainSectionController {
             this.progressBar = progressBar;
             this.text = text;
         }
-
         private void setProgress(int time) {
             this.initialTime = time;
             text.setText(String.valueOf(initialTime));
             progressBar.setProgress(initialTime == 0 ? 0 : 1);
         }
-
         public void refreshProgress() {
             setProgress(initialTime);
         }
-
         public int tick() {
-
             int time = Integer.valueOf(text.getText());
-
             if (time > 0) {
                 text.setText(String.valueOf(--time));
                 progressBar.setProgress((float) time / (float) initialTime);
@@ -804,7 +676,6 @@ public class MainSectionController {
     }
 
     private MainSectionController setupResetButton() {
-
         resetButton.setOnAction(event -> flowModbusWriter.add(ModbusMapFlow.StartMeasurementCycle, true));
         return this;
     }
@@ -835,7 +706,6 @@ public class MainSectionController {
         manufacturerListView.getSelectionModel().selectedItemProperty().addListener(((observable, oldValue, newValue) -> {
 
             if(oemAlertProcessing) return;
-
             if (!flowReportModel.getResultObservableMap().isEmpty()) {
 
                 showAlert();
@@ -853,7 +723,6 @@ public class MainSectionController {
             disableNode(newValue == null, injectorsVBox);
             setManufacturer(newValue);
             mainSectionModel.manufacturerObjectProperty().setValue(newValue);
-
 
             if (newValue != null && newValue.isCustom()) {
                 defaultRadioButton.setDisable(true);
@@ -893,7 +762,6 @@ public class MainSectionController {
         baseTypeToggleGroup.selectedToggleProperty().addListener(((observable, oldValue, newValue) -> {
 
             Manufacturer selectedItem = manufacturerListView.getSelectionModel().getSelectedItem();
-
             if (selectedItem == null)
                 return;
 
@@ -906,8 +774,7 @@ public class MainSectionController {
 
         modelListView.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
 
-            if(modelAlertProcessing)return;
-
+            if(modelAlertProcessing){ return; }
             if (!flowReportModel.getResultObservableMap().isEmpty()) {
 
                 showAlert();
@@ -919,7 +786,6 @@ public class MainSectionController {
                     return;
                 }
             }
-
             clearAllResults();
             returnToDefaultTestListAuto();
             resetButton.fire();
@@ -1167,9 +1033,7 @@ public class MainSectionController {
     private void moveTest(Move move) {
 
         int selectedTestIndex = testsSelectionModel.getSelectedIndex();
-
-        if (selectedTestIndex == -1)
-            return;
+        if (selectedTestIndex == -1) { return; }
 
         isFocusMoved = true;
 
@@ -1199,13 +1063,10 @@ public class MainSectionController {
 //
 //            if (isAnotherAutoOrNewTestList)
 //                return;
-//
 //            int index = testListViewItems.indexOf(getChangedInjectorTest());
 //
 //            while (change.next()) {
-//
 //                if (change.wasAdded()) {
-//
 //                    int lastIndex = testListViewItems.size() - 1;
 //
 //                    if (index == lastIndex)
@@ -1214,18 +1075,14 @@ public class MainSectionController {
 //                    for (int i = index; i < lastIndex; i++) {
 //                        Collections.swap(testListViewItems, i, i + 1);
 //                    }
-//
 //                } else if (change.wasRemoved()) {
-//
 //                    if (index == 0)
 //                        enabler.showButtons(true, false);
 //
 //                    for (int i = index; i > 0; i--) {
 //                        Collections.swap(testListViewItems, i, i - 1);
 //                    }
-//
 //                }
-//
 //            }
 //            enabler.enableUpDownButtons(testsSelectionModel.getSelectedIndex(), testListViewItems.size() - change.getList().size());
 //        });
@@ -1236,8 +1093,7 @@ public class MainSectionController {
 
         getListOfNonIncludedTests().addListener((ListChangeListener<? super InjectorTest>) change -> {
 
-            if (isAnotherAutoOrNewTestList)
-                return;
+            if (isAnotherAutoOrNewTestList) { return; }
 
             testListView.getItems().sort((o1, o2) -> Boolean.compare(o2.includedProperty().get(), o1.includedProperty().get()));
             int includedQty = (int)testListView.getItems().stream().filter(t -> t.includedProperty().get()).count();
@@ -1328,17 +1184,14 @@ public class MainSectionController {
         showNode(showUpDown, moveUpButton, moveDownButton);
         showNode(showStoreReset, storeButton, resetButton);
     }
-
     private void disableNode(boolean disable, Node... nodes) {
         for (Node node : nodes)
             node.setDisable(disable);
     }
-
     private void showNode(boolean show, Node... nodes) {
         for (Node node : nodes)
             node.setVisible(show);
     }
-
     private void disableRadioButtons(ToggleGroup targetToggleGroup, boolean disable) {
         targetToggleGroup.getToggles().stream()
                 .filter(radioButton -> !radioButton.isSelected())

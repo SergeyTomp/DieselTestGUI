@@ -6,6 +6,7 @@ import fi.stardex.sisu.model.cr.FlowReportModel;
 import fi.stardex.sisu.model.cr.MainSectionModel;
 import fi.stardex.sisu.persistence.orm.cr.inj.Injector;
 import fi.stardex.sisu.persistence.orm.cr.inj.InjectorTest;
+import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,6 +26,8 @@ public class DensoCoder implements Coder {
 
     private final List<Integer> DELTAS;
     private final Random RANDOM;
+    private ChangeListener<Boolean> resultMapChangedListener;
+    private ChangeListener<Injector> injectorChangeListener;
 
     private Map<InjectorTest, Map<Integer, Double>> led1DataStorage;
     private Map<InjectorTest, Map<Integer, Double>> led2DataStorage;
@@ -46,40 +49,28 @@ public class DensoCoder implements Coder {
         DELTAS = new ArrayList<>();
         RANDOM = new Random();
 
-        flowReportModel.resultMapChangedProperty().addListener((observableValue, oldValue, newValue) -> {
+        resultMapChangedListener = (observableValue, oldValue, newValue) -> {
             FlowReportModel.FlowResult flowResult = mapOfFlowTestResults.get(mainSectionModel.injectorTestProperty().get());
             if (newValue && !flowReportModel.isDensoResultRecovery() && flowResult != null) {
-                    store(flowResult);
+                store(flowResult);
             }
-        });
+        };
+        /**
+        * Workaround for GC cleaning-out delay of DensoCoder instance to avoid irrelevant invocation of method store(...)
+        */
+        injectorChangeListener = (observableValue, oldValue, newValue) -> {
+            flowReportModel.resultMapChangedProperty().removeListener(resultMapChangedListener);
+            mainSectionModel.injectorProperty().removeListener(injectorChangeListener);
+        };
+
+        flowReportModel.resultMapChangedProperty().addListener(resultMapChangedListener);
+        mainSectionModel.injectorProperty().addListener(injectorChangeListener);
     }
 
     private Map<InjectorTest, Map<Integer, Double>> getStorage() {
         Map<InjectorTest, Map<Integer, Double>> storage = new LinkedHashMap<>();
         codingTests.forEach(codingTest -> storage.put(codingTest, new LinkedHashMap<>()));
         return storage;
-    }
-
-    private void initialize(int led) {
-
-            switch (led) {
-                case 1:
-                    led1DataStorage = new LinkedHashMap<>();
-                    codingTests.forEach(codingTest -> led1DataStorage.put(codingTest, new LinkedHashMap<>()));
-                    break;
-                case 2:
-                    led2DataStorage = new LinkedHashMap<>();
-                    codingTests.forEach(codingTest -> led2DataStorage.put(codingTest, new LinkedHashMap<>()));
-                    break;
-                case 3:
-                    led3DataStorage = new LinkedHashMap<>();
-                    codingTests.forEach(codingTest -> led3DataStorage.put(codingTest, new LinkedHashMap<>()));
-                    break;
-                case 4:
-                    led4DataStorage = new LinkedHashMap<>();
-                    codingTests.forEach(codingTest -> led4DataStorage.put(codingTest, new LinkedHashMap<>()));
-                    break;
-        }
     }
 
     private void store(FlowReportModel.FlowResult flowTestResult) {

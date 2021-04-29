@@ -177,9 +177,10 @@ public class CrTestManager implements TestManager {
 
             if (codingComplete)
                 codingReportModel.storeResult(coder.buildCode());
-            /** For Denso-coding it is necessary to show result corresponding with test value of width == totalPulseTime
-             * but not additionally calculated incremented and decremented width values.
-             * Below we initiate final report data replacement after code calculation */
+            /** If Denso-coding: results corresponding to nominal pulse-width value
+             * should be set into the report model after coding completion - not last calculated incremented values!
+             * This values are used for PDF report only.
+             */
             if (isDensoCoding()) {
                 flowReportModel.setDensoCodingFlowReport();
             }
@@ -299,7 +300,7 @@ public class CrTestManager implements TestManager {
         adjustingTime.refreshProgress();
         measuringTime.refreshProgress();
         /** For Denso-coding it is necessary to store result corresponding with test value of totalPulseTime
-         * but not calculated additionally calculated incremented and decremented width values
+         * but not additionally calculated incremented and decremented width values
          * Below we initiate temporal result storage got by test-defined value of width*/
         if (widthCurrentSignalSpinner.getValue().intValue() == testsSelectionModel.getSelectedItem().getTotalPulseTime()) {
             flowReportModel.storeDensoCodingFlowResult();
